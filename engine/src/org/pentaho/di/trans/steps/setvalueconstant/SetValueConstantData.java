@@ -29,22 +29,58 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 16-06-2008
- * 
+ *
  */
 public class SetValueConstantData extends BaseStepData implements StepDataInterface {
 
-  /**
-	 * 
-	 */
-  public RowMetaInterface outputRowMeta;
-  public RowMetaInterface convertRowMeta;
+  private RowMetaInterface outputRowMeta;
+  private RowMetaInterface convertRowMeta;
 
-  public String[] realReplaceByvalues;
-  public int[] fieldnrs;
-  public int fieldnr;
+  private String[] realReplaceByValues;
+  private int[] fieldnrs;
+  private int fieldnr;
 
-  public SetValueConstantData() {
+  SetValueConstantData() {
     super();
   }
 
+  RowMetaInterface getOutputRowMeta() {
+    return outputRowMeta;
+  }
+
+  void setOutputRowMeta( RowMetaInterface outputRowMeta ) {
+    this.outputRowMeta = outputRowMeta;
+  }
+
+  RowMetaInterface getConvertRowMeta() {
+    return convertRowMeta;
+  }
+
+  void setConvertRowMeta( RowMetaInterface convertRowMeta ) {
+    this.convertRowMeta = convertRowMeta;
+  }
+
+  String[] getRealReplaceByValues() {
+    return realReplaceByValues;
+  }
+
+  void setRealReplaceByValues( String[] realReplaceByValues ) {
+    this.realReplaceByValues = realReplaceByValues;
+  }
+
+  int[] getFieldnrs() {
+    return fieldnrs;
+  }
+
+  void setFieldnrs( int[] fieldnrs ) {
+    this.fieldnrs = fieldnrs;
+  }
+
+  int getFieldnr() {
+    return fieldnr;
+  }
+
+  void setFieldnr( int fieldnr ) {
+    this.fieldnr = fieldnr;
+  }
 }

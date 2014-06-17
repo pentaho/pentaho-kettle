@@ -39,7 +39,7 @@ import org.pentaho.di.job.Job;
 
 public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInterface {
 
-  private static Class<?> PKG = RemoveJobServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RemoveJobServlet.class; // for i18n purposes, needed by Translator2!!
   private static final long serialVersionUID = -2051906998698124039L;
 
   public static final String CONTEXT_PATH = "/kettle/removeJob";
@@ -51,7 +51,8 @@ public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInte
     super( jobMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -118,24 +119,26 @@ public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInte
         out.println( "</HEAD>" );
         out.println( "<BODY>" );
         out.println( "<H3>"
-            + encoder.encodeForHTML( BaseMessages.getString( PKG, "RemoveJobServlet.TheJobWasRemoved", jobName, id ) )
-            + "</H3>" );
-        out.print( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><br>" );
+          + encoder.encodeForHTML( BaseMessages
+            .getString( PKG, "RemoveJobServlet.TheJobWasRemoved", jobName, id ) ) + "</H3>" );
+        out.print( "<a href=\""
+          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+          + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><br>" );
         out.println( "<p>" );
         out.println( "</BODY>" );
         out.println( "</HTML>" );
       }
     } else {
       if ( useXML ) {
-        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-            "RemoveJobServlet.Log.CoundNotFindSpecJob", jobName ) ) );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+          PKG, "RemoveJobServlet.Log.CoundNotFindSpecJob", jobName ) ) );
       } else {
         out.println( "<H1>"
-            + encoder.encodeForHTML( BaseMessages.getString( PKG, "RemoveJobServlet.JobRemoved.Log.CoundNotFindJob",
-                jobName, id ) ) + "</H1>" );
-        out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+          + encoder.encodeForHTML( BaseMessages.getString(
+            PKG, "RemoveJobServlet.JobRemoved.Log.CoundNotFindJob", jobName, id ) ) + "</H1>" );
+        out.println( "<a href=\""
+          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+          + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
       }
     }
   }

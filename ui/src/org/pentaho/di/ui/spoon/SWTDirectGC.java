@@ -48,7 +48,7 @@ import org.pentaho.di.ui.util.ImageUtil;
 /**
  * SWTGC draws on an Image. This class draws directly on an SWT GC. getImage() returns null as a consequence of not
  * being created nor used.
- * 
+ *
  * @author matt
  */
 public class SWTDirectGC implements GCInterface {
@@ -299,8 +299,8 @@ public class SWTDirectGC implements GCInterface {
         gc.setLineStyle( SWT.LINE_DOT );
         break;
       case PARALLEL:
-        gc.setLineAttributes( new LineAttributes( gc.getLineWidth(), SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM,
-            new float[] { 5, 3, }, 0, 10 ) );
+        gc.setLineAttributes( new LineAttributes(
+          gc.getLineWidth(), SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM, new float[] { 5, 3, }, 0, 10 ) );
         break;
       default:
         break;
@@ -312,7 +312,7 @@ public class SWTDirectGC implements GCInterface {
   }
 
   public void setTransform( float translationX, float translationY, int shadowsize, float magnification ) {
-    if ( transform != null ) {// dispose of previous to prevent leaking of handles
+    if ( transform != null ) { // dispose of previous to prevent leaking of handles
       transform.dispose();
     }
     transform = new Transform( gc.getDevice() );
@@ -332,8 +332,8 @@ public class SWTDirectGC implements GCInterface {
     gc.fillRectangle( x, y, iconsize, iconsize );
     String steptype = stepMeta.getStepID();
     Image im = images.get( steptype );
-    if ( im != null ) // Draw the icon!
-    {
+    if ( im != null ) { // Draw the icon!
+
       org.eclipse.swt.graphics.Rectangle bounds = im.getBounds();
       gc.drawImage( im, 0, 0, bounds.width, bounds.height, x, y, iconsize, iconsize );
     }

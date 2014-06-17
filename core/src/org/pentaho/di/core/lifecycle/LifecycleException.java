@@ -32,7 +32,7 @@ public class LifecycleException extends Exception {
   private boolean severe;
 
   /**
-   * 
+   *
    * @param severe
    *          true if Spoon should quit because of this exception
    */
@@ -41,7 +41,7 @@ public class LifecycleException extends Exception {
   }
 
   /**
-   * 
+   *
    * @param message
    *          The (localized) message
    * @param severe
@@ -53,7 +53,7 @@ public class LifecycleException extends Exception {
   }
 
   /**
-   * 
+   *
    * @param cause
    * @param severe
    *          true if Spoon should quit because of this exception
@@ -64,7 +64,7 @@ public class LifecycleException extends Exception {
   }
 
   /**
-   * 
+   *
    * @param message
    * @param cause
    * @param severe
@@ -76,7 +76,7 @@ public class LifecycleException extends Exception {
   }
 
   /**
-   * 
+   *
    * @return true if Spoon should quit because of this exception
    */
   public boolean isSevere() {

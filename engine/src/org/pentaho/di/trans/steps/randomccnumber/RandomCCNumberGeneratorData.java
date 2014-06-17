@@ -28,7 +28,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Generate random credit card number.
- * 
+ *
  * @author Samatar
  * @since 01-4-2010
  */
@@ -42,9 +42,6 @@ public class RandomCCNumberGeneratorData extends BaseStepData implements StepDat
   public boolean addCardTypeOutput;
   public boolean addCardLengthOutput;
 
-  /**
-	 * 
-	 */
   public RandomCCNumberGeneratorData() {
     super();
     addCardTypeOutput = false;

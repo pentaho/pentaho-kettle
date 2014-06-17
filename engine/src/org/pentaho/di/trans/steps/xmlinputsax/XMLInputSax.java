@@ -37,7 +37,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Matt
  * @since 4-apr-2003
  */
@@ -47,7 +47,7 @@ public class XMLInputSax extends BaseStep implements StepInterface {
   private XMLInputSaxData data;
 
   public XMLInputSax( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -126,8 +126,7 @@ public class XMLInputSax extends BaseStep implements StepInterface {
 
   private boolean openNextFile() {
     try {
-      if ( data.filenr >= data.files.length ) // finished processing!
-      {
+      if ( data.filenr >= data.files.length ) { // finished processing!
         if ( log.isDetailed() ) {
           logDetailed( "Finished processing files." );
         }

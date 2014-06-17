@@ -53,16 +53,15 @@ import org.w3c.dom.Node;
  */
 
 public class DelayMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = DelayMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DelayMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String timeout;
   private String scaletime;
   public static String DEFAULT_SCALE_TIME = "seconds";
 
-  public String[] ScaleTimeCode = { "milliseconds", "seconds", "minutes", "hours" }; // before 3.1.1 it was
-                                                                                     // "millisecond","second","minute","hour"-->
-                                                                                     // keep compatibilty see PDI-1850,
-                                                                                     // PDI-1532
+  // before 3.1.1 it was "millisecond","second","minute","hour"-->
+  // keep compatibility see PDI-1850, PDI-1532
+  public String[] ScaleTimeCode = { "milliseconds", "seconds", "minutes", "hours" };
 
   public DelayMeta() {
     super(); // allocate BaseStepMeta
@@ -153,8 +152,7 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface {
     this.timeout = timeout;
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       timeout = rep.getStepAttributeString( id_step, "timeout" );
       scaletime = rep.getStepAttributeString( id_step, "scaletime" );
@@ -162,28 +160,29 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface {
       setScaleTimeCode( getScaleTimeCode() ); // compatibility reasons for transformations before 3.1.1, see PDI-1850,
                                               // PDI-1532
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "DelayMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages
+        .getString( PKG, "DelayMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "timeout", timeout );
       rep.saveStepAttribute( id_transformation, id_step, "scaletime", scaletime );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "DelayMeta.Exception.UnexpectedErrorSavingStepInfo" ), e );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "DelayMeta.Exception.UnexpectedErrorSavingStepInfo" ), e );
     }
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -198,30 +197,30 @@ public class DelayMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "DelayMeta.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "DelayMeta.CheckResult.NotReceivingFields" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "DelayMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "DelayMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
     }
     remarks.add( cr );
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "DelayMeta.CheckResult.StepRecevingData2" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "DelayMeta.CheckResult.StepRecevingData2" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "DelayMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "DelayMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
     }
     remarks.add( cr );
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new Delay( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

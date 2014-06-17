@@ -31,12 +31,12 @@ import org.w3c.dom.Node;
 
 /**
  * Describes an LDIF field
- * 
+ *
  * @author Samatar Hassan
  * @since 24-05-2007
  */
 public class LDIFInputField implements Cloneable {
-  private static Class<?> PKG = LDIFInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LDIFInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int TYPE_TRIM_NONE = 0;
   public static final int TYPE_TRIM_LEFT = 1;
@@ -48,7 +48,8 @@ public class LDIFInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "LDIFInputField.TrimType.None" ),
+  public static final String[] trimTypeDesc = {
+    BaseMessages.getString( PKG, "LDIFInputField.TrimType.None" ),
     BaseMessages.getString( PKG, "LDIFInputField.TrimType.Left" ),
     BaseMessages.getString( PKG, "LDIFInputField.TrimType.Right" ),
     BaseMessages.getString( PKG, "LDIFInputField.TrimType.Both" ) };

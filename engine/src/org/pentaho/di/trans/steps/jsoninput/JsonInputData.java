@@ -83,9 +83,6 @@ public class JsonInputData extends BaseStepData implements StepDataInterface {
 
   public String stringToParse;
 
-  /**
-	 * 
-	 */
   public JsonInputData() {
     super();
     nr_repeats = 0;

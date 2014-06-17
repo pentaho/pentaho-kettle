@@ -29,9 +29,9 @@ import java.util.Map;
  * This class is responsible for keeping track of the execution of a job. It does this by keeping a Map in memory. This
  * map has the Unique job entry name has key. The value stored in there includes: - The execution state (waiting,
  * running, finished) - The
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class JobExecutionHistory {
   private Map<String, JobEntryExecutionResult> executionMap;

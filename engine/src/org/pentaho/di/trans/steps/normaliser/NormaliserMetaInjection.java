@@ -32,7 +32,7 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
 /**
  * To keep it simple, this metadata injection interface only supports the fields to denormalize for the time being.
- * 
+ *
  * @author Matt
  */
 public class NormaliserMetaInjection implements StepMetaInjectionInterface {
@@ -48,17 +48,17 @@ public class NormaliserMetaInjection implements StepMetaInjectionInterface {
     List<StepInjectionMetaEntry> all = new ArrayList<StepInjectionMetaEntry>();
 
     StepInjectionMetaEntry fieldsEntry =
-        new StepInjectionMetaEntry( "FIELDS", ValueMetaInterface.TYPE_NONE, "All the fields on the spreadsheets" );
+      new StepInjectionMetaEntry( "FIELDS", ValueMetaInterface.TYPE_NONE, "All the fields on the spreadsheets" );
     all.add( fieldsEntry );
 
     StepInjectionMetaEntry fieldEntry =
-        new StepInjectionMetaEntry( "FIELD", ValueMetaInterface.TYPE_NONE, "All the fields on the spreadsheets" );
+      new StepInjectionMetaEntry( "FIELD", ValueMetaInterface.TYPE_NONE, "All the fields on the spreadsheets" );
     fieldsEntry.getDetails().add( fieldEntry );
 
     for ( Entry entry : Entry.values() ) {
       if ( entry.getValueType() != ValueMetaInterface.TYPE_NONE ) {
         StepInjectionMetaEntry metaEntry =
-            new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
         fieldEntry.getDetails().add( metaEntry );
       }
     }
@@ -115,6 +115,7 @@ public class NormaliserMetaInjection implements StepMetaInjectionInterface {
 
     // Pass the grid to the step metadata
     //
+    //CHECKSTYLE:Indentation:OFF
     meta.allocate( normaliserFields.size() );
     for ( int i = 0; i < normaliserFields.size(); i++ ) {
       meta.getFieldName()[i] = normaliserFields.get( i ).getName();
@@ -122,6 +123,10 @@ public class NormaliserMetaInjection implements StepMetaInjectionInterface {
       meta.getFieldNorm()[i] = normaliserFields.get( i ).getNorm();
     }
 
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
   }
 
   public NormaliserMeta getMeta() {
@@ -192,8 +197,9 @@ public class NormaliserMetaInjection implements StepMetaInjectionInterface {
 
     FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields" ), FIELD( ValueMetaInterface.TYPE_NONE, "One field" ),
 
-    NAME( ValueMetaInterface.TYPE_STRING, "Input field name" ), VALUE( ValueMetaInterface.TYPE_STRING,
-        "Type field value" ), NORMALISED( ValueMetaInterface.TYPE_STRING, "Normalised field name" ), ;
+      NAME( ValueMetaInterface.TYPE_STRING, "Input field name" ), VALUE(
+        ValueMetaInterface.TYPE_STRING, "Type field value" ), NORMALISED(
+        ValueMetaInterface.TYPE_STRING, "Normalised field name" );
 
     private int valueType;
     private String description;

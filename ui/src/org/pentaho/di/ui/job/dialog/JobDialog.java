@@ -90,10 +90,11 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.HelpUtils;
 
 /**
  * Allows you to edit the Job settings. Just pass a JobInfo object.
- * 
+ *
  * @author Matt Casters
  * @since 02-jul-2003
  */
@@ -284,15 +285,16 @@ public class JobDialog extends Dialog {
     // See if there are any other tabs to be added...
     extraTabs = new ArrayList<JobDialogPluginInterface>();
     java.util.List<PluginInterface> jobDialogPlugins =
-        PluginRegistry.getInstance().getPlugins( JobDialogPluginType.class );
+      PluginRegistry.getInstance().getPlugins( JobDialogPluginType.class );
     for ( PluginInterface jobDialogPlugin : jobDialogPlugins ) {
       try {
         JobDialogPluginInterface extraTab =
-            (JobDialogPluginInterface) PluginRegistry.getInstance().loadClass( jobDialogPlugin );
+          (JobDialogPluginInterface) PluginRegistry.getInstance().loadClass( jobDialogPlugin );
         extraTab.addTab( jobMeta, parent, wTabFolder );
         extraTabs.add( extraTab );
       } catch ( Exception e ) {
-        new ErrorDialog( shell, "Error", "Error loading job dialog plugin with id " + jobDialogPlugin.getIds()[0], e );
+        new ErrorDialog(
+          shell, "Error", "Error loading job dialog plugin with id " + jobDialogPlugin.getIds()[0], e );
       }
     }
 
@@ -553,9 +555,8 @@ public class JobDialog extends Dialog {
             // We do this when the user pressed OK
             newDirectory = rd;
             wDirectory.setText( rd.getPath() );
-          } else {
-            // Same directory!
           }
+          // Else same directory!
         }
       }
     } );
@@ -689,18 +690,21 @@ public class JobDialog extends Dialog {
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.ColumnInfo.Parameter.Label" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "JobDialog.ColumnInfo.Parameter.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.ColumnInfo.Default.Label" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "JobDialog.ColumnInfo.Default.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.ColumnInfo.Description.Label" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "JobDialog.ColumnInfo.Description.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
 
     wParamFields =
-        new TableView( jobMeta, wParamComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+      new TableView(
+        jobMeta, wParamComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -917,7 +921,7 @@ public class JobDialog extends Dialog {
     wLogconnection.setItems( jobMeta.getDatabaseNames() );
     wLogconnection.setText( Const.NVL( logTable.getConnectionName(), "" ) );
     wLogconnection.setToolTipText( BaseMessages.getString( PKG, "JobDialog.LogConnection.Tooltip", logTable
-        .getConnectionNameVariable() ) );
+      .getConnectionNameVariable() ) );
 
     // Log schema ...
     //
@@ -939,7 +943,7 @@ public class JobDialog extends Dialog {
     wLogSchema.setLayoutData( fdLogSchema );
     wLogSchema.setText( Const.NVL( logTable.getSchemaName(), "" ) );
     wLogSchema.setToolTipText( BaseMessages.getString( PKG, "JobDialog.LogSchema.Tooltip", logTable
-        .getSchemaNameVariable() ) );
+      .getSchemaNameVariable() ) );
 
     // Log table...
     //
@@ -961,7 +965,7 @@ public class JobDialog extends Dialog {
     wLogTable.setLayoutData( fdLogtable );
     wLogTable.setText( Const.NVL( logTable.getTableName(), "" ) );
     wLogTable.setToolTipText( BaseMessages.getString( PKG, "JobDialog.LogTable.Tooltip", logTable
-        .getTableNameVariable() ) );
+      .getTableNameVariable() ) );
 
     return wLogTable;
 
@@ -1049,18 +1053,20 @@ public class JobDialog extends Dialog {
     final int nrRows = fields.size();
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.FieldName" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Description" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.FieldName" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Description" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     wOptionFields =
-        new TableView( jobMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add a
-                                                                                                               // check
-                                                                                                               // to the
-                                                                                                               // left...
-            colinf, nrRows, true, lsMod, props );
+      new TableView( jobMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add a
+                                                                                                             // check
+                                                                                                             // to the
+                                                                                                             // left...
+        colinf, nrRows, true, lsMod, props );
 
     wOptionFields.setSortable( false );
 
@@ -1068,11 +1074,12 @@ public class JobDialog extends Dialog {
       LogTableField field = fields.get( i );
       TableItem item = wOptionFields.table.getItem( i );
       item.setChecked( field.isEnabled() );
-      item.setText( new String[] { "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
+      item.setText( new String[] {
+        "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
     }
 
-    wOptionFields.table.getColumn( 0 )
-        .setText( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Enabled" ) );
+    wOptionFields.table.getColumn( 0 ).setText(
+      BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Enabled" ) );
 
     FormData fdOptionFields = new FormData();
     fdOptionFields.left = new FormAttachment( 0, 0 );
@@ -1144,11 +1151,13 @@ public class JobDialog extends Dialog {
     final int nrRows = fields.size();
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.FieldName" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Description" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.FieldName" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Description" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     FieldDisabledListener disabledListener = new FieldDisabledListener() {
 
@@ -1165,11 +1174,11 @@ public class JobDialog extends Dialog {
     colinf[1].setDisabledListener( disabledListener );
 
     wOptionFields =
-        new TableView( jobMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add a
-                                                                                                               // check
-                                                                                                               // to the
-                                                                                                               // left...
-            colinf, nrRows, true, lsMod, props );
+      new TableView( jobMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add a
+                                                                                                             // check
+                                                                                                             // to the
+                                                                                                             // left...
+        colinf, nrRows, true, lsMod, props );
 
     wOptionFields.setSortable( false );
 
@@ -1177,11 +1186,12 @@ public class JobDialog extends Dialog {
       LogTableField field = fields.get( i );
       TableItem item = wOptionFields.table.getItem( i );
       item.setChecked( field.isEnabled() );
-      item.setText( new String[] { "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
+      item.setText( new String[] {
+        "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
     }
 
-    wOptionFields.table.getColumn( 0 )
-        .setText( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Enabled" ) );
+    wOptionFields.table.getColumn( 0 ).setText(
+      BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Enabled" ) );
 
     FormData fdOptionFields = new FormData();
     fdOptionFields.left = new FormAttachment( 0, 0 );
@@ -1253,11 +1263,13 @@ public class JobDialog extends Dialog {
     final int nrRows = fields.size();
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.FieldName" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Description" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.FieldName" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Description" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     FieldDisabledListener disabledListener = new FieldDisabledListener() {
 
@@ -1274,11 +1286,11 @@ public class JobDialog extends Dialog {
     colinf[1].setDisabledListener( disabledListener );
 
     wOptionFields =
-        new TableView( jobMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add a
-                                                                                                               // check
-                                                                                                               // to the
-                                                                                                               // left...
-            colinf, nrRows, true, lsMod, props );
+      new TableView( jobMeta, wLogOptionsComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add a
+                                                                                                             // check
+                                                                                                             // to the
+                                                                                                             // left...
+        colinf, nrRows, true, lsMod, props );
 
     wOptionFields.setSortable( false );
 
@@ -1286,11 +1298,12 @@ public class JobDialog extends Dialog {
       LogTableField field = fields.get( i );
       TableItem item = wOptionFields.table.getItem( i );
       item.setChecked( field.isEnabled() );
-      item.setText( new String[] { "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
+      item.setText( new String[] {
+        "", Const.NVL( field.getFieldName(), "" ), Const.NVL( field.getDescription(), "" ) } );
     }
 
-    wOptionFields.table.getColumn( 0 )
-        .setText( BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Enabled" ) );
+    wOptionFields.table.getColumn( 0 ).setText(
+      BaseMessages.getString( PKG, "JobDialog.TransLogTable.Fields.Enabled" ) );
 
     FormData fdOptionFields = new FormData();
     fdOptionFields.left = new FormAttachment( 0, 0 );
@@ -1524,8 +1537,9 @@ public class JobDialog extends Dialog {
         } catch ( KettleException dbe ) {
           jobMeta.setRepositoryDirectory( dirFrom );
 
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "JobDialog.Dialog.ErrorChangingDirectory.Title" ),
-              BaseMessages.getString( PKG, "JobDialog.Dialog.ErrorChangingDirectory.Message" ), dbe );
+          new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "JobDialog.Dialog.ErrorChangingDirectory.Title" ), BaseMessages
+              .getString( PKG, "JobDialog.Dialog.ErrorChangingDirectory.Message" ), dbe );
         }
       } else {
         // Just update to the new selected directory...
@@ -1564,9 +1578,9 @@ public class JobDialog extends Dialog {
             RowMetaInterface fields = logTable.getLogRecord( LogStatus.START, null, null ).getRowMeta();
             String tableName = db.environmentSubstitute( logTable.getTableName() );
             String schemaTable =
-                logTable.getDatabaseMeta().getQuotedSchemaTableCombination(
-                    db.environmentSubstitute( logTable.getSchemaName() ),
-                    db.environmentSubstitute( logTable.getTableName() ) );
+              logTable.getDatabaseMeta().getQuotedSchemaTableCombination(
+                db.environmentSubstitute( logTable.getSchemaName() ),
+                db.environmentSubstitute( logTable.getTableName() ) );
             String createTable = db.getDDL( schemaTable, fields );
 
             if ( !Const.isEmpty( createTable ) ) {
@@ -1580,8 +1594,8 @@ public class JobDialog extends Dialog {
               RowMetaInterface index = indexes.get( i );
               if ( !index.isEmpty() ) {
                 String createIndex =
-                    db.getCreateIndexStatement( schemaTable, "IDX_" + tableName + "_" + ( i + 1 ), index
-                        .getFieldNames(), false, false, false, true );
+                  db.getCreateIndexStatement( schemaTable, "IDX_" + tableName + "_" + ( i + 1 ), index
+                    .getFieldNames(), false, false, false, true );
                 if ( !Const.isEmpty( createIndex ) ) {
                   ddl.append( createIndex );
                 }
@@ -1590,14 +1604,14 @@ public class JobDialog extends Dialog {
 
             if ( ddl.length() > 0 ) {
               SQLEditor sqledit =
-                  new SQLEditor( jobMeta, shell, SWT.NONE, logTable.getDatabaseMeta(), DBCache.getInstance(), ddl
-                      .toString() );
+                new SQLEditor( jobMeta, shell, SWT.NONE, logTable.getDatabaseMeta(), DBCache.getInstance(), ddl
+                  .toString() );
               sqledit.open();
             } else {
               MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
               mb.setText( BaseMessages.getString( PKG, "JobDialog.NoSqlNedds.DialogTitle" ) );
-              mb.setMessage( logTable.getLogTableType() + Const.CR + Const.CR
-                  + BaseMessages.getString( PKG, "JobDialog.NoSqlNedds.DialogMessage" ) );
+              mb.setMessage( logTable.getLogTableType()
+                + Const.CR + Const.CR + BaseMessages.getString( PKG, "JobDialog.NoSqlNedds.DialogMessage" ) );
               mb.open();
             }
 
@@ -1609,8 +1623,9 @@ public class JobDialog extends Dialog {
         }
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "JobDialog.Dialog.ErrorCreatingSQL.Title" ), BaseMessages
-          .getString( PKG, "JobDialog.Dialog.ErrorCreatingSQL.Message" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "JobDialog.Dialog.ErrorCreatingSQL.Title" ), BaseMessages.getString(
+          PKG, "JobDialog.Dialog.ErrorCreatingSQL.Message" ), e );
     }
   }
 
@@ -1621,16 +1636,16 @@ public class JobDialog extends Dialog {
   public static final void setShellImage( Shell shell, JobEntryInterface jobEntryInterface ) {
     try {
       final PluginInterface plugin =
-          PluginRegistry.getInstance().getPlugin( JobEntryPluginType.class, jobEntryInterface );
-      if ( !Const.isEmpty( plugin.getDocumentationUrl() ) ) {
-        BaseStepDialog.createHelpButton( shell, "Documentation for job entry " + jobEntryInterface.getName(), plugin );
-      }
+        PluginRegistry.getInstance().getPlugin( JobEntryPluginType.class, jobEntryInterface );
+
+      HelpUtils.createHelpButton( shell, HelpUtils.getHelpDialogTitle( plugin ), plugin );
 
       String id = plugin.getIds()[0];
       if ( id != null ) {
         shell.setImage( GUIResource.getInstance().getImagesJobentries().get( id ) );
       }
     } catch ( Throwable e ) {
+      // Ignore unexpected errors, not worth it
     }
   }
 
@@ -1639,7 +1654,7 @@ public class JobDialog extends Dialog {
   }
 
   private LogTableUserInterface getLogTableUserInterface( LogTableInterface logTable, JobMeta jobMeta,
-      ModifyListener lsMod ) {
+    ModifyListener lsMod ) {
 
     if ( !( logTable instanceof LogTablePluginInterface ) ) {
       return null;
@@ -1649,7 +1664,7 @@ public class JobDialog extends Dialog {
     String uiClassName = pluginInterface.getLogTablePluginUIClassname();
 
     Class<?> uiClass;
-    Class<?>[] paramClasses = new Class[] { JobMeta.class, ModifyListener.class, JobDialog.class, };
+    Class<?>[] paramClasses = new Class<?>[] { JobMeta.class, ModifyListener.class, JobDialog.class, };
     Object[] paramArgs = new Object[] { jobMeta, lsMod, this, };
     Constructor<?> uiConstructor;
     try {

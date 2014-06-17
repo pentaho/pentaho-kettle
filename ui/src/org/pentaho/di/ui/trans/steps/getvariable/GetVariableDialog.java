@@ -59,7 +59,7 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class GetVariableDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = GetVariableMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetVariableMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlStepname;
   private Text wStepname;
@@ -137,27 +137,38 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
     final int FieldsRows = input.getFieldName().length;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "GetVariableDialog.NameColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "GetVariableDialog.VariableColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta
-              .getTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Format" ), ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Length" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Currency" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Decimal" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "System.Column.Group" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "GetVariableDialog.TrimType.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTrimTypeDescriptions() ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "GetVariableDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "GetVariableDialog.VariableColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "System.Column.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta
+            .getTypes() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "System.Column.Format" ), ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "System.Column.Length" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "System.Column.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "System.Column.Currency" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "System.Column.Decimal" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "System.Column.Group" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "GetVariableDialog.TrimType.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          ValueMeta.getTrimTypeDescriptions() ), };
 
     colinf[1].setToolTip( BaseMessages.getString( PKG, "GetVariableDialog.VariableColumn.Tooltip" ) );
     colinf[1].setUsingVariables( true );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -278,6 +289,7 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
     int count = wFields.nrNonEmpty();
     input.allocate( count );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < count; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
 
@@ -316,7 +328,7 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
       getInfo( oneMeta );
 
       TransMeta previewMeta =
-          TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+        TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       // EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(),
       // BaseMessages.getString(PKG, "GetVariableDialog.NumberRows.DialogTitle"), BaseMessages.getString(PKG,
@@ -325,8 +337,8 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
       int previewSize = 1; // numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+            shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -335,23 +347,25 @@ public class GetVariableDialog extends BaseStepDialog implements StepDialogInter
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
+                  .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+            new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "GetVariableDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "GetVariableDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "GetVariableDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+          .getString( PKG, "GetVariableDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 

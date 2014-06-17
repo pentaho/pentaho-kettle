@@ -93,7 +93,8 @@ public class BaseHttpServlet extends HttpServlet {
     this.jettyMode = isJetty;
   }
 
-  protected void doPut( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  protected void doPut( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     doGet( request, response );
   }
 
@@ -180,7 +181,7 @@ public class BaseHttpServlet extends HttpServlet {
   }
 
   public void setup( TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository,
-      List<SlaveServerDetection> detections ) {
+    List<SlaveServerDetection> detections ) {
     this.transformationMap = transformationMap;
     this.jobMap = jobMap;
     this.socketRepository = socketRepository;

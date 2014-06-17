@@ -60,9 +60,6 @@ public class GetSubFoldersData extends BaseStepData implements StepDataInterface
 
   public int nrStepFields;
 
-  /**
-	 * 
-	 */
   public GetSubFoldersData() {
     super();
     previous_row = null;

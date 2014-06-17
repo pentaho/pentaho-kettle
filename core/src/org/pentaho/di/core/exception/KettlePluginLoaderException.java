@@ -24,10 +24,10 @@ package org.pentaho.di.core.exception;
 
 /**
  * This Exception is throws when an error occurs loading plugins.
- * 
+ *
  * @author Matt
  * @since 9-12-2004
- * 
+ *
  */
 public class KettlePluginLoaderException extends KettleException {
   public static final long serialVersionUID = 0x8D8EA0264F7A1C16L;
@@ -36,7 +36,7 @@ public class KettlePluginLoaderException extends KettleException {
 
   /**
    * Constructs a new throwable with null as its detail message.
-   * 
+   *
    * @param pluginId
    *          The missing plugin id
    */
@@ -47,7 +47,7 @@ public class KettlePluginLoaderException extends KettleException {
 
   /**
    * Constructs a new throwable with the specified detail message.
-   * 
+   *
    * @param pluginId
    *          The missing plugin id
    * @param message
@@ -61,7 +61,7 @@ public class KettlePluginLoaderException extends KettleException {
   /**
    * Constructs a new throwable with the specified cause and a detail message of (cause==null ? null : cause.toString())
    * (which typically contains the class and detail message of cause).
-   * 
+   *
    * @param pluginId
    *          The missing plugin id
    * @param cause
@@ -75,7 +75,7 @@ public class KettlePluginLoaderException extends KettleException {
 
   /**
    * Constructs a new throwable with the specified detail message and cause.
-   * 
+   *
    * @param pluginId
    *          The missing plugin id
    * @param message

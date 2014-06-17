@@ -36,9 +36,9 @@ import org.pentaho.di.core.vfs.KettleVFS;
 
 /**
  * A folder to search plugins in.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class PluginFolder implements PluginFolderInterface {
 
@@ -69,7 +69,8 @@ public class PluginFolder implements PluginFolderInterface {
    * @param searchLibDir
    *          look inside the plugins lib dir for additional plugins
    */
-  public PluginFolder( String folder, boolean pluginXmlFolder, boolean pluginAnnotationsFolder, boolean searchLibDir ) {
+  public PluginFolder( String folder, boolean pluginXmlFolder, boolean pluginAnnotationsFolder,
+    boolean searchLibDir ) {
     this.folder = folder;
     this.pluginXmlFolder = pluginXmlFolder;
     this.pluginAnnotationsFolder = pluginAnnotationsFolder;
@@ -83,7 +84,7 @@ public class PluginFolder implements PluginFolderInterface {
 
   /**
    * Create a list of plugin folders based on the specified xml sub folder
-   * 
+   *
    * @param xmlSubfolder
    *          the sub-folder to consider for XML plugin files or null if it's not applicable.
    * @return The list of plugin folders found

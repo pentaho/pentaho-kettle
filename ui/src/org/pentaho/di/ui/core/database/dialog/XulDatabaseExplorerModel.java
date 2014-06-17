@@ -69,7 +69,7 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
 
   /**
    * Finds the node.
-   * 
+   *
    * @param aSchema
    *          can be null
    * @param aName
@@ -89,8 +89,9 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
       if ( theNode != null ) {
         if ( lookingForSchema && theNode.isSchema() && theNode.getName().equals( aSchema ) ) {
           break;
-        } else if ( !lookingForSchema && theNode.isTable() && theNode.getName().equals( aTable )
-            && ( theNode.getSchema() != null ? theNode.getSchema().equals( aSchema ) : aSchema == null ) ) {
+        } else if ( !lookingForSchema
+          && theNode.isTable() && theNode.getName().equals( aTable )
+          && ( theNode.getSchema() != null ? theNode.getSchema().equals( aSchema ) : aSchema == null ) ) {
           break;
         } else {
           theNode = drillDown( theNode.listIterator(), aSchema, aTable );

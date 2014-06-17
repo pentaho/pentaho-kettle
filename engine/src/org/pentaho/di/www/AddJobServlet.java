@@ -57,7 +57,8 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
     super( jobMap, socketRepository );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getRequestURI().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -109,7 +110,8 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
       final Repository repository = jobConfiguration.getJobExecutionConfiguration().getRepository();
 
       String carteObjectId = UUID.randomUUID().toString();
-      SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
+      SimpleLoggingObject servletLoggingObject =
+        new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
       servletLoggingObject.setContainerObjectId( carteObjectId );
       servletLoggingObject.setLogLevel( jobExecutionConfiguration.getLogLevel() );
 
@@ -177,8 +179,9 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
         out.println( new WebResult( WebResult.STRING_OK, message, carteObjectId ) );
       } else {
         out.println( "<H1>" + message + "</H1>" );
-        out.println( "<p><a href=\"" + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
-            + job.getJobname() + "&id=" + carteObjectId + "\">Go to the job status page</a><p>" );
+        out.println( "<p><a href=\""
+          + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name=" + job.getJobname() + "&id="
+          + carteObjectId + "\">Go to the job status page</a><p>" );
       }
     } catch ( Exception ex ) {
       if ( useXML ) {

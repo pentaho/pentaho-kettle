@@ -5,6 +5,8 @@
     <conf name="default" />
     <conf name="test" visibility="private" />
     <conf name="swtlibs"/>
+    <conf name="pdf-docs" />
+    <conf name="oss-licenses" />
     <conf name="plugins"/>
     <conf name="launcher" />
   </configurations>
@@ -18,7 +20,29 @@
     <dependency org="${ivy.artifact.group}" name="kettle-core"          rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-engine"        rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"      rev="${project.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"        rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"        rev="${project.revision}" changing="true">
+      <exclude name="swt-linux-x86_64"/>
+    </dependency>
+    
+    <!-- Kettle plugin dependencies-->
+    <dependency org="${ivy.artifact.group}" name="market" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="market" type="zip"/>
+    </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-gpload-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="kettle-gpload-plugin" type="zip"/>
+    </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-hl7-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="kettle-hl7-plugin" type="zip"/>
+    </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-openerp-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="kettle-openerp-plugin" type="zip"/>
+    </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-palo-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="kettle-palo-plugin" type="zip"/>
+    </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="kettle5-log4j-plugin" type="zip"/>
+    </dependency>
     
     <!-- Pentaho dependencies (non-Kettle), launcher, shim, etc. -->
     <dependency org="pentaho"               name="pentaho-application-launcher"  rev="${dependency.launcher.revision}" conf="launcher->default"/>
@@ -32,9 +56,14 @@
     <dependency org="pentaho" name="pentaho-cassandra-plugin" rev="${dependency.pentaho-cassandra-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
       <artifact name="pentaho-cassandra-plugin" type="zip"/>
     </dependency>
+    <dependency org="pentaho" name="pdi-teradata-tpt-plugin-package" rev="${dependency.pdi-teradata-tpt-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
+      <artifact name="pdi-teradata-tpt-plugin-package" type="zip"/>
+    </dependency>
     
     <!--  Pentaho reporting dependencies -->
-    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
+    <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions" rev="${dependency.pentaho-reporting.revision}" changing="true">
+      <exclude name="pentaho-reporting-engine-classic-core-test"/>
+    </dependency>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-drill-down" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-kettle" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions-mondrian" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
@@ -48,9 +77,68 @@
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-legacy-charts" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-legacy-functions" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-wizard-core"  rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="true"/>
-       
+    
+    
+ 	<!-- PDF Documentation for bundling -->
+	<dependency org="pentaho-doc" name="bigdata_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="bigdata_guide" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="components" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="components" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="config_pdi_server" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="config_pdi_server" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="getting_started_with_instaview" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="getting_started_with_instaview" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="getting_started_with_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="getting_started_with_pdi" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="install_client_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="install_client_pdi" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="install_graphical" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="install_graphical" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="install_graphical_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="install_graphical_pdi" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="install_overview_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="install_overview_pdi" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="install_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="install_pdi" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="pdi_admin_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="pdi_admin_guide" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="pdi_embed_extend_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="pdi_embed_extend_guide" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="pdi_user_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="pdi_user_guide" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="pdi_whats_new" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="pdi_whats_new" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="reporting_embedders_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="reporting_embedders_guide" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="supported_components" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="supported_components" type="pdf" />
+	</dependency>
+	<dependency org="pentaho-doc" name="workflows" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+		<artifact name="workflows" type="pdf" />
+	</dependency>
+    
+ 	<!--  OSS Licenses file -->
+	<dependency org="pentaho" name="oss-licenses" rev="${dependency.oss-licenses.revision}" conf="oss-licenses->default">
+		<artifact name="oss-licenses" type="zip" />
+	</dependency>
+     
     <!-- The OS-specific libraries are bundled together, unzip them all for assembly -->
-    <dependency org="org.eclipse"          name="swtlibs"               rev="3.7" conf="swtlibs->default" transitive="false">
+    <dependency org="org.eclipse"          name="swtlibs"               rev="4.3.2" conf="swtlibs->default" transitive="false">
       <artifact name="swtlibs" type="zip"/>
     </dependency>
       
@@ -60,7 +148,6 @@
     <dependency org="com.h2database"       name="h2"                    rev="1.2.131"       transitive="false"/>
     <dependency org="hsqldb"               name="hsqldb"                rev="1.8.0.7"       transitive="false"/>
     <dependency org="infobright"           name="infobright-core"       rev="3.4"           transitive="false"/>
-    <dependency org="javassist"            name="javassist"             rev="3.12.1.GA"        transitive="false"/>
     <dependency org="org.firebirdsql.jdbc" name="jaybird"               rev="2.1.6"         transitive="false"/>
     <dependency org="net.sf.jt400"         name="jt400"                 rev="6.1"           transitive="false"/>  
     <dependency org="jtds"                 name="jtds"                  rev="1.2.5"         transitive="false"/>

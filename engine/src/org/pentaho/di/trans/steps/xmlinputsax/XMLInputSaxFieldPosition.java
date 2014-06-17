@@ -45,7 +45,7 @@ public class XMLInputSaxFieldPosition {
 
   /**
    * Create a new XML Input Field position.
-   * 
+   *
    * @param name
    *          the name of the element or attribute
    * @param type
@@ -63,7 +63,7 @@ public class XMLInputSaxFieldPosition {
 
   /**
    * Create a new XML Input Field position.
-   * 
+   *
    * @param name
    *          the name of the element or attribute
    * @param type
@@ -113,14 +113,14 @@ public class XMLInputSaxFieldPosition {
 
   /**
    * Construnct a new XMLFieldPosition based on an a code: E=Elementame, A=Attributename
-   * 
+   *
    * @param encoded
    */
   public XMLInputSaxFieldPosition( String encoded ) throws KettleValueException {
     int equalIndex = encoded.indexOf( '=' );
     if ( equalIndex < 0 ) {
       throw new KettleValueException( "Sorry, this is not a valid XML Field Position (no equal sign in code: '"
-          + encoded + "')" );
+        + encoded + "')" );
     }
 
     String positionType = Const.trim( encoded.substring( 0, equalIndex ) );
@@ -133,21 +133,22 @@ public class XMLInputSaxFieldPosition {
     // Is there an element defining attribute
     int semiIndex2 = nameAndNumber.indexOf( ATT_MARKER );
 
-    if ( positionType.equalsIgnoreCase( "Ea" ) ) // Element
-    {
+    if ( positionType.equalsIgnoreCase( "Ea" ) ) { // Element
+
       this.type = XML_ELEMENT_ATT;
       // this.name = positionName;
     } else if ( positionType.equalsIgnoreCase( "Ep" ) ) {
       this.type = XML_ELEMENT_POS;
       this.name = positionName;
-    } else if ( positionType.equalsIgnoreCase( "A" ) ) // Attribute
-    {
+    } else if ( positionType.equalsIgnoreCase( "A" ) ) { // Attribute
+
       this.type = XML_ATTRIBUTE;
       this.name = positionName;
     } else {
       throw new KettleValueException(
-          "Sorry, the position type can either be Ep (element defined by position) or Ea (element defined by an attribute value) or A (attribute), you specified "
-              + positionType );
+        "Sorry, the position type can either be Ep (element defined by position) or "
+          + "Ea (element defined by an attribute value) or A (attribute), you specified "
+          + positionType );
     }
 
     if ( this.type == XML_ELEMENT_ATT ) {
@@ -156,9 +157,8 @@ public class XMLInputSaxFieldPosition {
         this.value = nameAndNumber.substring( semiIndex2 + 1 );
         this.name = nameAndNumber.substring( 0, semiIndex );
       } else {
-        throw new KettleValueException(
-            "Sorry, when the position type is Ea, defining attibute and its value must be specified : Ea=element/attribute:value"
-                + "(" + semiIndex2 + ")" );
+        throw new KettleValueException( "Sorry, when the position type is Ea, defining attibute "
+          + "and its value must be specified : Ea=element/attribute:value" + "(" + semiIndex2 + ")" );
       }
     } else {
       if ( semiIndex >= 0 ) {
@@ -237,7 +237,7 @@ public class XMLInputSaxFieldPosition {
 
   /**
    * Encode the path to an XML element or attribute
-   * 
+   *
    * @param path
    *          An ArrayList of XMLInputFieldPosition
    * @return the path encoded

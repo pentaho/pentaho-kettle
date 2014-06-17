@@ -33,7 +33,7 @@ import org.pentaho.di.trans.step.StepMeta;
 
 /**
  * This class store undo and redo information...
- * 
+ *
  * Possible changes to a transformation:
  * <p>
  * step
@@ -44,7 +44,7 @@ import org.pentaho.di.trans.step.StepMeta;
  * <p>
  * connection
  * <p>
- * 
+ *
  * Build an Undo/Redo class containing:
  * <p>
  * Type of change
@@ -53,13 +53,13 @@ import org.pentaho.di.trans.step.StepMeta;
  * <p>
  * Link to previous infomation
  * <p>
- * 
+ *
  * @author Matt
  * @since 19-12-2003
- * 
+ *
  */
 public class TransAction {
-  private static Class<?> PKG = TransAction.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TransAction.class; // for i18n purposes, needed by Translator2!!
 
   public static final int TYPE_ACTION_NONE = 0;
   public static final int TYPE_ACTION_CHANGE_STEP = 1;
@@ -110,8 +110,8 @@ public class TransAction {
   public static final int TYPE_ACTION_CHANGE_PARTITION = 40;
   public static final int TYPE_ACTION_DELETE_PARTITION = 41;
 
-  public static final String[] desc_action = new String[] { "",
-    BaseMessages.getString( PKG, "TransAction.label.ChangeStep" ),
+  public static final String[] desc_action = new String[] {
+    "", BaseMessages.getString( PKG, "TransAction.label.ChangeStep" ),
     BaseMessages.getString( PKG, "TransAction.label.ChangeConnection" ),
     BaseMessages.getString( PKG, "TransAction.label.ChangeHop" ),
     BaseMessages.getString( PKG, "TransAction.label.ChangeNote" ),
@@ -315,7 +315,7 @@ public class TransAction {
 
   /**
    * Indicate that the next operations needs to be undone too.
-   * 
+   *
    * @param nextAlso
    *          The nextAlso to set.
    */
@@ -325,7 +325,7 @@ public class TransAction {
 
   /**
    * Get the status of the nextAlso flag.
-   * 
+   *
    * @return true if the next operation needs to be done too.
    */
   public boolean getNextAlso() {

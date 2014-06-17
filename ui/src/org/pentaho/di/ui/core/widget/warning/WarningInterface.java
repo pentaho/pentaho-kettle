@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Control;
 public interface WarningInterface {
   /**
    * Verifies if a warning situation has occurred.
-   * 
+   *
    * @param text
    *          The content of the text box to verify
    * @param widget

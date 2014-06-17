@@ -29,7 +29,7 @@ import java.util.Set;
 
 /**
  * This class is an implementation of NamedParams.
- * 
+ *
  * @author Sven Boden
  */
 public class NamedParamsDefault implements NamedParams {

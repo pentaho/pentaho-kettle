@@ -62,7 +62,7 @@ import org.snmp4j.UserTarget;
 import org.snmp4j.smi.UdpAddress;
 
 public class SyslogMessageDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = SyslogMessageMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SyslogMessageMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlMessageField;
   private CCombo wMessageField;
@@ -181,9 +181,9 @@ public class SyslogMessageDialog extends BaseStepDialog implements StepDialogInt
     wSettingsGroup.setLayout( settingGroupLayout );
 
     // Server port line
-    wServerName =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SyslogMessageDialog.Server.Label" ),
-            BaseMessages.getString( PKG, "SyslogMessageDialog.Server.Tooltip" ) );
+    wServerName = new LabelTextVar( transMeta, wSettingsGroup,
+      BaseMessages.getString( PKG, "SyslogMessageDialog.Server.Label" ),
+      BaseMessages.getString( PKG, "SyslogMessageDialog.Server.Tooltip" ) );
     props.setLook( wServerName );
     wServerName.addModifyListener( lsMod );
     fdServerName = new FormData();
@@ -193,9 +193,9 @@ public class SyslogMessageDialog extends BaseStepDialog implements StepDialogInt
     wServerName.setLayoutData( fdServerName );
 
     // Server port line
-    wPort =
-        new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SyslogMessageDialog.Port.Label" ),
-            BaseMessages.getString( PKG, "SyslogMessageDialog.Port.Tooltip" ) );
+    wPort = new LabelTextVar( transMeta, wSettingsGroup,
+      BaseMessages.getString( PKG, "SyslogMessageDialog.Port.Label" ),
+      BaseMessages.getString( PKG, "SyslogMessageDialog.Port.Tooltip" ) );
     props.setLook( wPort );
     wPort.addModifyListener( lsMod );
     fdPort = new FormData();
@@ -527,8 +527,9 @@ public class SyslogMessageDialog extends BaseStepDialog implements StepDialogInt
           }
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "SyslogMessageDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "SyslogMessageDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "SyslogMessageDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "SyslogMessageDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }
@@ -561,7 +562,7 @@ public class SyslogMessageDialog extends BaseStepDialog implements StepDialogInt
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "SyslogMessageDialog.Connected.NOK.ConnectionBad", hostname )
-          + Const.CR + errMsg + Const.CR );
+        + Const.CR + errMsg + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "SyslogMessageDialog.Connected.Title.Bad" ) );
       mb.open();
     }

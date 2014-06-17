@@ -26,10 +26,10 @@ import org.pentaho.di.core.row.ValueMeta;
 
 /**
  * Describes a single field in a text file
- * 
+ *
  * @author Matt
  * @since 11-05-2005
- * 
+ *
  */
 public class TextFileField implements Cloneable {
   private String name;
@@ -53,7 +53,7 @@ public class TextFileField implements Cloneable {
   private int trimType;
 
   public TextFileField( String name, int type, String format, int length, int precision, String currencySymbol,
-      String decimalSymbol, String groupSymbol, String nullString ) {
+    String decimalSymbol, String groupSymbol, String nullString ) {
     this.name = name;
     this.type = type;
     this.format = format;

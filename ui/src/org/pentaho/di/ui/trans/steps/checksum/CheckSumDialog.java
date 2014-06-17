@@ -65,7 +65,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class CheckSumDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = CheckSumMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CheckSumMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CheckSumMeta input;
   private Label wlType;
@@ -262,10 +262,12 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "CheckSumDialog.Fieldname.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "CheckSumDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "" }, false );
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -384,11 +386,12 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
             return true;
           }
         };
-        BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, insertListener );
+        BaseStepDialog
+          .getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, insertListener );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+        .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
   }
 
@@ -447,6 +450,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     input.allocate( nrfields );
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
+      //CHECKSTYLE:Indentation:OFF
       input.getFieldName()[i] = ti.getText( 1 );
     }
     dispose();
@@ -454,7 +458,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 
   private void activeHexa() {
     boolean activate =
-        ( CheckSumMeta.getResultTypeByDesc( wResultType.getText() ) == CheckSumMeta.result_TYPE_HEXADECIMAL );
+      ( CheckSumMeta.getResultTypeByDesc( wResultType.getText() ) == CheckSumMeta.result_TYPE_HEXADECIMAL );
     wlCompatibility.setEnabled( activate );
     wCompatibility.setEnabled( activate );
   }

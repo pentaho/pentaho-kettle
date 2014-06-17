@@ -71,7 +71,7 @@ import org.pentaho.di.ui.util.ImageUtil;
 
 public class StepPerformanceSnapShotDialog extends Dialog {
 
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   private static final int DATA_CHOICE_WRITTEN = 0;
   private static final int DATA_CHOICE_READ = 1;
@@ -105,7 +105,7 @@ public class StepPerformanceSnapShotDialog extends Dialog {
   private org.eclipse.swt.widgets.List dataList;
 
   public StepPerformanceSnapShotDialog( Shell parent, String title,
-      Map<String, List<StepPerformanceSnapShot>> stepPerformanceSnapShots, long timeDifference ) {
+    Map<String, List<StepPerformanceSnapShot>> stepPerformanceSnapShots, long timeDifference ) {
     super( parent );
     this.parent = parent;
     this.display = parent.getDisplay();
@@ -136,7 +136,7 @@ public class StepPerformanceSnapShotDialog extends Dialog {
     // Then put a canvas with the graph on the right side
     //
     dataList =
-        new org.eclipse.swt.widgets.List( shell, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT | SWT.BORDER );
+      new org.eclipse.swt.widgets.List( shell, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT | SWT.BORDER );
     props.setLook( dataList );
     dataList.setItems( dataChoices );
     dataList.addSelectionListener( new SelectionAdapter() {
@@ -161,7 +161,7 @@ public class StepPerformanceSnapShotDialog extends Dialog {
     dataList.setLayoutData( fdDataList );
 
     stepsList =
-        new org.eclipse.swt.widgets.List( shell, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT | SWT.BORDER );
+      new org.eclipse.swt.widgets.List( shell, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.LEFT | SWT.BORDER );
     props.setLook( stepsList );
     stepsList.setItems( steps );
     stepsList.addSelectionListener( new SelectionAdapter() {
@@ -284,9 +284,9 @@ public class StepPerformanceSnapShotDialog extends Dialog {
       List<StepPerformanceSnapShot> snapShotList = stepPerformanceSnapShots.get( stepNameCopy );
       if ( snapShotList != null && snapShotList.size() > 1 ) {
         totalTimeInSeconds =
-            (int) Math
-                .round( ( (double) ( snapShotList.get( snapShotList.size() - 1 ).getDate().getTime() - snapShotList
-                    .get( 0 ).getDate().getTime() ) ) / 1000 );
+          (int) Math
+            .round( ( (double) ( snapShotList.get( snapShotList.size() - 1 ).getDate().getTime() - snapShotList
+              .get( 0 ).getDate().getTime() ) ) / 1000 );
         for ( int i = 0; i < snapShotList.size(); i++ ) {
           StepPerformanceSnapShot snapShot = snapShotList.get( i );
           if ( snapShot.getTimeDifference() != 0 ) {
@@ -358,16 +358,15 @@ public class StepPerformanceSnapShotDialog extends Dialog {
       chartTitle += " (" + selectedSteps[0] + ")";
     }
     final JFreeChart chart =
-        ChartFactory.createLineChart( chartTitle, // chart title
-            BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.TimeInSeconds.Label", Integer
-                .toString( totalTimeInSeconds ), Long.toString( timeDifference ) ), // domain axis label
-            BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.RowsPerSecond.Label" ), // range axis label
-            dataset, // data
-            PlotOrientation.VERTICAL, // orientation
-            true, // include legend
-            true, // tooltips
-            false // urls
-            );
+      ChartFactory.createLineChart( chartTitle, // chart title
+        BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.TimeInSeconds.Label", Integer
+          .toString( totalTimeInSeconds ), Long.toString( timeDifference ) ), // domain axis label
+        BaseMessages.getString( PKG, "StepPerformanceSnapShotDialog.RowsPerSecond.Label" ), // range axis label
+        dataset, // data
+        PlotOrientation.VERTICAL, // orientation
+        true, // include legend
+        true, // tooltips
+        false ); // urls       
     chart.setBackgroundPaint( Color.white );
     CategoryPlot plot = (CategoryPlot) chart.getPlot();
     plot.setBackgroundPaint( Color.white );

@@ -33,11 +33,11 @@ import org.w3c.dom.Node;
 /**
  * The job to be executed in the transformation can receive parameters. These are either coming from an input row (the
  * first row in a group of rows) or from a static variable or value.
- * 
+ *
  * @author matt
  * @version 4.3
  * @since 2011-AUG-29
- * 
+ *
  */
 public class TransExecutorParameters implements Cloneable {
 
@@ -111,8 +111,7 @@ public class TransExecutorParameters implements Cloneable {
     return xml.toString();
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     for ( int i = 0; i < variable.length; i++ ) {
       rep.saveStepAttribute( id_transformation, id_step, i, "parameter_variable", variable[i] );
       rep.saveStepAttribute( id_transformation, id_step, i, "parameter_field", field[i] );

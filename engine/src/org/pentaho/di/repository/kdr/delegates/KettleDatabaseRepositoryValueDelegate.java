@@ -32,15 +32,16 @@ import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class KettleDatabaseRepositoryValueDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
-  // private static Class<?> PKG = ValueMetaAndData.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  // private static Class<?> PKG = ValueMetaAndData.class; // for i18n purposes, needed by Translator2!!
 
   public KettleDatabaseRepositoryValueDelegate( KettleDatabaseRepository repository ) {
     super( repository );
   }
 
   public RowMetaAndData getValue( ObjectId id_value ) throws KettleException {
-    return repository.connectionDelegate.getOneRow( quoteTable( KettleDatabaseRepository.TABLE_R_VALUE ),
-        quote( KettleDatabaseRepository.FIELD_VALUE_ID_VALUE ), id_value );
+    return repository.connectionDelegate.getOneRow(
+      quoteTable( KettleDatabaseRepository.TABLE_R_VALUE ),
+      quote( KettleDatabaseRepository.FIELD_VALUE_ID_VALUE ), id_value );
   }
 
   public ValueMetaAndData loadValueMetaAndData( ObjectId id_value ) throws KettleException {

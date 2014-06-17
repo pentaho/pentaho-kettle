@@ -73,7 +73,7 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 /**
  * Dialog class for the LucidDB bulk loader step.
- * 
+ *
  */
 public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = LucidDBBulkLoaderMeta.class; // for i18n purposes
@@ -304,18 +304,22 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
     ColumnInfo[] ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.ColumnInfo.TableField" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.ColumnInfo.TableField" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.ColumnInfo.StreamField" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.ColumnInfo.StreamField" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.ColumnInfo.FormatOK" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N", }, true ); // $NON-NLS-1$ $NON-NLS-3$
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.ColumnInfo.FormatOK" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N", }, true );
 
     wReturn =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
+        UpInsRows, lsMod, props );
 
     wGetLU = new Button( shell, SWT.PUSH );
     wGetLU.setText( BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.GetFields.Label" ) );
@@ -474,9 +478,9 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "LucidDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
-          "LucidDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ),
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data
@@ -486,9 +490,9 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     try {
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "LucidDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
-          "LucidDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ),
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -533,30 +537,30 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound",
-                missingSourceFields.toString() )
-                + Const.CR;
+          BaseMessages.getString(
+            PKG, "LucidDBBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() )
+            + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound",
-                missingSourceFields.toString() )
-                + Const.CR;
+          BaseMessages.getString(
+            PKG, "LucidDBBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() )
+            + Const.CR;
       }
       message += Const.CR;
       message +=
-          BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-              "LucidDBBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+        MessageDialog.openConfirm( shell, BaseMessages.getString(
+          PKG, "LucidDBBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
     }
     EnterMappingDialog d =
-        new EnterMappingDialog( LucidDBBulkLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields
-            .getFieldNames(), mappings );
+      new EnterMappingDialog( LucidDBBulkLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields
+        .getFieldNames(), mappings );
     mappings = d.open();
 
     // mappings == null if the user pressed cancel
@@ -591,6 +595,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     inf.setMaxErrors( Const.toInt( wMaxErrors.getText(), 0 ) );
 
     logDebug( BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.Log.FoundFields", "" + nrfields ) );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       inf.getFieldTable()[i] = item.getText( 1 );
@@ -669,8 +674,9 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.FailedToGetFields.DialogTitle" ),
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -683,14 +689,15 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
       String name = stepname; // new name might not yet be linked to other steps!
       StepMeta stepMeta =
-          new StepMeta( BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.StepMeta.Title" ), name, info );
+        new StepMeta( BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.StepMeta.Title" ), name, info );
       RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
 
       SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, repository, metaStore );
       if ( !sql.hasError() ) {
         if ( sql.hasSQL() ) {
           SQLEditor sqledit =
-              new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
+            new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql
+              .getSQL() );
           sqledit.open();
         } else {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -705,8 +712,9 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.CouldNotBuildSQL.DialogTitle" ),
-          BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.CouldNotBuildSQL.DialogTitle" ),
+        BaseMessages.getString( PKG, "LucidDBBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
     }
 
   }

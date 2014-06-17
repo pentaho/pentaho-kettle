@@ -26,9 +26,9 @@ package org.pentaho.di.laf;
  * This is a static accessor for the dynamic property loader and should be used by all classes requiring access to
  * property files. The static accessor provides a notification from the LAFFactory when the concrete handler is changed
  * at runtime should the LAF be changed.
- * 
+ *
  * @author dhushon
- * 
+ *
  */
 public class BasePropertyHandler implements LAFChangeListener<PropertyHandler> {
 
@@ -66,7 +66,7 @@ public class BasePropertyHandler implements LAFChangeListener<PropertyHandler> {
 
   /**
    * return the value of a given key from the properties list
-   * 
+   *
    * @param key
    * @return null if the key is not found
    */
@@ -76,7 +76,7 @@ public class BasePropertyHandler implements LAFChangeListener<PropertyHandler> {
 
   /**
    * return the value of a given key from the properties list, returning the defValue string should the key not be found
-   * 
+   *
    * @param key
    * @param defValue
    * @return a string representing either the value associated with the passed key or defValue should that key not be

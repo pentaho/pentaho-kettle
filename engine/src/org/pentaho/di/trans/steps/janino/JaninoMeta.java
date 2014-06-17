@@ -51,12 +51,12 @@ import org.w3c.dom.Node;
 
 /**
  * Contains the meta-data for the Formula step: calculates ad-hoc formula's Powered by Pentaho's "libformula"
- * 
+ *
  * Created on 22-feb-2007
  */
 
 public class JaninoMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = JaninoMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JaninoMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** The formula calculations to be performed */
   private JaninoMetaFunction[] formula;
@@ -112,6 +112,7 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface {
     if ( formula != null ) {
       retval.allocate( formula.length );
       for ( int i = 0; i < formula.length; i++ ) {
+        //CHECKSTYLE:Indentation:OFF
         retval.getFormula()[i] = (JaninoMetaFunction) formula[i].clone();
       }
     } else {
@@ -124,8 +125,7 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface {
     formula = new JaninoMetaFunction[0];
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     int nrCalcs = rep.countNrStepAttributes( id_step, "field_name" );
     allocate( nrCalcs );
     for ( int i = 0; i < nrCalcs; i++ ) {
@@ -133,8 +133,7 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     for ( int i = 0; i < formula.length; i++ ) {
       formula[i].saveRep( rep, metaStore, id_transformation, id_step, i );
     }
@@ -142,12 +141,14 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < formula.length; i++ ) {
       JaninoMetaFunction fn = formula[i];
-      if ( Const.isEmpty( fn.getReplaceField() ) ) { // Not replacing a field.
-        if ( !Const.isEmpty( fn.getFieldName() ) ) // It's a new field!
-        {
+      if ( Const.isEmpty( fn.getReplaceField() ) ) {
+        // Not replacing a field.
+        if ( !Const.isEmpty( fn.getFieldName() ) ) {
+          // It's a new field!
+
           try {
             ValueMetaInterface v = ValueMetaFactory.createValueMeta( fn.getFieldName(), fn.getValueType() );
             v.setLength( fn.getValueLength(), fn.getValuePrecision() );
@@ -157,11 +158,12 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface {
             throw new KettleStepException( e );
           }
         }
-      } else { // Replacing a field
+      } else {
+        // Replacing a field
         int index = row.indexOfValue( fn.getReplaceField() );
         if ( index < 0 ) {
           throw new KettleStepException( "Unknown field specified to replace with a formula result: ["
-              + fn.getReplaceField() + "]" );
+            + fn.getReplaceField() + "]" );
         }
         // Change the data type etc.
         //
@@ -175,7 +177,7 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Checks the settings of this step and puts the findings in a remarks List.
-   * 
+   *
    * @param remarks
    *          The list to put the remarks in @see org.pentaho.di.core.CheckResult
    * @param stepMeta
@@ -189,38 +191,38 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface {
    * @param info
    *          The fields that are used as information by the step
    */
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "JaninoMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "JaninoMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "JaninoMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "JaninoMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "JaninoMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "JaninoMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "JaninoMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "JaninoMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new Janino( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

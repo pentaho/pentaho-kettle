@@ -35,16 +35,16 @@ import org.pentaho.di.trans.step.StepMeta;
 /**
  * Regression test case for PDI JIRA-1317: a csv input step with less columns in certain rows than the number of columns
  * defined in the step.
- * 
+ *
  * In the original problem (in v3.1-M2) this caused the filename column to be in the wrong places.
- * 
+ *
  * @author Sven Boden Modified by Sean Flatley
  */
 public class CsvInput1NoTrailingSpaceTest extends CsvInput1Test {
 
   /**
    * Write the file to be used as input (as a temporary file).
-   * 
+   *
    * @return Absolute file name/path of the created file.
    * @throws IOException
    *           UPON
@@ -71,7 +71,7 @@ public class CsvInput1NoTrailingSpaceTest extends CsvInput1Test {
 
   /**
    * Test case for Get XML Data step, very simple example.
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -92,6 +92,7 @@ public class CsvInput1NoTrailingSpaceTest extends CsvInput1Test {
     StepMeta injectorStep = createInjectorStep( transMeta, registry );
     StepMeta csvInputStep = createCsvInputStep( transMeta, registry, "\'", true );
 
-    createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
+    createAndTestTrans(
+      registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
   }
 }

@@ -67,7 +67,7 @@ public interface CheckResultInterface {
 
   /**
    * Sets the component-specific result/error code.
-   * 
+   *
    * @param errorCode
    *          Unchecked string that can be used for validation
    */
@@ -75,7 +75,7 @@ public interface CheckResultInterface {
 
   /**
    * Sets the check-result type
-   * 
+   *
    * @param value
    *          The type from 0-4
    */
@@ -83,7 +83,7 @@ public interface CheckResultInterface {
 
   /**
    * Sets the text for the check-result
-   * 
+   *
    * @param value
    */
   public void setText( String value );

@@ -29,10 +29,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Used to define the behaviour and the content of a Table column in a TableView object.
- * 
+ *
  * @author Matt
  * @since 27-05-2003
- * 
+ *
  */
 public class ColumnInfo {
   public static final int COLUMN_TYPE_NONE = 0;
@@ -67,7 +67,7 @@ public class ColumnInfo {
 
   /**
    * Creates a column info class for use with the TableView class.
-   * 
+   *
    * @param colname
    *          The column name
    * @param coltype
@@ -88,7 +88,7 @@ public class ColumnInfo {
   /**
    * Creates a column info class for use with the TableView class. The type of column info to be created is :
    * COLUMN_TYPE_CCOMBO
-   * 
+   *
    * @param colname
    *          The column name
    * @param coltype
@@ -109,7 +109,7 @@ public class ColumnInfo {
 
   /**
    * Creates a column info class for use with the TableView class.
-   * 
+   *
    * @param colname
    *          The column name
    * @param coltype
@@ -136,7 +136,7 @@ public class ColumnInfo {
   /**
    * Creates a column info class for use with the TableView class. The type of column info to be created is :
    * COLUMN_TYPE_CCOMBO
-   * 
+   *
    * @param colname
    *          The column name
    * @param coltype
@@ -153,7 +153,7 @@ public class ColumnInfo {
 
   /**
    * Creates a column info class for use with the TableView class.
-   * 
+   *
    * @param colname
    *          The column name
    * @param coltype
@@ -172,7 +172,7 @@ public class ColumnInfo {
   /**
    * Creates a column info class for use with the TableView class. The type of column info to be created is :
    * COLUMN_TYPE_FORMAT
-   * 
+   *
    * @param colname
    *          The column name
    * @param coltype

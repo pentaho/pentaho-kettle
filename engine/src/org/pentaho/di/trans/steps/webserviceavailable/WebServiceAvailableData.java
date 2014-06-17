@@ -29,7 +29,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 03-02-2010
- * 
+ *
  */
 public class WebServiceAvailableData extends BaseStepData implements StepDataInterface {
   public int indexOfURL;
@@ -40,9 +40,6 @@ public class WebServiceAvailableData extends BaseStepData implements StepDataInt
   public RowMetaInterface outputRowMeta;
   public int NrPrevFields;
 
-  /**
-	 * 
-	 */
   public WebServiceAvailableData() {
     super();
     indexOfURL = -1;

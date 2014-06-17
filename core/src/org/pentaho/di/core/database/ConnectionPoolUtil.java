@@ -33,12 +33,13 @@ import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDriver;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class ConnectionPoolUtil {
-  private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!
 
   private static PoolingDriver pd = new PoolingDriver();
 
@@ -86,6 +87,7 @@ public class ConnectionPoolUtil {
       password = databaseMeta.getPassword();
     }
 
+    password = Encr.decryptPasswordOptionallyEncrypted( password );
     // Get the list of pool properties
     Properties originalProperties = databaseMeta.getConnectionPoolingProperties();
     // Add user/pass
@@ -121,8 +123,7 @@ public class ConnectionPoolUtil {
     log.logBasic( BaseMessages.getString( PKG, "Database.CreatedConnectionPool", databaseMeta.getName() ) );
   }
 
-  public static Connection getConnection( LogChannelInterface log, DatabaseMeta dbMeta, String partitionId )
-    throws Exception {
+  public static Connection getConnection( LogChannelInterface log, DatabaseMeta dbMeta, String partitionId ) throws Exception {
     return getConnection( log, dbMeta, partitionId, dbMeta.getInitialPoolSize(), dbMeta.getMaximumPoolSize() );
   }
 

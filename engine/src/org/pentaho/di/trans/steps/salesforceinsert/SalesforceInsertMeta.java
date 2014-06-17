@@ -52,7 +52,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class SalesforceInsertMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = SalesforceInsertMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SalesforceInsertMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** The salesforce url */
   private String targeturl;
@@ -293,7 +293,7 @@ public class SalesforceInsertMeta extends BaseStepMeta implements StepMetaInterf
     retval.append( "    " + XMLHandler.addTagValue( "targeturl", targeturl ) );
     retval.append( "    " + XMLHandler.addTagValue( "username", username ) );
     retval.append( "    "
-        + XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ), false ) );
+      + XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ), false ) );
     retval.append( "    " + XMLHandler.addTagValue( "module", module ) );
     retval.append( "    " + XMLHandler.addTagValue( "batchSize", batchSize ) );
     retval.append( "    " + XMLHandler.addTagValue( "salesforceIDFieldName", salesforceIDFieldName ) );
@@ -304,7 +304,8 @@ public class SalesforceInsertMeta extends BaseStepMeta implements StepMetaInterf
       retval.append( "      <field>" ).append( Const.CR );
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", updateLookup[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "field", updateStream[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "useExternalId", useExternalId[i].booleanValue() ) );
+      retval.append( "        " ).append(
+        XMLHandler.addTagValue( "useExternalId", useExternalId[i].booleanValue() ) );
       retval.append( "      </field>" ).append( Const.CR );
     }
 
@@ -357,7 +358,7 @@ public class SalesforceInsertMeta extends BaseStepMeta implements StepMetaInterf
       useCompression = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "useCompression" ) );
       timeout = XMLHandler.getTagValue( stepnode, "timeout" );
       rollbackAllChangesOnError =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rollbackAllChangesOnError" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rollbackAllChangesOnError" ) );
 
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
@@ -392,7 +393,7 @@ public class SalesforceInsertMeta extends BaseStepMeta implements StepMetaInterf
 
   /* This function adds meta data to the rows being pushed out */
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     String realfieldname = space.environmentSubstitute( getSalesforceIDFieldName() );
     if ( !Const.isEmpty( realfieldname ) ) {
       ValueMetaInterface v = new ValueMeta( realfieldname, ValueMeta.TYPE_STRING );
@@ -402,8 +403,7 @@ public class SalesforceInsertMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       targeturl = rep.getStepAttributeString( id_step, "targeturl" );
       module = rep.getStepAttributeString( id_step, "module" );
@@ -417,19 +417,19 @@ public class SalesforceInsertMeta extends BaseStepMeta implements StepMetaInterf
       for ( int i = 0; i < nrFields; i++ ) {
         updateLookup[i] = rep.getStepAttributeString( id_step, i, "field_name" );
         updateStream[i] = rep.getStepAttributeString( id_step, i, "field_attribut" );
-        useExternalId[i] = Boolean.valueOf( rep.getStepAttributeBoolean( id_step, i, "field_useExternalId", false ) );
+        useExternalId[i] =
+          Boolean.valueOf( rep.getStepAttributeBoolean( id_step, i, "field_useExternalId", false ) );
       }
       useCompression = rep.getStepAttributeBoolean( id_step, "useCompression" );
       timeout = rep.getStepAttributeString( id_step, "timeout" );
       rollbackAllChangesOnError = rep.getStepAttributeBoolean( id_step, "rollbackAllChangesOnError" );
     } catch ( Exception e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "SalesforceInsertMeta.Exception.ErrorReadingRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "SalesforceInsertMeta.Exception.ErrorReadingRepository" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "targeturl", targeturl );
       rep.saveStepAttribute( id_transformation, id_step, "batchSize", batchSize );
@@ -441,87 +441,88 @@ public class SalesforceInsertMeta extends BaseStepMeta implements StepMetaInterf
       for ( int i = 0; i < updateLookup.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", updateLookup[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_attribut", updateStream[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_useExternalId", useExternalId[i].booleanValue() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_useExternalId", useExternalId[i]
+          .booleanValue() );
 
       }
       rep.saveStepAttribute( id_transformation, id_step, "useCompression", useCompression );
       rep.saveStepAttribute( id_transformation, id_step, "timeout", timeout );
       rep.saveStepAttribute( id_transformation, id_step, "rollbackAllChangesOnError", rollbackAllChangesOnError );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SalesforceInsertMeta.Exception.ErrorSavingToRepository",
-          "" + id_step ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "SalesforceInsertMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.NoInputExpected" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SalesforceInsertMeta.CheckResult.NoInputExpected" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.NoInput" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SalesforceInsertMeta.CheckResult.NoInput" ), stepMeta );
     }
     remarks.add( cr );
 
     // check URL
     if ( Const.isEmpty( targeturl ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.NoURL" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SalesforceInsertMeta.CheckResult.NoURL" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.URLOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SalesforceInsertMeta.CheckResult.URLOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // check username
     if ( Const.isEmpty( username ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.NoUsername" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SalesforceInsertMeta.CheckResult.NoUsername" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.UsernameOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SalesforceInsertMeta.CheckResult.UsernameOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // check module
     if ( Const.isEmpty( module ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.NoModule" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SalesforceInsertMeta.CheckResult.NoModule" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.ModuleOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SalesforceInsertMeta.CheckResult.ModuleOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // check return fields
     if ( updateLookup.length == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.NoFields" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SalesforceInsertMeta.CheckResult.NoFields" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SalesforceInsertMeta.CheckResult.FieldsOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SalesforceInsertMeta.CheckResult.FieldsOk" ), stepMeta );
     }
     remarks.add( cr );
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new SalesforceInsert( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

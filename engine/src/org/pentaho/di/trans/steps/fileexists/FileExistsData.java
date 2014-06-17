@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 public class FileExistsData extends BaseStepData implements StepDataInterface {
   public int indexOfFileename;
@@ -39,9 +39,6 @@ public class FileExistsData extends BaseStepData implements StepDataInterface {
   public FileObject file;
   public int NrPrevFields;
 
-  /**
-	 * 
-	 */
   public FileExistsData() {
     super();
     indexOfFileename = -1;

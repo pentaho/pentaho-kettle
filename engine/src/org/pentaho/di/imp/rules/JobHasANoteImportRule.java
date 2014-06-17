@@ -54,11 +54,11 @@ public class JobHasANoteImportRule extends BaseImportRule implements ImportRuleI
     JobMeta jobMeta = (JobMeta) subject;
 
     if ( jobMeta.nrNotes() == 0 ) {
-      feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-          "There is not even a single note in the job." ) );
+      feedback.add( new ImportValidationFeedback(
+        this, ImportValidationResultType.ERROR, "There is not even a single note in the job." ) );
     } else {
-      feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.APPROVAL,
-          "At least one not is present in the job." ) );
+      feedback.add( new ImportValidationFeedback(
+        this, ImportValidationResultType.APPROVAL, "At least one not is present in the job." ) );
     }
 
     return feedback;

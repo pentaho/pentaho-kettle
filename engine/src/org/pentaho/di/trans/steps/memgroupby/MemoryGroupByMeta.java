@@ -51,11 +51,11 @@ import org.w3c.dom.Node;
 
 /**
  * Created on 02-jun-2003
- * 
+ *
  */
 
 public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = MemoryGroupByMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MemoryGroupByMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int TYPE_GROUP_NONE = 0;
 
@@ -92,11 +92,12 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
   public static final int TYPE_GROUP_COUNT_ANY = 16;
 
   public static final String[] typeGroupCode = /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */
-  { "-", "SUM", "AVERAGE", "MEDIAN", "PERCENTILE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA", "FIRST", "LAST",
+  {
+    "-", "SUM", "AVERAGE", "MEDIAN", "PERCENTILE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA", "FIRST", "LAST",
     "FIRST_INCL_NULL", "LAST_INCL_NULL", "STD_DEV", "CONCAT_STRING", "COUNT_DISTINCT", "COUNT_ANY", };
 
-  public static final String[] typeGroupLongDesc = { "-",
-    BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.SUM" ),
+  public static final String[] typeGroupLongDesc = {
+    "-", BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.SUM" ),
     BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.AVERAGE" ),
     BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.MEDIAN" ),
     BaseMessages.getString( PKG, "MemoryGroupByMeta.TypeGroupLongDesc.PERCENTILE" ),
@@ -249,23 +250,23 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
         subjectField[i] = XMLHandler.getTagValue( fnode, "subject" );
         aggregateType[i] = getType( XMLHandler.getTagValue( fnode, "type" ) );
 
-        if ( aggregateType[i] == TYPE_GROUP_COUNT_ALL || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT
-            || aggregateType[i] == TYPE_GROUP_COUNT_ANY ) {
+        if ( aggregateType[i] == TYPE_GROUP_COUNT_ALL
+          || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT || aggregateType[i] == TYPE_GROUP_COUNT_ANY ) {
           hasNumberOfValues = true;
         }
 
         valueField[i] = XMLHandler.getTagValue( fnode, "valuefield" );
       }
 
-      String giveBackRow = XMLHandler.getTagValue( stepnode, "give_back_row" ); // $NON-NLS-1$
+      String giveBackRow = XMLHandler.getTagValue( stepnode, "give_back_row" );
       if ( Const.isEmpty( giveBackRow ) ) {
         alwaysGivingBackOneRow = hasNumberOfValues;
       } else {
-        alwaysGivingBackOneRow = "Y".equalsIgnoreCase( giveBackRow ); // $NON-NLS-1$
+        alwaysGivingBackOneRow = "Y".equalsIgnoreCase( giveBackRow );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "MemoryGroupByMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "MemoryGroupByMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -305,7 +306,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) {
     // re-assemble a new row of metadata
     //
     RowMetaInterface fields = new RowMeta();
@@ -361,15 +362,15 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
             break;
         }
 
-        if ( aggregateType[i] == TYPE_GROUP_COUNT_ALL || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT
-            || aggregateType[i] == TYPE_GROUP_COUNT_ANY ) {
+        if ( aggregateType[i] == TYPE_GROUP_COUNT_ALL
+          || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT || aggregateType[i] == TYPE_GROUP_COUNT_ANY ) {
           length = ValueMetaInterface.DEFAULT_INTEGER_LENGTH;
           precision = 0;
-        }
-        // If it ain't numeric, we change it to Number
-        //
-        else if ( aggregateType[i] == TYPE_GROUP_SUM && value_type != ValueMetaInterface.TYPE_INTEGER
-            && value_type != ValueMetaInterface.TYPE_NUMBER && value_type != ValueMetaInterface.TYPE_BIGNUMBER ) {
+        } else if ( aggregateType[i] == TYPE_GROUP_SUM
+          && value_type != ValueMetaInterface.TYPE_INTEGER && value_type != ValueMetaInterface.TYPE_NUMBER
+          && value_type != ValueMetaInterface.TYPE_BIGNUMBER ) {
+          // If it ain't numeric, we change it to Number
+          //
           value_type = ValueMetaInterface.TYPE_NUMBER;
           precision = -1;
           length = -1;
@@ -417,8 +418,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       int groupsize = rep.countNrStepAttributes( id_step, "group_name" );
       int nrvalues = rep.countNrStepAttributes( id_step, "aggregate_name" );
@@ -435,24 +435,23 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
         subjectField[i] = rep.getStepAttributeString( id_step, i, "aggregate_subject" );
         aggregateType[i] = getType( rep.getStepAttributeString( id_step, i, "aggregate_type" ) );
 
-        if ( aggregateType[i] == TYPE_GROUP_COUNT_ALL || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT
-            || aggregateType[i] == TYPE_GROUP_COUNT_ANY ) {
+        if ( aggregateType[i] == TYPE_GROUP_COUNT_ALL
+          || aggregateType[i] == TYPE_GROUP_COUNT_DISTINCT || aggregateType[i] == TYPE_GROUP_COUNT_ANY ) {
           hasNumberOfValues = true;
         }
         valueField[i] = rep.getStepAttributeString( id_step, i, "aggregate_value_field" );
       }
 
-      alwaysGivingBackOneRow = rep.getStepAttributeBoolean( id_step, 0, "give_back_row", hasNumberOfValues ); // $NON-NLS-1$
+      alwaysGivingBackOneRow = rep.getStepAttributeBoolean( id_step, 0, "give_back_row", hasNumberOfValues );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "MemoryGroupByMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "MemoryGroupByMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
-      rep.saveStepAttribute( id_transformation, id_step, "give_back_row", alwaysGivingBackOneRow ); // $NON-NLS-1$
+      rep.saveStepAttribute( id_transformation, id_step, "give_back_row", alwaysGivingBackOneRow );
 
       for ( int i = 0; i < groupField.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "group_name", groupField[i] );
@@ -465,32 +464,32 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute( id_transformation, id_step, i, "aggregate_value_field", valueField[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "MemoryGroupByMeta.Exception.UnableToSaveStepInfoToRepository" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "MemoryGroupByMeta.Exception.UnableToSaveStepInfoToRepository" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MemoryGroupByMeta.CheckResult.ReceivingInfoOK" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "MemoryGroupByMeta.CheckResult.ReceivingInfoOK" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MemoryGroupByMeta.CheckResult.NoInputError" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "MemoryGroupByMeta.CheckResult.NoInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new MemoryGroupBy( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

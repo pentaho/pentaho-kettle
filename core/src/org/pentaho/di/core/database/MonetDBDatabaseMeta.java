@@ -30,7 +30,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains Generic Database Connection information through static final members
- * 
+ *
  * @author Matt
  * @since 11-mrt-2005
  */
@@ -130,7 +130,8 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   /**
@@ -169,7 +170,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   /**
    * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
-   * 
+   *
    * @return true is setFetchSize() is supported!
    */
   @Override
@@ -201,14 +202,6 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   }
 
   /**
-   * @return true if Kettle can create a repository on this type of database.
-   */
-  @Override
-  public boolean supportsRepository() {
-    return false;
-  }
-
-  /**
    * @param tableName
    *          The table to be truncated.
    * @return The SQL statement to truncate a table: remove all rows from it without a transaction
@@ -221,7 +214,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   /**
    * Generates the SQL statement to add a column to the specified table For this generic type, i set it to the most
    * common possibility.
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -238,13 +231,13 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -261,7 +254,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " MODIFY " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
@@ -272,7 +265,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     StringBuffer retval = new StringBuffer();
 
     String fieldname = v.getName();
@@ -308,7 +301,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
-            fieldname.equalsIgnoreCase( pk ) // Primary key
+          fieldname.equalsIgnoreCase( pk ) // Primary key
         ) {
           if ( use_autoinc ) {
             retval.append( "SERIAL" );
@@ -381,7 +374,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   /**
    * Returns the minimal SQL to launch in order to determine the layout of the resultset for a given database table
-   * 
+   *
    * @param tableName
    *          The name of the table to determine the layout for
    * @return The SQL to launch.

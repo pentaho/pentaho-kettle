@@ -36,7 +36,7 @@ public final class WsdlOpFault extends WsdlOpReturnType implements java.io.Seria
 
   /**
    * Create a new WsdlOpFault instance.
-   * 
+   *
    * @param name
    *          QName of the parameter.
    * @param xmlType
@@ -54,7 +54,7 @@ public final class WsdlOpFault extends WsdlOpReturnType implements java.io.Seria
 
   /**
    * Get the name of this fault.
-   * 
+   *
    * @return QName.
    */
   public QName getName() {
@@ -63,7 +63,7 @@ public final class WsdlOpFault extends WsdlOpReturnType implements java.io.Seria
 
   /**
    * Is the XML type a complex type?
-   * 
+   *
    * @return true if xmltype is a complex type.
    */
   public boolean isComplexType() {
@@ -72,7 +72,7 @@ public final class WsdlOpFault extends WsdlOpReturnType implements java.io.Seria
 
   /**
    * Is this element part of an element form qualifed schema?
-   * 
+   *
    * @return true if it is.
    */
   public boolean isFaultNameElementFormQualified() {

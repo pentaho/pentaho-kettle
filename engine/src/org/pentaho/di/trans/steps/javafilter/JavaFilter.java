@@ -44,18 +44,18 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 /**
  * Calculate new field values using pre-defined functions.
- * 
+ *
  * @author Matt
  * @since 8-sep-2005
  */
 public class JavaFilter extends BaseStep implements StepInterface {
-  private static Class<?> PKG = JavaFilterMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JavaFilterMeta.class; // for i18n purposes, needed by Translator2!!
 
   private JavaFilterMeta meta;
   private JavaFilterData data;
 
   public JavaFilter( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -64,8 +64,8 @@ public class JavaFilter extends BaseStep implements StepInterface {
     data = (JavaFilterData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -82,14 +82,14 @@ public class JavaFilter extends BaseStep implements StepInterface {
         List<StreamInterface> targetStreams = meta.getStepIOMeta().getTargetStreams();
         data.trueRowSet = findOutputRowSet( getStepname(), getCopy(), targetStreams.get( 0 ).getStepname(), 0 );
         if ( data.trueRowSet == null ) {
-          throw new KettleException( BaseMessages.getString( PKG, "JavaFilter.Log.TargetStepInvalid", targetStreams
-              .get( 0 ).getStepname() ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "JavaFilter.Log.TargetStepInvalid", targetStreams.get( 0 ).getStepname() ) );
         }
 
         data.falseRowSet = findOutputRowSet( getStepname(), getCopy(), targetStreams.get( 1 ).getStepname(), 0 );
         if ( data.falseRowSet == null ) {
-          throw new KettleException( BaseMessages.getString( PKG, "JavaFilter.Log.TargetStepInvalid", targetStreams
-              .get( 1 ).getStepname() ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "JavaFilter.Log.TargetStepInvalid", targetStreams.get( 1 ).getStepname() ) );
         }
       }
 
@@ -183,8 +183,9 @@ public class JavaFilter extends BaseStep implements StepInterface {
         // Create the expression evaluator: is relatively slow so we do it only for the first row...
         //
         data.expressionEvaluator = new ExpressionEvaluator();
-        data.expressionEvaluator.setParameters( parameterNames.toArray( new String[parameterNames.size()] ),
-            parameterTypes.toArray( new Class<?>[parameterTypes.size()] ) );
+        data.expressionEvaluator.setParameters(
+          parameterNames.toArray( new String[parameterNames.size()] ), parameterTypes
+            .toArray( new Class<?>[parameterTypes.size()] ) );
         data.expressionEvaluator.setReturnType( Object.class );
         data.expressionEvaluator.setThrownExceptions( new Class<?>[] { Exception.class } );
         data.expressionEvaluator.cook( meta.getCondition() );
@@ -208,7 +209,7 @@ public class JavaFilter extends BaseStep implements StepInterface {
         return (Boolean) formulaResult;
       } else {
         throw new KettleException( "The result of the filter expression must be a boolean and we got back : "
-            + formulaResult.getClass().getName() );
+          + formulaResult.getClass().getName() );
       }
     } catch ( Exception e ) {
       throw new KettleValueException( e );
@@ -228,7 +229,7 @@ public class JavaFilter extends BaseStep implements StepInterface {
         logError( BaseMessages.getString( PKG, "JavaFilter.Log.BothTrueAndFalseNeeded" ) );
       } else {
         data.chosesTargetSteps =
-            targetStreams.get( 0 ).getStepMeta() != null && targetStreams.get( 1 ).getStepMeta() != null;
+          targetStreams.get( 0 ).getStepMeta() != null && targetStreams.get( 1 ).getStepMeta() != null;
 
         return true;
       }

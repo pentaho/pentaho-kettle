@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -47,12 +48,12 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 /**
  * Calculate new field values using pre-defined functions.
- * 
+ *
  * @author Matt
  * @since 8-sep-2005
  */
 public class Validator extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ValidatorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
   public class FieldIndexes {
     public int indexName;
@@ -64,7 +65,8 @@ public class Validator extends BaseStep implements StepInterface {
   private ValidatorMeta meta;
   private ValidatorData data;
 
-  public Validator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public Validator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -83,8 +85,8 @@ public class Validator extends BaseStep implements StepInterface {
       // That way the info-rowsets are out of the way
       //
       r = getRow(); // get row, set busy!
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) { // no more input to be expected...
+
         setOutputDone();
         return false;
       }
@@ -101,8 +103,8 @@ public class Validator extends BaseStep implements StepInterface {
           data.fieldIndexes[i] = getInputRowMeta().indexOfValue( field.getFieldName() );
           if ( data.fieldIndexes[i] < 0 ) {
             // Nope: throw an exception
-            throw new KettleStepException( "Unable to find the specified fieldname '" + field.getFieldName()
-                + "' for validation#" + ( i + 1 ) );
+            throw new KettleStepException( "Unable to find the specified fieldname '"
+              + field.getFieldName() + "' for validation#" + ( i + 1 ) );
           }
         } else {
           throw new KettleStepException( "There is no name specified for validator field #" + ( i + 1 ) );
@@ -113,8 +115,8 @@ public class Validator extends BaseStep implements StepInterface {
       // That way the info-rowsets are out of the way
       //
       r = getRow(); // get row, set busy!
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) { // no more input to be expected...
+
         setOutputDone();
         return false;
       }
@@ -145,7 +147,8 @@ public class Validator extends BaseStep implements StepInterface {
               fields.append( e.getFieldname() );
               codes.append( e.getCodeDesc() );
             }
-            putError( getInputRowMeta(), r, exceptions.size(), messages.toString(), fields.toString(), codes.toString() );
+            putError( getInputRowMeta(), r, exceptions.size(), messages.toString(), fields.toString(), codes
+              .toString() );
           } else {
             for ( KettleValidatorException e : exceptions ) {
               putError( getInputRowMeta(), r, 1, e.getMessage(), e.getFieldname(), e.getCodeDesc() );
@@ -186,11 +189,13 @@ public class Validator extends BaseStep implements StepInterface {
       if ( field.isSourcingValues() ) {
         if ( streams.get( i ).getStepMeta() == null ) {
           throw new KettleStepException(
-              "There is no valid source step specified for the allowed values of validation [" + field.getName() + "]" );
+            "There is no valid source step specified for the allowed values of validation ["
+              + field.getName() + "]" );
         }
         if ( Const.isEmpty( field.getSourcingField() ) ) {
           throw new KettleStepException(
-              "There is no valid source field specified for the allowed values of validation [" + field.getName() + "]" );
+            "There is no valid source field specified for the allowed values of validation ["
+              + field.getName() + "]" );
         }
 
         // Still here : OK, read the data from the specified step...
@@ -205,8 +210,8 @@ public class Validator extends BaseStep implements StepInterface {
           if ( fieldIndex < 0 ) {
             fieldIndex = allowedRowMeta.indexOfValue( field.getSourcingField() );
             if ( fieldIndex < 0 ) {
-              throw new KettleStepException( "Source field [" + field.getSourcingField()
-                  + "] is not found in the source row data" );
+              throw new KettleStepException( "Source field ["
+                + field.getSourcingField() + "] is not found in the source row data" );
             }
             data.constantsMeta[i] = allowedRowMeta.getValueMeta( fieldIndex );
           }
@@ -234,8 +239,7 @@ public class Validator extends BaseStep implements StepInterface {
    * @throws KettleValidatorException
    *           in case there is a validation error, details are stored in the exception.
    */
-  private List<KettleValidatorException> validateFields( RowMetaInterface inputRowMeta, Object[] r )
-    throws KettleValidatorException, KettleValueException {
+  private List<KettleValidatorException> validateFields( RowMetaInterface inputRowMeta, Object[] r ) throws KettleValidatorException, KettleValueException {
     List<KettleValidatorException> exceptions = new ArrayList<KettleValidatorException>();
 
     for ( int i = 0; i < meta.getValidations().size(); i++ ) {
@@ -252,9 +256,13 @@ public class Validator extends BaseStep implements StepInterface {
       boolean isNull = valueMeta.isNull( valueData );
       if ( !field.isNullAllowed() && isNull ) {
         KettleValidatorException exception =
-            new KettleValidatorException( this, field, KettleValidatorException.ERROR_NULL_VALUE_NOT_ALLOWED,
-                BaseMessages.getString( PKG, "Validator.Exception.NullNotAllowed", field.getFieldName(), inputRowMeta
-                    .getString( r ) ), field.getFieldName() );
+          new KettleValidatorException(
+            this,
+            field,
+            KettleValidatorException.ERROR_NULL_VALUE_NOT_ALLOWED,
+            BaseMessages.getString(
+              PKG, "Validator.Exception.NullNotAllowed", field.getFieldName(), inputRowMeta.getString( r ) ),
+            field.getFieldName() );
         exceptions.add( exception );
         if ( !meta.isValidatingAll() ) {
           return exceptions;
@@ -263,9 +271,13 @@ public class Validator extends BaseStep implements StepInterface {
 
       if ( field.isOnlyNullAllowed() && !isNull ) {
         KettleValidatorException exception =
-            new KettleValidatorException( this, field, KettleValidatorException.ERROR_ONLY_NULL_VALUE_ALLOWED,
-                BaseMessages.getString( PKG, "Validator.Exception.OnlyNullAllowed", field.getFieldName(), inputRowMeta
-                    .getString( r ) ), field.getFieldName() );
+          new KettleValidatorException(
+            this,
+            field,
+            KettleValidatorException.ERROR_ONLY_NULL_VALUE_ALLOWED,
+            BaseMessages.getString(
+              PKG, "Validator.Exception.OnlyNullAllowed", field.getFieldName(), inputRowMeta.getString( r ) ),
+            field.getFieldName() );
         exceptions.add( exception );
         if ( !meta.isValidatingAll() ) {
           return exceptions;
@@ -280,9 +292,10 @@ public class Validator extends BaseStep implements StepInterface {
         //
         if ( field.getDataType() != valueMeta.getType() ) {
           KettleValidatorException exception =
-              new KettleValidatorException( this, field, KettleValidatorException.ERROR_UNEXPECTED_DATA_TYPE,
-                  BaseMessages.getString( PKG, "Validator.Exception.UnexpectedDataType", field.getFieldName(),
-                      valueMeta.toStringMeta(), validatorMeta.toStringMeta() ), field.getFieldName() );
+            new KettleValidatorException(
+              this, field, KettleValidatorException.ERROR_UNEXPECTED_DATA_TYPE, BaseMessages.getString(
+                PKG, "Validator.Exception.UnexpectedDataType", field.getFieldName(), valueMeta
+                  .toStringMeta(), validatorMeta.toStringMeta() ), field.getFieldName() );
           exceptions.add( exception );
           if ( !meta.isValidatingAll() ) {
             return exceptions;
@@ -294,11 +307,13 @@ public class Validator extends BaseStep implements StepInterface {
       //
       if ( !isNull ) {
 
-        if ( data.fieldsMinimumLengthAsInt[i] >= 0 || data.fieldsMaximumLengthAsInt[i] >= 0
-            || data.minimumValue[i] != null || data.maximumValue[i] != null || data.listValues[i].length > 0
-            || field.isSourcingValues() || !Const.isEmpty( data.startString[i] ) || !Const.isEmpty( data.endString[i] )
-            || !Const.isEmpty( data.startStringNotAllowed[i] ) || !Const.isEmpty( data.endStringNotAllowed[i] )
-            || field.isOnlyNumericAllowed() || data.patternExpected[i] != null || data.patternDisallowed[i] != null ) {
+        if ( data.fieldsMinimumLengthAsInt[i] >= 0
+          || data.fieldsMaximumLengthAsInt[i] >= 0 || data.minimumValue[i] != null
+          || data.maximumValue[i] != null || data.listValues[i].length > 0 || field.isSourcingValues()
+          || !Const.isEmpty( data.startString[i] ) || !Const.isEmpty( data.endString[i] )
+          || !Const.isEmpty( data.startStringNotAllowed[i] ) || !Const.isEmpty( data.endStringNotAllowed[i] )
+          || field.isOnlyNumericAllowed() || data.patternExpected[i] != null
+          || data.patternDisallowed[i] != null ) {
 
           String stringValue = valueMeta.getString( valueData );
           int stringLength = stringValue.length();
@@ -308,10 +323,12 @@ public class Validator extends BaseStep implements StepInterface {
           // if (field.getMinimumLength()>=0 && stringValue.length()<field.getMinimumLength() ) {
           if ( data.fieldsMinimumLengthAsInt[i] >= 0 && stringLength < data.fieldsMinimumLengthAsInt[i] ) {
             KettleValidatorException exception =
-                new KettleValidatorException( this, field, KettleValidatorException.ERROR_SHORTER_THAN_MINIMUM_LENGTH,
-                    BaseMessages.getString( PKG, "Validator.Exception.ShorterThanMininumLength", field.getFieldName(),
-                        valueMeta.getString( valueData ), Integer.toString( stringValue.length() ), field
-                            .getMinimumLength() ), field.getFieldName() );
+              new KettleValidatorException(
+                this, field, KettleValidatorException.ERROR_SHORTER_THAN_MINIMUM_LENGTH, BaseMessages
+                  .getString(
+                    PKG, "Validator.Exception.ShorterThanMininumLength", field.getFieldName(), valueMeta
+                      .getString( valueData ), Integer.toString( stringValue.length() ), field
+                      .getMinimumLength() ), field.getFieldName() );
             exceptions.add( exception );
             if ( !meta.isValidatingAll() ) {
               return exceptions;
@@ -323,10 +340,12 @@ public class Validator extends BaseStep implements StepInterface {
           // if (field.getMaximumLength()>=0 && stringValue.length()>field.getMaximumLength() ) {
           if ( data.fieldsMaximumLengthAsInt[i] >= 0 && stringLength > data.fieldsMaximumLengthAsInt[i] ) {
             KettleValidatorException exception =
-                new KettleValidatorException( this, field, KettleValidatorException.ERROR_LONGER_THAN_MAXIMUM_LENGTH,
-                    BaseMessages.getString( PKG, "Validator.Exception.LongerThanMaximumLength", field.getFieldName(),
-                        valueMeta.getString( valueData ), Integer.toString( stringValue.length() ), field
-                            .getMaximumLength() ), field.getFieldName() );
+              new KettleValidatorException(
+                this, field, KettleValidatorException.ERROR_LONGER_THAN_MAXIMUM_LENGTH, BaseMessages
+                  .getString(
+                    PKG, "Validator.Exception.LongerThanMaximumLength", field.getFieldName(), valueMeta
+                      .getString( valueData ), Integer.toString( stringValue.length() ), field
+                      .getMaximumLength() ), field.getFieldName() );
             exceptions.add( exception );
             if ( !meta.isValidatingAll() ) {
               return exceptions;
@@ -335,12 +354,15 @@ public class Validator extends BaseStep implements StepInterface {
 
           // Minimal value
           //
-          if ( data.minimumValue[i] != null && valueMeta.compare( valueData, validatorMeta, data.minimumValue[i] ) < 0 ) {
+          if ( data.minimumValue[i] != null
+            && valueMeta.compare( valueData, validatorMeta, data.minimumValue[i] ) < 0 ) {
             KettleValidatorException exception =
-                new KettleValidatorException( this, field, KettleValidatorException.ERROR_LOWER_THAN_ALLOWED_MINIMUM,
-                    BaseMessages.getString( PKG, "Validator.Exception.LowerThanMinimumValue", field.getFieldName(),
-                        valueMeta.getString( valueData ), data.constantsMeta[i].getString( data.minimumValue[i] ) ),
-                    field.getFieldName() );
+              new KettleValidatorException(
+                this, field, KettleValidatorException.ERROR_LOWER_THAN_ALLOWED_MINIMUM,
+                BaseMessages.getString(
+                  PKG, "Validator.Exception.LowerThanMinimumValue", field.getFieldName(), valueMeta
+                    .getString( valueData ), data.constantsMeta[i].getString( data.minimumValue[i] ) ),
+                field.getFieldName() );
             exceptions.add( exception );
             if ( !meta.isValidatingAll() ) {
               return exceptions;
@@ -349,12 +371,14 @@ public class Validator extends BaseStep implements StepInterface {
 
           // Maximum value
           //
-          if ( data.maximumValue[i] != null && valueMeta.compare( valueData, validatorMeta, data.maximumValue[i] ) > 0 ) {
+          if ( data.maximumValue[i] != null
+            && valueMeta.compare( valueData, validatorMeta, data.maximumValue[i] ) > 0 ) {
             KettleValidatorException exception =
-                new KettleValidatorException( this, field, KettleValidatorException.ERROR_HIGHER_THAN_ALLOWED_MAXIMUM,
-                    BaseMessages.getString( PKG, "Validator.Exception.HigherThanMaximumValue", field.getFieldName(),
-                        valueMeta.getString( valueData ), data.constantsMeta[i].getString( data.maximumValue[i] ) ),
-                    field.getFieldName() );
+              new KettleValidatorException(
+                this, field, KettleValidatorException.ERROR_HIGHER_THAN_ALLOWED_MAXIMUM,
+                BaseMessages.getString( PKG, "Validator.Exception.HigherThanMaximumValue", field
+                  .getFieldName(), valueMeta.getString( valueData ), data.constantsMeta[i]
+                  .getString( data.maximumValue[i] ) ), field.getFieldName() );
             exceptions.add( exception );
             if ( !meta.isValidatingAll() ) {
               return exceptions;
@@ -366,16 +390,17 @@ public class Validator extends BaseStep implements StepInterface {
           if ( field.isSourcingValues() || data.listValues[i].length > 0 ) {
             boolean found = false;
             for ( Object object : data.listValues[i] ) {
-              if ( object != null && data.listValues[i] != null
-                  && valueMeta.compare( valueData, validatorMeta, object ) == 0 ) {
+              if ( object != null
+                && data.listValues[i] != null && valueMeta.compare( valueData, validatorMeta, object ) == 0 ) {
                 found = true;
               }
             }
             if ( !found ) {
               KettleValidatorException exception =
-                  new KettleValidatorException( this, field, KettleValidatorException.ERROR_VALUE_NOT_IN_LIST,
-                      BaseMessages.getString( PKG, "Validator.Exception.NotInList", field.getFieldName(), valueMeta
-                          .getString( valueData ) ), field.getFieldName() );
+                new KettleValidatorException(
+                  this, field, KettleValidatorException.ERROR_VALUE_NOT_IN_LIST, BaseMessages.getString(
+                    PKG, "Validator.Exception.NotInList", field.getFieldName(), valueMeta
+                      .getString( valueData ) ), field.getFieldName() );
               exceptions.add( exception );
               if ( !meta.isValidatingAll() ) {
                 return exceptions;
@@ -387,9 +412,10 @@ public class Validator extends BaseStep implements StepInterface {
           if ( field.isOnlyNumericAllowed() ) {
             if ( valueMeta.isNumeric() || !containsOnlyDigits( valueMeta.getString( valueData ) ) ) {
               KettleValidatorException exception =
-                  new KettleValidatorException( this, field, KettleValidatorException.ERROR_NON_NUMERIC_DATA,
-                      BaseMessages.getString( PKG, "Validator.Exception.NonNumericDataNotAllowed",
-                          field.getFieldName(), valueMeta.toStringMeta() ), field.getFieldName() );
+                new KettleValidatorException(
+                  this, field, KettleValidatorException.ERROR_NON_NUMERIC_DATA, BaseMessages.getString(
+                    PKG, "Validator.Exception.NonNumericDataNotAllowed", field.getFieldName(), valueMeta
+                      .toStringMeta() ), field.getFieldName() );
               exceptions.add( exception );
               if ( !meta.isValidatingAll() ) {
                 return exceptions;
@@ -401,9 +427,11 @@ public class Validator extends BaseStep implements StepInterface {
           //
           if ( !Const.isEmpty( data.startString[i] ) && !stringValue.startsWith( data.startString[i] ) ) {
             KettleValidatorException exception =
-                new KettleValidatorException( this, field, KettleValidatorException.ERROR_DOES_NOT_START_WITH_STRING,
-                    BaseMessages.getString( PKG, "Validator.Exception.DoesNotStartWithString", field.getFieldName(),
-                        valueMeta.getString( valueData ), field.getStartString() ), field.getFieldName() );
+              new KettleValidatorException(
+                this, field, KettleValidatorException.ERROR_DOES_NOT_START_WITH_STRING, BaseMessages
+                  .getString(
+                    PKG, "Validator.Exception.DoesNotStartWithString", field.getFieldName(), valueMeta
+                      .getString( valueData ), field.getStartString() ), field.getFieldName() );
             exceptions.add( exception );
             if ( !meta.isValidatingAll() ) {
               return exceptions;
@@ -414,9 +442,10 @@ public class Validator extends BaseStep implements StepInterface {
           //
           if ( !Const.isEmpty( data.endString[i] ) && !stringValue.endsWith( data.endString[i] ) ) {
             KettleValidatorException exception =
-                new KettleValidatorException( this, field, KettleValidatorException.ERROR_DOES_NOT_END_WITH_STRING,
-                    BaseMessages.getString( PKG, "Validator.Exception.DoesNotStartWithString", field.getFieldName(),
-                        valueMeta.getString( valueData ), field.getEndString() ), field.getFieldName() );
+              new KettleValidatorException(
+                this, field, KettleValidatorException.ERROR_DOES_NOT_END_WITH_STRING, BaseMessages.getString(
+                  PKG, "Validator.Exception.DoesNotStartWithString", field.getFieldName(), valueMeta
+                    .getString( valueData ), field.getEndString() ), field.getFieldName() );
             exceptions.add( exception );
             if ( !meta.isValidatingAll() ) {
               return exceptions;
@@ -426,11 +455,12 @@ public class Validator extends BaseStep implements StepInterface {
           // Starts with string value
           //
           if ( !Const.isEmpty( data.startStringNotAllowed[i] )
-              && stringValue.startsWith( data.startStringNotAllowed[i] ) ) {
+            && stringValue.startsWith( data.startStringNotAllowed[i] ) ) {
             KettleValidatorException exception =
-                new KettleValidatorException( this, field, KettleValidatorException.ERROR_STARTS_WITH_STRING,
-                    BaseMessages.getString( PKG, "Validator.Exception.StartsWithString", field.getFieldName(),
-                        valueMeta.getString( valueData ), field.getStartStringNotAllowed() ), field.getFieldName() );
+              new KettleValidatorException(
+                this, field, KettleValidatorException.ERROR_STARTS_WITH_STRING, BaseMessages.getString(
+                  PKG, "Validator.Exception.StartsWithString", field.getFieldName(), valueMeta
+                    .getString( valueData ), field.getStartStringNotAllowed() ), field.getFieldName() );
             exceptions.add( exception );
             if ( !meta.isValidatingAll() ) {
               return exceptions;
@@ -441,9 +471,10 @@ public class Validator extends BaseStep implements StepInterface {
           //
           if ( !Const.isEmpty( data.endStringNotAllowed[i] ) && stringValue.endsWith( data.endStringNotAllowed[i] ) ) {
             KettleValidatorException exception =
-                new KettleValidatorException( this, field, KettleValidatorException.ERROR_ENDS_WITH_STRING,
-                    BaseMessages.getString( PKG, "Validator.Exception.EndsWithString", field.getFieldName(), valueMeta
-                        .getString( valueData ), field.getEndStringNotAllowed() ), field.getFieldName() );
+              new KettleValidatorException(
+                this, field, KettleValidatorException.ERROR_ENDS_WITH_STRING, BaseMessages.getString(
+                  PKG, "Validator.Exception.EndsWithString", field.getFieldName(), valueMeta
+                    .getString( valueData ), field.getEndStringNotAllowed() ), field.getFieldName() );
             exceptions.add( exception );
             if ( !meta.isValidatingAll() ) {
               return exceptions;
@@ -456,10 +487,11 @@ public class Validator extends BaseStep implements StepInterface {
             Matcher matcher = data.patternExpected[i].matcher( stringValue );
             if ( !matcher.matches() ) {
               KettleValidatorException exception =
-                  new KettleValidatorException( this, field,
-                      KettleValidatorException.ERROR_MATCHING_REGULAR_EXPRESSION_EXPECTED, BaseMessages.getString( PKG,
-                          "Validator.Exception.MatchingRegExpExpected", field.getFieldName(), valueMeta
-                              .getString( valueData ), field.getRegularExpression() ), field.getFieldName() );
+                new KettleValidatorException(
+                  this, field, KettleValidatorException.ERROR_MATCHING_REGULAR_EXPRESSION_EXPECTED,
+                  BaseMessages.getString( PKG, "Validator.Exception.MatchingRegExpExpected", field
+                    .getFieldName(), valueMeta.getString( valueData ), data.regularExpression[i] ), field
+                    .getFieldName() );
               exceptions.add( exception );
               if ( !meta.isValidatingAll() ) {
                 return exceptions;
@@ -473,10 +505,13 @@ public class Validator extends BaseStep implements StepInterface {
             Matcher matcher = data.patternDisallowed[i].matcher( stringValue );
             if ( matcher.matches() ) {
               KettleValidatorException exception =
-                  new KettleValidatorException( this, field,
-                      KettleValidatorException.ERROR_MATCHING_REGULAR_EXPRESSION_NOT_ALLOWED, BaseMessages.getString(
-                          PKG, "Validator.Exception.MatchingRegExpNotAllowed", field.getFieldName(), valueMeta
-                              .getString( valueData ), field.getRegularExpressionNotAllowed() ), field.getFieldName() );
+                new KettleValidatorException(
+                  this,
+                  field,
+                  KettleValidatorException.ERROR_MATCHING_REGULAR_EXPRESSION_NOT_ALLOWED,
+                  BaseMessages.getString( PKG, "Validator.Exception.MatchingRegExpNotAllowed", field
+                    .getFieldName(), valueMeta.getString( valueData ), data.regularExpressionNotAllowed[i] ),
+                  field.getFieldName() );
               exceptions.add( exception );
               if ( !meta.isValidatingAll() ) {
                 return exceptions;
@@ -533,7 +568,7 @@ public class Validator extends BaseStep implements StepInterface {
 
         Validation field = meta.getValidations().get( i );
         try {
-          data.constantsMeta[i] = ValueMetaFactory.createValueMeta( field.getFieldName(), field.getDataType() );
+          data.constantsMeta[i] = createValueMeta( field.getFieldName(), field.getDataType() );
           data.constantsMeta[i].setConversionMask( field.getConversionMask() );
           data.constantsMeta[i].setDecimalSymbol( field.getDecimalSymbol() );
           data.constantsMeta[i].setGroupingSymbol( field.getGroupingSymbol() );
@@ -548,32 +583,34 @@ public class Validator extends BaseStep implements StepInterface {
           data.minimumValueAsString[i] = environmentSubstitute( Const.NVL( field.getMinimumValue(), "" ) );
           data.startString[i] = environmentSubstitute( Const.NVL( field.getStartString(), "" ) );
           data.endString[i] = environmentSubstitute( Const.NVL( field.getEndString(), "" ) );
-          data.startStringNotAllowed[i] = environmentSubstitute( Const.NVL( field.getStartStringNotAllowed(), "" ) );
+          data.startStringNotAllowed[i] =
+            environmentSubstitute( Const.NVL( field.getStartStringNotAllowed(), "" ) );
           data.endStringNotAllowed[i] = environmentSubstitute( Const.NVL( field.getEndStringNotAllowed(), "" ) );
           data.regularExpression[i] = environmentSubstitute( Const.NVL( field.getRegularExpression(), "" ) );
           data.regularExpressionNotAllowed[i] =
-              environmentSubstitute( Const.NVL( field.getRegularExpressionNotAllowed(), "" ) );
+            environmentSubstitute( Const.NVL( field.getRegularExpressionNotAllowed(), "" ) );
 
-          ValueMetaInterface stringMeta =
-              ValueMetaFactory.cloneValueMeta( data.constantsMeta[i], ValueMetaInterface.TYPE_STRING );
+          ValueMetaInterface stringMeta = cloneValueMeta( data.constantsMeta[i], ValueMetaInterface.TYPE_STRING );
           data.minimumValue[i] =
-              Const.isEmpty( data.minimumValueAsString[i] ) ? null : data.constantsMeta[i].convertData( stringMeta,
-                  data.minimumValueAsString[i] );
+            Const.isEmpty( data.minimumValueAsString[i] ) ? null : data.constantsMeta[i].convertData(
+              stringMeta, data.minimumValueAsString[i] );
           data.maximumValue[i] =
-              Const.isEmpty( data.maximumValueAsString[i] ) ? null : data.constantsMeta[i].convertData( stringMeta,
-                  data.maximumValueAsString[i] );
+            Const.isEmpty( data.maximumValueAsString[i] ) ? null : data.constantsMeta[i].convertData(
+              stringMeta, data.maximumValueAsString[i] );
 
           try {
             data.fieldsMinimumLengthAsInt[i] = Integer.valueOf( Const.NVL( data.minimumLength[i], "-1" ) );
           } catch ( NumberFormatException nfe ) {
-            throw new KettleValueException( "Caught a number format exception converting minimum length with value "
+            throw new KettleValueException(
+              "Caught a number format exception converting minimum length with value "
                 + data.minimumLength[i] + " to an int.", nfe );
           }
 
           try {
             data.fieldsMaximumLengthAsInt[i] = Integer.valueOf( Const.NVL( data.maximumLength[i], "-1" ) );
           } catch ( NumberFormatException nfe ) {
-            throw new KettleValueException( "Caught a number format exception converting minimum length with value "
+            throw new KettleValueException(
+              "Caught a number format exception converting minimum length with value "
                 + data.maximumLength[i] + " to an int.", nfe );
           }
 
@@ -581,8 +618,8 @@ public class Validator extends BaseStep implements StepInterface {
           data.listValues[i] = new Object[listSize];
           for ( int s = 0; s < listSize; s++ ) {
             data.listValues[i][s] =
-                Const.isEmpty( field.getAllowedValues()[s] ) ? null : data.constantsMeta[i].convertData( stringMeta,
-                    environmentSubstitute( field.getAllowedValues()[s] ) );
+              Const.isEmpty( field.getAllowedValues()[s] ) ? null : data.constantsMeta[i].convertData(
+                stringMeta, environmentSubstitute( field.getAllowedValues()[s] ) );
           }
         } catch ( KettleException e ) {
           if ( field.getDataType() == ValueMetaInterface.TYPE_NONE ) {
@@ -594,10 +631,10 @@ public class Validator extends BaseStep implements StepInterface {
         }
 
         if ( !Const.isEmpty( data.regularExpression[i] ) ) {
-          data.patternExpected[i] = Pattern.compile( field.getRegularExpression() );
+          data.patternExpected[i] = Pattern.compile( data.regularExpression[i] );
         }
         if ( !Const.isEmpty( data.regularExpressionNotAllowed[i] ) ) {
-          data.patternDisallowed[i] = Pattern.compile( field.getRegularExpressionNotAllowed() );
+          data.patternDisallowed[i] = Pattern.compile( data.regularExpressionNotAllowed[i] );
         }
 
       }
@@ -605,6 +642,14 @@ public class Validator extends BaseStep implements StepInterface {
       return true;
     }
     return false;
+  }
+
+  protected ValueMetaInterface createValueMeta( String name, int type ) throws KettlePluginException {
+    return ValueMetaFactory.createValueMeta( name, type );
+  }
+
+  protected ValueMetaInterface cloneValueMeta( ValueMetaInterface valueMeta, int type ) throws KettlePluginException {
+    return ValueMetaFactory.cloneValueMeta( valueMeta, type );
   }
 
 }

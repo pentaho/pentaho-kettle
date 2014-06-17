@@ -30,9 +30,9 @@ import org.pentaho.di.trans.step.StepInterface;
 
 /**
  * Allows you to "Inject" rows into a step.
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public class RowProducer {
   private RowSet rowSet;
@@ -45,7 +45,7 @@ public class RowProducer {
 
   /**
    * Puts a row into the underlying row set. This will block until the row is successfully added.
-   * 
+   *
    * @see #putRow(RowMetaInterface, Object[], boolean) putRow(RowMetaInterface, Object[], true)
    */
   public void putRow( RowMetaInterface rowMeta, Object[] row ) {
@@ -54,16 +54,18 @@ public class RowProducer {
 
   /**
    * Puts a row on to the underlying row set, optionally blocking until the row can be successfully put.
-   * 
+   *
    * @return true if the row was successfully added to the rowset and false if this buffer was full. If {@code block} is
    *         true this will always return true.
    * @see RowSet#putRow(RowMetaInterface, Object[])
    */
   public boolean putRow( RowMetaInterface rowMeta, Object[] row, boolean block ) {
     if ( block ) {
-      while ( !rowSet.putRowWait( rowMeta, row, Long.MAX_VALUE, TimeUnit.DAYS ) ) {
-        // Wait
+      boolean added = false;
+      while ( !added ) {
+        added = rowSet.putRowWait( rowMeta, row, Long.MAX_VALUE, TimeUnit.DAYS );
       }
+
       return true;
     }
     return rowSet.putRow( rowMeta, row );
@@ -76,6 +78,10 @@ public class RowProducer {
     return rowSet.putRowWait( rowMeta, rowData, time, tu );
   }
 
+  /**
+   * Signal that we are done producing rows. 
+   * It will allow the step to which this producer is attached to know that no more rows are forthcoming.
+   */
   public void finished() {
     rowSet.setDone();
   }

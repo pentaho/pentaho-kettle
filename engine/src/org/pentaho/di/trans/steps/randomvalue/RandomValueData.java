@@ -48,9 +48,6 @@ public class RandomValueData extends BaseStepData implements StepDataInterface {
 
   public final Random randomgen = new Random();
 
-  /**
-	 * 
-	 */
   public RandomValueData() {
     super();
   }

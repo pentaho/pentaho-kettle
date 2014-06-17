@@ -35,12 +35,12 @@ import org.pentaho.metastore.util.MetaStoreUtil;
 import org.pentaho.metastore.util.PentahoDefaults;
 
 /**
- * Some utility methods to serialize to/from the metastore 
+ * Some utility methods to serialize to/from the metastore
  * @author matt
  *
  */
 public class ModelMetaStoreUtil extends MetaStoreUtil {
-  
+
   public static final String METASTORE_STAR_MODEL_TYPE_NAME = "Logical star model";
   public static final String METASTORE_STAR_MODEL_TYPE_DESCRIPTION = "This contains a logical star model with references to logical columns";
 
@@ -60,12 +60,12 @@ public class ModelMetaStoreUtil extends MetaStoreUtil {
       this.id = id;
     }
   }
-  
+
   private static String defaultLocale = LanguageChoice.getInstance().getDefaultLocale().toString();
-  
+
   public static IMetaStoreElementType getLogicalModelElementType(IMetaStore metaStore) throws MetaStoreException {
     verifyNamespaceCreated(metaStore, PentahoDefaults.NAMESPACE);
-    
+
     IMetaStoreElementType elementType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, METASTORE_STAR_MODEL_TYPE_NAME);
     if (elementType==null) {
       // create the type
@@ -77,10 +77,10 @@ public class ModelMetaStoreUtil extends MetaStoreUtil {
     }
     return elementType;
   }
-  
+
   public static IMetaStoreElementType getLogicalTableElementType(IMetaStore metaStore) throws MetaStoreException {
     verifyNamespaceCreated(metaStore, PentahoDefaults.NAMESPACE);
-    
+
     IMetaStoreElementType elementType = metaStore.getElementTypeByName(PentahoDefaults.NAMESPACE, METASTORE_LOGICAL_TABLE_TYPE_NAME);
     if (elementType==null) {
       // create the type
@@ -92,10 +92,10 @@ public class ModelMetaStoreUtil extends MetaStoreUtil {
     }
     return elementType;
   }
-  
+
   /**
    * Inflate a logical model from a metastore element.
-   * 
+   *
    * @param metaStore The metastore to read from
    * @param element The element to read from
    * @return The Logical Model
@@ -104,12 +104,12 @@ public class ModelMetaStoreUtil extends MetaStoreUtil {
   public static LogicalModel buildLogicalModel(IMetaStore metaStore, IMetaStoreElement element) throws MetaStoreException {
     try {
       LogicalModel model = new LogicalModel();
-      
+
       model.setName(new LocalizedString(defaultLocale, element.getName()));
       model.setDescription(new LocalizedString(defaultLocale, getChildString(element, Attribute.ID_MODEL_DESCRIPTION.id)));
 
 
-      
+
       return model;
     } catch(Exception e) {
       throw new MetaStoreException("Unable to inflate logical model from metastore element", e);
@@ -139,22 +139,22 @@ public class ModelMetaStoreUtil extends MetaStoreUtil {
       IMetaStoreElement element = metaStore.newElement();
       element.setName(model.getName(defaultLocale));
       element.addChild( metaStore.newAttribute(Attribute.ID_MODEL_DESCRIPTION.id, model.getDescription(defaultLocale)) );
-      
+
       IMetaStoreAttribute logicalTablesAttribute = metaStore.newAttribute(Attribute.ID_LOGICAL_TABLES.id, model.getDescription(defaultLocale));
       element.addChild(logicalTablesAttribute);
       for (LogicalTable logicalTable : model.getLogicalTables()) {
-        
+
         IMetaStoreAttribute logicalTableAttribute = metaStore.newAttribute(Attribute.ID_LOGICAL_TABLE.id, model.getDescription(defaultLocale));
         logicalTablesAttribute.addChild(logicalTableAttribute);
-        
-        // 
-        
+
+        //
+
         // Save the ID as well as the name (for safety)
         //
         logicalTableAttribute.addChild(metaStore.newAttribute(Attribute.ID_LOGICAL_TABLE_ID.id, logicalTable.getId()));
         logicalTableAttribute.addChild(metaStore.newAttribute(Attribute.ID_LOGICAL_TABLE_NAME.id, logicalTable.getName()));
       }
-      
+
       return element;
     } catch(Exception e) {
       throw new MetaStoreException("Unable to populate metastore element from logical model", e);

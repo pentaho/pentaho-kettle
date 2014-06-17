@@ -68,14 +68,14 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Gets the value meta list.
-   * 
+   *
    * @return the list of value Metadata
    */
   public List<ValueMetaInterface> getValueMetaList();
 
   /**
    * Sets the value meta list.
-   * 
+   *
    * @param valueMetaList
    *          the list of valueMeta to set
    */
@@ -83,7 +83,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Check if a value is already present in this row with the same name.
-   * 
+   *
    * @param meta
    *          the value to check for existence
    * @return true if a value with the same name already exists in the row
@@ -92,7 +92,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Add a metadata value, extends the array if needed. If a value with the same name already exists, it gets renamed.
-   * 
+   *
    * @param meta
    *          The metadata value to add
    */
@@ -101,7 +101,7 @@ public interface RowMetaInterface extends Cloneable {
   /**
    * Add a metadata value on a certain location in the row. If a value with the same name already exists, it gets
    * renamed. Remember to change the data row according to this.
-   * 
+   *
    * @param index
    *          The index where the metadata value needs to be put in the row
    * @param meta
@@ -111,7 +111,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Get the value metadata on the specified index.
-   * 
+   *
    * @param index
    *          The index to get the value metadata from
    * @return The value metadata specified by the index.
@@ -120,7 +120,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Replaces a value meta entry in the row metadata with another one.
-   * 
+   *
    * @param index
    *          The index in the row to replace at
    * @param valueMeta
@@ -130,7 +130,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Get a String value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param dataRow
    *          the data row
    * @param index
@@ -143,7 +143,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Get an Integer value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param dataRow
    *          the data row
    * @param index
@@ -156,7 +156,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Get a Number value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param dataRow
    *          the data row
    * @param index
@@ -169,7 +169,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Get a Date value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param dataRow
    *          the data row
    * @param index
@@ -182,7 +182,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Get a BigNumber value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param dataRow
    *          the data row
    * @param index
@@ -195,7 +195,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Get a Boolean value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param dataRow
    *          the data row
    * @param index
@@ -208,7 +208,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Get a Binary value from a row of data. Convert data if this needed.
-   * 
+   *
    * @param dataRow
    *          the data row
    * @param index
@@ -221,7 +221,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Clone row.
-   * 
+   *
    * @param objects
    *          objects to clone
    * @param cloneTo
@@ -234,7 +234,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Clone row.
-   * 
+   *
    * @param objects
    *          object to clone
    * @return a cloned objects to clone to
@@ -245,14 +245,14 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Returns the size of the metadata row.
-   * 
+   *
    * @return the size of the metadata row
    */
   public int size();
 
   /**
    * Returns true if there are no elements in the row metadata.
-   * 
+   *
    * @return true if there are no elements in the row metadata
    */
   public boolean isEmpty();
@@ -260,7 +260,7 @@ public interface RowMetaInterface extends Cloneable {
   /**
    * Determines whether a value in a row is null. A value is null when the object is null. As such, you can just as good
    * write dataRow[index]==null in your code.
-   * 
+   *
    * @param dataRow
    *          The row of data
    * @param index
@@ -273,14 +273,14 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Clone this RowMetaInterface object.
-   * 
+   *
    * @return a copy of this RowMetaInterface object
    */
   public RowMetaInterface clone();
 
   /**
    * This method copies the row metadata and sets all values to the specified type (usually String)
-   * 
+   *
    * @param targetType
    *          The target type
    * @return The cloned metadata
@@ -291,7 +291,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Gets the string.
-   * 
+   *
    * @param dataRow
    *          the data row
    * @param valueName
@@ -306,7 +306,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Gets the integer.
-   * 
+   *
    * @param dataRow
    *          the data row
    * @param valueName
@@ -321,7 +321,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Gets the date.
-   * 
+   *
    * @param dataRow
    *          the data row
    * @param valueName
@@ -336,7 +336,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Searches for a value with a certain name in the value meta list.
-   * 
+   *
    * @param valueName
    *          The value name to search for
    * @return The value metadata or null if nothing was found
@@ -345,7 +345,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Searches the index of a value meta with a given name.
-   * 
+   *
    * @param valueName
    *          the name of the value metadata to look for
    * @return the index or -1 in case we didn't find the value
@@ -354,7 +354,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Add a number of fields from another row (append to the end).
-   * 
+   *
    * @param rowMeta
    *          The row of metadata values to add
    */
@@ -363,7 +363,7 @@ public interface RowMetaInterface extends Cloneable {
   /**
    * Merge the values of row r to this Row. The values that are not yet in the row are added unchanged. The values that
    * are in the row are renamed to name[2], name[3], etc.
-   * 
+   *
    * @param r
    *          The row to be merged with this row
    */
@@ -371,14 +371,14 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Get an array of the names of all the Values in the Row.
-   * 
+   *
    * @return an array of Strings: the names of all the Values in the Row.
    */
   public String[] getFieldNames();
 
   /**
    * Write a serialized version of this class (Row Metadata) to the specified outputStream.
-   * 
+   *
    * @param outputStream
    *          the outputstream to write to
    * @throws KettleFileException
@@ -389,7 +389,7 @@ public interface RowMetaInterface extends Cloneable {
   /**
    * Write a serialized version of the supplied data to the outputStream (based on the metadata but not the metadata
    * itself).
-   * 
+   *
    * @param outputStream
    *          the outputstream to write to
    * @param data
@@ -401,7 +401,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * De-serialize a row of data (no metadata is read) from an input stream.
-   * 
+   *
    * @param inputStream
    *          the inputstream to read from
    * @return a new row of data
@@ -419,7 +419,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Remove a value with a certain name from the row metadata.
-   * 
+   *
    * @param string
    *          the name of the value metadata to remove
    * @throws KettleValueException
@@ -429,7 +429,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Remove a value metadata object on a certain index in the row.
-   * 
+   *
    * @param index
    *          the index to remove the value metadata from
    */
@@ -437,7 +437,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Get the string representation of the data in a row of data.
-   * 
+   *
    * @param row
    *          the row of data to convert to string
    * @return the row of data in string form
@@ -449,7 +449,7 @@ public interface RowMetaInterface extends Cloneable {
   /**
    * Get an array of strings showing the name of the values in the row padded to a maximum length, followed by the types
    * of the values.
-   * 
+   *
    * @param maxlen
    *          The length to which the name will be padded.
    * @return an array of strings: the names and the types of the fieldnames in the row.
@@ -459,7 +459,7 @@ public interface RowMetaInterface extends Cloneable {
   /**
    * Compare 2 rows with each other using certain values in the rows and also considering the specified ascending
    * clauses of the value metadata.
-   * 
+   *
    * @param rowData1
    *          The first row of data
    * @param rowData2
@@ -475,7 +475,7 @@ public interface RowMetaInterface extends Cloneable {
   /**
    * Compare 2 rows with each other for equality using certain values in the rows and also considering the case
    * sensitivity flag.
-   * 
+   *
    * @param rowData1
    *          The first row of data
    * @param rowData2
@@ -491,7 +491,7 @@ public interface RowMetaInterface extends Cloneable {
   /**
    * Compare 2 rows with each other using certain values in the rows and also considering the specified ascending
    * clauses of the value metadata.
-   * 
+   *
    * @param rowData1
    *          The first row of data
    * @param rowData2
@@ -504,13 +504,12 @@ public interface RowMetaInterface extends Cloneable {
    * @throws KettleValueException
    *           the kettle value exception
    */
-  public int compare( Object[] rowData1, Object[] rowData2, int[] fieldnrs1, int[] fieldnrs2 )
-    throws KettleValueException;
+  public int compare( Object[] rowData1, Object[] rowData2, int[] fieldnrs1, int[] fieldnrs2 ) throws KettleValueException;
 
   /**
    * Compare 2 rows with each other using certain values in the rows and also considering the specified ascending
    * clauses of the value metadata.
-   * 
+   *
    * @param rowData1
    *          The first row of data
    * @param rowMeta2
@@ -525,14 +524,13 @@ public interface RowMetaInterface extends Cloneable {
    * @throws KettleValueException
    *           the kettle value exception
    */
-  public int
-    compare( Object[] rowData1, RowMetaInterface rowMeta2, Object[] rowData2, int[] fieldnrs1, int[] fieldnrs2 )
-      throws KettleValueException;
+  public int compare( Object[] rowData1, RowMetaInterface rowMeta2, Object[] rowData2, int[] fieldnrs1,
+    int[] fieldnrs2 ) throws KettleValueException;
 
   /**
    * Compare 2 rows with each other using all values in the rows and also considering the specified ascending clauses of
    * the value metadata.
-   * 
+   *
    * @param rowData1
    *          The first row of data
    * @param rowData2
@@ -547,7 +545,7 @@ public interface RowMetaInterface extends Cloneable {
    * Calculate a hashCode of the content (not the index) of the data specified NOTE: This method uses a simple XOR of
    * the individual hashCodes which can result in a lot of collisions for similar types of data (e.g. [A,B] == [B,A] and
    * is not suitable for normal use. It is kept to provide backward compatibility with CombinationLookup.lookupValues()
-   * 
+   *
    * @param rowData
    *          The data to calculate a hashCode with
    * @return the calculated hashCode
@@ -565,7 +563,7 @@ public interface RowMetaInterface extends Cloneable {
    * different primitive values ['2008-01-01:12:30'] and ['2008-01-01:00:00'] that use a format object to change the
    * value (as Date yyyy-MM-dd), the hashCodes will be different resulting in the two rows not being considered equal
    * via the hashCode even though compare() or equals() might consider them to be.
-   * 
+   *
    * @param rowData
    *          The data to calculate a hashCode with
    * @return the calculated hashCode
@@ -579,7 +577,7 @@ public interface RowMetaInterface extends Cloneable {
    * values for nulls of different data types and will return the same hashCode for different native values that have a
    * ValueMeta converting them into the same value (e.g. ['2008-01-01:12:30'] and ['2008-01-01:00:00'] as Date
    * yyyy-MM-dd)
-   * 
+   *
    * @param rowData
    *          The data to calculate a hashCode with
    * @return the calculated hashCode
@@ -590,14 +588,14 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * To string meta.
-   * 
+   *
    * @return a string with a description of all the metadata values of the complete row of metadata
    */
   public String toStringMeta();
 
   /**
    * Gets the meta xml.
-   * 
+   *
    * @return an XML representation of the row metadata
    * @throws IOException
    *           Thrown in case there is an (Base64/GZip) encoding problem
@@ -606,7 +604,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Gets the data xml.
-   * 
+   *
    * @param rowData
    *          the row of data to serialize as XML
    * @return an XML representation of the row data
@@ -617,7 +615,7 @@ public interface RowMetaInterface extends Cloneable {
 
   /**
    * Convert an XML node into binary data using the row metadata supplied.
-   * 
+   *
    * @param node
    *          The data row node
    * @return a row of data de-serialized from XML

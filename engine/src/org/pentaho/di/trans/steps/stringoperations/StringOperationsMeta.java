@@ -51,13 +51,13 @@ import org.w3c.dom.Node;
 
 /**
  * This class takes care of the meta data for the StringOperations step.
- * 
+ *
  * @author Samatar Hassan
  * @since 02 April 2009
  */
 public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterface {
 
-  private static Class<?> PKG = StringOperationsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StringOperationsMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** which field in input stream to compare with? */
   private String[] fieldInStream;
@@ -104,7 +104,8 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
   /**
    * The trim description
    */
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "StringOperationsMeta.TrimType.None" ),
+  public static final String[] trimTypeDesc = {
+    BaseMessages.getString( PKG, "StringOperationsMeta.TrimType.None" ),
     BaseMessages.getString( PKG, "StringOperationsMeta.TrimType.Left" ),
     BaseMessages.getString( PKG, "StringOperationsMeta.TrimType.Right" ),
     BaseMessages.getString( PKG, "StringOperationsMeta.TrimType.Both" ) };
@@ -128,8 +129,8 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     BaseMessages.getString( PKG, "StringOperationsMeta.LowerUpper.Lower" ),
     BaseMessages.getString( PKG, "StringOperationsMeta.LowerUpper.Upper" ) };
 
-  public static final String[] initCapDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] initCapDesc = new String[] {
+    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
 
   public static final String[] initCapCode = { "no", "yes" };
 
@@ -162,8 +163,8 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     BaseMessages.getString( PKG, "StringOperationsMeta.MaskXML.EscapeHTML" ),
     BaseMessages.getString( PKG, "StringOperationsMeta.MaskXML.UnEscapeHTML" ), };
 
-  public static final String[] maskXMLCode = { "none", "escapexml", "cdata", "unescapexml", "escapesql", "escapehtml",
-    "unescapehtml" };
+  public static final String[] maskXMLCode = {
+    "none", "escapexml", "cdata", "unescapexml", "escapesql", "escapehtml", "unescapehtml" };
 
   public static final int MASK_NONE = 0;
   public static final int MASK_ESCAPE_XML = 1;
@@ -199,7 +200,8 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
   /**
    * The padding description
    */
-  public static final String[] paddingDesc = { BaseMessages.getString( PKG, "StringOperationsMeta.Padding.None" ),
+  public static final String[] paddingDesc = {
+    BaseMessages.getString( PKG, "StringOperationsMeta.Padding.None" ),
     BaseMessages.getString( PKG, "StringOperationsMeta.Padding.Left" ),
     BaseMessages.getString( PKG, "StringOperationsMeta.Padding.Right" ) };
 
@@ -223,7 +225,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   /**
-   * @param fieldInStream
+   * @param keyStream
    *          The fieldInStream to set.
    */
   public void setFieldInStream( String[] keyStream ) {
@@ -355,13 +357,13 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
         maskXML[i] = getMaskXMLByCode( Const.NVL( XMLHandler.getTagValue( fnode, "mask_xml" ), "" ) );
         digits[i] = getDigitsByCode( Const.NVL( XMLHandler.getTagValue( fnode, "digits" ), "" ) );
         remove_special_characters[i] =
-            getRemoveSpecialCharactersByCode( Const.NVL( XMLHandler.getTagValue( fnode, "remove_special_characters" ),
-                "" ) );
+          getRemoveSpecialCharactersByCode( Const.NVL( XMLHandler.getTagValue(
+            fnode, "remove_special_characters" ), "" ) );
 
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "StringOperationsMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "StringOperationsMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -385,16 +387,18 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
       retval.append( "        " ).append( XMLHandler.addTagValue( "out_stream_name", fieldOutStream[i] ) );
 
       retval.append( "        " ).append( XMLHandler.addTagValue( "trim_type", getTrimTypeCode( trimType[i] ) ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "lower_upper", getLowerUpperCode( lowerUpper[i] ) ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "padding_type", getPaddingCode( padding_type[i] ) ) );
+      retval.append( "        " ).append(
+        XMLHandler.addTagValue( "lower_upper", getLowerUpperCode( lowerUpper[i] ) ) );
+      retval.append( "        " ).append(
+        XMLHandler.addTagValue( "padding_type", getPaddingCode( padding_type[i] ) ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "pad_char", padChar[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "pad_len", padLen[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "init_cap", getInitCapCode( initCap[i] ) ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "mask_xml", getMaskXMLCode( maskXML[i] ) ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "digits", getDigitsCode( digits[i] ) ) );
       retval.append( "        " ).append(
-          XMLHandler.addTagValue( "remove_special_characters",
-              getRemoveSpecialCharactersCode( remove_special_characters[i] ) ) );
+        XMLHandler.addTagValue(
+          "remove_special_characters", getRemoveSpecialCharactersCode( remove_special_characters[i] ) ) );
 
       retval.append( "      </field>" ).append( Const.CR );
     }
@@ -404,8 +408,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
       int nrkeys = rep.countNrStepAttributes( id_step, "in_stream_name" );
@@ -416,26 +419,27 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
         fieldOutStream[i] = Const.NVL( rep.getStepAttributeString( id_step, i, "out_stream_name" ), "" );
 
         trimType[i] = getTrimTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, i, "trim_type" ), "" ) );
-        lowerUpper[i] = getLowerUpperByCode( Const.NVL( rep.getStepAttributeString( id_step, i, "lower_upper" ), "" ) );
-        padding_type[i] = getPaddingByCode( Const.NVL( rep.getStepAttributeString( id_step, i, "padding_type" ), "" ) );
+        lowerUpper[i] =
+          getLowerUpperByCode( Const.NVL( rep.getStepAttributeString( id_step, i, "lower_upper" ), "" ) );
+        padding_type[i] =
+          getPaddingByCode( Const.NVL( rep.getStepAttributeString( id_step, i, "padding_type" ), "" ) );
         padChar[i] = Const.NVL( rep.getStepAttributeString( id_step, i, "pad_char" ), "" );
         padLen[i] = Const.NVL( rep.getStepAttributeString( id_step, i, "pad_len" ), "" );
         initCap[i] = getInitCapByCode( Const.NVL( rep.getStepAttributeString( id_step, i, "init_cap" ), "" ) );
         maskXML[i] = getMaskXMLByCode( Const.NVL( rep.getStepAttributeString( id_step, i, "mask_xml" ), "" ) );
         digits[i] = getDigitsByCode( Const.NVL( rep.getStepAttributeString( id_step, i, "digits" ), "" ) );
         remove_special_characters[i] =
-            getRemoveSpecialCharactersByCode( Const.NVL( rep.getStepAttributeString( id_step, i,
-                "remove_special_characters" ), "" ) );
+          getRemoveSpecialCharactersByCode( Const.NVL( rep.getStepAttributeString(
+            id_step, i, "remove_special_characters" ), "" ) );
 
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "StringOperationsMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "StringOperationsMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
 
       for ( int i = 0; i < fieldInStream.length; i++ ) {
@@ -449,18 +453,20 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
         rep.saveStepAttribute( id_transformation, id_step, i, "init_cap", getInitCapCode( initCap[i] ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "mask_xml", getMaskXMLCode( maskXML[i] ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "digits", getDigitsCode( digits[i] ) );
-        rep.saveStepAttribute( id_transformation, id_step, i, "remove_special_characters",
-            getRemoveSpecialCharactersCode( remove_special_characters[i] ) );
+        rep.saveStepAttribute(
+          id_transformation, id_step, i, "remove_special_characters",
+          getRemoveSpecialCharactersCode( remove_special_characters[i] ) );
 
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "StringOperationsMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "StringOperationsMeta.Exception.UnableToSaveStepInfo" )
+        + id_step, e );
     }
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Add new field?
     for ( int i = 0; i < fieldOutStream.length; i++ ) {
       ValueMetaInterface v;
@@ -473,6 +479,10 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
         inputRowMeta.addValueMeta( v );
       } else {
         v = inputRowMeta.searchValueMeta( fieldInStream[i] );
+        if ( v == null ) {
+          continue;
+        }
+        v.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
         int paddingType = getPaddingType()[i];
         if ( paddingType == PADDING_LEFT || paddingType == PADDING_RIGHT ) {
           int padLen = Const.toInt( space.environmentSubstitute( getPadLen()[i] ), 0 );
@@ -485,9 +495,9 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
     String error_message = "";
@@ -496,7 +506,8 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
 
     if ( prev == null ) {
 
-      error_message += BaseMessages.getString( PKG, "StringOperationsMeta.CheckResult.NoInputReceived" ) + Const.CR;
+      error_message +=
+        BaseMessages.getString( PKG, "StringOperationsMeta.CheckResult.NoInputReceived" ) + Const.CR;
       cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo );
       remarks.add( cr );
     } else {
@@ -509,7 +520,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
           if ( first ) {
             first = false;
             error_message +=
-                BaseMessages.getString( PKG, "StringOperationsMeta.CheckResult.MissingInStreamFields" ) + Const.CR;
+              BaseMessages.getString( PKG, "StringOperationsMeta.CheckResult.MissingInStreamFields" ) + Const.CR;
           }
           error_found = true;
           error_message += "\t\t" + field + Const.CR;
@@ -519,8 +530,8 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "StringOperationsMeta.CheckResult.FoundInStreamFields" ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "StringOperationsMeta.CheckResult.FoundInStreamFields" ), stepinfo );
       }
       remarks.add( cr );
 
@@ -536,8 +547,8 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
             if ( first ) {
               first = false;
               error_message +=
-                  BaseMessages.getString( PKG, "StringOperationsMeta.CheckResult.OperationOnNonStringFields" )
-                      + Const.CR;
+                BaseMessages.getString( PKG, "StringOperationsMeta.CheckResult.OperationOnNonStringFields" )
+                  + Const.CR;
             }
             error_found = true;
             error_message += "\t\t" + field + Const.CR;
@@ -548,8 +559,8 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "StringOperationsMeta.CheckResult.AllOperationsOnStringFields" ), stepinfo );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "StringOperationsMeta.CheckResult.AllOperationsOnStringFields" ), stepinfo );
       }
       remarks.add( cr );
 
@@ -557,9 +568,9 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
         for ( int idx = 0; idx < fieldInStream.length; idx++ ) {
           if ( Const.isEmpty( fieldInStream[idx] ) ) {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                    "StringOperationsMeta.CheckResult.InStreamFieldMissing", new Integer( idx + 1 ).toString() ),
-                    stepinfo );
+              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "StringOperationsMeta.CheckResult.InStreamFieldMissing", new Integer( idx + 1 )
+                  .toString() ), stepinfo );
             remarks.add( cr );
 
           }
@@ -571,7 +582,8 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
         for ( int jdx = 0; jdx < fieldInStream.length; jdx++ ) {
           if ( fieldInStream[idx].equals( fieldInStream[jdx] ) && idx != jdx && idx < jdx ) {
             error_message =
-                BaseMessages.getString( PKG, "StringOperationsMeta.CheckResult.FieldInputError", fieldInStream[idx] );
+              BaseMessages.getString(
+                PKG, "StringOperationsMeta.CheckResult.FieldInputError", fieldInStream[idx] );
             cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo );
             remarks.add( cr );
           }
@@ -581,8 +593,8 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new StringOperations( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

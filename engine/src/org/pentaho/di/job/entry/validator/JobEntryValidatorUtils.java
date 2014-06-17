@@ -35,12 +35,12 @@ import org.pentaho.di.core.CheckResultSourceInterface;
 /**
  * Methods in this class are referenced in validator definitions within the validator resources file (e.g.
  * <tt>validator.xml</tt>).
- * 
+ *
  * <p>
  * Modeled after <code>org.apache.struts.validator.FieldChecks</code> and
  * <code>org.apache.commons.collections.PredicateUtils</code>.
  * </p>
- * 
+ *
  * @author mlowery
  */
 public class JobEntryValidatorUtils {
@@ -135,7 +135,7 @@ public class JobEntryValidatorUtils {
    * Fails if a field's value does not match the given mask.
    */
   public static boolean validateMask( CheckResultSourceInterface source, String propertyName,
-      List<CheckResultInterface> remarks, String mask, int levelOnFail ) {
+    List<CheckResultInterface> remarks, String mask, int levelOnFail ) {
     return validateMask( source, propertyName, remarks, mask, LEVEL_FAILURE_DEFAULT );
   }
 
@@ -143,7 +143,7 @@ public class JobEntryValidatorUtils {
    * Fails if a field's value does not match the given mask.
    */
   public static boolean validateMask( CheckResultSourceInterface source, String propertyName, int levelOnFail,
-      List<CheckResultInterface> remarks, String mask ) {
+    List<CheckResultInterface> remarks, String mask ) {
     final String VALIDATOR_NAME = "matches";
     String value = null;
 
@@ -151,8 +151,9 @@ public class JobEntryValidatorUtils {
 
     try {
       if ( null == mask ) {
-        addGeneralRemark( source, propertyName, VALIDATOR_NAME, remarks, "errors.missingVar",
-            CheckResultInterface.TYPE_RESULT_ERROR );
+        addGeneralRemark(
+          source, propertyName, VALIDATOR_NAME, remarks, "errors.missingVar",
+          CheckResultInterface.TYPE_RESULT_ERROR );
         return false;
       }
 
@@ -168,26 +169,27 @@ public class JobEntryValidatorUtils {
     }
   }
 
-  public static void addFailureRemark( CheckResultSourceInterface source, String propertyName, String validatorName,
-      List<CheckResultInterface> remarks, int level ) {
+  public static void addFailureRemark( CheckResultSourceInterface source, String propertyName,
+    String validatorName, List<CheckResultInterface> remarks, int level ) {
     String key = "messages.failed." + validatorName;
     remarks.add( new CheckResult( level, ValidatorMessages.getString( key, propertyName ), source ) );
   }
 
-  public static void addExceptionRemark( CheckResultSourceInterface source, String propertyName, String validatorName,
-      List<CheckResultInterface> remarks, Exception e ) {
+  public static void addExceptionRemark( CheckResultSourceInterface source, String propertyName,
+    String validatorName, List<CheckResultInterface> remarks, Exception e ) {
     String key = "messages.failed.unableToValidate";
-    remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, ValidatorMessages.getString( key,
-        propertyName, e.getClass().getSimpleName() + ": " + e.getLocalizedMessage() ), source ) );
+    remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, ValidatorMessages.getString(
+      key, propertyName, e.getClass().getSimpleName() + ": " + e.getLocalizedMessage() ), source ) );
   }
 
-  public static void addGeneralRemark( CheckResultSourceInterface source, String propertyName, String validatorName,
-      List<CheckResultInterface> remarks, String key, int level ) {
-    remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, ValidatorMessages.getString( key ), source ) );
+  public static void addGeneralRemark( CheckResultSourceInterface source, String propertyName,
+    String validatorName, List<CheckResultInterface> remarks, String key, int level ) {
+    remarks.add( new CheckResult(
+      CheckResultInterface.TYPE_RESULT_ERROR, ValidatorMessages.getString( key ), source ) );
   }
 
   public static void addOkRemark( CheckResultSourceInterface source, String propertyName,
-      List<CheckResultInterface> remarks ) {
+    List<CheckResultInterface> remarks ) {
     final int SUBSTRING_LENGTH = 20;
     String value = ValidatorUtils.getValueAsString( source, propertyName );
     String substr = null;
@@ -197,8 +199,8 @@ public class JobEntryValidatorUtils {
         substr += "...";
       }
     }
-    remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_OK, ValidatorMessages.getString( "messages.passed",
-        propertyName, substr ), source ) );
+    remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_OK, ValidatorMessages.getString(
+      "messages.passed", propertyName, substr ), source ) );
   }
 
 }

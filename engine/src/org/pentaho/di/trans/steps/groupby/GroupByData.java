@@ -39,16 +39,24 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class GroupByData extends BaseStepData implements StepDataInterface {
   public Object[] previous;
 
+  /**
+   * target value meta for aggregation fields
+   */
   public RowMetaInterface aggMeta;
   public Object[] agg;
   public RowMetaInterface groupMeta;
   public RowMetaInterface groupAggMeta; // for speed: groupMeta+aggMeta
   public int[] groupnrs;
+  /**
+   * array, length is equal to aggMeta value
+   * meta list size and metadata subject fields length. Values corresponds to input
+   * values used to calculate target results.
+   */
   public int[] subjectnrs;
   public long[] counts;
 
@@ -96,8 +104,8 @@ public class GroupByData extends BaseStepData implements StepDataInterface {
   public boolean newBatch;
 
   /**
-	 * 
-	 */
+   *
+   */
   public GroupByData() {
     super();
 

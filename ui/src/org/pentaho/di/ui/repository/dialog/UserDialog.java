@@ -53,7 +53,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class UserDialog extends Dialog {
   private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!
-                                                                 // $NON-NLS-1$
 
   private Shell shell;
   private Label wlLogin, wlPassword, wlUsername, wlDescription;
@@ -299,7 +298,7 @@ public class UserDialog extends Dialog {
 
   /**
    * Set the flag this dialog is opened to create a new user
-   * 
+   *
    * @param flag
    */
   private void setNewUser( boolean flag ) {
@@ -308,7 +307,7 @@ public class UserDialog extends Dialog {
 
   /**
    * Get the flag whether this dialog is for a new user or not.
-   * 
+   *
    * @return true when used for a new user else false
    */
   private boolean isNewUser() {

@@ -39,7 +39,7 @@ public class MetricsUtil {
 
   /**
    * Calculates the durations between the START and STOP snapshots for a given metric description
-   * 
+   *
    * @param logChannelId
    *          the id of the log channel to investigate
    * @param metricsCode
@@ -60,13 +60,13 @@ public class MetricsUtil {
           if ( start != null ) {
             // We didn't find a stop for the previous start so add it with a null duration
             durations.add( new MetricsDuration( start.getDate(), snapshot.getMetric().getDescription(), snapshot
-                .getSubject(), logChannelId, null ) );
+              .getSubject(), logChannelId, null ) );
           }
           start = snapshot;
         } else {
           long duration = snapshot.getDate().getTime() - start.getDate().getTime();
           durations.add( new MetricsDuration( start.getDate(), snapshot.getMetric().getDescription(), snapshot
-              .getSubject(), logChannelId, duration ) );
+            .getSubject(), logChannelId, duration ) );
           start = null;
         }
       }
@@ -77,8 +77,8 @@ public class MetricsUtil {
     Map<String, MetricsDuration> map = new HashMap<String, MetricsDuration>();
     for ( MetricsDuration duration : durations ) {
       String key =
-          duration.getSubject() == null ? duration.getDescription() : duration.getDescription() + " / "
-              + duration.getSubject();
+        duration.getSubject() == null ? duration.getDescription() : duration.getDescription()
+          + " / " + duration.getSubject();
       MetricsDuration agg = map.get( key );
       if ( agg == null ) {
         map.put( key, duration );
@@ -95,13 +95,10 @@ public class MetricsUtil {
   public static List<MetricsDuration> getAllDurations( String parentLogChannelId ) {
     List<MetricsDuration> durations = new ArrayList<MetricsDuration>();
 
-    // System.out.println("-------------------------------------------");
-    //
     List<String> logChannelIds = LoggingRegistry.getInstance().getLogChannelChildren( parentLogChannelId );
     for ( String logChannelId : logChannelIds ) {
       LoggingObjectInterface object = LoggingRegistry.getInstance().getLoggingObject( logChannelId );
       if ( object != null ) {
-        // System.out.println(object.getObjectName());
         durations.addAll( getDurations( logChannelId ) );
       }
     }
@@ -111,7 +108,7 @@ public class MetricsUtil {
 
   /**
    * Calculates the durations between the START and STOP snapshots per metric description and subject (if any)
-   * 
+   *
    * @param logChannelId
    *          the id of the log channel to investigate
    * @return the duration in ms
@@ -129,8 +126,8 @@ public class MetricsUtil {
       // Do we have a start point in the map?
       //
       String key =
-          snapshot.getMetric().getDescription()
-              + ( snapshot.getSubject() == null ? "" : ( " - " + snapshot.getSubject() ) );
+        snapshot.getMetric().getDescription()
+          + ( snapshot.getSubject() == null ? "" : ( " - " + snapshot.getSubject() ) );
       MetricsSnapshotInterface lastSnapshot = last.get( key );
       if ( lastSnapshot == null ) {
         lastSnapshot = snapshot;
@@ -140,14 +137,15 @@ public class MetricsUtil {
         //
         MetricsInterface metric = lastSnapshot.getMetric();
         if ( metric.getType() == MetricsSnapshotType.START
-            && snapshot.getMetric().getType() == MetricsSnapshotType.STOP ) {
+          && snapshot.getMetric().getType() == MetricsSnapshotType.STOP ) {
           long extraDuration = snapshot.getDate().getTime() - lastSnapshot.getDate().getTime();
 
           MetricsDuration metricsDuration = map.get( key );
           if ( metricsDuration == null ) {
             metricsDuration =
-                new MetricsDuration( lastSnapshot.getDate(), metric.getDescription(), lastSnapshot.getSubject(),
-                    logChannelId, extraDuration );
+              new MetricsDuration(
+                lastSnapshot.getDate(), metric.getDescription(), lastSnapshot.getSubject(), logChannelId,
+                extraDuration );
           } else {
             metricsDuration.setDuration( metricsDuration.getDuration() + extraDuration );
             metricsDuration.incrementCount();
@@ -166,7 +164,8 @@ public class MetricsUtil {
   public static List<MetricsSnapshotInterface> getResultsList( Metrics metric ) {
     List<MetricsSnapshotInterface> snapshots = new ArrayList<MetricsSnapshotInterface>();
 
-    Map<String, Map<String, MetricsSnapshotInterface>> snapshotMaps = MetricsRegistry.getInstance().getSnapshotMaps();
+    Map<String, Map<String, MetricsSnapshotInterface>> snapshotMaps =
+      MetricsRegistry.getInstance().getSnapshotMaps();
     Iterator<Map<String, MetricsSnapshotInterface>> mapsIterator = snapshotMaps.values().iterator();
     while ( mapsIterator.hasNext() ) {
       Map<String, MetricsSnapshotInterface> map = mapsIterator.next();
@@ -183,7 +182,8 @@ public class MetricsUtil {
   }
 
   public static Long getResult( Metrics metric ) {
-    Map<String, Map<String, MetricsSnapshotInterface>> snapshotMaps = MetricsRegistry.getInstance().getSnapshotMaps();
+    Map<String, Map<String, MetricsSnapshotInterface>> snapshotMaps =
+      MetricsRegistry.getInstance().getSnapshotMaps();
     Iterator<Map<String, MetricsSnapshotInterface>> mapsIterator = snapshotMaps.values().iterator();
     while ( mapsIterator.hasNext() ) {
       Map<String, MetricsSnapshotInterface> map = mapsIterator.next();

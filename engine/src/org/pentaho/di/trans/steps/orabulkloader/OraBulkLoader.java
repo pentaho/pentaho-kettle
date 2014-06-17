@@ -33,19 +33,12 @@ package org.pentaho.di.trans.steps.orabulkloader;
 //   it.
 // - Filters (besides data and datetime) are not supported as it slows down.
 //
-// 
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+//
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -60,14 +53,22 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+
 /**
  * Performs a bulk load to an oracle table.
- * 
+ *
  * @author Sven Boden
  * @since 20-feb-2007
  */
 public class OraBulkLoader extends BaseStep implements StepInterface {
-  private static Class<?> PKG = OraBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = OraBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int EX_SUCC = 0;
 
@@ -118,13 +119,13 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
   }
 
   public OraBulkLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   private String substituteRecordTerminator( String terminator ) {
     final StringBuilder in = new StringBuilder();
-    int length = 0;
+    int length;
     boolean escaped = false;
 
     terminator = environmentSubstitute( terminator );
@@ -158,19 +159,19 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
   private String encodeRecordTerminator( String terminator, String encoding ) throws KettleException {
     final String in = substituteRecordTerminator( terminator );
     final StringBuilder out = new StringBuilder();
-    byte[] bytes = null;
+    byte[] bytes;
 
     try {
       // use terminator in hex representation due to character set
       // terminator in hex representation must be in character set
       // of data file
       if ( Const.isEmpty( encoding ) ) {
-        bytes = in.toString().getBytes();
+        bytes = in.getBytes();
       } else {
-        bytes = in.toString().getBytes( encoding );
+        bytes = in.getBytes( encoding );
       }
-      for ( int i = 0; i < bytes.length; i++ ) {
-        final String hex = Integer.toHexString( bytes[i] );
+      for ( byte aByte : bytes ) {
+        final String hex = Integer.toHexString( aByte );
 
         if ( hex.length() == 1 ) {
           out.append( '0' );
@@ -186,20 +187,19 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
 
   /**
    * Get the contents of the control file as specified in the meta object
-   * 
+   *
    * @param meta
    *          the meta object to model the control file after
-   * 
+   *
    * @return a string containing the control file contents
    */
-  public String getControlFileContents( OraBulkLoaderMeta meta, RowMetaInterface rm, Object[] r )
-    throws KettleException {
+  public String getControlFileContents( OraBulkLoaderMeta meta, RowMetaInterface rm, Object[] r ) throws KettleException {
     DatabaseMeta dm = meta.getDatabaseMeta();
     String inputName = "'" + environmentSubstitute( meta.getDataFile() ) + "'";
 
     String loadAction = meta.getLoadAction();
 
-    StringBuffer contents = new StringBuffer( 500 );
+    StringBuilder contents = new StringBuilder( 500 );
     contents.append( "OPTIONS(" ).append( Const.CR );
     contents.append( "  ERRORS=\'" ).append( meta.getMaxErrors() ).append( "\'" ).append( Const.CR );
 
@@ -224,7 +224,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
       contents.append( "CHARACTERSET " ).append( meta.getCharacterSetName() ).append( Const.CR );
     }
     if ( !OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals( meta.getLoadMethod() )
-        || !Const.isEmpty( meta.getAltRecordTerm() ) ) {
+      || !Const.isEmpty( meta.getAltRecordTerm() ) ) {
       String infile = inputName;
 
       if ( OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals( meta.getLoadMethod() ) ) {
@@ -234,14 +234,16 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
       // For concurrent input, data command line argument must be specified
       contents.append( "INFILE " ).append( infile );
       if ( !Const.isEmpty( meta.getAltRecordTerm() ) ) {
-        contents.append( " \"STR x'" ).append( encodeRecordTerminator( meta.getAltRecordTerm(), meta.getEncoding() ) )
-            .append( "'\"" );
+        contents.append( " \"STR x'" ).append(
+          encodeRecordTerminator( meta.getAltRecordTerm(), meta.getEncoding() ) ).append( "'\"" );
       }
       contents.append( Const.CR );
     }
-    contents.append( "INTO TABLE " ).append(
-        dm.getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta
-            .getTableName() ) ) ).append( Const.CR ).append( loadAction ).append( Const.CR ).append(
+    contents
+      .append( "INTO TABLE " ).append(
+        dm.getQuotedSchemaTableCombination(
+          environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) ) )
+      .append( Const.CR ).append( loadAction ).append( Const.CR ).append(
         "FIELDS TERMINATED BY ',' ENCLOSED BY '\"'" ).append( Const.CR ).append( "(" );
 
     String[] streamFields = meta.getFieldStream();
@@ -288,6 +290,9 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
         case ValueMetaInterface.TYPE_BINARY:
           contents.append( " ENCLOSED BY '<startlob>' AND '<endlob>'" );
           break;
+        case ValueMetaInterface.TYPE_TIMESTAMP:
+          contents.append( " TIMESTAMP 'yyyy-mm-dd hh24:mi:ss.ff'" );
+          break;
         default:
           break;
       }
@@ -299,9 +304,9 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
 
   /**
    * Create a control file.
-   * 
-   * @param filename
-   * @param meta
+   *
+   * @param filename path to control file
+   * @param meta step meta
    * @throws KettleException
    */
   public void createControlFile( String filename, Object[] row, OraBulkLoaderMeta meta ) throws KettleException {
@@ -320,29 +325,31 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
           fw.close();
         }
       } catch ( Exception ex ) {
+        // Ignore errors
       }
     }
   }
 
   /**
    * Create the command line for an sqlldr process depending on the meta information supplied.
-   * 
+   *
    * @param meta
    *          The meta data to create the command line from
    * @param password
    *          Use the real password or not
-   * 
+   *
    * @return The string to execute.
-   * 
+   *
    * @throws KettleException
    *           Upon any exception
    */
   public String createCommandLine( OraBulkLoaderMeta meta, boolean password ) throws KettleException {
-    StringBuffer sb = new StringBuffer( 300 );
+    StringBuilder sb = new StringBuilder( 300 );
 
     if ( meta.getSqlldr() != null ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getSqlldr() ), getTransMeta() );
+        FileObject fileObject =
+          KettleVFS.getFileObject( environmentSubstitute( meta.getSqlldr() ), getTransMeta() );
         String sqlldr = KettleVFS.getFilename( fileObject );
         sb.append( sqlldr );
       } catch ( KettleFileException ex ) {
@@ -355,7 +362,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     if ( meta.getControlFile() != null ) {
       try {
         FileObject fileObject =
-            KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
+          KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
 
         sb.append( " control=\'" );
         sb.append( KettleVFS.getFilename( fileObject ) );
@@ -373,7 +380,8 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
 
     if ( meta.getLogFile() != null ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getLogFile() ), getTransMeta() );
+        FileObject fileObject =
+          KettleVFS.getFileObject( environmentSubstitute( meta.getLogFile() ), getTransMeta() );
 
         sb.append( " log=\'" );
         sb.append( KettleVFS.getFilename( fileObject ) );
@@ -385,7 +393,8 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
 
     if ( meta.getBadFile() != null ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getBadFile() ), getTransMeta() );
+        FileObject fileObject =
+          KettleVFS.getFileObject( environmentSubstitute( meta.getBadFile() ), getTransMeta() );
 
         sb.append( " bad=\'" );
         sb.append( KettleVFS.getFilename( fileObject ) );
@@ -398,7 +407,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     if ( meta.getDiscardFile() != null ) {
       try {
         FileObject fileObject =
-            KettleVFS.getFileObject( environmentSubstitute( meta.getDiscardFile() ), getTransMeta() );
+          KettleVFS.getFileObject( environmentSubstitute( meta.getDiscardFile() ), getTransMeta() );
 
         sb.append( " discard=\'" );
         sb.append( KettleVFS.getFilename( fileObject ) );
@@ -411,13 +420,14 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     DatabaseMeta dm = meta.getDatabaseMeta();
     if ( dm != null ) {
       String user = Const.NVL( dm.getUsername(), "" );
-      String pass = Const.NVL( dm.getPassword(), "" );
+      String pass =
+        Const.NVL( Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( dm.getPassword() ) ), "" );
       if ( !password ) {
         pass = "******";
       }
       String dns = Const.NVL( dm.getDatabaseName(), "" );
       sb.append( " userid=" ).append( environmentSubstitute( user ) ).append( "/" ).append(
-          environmentSubstitute( pass ) ).append( "@" );
+        environmentSubstitute( pass ) ).append( "@" );
 
       String overrideName = meta.getDbNameOverride();
       if ( Const.isEmpty( Const.rtrim( overrideName ) ) ) {
@@ -489,8 +499,9 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
 
     try {
       Object[] r = getRow(); // Get row from input rowset & set row busy!
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) {
+        // no more input to be expected...
+
         setOutputDone();
 
         if ( !preview ) {
@@ -571,10 +582,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
     Trans trans = getTrans();
     preview = trans.isPreview();
 
-    if ( super.init( smi, sdi ) ) {
-      return true;
-    }
-    return false;
+    return super.init( smi, sdi );
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -616,16 +624,16 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
       FileObject fileObject = null;
 
       String method = meta.getLoadMethod();
-      if ( // OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(method) ||
-      OraBulkLoaderMeta.METHOD_AUTO_END.equals( method ) ) {
+      // OraBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(method) ||
+      if ( OraBulkLoaderMeta.METHOD_AUTO_END.equals( method ) ) {
         if ( meta.getControlFile() != null ) {
           try {
             fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {
-            logError(
-                "Error deleting control file \'" + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage(), ex );
+            logError( "Error deleting control file \'"
+              + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage(), ex );
           }
         }
       }
@@ -638,8 +646,8 @@ public class OraBulkLoader extends BaseStep implements StepInterface {
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {
-            logError( "Error deleting data file \'" + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage(),
-                ex );
+            logError( "Error deleting data file \'"
+              + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage(), ex );
           }
         }
       }

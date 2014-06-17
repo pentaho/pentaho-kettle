@@ -22,9 +22,6 @@
 
 package org.pentaho.di.ui.job.entries.trans;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -86,17 +83,21 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * This dialog allows you to edit the transformation job entry (JobEntryTrans)
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILE_FILTERLOGNAMES = new String[] {
-    BaseMessages.getString( PKG, "JobTrans.Fileformat.TXT" ), BaseMessages.getString( PKG, "JobTrans.Fileformat.LOG" ),
+    BaseMessages.getString( PKG, "JobTrans.Fileformat.TXT" ),
+    BaseMessages.getString( PKG, "JobTrans.Fileformat.LOG" ),
     BaseMessages.getString( PKG, "JobTrans.Fileformat.All" ) };
 
   private Label wlName;
@@ -811,7 +812,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     fdlCreateParentFolder.right = new FormAttachment( middle, -margin );
     wlCreateParentFolder.setLayoutData( fdlCreateParentFolder );
     wCreateParentFolder = new Button( wLogging, SWT.CHECK );
-    wCreateParentFolder.setToolTipText( BaseMessages.getString( PKG, "JobTrans.Logfile.CreateParentFolder.Tooltip" ) );
+    wCreateParentFolder.setToolTipText( BaseMessages
+      .getString( PKG, "JobTrans.Logfile.CreateParentFolder.Tooltip" ) );
     props.setLook( wCreateParentFolder );
     fdCreateParentFolder = new FormData();
     fdCreateParentFolder.left = new FormAttachment( middle, 0 );
@@ -927,15 +929,15 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     int rows = jobEntry.arguments == null ? 1 : ( jobEntry.arguments.length == 0 ? 0 : jobEntry.arguments.length );
     final int FieldsRows = rows;
 
-    ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
-    colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JobTrans.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
-    colinf[0].setUsingVariables( true );
+    ColumnInfo[] colinf = new ColumnInfo[ FieldsCols ];
+    colinf[ 0 ] =
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "JobTrans.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
+    colinf[ 0 ].setUsingVariables( true );
 
     wFields =
-        new TableView( jobMeta, wFieldComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+      new TableView(
+        jobMeta, wFieldComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -1000,18 +1002,22 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     final int parameterRows = jobEntry.parameters != null ? jobEntry.parameters.length : 0;
 
     colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobTrans.Parameters.Parameter.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobTrans.Parameters.ColumnName.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobTrans.Parameters.Value.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
-    colinf[2].setUsingVariables( true );
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobTrans.Parameters.Parameter.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobTrans.Parameters.ColumnName.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobTrans.Parameters.Value.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ), };
+    colinf[ 2 ].setUsingVariables( true );
 
     wParameters =
-        new TableView( jobMeta, wParameterComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, parameterRows,
-            lsMod, props );
+      new TableView(
+        jobMeta, wParameterComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, parameterRows, lsMod,
+        props );
 
     FormData fdParameters = new FormData();
     fdParameters.left = new FormAttachment( 0, 0 );
@@ -1108,8 +1114,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
             // Set file extension ..
             wLogext.setText( file.getName().getExtension() );
             // Set filename without extension ...
-            wLogfile.setText( wLogfile.getText().substring( 0,
-                wLogfile.getText().length() - wLogext.getText().length() - 1 ) );
+            wLogfile.setText( wLogfile.getText().substring(
+              0, wLogfile.getText().length() - wLogext.getText().length() - 1 ) );
           } catch ( Exception ex ) {
             // Ignore
           }
@@ -1181,7 +1187,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
       }
       if ( saved ) {
         setRadioButtons();
-        switch ( specificationMethod ) {
+        switch( specificationMethod ) {
           case FILENAME:
             wFilename.setText( Const.NVL( newTransMeta.getFilename(), "" ) );
             break;
@@ -1213,18 +1219,18 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
       String[] existing = wParameters.getItems( 1 );
 
       for ( int i = 0; i < parameters.length; i++ ) {
-        if ( Const.indexOfString( parameters[i], existing ) < 0 ) {
+        if ( Const.indexOfString( parameters[ i ], existing ) < 0 ) {
           TableItem item = new TableItem( wParameters.table, SWT.NONE );
-          item.setText( 1, parameters[i] );
+          item.setText( 1, parameters[ i ] );
         }
       }
       wParameters.removeEmptyRows();
       wParameters.setRowNums();
       wParameters.optWidth( true );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "JobEntryTransDialog.Exception.UnableToLoadTransformation.Title" ), BaseMessages.getString( PKG,
-          "JobEntryTransDialog.Exception.UnableToLoadTransformation.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToLoadTransformation.Title" ),
+        BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToLoadTransformation.Message" ), e );
     }
 
   }
@@ -1232,7 +1238,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
   protected void setRadioButtons() {
     radioFilename.setSelection( specificationMethod == ObjectLocationSpecificationMethod.FILENAME );
     radioByName.setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
-    radioByReference.setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
+    radioByReference
+      .setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
     setActive();
   }
 
@@ -1272,8 +1279,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     String parentFolder = null;
     try {
       parentFolder =
-          KettleVFS.getFilename( KettleVFS.getFileObject( jobMeta.environmentSubstitute( jobMeta.getFilename() ) )
-              .getParent() );
+        KettleVFS.getFilename( KettleVFS
+          .getFileObject( jobMeta.environmentSubstitute( jobMeta.getFilename() ) ).getParent() );
     } catch ( Exception e ) {
       // not that important
     }
@@ -1285,8 +1292,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
           if ( !prevName.endsWith( ".ktr" ) ) {
             prevName =
-                "${" + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + Const.trim( wFilename.getText() )
-                    + ".ktr";
+              "${"
+                + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + Const.trim( wFilename.getText() )
+                + ".ktr";
           }
           if ( KettleVFS.fileExists( prevName ) ) {
             specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
@@ -1345,7 +1353,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
   public void setActive() {
     boolean supportsReferences =
-        rep != null && rep.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
+      rep != null && rep.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
 
     wbLogFilename.setEnabled( wSetLogfile.getSelection() );
     radioByName.setEnabled( rep != null );
@@ -1388,10 +1396,10 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     wlWaitingToFinish.setEnabled( !wCluster.getSelection() && !Const.isEmpty( wSlaveServer.getText() ) );
     wWaitingToFinish.setEnabled( !wCluster.getSelection() && !Const.isEmpty( wSlaveServer.getText() ) );
 
-    wlFollowingAbortRemotely.setEnabled( !wCluster.getSelection() && wWaitingToFinish.getSelection()
-        && !Const.isEmpty( wSlaveServer.getText() ) );
-    wFollowingAbortRemotely.setEnabled( !wCluster.getSelection() && wWaitingToFinish.getSelection()
-        && !Const.isEmpty( wSlaveServer.getText() ) );
+    wlFollowingAbortRemotely.setEnabled( !wCluster.getSelection()
+      && wWaitingToFinish.getSelection() && !Const.isEmpty( wSlaveServer.getText() ) );
+    wFollowingAbortRemotely.setEnabled( !wCluster.getSelection()
+      && wWaitingToFinish.getSelection() && !Const.isEmpty( wSlaveServer.getText() ) );
 
     wlLogRemoteWork.setEnabled( wCluster.getSelection() );
     wLogRemoteWork.setEnabled( wCluster.getSelection() );
@@ -1401,7 +1409,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     wName.setText( Const.NVL( jobEntry.getName(), "" ) );
 
     specificationMethod = jobEntry.getSpecificationMethod();
-    switch ( specificationMethod ) {
+    switch( specificationMethod ) {
       case FILENAME:
         wFilename.setText( Const.NVL( jobEntry.getFilename(), "" ) );
         break;
@@ -1412,7 +1420,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
       case REPOSITORY_BY_REFERENCE:
         referenceObjectId = jobEntry.getTransObjectId();
         wByReference.setText( "" );
-        if ( rep != null ) {
+        if ( rep != null && jobEntry.getTransObjectId() != null ) {
           getByReferenceData( jobEntry.getTransObjectId() );
         }
         break;
@@ -1425,8 +1433,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     if ( jobEntry.arguments != null ) {
       for ( int i = 0; i < jobEntry.arguments.length; i++ ) {
         TableItem ti = wFields.table.getItem( i );
-        if ( jobEntry.arguments[i] != null ) {
-          ti.setText( 1, jobEntry.arguments[i] );
+        if ( jobEntry.arguments[ i ] != null ) {
+          ti.setText( 1, jobEntry.arguments[ i ] );
         }
       }
       wFields.setRowNums();
@@ -1437,10 +1445,10 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     if ( jobEntry.parameters != null ) {
       for ( int i = 0; i < jobEntry.parameters.length; i++ ) {
         TableItem ti = wParameters.table.getItem( i );
-        if ( !Const.isEmpty( jobEntry.parameters[i] ) ) {
-          ti.setText( 1, Const.NVL( jobEntry.parameters[i], "" ) );
-          ti.setText( 2, Const.NVL( jobEntry.parameterFieldNames[i], "" ) );
-          ti.setText( 3, Const.NVL( jobEntry.parameterValues[i], "" ) );
+        if ( !Const.isEmpty( jobEntry.parameters[ i ] ) ) {
+          ti.setText( 1, Const.NVL( jobEntry.parameters[ i ], "" ) );
+          ti.setText( 2, Const.NVL( jobEntry.parameterFieldNames[ i ], "" ) );
+          ti.setText( 3, Const.NVL( jobEntry.parameterValues[ i ], "" ) );
         }
       }
       wParameters.setRowNums();
@@ -1485,9 +1493,9 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
         getByReferenceData( transInf );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString( PKG,
-          "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Title" ),
+        BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
   }
 
@@ -1507,24 +1515,38 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     dispose();
   }
 
-  private void getInfo( JobEntryTrans jet ) {
+  private void getInfo( JobEntryTrans jet ) throws KettleException {
     jet.setName( wName.getText() );
-
     jet.setSpecificationMethod( specificationMethod );
-    switch ( specificationMethod ) {
+    switch( specificationMethod ) {
       case FILENAME:
         jet.setFileName( wFilename.getText() );
+        if ( jet.getFilename().isEmpty() ) {
+          throw new KettleException( BaseMessages.getString( PKG,
+            "JobTrans.Dialog.Exception.NoValidMappingDetailsFound" ) );
+        }
+
         jet.setDirectory( null );
         jet.setTransname( null );
         jet.setTransObjectId( null );
         break;
       case REPOSITORY_BY_NAME:
         jet.setDirectory( wDirectory.getText() );
+        if ( jet.getDirectory().isEmpty() ) {
+          throw new KettleException( BaseMessages.getString( PKG,
+            "JobTrans.Dialog.Exception.UnableToFindRepositoryDirectory" ) );
+        }
+
         jet.setTransname( wTransname.getText() );
         jet.setFileName( null );
         jet.setTransObjectId( null );
         break;
       case REPOSITORY_BY_REFERENCE:
+        if ( referenceObjectId == null ) {
+          throw new KettleException( BaseMessages.getString( PKG,
+            "JobTrans.Dialog.Exception.ReferencedTransformationIdIsNull" ) );
+        }
+
         jet.setFileName( null );
         jet.setDirectory( null );
         jet.setTransname( null );
@@ -1542,12 +1564,12 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
         nr++;
       }
     }
-    jet.arguments = new String[nr];
+    jet.arguments = new String[ nr ];
     nr = 0;
     for ( int i = 0; i < nritems; i++ ) {
       String arg = wFields.getNonEmpty( i ).getText( 1 );
       if ( arg != null && arg.length() != 0 ) {
-        jet.arguments[nr] = arg;
+        jet.arguments[ nr ] = arg;
         nr++;
       }
     }
@@ -1561,27 +1583,27 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
         nr++;
       }
     }
-    jet.parameters = new String[nr];
-    jet.parameterFieldNames = new String[nr];
-    jet.parameterValues = new String[nr];
+    jet.parameters = new String[ nr ];
+    jet.parameterFieldNames = new String[ nr ];
+    jet.parameterValues = new String[ nr ];
     nr = 0;
     for ( int i = 0; i < nritems; i++ ) {
       String param = wParameters.getNonEmpty( i ).getText( 1 );
       String fieldName = wParameters.getNonEmpty( i ).getText( 2 );
       String value = wParameters.getNonEmpty( i ).getText( 3 );
 
-      jet.parameters[nr] = param;
+      jet.parameters[ nr ] = param;
 
       if ( !Const.isEmpty( Const.trim( fieldName ) ) ) {
-        jet.parameterFieldNames[nr] = fieldName;
+        jet.parameterFieldNames[ nr ] = fieldName;
       } else {
-        jet.parameterFieldNames[nr] = "";
+        jet.parameterFieldNames[ nr ] = "";
       }
 
       if ( !Const.isEmpty( Const.trim( value ) ) ) {
-        jet.parameterValues[nr] = value;
+        jet.parameterValues[ nr ] = value;
       } else {
-        jet.parameterValues[nr] = "";
+        jet.parameterValues[ nr ] = "";
       }
 
       nr++;
@@ -1593,7 +1615,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     jet.logext = wLogext.getText();
 
     if ( wLoglevel.getSelectionIndex() >= 0 ) {
-      jet.logFileLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
+      jet.logFileLevel = LogLevel.values()[ wLoglevel.getSelectionIndex() ];
     } else {
       jet.logFileLevel = LogLevel.BASIC;
     }
@@ -1627,10 +1649,13 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     }
     jobEntry.setName( wName.getText() );
 
-    getInfo( jobEntry );
-
-    jobEntry.setChanged();
-
-    dispose();
+    try {
+      getInfo( jobEntry );
+      jobEntry.setChanged();
+      dispose();
+    } catch ( KettleException e ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "JobTrans.Dialog.ErrorShowingTransformation.Title" ),
+        BaseMessages.getString( PKG, "JobTrans.Dialog.ErrorShowingTransformation.Message" ), e );
+    }
   }
 }

@@ -28,78 +28,63 @@ import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 
-public class Log4jConsoleAppender implements Appender
-{
-    private Layout layout;
-    private Filter filter;
-    
-    private String  name;
-    
-    public Log4jConsoleAppender()
-    {
-    }
-    
-    public void addFilter(Filter filter)
-    {
-        this.filter = filter;
-    }
+public class Log4jConsoleAppender implements Appender {
+  private Layout layout;
+  private Filter filter;
 
-    public Filter getFilter()
-    {
-        return filter;
-    }
+  private String name;
 
-    public void clearFilters()
-    {
-        filter=null;
-    }
+  public Log4jConsoleAppender() {
+  }
 
-    public void close()
-    {
-    }
+  public void addFilter( Filter filter ) {
+    this.filter = filter;
+  }
 
-    public void doAppend(LoggingEvent event)
-    {
-        String line = layout.format(event);
-        System.out.println(line);
-    }
+  public Filter getFilter() {
+    return filter;
+  }
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+  public void clearFilters() {
+    filter = null;
+  }
 
-    public String getName()
-    {
-        return name;
-    }
+  public void close() {
+  }
 
-    public void setErrorHandler(ErrorHandler arg0)
-    {
-    }
+  public void doAppend( LoggingEvent event ) {
+    String line = layout.format( event );
+    System.out.println( line );
+  }
 
-    public ErrorHandler getErrorHandler()
-    {
-        return null;
-    }
+  public void setName( String name ) {
+    this.name = name;
+  }
 
-    public void setLayout(Layout layout)
-    {
-        this.layout = layout;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public Layout getLayout()
-    {
-        return layout;
-    }
+  public void setErrorHandler( ErrorHandler arg0 ) {
+  }
 
-    public boolean requiresLayout()
-    {
-        return true;
-    }
+  public ErrorHandler getErrorHandler() {
+    return null;
+  }
 
-    public void setFilter(Filter filter)
-    {
-        this.filter = filter;
-    }
+  public void setLayout( Layout layout ) {
+    this.layout = layout;
+  }
+
+  public Layout getLayout() {
+    return layout;
+  }
+
+  public boolean requiresLayout() {
+    return true;
+  }
+
+  public void setFilter( Filter filter ) {
+    this.filter = filter;
+  }
 }

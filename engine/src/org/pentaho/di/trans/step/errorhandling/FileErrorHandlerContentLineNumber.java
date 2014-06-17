@@ -32,10 +32,9 @@ import org.pentaho.di.trans.step.BaseStep;
 
 public class FileErrorHandlerContentLineNumber extends AbstractFileErrorHandler {
   private static Class<?> PKG = FileErrorHandlerContentLineNumber.class; // for i18n purposes, needed by Translator2!!
-                                                                         // $NON-NLS-1$
 
   public FileErrorHandlerContentLineNumber( Date date, String destinationDirectory, String fileExtension,
-      String encoding, BaseStep baseStep ) {
+    String encoding, BaseStep baseStep ) {
     super( date, destinationDirectory, fileExtension, encoding, baseStep );
   }
 
@@ -44,9 +43,9 @@ public class FileErrorHandlerContentLineNumber extends AbstractFileErrorHandler 
       getWriter( filePart ).write( String.valueOf( lineNr ) );
       getWriter( filePart ).write( Const.CR );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FileErrorHandlerContentLineNumber.Exception.CouldNotCreateWriteLine" )
-          + lineNr, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "FileErrorHandlerContentLineNumber.Exception.CouldNotCreateWriteLine" )
+        + lineNr, e );
 
     }
   }

@@ -53,7 +53,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class PrioritizeStreamsDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = PrioritizeStreamsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PrioritizeStreamsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String[] previousSteps;
   private PrioritizeStreamsMeta input;
@@ -137,10 +137,12 @@ public class PrioritizeStreamsDialog extends BaseStepDialog implements StepDialo
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "PrioritizeStreamsDialog.Fieldname.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, previousSteps, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "PrioritizeStreamsDialog.Fieldname.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, previousSteps, false );
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -258,6 +260,7 @@ public class PrioritizeStreamsDialog extends BaseStepDialog implements StepDialo
       TableItem ti = wFields.getNonEmpty( i );
       StepMeta tm = transMeta.findStep( ti.getText( 1 ) );
       if ( tm != null ) {
+        //CHECKSTYLE:Indentation:OFF
         input.getStepName()[i] = tm.getName();
       }
 

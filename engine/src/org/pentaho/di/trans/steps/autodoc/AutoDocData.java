@@ -43,9 +43,6 @@ public class AutoDocData extends BaseStepData implements StepDataInterface {
   public Repository repository;
   public RepositoryDirectoryInterface tree;
 
-  /**
-	 * 
-	 */
   public AutoDocData() {
     super();
 

@@ -43,25 +43,25 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Matt
  * @since 4-apr-2003
  */
 public class GetRepositoryNames extends BaseStep implements StepInterface {
-  private static Class<?> PKG = GetRepositoryNamesMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetRepositoryNamesMeta.class; // for i18n purposes, needed by Translator2!!
 
   private GetRepositoryNamesMeta meta;
 
   private GetRepositoryNamesData data;
 
-  public GetRepositoryNames( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public GetRepositoryNames( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
 
@@ -167,8 +167,8 @@ public class GetRepositoryNames extends BaseStep implements StepInterface {
         RepositoryDirectoryInterface dir = tree.findDirectory( meta.getDirectory()[i] );
         if ( dir != null ) {
           List<RepositoryElementMetaInterface> objects =
-              getRepositoryObjects( repository, dir, meta.getIncludeSubFolders()[i], meta.getNameMask()[i], meta
-                  .getExcludeNameMask()[i] );
+            getRepositoryObjects( repository, dir, meta.getIncludeSubFolders()[i], meta.getNameMask()[i], meta
+              .getExcludeNameMask()[i] );
           list.addAll( objects );
         }
       }
@@ -180,8 +180,7 @@ public class GetRepositoryNames extends BaseStep implements StepInterface {
   }
 
   private List<RepositoryElementMetaInterface> getRepositoryObjects( Repository repository,
-      RepositoryDirectoryInterface directory, boolean subdirs, String nameMask, String excludeNameMask )
-    throws KettleException {
+    RepositoryDirectoryInterface directory, boolean subdirs, String nameMask, String excludeNameMask ) throws KettleException {
     List<RepositoryElementMetaInterface> list = new ArrayList<RepositoryElementMetaInterface>();
     List<RepositoryElementMetaInterface> objects = new ArrayList<RepositoryElementMetaInterface>();
     if ( meta.getObjectTypeSelection().areTransformationsSelected() ) {

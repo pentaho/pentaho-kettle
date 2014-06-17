@@ -64,9 +64,9 @@ public class StepPerformanceSnapShot {
    * @param totalLinesRejected
    * @param totalErrors
    */
-  public StepPerformanceSnapShot( int seqNr, long batchId, Date date, String transName, String stepName, int stepCopy,
-      long totalLinesRead, long totalLinesWritten, long totalLinesInput, long totalLinesOutput, long totalLinesUpdated,
-      long totalLinesRejected, long totalErrors ) {
+  public StepPerformanceSnapShot( int seqNr, long batchId, Date date, String transName, String stepName,
+    int stepCopy, long totalLinesRead, long totalLinesWritten, long totalLinesInput, long totalLinesOutput,
+    long totalLinesUpdated, long totalLinesRejected, long totalErrors ) {
     this.seqNr = seqNr;
     this.batchId = batchId;
     this.date = date;

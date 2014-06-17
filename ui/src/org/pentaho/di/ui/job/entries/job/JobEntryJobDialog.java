@@ -86,15 +86,16 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the job job entry (JobEntryJob)
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILE_FILTERLOGNAMES = new String[] {
-    BaseMessages.getString( PKG, "JobJob.Fileformat.TXT" ), BaseMessages.getString( PKG, "JobJob.Fileformat.LOG" ),
+    BaseMessages.getString( PKG, "JobJob.Fileformat.TXT" ),
+    BaseMessages.getString( PKG, "JobJob.Fileformat.LOG" ),
     BaseMessages.getString( PKG, "JobJob.Fileformat.All" ) };
 
   private Label wlName;
@@ -705,8 +706,8 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     wlForceSeparateLogging.setLayoutData( fdlForceSeparateLogging );
     wForceSeparateLogging = new Button( wLogging, SWT.CHECK );
     props.setLook( wForceSeparateLogging );
-    wForceSeparateLogging.setToolTipText( BaseMessages
-        .getString( PKG, "JobEntryJobDialog.ForceSeparateLogging.Tooltip" ) );
+    wForceSeparateLogging.setToolTipText( BaseMessages.getString(
+      PKG, "JobEntryJobDialog.ForceSeparateLogging.Tooltip" ) );
     FormData fdForceSeparateLogging = new FormData();
     fdForceSeparateLogging.left = new FormAttachment( middle, 0 );
     fdForceSeparateLogging.top = new FormAttachment( 0, margin );
@@ -795,7 +796,8 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     fdlCreateParentFolder.right = new FormAttachment( middle, -margin );
     wlCreateParentFolder.setLayoutData( fdlCreateParentFolder );
     wCreateParentFolder = new Button( wLogging, SWT.CHECK );
-    wCreateParentFolder.setToolTipText( BaseMessages.getString( PKG, "JobJob.Logfile.CreateParentFolder.Tooltip" ) );
+    wCreateParentFolder
+      .setToolTipText( BaseMessages.getString( PKG, "JobJob.Logfile.CreateParentFolder.Tooltip" ) );
     props.setLook( wCreateParentFolder );
     fdCreateParentFolder = new FormData();
     fdCreateParentFolder.left = new FormAttachment( middle, 0 );
@@ -912,13 +914,13 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JobJob.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "JobJob.Fields.Argument.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[0].setUsingVariables( true );
 
     wFields =
-        new TableView( jobMeta, wFieldComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+      new TableView(
+        jobMeta, wFieldComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -983,18 +985,21 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     final int parameterRows = jobEntry.parameters == null ? 0 : jobEntry.parameters.length;
 
     colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobJob.Parameters.Parameter.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobJob.Parameters.ColumnName.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobJob.Parameters.Value.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobJob.Parameters.Parameter.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobJob.Parameters.ColumnName.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobJob.Parameters.Value.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
     colinf[2].setUsingVariables( true );
 
     wParameters =
-        new TableView( jobMeta, wParameterComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, parameterRows,
-            lsMod, props );
+      new TableView(
+        jobMeta, wParameterComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, parameterRows, lsMod,
+        props );
 
     FormData fdParameters = new FormData();
     fdParameters.left = new FormAttachment( 0, 0 );
@@ -1091,8 +1096,8 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
             // Set file extension ..
             wLogext.setText( file.getName().getExtension() );
             // Set filename without extension ...
-            wLogfile.setText( wLogfile.getText().substring( 0,
-                wLogfile.getText().length() - wLogext.getText().length() - 1 ) );
+            wLogfile.setText( wLogfile.getText().substring(
+              0, wLogfile.getText().length() - wLogext.getText().length() - 1 ) );
           } catch ( Exception ex ) {
             // Ignore
           }
@@ -1203,8 +1208,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
       wParameters.setRowNums();
       wParameters.optWidth( true );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "JobEntryJobDialog.Exception.UnableToLoadJob.Title" ),
-          BaseMessages.getString( PKG, "JobEntryJobDialog.Exception.UnableToLoadJob.Message" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "JobEntryJobDialog.Exception.UnableToLoadJob.Title" ), BaseMessages
+          .getString( PKG, "JobEntryJobDialog.Exception.UnableToLoadJob.Message" ), e );
     }
   }
 
@@ -1226,7 +1232,8 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
   protected void setRadioButtons() {
     radioFilename.setSelection( specificationMethod == ObjectLocationSpecificationMethod.FILENAME );
     radioByName.setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
-    radioByReference.setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
+    radioByReference
+      .setSelection( specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
     setActive();
   }
 
@@ -1262,8 +1269,8 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     String parentFolder = null;
     try {
       parentFolder =
-          KettleVFS.getFilename( KettleVFS.getFileObject( jobMeta.environmentSubstitute( jobMeta.getFilename() ) )
-              .getParent() );
+        KettleVFS.getFilename( KettleVFS
+          .getFileObject( jobMeta.environmentSubstitute( jobMeta.getFilename() ) ).getParent() );
     } catch ( Exception e ) {
       // not that important
     }
@@ -1275,8 +1282,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
           if ( !prevName.endsWith( ".kjb" ) ) {
             prevName =
-                "${" + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + Const.trim( wFilename.getText() )
-                    + ".kjb";
+              "${"
+                + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + Const.trim( wFilename.getText() )
+                + ".kjb";
           }
           if ( KettleVFS.fileExists( prevName ) ) {
             wFilename.setText( prevName );
@@ -1335,7 +1343,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
   public void setActive() {
     boolean supportsReferences =
-        rep != null && rep.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
+      rep != null && rep.getRepositoryMeta().getRepositoryCapabilities().supportsReferences();
 
     radioByName.setEnabled( rep != null );
     radioByReference.setEnabled( rep != null && supportsReferences );
@@ -1372,8 +1380,10 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     wlWaitingToFinish.setEnabled( !Const.isEmpty( wSlaveServer.getText() ) );
     wWaitingToFinish.setEnabled( !Const.isEmpty( wSlaveServer.getText() ) );
 
-    wlFollowingAbortRemotely.setEnabled( wWaitingToFinish.getSelection() && !Const.isEmpty( wSlaveServer.getText() ) );
-    wFollowingAbortRemotely.setEnabled( wWaitingToFinish.getSelection() && !Const.isEmpty( wSlaveServer.getText() ) );
+    wlFollowingAbortRemotely.setEnabled( wWaitingToFinish.getSelection()
+      && !Const.isEmpty( wSlaveServer.getText() ) );
+    wFollowingAbortRemotely
+      .setEnabled( wWaitingToFinish.getSelection() && !Const.isEmpty( wSlaveServer.getText() ) );
 
     wlExpandRemote.setEnabled( !Const.isEmpty( wSlaveServer.getText() ) );
     wExpandRemote.setEnabled( !Const.isEmpty( wSlaveServer.getText() ) );
@@ -1473,9 +1483,9 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
         getByReferenceData( jobInf );
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "JobEntryJobDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString( PKG,
-          "JobEntryJobDialog.Exception.UnableToReferenceObjectId.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "JobEntryJobDialog.Exception.UnableToReferenceObjectId.Title" ),
+        BaseMessages.getString( PKG, "JobEntryJobDialog.Exception.UnableToReferenceObjectId.Message" ), e );
     }
   }
 

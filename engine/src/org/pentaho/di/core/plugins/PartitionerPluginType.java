@@ -40,9 +40,9 @@ import org.w3c.dom.Node;
 
 /**
  * This is the partitioner plugin type.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @PluginMainClassType( Partitioner.class )
 @PluginAnnotationType( PartitionerPlugin.class )
@@ -79,7 +79,7 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
       }
       if ( inputStream == null ) {
         throw new KettlePluginException( "Unable to find native partition plugins definition file: "
-            + Const.XML_FILE_KETTLE_PARTITION_PLUGINS );
+          + Const.XML_FILE_KETTLE_PARTITION_PLUGINS );
       }
       Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
 
@@ -92,8 +92,8 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
       }
 
     } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle steps XML config file: " + kettlePartitionerXmlFile,
-          e );
+      throw new KettlePluginException( "Unable to read the kettle steps XML config file: "
+        + kettlePartitionerXmlFile, e );
     }
   }
 
@@ -116,13 +116,14 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
             Document document = XMLHandler.loadXMLFile( file );
             Node pluginNode = XMLHandler.getSubNode( document, "partitioner-plugin" );
             if ( pluginNode != null ) {
-              registerPluginFromXmlResource( pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(),
-                  false, file.getParent().getURL() );
+              registerPluginFromXmlResource( pluginNode, KettleVFS.getFilename( file.getParent() ), this
+                .getClass(), false, file.getParent().getURL() );
             }
           } catch ( Exception e ) {
             // We want to report this plugin.xml error, perhaps an XML typo or something like that...
             //
-            log.logError( "Error found while reading partitioning plugin.xml file: " + file.getName().toString(), e );
+            log.logError(
+              "Error found while reading partitioning plugin.xml file: " + file.getName().toString(), e );
           }
         }
       }
@@ -181,6 +182,11 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
   @Override
   protected String extractForumUrl( Annotation annotation ) {
     return null;
+  }
+
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (PartitionerPlugin) annotation ).classLoaderGroup();
   }
 
 }

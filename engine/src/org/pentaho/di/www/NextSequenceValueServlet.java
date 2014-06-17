@@ -40,9 +40,9 @@ import org.pentaho.di.core.xml.XMLHandler;
  * This port number will be allocated in such a way that the port number is unique for a given hostname.<br>
  * This in turn will ensure that all the slaves will use valid port numbers, even if multiple slaves run on the same
  * host.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class NextSequenceValueServlet extends BaseHttpServlet implements CartePluginInterface {
   private static final long serialVersionUID = 3634806745372015720L;
@@ -64,7 +64,8 @@ public class NextSequenceValueServlet extends BaseHttpServlet implements CartePl
     super( transformationMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -103,7 +104,7 @@ public class NextSequenceValueServlet extends BaseHttpServlet implements CartePl
     } catch ( Exception e ) {
       response.setStatus( HttpServletResponse.SC_NOT_FOUND );
       out.println( XMLHandler.addTagValue( XML_TAG_ERROR, "Error retrieving next value from slave sequence: "
-          + Const.getStackTracker( e ) ) );
+        + Const.getStackTracker( e ) ) );
     }
 
     out.println( XMLHandler.closeTag( XML_TAG ) );

@@ -28,30 +28,33 @@ import java.util.List;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
+import org.pentaho.di.trans.step.StepInjectionUtil;
+import org.pentaho.di.trans.step.StepMetaInjectionEntryInterface;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
 /**
  * This takes care of the external metadata injection into the SortRowsMeta class
- * 
+ *
  * @author Matt
  */
 public class SortRowsMetaInjection implements StepMetaInjectionInterface {
 
-  private enum Entry {
+  public enum Entry implements StepMetaInjectionEntryInterface {
 
-    SORT_SIZE_ROWS( ValueMetaInterface.TYPE_STRING, "In memory sort size (in rows)" ), SORT_DIRECTORY(
-        ValueMetaInterface.TYPE_STRING, "The sort directory" ), SORT_FILE_PREFIX( ValueMetaInterface.TYPE_STRING,
-        "The sort file prefix" ), FREE_MEMORY_TRESHOLD( ValueMetaInterface.TYPE_STRING,
-        "The free memory treshold (in %)" ), ONLY_PASS_UNIQUE_ROWS( ValueMetaInterface.TYPE_STRING,
-        "Only pass unique rows? (Y/N)" ), COMPRESS_TEMP_FILES( ValueMetaInterface.TYPE_STRING,
-        "Compress temporary files? (Y/N)" ),
+    SORT_SIZE_ROWS( ValueMetaInterface.TYPE_STRING, "In memory sort size (in rows)" ),
+      SORT_DIRECTORY( ValueMetaInterface.TYPE_STRING, "The sort directory" ),
+      SORT_FILE_PREFIX( ValueMetaInterface.TYPE_STRING, "The sort file prefix" ),
+      FREE_MEMORY_TRESHOLD( ValueMetaInterface.TYPE_STRING, "The free memory treshold (in %)" ),
+      ONLY_PASS_UNIQUE_ROWS( ValueMetaInterface.TYPE_STRING, "Only pass unique rows? (Y/N)" ),
+      COMPRESS_TEMP_FILES( ValueMetaInterface.TYPE_STRING, "Compress temporary files? (Y/N)" ),
 
-    FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields to sort" ), FIELD( ValueMetaInterface.TYPE_NONE,
-        "One field to sort" ),
+      FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields to sort" ),
+      FIELD( ValueMetaInterface.TYPE_NONE, "One field to sort" ),
 
-    NAME( ValueMetaInterface.TYPE_STRING, "Field name" ), SORT_ASCENDING( ValueMetaInterface.TYPE_STRING,
-        "Sort ascending? (Y/N)" ), IGNORE_CASE( ValueMetaInterface.TYPE_STRING, "Ignore case? (Y/N)" ), PRESORTED(
-        ValueMetaInterface.TYPE_STRING, "Presorted? (Y/N)" ), ;
+      NAME( ValueMetaInterface.TYPE_STRING, "Field name" ),
+      SORT_ASCENDING( ValueMetaInterface.TYPE_STRING, "Sort ascending? (Y/N)" ),
+      IGNORE_CASE( ValueMetaInterface.TYPE_STRING, "Ignore case? (Y/N)" ),
+      PRESORTED( ValueMetaInterface.TYPE_STRING, "Presorted? (Y/N)" );
 
     private int valueType;
     private String description;
@@ -91,24 +94,25 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
     List<StepInjectionMetaEntry> all = new ArrayList<StepInjectionMetaEntry>();
 
     Entry[] topEntries =
-        new Entry[] { Entry.SORT_SIZE_ROWS, Entry.ONLY_PASS_UNIQUE_ROWS, Entry.COMPRESS_TEMP_FILES,
-          Entry.SORT_DIRECTORY, Entry.SORT_FILE_PREFIX, Entry.FREE_MEMORY_TRESHOLD, };
+      new Entry[] {
+        Entry.SORT_SIZE_ROWS, Entry.ONLY_PASS_UNIQUE_ROWS, Entry.COMPRESS_TEMP_FILES, Entry.SORT_DIRECTORY,
+        Entry.SORT_FILE_PREFIX, Entry.FREE_MEMORY_TRESHOLD, };
     for ( Entry topEntry : topEntries ) {
       all.add( new StepInjectionMetaEntry( topEntry.name(), topEntry.getValueType(), topEntry.getDescription() ) );
     }
 
     StepInjectionMetaEntry fieldsEntry =
-        new StepInjectionMetaEntry( "FIELDS", ValueMetaInterface.TYPE_NONE, Entry.FIELDS.description );
+      new StepInjectionMetaEntry( "FIELDS", ValueMetaInterface.TYPE_NONE, Entry.FIELDS.description );
     all.add( fieldsEntry );
 
     StepInjectionMetaEntry fieldEntry =
-        new StepInjectionMetaEntry( "FIELD", ValueMetaInterface.TYPE_NONE, Entry.FIELD.description );
+      new StepInjectionMetaEntry( "FIELD", ValueMetaInterface.TYPE_NONE, Entry.FIELD.description );
     fieldsEntry.getDetails().add( fieldEntry );
 
     Entry[] fieldsEntries = new Entry[] { Entry.NAME, Entry.SORT_ASCENDING, Entry.IGNORE_CASE, Entry.PRESORTED };
     for ( Entry entry : fieldsEntries ) {
       StepInjectionMetaEntry metaEntry =
-          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+        new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
       fieldEntry.getDetails().add( metaEntry );
     }
 
@@ -131,7 +135,7 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
 
         String lookValue = (String) lookFields.getValue();
         switch ( fieldsEntry ) {
-          case FIELDS: {
+          case FIELDS:
             for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
               Entry fieldEntry = Entry.findEntry( lookField.getKey() );
               if ( fieldEntry != null ) {
@@ -172,7 +176,6 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
                 }
               }
             }
-          }
             break;
 
           case COMPRESS_TEMP_FILES:
@@ -201,18 +204,48 @@ public class SortRowsMetaInjection implements StepMetaInjectionInterface {
 
     // Pass the grid to the step metadata
     //
-    meta.setFieldName( sortNames.toArray( new String[sortNames.size()] ) );
-    boolean[] ascending = new boolean[sortAscs.size()];
-    boolean[] cases = new boolean[sortCases.size()];
-    boolean[] presorteds = new boolean[sortPresorteds.size()];
-    for ( int i = 0; i < ascending.length; i++ ) {
-      ascending[i] = sortAscs.get( i );
-      cases[i] = sortCases.get( i );
-      presorteds[i] = sortPresorteds.get( i );
+    // if at least one of the arrays was specified to be injected
+    // we inject the entire grid
+    if ( !sortNames.isEmpty() || !sortAscs.isEmpty() || !sortCases.isEmpty() || !sortPresorteds.isEmpty() ) {
+      meta.setFieldName( sortNames.toArray( new String[sortNames.size()] ) );
+      boolean[] ascending = new boolean[sortAscs.size()];
+      boolean[] cases = new boolean[sortCases.size()];
+      boolean[] presorteds = new boolean[sortPresorteds.size()];
+      for ( int i = 0; i < ascending.length; i++ ) {
+        ascending[i] = sortAscs.get( i );
+        cases[i] = sortCases.get( i );
+        presorteds[i] = sortPresorteds.get( i );
+      }
+      meta.setAscending( ascending );
+      meta.setCaseSensitive( cases );
+      meta.setPreSortedField( presorteds );
     }
-    meta.setAscending( ascending );
-    meta.setCaseSensitive( cases );
-    meta.setPreSortedField( presorteds );
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    List<StepInjectionMetaEntry> list = new ArrayList<StepInjectionMetaEntry>();
+
+    list.add( StepInjectionUtil.getEntry( Entry.SORT_SIZE_ROWS, meta.getSortSize() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.SORT_DIRECTORY, meta.getDirectory() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.SORT_FILE_PREFIX, meta.getPrefix() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.FREE_MEMORY_TRESHOLD, meta.getFreeMemoryLimit() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.ONLY_PASS_UNIQUE_ROWS, meta.isOnlyPassingUniqueRows() ) );
+    list.add( StepInjectionUtil.getEntry( Entry.COMPRESS_TEMP_FILES, meta.getCompressFiles() ) );
+
+    StepInjectionMetaEntry fieldsEntry = StepInjectionUtil.getEntry( Entry.FIELDS );
+    list.add( fieldsEntry );
+    for ( int i = 0; i < meta.getFieldName().length; i++ ) {
+      StepInjectionMetaEntry fieldEntry = StepInjectionUtil.getEntry( Entry.FIELD );
+      List<StepInjectionMetaEntry> details = fieldEntry.getDetails();
+      details.add( StepInjectionUtil.getEntry( Entry.NAME, meta.getFieldName()[i] ) );
+      details.add( StepInjectionUtil.getEntry( Entry.SORT_ASCENDING, meta.getAscending()[i] ) );
+      details.add( StepInjectionUtil.getEntry( Entry.IGNORE_CASE, meta.getCaseSensitive()[i] ) );
+      details.add( StepInjectionUtil.getEntry( Entry.PRESORTED, meta.getPreSortedField()[i] ) );
+
+      fieldsEntry.getDetails().add( fieldEntry );
+    }
+
+    return list;
   }
 
   public SortRowsMeta getMeta() {

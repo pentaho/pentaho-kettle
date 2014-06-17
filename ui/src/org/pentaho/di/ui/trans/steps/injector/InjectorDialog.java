@@ -52,7 +52,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class InjectorDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = InjectorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = InjectorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFields;
   private TableView wFields;
@@ -120,18 +120,23 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
     final int FieldsRows = input.getFieldname().length;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "InjectorDialog.ColumnInfo.Fieldname" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "InjectorDialog.ColumnInfo.Type" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getAllTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "InjectorDialog.ColumnInfo.Length" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "InjectorDialog.ColumnInfo.Precision" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "InjectorDialog.ColumnInfo.Fieldname" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "InjectorDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          ValueMeta.getAllTypes() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "InjectorDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "InjectorDialog.ColumnInfo.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ), };
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     // Some buttons
     wOK = new Button( shell, SWT.PUSH );
@@ -225,6 +230,7 @@ public class InjectorDialog extends BaseStepDialog implements StepDialogInterfac
     stepname = wStepname.getText(); // return value
     int nrfields = wFields.nrNonEmpty();
     input.allocate( nrfields );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getFieldname()[i] = item.getText( 1 );

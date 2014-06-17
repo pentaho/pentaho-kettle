@@ -53,7 +53,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = RegexEvalMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RegexEvalMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String script;
   private String matcher;
@@ -378,8 +378,8 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
         fieldTrimType[i] = ValueMeta.getTrimTypeByCode( trim );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException(
-          BaseMessages.getString( PKG, "RegexEvalMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "RegexEvalMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -402,25 +402,26 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] infos, StepMeta nextSteps,
-      VariableSpace space, Repository repositorys, IMetaStore metaStores ) throws KettleStepException {
+    VariableSpace space, Repository repositorys, IMetaStore metaStores ) throws KettleStepException {
     try {
       if ( !Const.isEmpty( resultfieldname ) ) {
         if ( replacefields ) {
           int replaceIndex = inputRowMeta.indexOfValue( resultfieldname );
           if ( replaceIndex < 0 ) {
             ValueMetaInterface v =
-                new ValueMeta( space.environmentSubstitute( resultfieldname ), ValueMeta.TYPE_BOOLEAN );
+              new ValueMeta( space.environmentSubstitute( resultfieldname ), ValueMeta.TYPE_BOOLEAN );
             v.setOrigin( name );
             inputRowMeta.addValueMeta( v );
           } else {
             ValueMetaInterface valueMeta = inputRowMeta.getValueMeta( replaceIndex );
             ValueMetaInterface replaceMeta =
-                ValueMetaFactory.cloneValueMeta( valueMeta, ValueMetaInterface.TYPE_BOOLEAN );
+              ValueMetaFactory.cloneValueMeta( valueMeta, ValueMetaInterface.TYPE_BOOLEAN );
             replaceMeta.setOrigin( name );
             inputRowMeta.setValueMeta( replaceIndex, replaceMeta );
           }
         } else {
-          ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( resultfieldname ), ValueMeta.TYPE_BOOLEAN );
+          ValueMetaInterface v =
+            new ValueMeta( space.environmentSubstitute( resultfieldname ), ValueMeta.TYPE_BOOLEAN );
           v.setOrigin( name );
           inputRowMeta.addValueMeta( v );
         }
@@ -452,7 +453,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   private ValueMetaInterface constructValueMeta( ValueMetaInterface sourceValueMeta, String fieldName, int i,
-      String name ) throws KettlePluginException {
+    String name ) throws KettlePluginException {
     int type = fieldType[i];
     if ( type == ValueMetaInterface.TYPE_NONE ) {
       type = ValueMetaInterface.TYPE_STRING;
@@ -482,8 +483,8 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
-    retval.append( "    " + XMLHandler.openTag( "script" ) + XMLHandler.buildCDATA( script )
-        + XMLHandler.closeTag( "script" ) );
+    retval.append( "    "
+      + XMLHandler.openTag( "script" ) + XMLHandler.buildCDATA( script ) + XMLHandler.closeTag( "script" ) );
     retval.append( "    " + XMLHandler.addTagValue( "matcher", matcher ) );
     retval.append( "    " + XMLHandler.addTagValue( "resultfieldname", resultfieldname ) );
     retval.append( "    " + XMLHandler.addTagValue( "usevar", usevar ) );
@@ -502,7 +503,8 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
       if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
         retval.append( "      <field>" ).append( Const.CR );
         retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldName[i] ) );
-        retval.append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( fieldType[i] ) ) );
+        retval
+          .append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( fieldType[i] ) ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "format", fieldFormat[i] ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "group", fieldGroup[i] ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", fieldDecimal[i] ) );
@@ -511,7 +513,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
         retval.append( "        " ).append( XMLHandler.addTagValue( "nullif", fieldNullIf[i] ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "ifnull", fieldIfNull[i] ) );
         retval.append( "        " ).append(
-            XMLHandler.addTagValue( "trimtype", ValueMeta.getTrimTypeCode( fieldTrimType[i] ) ) );
+          XMLHandler.addTagValue( "trimtype", ValueMeta.getTrimTypeCode( fieldTrimType[i] ) ) );
         retval.append( "      </field>" ).append( Const.CR );
       }
     }
@@ -520,10 +522,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException
-
-  {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       script = rep.getStepAttributeString( id_step, "script" );
       matcher = rep.getStepAttributeString( id_step, "matcher" );
@@ -554,22 +553,24 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
         fieldPrecision[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
         fieldNullIf[i] = rep.getStepAttributeString( id_step, i, "field_nullif" );
         fieldIfNull[i] = rep.getStepAttributeString( id_step, i, "field_ifnull" );
-        fieldTrimType[i] = ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trimtype" ) );
+        fieldTrimType[i] =
+          ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trimtype" ) );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "RegexEvalMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "RegexEvalMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "script", script );
       for ( int i = 0; i < fieldName.length; i++ ) {
         if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
           rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
-          rep.saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc( fieldType[i] ) );
+          rep
+            .saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta
+              .getTypeDesc( fieldType[i] ) );
           rep.saveStepAttribute( id_transformation, id_step, i, "field_format", fieldFormat[i] );
           rep.saveStepAttribute( id_transformation, id_step, i, "field_group", fieldGroup[i] );
           rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", fieldDecimal[i] );
@@ -578,7 +579,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
           rep.saveStepAttribute( id_transformation, id_step, i, "field_nullif", fieldNullIf[i] );
           rep.saveStepAttribute( id_transformation, id_step, i, "field_ifnull", fieldIfNull[i] );
           rep.saveStepAttribute( id_transformation, id_step, i, "field_trimtype", ValueMeta
-              .getTrimTypeCode( fieldTrimType[i] ) );
+            .getTrimTypeCode( fieldTrimType[i] ) );
         }
       }
 
@@ -596,38 +597,38 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "matcher", matcher );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "RegexEvalMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
 
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "RegexEvalMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "RegexEvalMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "RegexEvalMeta.CheckResult.NoInputReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "RegexEvalMeta.CheckResult.NoInputReceived" ), stepMeta );
       remarks.add( cr );
     }
 
     // Check Field to evaluate
     if ( !Const.isEmpty( matcher ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "RegexEvalMeta.CheckResult.MatcherOK" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "RegexEvalMeta.CheckResult.MatcherOK" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "RegexEvalMeta.CheckResult.NoMatcher" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "RegexEvalMeta.CheckResult.NoMatcher" ), stepMeta );
       remarks.add( cr );
 
     }
@@ -635,20 +636,20 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
     // Check Result Field name
     if ( !Const.isEmpty( resultfieldname ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "RegexEvalMeta.CheckResult.ResultFieldnameOK" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "RegexEvalMeta.CheckResult.ResultFieldnameOK" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "RegexEvalMeta.CheckResult.NoResultFieldname" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "RegexEvalMeta.CheckResult.NoResultFieldname" ), stepMeta );
       remarks.add( cr );
     }
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new RegexEval( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

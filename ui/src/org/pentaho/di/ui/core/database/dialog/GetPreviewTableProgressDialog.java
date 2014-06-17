@@ -41,13 +41,12 @@ import org.pentaho.di.ui.spoon.Spoon;
 /**
  * Takes care of displaying a dialog that will handle the wait while we're getting rows for a certain SQL query on a
  * database.
- * 
+ *
  * @author Matt
  * @since 12-may-2005
  */
 public class GetPreviewTableProgressDialog {
   private static Class<?> PKG = GetPreviewTableProgressDialog.class; // for i18n purposes, needed by Translator2!!
-                                                                     // $NON-NLS-1$
 
   private Shell shell;
   private DatabaseMeta dbMeta;
@@ -61,7 +60,8 @@ public class GetPreviewTableProgressDialog {
   /**
    * Creates a new dialog that will handle the wait while we're doing the hard work.
    */
-  public GetPreviewTableProgressDialog( Shell shell, DatabaseMeta dbInfo, String schemaName, String tableName, int limit ) {
+  public GetPreviewTableProgressDialog( Shell shell, DatabaseMeta dbInfo, String schemaName, String tableName,
+    int limit ) {
     this.shell = shell;
     this.dbMeta = dbInfo;
     this.tableName = dbInfo.getQuotedSchemaTableCombination( schemaName, tableName );
@@ -103,8 +103,8 @@ public class GetPreviewTableProgressDialog {
             }
           }
 
-          if ( monitor.isCanceled() ) // Disconnect and see what happens!
-          {
+          if ( monitor.isCanceled() ) { // Disconnect and see what happens!
+
             try {
               db.cancelQuery();
             } catch ( Exception e ) {
@@ -130,12 +130,13 @@ public class GetPreviewTableProgressDialog {
 
   /**
    * Showing an error dialog
-   * 
+   *
    * @param e
    */
   private void showErrorDialog( Exception e ) {
-    new ErrorDialog( shell, BaseMessages.getString( PKG, "GetPreviewTableProgressDialog.Error.Title" ), BaseMessages
-        .getString( PKG, "GetPreviewTableProgressDialog.Error.Message" ), e );
+    new ErrorDialog(
+      shell, BaseMessages.getString( PKG, "GetPreviewTableProgressDialog.Error.Title" ), BaseMessages.getString(
+        PKG, "GetPreviewTableProgressDialog.Error.Message" ), e );
   }
 
   /**

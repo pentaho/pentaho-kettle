@@ -22,10 +22,9 @@
 
 package org.pentaho.di.core.variables;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -36,7 +35,7 @@ import org.pentaho.di.version.BuildVersion;
 
 /**
  * This class is an implementation of VariableSpace
- * 
+ *
  * @author Sven Boden
  */
 public class Variables implements VariableSpace {
@@ -55,7 +54,7 @@ public class Variables implements VariableSpace {
     initialized = false;
 
     // The Kettle version
-    properties.put( Const.INTERNAL_VARIABLE_KETTLE_VERSION, Const.VERSION );
+    properties.put( Const.INTERNAL_VARIABLE_KETTLE_VERSION, BuildVersion.getInstance().getVersion() );
 
     // The Kettle build version
     String revision = BuildVersion.getInstance().getRevision();
@@ -140,11 +139,8 @@ public class Variables implements VariableSpace {
 
   @Override
   public String[] listVariables() {
-    List<String> list = new ArrayList<String>();
-    for ( String name : properties.keySet() ) {
-      list.add( name );
-    }
-    return list.toArray( new String[list.size()] );
+    Set<String> keySet = properties.keySet();
+    return keySet.toArray( new String[0] );
   }
 
   @Override
@@ -169,21 +165,20 @@ public class Variables implements VariableSpace {
    * Substitutes field values in <code>aString</code>. Field values are of the form "?{<field name>}". The values are
    * retrieved from the specified row. Please note that the getString() method is used to convert to a String, for all
    * values in the row.
-   * 
+   *
    * @param aString
    *          the string on which to apply the substitution.
    * @param rowMeta
    *          The row metadata to use.
    * @param rowData
    *          The row data to use
-   * 
+   *
    * @return the string with the substitution applied.
    * @throws KettleValueException
    *           In case there is a String conversion error
    */
   @Override
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     if ( aString == null || aString.length() == 0 ) {
       return aString;
     }
@@ -234,7 +229,7 @@ public class Variables implements VariableSpace {
 
   /**
    * Get a default variable space as a placeholder. Everytime you will get a new instance.
-   * 
+   *
    * @return a default variable space.
    */
   public static synchronized VariableSpace getADefaultVariableSpace() {

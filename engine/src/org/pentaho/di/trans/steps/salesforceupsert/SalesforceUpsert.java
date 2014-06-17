@@ -44,18 +44,18 @@ import com.sforce.soap.partner.sobject.SObject;
 
 /**
  * Read data from Salesforce module, convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author jstairs,Samatar
  * @since 10-06-2007
  */
 public class SalesforceUpsert extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SalesforceUpsertMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SalesforceUpsertMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SalesforceUpsertMeta meta;
   private SalesforceUpsertData data;
 
-  public SalesforceUpsert( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public SalesforceUpsert( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -84,7 +84,8 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
 
       // Check if field list is filled
       if ( data.nrfields == 0 ) {
-        throw new KettleException( BaseMessages.getString( PKG, "SalesforceUpsertDialog.FieldsMissing.DialogMessage" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "SalesforceUpsertDialog.FieldsMissing.DialogMessage" ) );
       }
 
       // Create the output row meta-data
@@ -98,7 +99,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
         data.fieldnrs[i] = getInputRowMeta().indexOfValue( meta.getUpdateStream()[i] );
         if ( data.fieldnrs[i] < 0 ) {
           throw new KettleException( BaseMessages.getString( PKG, "SalesforceUpsert.FieldNotFound", meta
-              .getUpdateStream()[i] ) );
+            .getUpdateStream()[i] ) );
         }
       }
     }
@@ -116,7 +117,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
 
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "SalesforceUpsert.CalledWrite", data.iBufferPos, meta
-            .getBatchSizeInt() ) );
+          .getBatchSizeInt() ) );
       }
       // if there is room in the buffer
       if ( data.iBufferPos < meta.getBatchSizeInt() ) {
@@ -135,8 +136,8 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
             fieldsToNull.add( meta.getUpdateLookup()[i] );
           } else {
             Object normalObject = valueMeta.convertToNormalStorageType( object );
-            upsertfields.add( SalesforceConnection.createMessageElement( meta.getUpdateLookup()[i], normalObject, meta
-                .getUseExternalId()[i] ) );
+            upsertfields.add( SalesforceConnection.createMessageElement(
+              meta.getUpdateLookup()[i], normalObject, meta.getUseExternalId()[i] ) );
           }
         }
 
@@ -221,8 +222,9 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
             // Only throw the first error
             //
             com.sforce.soap.partner.Error err = data.upsertResult[j].getErrors()[0];
-            throw new KettleException( BaseMessages.getString( PKG, "SalesforceUpsert.Error.FlushBuffer", new Integer(
-                j ), err.getStatusCode(), err.getMessage() ) );
+            throw new KettleException( BaseMessages
+              .getString( PKG, "SalesforceUpsert.Error.FlushBuffer", new Integer( j ), err.getStatusCode(), err
+                .getMessage() ) );
           }
 
           String errorMessage = "";
@@ -230,8 +232,8 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
             // get the next error
             com.sforce.soap.partner.Error err = data.upsertResult[j].getErrors()[i];
             errorMessage +=
-                BaseMessages.getString( PKG, "SalesforceUpsert.Error.FlushBuffer", new Integer( j ), err
-                    .getStatusCode(), err.getMessage() );
+              BaseMessages.getString( PKG, "SalesforceUpsert.Error.FlushBuffer", new Integer( j ), err
+                .getStatusCode(), err.getMessage() );
           }
 
           // Simply add this row to the error row
@@ -254,7 +256,8 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
           // I know, bad form usually. But I didn't want to duplicate the logic with a catch(KettleException). MB
           throw (KettleException) e;
         } else {
-          throw new KettleException( BaseMessages.getString( PKG, "SalesforceUpsert.FailedUpsert", e.getMessage() ), e );
+          throw new KettleException(
+            BaseMessages.getString( PKG, "SalesforceUpsert.FailedUpsert", e.getMessage() ), e );
         }
       }
       // Simply add this row to the error row
@@ -303,7 +306,7 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
         data.realURL = environmentSubstitute( meta.getTargetURL() );
         // create a Salesforce connection
         data.connection =
-            new SalesforceConnection( log, data.realURL, realUser, environmentSubstitute( meta.getPassword() ) );
+          new SalesforceConnection( log, data.realURL, realUser, environmentSubstitute( meta.getPassword() ) );
         // set timeout
         data.connection.setTimeOut( Const.toInt( environmentSubstitute( meta.getTimeOut() ), 0 ) );
         // Do we use compression?
@@ -314,7 +317,8 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
         data.connection.connect();
         return true;
       } catch ( KettleException ke ) {
-        logError( BaseMessages.getString( PKG, "SalesforceUpsert.Log.ErrorOccurredDuringStepInitialize" ) + ke.getMessage() ); //$NON-NLS-1$
+        logError( BaseMessages.getString( PKG, "SalesforceUpsert.Log.ErrorOccurredDuringStepInitialize" )
+          + ke.getMessage() );
       }
       return true;
     }

@@ -54,14 +54,14 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 public class BlockingStep extends BaseStep implements StepInterface {
 
-  private static Class<?> PKG = BlockingStepMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = BlockingStepMeta.class; // for i18n purposes, needed by Translator2!!
 
   private BlockingStepMeta meta;
   private BlockingStepData data;
   private Object[] lastRow;
 
   public BlockingStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -72,7 +72,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 
     // Time to write to disk: buffer in core is full!
     if ( data.buffer.size() == meta.getCacheSize() // Buffer is full: dump to disk
-        || ( data.files.size() > 0 && r == null && data.buffer.size() > 0 ) // No more records: join from disk
+      || ( data.files.size() > 0 && r == null && data.buffer.size() > 0 ) // No more records: join from disk
     ) {
       // Then write them to disk...
       DataOutputStream dos;
@@ -81,8 +81,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
 
       try {
         FileObject fileObject =
-            KettleVFS.createTempFile( meta.getPrefix(), ".tmp", environmentSubstitute( meta.getDirectory() ),
-                getTransMeta() );
+          KettleVFS.createTempFile(
+            meta.getPrefix(), ".tmp", environmentSubstitute( meta.getDirectory() ), getTransMeta() );
 
         data.files.add( fileObject ); // Remember the files!
         OutputStream outputStream = KettleVFS.getOutputStream( fileObject, false );
@@ -131,8 +131,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
         FileObject fileObject = data.files.get( 0 );
         String filename = KettleVFS.getFilename( fileObject );
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "BlockingStep.Log.Openfilename1" ) + filename
-              + BaseMessages.getString( PKG, "BlockingStep.Log.Openfilename2" ) );
+          logDetailed( BaseMessages.getString( PKG, "BlockingStep.Log.Openfilename1" )
+            + filename + BaseMessages.getString( PKG, "BlockingStep.Log.Openfilename2" ) );
         }
         InputStream fi = KettleVFS.getInputStream( fileObject );
         DataInputStream di;
@@ -150,9 +150,9 @@ public class BlockingStep extends BaseStep implements StepInterface {
         int buffersize = di.readInt();
 
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize1" ) + filename
-              + BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize2" ) + buffersize + " "
-              + BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize3" ) );
+          logDetailed( BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize1" )
+            + filename + BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize2" ) + buffersize + " "
+            + BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize3" ) );
         }
 
         if ( buffersize > 0 ) {
@@ -193,8 +193,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
           logError( Const.getStackTracker( e ) );
           setErrors( 1 );
           stopAll();
-        } catch ( KettleFileException fe ) // empty file or EOF mostly
-        {
+        } catch ( KettleFileException fe ) {
+          // empty file or EOF mostly
           try {
             di.close();
             fi.close();
@@ -263,8 +263,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
     }
 
     if ( !meta.isPassAllRows() ) {
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) {
+        // no more input to be expected...
         if ( lastRow != null ) {
           putRow( data.outputRowMeta, lastRow );
         }
@@ -282,8 +282,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
         return false;
       }
 
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) {
+        // no more input to be expected...
         // Now we can start the output!
         r = getBuffer();
         while ( r != null && !isStopped() ) {

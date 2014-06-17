@@ -44,9 +44,9 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -55,7 +55,7 @@ import org.w3c.dom.Node;
  * Created on 02-jun-2003
  */
 public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = SortRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SortRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** order by which fields? */
   private String[] fieldName;
@@ -263,8 +263,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       directory = rep.getStepAttributeString( id_step, "directory" );
       prefix = rep.getStepAttributeString( id_step, "prefix" );
@@ -296,8 +295,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "directory", directory );
       rep.saveStepAttribute( id_transformation, id_step, "prefix", prefix );
@@ -319,7 +317,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Set the sorted properties: ascending/descending
     for ( int i = 0; i < fieldName.length; i++ ) {
       int idx = inputRowMeta.indexOfValue( fieldName[i] );
@@ -339,15 +337,15 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SortRowsMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SortRowsMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -369,13 +367,13 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
       } else {
         if ( fieldName.length > 0 ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "SortRowsMeta.CheckResult.AllSortKeysFound" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SortRowsMeta.CheckResult.AllSortKeysFound" ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "SortRowsMeta.CheckResult.NoSortKeysEntered" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SortRowsMeta.CheckResult.NoSortKeysEntered" ), stepMeta );
           remarks.add( cr );
         }
       }
@@ -387,44 +385,44 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
       if ( f.exists() ) {
         if ( f.isDirectory() ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "SortRowsMeta.CheckResult.DirectoryExists", realDirectory ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SortRowsMeta.CheckResult.DirectoryExists", realDirectory ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "SortRowsMeta.CheckResult.ExistsButNoDirectory", realDirectory ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SortRowsMeta.CheckResult.ExistsButNoDirectory", realDirectory ), stepMeta );
           remarks.add( cr );
         }
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "SortRowsMeta.CheckResult.DirectoryNotExists", realDirectory ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "SortRowsMeta.CheckResult.DirectoryNotExists", realDirectory ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SortRowsMeta.CheckResult.NoFields" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SortRowsMeta.CheckResult.NoFields" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SortRowsMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SortRowsMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SortRowsMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SortRowsMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new SortRows( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -557,7 +555,12 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+  public SortRowsMetaInjection getStepMetaInjectionInterface() {
     return new SortRowsMetaInjection( this );
+  }
+
+  @Override
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return getStepMetaInjectionInterface().extractStepMetadataEntries();
   }
 }

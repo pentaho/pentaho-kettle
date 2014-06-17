@@ -33,14 +33,14 @@ import org.pentaho.di.core.plugins.PluginTypeInterface;
 
 /**
  * This plugin allows you to capture additional information concerning job entries.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @PluginMainClassType( JobDialogPluginInterface.class )
 @PluginAnnotationType( JobDialogPlugin.class )
 public class JobDialogPluginType extends BasePluginType implements PluginTypeInterface {
-  // private static Class<?> PKG = JobDialogPluginType.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  // private static Class<?> PKG = JobDialogPluginType.class; // for i18n purposes, needed by Translator2!!
 
   private static JobDialogPluginType pluginType;
 
@@ -137,5 +137,10 @@ public class JobDialogPluginType extends BasePluginType implements PluginTypeInt
   @Override
   protected String extractForumUrl( Annotation annotation ) {
     return null;
+  }
+
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (JobDialogPlugin) annotation ).classLoaderGroup();
   }
 }

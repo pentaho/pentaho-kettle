@@ -39,7 +39,7 @@ import java.util.Hashtable;
  * We can solve this by caching the position of index 18 and by starting back at that position.<br>
  * <br>
  * This class is a singleton to keep everyting 100% compatible with the rest of the codebase. <br>
- * 
+ *
  * @author Matt
  * @since 22-Apr-2006
  */
@@ -71,7 +71,7 @@ public class XMLHandlerCache {
 
   /**
    * Store a cache entry
-   * 
+   *
    * @param entry
    *          The cache entry to store
    */
@@ -93,7 +93,7 @@ public class XMLHandlerCache {
 
   /**
    * Retrieve the last child were we left off...
-   * 
+   *
    * @param entry
    *          The cache entry to look for.
    * @return the last child position or -1 if nothing was found.
@@ -116,7 +116,7 @@ public class XMLHandlerCache {
 
   /**
    * Allows you to (re-)set the number of cache hits
-   * 
+   *
    * @param cacheHits
    *          the number of cache hits.
    */
@@ -126,7 +126,7 @@ public class XMLHandlerCache {
 
   /**
    * Clears the cache
-   * 
+   *
    */
   public synchronized void clear() {
     this.hashtable.clear();

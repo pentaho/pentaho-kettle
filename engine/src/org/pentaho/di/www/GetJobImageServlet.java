@@ -47,11 +47,12 @@ public class GetJobImageServlet extends BaseHttpServlet implements CartePluginIn
 
   private static final long serialVersionUID = -4365372274638005929L;
 
-  private static Class<?> PKG = GetTransStatusServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetTransStatusServlet.class; // for i18n purposes, needed by Translator2!!
 
   public static final String CONTEXT_PATH = "/kettle/jobImage";
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -119,8 +120,9 @@ public class GetJobImageServlet extends BaseHttpServlet implements CartePluginIn
 
     SwingGC gc = new SwingGC( null, maximum, 32, 0, 0 );
     JobPainter jobPainter =
-        new JobPainter( gc, jobMeta, maximum, null, null, null, null, null, new ArrayList<AreaOwner>(),
-            new ArrayList<JobEntryCopy>(), 32, 1, 0, 0, true, "Arial", 10 );
+      new JobPainter(
+        gc, jobMeta, maximum, null, null, null, null, null, new ArrayList<AreaOwner>(),
+        new ArrayList<JobEntryCopy>(), 32, 1, 0, 0, true, "Arial", 10 );
     jobPainter.setMagnification( magnification );
     jobPainter.drawJob();
 

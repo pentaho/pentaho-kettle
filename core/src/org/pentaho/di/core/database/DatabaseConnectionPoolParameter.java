@@ -105,7 +105,7 @@ public class DatabaseConnectionPoolParameter {
   }
 
   public static final DatabaseConnectionPoolParameter findParameter( String parameterName,
-      DatabaseConnectionPoolParameter[] poolParameters ) {
+    DatabaseConnectionPoolParameter[] poolParameters ) {
     for ( int i = 0; i < poolParameters.length; i++ ) {
       if ( poolParameters[i].getParameter().equalsIgnoreCase( parameterName ) ) {
         return poolParameters[i];
@@ -115,7 +115,7 @@ public class DatabaseConnectionPoolParameter {
   }
 
   public static final List<RowMetaAndData> getRowList( DatabaseConnectionPoolParameter[] poolParameters,
-      String titleParameter, String titleDefaultValue, String titleDescription ) {
+    String titleParameter, String titleDefaultValue, String titleDescription ) {
     RowMetaInterface rowMeta = new RowMeta();
 
     rowMeta.addValueMeta( new ValueMeta( titleParameter, ValueMetaInterface.TYPE_STRING ) );

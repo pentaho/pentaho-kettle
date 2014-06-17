@@ -1,24 +1,24 @@
 /*! ******************************************************************************
-*
-* Pentaho Data Integration
-*
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
-*
-*******************************************************************************
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with
-* the License. You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-******************************************************************************/
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.ldapinput;
 
@@ -57,20 +57,20 @@ public class LdapSslProtocolTest {
 
     public String trustStorePassword = null;
 
-    public TestableLdapProtocol(LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
-        Collection<String> binaryAttributes) {
-      super(log, variableSpace, meta, binaryAttributes);
+    public TestableLdapProtocol( LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
+      Collection<String> binaryAttributes ) {
+      super( log, variableSpace, meta, binaryAttributes );
     }
 
     @Override
-    protected InitialLdapContext createLdapContext(Hashtable<String, String> env) throws NamingException {
+    protected InitialLdapContext createLdapContext( Hashtable<String, String> env ) throws NamingException {
       contextEnv = env;
       return null;
     }
 
     @Override
-    protected void configureSocketFactory(boolean trustAllCertificates, String trustStorePath, String trustStorePassword)
-        throws KettleException {
+    protected void configureSocketFactory( boolean trustAllCertificates, String trustStorePath,
+      String trustStorePassword ) throws KettleException {
       this.trustAllCertificates = trustAllCertificates;
       this.trustStorePath = trustStorePath;
       this.trustStorePassword = trustStorePassword;
@@ -79,29 +79,30 @@ public class LdapSslProtocolTest {
 
   @Before
   public void setup() {
-    mockLogChannelInterface = mock(LogChannelInterface.class);
-    mockVariableSpace = mock(VariableSpace.class);
-    mockLdapMeta = mock(LdapMeta.class);
+    mockLogChannelInterface = mock( LogChannelInterface.class );
+    mockVariableSpace = mock( VariableSpace.class );
+    mockLdapMeta = mock( LdapMeta.class );
   }
 
   @Test
   public void testLdapProtocolAddsLdapPrefixIfNecessary() throws KettleException {
     String hostConcrete = "host_concrete";
     String portConcrete = "12345";
-    when(mockLdapMeta.getHost()).thenReturn(hostConcrete);
-    when(mockLdapMeta.getPort()).thenReturn(portConcrete);
-    when(mockLdapMeta.getDerefAliases()).thenReturn("always");
-    when(mockLdapMeta.getReferrals()).thenReturn("follow");
+    when( mockLdapMeta.getHost() ).thenReturn( hostConcrete );
+    when( mockLdapMeta.getPort() ).thenReturn( portConcrete );
+    when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
+    when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
 
-    when(mockVariableSpace.environmentSubstitute(eq(hostConcrete))).thenReturn(hostConcrete);
-    when(mockVariableSpace.environmentSubstitute(eq(portConcrete))).thenReturn(portConcrete);
+    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
-    TestableLdapProtocol testableLdapProtocol = new TestableLdapProtocol(mockLogChannelInterface, mockVariableSpace,
-        mockLdapMeta, null);
-    testableLdapProtocol.connect(null, null);
+    TestableLdapProtocol testableLdapProtocol =
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+    testableLdapProtocol.connect( null, null );
 
-    assertEquals(testableLdapProtocol.getConnectionPrefix() + hostConcrete + ":" + portConcrete,
-        testableLdapProtocol.contextEnv.get(Context.PROVIDER_URL));
+    assertEquals(
+      testableLdapProtocol.getConnectionPrefix() + hostConcrete + ":" + portConcrete,
+      testableLdapProtocol.contextEnv.get( Context.PROVIDER_URL ) );
   }
 
   @Test
@@ -109,113 +110,115 @@ public class LdapSslProtocolTest {
     String hostnameConcrete = "host_concrete";
     String hostConcrete = "ldaps://" + hostnameConcrete;
     String portConcrete = "12345";
-    when(mockLdapMeta.getHost()).thenReturn(hostConcrete);
-    when(mockLdapMeta.getPort()).thenReturn(portConcrete);
-    when(mockLdapMeta.getDerefAliases()).thenReturn("always");
-    when(mockLdapMeta.getReferrals()).thenReturn("follow");
+    when( mockLdapMeta.getHost() ).thenReturn( hostConcrete );
+    when( mockLdapMeta.getPort() ).thenReturn( portConcrete );
+    when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
+    when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
 
-    when(mockVariableSpace.environmentSubstitute(eq(hostConcrete))).thenReturn(hostConcrete);
-    when(mockVariableSpace.environmentSubstitute(eq(portConcrete))).thenReturn(portConcrete);
+    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
-    TestableLdapProtocol testableLdapProtocol = new TestableLdapProtocol(mockLogChannelInterface, mockVariableSpace,
-        mockLdapMeta, null);
-    testableLdapProtocol.connect(null, null);
+    TestableLdapProtocol testableLdapProtocol =
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+    testableLdapProtocol.connect( null, null );
 
-    assertEquals(testableLdapProtocol.getConnectionPrefix() + hostnameConcrete + ":" + portConcrete,
-        testableLdapProtocol.contextEnv.get(Context.PROVIDER_URL));
+    assertEquals(
+      testableLdapProtocol.getConnectionPrefix() + hostnameConcrete + ":" + portConcrete,
+      testableLdapProtocol.contextEnv.get( Context.PROVIDER_URL ) );
   }
-  
+
   @Test
   public void testLdapProtocolSetsSsl() throws KettleException {
     String hostConcrete = "host_concrete";
     String portConcrete = "12345";
-    when(mockLdapMeta.getHost()).thenReturn(hostConcrete);
-    when(mockLdapMeta.getPort()).thenReturn(portConcrete);
-    when(mockLdapMeta.getDerefAliases()).thenReturn("always");
-    when(mockLdapMeta.getReferrals()).thenReturn("follow");
+    when( mockLdapMeta.getHost() ).thenReturn( hostConcrete );
+    when( mockLdapMeta.getPort() ).thenReturn( portConcrete );
+    when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
+    when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
 
-    when(mockVariableSpace.environmentSubstitute(eq(hostConcrete))).thenReturn(hostConcrete);
-    when(mockVariableSpace.environmentSubstitute(eq(portConcrete))).thenReturn(portConcrete);
+    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
-    TestableLdapProtocol testableLdapProtocol = new TestableLdapProtocol(mockLogChannelInterface, mockVariableSpace,
-        mockLdapMeta, null);
-    testableLdapProtocol.connect(null, null);
+    TestableLdapProtocol testableLdapProtocol =
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+    testableLdapProtocol.connect( null, null );
 
-    assertEquals("ssl", testableLdapProtocol.contextEnv.get(Context.SECURITY_PROTOCOL));
+    assertEquals( "ssl", testableLdapProtocol.contextEnv.get( Context.SECURITY_PROTOCOL ) );
   }
-  
+
   @Test
   public void testLdapProtocolSetsSocketFactory() throws KettleException {
     String hostConcrete = "host_concrete";
     String portConcrete = "12345";
-    when(mockLdapMeta.getHost()).thenReturn(hostConcrete);
-    when(mockLdapMeta.getPort()).thenReturn(portConcrete);
-    when(mockLdapMeta.getDerefAliases()).thenReturn("always");
-    when(mockLdapMeta.getReferrals()).thenReturn("follow");
+    when( mockLdapMeta.getHost() ).thenReturn( hostConcrete );
+    when( mockLdapMeta.getPort() ).thenReturn( portConcrete );
+    when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
+    when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
 
-    when(mockVariableSpace.environmentSubstitute(eq(hostConcrete))).thenReturn(hostConcrete);
-    when(mockVariableSpace.environmentSubstitute(eq(portConcrete))).thenReturn(portConcrete);
+    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
-    TestableLdapProtocol testableLdapProtocol = new TestableLdapProtocol(mockLogChannelInterface, mockVariableSpace,
-        mockLdapMeta, null);
-    testableLdapProtocol.connect(null, null);
+    TestableLdapProtocol testableLdapProtocol =
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+    testableLdapProtocol.connect( null, null );
 
-    assertEquals(CustomSocketFactory.class.getCanonicalName(), testableLdapProtocol.contextEnv.get("java.naming.ldap.factory.socket"));
+    assertEquals( CustomSocketFactory.class.getCanonicalName(), testableLdapProtocol.contextEnv
+      .get( "java.naming.ldap.factory.socket" ) );
   }
-  
+
   @Test
   public void testLdapProtocolSkipsConfiguresSocketFactoryIfNecessary() throws KettleException {
     String hostConcrete = "host_concrete";
     String portConcrete = "12345";
     String trustStorePath = "TEST_PATH";
     String trustStorePassword = "TEST_PASSWORD";
-    
-    when(mockLdapMeta.getHost()).thenReturn(hostConcrete);
-    when(mockLdapMeta.getPort()).thenReturn(portConcrete);
-    when(mockLdapMeta.getDerefAliases()).thenReturn("always");
-    when(mockLdapMeta.getReferrals()).thenReturn("follow");
-    when(mockLdapMeta.isUseCertificate()).thenReturn(false);
-    when(mockLdapMeta.isTrustAllCertificates()).thenReturn(true);
-    when(mockLdapMeta.getTrustStorePath()).thenReturn(trustStorePath);
-    when(mockLdapMeta.getTrustStorePassword()).thenReturn(trustStorePassword);
 
-    when(mockVariableSpace.environmentSubstitute(eq(hostConcrete))).thenReturn(hostConcrete);
-    when(mockVariableSpace.environmentSubstitute(eq(portConcrete))).thenReturn(portConcrete);
+    when( mockLdapMeta.getHost() ).thenReturn( hostConcrete );
+    when( mockLdapMeta.getPort() ).thenReturn( portConcrete );
+    when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
+    when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
+    when( mockLdapMeta.isUseCertificate() ).thenReturn( false );
+    when( mockLdapMeta.isTrustAllCertificates() ).thenReturn( true );
+    when( mockLdapMeta.getTrustStorePath() ).thenReturn( trustStorePath );
+    when( mockLdapMeta.getTrustStorePassword() ).thenReturn( trustStorePassword );
 
-    TestableLdapProtocol testableLdapProtocol = new TestableLdapProtocol(mockLogChannelInterface, mockVariableSpace,
-        mockLdapMeta, null);
-    testableLdapProtocol.connect(null, null);
+    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
-    assertEquals(false, testableLdapProtocol.trustAllCertificates);
-    assertEquals(null, testableLdapProtocol.trustStorePath);
-    assertEquals(null, testableLdapProtocol.trustStorePassword);
+    TestableLdapProtocol testableLdapProtocol =
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+    testableLdapProtocol.connect( null, null );
+
+    assertEquals( false, testableLdapProtocol.trustAllCertificates );
+    assertEquals( null, testableLdapProtocol.trustStorePath );
+    assertEquals( null, testableLdapProtocol.trustStorePassword );
   }
-  
+
   @Test
   public void testLdapProtocolConfiguresSocketFactoryIfNecessary() throws KettleException {
     String hostConcrete = "host_concrete";
     String portConcrete = "12345";
     String trustStorePath = "TEST_PATH";
     String trustStorePassword = "TEST_PASSWORD";
-    
-    when(mockLdapMeta.getHost()).thenReturn(hostConcrete);
-    when(mockLdapMeta.getPort()).thenReturn(portConcrete);
-    when(mockLdapMeta.getDerefAliases()).thenReturn("always");
-    when(mockLdapMeta.getReferrals()).thenReturn("follow");
-    when(mockLdapMeta.isUseCertificate()).thenReturn(true);
-    when(mockLdapMeta.isTrustAllCertificates()).thenReturn(true);
-    when(mockLdapMeta.getTrustStorePath()).thenReturn(trustStorePath);
-    when(mockLdapMeta.getTrustStorePassword()).thenReturn(trustStorePassword);
 
-    when(mockVariableSpace.environmentSubstitute(eq(hostConcrete))).thenReturn(hostConcrete);
-    when(mockVariableSpace.environmentSubstitute(eq(portConcrete))).thenReturn(portConcrete);
+    when( mockLdapMeta.getHost() ).thenReturn( hostConcrete );
+    when( mockLdapMeta.getPort() ).thenReturn( portConcrete );
+    when( mockLdapMeta.getDerefAliases() ).thenReturn( "always" );
+    when( mockLdapMeta.getReferrals() ).thenReturn( "follow" );
+    when( mockLdapMeta.isUseCertificate() ).thenReturn( true );
+    when( mockLdapMeta.isTrustAllCertificates() ).thenReturn( true );
+    when( mockLdapMeta.getTrustStorePath() ).thenReturn( trustStorePath );
+    when( mockLdapMeta.getTrustStorePassword() ).thenReturn( trustStorePassword );
 
-    TestableLdapProtocol testableLdapProtocol = new TestableLdapProtocol(mockLogChannelInterface, mockVariableSpace,
-        mockLdapMeta, null);
-    testableLdapProtocol.connect(null, null);
+    when( mockVariableSpace.environmentSubstitute( eq( hostConcrete ) ) ).thenReturn( hostConcrete );
+    when( mockVariableSpace.environmentSubstitute( eq( portConcrete ) ) ).thenReturn( portConcrete );
 
-    assertEquals(true, testableLdapProtocol.trustAllCertificates);
-    assertEquals(trustStorePath, testableLdapProtocol.trustStorePath);
-    assertEquals(trustStorePassword, testableLdapProtocol.trustStorePassword);
+    TestableLdapProtocol testableLdapProtocol =
+      new TestableLdapProtocol( mockLogChannelInterface, mockVariableSpace, mockLdapMeta, null );
+    testableLdapProtocol.connect( null, null );
+
+    assertEquals( true, testableLdapProtocol.trustAllCertificates );
+    assertEquals( trustStorePath, testableLdapProtocol.trustStorePath );
+    assertEquals( trustStorePassword, testableLdapProtocol.trustStorePassword );
   }
 }

@@ -36,7 +36,7 @@ public class JobGraphJobEntryMenuExtension {
   public XulDomContainer xulDomContainer;
 
   public JobGraphJobEntryMenuExtension( XulDomContainer xulDomContainer, Document doc, JobMeta jobMeta,
-      JobEntryCopy jobEntry, JobGraph jobGraph ) {
+    JobEntryCopy jobEntry, JobGraph jobGraph ) {
     this.xulDomContainer = xulDomContainer;
     this.doc = doc;
     this.jobMeta = jobMeta;

@@ -66,13 +66,13 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 /**
  * Dialog class for the StringOperations step.
- * 
+ *
  * @author Samatar Hassan
  * @since 02 April 2009
  */
 public class StringOperationsDialog extends BaseStepDialog implements StepDialogInterface {
 
-  private static Class<?> PKG = StringOperationsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StringOperationsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlKey;
 
@@ -150,40 +150,52 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
 
     ciKey = new ColumnInfo[nrFieldCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.InStreamField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.InStreamField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.OutStreamField" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.OutStreamField" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciKey[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.Trim" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.trimTypeDesc, true );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.Trim" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.trimTypeDesc, true );
     ciKey[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.LowerUpper" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.lowerUpperDesc, true );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.LowerUpper" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.lowerUpperDesc, true );
     ciKey[4] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.Padding" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.paddingDesc, true );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.Padding" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.paddingDesc, true );
     ciKey[5] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.CharPad" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.CharPad" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciKey[6] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.LenPad" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.LenPad" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciKey[7] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.InitCap" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.initCapDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.InitCap" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.initCapDesc );
     ciKey[8] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.MaskXML" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.maskXMLDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.MaskXML" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.maskXMLDesc );
     ciKey[9] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.Digits" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.digitsDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.Digits" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.digitsDesc );
     ciKey[10] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.RemoveSpecialCharacters" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.removeSpecialCharactersDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.RemoveSpecialCharacters" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.removeSpecialCharactersDesc );
 
-    ciKey[1].setToolTip( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.OutStreamField.Tooltip" ) );
+    ciKey[1]
+      .setToolTip( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.OutStreamField.Tooltip" ) );
     ciKey[1].setUsingVariables( true );
     ciKey[4].setUsingVariables( true );
     ciKey[5].setUsingVariables( true );
@@ -191,8 +203,9 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
     ciKey[7].setUsingVariables( true );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrFieldRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+        nrFieldRows, lsMod, props );
 
     fdKey = new FormData();
     fdKey.left = new FormAttachment( 0, 0 );
@@ -345,7 +358,8 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
         item.setText( 8, StringOperationsMeta.getInitCapDesc( input.getInitCap()[i] ) );
         item.setText( 9, StringOperationsMeta.getMaskXMLDesc( input.getMaskXML()[i] ) );
         item.setText( 10, StringOperationsMeta.getDigitsDesc( input.getDigits()[i] ) );
-        item.setText( 11, StringOperationsMeta.getRemoveSpecialCharactersDesc( input.getRemoveSpecialCharacters()[i] ) );
+        item.setText( 11, StringOperationsMeta
+          .getRemoveSpecialCharactersDesc( input.getRemoveSpecialCharacters()[i] ) );
       }
     }
 
@@ -369,6 +383,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
     if ( isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "StringOperationsDialog.Log.FoundFields", String.valueOf( nrkeys ) ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       inf.getFieldInStream()[i] = item.getText( 1 );
@@ -412,8 +427,8 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
               tableItem.setText( 8, BaseMessages.getString( PKG, "System.Combo.No" ) );
               tableItem.setText( 9, BaseMessages.getString( PKG, "StringOperationsMeta.MaskXML.None" ) );
               tableItem.setText( 10, BaseMessages.getString( PKG, "StringOperationsMeta.Digits.None" ) );
-              tableItem
-                  .setText( 11, BaseMessages.getString( PKG, "StringOperationsMeta.RemoveSpecialCharacters.None" ) );
+              tableItem.setText( 11, BaseMessages.getString(
+                PKG, "StringOperationsMeta.RemoveSpecialCharacters.None" ) );
               return true;
             } else {
               return false;
@@ -425,8 +440,9 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
 
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "StringOperationsDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "StringOperationsDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "StringOperationsDialog.FailedToGetFields.DialogTitle" ),
+        BaseMessages.getString( PKG, "StringOperationsDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 }

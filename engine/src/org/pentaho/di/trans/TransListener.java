@@ -28,7 +28,7 @@ public interface TransListener {
 
   /**
    * This transformation started
-   * 
+   *
    * @param trans
    * @throws KettleException
    */
@@ -36,7 +36,7 @@ public interface TransListener {
 
   /**
    * This transformation went from an in-active to an active state.
-   * 
+   *
    * @param trans
    * @throws KettleException
    */
@@ -44,7 +44,7 @@ public interface TransListener {
 
   /**
    * The transformation has finished.
-   * 
+   *
    * @param trans
    * @throws KettleException
    */

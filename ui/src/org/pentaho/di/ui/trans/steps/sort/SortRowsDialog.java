@@ -68,7 +68,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class SortRowsDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = SortRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SortRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlSortDir;
   private Button wbSortDir;
@@ -318,21 +318,29 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
     final int FieldsRows = input.getFieldName().length;
 
     colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "SortRowsDialog.Fieldname.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SortRowsDialog.Ascending.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) } ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SortRowsDialog.CaseInsensitive.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) } ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SortRowsDialog.PreSortedField.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) } ) };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SortRowsDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SortRowsDialog.Ascending.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          new String[] {
+            BaseMessages.getString( PKG, "System.Combo.Yes" ),
+            BaseMessages.getString( PKG, "System.Combo.No" ) } ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SortRowsDialog.CaseInsensitive.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+            BaseMessages.getString( PKG, "System.Combo.Yes" ),
+            BaseMessages.getString( PKG, "System.Combo.No" ) } ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SortRowsDialog.PreSortedField.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+            BaseMessages.getString( PKG, "System.Combo.Yes" ),
+            BaseMessages.getString( PKG, "System.Combo.No" ) } ) };
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -471,11 +479,11 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
       ti.setText( 0, "" + ( i + 1 ) );
       ti.setText( 1, input.getFieldName()[i] );
       ti.setText( 2, input.getAscending()[i] ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages
-          .getString( PKG, "System.Combo.No" ) );
-      ti.setText( 3, input.getCaseSensitive()[i] ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages
-          .getString( PKG, "System.Combo.No" ) );
-      ti.setText( 4, input.getPreSortedField()[i] ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages
-          .getString( PKG, "System.Combo.No" ) );
+        .getString( PKG, "System.Combo.No" ) );
+      ti.setText( 3, input.getCaseSensitive()[i]
+        ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
+      ti.setText( 4, input.getPreSortedField()[i]
+        ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
     }
 
     wFields.setRowNums();
@@ -513,16 +521,14 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
     input.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
+    //CHECKSTYLE:LineLength:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
       input.getFieldName()[i] = ti.getText( 1 );
-      input.getAscending()[i] =
-          Const.isEmpty( ti.getText( 2 ) )
-              || BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 2 ) );
-      input.getCaseSensitive()[i] =
-          BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 3 ) );
-      input.getPreSortedField()[i] =
-          BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
+      input.getAscending()[i] = Const.isEmpty( ti.getText( 2 ) ) || BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 2 ) );
+      input.getCaseSensitive()[i] = BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 3 ) );
+      input.getPreSortedField()[i] = BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
     }
 
     dispose();
@@ -538,11 +544,12 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
             return true;
           }
         };
-        BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, insertListener );
+        BaseStepDialog
+          .getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, insertListener );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+        .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
 
   }

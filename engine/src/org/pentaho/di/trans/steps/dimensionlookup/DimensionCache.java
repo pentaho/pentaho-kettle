@@ -34,12 +34,12 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 /**
  * This class will act as a special purpose dimension Cache. The idea here is to not only cache the last version of a
  * dimension entry, but all versions. So basically, the entry key is the natural key as well as the from-to date range.
- * 
+ *
  * The way to achieve that result is to keep a sorted list in memory. Because we want as few conversion errors as
  * possible, we'll use the same row as we get from the database.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class DimensionCache implements Comparator<Object[]> {
   private RowMetaInterface rowMeta;
@@ -50,7 +50,7 @@ public class DimensionCache implements Comparator<Object[]> {
 
   /**
    * Create a new dimension cache object
-   * 
+   *
    * @param rowMeta
    *          the description of the rows to store
    * @param keyIndexes
@@ -69,7 +69,7 @@ public class DimensionCache implements Comparator<Object[]> {
 
   /**
    * Add a row to the back of the list
-   * 
+   *
    * @param row
    *          the row to add
    */
@@ -79,7 +79,7 @@ public class DimensionCache implements Comparator<Object[]> {
 
   /**
    * Get a row from the cache on a certain index
-   * 
+   *
    * @param index
    *          the index to look for
    * @return the row on the specified index
@@ -90,7 +90,7 @@ public class DimensionCache implements Comparator<Object[]> {
 
   /**
    * Insert a row into the list on a certain index
-   * 
+   *
    * @param index
    *          the index on which the row should be inserted
    * @param row
@@ -102,7 +102,7 @@ public class DimensionCache implements Comparator<Object[]> {
 
   /**
    * Looks up a row in the (sorted) cache.
-   * 
+   *
    * @param lookupRowData
    *          The data of the lookup row. Make sure that on the index of the from date, you put the lookup date.
    * @throws a
@@ -150,7 +150,8 @@ public class DimensionCache implements Comparator<Object[]> {
                 // TODO: print the row perhaps?
                 //
                 throw new KettleException(
-                    "Key sorting problem detected during row cache lookup: the lookup date of the row retrieved is higher than or equal to the end of the date range." );
+                  "Key sorting problem detected during row cache lookup: the lookup date of "
+                    + "the row retrieved is higher than or equal to the end of the date range." );
               }
             } else if ( fromDate != null && toDate == null ) {
               // This is the case where the toDate is null and the fromDate is not.
@@ -163,16 +164,16 @@ public class DimensionCache implements Comparator<Object[]> {
                 // TODO: print the row perhaps?
                 //
                 throw new KettleException(
-                    "Key sorting problem detected during row cache lookup: the lookup date of the row retrieved is lower than or equal to the start of the date range." );
+                  "Key sorting problem detected during row cache lookup: the lookup date of the row "
+                    + "retrieved is lower than or equal to the start of the date range." );
               }
             } else {
               // Both dates are available: simply see if the lookup date falls in between...
               //
               if ( fromDate.compareTo( lookupDate ) <= 0 && toDate.compareTo( lookupDate ) > 0 ) {
                 return insertionPoint;
-              } else {
-                // This is a cache miss.
               }
+              // Else this is a cache miss.
             }
           }
         }
@@ -189,7 +190,7 @@ public class DimensionCache implements Comparator<Object[]> {
 
   /**
    * Compare 2 rows of data using the natural keys and indexes specified.
-   * 
+   *
    * @param o1
    * @param o2
    * @return

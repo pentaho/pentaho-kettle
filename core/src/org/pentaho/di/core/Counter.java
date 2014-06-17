@@ -24,10 +24,10 @@ package org.pentaho.di.core;
 
 /**
  * Is used to keep the state of sequences / counters throughout a single session of a Transformation, but across Steps.
- * 
+ *
  * @author Matt
  * @since 13-05-2003
- * 
+ *
  */
 public class Counter {
   private long counter;

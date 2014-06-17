@@ -61,13 +61,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a 'delete file' job entry. Its main use would be to delete trigger files, but it will delete any file.
- * 
+ *
  * @author Sven Boden
  * @since 10-02-2007
- * 
+ *
  */
 public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryDeleteFile.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryDeleteFile.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
   private boolean failIfFileNotExists;
@@ -76,7 +76,6 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
     super( n, "" );
     filename = null;
     failIfFileNotExists = false;
-    setID( -1L );
   }
 
   public JobEntryDeleteFile() {
@@ -98,26 +97,26 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       filename = XMLHandler.getTagValue( entrynode, "filename" );
       failIfFileNotExists = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "fail_if_file_not_exists" ) );
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "JobEntryDeleteFile.Error_0001_Unable_To_Load_Job_From_Xml_Node" ), xe );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "JobEntryDeleteFile.Error_0001_Unable_To_Load_Job_From_Xml_Node" ), xe );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       filename = rep.getJobEntryAttributeString( id_jobentry, "filename" );
       failIfFileNotExists = rep.getJobEntryAttributeBoolean( id_jobentry, "fail_if_file_not_exists" );
     } catch ( KettleException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryDeleteFile.ERROR_0002_Unable_To_Load_From_Repository", id_jobentry ), dbe );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "JobEntryDeleteFile.ERROR_0002_Unable_To_Load_From_Repository", id_jobentry ), dbe );
     }
   }
 
@@ -126,8 +125,8 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
       rep.saveJobEntryAttribute( id_job, getObjectId(), "filename", filename );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "fail_if_file_not_exists", failIfFileNotExists );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryDeleteFile.ERROR_0003_Unable_To_Save_Job_To_Repository", id_job ), dbe );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "JobEntryDeleteFile.ERROR_0003_Unable_To_Save_Job_To_Repository", id_job ), dbe );
     }
   }
 
@@ -158,7 +157,8 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
           if ( isFailIfFileNotExists() ) {
             // File doesn't exist and fail flag is on.
             result.setResult( false );
-            logError( BaseMessages.getString( PKG, "JobEntryDeleteFile.ERROR_0004_File_Does_Not_Exist", realFilename ) );
+            logError( BaseMessages.getString(
+              PKG, "JobEntryDeleteFile.ERROR_0004_File_Does_Not_Exist", realFilename ) );
           } else {
             // File already deleted, no reason to try to delete it
             result.setResult( true );
@@ -169,7 +169,8 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
         } else {
           boolean deleted = fileObject.delete();
           if ( !deleted ) {
-            logError( BaseMessages.getString( PKG, "JobEntryDeleteFile.ERROR_0005_Could_Not_Delete_File", realFilename ) );
+            logError( BaseMessages.getString(
+              PKG, "JobEntryDeleteFile.ERROR_0005_Could_Not_Delete_File", realFilename ) );
             result.setResult( false );
             result.setNrErrors( 1 );
           }
@@ -179,8 +180,8 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
           result.setResult( true );
         }
       } catch ( Exception e ) {
-        logError( BaseMessages.getString( PKG, "JobEntryDeleteFile.ERROR_0006_Exception_Deleting_File", realFilename, e
-            .getMessage() ), e );
+        logError( BaseMessages.getString(
+          PKG, "JobEntryDeleteFile.ERROR_0006_Exception_Deleting_File", realFilename, e.getMessage() ), e );
         result.setResult( false );
         result.setNrErrors( 1 );
       } finally {
@@ -222,8 +223,8 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
     return references;
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace( ctx, getVariables() );
     putValidators( ctx, notNullValidator(), fileExistsValidator() );

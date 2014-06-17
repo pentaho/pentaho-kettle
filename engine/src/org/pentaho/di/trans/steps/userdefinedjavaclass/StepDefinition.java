@@ -47,7 +47,9 @@ public class StepDefinition implements Cloneable {
   public Object clone() throws CloneNotSupportedException {
     StepDefinition retval;
     retval = (StepDefinition) super.clone();
-    retval.stepMeta = (StepMeta) stepMeta.clone();
+    if ( stepMeta != null ) {
+      retval.stepMeta = (StepMeta) stepMeta.clone();
+    }
     return retval;
   }
 }

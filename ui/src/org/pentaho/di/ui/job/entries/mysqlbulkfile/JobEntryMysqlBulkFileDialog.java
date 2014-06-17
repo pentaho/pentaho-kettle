@@ -66,12 +66,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 /**
  * This dialog allows you to edit the MYSQL Bulk Load To a file entry settings. (select the connection and the table to
  * be checked) This entry type evaluates!
- * 
+ *
  * @author Samatar
  * @since 06-03-2006
  */
 public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryMysqlBulkFile.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryMysqlBulkFile.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILETYPES = new String[] {
     BaseMessages.getString( PKG, "JobMysqlBulkFile.Filetype.Text" ),
@@ -806,7 +806,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
 
   /**
    * Get a list of columns, comma separated, allow the user to select from it.
-   * 
+   *
    */
   private void getListColumns() {
     if ( !Const.isEmpty( wTablename.getText() ) ) {
@@ -817,7 +817,7 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
         try {
           database.connect();
           String schemaTable =
-              databaseMeta.getQuotedSchemaTableCombination( wSchemaname.getText(), wTablename.getText() );
+            databaseMeta.getQuotedSchemaTableCombination( wSchemaname.getText(), wTablename.getText() );
           RowMetaInterface row = database.getTableFields( schemaTable );
           String[] available = row.getFieldNames();
 
@@ -826,10 +826,9 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
             source[i] = Const.trim( source[i] );
           }
           int[] idxSource = Const.indexsOfStrings( source, available );
-          EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, available, BaseMessages.getString( PKG,
-                  "JobMysqlBulkFile.SelectColumns.Title" ), BaseMessages.getString( PKG,
-                  "JobMysqlBulkFile.SelectColumns.Message" ) );
+          EnterSelectionDialog dialog = new EnterSelectionDialog( shell, available,
+            BaseMessages.getString( PKG, "JobMysqlBulkFile.SelectColumns.Title" ),
+            BaseMessages.getString( PKG, "JobMysqlBulkFile.SelectColumns.Message" ) );
           dialog.setMulti( true );
           dialog.setAvoidQuickSearch();
           dialog.setSelectedNrs( idxSource );
@@ -845,8 +844,8 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
             wListColumn.setText( columns );
           }
         } catch ( KettleDatabaseException e ) {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-              PKG, "JobMysqlBulkFile.ConnectionError2.DialogMessage" ), e );
+          new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+            .getString( PKG, "JobMysqlBulkFile.ConnectionError2.DialogMessage" ), e );
         } finally {
           database.disconnect();
         }

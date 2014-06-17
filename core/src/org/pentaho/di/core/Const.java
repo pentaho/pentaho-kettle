@@ -1,3 +1,4 @@
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -55,35 +56,60 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
+import org.pentaho.di.version.BuildVersion;
 
 /**
  * This class is used to define a number of default values for various settings throughout Kettle. It also contains a
  * number of static final methods to make your life easier.
- * 
+ *
  * @author Matt
  * @since 07-05-2003
- * 
+ *
  */
 public class Const {
-  private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!
 
   /**
    * Version number
+   *
+   * @deprecated Use {@link BuildVersion#getVersion()} instead
    */
-  public static final String VERSION = "5.1-SNAPSHOT";
+  @Deprecated
+  public static final String VERSION = BuildVersion.getInstance().getVersion();
 
   /**
    * Copyright year
    */
-  public static final String COPYRIGHT_YEAR = "2013";
+  public static final String COPYRIGHT_YEAR = "2014";
 
   /**
    * Release Type
    */
   public enum ReleaseType {
-    RELEASE_CANDIDATE, MILESTONE, PREVIEW, GA
+    RELEASE_CANDIDATE {
+      public String getMessage() {
+        return BaseMessages.getString( PKG, "Const.PreviewRelease.HelpAboutText" );
+      }
+    },
+    MILESTONE {
+      public String getMessage() {
+        return BaseMessages.getString( PKG, "Const.Candidate.HelpAboutText" );
+      }
+    },
+    PREVIEW {
+      public String getMessage() {
+        return BaseMessages.getString( PKG, "Const.Milestone.HelpAboutText" );
+      }
+    },
+    GA {
+      public String getMessage() {
+        return BaseMessages.getString( PKG, "Const.GA.HelpAboutText" );
+      }
+    };
+    public abstract String getMessage();
   }
 
   /**
@@ -148,23 +174,23 @@ public class Const {
 
   /**
    * Path to the users home directory (keep this entry above references to getKettleDirectory())
-   * 
-   * @deprecated Use {@link Const.getUserHomeDirectory()} instead.
+   *
+   * @deprecated Use {@link Const#getUserHomeDirectory()} instead.
    */
   @Deprecated
   public static final String USER_HOME_DIRECTORY = NVL( System.getProperty( "KETTLE_HOME" ), System
-      .getProperty( "user.home" ) );
+    .getProperty( "user.home" ) );
 
   /**
    * Path to the simple-jndi directory
    */
 
   public static String JNDI_DIRECTORY = NVL( System.getProperty( "KETTLE_JNDI_ROOT" ), System
-      .getProperty( "org.osjava.sj.root" ) );
+    .getProperty( "org.osjava.sj.root" ) );
 
   /*
    * The images directory
-   * 
+   *
    * public static final String IMAGE_DIRECTORY = "/ui/images/";
    */
 
@@ -173,8 +199,8 @@ public class Const {
    * the default comma separated list of base plugin folders.
    */
   public static final String DEFAULT_PLUGIN_BASE_FOLDERS = "plugins,"
-      + ( Const.isEmpty( getDIHomeDirectory() ) ? "" : getDIHomeDirectory() + FILE_SEPARATOR + "plugins," )
-      + getKettleDirectory() + FILE_SEPARATOR + "plugins";
+    + ( Const.isEmpty( getDIHomeDirectory() ) ? "" : getDIHomeDirectory() + FILE_SEPARATOR + "plugins," )
+    + getKettleDirectory() + FILE_SEPARATOR + "plugins";
 
   /**
    * Default minimum date range...
@@ -251,24 +277,25 @@ public class Const {
    * The default decimal separator . or ,
    */
   public static final char DEFAULT_DECIMAL_SEPARATOR = ( new DecimalFormatSymbols( DEFAULT_LOCALE ) )
-      .getDecimalSeparator();
+    .getDecimalSeparator();
 
   /**
    * The default grouping separator , or .
    */
   public static final char DEFAULT_GROUPING_SEPARATOR = ( new DecimalFormatSymbols( DEFAULT_LOCALE ) )
-      .getGroupingSeparator();
+    .getGroupingSeparator();
 
   /**
    * The default currency symbol
    */
   public static final String DEFAULT_CURRENCY_SYMBOL = ( new DecimalFormatSymbols( DEFAULT_LOCALE ) )
-      .getCurrencySymbol();
+    .getCurrencySymbol();
 
   /**
    * The default number format
    */
-  public static final String DEFAULT_NUMBER_FORMAT = ( (DecimalFormat) ( NumberFormat.getInstance() ) ).toPattern();
+  public static final String DEFAULT_NUMBER_FORMAT = ( (DecimalFormat) ( NumberFormat.getInstance() ) )
+    .toPattern();
 
   /**
    * Default string representing Null String values (empty)
@@ -353,8 +380,8 @@ public class Const {
   public static final String XML_ENCODING = "UTF-8";
 
   /** The possible extensions a transformation XML file can have. */
-  public static final String[] STRING_TRANS_AND_JOB_FILTER_EXT = new String[] { "*.ktr;*.kjb;*.xml", "*.ktr;*.xml",
-    "*.kjb;*.xml", "*.xml", "*.*" };
+  public static final String[] STRING_TRANS_AND_JOB_FILTER_EXT = new String[] {
+    "*.ktr;*.kjb;*.xml", "*.ktr;*.xml", "*.kjb;*.xml", "*.xml", "*.*" };
 
   /** The discriptions of the possible extensions a transformation XML file can have. */
   private static String[] STRING_TRANS_AND_JOB_FILTER_NAMES;
@@ -388,14 +415,14 @@ public class Const {
 
   /** The build version as an internal variable */
   public static final String INTERNAL_VARIABLE_KETTLE_BUILD_VERSION = INTERNAL_VARIABLE_PREFIX
-      + ".Kettle.Build.Version";
+    + ".Kettle.Build.Version";
 
   /** The build date as an internal variable */
   public static final String INTERNAL_VARIABLE_KETTLE_BUILD_DATE = INTERNAL_VARIABLE_PREFIX + ".Kettle.Build.Date";
 
   /** The job filename directory */
   public static final String INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY = INTERNAL_VARIABLE_PREFIX
-      + ".Job.Filename.Directory";
+    + ".Job.Filename.Directory";
 
   /** The job filename name */
   public static final String INTERNAL_VARIABLE_JOB_FILENAME_NAME = INTERNAL_VARIABLE_PREFIX + ".Job.Filename.Name";
@@ -405,7 +432,7 @@ public class Const {
 
   /** The job directory */
   public static final String INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY = INTERNAL_VARIABLE_PREFIX
-      + ".Job.Repository.Directory";
+    + ".Job.Repository.Directory";
 
   /** The job run ID */
   public static final String INTERNAL_VARIABLE_JOB_RUN_ID = INTERNAL_VARIABLE_PREFIX + ".Job.Run.ID";
@@ -417,43 +444,46 @@ public class Const {
    * All the internal transformation variables
    */
   public static final String[] INTERNAL_TRANS_VARIABLES = new String[] {
-    Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME,
-    Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY,
+    Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY,
+    Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME,
+    Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY,
 
   };
 
   /**
    * All the internal job variables
    */
-  public static final String[] INTERNAL_JOB_VARIABLES = new String[] { Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY,
-    Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, Const.INTERNAL_VARIABLE_JOB_NAME,
-    Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, Const.INTERNAL_VARIABLE_JOB_RUN_ID,
-    Const.INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR, };
+  public static final String[] INTERNAL_JOB_VARIABLES = new String[] {
+    Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME,
+    Const.INTERNAL_VARIABLE_JOB_NAME, Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
+    Const.INTERNAL_VARIABLE_JOB_RUN_ID, Const.INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR, };
 
   /** The transformation filename directory */
   public static final String INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY = INTERNAL_VARIABLE_PREFIX
-      + ".Transformation.Filename.Directory";
+    + ".Transformation.Filename.Directory";
 
   /** The transformation filename name */
   public static final String INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME = INTERNAL_VARIABLE_PREFIX
-      + ".Transformation.Filename.Name";
+    + ".Transformation.Filename.Name";
 
   /** The transformation name */
-  public static final String INTERNAL_VARIABLE_TRANSFORMATION_NAME = INTERNAL_VARIABLE_PREFIX + ".Transformation.Name";
+  public static final String INTERNAL_VARIABLE_TRANSFORMATION_NAME = INTERNAL_VARIABLE_PREFIX
+    + ".Transformation.Name";
 
   /** The transformation directory */
   public static final String INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY = INTERNAL_VARIABLE_PREFIX
-      + ".Transformation.Repository.Directory";
+    + ".Transformation.Repository.Directory";
 
   /** The step partition ID */
   public static final String INTERNAL_VARIABLE_STEP_PARTITION_ID = INTERNAL_VARIABLE_PREFIX + ".Step.Partition.ID";
 
   /** The step partition number */
-  public static final String INTERNAL_VARIABLE_STEP_PARTITION_NR = INTERNAL_VARIABLE_PREFIX + ".Step.Partition.Number";
+  public static final String INTERNAL_VARIABLE_STEP_PARTITION_NR = INTERNAL_VARIABLE_PREFIX
+    + ".Step.Partition.Number";
 
   /** The slave transformation number */
   public static final String INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER = INTERNAL_VARIABLE_PREFIX
-      + ".Slave.Transformation.Number";
+    + ".Slave.Transformation.Number";
 
   /** The slave transformation name */
   public static final String INTERNAL_VARIABLE_SLAVE_SERVER_NAME = INTERNAL_VARIABLE_PREFIX + ".Slave.Server.Name";
@@ -462,7 +492,8 @@ public class Const {
   public static final String INTERNAL_VARIABLE_CLUSTER_SIZE = INTERNAL_VARIABLE_PREFIX + ".Cluster.Size";
 
   /** The slave transformation number */
-  public static final String INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER = INTERNAL_VARIABLE_PREFIX + ".Step.Unique.Number";
+  public static final String INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER = INTERNAL_VARIABLE_PREFIX
+    + ".Step.Unique.Number";
 
   /** Is this transformation running clustered, on the master? */
   public static final String INTERNAL_VARIABLE_CLUSTER_MASTER = INTERNAL_VARIABLE_PREFIX + ".Cluster.Master";
@@ -661,7 +692,26 @@ public class Const {
    * converted into 192 or 192.168 depending on the decimal symbol). The default (N) will be to throw an error if
    * non-numeric symbols are found in the string.
    */
-  public static final String KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION = "KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION";
+  public static final String KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION =
+    "KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION";
+
+  /**
+   * System wide flag to ignore timezone while writing date/timestamp value to the database. See PDI-10749 for details.
+   */
+  public static final String KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE = "KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE";
+
+  /**
+   * System wide flag to set or not append and header options dependency on Text file output step. See PDI-5252 for
+   * details.
+   */
+  public static final String KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER =
+    "KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER";
+
+  /**
+   * You can use this variable to speed up hostname lookup. 
+   * Hostname lookup is performed by Kettle so that it is capable of logging the server on which a job or transformation is executed.
+   */
+  public static final String KETTLE_SYSTEM_HOSTNAME = "KETTLE_SYSTEM_HOSTNAME";
 
   /**
    * System wide flag to set the maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all
@@ -724,7 +774,7 @@ public class Const {
    * The default SAP ERP connection factory
    */
   public static final String KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME =
-      "org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory";
+    "org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory";
 
   /**
    * Name of the environment variable to specify additional classes to scan for plugin annotations
@@ -783,10 +833,26 @@ public class Const {
   public static final String XML_FILE_KETTLE_VALUEMETA_PLUGINS = "kettle-valuemeta-plugins.xml";
 
   /**
+   * The XML file that contains the list of native Kettle two-way password encoder plugins
+   */
+  public static final String XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS = "kettle-password-encoder-plugins.xml";
+
+  /**
    * The name of the environment variable that will contain the alternative location of the kettle-valuemeta-plugins.xml
    * file
    */
   public static final String KETTLE_VALUEMETA_PLUGINS_FILE = "KETTLE_VALUEMETA_PLUGINS_FILE";
+
+  /**
+   * Specifies the password encoding plugin to use by ID (Kettle is the default).
+   */
+  public static final String KETTLE_PASSWORD_ENCODER_PLUGIN = "KETTLE_PASSWORD_ENCODER_PLUGIN";
+
+  /**
+   * The name of the environment variable that will contain the alternative location of the kettle-password-encoder-plugins.xml
+   * file
+   */
+  public static final String KETTLE_PASSWORD_ENCODER_PLUGINS_FILE = "KETTLE_PASSWORD_ENCODER_PLUGINS_FILE";
 
   /**
    * The XML file that contains the list of native Kettle logging plugins
@@ -842,6 +908,16 @@ public class Const {
   public static final String XML_FILE_KETTLE_DATABASE_TYPES = "kettle-database-types.xml";
 
   /**
+   * The XML file that contains the list of native Kettle compression providers (None, ZIP, GZip, etc.)
+   */
+  public static final String XML_FILE_KETTLE_COMPRESSION_PROVIDERS = "kettle-compression-providers.xml";
+
+  /**
+   * The XML file that contains the list of native Kettle compression providers (None, ZIP, GZip, etc.)
+   */
+  public static final String XML_FILE_KETTLE_AUTHENTICATION_PROVIDERS = "kettle-authentication-providers.xml";
+
+  /**
    * The XML file that contains the list of native extension points (None by default, this is mostly for OEM purposes)
    */
   public static final String XML_FILE_KETTLE_EXTENSION_POINTS = "kettle-extension-points.xml";
@@ -871,12 +947,21 @@ public class Const {
    */
   public static final String KETTLE_DEFAULT_DATE_FORMAT = "KETTLE_DEFAULT_DATE_FORMAT";
 
+  // Null values tweaks
+  public static final String KETTLE_AGGREGATION_MIN_NULL_IS_VALUED = "KETTLE_AGGREGATION_MIN_NULL_IS_VALUED";
+  public static final String KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO = "KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO";
+
+  /**
+   * The name of the variable containing an alternative default timestamp format
+   */
+  public static final String KETTLE_DEFAULT_TIMESTAMP_FORMAT = "KETTLE_DEFAULT_TIMESTAMP_FORMAT";
+
   /**
    * Compatibility settings for setNrErrors
    */
   // see PDI-10270 for details.
   public static final String KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES =
-      "KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES";
+    "KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES";
 
   /**
    * The XML file that contains the list of native import rules
@@ -898,20 +983,25 @@ public class Const {
 
   /**
    * The name of the local client MetaStore
-   * 
+   *
    */
   public static final String PENTAHO_METASTORE_NAME = "Pentaho Local Client Metastore";
 
   /**
-   * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
-   * overflow while rounding
-   * 
-   * @param f
-   *          The value to round
-   * @param places
-   *          The number of decimal places
-   * @return The rounded floating point value
+   * A variable to configure turning on/off detailed subjects in log.
    */
+  public static final String KETTLE_LOG_MARK_MAPPINGS = "KETTLE_LOG_MARK_MAPPINGS";
+
+  /**
+  * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
+  * overflow while rounding
+  *
+  * @param f
+  *          The value to round
+  * @param places
+  *          The number of decimal places
+  * @return The rounded floating point value
+  */
 
   public static final double round( double f, int places ) {
     return round( f, places, java.math.BigDecimal.ROUND_HALF_EVEN );
@@ -920,7 +1010,7 @@ public class Const {
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
-   * 
+   *
    * @param f
    *          The value to round
    * @param places
@@ -948,19 +1038,19 @@ public class Const {
    * OLD code: caused a lot of problems with very small and very large numbers. It's a miracle it worked at all. Go
    * ahead, have a laugh... public static final float round(double f, int places) { float temp = (float) (f *
    * (Math.pow(10, places)));
-   * 
+   *
    * temp = (Math.round(temp));
-   * 
+   *
    * temp = temp / (int) (Math.pow(10, places));
-   * 
+   *
    * return temp;
-   * 
+   *
    * }
    */
 
   /**
    * Convert a String into an integer. If the conversion fails, assign a default value.
-   * 
+   *
    * @param str
    *          The String to convert to an integer
    * @param def
@@ -979,7 +1069,7 @@ public class Const {
 
   /**
    * Convert a String into a long integer. If the conversion fails, assign a default value.
-   * 
+   *
    * @param str
    *          The String to convert to a long integer
    * @param def
@@ -998,7 +1088,7 @@ public class Const {
 
   /**
    * Convert a String into a double. If the conversion fails, assign a default value.
-   * 
+   *
    * @param str
    *          The String to convert to a double
    * @param def
@@ -1018,7 +1108,7 @@ public class Const {
   /**
    * Convert a String into a date. The date format is <code>yyyy/MM/dd HH:mm:ss.SSS</code>. If the conversion fails,
    * assign a default value.
-   * 
+   *
    * @param str
    *          The String to convert into a Date
    * @param def
@@ -1037,7 +1127,7 @@ public class Const {
   /**
    * Determines whether or not a character is considered a space. A character is considered a space in Kettle if it is a
    * space, a tab, a newline or a cariage return.
-   * 
+   *
    * @param c
    *          The character to verify if it is a space.
    * @return true if the character is a space. false otherwise.
@@ -1048,8 +1138,8 @@ public class Const {
 
   /**
    * Left trim: remove spaces to the left of a String.
-   * 
-   * @param str
+   *
+   * @param source
    *          The String to left trim
    * @return The left trimmed String
    */
@@ -1067,8 +1157,8 @@ public class Const {
 
   /**
    * Right trim: remove spaces to the right of a string
-   * 
-   * @param str
+   *
+   * @param source
    *          The string to right trim
    * @return The trimmed string.
    */
@@ -1087,7 +1177,7 @@ public class Const {
 
   /**
    * Trims a string: removes the leading and trailing spaces of a String.
-   * 
+   *
    * @param str
    *          The string to trim
    * @return The trimmed string.
@@ -1117,7 +1207,7 @@ public class Const {
   /**
    * Right pad a string: adds spaces to a string until a certain length. If the length is smaller then the limit
    * specified, the String is truncated.
-   * 
+   *
    * @param ret
    *          The string to pad
    * @param limit
@@ -1135,7 +1225,7 @@ public class Const {
   /**
    * Right pad a StringBuffer: adds spaces to a string until a certain length. If the length is smaller then the limit
    * specified, the String is truncated.
-   * 
+   *
    * @param ret
    *          The StringBuffer to pad
    * @param limit
@@ -1158,7 +1248,7 @@ public class Const {
 
   /**
    * Replace values in a String with another.
-   * 
+   *
    * @param string
    *          The original String.
    * @param repl
@@ -1180,7 +1270,7 @@ public class Const {
 
   /**
    * Alternate faster version of string replace using a stringbuffer as input.
-   * 
+   *
    * @param str
    *          The string where we want to replace in
    * @param code
@@ -1205,7 +1295,7 @@ public class Const {
 
   /**
    * Count the number of spaces to the left of a text. (leading)
-   * 
+   *
    * @param field
    *          The text to examine
    * @return The number of leading spaces found.
@@ -1221,7 +1311,7 @@ public class Const {
 
   /**
    * Count the number of spaces to the right of a text. (trailing)
-   * 
+   *
    * @param field
    *          The text to examine
    * @return The number of trailing spaces found.
@@ -1237,7 +1327,7 @@ public class Const {
 
   /**
    * Checks whether or not a String consists only of spaces.
-   * 
+   *
    * @param str
    *          The string to check
    * @return true if the string has nothing but spaces.
@@ -1253,7 +1343,7 @@ public class Const {
 
   /**
    * determine the OS name
-   * 
+   *
    * @return The name of the OS
    */
   public static final String getOS() {
@@ -1263,7 +1353,7 @@ public class Const {
   /**
    * Determine the quoting character depending on the OS. Often used for shell calls, gives back " for Windows systems
    * otherwise '
-   * 
+   *
    * @return quoting character
    */
   public static String getQuoteCharByOS() {
@@ -1276,7 +1366,7 @@ public class Const {
 
   /**
    * Quote a string depending on the OS. Often used for shell calls.
-   * 
+   *
    * @return quoted string
    */
   public static String optionallyQuoteStringByOS( String string ) {
@@ -1316,12 +1406,27 @@ public class Const {
     return getOS().toUpperCase().contains( "OS X" );
   }
 
+  private static String cachedHostname;
+
   /**
    * Determine the hostname of the machine Kettle is running on
-   * 
+   *
    * @return The hostname
    */
   public static final String getHostname() {
+
+    if ( cachedHostname != null ) {
+      return cachedHostname;
+    }
+
+    // In case we don't want to leave anything to doubt...
+    //
+    String systemHostname = EnvUtil.getSystemProperty( KETTLE_SYSTEM_HOSTNAME );
+    if ( !isEmpty( systemHostname ) ) {
+      cachedHostname = systemHostname;
+      return systemHostname;
+    }
+
     String lastHostname = "localhost";
     try {
       Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
@@ -1337,20 +1442,68 @@ public class Const {
           // System.out.println("  Cann.hostname    : "+in.getCanonicalHostName());
           // System.out.println("  ip string        : "+in.toString());
           if ( !lastHostname.equalsIgnoreCase( "localhost" ) && !( lastHostname.indexOf( ':' ) >= 0 ) ) {
-            return lastHostname;
+            break;
           }
         }
       }
     } catch ( SocketException e ) {
-      return lastHostname;
+      // Eat exception, just return what you have
     }
+
+    cachedHostname = lastHostname;
 
     return lastHostname;
   }
 
   /**
+   * Determine the hostname of the machine Kettle is running on
+   *
+   * @return The hostname
+   */
+  public static final String getHostnameReal() {
+
+    // In case we don't want to leave anything to doubt...
+    //
+    String systemHostname = EnvUtil.getSystemProperty( KETTLE_SYSTEM_HOSTNAME );
+    if ( !isEmpty( systemHostname ) ) {
+      return systemHostname;
+    }
+
+    if ( isWindows() ) {
+      // Windows will always set the 'COMPUTERNAME' variable
+      return System.getenv( "COMPUTERNAME" );
+    } else {
+      // If it is not Windows then it is most likely a Unix-like operating system
+      // such as Solaris, AIX, HP-UX, Linux or MacOS.
+      // Most modern shells (such as Bash or derivatives) sets the
+      // HOSTNAME variable so lets try that first.
+      String hostname = System.getenv( "HOSTNAME" );
+      if ( hostname != null ) {
+        return hostname;
+      } else {
+        BufferedReader br;
+        try {
+          Process pr = Runtime.getRuntime().exec( "hostname" );
+          br = new BufferedReader( new InputStreamReader( pr.getInputStream() ) );
+          String line;
+          if ( ( line = br.readLine() ) != null ) {
+            return line;
+          }
+          pr.waitFor();
+          br.close();
+        } catch ( IOException e ) {
+          return getHostname();
+        } catch ( InterruptedException e ) {
+          return getHostname();
+        }
+      }
+    }
+    return getHostname();
+  }
+
+  /**
    * Determins the IP address of the machine Kettle is running on.
-   * 
+   *
    * @return The IP address
    */
   public static final String getIPAddress() throws Exception {
@@ -1370,11 +1523,11 @@ public class Const {
 
   /**
    * Get the primary IP address tied to a network interface (excluding loop-back etc)
-   * 
+   *
    * @param networkInterfaceName
    *          the name of the network interface to interrogate
    * @return null if the network interface or address wasn't found.
-   * 
+   *
    * @throws SocketException
    *           in case of a security or network error
    */
@@ -1393,7 +1546,7 @@ public class Const {
 
   /**
    * Tries to determine the MAC address of the machine Kettle is running on.
-   * 
+   *
    * @return The MAC address.
    */
   public static final String getMACAddress() throws Exception {
@@ -1405,9 +1558,10 @@ public class Const {
     Boolean errorOccured = false;
     // System.out.println("os = "+os+", ip="+ip);
 
-    if ( os.equalsIgnoreCase( "Windows NT" ) || os.equalsIgnoreCase( "Windows 2000" )
-        || os.equalsIgnoreCase( "Windows XP" ) || os.equalsIgnoreCase( "Windows 95" )
-        || os.equalsIgnoreCase( "Windows 98" ) || os.equalsIgnoreCase( "Windows Me" ) || os.startsWith( "Windows" ) ) {
+    if ( os.equalsIgnoreCase( "Windows NT" )
+      || os.equalsIgnoreCase( "Windows 2000" ) || os.equalsIgnoreCase( "Windows XP" )
+      || os.equalsIgnoreCase( "Windows 95" ) || os.equalsIgnoreCase( "Windows 98" )
+      || os.equalsIgnoreCase( "Windows Me" ) || os.startsWith( "Windows" ) ) {
       try {
         // System.out.println("EXEC> nbtstat -a "+ip);
 
@@ -1506,7 +1660,7 @@ public class Const {
   /**
    * Looks up the user's home directory (or KETTLE_HOME) for every invocation. This is no longer a static property so
    * the value may be set after this class is loaded.
-   * 
+   *
    * @return The path to the users home directory, or the System property {@code KETTLE_HOME} if set.
    */
   public static final String getUserHomeDirectory() {
@@ -1515,7 +1669,7 @@ public class Const {
 
   /**
    * Determines the Kettle directory in the user's home directory.
-   * 
+   *
    * @return The Kettle directory.
    */
   public static final String getKettleDirectory() {
@@ -1531,7 +1685,7 @@ public class Const {
 
   /**
    * Determines the location of the shared objects file
-   * 
+   *
    * @return the name of the shared objects file
    */
   public static final String getSharedObjectsFile() {
@@ -1540,7 +1694,7 @@ public class Const {
 
   /**
    * Returns the path to the Kettle local (current directory) repositories XML file.
-   * 
+   *
    * @return The local repositories file.
    */
   public static final String getKettleLocalRepositoriesFile() {
@@ -1549,7 +1703,7 @@ public class Const {
 
   /**
    * Returns the full path to the Kettle repositories XML file.
-   * 
+   *
    * @return The Kettle repositories file.
    */
   public static final String getKettleUserRepositoriesFile() {
@@ -1560,7 +1714,7 @@ public class Const {
    * Returns the path to the Kettle local (current directory) Carte password file:
    * <p>
    * ./pwd/kettle.pwd<br>
-   * 
+   *
    * @return The local Carte password file.
    */
   public static final String getKettleLocalCartePasswordFile() {
@@ -1571,7 +1725,7 @@ public class Const {
    * Returns the path to the Kettle Carte password file in the home directory:
    * <p>
    * $KETTLE_HOME/.kettle/kettle.pwd<br>
-   * 
+   *
    * @return The Carte password file in the home directory.
    */
   public static final String getKettleCartePasswordFile() {
@@ -1580,7 +1734,7 @@ public class Const {
 
   /**
    * Retrieves the content of an environment variable
-   * 
+   *
    * @param variable
    *          The name of the environment variable
    * @param deflt
@@ -1596,10 +1750,10 @@ public class Const {
    * use %%KETTLE_HOME%% in dialogs etc. to refer to this value. This procedures looks for %%...%% pairs and replaces
    * them including the name of the environment variable with the actual value. In case the variable was not set,
    * nothing is replaced!
-   * 
+   *
    * @param string
    *          The source string where text is going to be replaced.
-   * 
+   *
    * @return The expanded string.
    * @deprecated use StringUtil.environmentSubstitute(): handles both Windows and unix conventions
    */
@@ -1649,7 +1803,7 @@ public class Const {
    * Replaces environment variables in an array of strings.
    * <p>
    * See also: replEnv(String string)
-   * 
+   *
    * @param string
    *          The array of strings that wants its variables to be replaced.
    * @return the array with the environment variables replaced.
@@ -1666,7 +1820,7 @@ public class Const {
 
   /**
    * Implements Oracle style NVL function
-   * 
+   *
    * @param source
    *          The source argument
    * @param def
@@ -1682,7 +1836,7 @@ public class Const {
 
   /**
    * Return empty string "" in case the given parameter is null, otherwise return the same value.
-   * 
+   *
    * @param source
    *          The source value to check for null.
    * @return empty string if source is null, otherwise simply return the source value.
@@ -1696,7 +1850,7 @@ public class Const {
 
   /**
    * Search for a string in an array of strings and return the index.
-   * 
+   *
    * @param lookup
    *          The string to search for
    * @param array
@@ -1721,7 +1875,7 @@ public class Const {
 
   /**
    * Search for strings in an array of strings and return the indexes.
-   * 
+   *
    * @param lookup
    *          The strings to search for
    * @param array
@@ -1739,7 +1893,7 @@ public class Const {
   /**
    * Search for strings in an array of strings and return the indexes. If a string is not found, the index is not
    * returned.
-   * 
+   *
    * @param lookup
    *          The strings to search for
    * @param array
@@ -1763,7 +1917,7 @@ public class Const {
 
   /**
    * Search for a string in a list of strings and return the index.
-   * 
+   *
    * @param lookup
    *          The string to search for
    * @param list
@@ -1786,7 +1940,7 @@ public class Const {
 
   /**
    * Sort the strings of an array in alphabetical order.
-   * 
+   *
    * @param input
    *          The array of strings to sort.
    * @return The sorted array of strings.
@@ -1802,11 +1956,11 @@ public class Const {
    * <code>
   Example: a;b;c;d    ==>    new String[] { a, b, c, d }
    * </code>
-   * 
+   *
    * <p>
    * <b>NOTE: this differs from String.split() in a way that the built-in method uses regular expressions and this one
    * does not.</b>
-   * 
+   *
    * @param string
    *          The string to split
    * @param separator
@@ -1852,7 +2006,7 @@ public class Const {
    * <code>
    Example: a;b;c;d    ==  new String[] { a, b, c, d }
    * </code>
-   * 
+   *
    * @param string
    *          The string to split
    * @param separator
@@ -1869,7 +2023,7 @@ public class Const {
    * <code>
     Example: a;b;c;d    ==  new String[] { a, b, c, d }
    * </code>
-   * 
+   *
    * @param string
    *          The string to split
    * @param separator
@@ -1920,7 +2074,7 @@ public class Const {
    * <code>
    *   Example /a/b/c --> new String[] { a, b, c }
    * </code>
-   * 
+   *
    * @param path
    *          The string to split
    * @param separator
@@ -1984,13 +2138,13 @@ public class Const {
 
   /**
    * Split the given string using the given delimiter and enclosure strings.
-   * 
+   *
    * The delimiter and enclosures are not regular expressions (regexes); rather they are literal strings that will be
    * quoted so as not to be treated like regexes.
-   * 
+   *
    * This method expects that the data contains an even number of enclosure strings in the input; otherwise the results
    * are undefined
-   * 
+   *
    * @param stringToSplit
    *          the String to split
    * @param delimiter
@@ -2080,7 +2234,7 @@ public class Const {
 
   /**
    * Sorts the array of Strings, determines the uniquely occurring strings.
-   * 
+   *
    * @param strings
    *          the array that you want to do a distinct on
    * @return a sorted array of uniquely occurring strings
@@ -2145,7 +2299,7 @@ public class Const {
 
   /**
    * Check if the string supplied is empty. A String is empty when it is null or when the length is 0
-   * 
+   *
    * @param string
    *          The string to check
    * @return true if the string supplied is empty
@@ -2156,7 +2310,7 @@ public class Const {
 
   /**
    * Check if the stringBuffer supplied is empty. A StringBuffer is empty when it is null or when the length is 0
-   * 
+   *
    * @param string
    *          The stringBuffer to check
    * @return true if the stringBuffer supplied is empty
@@ -2168,8 +2322,8 @@ public class Const {
   /**
    * Check if the string array supplied is empty. A String array is empty when it is null or when the number of elements
    * is 0
-   * 
-   * @param string
+   *
+   * @param strings
    *          The string array to check
    * @return true if the string array supplied is empty
    */
@@ -2179,7 +2333,7 @@ public class Const {
 
   /**
    * Check if the array supplied is empty. An array is empty when it is null or when the length is 0
-   * 
+   *
    * @param array
    *          The array to check
    * @return true if the array supplied is empty
@@ -2190,7 +2344,7 @@ public class Const {
 
   /**
    * Check if the list supplied is empty. An array is empty when it is null or when the length is 0
-   * 
+   *
    * @param list
    *          the list to check
    * @return true if the supplied list is empty
@@ -2216,7 +2370,7 @@ public class Const {
 
   /**
    * Utility class for use in JavaScript to create a new byte array. This is surprisingly difficult to do in JavaScript.
-   * 
+   *
    * @return a new java byte array
    */
   public static final byte[] createByteArray( int size ) {
@@ -2225,7 +2379,7 @@ public class Const {
 
   /**
    * Sets the first character of each word in upper-case.
-   * 
+   *
    * @param string
    *          The strings to convert to initcap
    * @return the input string but with the first character of each word converted to upper-case.
@@ -2261,7 +2415,7 @@ public class Const {
 
   /**
    * Create a valid filename using a name We remove all special characters, spaces, etc.
-   * 
+   *
    * @param name
    *          The name to use as a base for the filename
    * @return a valid filename
@@ -2317,14 +2471,14 @@ public class Const {
    * Environment variable <i>System.getProperty("file.separator")</i>, so on linux/Unix it will check for the last
    * occurrence of a frontslash, on windows for the last occurrence of a backslash.
    * </p>
-   * 
+   *
    * <p>
    * To make this OS independent, the method could check for the last occurrence of a frontslash and backslash and use
    * the higher value of both. Should work, since these characters aren't allowed in filenames on neither OS types (or
    * said differently: Neither linux nor windows can carry frontslashes OR backslashes in filenames). Just a suggestion
    * of an improvement ...
    * </p>
-   * 
+   *
    * @param sFullPath
    * @return
    */
@@ -2349,7 +2503,7 @@ public class Const {
 
   /**
    * Returning the internationalized tips of the days. They get created once on first request.
-   * 
+   *
    * @return
    */
   public static String[] getTips() {
@@ -2366,7 +2520,7 @@ public class Const {
 
   /**
    * Returning the localized date conversion formats. They get created once on first request.
-   * 
+   *
    * @return
    */
   public static String[] getDateFormats() {
@@ -2382,7 +2536,7 @@ public class Const {
 
   /**
    * Returning the localized number conversion formats. They get created once on first request.
-   * 
+   *
    * @return
    */
   public static String[] getNumberFormats() {
@@ -2418,10 +2572,12 @@ public class Const {
   public static String[] getTransformationAndJobFilterNames() {
     if ( STRING_TRANS_AND_JOB_FILTER_NAMES == null ) {
       STRING_TRANS_AND_JOB_FILTER_NAMES =
-          new String[] { BaseMessages.getString( PKG, "Const.FileFilter.TransformationJob" ),
-            BaseMessages.getString( PKG, "Const.FileFilter.Transformations" ),
-            BaseMessages.getString( PKG, "Const.FileFilter.Jobs" ),
-            BaseMessages.getString( PKG, "Const.FileFilter.XML" ), BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
+        new String[] {
+          BaseMessages.getString( PKG, "Const.FileFilter.TransformationJob" ),
+          BaseMessages.getString( PKG, "Const.FileFilter.Transformations" ),
+          BaseMessages.getString( PKG, "Const.FileFilter.Jobs" ),
+          BaseMessages.getString( PKG, "Const.FileFilter.XML" ),
+          BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
     }
     return STRING_TRANS_AND_JOB_FILTER_NAMES;
   }
@@ -2429,8 +2585,10 @@ public class Const {
   public static String[] getTransformationFilterNames() {
     if ( STRING_TRANS_FILTER_NAMES == null ) {
       STRING_TRANS_FILTER_NAMES =
-          new String[] { BaseMessages.getString( PKG, "Const.FileFilter.Transformations" ),
-            BaseMessages.getString( PKG, "Const.FileFilter.XML" ), BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
+        new String[] {
+          BaseMessages.getString( PKG, "Const.FileFilter.Transformations" ),
+          BaseMessages.getString( PKG, "Const.FileFilter.XML" ),
+          BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
     }
     return STRING_TRANS_FILTER_NAMES;
   }
@@ -2438,15 +2596,17 @@ public class Const {
   public static String[] getJobFilterNames() {
     if ( STRING_JOB_FILTER_NAMES == null ) {
       STRING_JOB_FILTER_NAMES =
-          new String[] { BaseMessages.getString( PKG, "Const.FileFilter.Jobs" ),
-            BaseMessages.getString( PKG, "Const.FileFilter.XML" ), BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
+        new String[] {
+          BaseMessages.getString( PKG, "Const.FileFilter.Jobs" ),
+          BaseMessages.getString( PKG, "Const.FileFilter.XML" ),
+          BaseMessages.getString( PKG, "Const.FileFilter.All" ) };
     }
     return STRING_JOB_FILTER_NAMES;
   }
 
   /**
    * Return the current time as nano-seconds.
-   * 
+   *
    * @return time as nano-seconds.
    */
   public static long nanoTime() {
@@ -2455,12 +2615,12 @@ public class Const {
 
   /**
    * Return the input string trimmed as specified.
-   * 
+   *
    * @param string
    *          String to be trimmed
    * @param trimType
    *          Type of trimming
-   * 
+   *
    * @return Trimmed string.
    */
   public static String trimToType( String string, int trimType ) {
@@ -2480,7 +2640,7 @@ public class Const {
   /**
    * implemented to help prevent errors in matching up pluggable LAF directories and paths/files eliminating malformed
    * URLs - duplicate file separators or missing file separators.
-   * 
+   *
    * @param dir
    * @param file
    * @return concatenated string representing a file url
@@ -2500,7 +2660,7 @@ public class Const {
   /**
    * Create an array of Strings consisting of spaces. The index of a String in the array determines the number of spaces
    * in that string.
-   * 
+   *
    * @return array of 'space' Strings.
    */
   public static String[] getEmptyPaddedStrings() {
@@ -2515,7 +2675,7 @@ public class Const {
 
   /**
    * Return the percentage of free memory for this JVM.
-   * 
+   *
    * @return Percentage of free memory.
    */
   public static final int getPercentageFreeMemory() {
@@ -2532,7 +2692,7 @@ public class Const {
 
   /**
    * Return non digits only.
-   * 
+   *
    * @return non digits in a string.
    */
 
@@ -2553,7 +2713,7 @@ public class Const {
 
   /**
    * Return digits only.
-   * 
+   *
    * @return digits in a string.
    */
   public static String getDigitsOnly( String input ) {
@@ -2573,7 +2733,7 @@ public class Const {
 
   /**
    * Remove time from a date.
-   * 
+   *
    * @return a date without hour.
    */
   public static Date removeTimeFromDate( Date input ) {
@@ -2601,7 +2761,7 @@ public class Const {
 
   /**
    * Escape XML content. i.e. replace characters with &values;
-   * 
+   *
    * @param content
    *          content
    * @return escaped content
@@ -2615,7 +2775,7 @@ public class Const {
 
   /**
    * Escape HTML content. i.e. replace characters with &values;
-   * 
+   *
    * @param content
    *          content
    * @return escaped content
@@ -2629,7 +2789,7 @@ public class Const {
 
   /**
    * UnEscape HTML content. i.e. replace characters with &values;
-   * 
+   *
    * @param content
    *          content
    * @return unescaped content
@@ -2643,7 +2803,7 @@ public class Const {
 
   /**
    * UnEscape XML content. i.e. replace characters with &values;
-   * 
+   *
    * @param content
    *          content
    * @return unescaped content
@@ -2657,7 +2817,7 @@ public class Const {
 
   /**
    * Escape SQL content. i.e. replace characters with &values;
-   * 
+   *
    * @param content
    *          content
    * @return escaped content
@@ -2671,7 +2831,7 @@ public class Const {
 
   /**
    * Remove CR / LF from String
-   * 
+   *
    * @param in
    *          input
    * @return cleaned string
@@ -2690,7 +2850,7 @@ public class Const {
 
   /**
    * Remove CR / LF from String
-   * 
+   *
    * @param in
    *          input
    * @return cleaned string
@@ -2709,7 +2869,7 @@ public class Const {
 
   /**
    * Remove CR / LF from String
-   * 
+   *
    * @param in
    *          input
    * @return cleaned string
@@ -2728,7 +2888,7 @@ public class Const {
 
   /**
    * Remove Horizontan Tab from String
-   * 
+   *
    * @param in
    *          input
    * @return cleaned string
@@ -2747,7 +2907,7 @@ public class Const {
 
   /**
    * Add time to an input date
-   * 
+   *
    * @param input
    *          the date
    * @param time
@@ -2785,7 +2945,7 @@ public class Const {
 
   /**
    * Get the number of occurances of searchFor in string.
-   * 
+   *
    * @param string
    *          String to be searched
    * @param searchFor
@@ -2820,7 +2980,9 @@ public class Const {
   public static String getKettlePropertiesFileHeader() {
     StringBuilder out = new StringBuilder();
 
-    out.append( BaseMessages.getString( PKG, "Props.Kettle.Properties.Sample.Line01", VERSION ) + CR );
+    out.append( BaseMessages.getString( PKG, "Props.Kettle.Properties.Sample.Line01", BuildVersion
+      .getInstance().getVersion() )
+      + CR );
     out.append( BaseMessages.getString( PKG, "Props.Kettle.Properties.Sample.Line02" ) + CR );
     out.append( BaseMessages.getString( PKG, "Props.Kettle.Properties.Sample.Line03" ) + CR );
     out.append( BaseMessages.getString( PKG, "Props.Kettle.Properties.Sample.Line04" ) + CR );
@@ -2836,7 +2998,7 @@ public class Const {
 
   /**
    * Mask XML content. i.e. protect with CDATA;
-   * 
+   *
    * @param content
    *          content
    * @return protected content
@@ -2850,7 +3012,7 @@ public class Const {
 
   /**
    * Get the number of occurances of searchFor in string.
-   * 
+   *
    * @param string
    *          String to be searched
    * @param searchFor
@@ -2872,7 +3034,7 @@ public class Const {
 
   /**
    * Mask XML content. i.e. replace characters with &values;
-   * 
+   *
    * @param content
    *          content
    * @return masked content

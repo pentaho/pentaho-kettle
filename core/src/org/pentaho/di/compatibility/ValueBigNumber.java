@@ -28,10 +28,10 @@ import java.util.Date;
 
 /**
  * This class contains a Value of type BigNumber and the length/precision by which it is described.
- * 
+ *
  * @author Matt
  * @since 05-09-2005
- * 
+ *
  */
 public class ValueBigNumber implements ValueInterface, Cloneable {
   private BigDecimal number;

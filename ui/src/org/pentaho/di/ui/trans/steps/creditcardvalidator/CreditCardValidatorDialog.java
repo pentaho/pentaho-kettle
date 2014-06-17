@@ -56,7 +56,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class CreditCardValidatorDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = CreditCardValidatorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CreditCardValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private boolean gotPreviousFields = false;
 
@@ -375,8 +375,8 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
         new ErrorDialog( shell,
-            BaseMessages.getString( PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogMessage" ), ke );
+          BaseMessages.getString( PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "CreditCardValidatorDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

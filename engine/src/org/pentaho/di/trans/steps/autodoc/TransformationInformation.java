@@ -134,18 +134,19 @@ public class TransformationInformation {
     GCInterface gc = new SwingGC( null, area, iconsize, 50, 20 );
     List<AreaOwner> areaOwners = new ArrayList<AreaOwner>();
     TransPainter painter =
-        new TransPainter( gc, transMeta, area, bar, bar, null, null, null, areaOwners, new ArrayList<StepMeta>(),
-            iconsize, 1, 0, 0, true, "FreeSans", 10 );
+      new TransPainter(
+        gc, transMeta, area, bar, bar, null, null, null, areaOwners, new ArrayList<StepMeta>(), iconsize, 1,
+        0, 0, true, "FreeSans", 10 );
     painter.setMagnification( 0.5f );
     painter.setTranslationX( min.x );
-    painter.setTranslationX( min.y );
+    painter.setTranslationY( min.y );
     painter.buildTransformationImage();
     BufferedImage bufferedImage = (BufferedImage) gc.getImage();
     int newWidth = bufferedImage.getWidth() - min.x;
     int newHeigth = bufferedImage.getHeight() - min.y;
     BufferedImage image = new BufferedImage( newWidth, newHeigth, bufferedImage.getType() );
-    image.getGraphics().drawImage( bufferedImage, 0, 0, newWidth, newHeigth, min.x, min.y, min.x + newWidth,
-        min.y + newHeigth, null );
+    image.getGraphics().drawImage(
+      bufferedImage, 0, 0, newWidth, newHeigth, min.x, min.y, min.x + newWidth, min.y + newHeigth, null );
 
     TransformationInformationValues values = new TransformationInformationValues();
     values.transMeta = transMeta;
@@ -156,7 +157,7 @@ public class TransformationInformation {
   }
 
   public void drawImage( final Graphics2D g2d, final Rectangle2D rectangle2d, ReportSubjectLocation location,
-      boolean pixelateImages ) throws KettleException {
+    boolean pixelateImages ) throws KettleException {
 
     // Load the transformation
     //
@@ -164,6 +165,10 @@ public class TransformationInformation {
 
     Point min = transMeta.getMinimum();
     Point area = transMeta.getMaximum();
+
+    area.x -= min.x;
+    area.y -= min.y;
+
     int iconsize = 32;
 
     ScrollBarInterface bar = new ScrollBarInterface() {
@@ -180,7 +185,7 @@ public class TransformationInformation {
     Rectangle rect = new java.awt.Rectangle( 0, 0, area.x, area.y );
     double magnificationX = rectangle2d.getWidth() / rect.getWidth();
     double magnificationY = rectangle2d.getHeight() / rect.getHeight();
-    double magnification = Math.min( magnificationX, magnificationY );
+    float magnification = (float) Math.min( 1, Math.min( magnificationX, magnificationY ) );
 
     SwingGC gc = new SwingGC( g2d, rect, iconsize, 0, 0 );
     gc.setDrawingPixelatedImages( pixelateImages );
@@ -188,11 +193,12 @@ public class TransformationInformation {
     TransPainter painter =
         new TransPainter( gc, transMeta, area, bar, bar, null, null, null, new ArrayList<AreaOwner>(),
             new ArrayList<StepMeta>(), iconsize, 1, 0, 0, true, "FreeSans", 10 );
-    painter.setMagnification( (float) Math.min( magnification, 1 ) );
-    if ( pixelateImages ) {
-      painter.setTranslationX( 100 + min.x );
-      painter.setTranslationY( 100 + min.y );
-    }
+
+    painter.setMagnification( magnification );
+
+    painter.setTranslationX( ( -min.x ) * magnification );
+    painter.setTranslationY( ( -min.y ) * magnification );
+
     painter.buildTransformationImage();
   }
 

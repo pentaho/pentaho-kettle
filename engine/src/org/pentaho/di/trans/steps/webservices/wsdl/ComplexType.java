@@ -52,7 +52,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Create a new complex type for the specified element.
-   * 
+   *
    * @param type
    *          DOM element of the complex type.
    * @param wsdlTypes
@@ -86,7 +86,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Get the complex type name.
-   * 
+   *
    * @return String containing name of complex type.
    */
   public String getName() {
@@ -95,7 +95,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Given the name of an element contained within the complex type, get its xml type.
-   * 
+   *
    * @param elementName
    *          Name of element contained within complex type.
    * @return Xmltype of the element or null if element can not be found in the complex type.
@@ -106,7 +106,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Get the set of all element names contained in this complex type.
-   * 
+   *
    * @return Set.
    */
   public List<String> getElementNames() {
@@ -117,7 +117,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Process an 'all' element.
-   * 
+   *
    * @param all
    */
   private void processAll( Element all ) {
@@ -130,7 +130,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Process an 'any' element.
-   * 
+   *
    * @param any
    */
   private void processAny( Element any ) {
@@ -155,7 +155,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Process a 'choice' element.
-   * 
+   *
    * @param choice
    */
   private void processChoice( Element choice ) {
@@ -166,7 +166,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Process a 'complexContent' element.
-   * 
+   *
    * @param complexContent
    */
   private void processComplexContent( Element complexContent ) {
@@ -181,7 +181,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Process an 'extension' element whose parent is 'complexContent'.
-   * 
+   *
    * @param complexExtension
    */
   private void processComplexExtension( Element complexExtension ) {
@@ -200,7 +200,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Process a 'restriction' element whose parent is 'complexContent'.
-   * 
+   *
    * @param complexRestriction
    */
   private void processComplexRestriction( Element complexRestriction ) {
@@ -225,7 +225,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Process an 'element'.
-   * 
+   *
    * @param element
    */
   private void processElement( Element element ) {
@@ -240,7 +240,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Process a 'group' element.
-   * 
+   *
    * @param group
    */
   private void processGroup( Element group ) {
@@ -257,7 +257,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Process a 'sequence' element.
-   * 
+   *
    * @param sequence
    */
   private void processSequence( Element sequence ) {
@@ -290,7 +290,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Process a 'simpleContent' element.
-   * 
+   *
    * @param simpleContent
    */
   private void processSimpleContent( Element simpleContent ) {
@@ -305,7 +305,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Process an 'extension' element whose parent is 'simpleContent'.
-   * 
+   *
    * @param any
    */
   private void processSimpleExtension( Element any ) {
@@ -315,7 +315,7 @@ public final class ComplexType implements java.io.Serializable {
 
   /**
    * Process a 'restriction' element whose parent is 'simpleContent'.
-   * 
+   *
    * @param simpleRestriction
    */
   private void processSimpleRestriction( Element simpleRestriction ) {

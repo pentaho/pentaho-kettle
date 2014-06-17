@@ -54,7 +54,7 @@ public class XMLJoinData extends BaseStepData implements StepDataInterface {
   public int iCompareFieldID = -1;
 
   /**
-     * 
+     *
      */
   public XMLJoinData() {
     super();

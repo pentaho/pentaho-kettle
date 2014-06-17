@@ -59,13 +59,13 @@ import org.w3c.dom.Node;
 /**
  * This defines a 'create file' job entry. Its main use would be to create empty trigger files that can be used to
  * control the flow in ETL cycles.
- * 
+ *
  * @author Sven Boden
  * @since 28-01-2007
- * 
+ *
  */
 public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryCreateFile.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryCreateFile.class; // for i18n purposes, needed by Translator2!!
   private String filename;
 
   private boolean failIfFileExists;
@@ -76,7 +76,6 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
     filename = null;
     failIfFileExists = true;
     addfilenameresult = false;
-    setID( -1L );
   }
 
   public JobEntryCreateFile() {
@@ -99,8 +98,8 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       filename = XMLHandler.getTagValue( entrynode, "filename" );
@@ -113,15 +112,15 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       filename = rep.getJobEntryAttributeString( id_jobentry, "filename" );
       failIfFileExists = rep.getJobEntryAttributeBoolean( id_jobentry, "fail_if_file_exists" );
       addfilenameresult = rep.getJobEntryAttributeBoolean( id_jobentry, "add_filename_result" );
 
     } catch ( KettleException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'create file' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+      throw new KettleException(
+        "Unable to load job entry of type 'create file' from the repository for id_jobentry=" + id_jobentry, dbe );
     }
   }
 
@@ -133,7 +132,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
 
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to save job entry of type 'create file' to the repository for id_job="
-          + id_job, dbe );
+        + id_job, dbe );
     }
   }
 
@@ -211,7 +210,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
 
       // Add to the result files...
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString() );
       resultFile.setComment( "" );
       result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
 
@@ -225,6 +224,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
         targetFile.close();
         targetFile = null;
       } catch ( Exception e ) {
+        // Ignore close errors
       }
     }
   }
@@ -255,8 +255,8 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
     System.out.printf( "Remarks: %s\n", remarks );
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace( ctx, getVariables() );
     putValidators( ctx, notNullValidator(), fileDoesNotExistValidator() );

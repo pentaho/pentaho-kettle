@@ -91,7 +91,7 @@ public interface LogChannelInterface {
   /**
    * This option will force the create of a separate logging channel even if the logging concerns identical objects with
    * identical names.
-   * 
+   *
    * @param forcingSeparateLogging
    *          Set to true to force separate logging
    */
@@ -106,7 +106,7 @@ public interface LogChannelInterface {
    * Add a snapshot to the metrics system for this log channel at the time of invocation. This will process the value
    * depending on the type of metric specified. For example, for MetricsInterface.look up the maximum value in the
    * metrics and replace it if the new value is higher. The snapshot date will be retained in that case.
-   * 
+   *
    * @param metric
    *          The metric to use (ex. connect to a database)
    * @param value
@@ -118,7 +118,7 @@ public interface LogChannelInterface {
    * Add a maximum snapshot to the metrics system for this log channel at the time of invocation. This will look up the
    * maximum value in the metrics and replace it if the new value is higher. The snapshot date will be retained in that
    * case.
-   * 
+   *
    * @param metric
    *          The metric to use (ex. connect to a database)
    * @param subject

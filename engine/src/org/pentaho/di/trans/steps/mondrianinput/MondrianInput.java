@@ -36,7 +36,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Reads information from a database table by using freehand SQL
- * 
+ *
  * @author Matt
  * @since 8-apr-2003
  */
@@ -45,13 +45,13 @@ public class MondrianInput extends BaseStep implements StepInterface {
   private MondrianData data;
 
   public MondrianInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
-    if ( first ) // we just got started
-    {
+    if ( first ) {
+      // we just got started
       first = false;
       String mdx = meta.getSQL();
       if ( meta.isVariableReplacementActive() ) {

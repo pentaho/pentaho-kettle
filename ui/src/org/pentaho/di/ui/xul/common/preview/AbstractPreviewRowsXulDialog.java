@@ -107,7 +107,7 @@ public abstract class AbstractPreviewRowsXulDialog extends AbstractXulEventHandl
   /**
    * TODO: This method should not be necessary once a XulTable can take bindings for creating xulcolumn definitions at
    * runtime and mapping the data to the columns.
-   * 
+   *
    * @param data
    * @param columns
    */
@@ -115,14 +115,14 @@ public abstract class AbstractPreviewRowsXulDialog extends AbstractXulEventHandl
 
   /**
    * TODO: This method needs to communicate and control a UI wait status indicator (aka, progress monitor)
-   * 
+   *
    * @param data
    * @param columns
    */
   protected void previewStep( List<Object[]> data, List<String> columns ) {
 
     TransMeta previewMeta =
-        TransPreviewFactory.generatePreviewTransformation( null, (StepMetaInterface) meta, "data_sync" );
+      TransPreviewFactory.generatePreviewTransformation( null, (StepMetaInterface) meta, "data_sync" );
 
     final Trans trans = new Trans( previewMeta );
 
@@ -142,7 +142,7 @@ public abstract class AbstractPreviewRowsXulDialog extends AbstractXulEventHandl
 
       transDebugMeta.addBreakPointListers( new BreakPointListener() {
         public void breakPointHit( TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta,
-            RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer ) {
+          RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer ) {
           System.out.println( "break point hit...".concat( String.valueOf( stepDebugMeta.getRowCount() ) ) );
           trans.stopAll();
         }
@@ -178,6 +178,7 @@ public abstract class AbstractPreviewRowsXulDialog extends AbstractXulEventHandl
         try {
           Thread.sleep( 500 );
         } catch ( InterruptedException e ) {
+          // Ignore sleep interruption exception
         }
 
       }
@@ -203,13 +204,12 @@ public abstract class AbstractPreviewRowsXulDialog extends AbstractXulEventHandl
   /**
    * The implementors of this method should call the sibling method initializeXul(XulLoder, BindingFactory, XulRunner,
    * parent) with the desired Xul implementation classes - SWT or Swing.
-   * 
+   *
    * @throws XulException
    */
   protected abstract void initializeXul() throws XulException;
 
-  protected void initializeXul( XulLoader loader, BindingFactory bindingFactory, XulRunner runner, Object parent )
-    throws XulException {
+  protected void initializeXul( XulLoader loader, BindingFactory bindingFactory, XulRunner runner, Object parent ) throws XulException {
 
     bf = bindingFactory;
     this.runner = runner;
@@ -265,7 +265,7 @@ public abstract class AbstractPreviewRowsXulDialog extends AbstractXulEventHandl
 
   protected abstract Class<?> getClassForMessages();
 
-  abstract public void dispose();
+  public abstract void dispose();
 
   public boolean isBasic() {
     return log.isBasic();

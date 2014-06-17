@@ -25,9 +25,9 @@ package org.pentaho.di.core;
 import org.pentaho.di.repository.ObjectId;
 
 /**
- * 
+ *
  * Implementing classes of this interface can provide more information about the source of the CheckResult remark.
- * 
+ *
  * @author mbatchel 6/25/07
  */
 public interface CheckResultSourceInterface {

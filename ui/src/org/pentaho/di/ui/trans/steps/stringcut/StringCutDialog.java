@@ -65,7 +65,7 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class StringCutDialog extends BaseStepDialog implements StepDialogInterface {
 
-  private static Class<?> PKG = StringCutMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StringCutMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlKey;
 
@@ -142,25 +142,29 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 
     ciKey = new ColumnInfo[nrFieldCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.InStreamField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.InStreamField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.OutStreamField" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.OutStreamField" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciKey[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.CutFrom" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.CutFrom" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     ciKey[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.CutTo" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.CutTo" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     ciKey[2].setUsingVariables( true );
     ciKey[1].setToolTip( BaseMessages.getString( PKG, "StringCutDialog.ColumnInfo.OutStreamField.Tooltip" ) );
     ciKey[3].setUsingVariables( true );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrFieldRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+        nrFieldRows, lsMod, props );
 
     fdKey = new FormData();
     fdKey.left = new FormAttachment( 0, 0 );
@@ -318,6 +322,7 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "StringCutDialog.Log.FoundFields", String.valueOf( nrkeys ) ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       inf.getFieldInStream()[i] = item.getText( 1 );
@@ -359,8 +364,9 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "StringCutDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "StringCutDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "StringCutDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "StringCutDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 }

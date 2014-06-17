@@ -39,7 +39,7 @@ public class PositionAndLength {
 
   /**
    * Determine the absolute position in the expression
-   * 
+   *
    * @param expression
    * @param position
    * @return Point : x=start, y=end

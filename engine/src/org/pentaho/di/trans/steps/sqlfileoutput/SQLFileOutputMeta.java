@@ -65,7 +65,7 @@ import org.w3c.dom.Node;
  */
 
 public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = SQLFileOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SQLFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DatabaseMeta databaseMeta;
   private String schemaName;
@@ -462,7 +462,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
       StartNewLine = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "StartNewLine" ) );
 
       fileName = XMLHandler.getTagValue( stepnode, "file", "name" );
-      createparentfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "create_parent_folder" ) );
+      createparentfolder =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "create_parent_folder" ) );
       extension = XMLHandler.getTagValue( stepnode, "file", "extention" );
       fileAppended = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "append" ) );
       stepNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "split" ) );
@@ -470,7 +471,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
       dateInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_date" ) );
       timeInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_time" ) );
       splitEvery = Const.toInt( XMLHandler.getTagValue( stepnode, "file", "splitevery" ), 0 );
-      DoNotOpenNewFileInit = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "DoNotOpenNewFileInit" ) );
+      DoNotOpenNewFileInit =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "DoNotOpenNewFileInit" ) );
 
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
@@ -488,7 +490,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
   public String getXML() {
     StringBuffer retval = new StringBuffer();
 
-    retval.append( "    " + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
+    retval.append( "    "
+      + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
     retval.append( "    " + XMLHandler.addTagValue( "schema", schemaName ) );
     retval.append( "    " + XMLHandler.addTagValue( "table", tablename ) );
     retval.append( "    " + XMLHandler.addTagValue( "truncate", truncateTable ) );
@@ -516,8 +519,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       schemaName = rep.getStepAttributeString( id_step, "schema" );
@@ -545,8 +547,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
       rep.saveStepAttribute( id_transformation, id_step, "schema", schemaName );
@@ -556,6 +557,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute( id_transformation, id_step, "encoding", encoding );
       rep.saveStepAttribute( id_transformation, id_step, "dateformat", dateformat );
       rep.saveStepAttribute( id_transformation, id_step, "addtoresult", AddToResult );
+      rep.saveStepAttribute( id_transformation, id_step, "startnewline", StartNewLine );
 
       rep.saveStepAttribute( id_transformation, id_step, "file_name", fileName );
       rep.saveStepAttribute( id_transformation, id_step, "file_extention", extension );
@@ -578,13 +580,13 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     if ( databaseMeta != null ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SQLFileOutputMeta.CheckResult.ConnectionExists" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SQLFileOutputMeta.CheckResult.ConnectionExists" ), stepMeta );
       remarks.add( cr );
 
       Database db = new Database( loggingObject, databaseMeta );
@@ -592,8 +594,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
         db.connect();
 
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "SQLFileOutputMeta.CheckResult.ConnectionOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "SQLFileOutputMeta.CheckResult.ConnectionOk" ), stepMeta );
         remarks.add( cr );
 
         if ( !Const.isEmpty( tablename ) ) {
@@ -601,15 +603,15 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
           // Check if this table exists...
           if ( db.checkTableExists( schemaTable ) ) {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "SQLFileOutputMeta.CheckResult.TableAccessible", schemaTable ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "SQLFileOutputMeta.CheckResult.TableAccessible", schemaTable ), stepMeta );
             remarks.add( cr );
 
             RowMetaInterface r = db.getTableFields( schemaTable );
             if ( r != null ) {
               cr =
-                  new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                      "SQLFileOutputMeta.CheckResult.TableOk", schemaTable ), stepMeta );
+                new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "SQLFileOutputMeta.CheckResult.TableOk", schemaTable ), stepMeta );
               remarks.add( cr );
 
               String error_message = "";
@@ -618,8 +620,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
               // Now see what we can find as previous step...
               if ( prev != null && prev.size() > 0 ) {
                 cr =
-                    new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                        "SQLFileOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+                  new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "SQLFileOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
                 remarks.add( cr );
 
                 // Starting from prev...
@@ -633,15 +635,15 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
                 }
                 if ( error_found ) {
                   error_message =
-                      BaseMessages.getString( PKG, "SQLFileOutputMeta.CheckResult.FieldsNotFoundInOutput",
-                          error_message );
+                    BaseMessages.getString(
+                      PKG, "SQLFileOutputMeta.CheckResult.FieldsNotFoundInOutput", error_message );
 
                   cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
                   remarks.add( cr );
                 } else {
                   cr =
-                      new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                          "SQLFileOutputMeta.CheckResult.AllFieldsFoundInOutput" ), stepMeta );
+                    new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                      PKG, "SQLFileOutputMeta.CheckResult.AllFieldsFoundInOutput" ), stepMeta );
                   remarks.add( cr );
                 }
 
@@ -656,71 +658,71 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
                 }
                 if ( error_found ) {
                   error_message =
-                      BaseMessages.getString( PKG, "SQLFileOutputMeta.CheckResult.FieldsNotFound", error_message );
+                    BaseMessages.getString( PKG, "SQLFileOutputMeta.CheckResult.FieldsNotFound", error_message );
 
                   cr = new CheckResult( CheckResult.TYPE_RESULT_WARNING, error_message, stepMeta );
                   remarks.add( cr );
                 } else {
                   cr =
-                      new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                          "SQLFileOutputMeta.CheckResult.AllFieldsFound" ), stepMeta );
+                    new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+                      PKG, "SQLFileOutputMeta.CheckResult.AllFieldsFound" ), stepMeta );
                   remarks.add( cr );
                 }
               } else {
                 cr =
-                    new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                        "SQLFileOutputMeta.CheckResult.NoFields" ), stepMeta );
+                  new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                    PKG, "SQLFileOutputMeta.CheckResult.NoFields" ), stepMeta );
                 remarks.add( cr );
               }
             } else {
               cr =
-                  new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                      "SQLFileOutputMeta.CheckResult.TableNotAccessible" ), stepMeta );
+                new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                  PKG, "SQLFileOutputMeta.CheckResult.TableNotAccessible" ), stepMeta );
               remarks.add( cr );
             }
           } else {
             cr =
-                new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                    "SQLFileOutputMeta.CheckResult.TableError", schemaTable ), stepMeta );
+              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "SQLFileOutputMeta.CheckResult.TableError", schemaTable ), stepMeta );
             remarks.add( cr );
           }
         } else {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "SQLFileOutputMeta.CheckResult.NoTableName" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SQLFileOutputMeta.CheckResult.NoTableName" ), stepMeta );
           remarks.add( cr );
         }
       } catch ( KettleException e ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "SQLFileOutputMeta.CheckResult.UndefinedError", e.getMessage() ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "SQLFileOutputMeta.CheckResult.UndefinedError", e.getMessage() ), stepMeta );
         remarks.add( cr );
       } finally {
         db.disconnect();
       }
     } else {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SQLFileOutputMeta.CheckResult.NoConnection" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SQLFileOutputMeta.CheckResult.NoConnection" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SQLFileOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SQLFileOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SQLFileOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SQLFileOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new SQLFileOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -729,12 +731,13 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-      IMetaStore metaStore ) {
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+    IMetaStore metaStore ) {
     if ( truncateTable ) {
       DatabaseImpact ii =
-          new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_TRUNCATE, transMeta.getName(), stepMeta.getName(),
-              databaseMeta.getDatabaseName(), tablename, "", "", "", "", "Truncate of table" );
+        new DatabaseImpact(
+          DatabaseImpact.TYPE_IMPACT_TRUNCATE, transMeta.getName(), stepMeta.getName(), databaseMeta
+            .getDatabaseName(), tablename, "", "", "", "", "Truncate of table" );
       impact.add( ii );
 
     }
@@ -743,16 +746,17 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
       for ( int i = 0; i < prev.size(); i++ ) {
         ValueMetaInterface v = prev.getValueMeta( i );
         DatabaseImpact ii =
-            new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
-                .getDatabaseName(), tablename, v.getName(), v.getName(), v != null ? v.getOrigin() : "?", "", "Type = "
-                + v.toStringMeta() );
+          new DatabaseImpact(
+            DatabaseImpact.TYPE_IMPACT_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
+              .getDatabaseName(), tablename, v.getName(), v.getName(), v != null ? v.getOrigin() : "?", "",
+            "Type = " + v.toStringMeta() );
         impact.add( ii );
       }
     }
   }
 
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      Repository repository, IMetaStore metaStore ) {
+    Repository repository, IMetaStore metaStore ) {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
 
     if ( databaseMeta != null ) {
@@ -773,8 +777,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
 
             retval.setSQL( cr_table );
           } catch ( KettleDatabaseException dbe ) {
-            retval
-                .setError( BaseMessages.getString( PKG, "SQLFileOutputMeta.Error.ErrorConnecting", dbe.getMessage() ) );
+            retval.setError( BaseMessages.getString( PKG, "SQLFileOutputMeta.Error.ErrorConnecting", dbe
+              .getMessage() ) );
           } finally {
             db.disconnect();
           }
@@ -813,7 +817,8 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
           throw new KettleException( BaseMessages.getString( PKG, "SQLFileOutputMeta.Exception.TableNotSpecified" ) );
         }
       } catch ( Exception e ) {
-        throw new KettleException( BaseMessages.getString( PKG, "SQLFileOutputMeta.Exception.ErrorGettingFields" ), e );
+        throw new KettleException(
+          BaseMessages.getString( PKG, "SQLFileOutputMeta.Exception.ErrorGettingFields" ), e );
       } finally {
         db.disconnect();
       }
@@ -854,7 +859,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
    * what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -863,12 +868,11 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

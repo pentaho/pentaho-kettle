@@ -35,6 +35,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleConfigException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -65,12 +66,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * 4) if replace is Y, remove all key fields from output.
  * <p>
  * <p>
- * 
+ *
  * @author Matt
  * @since 22-jul-2003
  */
 public class CombinationLookup extends BaseStep implements StepInterface {
-  private static Class<?> PKG = CombinationLookupMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CombinationLookupMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final int CREATION_METHOD_AUTOINC = 1;
   private static final int CREATION_METHOD_SEQUENCE = 2;
@@ -81,8 +82,8 @@ public class CombinationLookup extends BaseStep implements StepInterface {
   private CombinationLookupMeta meta;
   private CombinationLookupData data;
 
-  public CombinationLookup( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public CombinationLookup( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (CombinationLookupMeta) getStepMeta().getStepMetaInterface();
@@ -99,10 +100,11 @@ public class CombinationLookup extends BaseStep implements StepInterface {
 
   private void determineTechKeyCreation() {
     String keyCreation = meta.getTechKeyCreation();
-    if ( meta.getDatabaseMeta().supportsAutoinc() && CombinationLookupMeta.CREATION_METHOD_AUTOINC.equals( keyCreation ) ) {
+    if ( meta.getDatabaseMeta().supportsAutoinc()
+      && CombinationLookupMeta.CREATION_METHOD_AUTOINC.equals( keyCreation ) ) {
       setTechKeyCreation( CREATION_METHOD_AUTOINC );
     } else if ( meta.getDatabaseMeta().supportsSequences()
-        && CombinationLookupMeta.CREATION_METHOD_SEQUENCE.equals( keyCreation ) ) {
+      && CombinationLookupMeta.CREATION_METHOD_SEQUENCE.equals( keyCreation ) ) {
       setTechKeyCreation( CREATION_METHOD_SEQUENCE );
     } else {
       setTechKeyCreation( CREATION_METHOD_TABLEMAX );
@@ -124,10 +126,10 @@ public class CombinationLookup extends BaseStep implements StepInterface {
   /**
    * Adds a row to the cache In case we are doing updates, we need to store the complete rows from the database. These
    * are the values we need to store
-   * 
+   *
    * Key: - natural key fields Value: - Technical key - lookup fields / extra fields (allows us to compare or retrieve)
    * - Date_from - Date_to
-   * 
+   *
    * @param row
    * @param returnValues
    * @throws KettleValueException
@@ -240,7 +242,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
       lookupIndex++;
 
       if ( meta.getDatabaseMeta().requiresCastToVariousForIsNull()
-          && rowMeta.getValueMeta( rowIndex ).getType() == ValueMeta.TYPE_STRING ) {
+        && rowMeta.getValueMeta( rowIndex ).getType() == ValueMeta.TYPE_STRING ) {
         lookupRow[lookupIndex] = rowMeta.getValueMeta( rowIndex ).isNull( row[rowIndex] ) ? null : "NotNull"; // KEYi IS
                                                                                                               // NULL or
                                                                                                               // ? IS
@@ -265,18 +267,19 @@ public class CombinationLookup extends BaseStep implements StepInterface {
           case CREATION_METHOD_TABLEMAX:
             // Use our own counter: what's the next value for the technical key?
             val_key =
-                data.db.getNextValue( getTransMeta().getCounters(), data.realSchemaName, data.realTableName, meta
-                    .getTechnicalKeyField() );
+              data.db.getNextValue( getTransMeta().getCounters(), data.realSchemaName, data.realTableName, meta
+                .getTechnicalKeyField() );
             break;
           case CREATION_METHOD_AUTOINC:
             val_key = new Long( 0 ); // value to accept new key...
             break;
           case CREATION_METHOD_SEQUENCE:
             val_key =
-                data.db.getNextSequenceValue( data.realSchemaName, meta.getSequenceFrom(), meta.getTechnicalKeyField() );
+              data.db.getNextSequenceValue( data.realSchemaName, meta.getSequenceFrom(), meta
+                .getTechnicalKeyField() );
             if ( val_key != null && log.isRowLevel() ) {
               logRowlevel( BaseMessages.getString( PKG, "CombinationLookup.Log.FoundNextSequenceValue" )
-                  + val_key.toString() );
+                + val_key.toString() );
             }
             break;
           default:
@@ -326,8 +329,8 @@ public class CombinationLookup extends BaseStep implements StepInterface {
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    // if no more input to be expected set done
+    if ( r == null ) {
       setOutputDone();
       return false;
     }
@@ -339,7 +342,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       data.schemaTable =
-          meta.getDatabaseMeta().getQuotedSchemaTableCombination( data.realSchemaName, data.realTableName );
+        meta.getDatabaseMeta().getQuotedSchemaTableCombination( data.realSchemaName, data.realTableName );
 
       determineTechKeyCreation();
 
@@ -349,10 +352,10 @@ public class CombinationLookup extends BaseStep implements StepInterface {
 
       for ( int i = 0; i < meta.getKeyField().length; i++ ) {
         data.keynrs[i] = getInputRowMeta().indexOfValue( meta.getKeyField()[i] );
-        if ( data.keynrs[i] < 0 ) // couldn't find field!
-        {
-          throw new KettleStepException( BaseMessages.getString( PKG, "CombinationLookup.Exception.FieldNotFound", meta
-              .getKeyField()[i] ) );
+        if ( data.keynrs[i] < 0 ) {
+          // couldn't find field!
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "CombinationLookup.Exception.FieldNotFound", meta.getKeyField()[i] ) );
         }
       }
 
@@ -377,6 +380,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
       }
 
       setCombiLookup( getInputRowMeta() );
+      preloadCache( data.hashRowMeta );
     }
 
     try {
@@ -417,9 +421,9 @@ public class CombinationLookup extends BaseStep implements StepInterface {
     /*
      * SELECT <retval> FROM <table> WHERE ( ( <key1> = ? ) OR ( <key1> IS NULL AND ? IS NULL ) ) AND ( ( <key2> = ? ) OR
      * ( <key1> IS NULL AND ? IS NULL ) ) ... ;
-     * 
+     *
      * OR
-     * 
+     *
      * SELECT <retval> FROM <table> WHERE <crcfield> = ? AND ( ( <key1> = ? ) OR ( <key1> IS NULL AND ? IS NULL ) ) AND
      * ( ( <key2> = ? ) OR ( <key1> IS NULL AND ? IS NULL ) ) ... ;
      */
@@ -444,8 +448,8 @@ public class CombinationLookup extends BaseStep implements StepInterface {
         comma = true;
       }
       sql +=
-          databaseMeta.quoteField( meta.getKeyLookup()[i] ) + " = ? ) OR ( "
-              + databaseMeta.quoteField( meta.getKeyLookup()[i] );
+        databaseMeta.quoteField( meta.getKeyLookup()[i] )
+          + " = ? ) OR ( " + databaseMeta.quoteField( meta.getKeyLookup()[i] );
       data.lookupRowMeta.addValueMeta( inputRowMeta.getValueMeta( data.keynrs[i] ) );
 
       sql += " IS NULL AND ";
@@ -478,8 +482,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
   /**
    * This inserts new record into a junk dimension
    */
-  public Long combiInsert( RowMetaInterface rowMeta, Object[] row, Long val_key, Long val_crc )
-    throws KettleDatabaseException {
+  public Long combiInsert( RowMetaInterface rowMeta, Object[] row, Long val_key, Long val_crc ) throws KettleDatabaseException {
     String debug = "Combination insert";
     DatabaseMeta databaseMeta = meta.getDatabaseMeta();
     try {
@@ -491,7 +494,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
 
         /*
          * Construct the SQL statement...
-         * 
+         *
          * INSERT INTO d_test(keyfield, [crcfield,] keylookup[]) VALUES(val_key, [val_crc], row values with keynrs[]) ;
          */
 
@@ -499,16 +502,16 @@ public class CombinationLookup extends BaseStep implements StepInterface {
         sql += "INSERT INTO " + data.schemaTable + ( "( " );
         boolean comma = false;
 
-        if ( !isAutoIncrement() ) // NO AUTOINCREMENT
-        {
+        if ( !isAutoIncrement() ) {
+          // NO AUTOINCREMENT
           sql += databaseMeta.quoteField( meta.getTechnicalKeyField() );
-          data.insertRowMeta
-              .addValueMeta( new ValueMeta( meta.getTechnicalKeyField(), ValueMetaInterface.TYPE_INTEGER ) );
+          data.insertRowMeta.addValueMeta( new ValueMeta(
+            meta.getTechnicalKeyField(), ValueMetaInterface.TYPE_INTEGER ) );
           comma = true;
         } else if ( databaseMeta.needsPlaceHolder() ) {
           sql += "0"; // placeholder on informix! Will be replaced in table by real autoinc value.
-          data.insertRowMeta
-              .addValueMeta( new ValueMeta( meta.getTechnicalKeyField(), ValueMetaInterface.TYPE_INTEGER ) );
+          data.insertRowMeta.addValueMeta( new ValueMeta(
+            meta.getTechnicalKeyField(), ValueMetaInterface.TYPE_INTEGER ) );
           comma = true;
         }
 
@@ -526,7 +529,8 @@ public class CombinationLookup extends BaseStep implements StepInterface {
             sql += ", ";
           }
           sql += databaseMeta.quoteField( meta.getLastUpdateField() );
-          data.insertRowMeta.addValueMeta( new ValueMeta( meta.getLastUpdateField(), ValueMetaInterface.TYPE_DATE ) );
+          data.insertRowMeta
+            .addValueMeta( new ValueMeta( meta.getLastUpdateField(), ValueMetaInterface.TYPE_DATE ) );
           comma = true;
         }
 
@@ -579,18 +583,19 @@ public class CombinationLookup extends BaseStep implements StepInterface {
           if ( isAutoIncrement() ) {
             logDetailed( "SQL with return keys: " + sqlStatement );
             data.prepStatementInsert =
-                data.db.getConnection().prepareStatement( databaseMeta.stripCR( sqlStatement ),
-                    Statement.RETURN_GENERATED_KEYS );
+              data.db.getConnection().prepareStatement(
+                databaseMeta.stripCR( sqlStatement ), Statement.RETURN_GENERATED_KEYS );
           } else {
             logDetailed( "SQL without return keys: " + sqlStatement );
-            data.prepStatementInsert = data.db.getConnection().prepareStatement( databaseMeta.stripCR( sqlStatement ) );
+            data.prepStatementInsert =
+              data.db.getConnection().prepareStatement( databaseMeta.stripCR( sqlStatement ) );
           }
         } catch ( SQLException ex ) {
-          throw new KettleDatabaseException( "Unable to prepare combi insert statement : " + Const.CR + sqlStatement,
-              ex );
+          throw new KettleDatabaseException( "Unable to prepare combi insert statement : "
+            + Const.CR + sqlStatement, ex );
         } catch ( Exception ex ) {
-          throw new KettleDatabaseException( "Unable to prepare combi insert statement : " + Const.CR + sqlStatement,
-              ex );
+          throw new KettleDatabaseException( "Unable to prepare combi insert statement : "
+            + Const.CR + sqlStatement, ex );
         }
       }
 
@@ -635,11 +640,11 @@ public class CombinationLookup extends BaseStep implements StepInterface {
             val_key = new Long( keys.getLong( 1 ) );
           } else {
             throw new KettleDatabaseException( "Unable to retrieve auto-increment of combi insert key : "
-                + meta.getTechnicalKeyField() + ", no fields in resultset" );
+              + meta.getTechnicalKeyField() + ", no fields in resultset" );
           }
         } catch ( SQLException ex ) {
           throw new KettleDatabaseException( "Unable to retrieve auto-increment of combi insert key : "
-              + meta.getTechnicalKeyField(), ex );
+            + meta.getTechnicalKeyField(), ex );
         } finally {
           try {
             if ( keys != null ) {
@@ -647,14 +652,14 @@ public class CombinationLookup extends BaseStep implements StepInterface {
             }
           } catch ( SQLException ex ) {
             throw new KettleDatabaseException( "Unable to retrieve auto-increment of combi insert key : "
-                + meta.getTechnicalKeyField(), ex );
+              + meta.getTechnicalKeyField(), ex );
           }
         }
       }
     } catch ( Exception e ) {
       logError( Const.getStackTracker( e ) );
-      throw new KettleDatabaseException( "Unexpected error in combination insert in part [" + debug + "] : "
-          + e.toString(), e );
+      throw new KettleDatabaseException( "Unexpected error in combination insert in part ["
+        + debug + "] : " + e.toString(), e );
     }
 
     return val_key;
@@ -719,6 +724,80 @@ public class CombinationLookup extends BaseStep implements StepInterface {
     }
 
     super.dispose( smi, sdi );
+  }
+
+  /** Preload the cache
+   * 
+   * @param hashRowMeta The RowMeta of the hashRow
+   * @author nwyrwa
+   * @throws KettleDatabaseException If something went wrong while selecting the values from the db
+   * @throws KettleValueException If something went wrong while adding the data to the cache
+   * @throws KettleConfigException If the step configuration is incomplete
+   */
+  private void preloadCache( RowMetaInterface hashRowMeta ) throws KettleDatabaseException, KettleValueException, KettleConfigException {
+    // fast exit if no preload cache or no cache
+    if ( meta.getPreloadCache() && meta.getCacheSize() >= 0 ) {
+      if ( hashRowMeta == null ) {
+        throw new KettleConfigException( BaseMessages.getString( PKG, "CombinationLookup.Log.UnexpectedError" ) );
+      }
+      DatabaseMeta databaseMeta = meta.getDatabaseMeta();
+      if ( databaseMeta == null ) {
+        throw new KettleConfigException( BaseMessages.getString( PKG, "CombinationLookup.Log.UnexpectedError" ) );
+      }
+      String lookupKeys = "";
+      String sql = "";
+      List<Object[]> cacheValues;
+
+      /* build SQl Statement to preload cache
+       * 
+           * SELECT 
+           * min(<retval>) as <retval>, 
+           * key1, 
+           * key2, 
+           * key3  
+           * FROM   <table> 
+           * 
+           * GROUP BY key1,
+           * key2,
+           * key3;
+           * 
+           */
+
+      // Build a string representation of the lookupKeys 
+      for ( int i = 0; i < meta.getKeyLookup().length; i++ ) {
+        lookupKeys += databaseMeta.quoteField( meta.getKeyLookup()[i] );
+
+        // No comma after last field
+        if ( i < meta.getKeyLookup().length - 1 ) {
+          lookupKeys += "," + Const.CR;
+        }
+      }
+
+      // Use min in case of disambiguation
+      sql += "SELECT " + Const.CR;
+      sql += "MIN(" + databaseMeta.quoteField( meta.getTechnicalKeyField() ) + ") as "
+        + databaseMeta.quoteField( meta.getTechnicalKeyField() ) + "," + Const.CR;
+      sql += lookupKeys + Const.CR;
+      sql += "FROM " + data.schemaTable + Const.CR;
+      sql += "GROUP BY" + Const.CR;
+      sql += lookupKeys + Const.CR;
+
+      if ( log.isDebug() ) {
+        logDebug( "Using preload cache statement:" + Const.CR + sql );
+      }
+      cacheValues = data.db.getRows( databaseMeta.stripCR( sql ), meta.getCacheSize() );
+      for ( Object[] cacheRow : cacheValues ) {
+        // Create a correctly structured array for the cache
+        Object[] hashRow = new Object[data.hashRowMeta.size()];
+        // Assumes the technical key is at position 0 !!
+        System.arraycopy( cacheRow, 1, hashRow, 0, hashRow.length );
+        // Potential Cache Overflow is ahndled inside 
+        addToCache( hashRowMeta, hashRow, (Long) cacheRow[0] );
+        incrementLinesInput();
+      }
+
+    }
+
   }
 
 }

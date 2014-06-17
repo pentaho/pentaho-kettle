@@ -33,15 +33,15 @@ import org.w3c.dom.Node;
 
 /**
  * This class defines a hop from one job entry copy to another.
- * 
+ *
  * @author Matt
  * @since 19-06-2003
- * 
+ *
  */
 public class JobHopMeta implements Cloneable, XMLInterface {
   private static final String XML_TAG = "hop";
 
-  private static Class<?> PKG = JobHopMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobHopMeta.class; // for i18n purposes, needed by Translator2!!
 
   private JobEntryCopy from_entry, to_entry;
   private boolean enabled;
@@ -100,7 +100,8 @@ public class JobHopMeta implements Cloneable, XMLInterface {
       }
       unconditional = "Y".equalsIgnoreCase( sunconditional );
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "JobHopMeta.Exception.UnableToLoadHopInfoXML" ), e );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "JobHopMeta.Exception.UnableToLoadHopInfoXML" ), e );
     }
   }
 

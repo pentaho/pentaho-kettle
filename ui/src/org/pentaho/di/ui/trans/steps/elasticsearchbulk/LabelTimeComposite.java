@@ -43,7 +43,7 @@ import org.pentaho.di.ui.core.PropsUI;
 
 /**
  * Label, numeric text input and drop down time unit selector
- * 
+ *
  */
 public class LabelTimeComposite extends Composite {
   private static final PropsUI props = PropsUI.getInstance();

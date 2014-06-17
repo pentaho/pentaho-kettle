@@ -48,7 +48,7 @@ import org.pentaho.di.trans.steps.xmloutput.XMLField.ContentType;
 
 /**
  * Converts input rows to one or more XML files.
- * 
+ *
  * @author Matt
  * @since 14-jan-2006
  */
@@ -57,7 +57,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
 
   private XMLOutputData data;
 
-  public XMLOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public XMLOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -87,7 +88,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
       }
     }
 
-    if ( ( r != null && getLinesOutput() > 0 && meta.getSplitEvery() > 0 && ( getLinesOutput() % meta.getSplitEvery() ) == 0 ) ) {
+    if ( ( r != null && getLinesOutput() > 0 && meta.getSplitEvery() > 0 && ( getLinesOutput() % meta
+      .getSplitEvery() ) == 0 ) ) {
       // Done with this part or with everything.
       closeFile();
 
@@ -101,8 +103,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
       }
     }
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -131,8 +133,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
           data.fieldnrs[i] = data.formatRowMeta.indexOfValue( meta.getOutputFields()[i].getFieldName() );
           if ( data.fieldnrs[i] < 0 ) {
-            throw new KettleException( "Field [" + meta.getOutputFields()[i].getFieldName()
-                + "] couldn't be found in the input stream!" );
+            throw new KettleException( "Field ["
+              + meta.getOutputFields()[i].getFieldName() + "] couldn't be found in the input stream!" );
           }
 
           // Apply the formatting settings to the valueMeta object...
@@ -186,7 +188,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
             if ( Const.isEmpty( elementName ) ) {
               elementName = xmlField.getFieldName();
             }
-            data.writer.write( ( " " + elementName + "=\"" + valueMeta.getString( valueData ) + "\"" ).toCharArray() );
+            data.writer.write( ( " " + elementName + "=\"" + valueMeta.getString( valueData ) + "\"" )
+              .toCharArray() );
           }
         }
 
@@ -220,8 +223,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
       data.writer.write( ( " </" + meta.getRepeatElement() + ">" ).toCharArray() );
       data.writer.write( Const.CR.toCharArray() );
     } catch ( Exception e ) {
-      throw new KettleException( "Error writing XML row :" + e.toString() + Const.CR + "Row: "
-          + getInputRowMeta().getString( r ), e );
+      throw new KettleException( "Error writing XML row :"
+        + e.toString() + Const.CR + "Row: " + getInputRowMeta().getString( r ), e );
     }
 
     incrementLinesOutput();
@@ -261,7 +264,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
         if ( meta.isAddToResultFiles() ) {
           // Add this to the result file names...
           ResultFile resultFile =
-              new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
+            new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
           resultFile.setComment( "This file was created with a xml output step" );
           addResultFile( resultFile );
         }
@@ -333,6 +336,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
 
         retval = true;
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
     return retval;

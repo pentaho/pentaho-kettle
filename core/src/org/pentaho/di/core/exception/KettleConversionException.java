@@ -33,7 +33,7 @@ public class KettleConversionException extends KettleException {
   private Object[] rowData;
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1697154653111622296L;
 
@@ -46,7 +46,7 @@ public class KettleConversionException extends KettleException {
 
   /**
    * Constructs a new throwable with the specified detail message and cause.
-   * 
+   *
    * @param message
    *          the detail message (which is saved for later retrieval by the getMessage() method).
    * @param causes
@@ -57,7 +57,7 @@ public class KettleConversionException extends KettleException {
    *          the row with the failed fields set to null.
    */
   public KettleConversionException( String message, List<Exception> causes, List<ValueMetaInterface> fields,
-      Object[] rowData ) {
+    Object[] rowData ) {
     super( message );
     this.causes = causes;
     this.fields = fields;

@@ -2,10 +2,15 @@ package org.pentaho.di.trans.steps.mock;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,8 +20,12 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
+import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.logging.LogMessageInterface;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -43,14 +52,14 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
     KettleLogStore.setLogChannelInterfaceFactory( logChannelInterfaceFactory );
     stepMeta = mock( StepMeta.class );
     when( stepMeta.getName() ).thenReturn( stepName );
-    stepDataInterface = (Data) mock( stepDataClass );
+    stepDataInterface = mock( stepDataClass );
     transMeta = mock( TransMeta.class );
     when( transMeta.findStep( stepName ) ).thenReturn( stepMeta );
     trans = mock( Trans.class );
-    initStepMetaInterface = (Meta) mock( stepMetaClass );
-    initStepDataInterface = (Data) mock( stepDataClass );
-    processRowsStepDataInterface = (Data) mock( stepDataClass );
-    processRowsStepMetaInterface = (Meta) mock( stepMetaClass );
+    initStepMetaInterface = mock( stepMetaClass );
+    initStepDataInterface = mock( stepDataClass );
+    processRowsStepDataInterface = mock( stepDataClass );
+    processRowsStepMetaInterface = mock( stepMetaClass );
   }
 
   public RowSet getMockInputRowSet( Object[]... rows ) {
@@ -60,14 +69,15 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
   public RowSet getMockInputRowSet( final List<Object[]> rows ) {
     final AtomicInteger index = new AtomicInteger( 0 );
     RowSet rowSet = mock( RowSet.class, Mockito.RETURNS_MOCKS );
-    when( rowSet.getRowWait( anyLong(), any( TimeUnit.class ) ) ).thenAnswer( new Answer<Object[]>() {
+    Answer<Object[]> answer = new Answer<Object[]>() {
       @Override
       public Object[] answer( InvocationOnMock invocation ) throws Throwable {
         int i = index.getAndIncrement();
         return i < rows.size() ? rows.get( i ) : null;
       }
-
-    } );
+    };
+    when( rowSet.getRowWait( anyLong(), any( TimeUnit.class ) ) ).thenAnswer( answer );
+    when( rowSet.getRow() ).thenAnswer( answer );
     when( rowSet.isDone() ).thenAnswer( new Answer<Boolean>() {
 
       @Override
@@ -80,13 +90,46 @@ public class StepMockHelper<Meta extends StepMetaInterface, Data extends StepDat
 
   public static List<Object[]> asList( Object[]... objects ) {
     List<Object[]> result = new ArrayList<Object[]>();
-    for ( Object[] object : objects ) {
-      result.add( object );
-    }
+    Collections.addAll( result, objects );
     return result;
   }
 
   public void cleanUp() {
     KettleLogStore.setLogChannelInterfaceFactory( originalLogChannelInterfaceFactory );
+  }
+
+  /**
+   *  In case you need to use log methods during the tests
+   *  use redirectLog method after creating new StepMockHelper object.
+   *  Examples:
+   *    stepMockHelper.redirectLog( System.out, LogLevel.ROWLEVEL );
+   *    stepMockHelper.redirectLog( new FileOutputStream("log.txt"), LogLevel.BASIC );
+   */
+  public void redirectLog( final OutputStream out, LogLevel channelLogLevel ) {
+    final LogChannel log = spy( new LogChannel( this.getClass().getName(), true ) );
+    log.setLogLevel( channelLogLevel );
+    when( logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn( log );
+    doAnswer( new Answer<Object>() {
+      @Override
+      public Object answer( InvocationOnMock invocation ) throws Throwable {
+        Object[] args = invocation.getArguments();
+
+        LogLevel logLevel = (LogLevel) args[1];
+        LogLevel channelLogLevel = log.getLogLevel();
+
+        if ( !logLevel.isVisible( channelLogLevel ) ) {
+          return null; // not for our eyes.
+        }
+        if ( channelLogLevel.getLevel() >= logLevel.getLevel() ) {
+          LogMessageInterface logMessage = (LogMessageInterface) args[0];
+          out.write( logMessage.getMessage().getBytes() );
+          out.write( '\n' );
+          out.write( '\r' );
+          out.flush();
+          return true;
+        }
+        return false;
+      }
+    } ).when( log ).println( (LogMessageInterface) anyObject(), (LogLevel) anyObject() );
   }
 }

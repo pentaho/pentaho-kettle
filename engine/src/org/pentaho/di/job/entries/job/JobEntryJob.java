@@ -83,13 +83,13 @@ import org.w3c.dom.Node;
 /**
  * Recursive definition of a Job. This step means that an entire Job has to be executed. It can be the same Job, but
  * just make sure that you don't get an endless loop. Provide an escape routine using JobEval.
- * 
+ *
  * @author Matt
  * @since 01-10-2003, Rewritten on 18-06-2004
- * 
+ *
  */
 public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
   private String jobname;
@@ -219,10 +219,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     // specificationMethod
     //
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "specification_method", specificationMethod == null ? null : specificationMethod
-            .getCode() ) );
+      XMLHandler.addTagValue( "specification_method", specificationMethod == null ? null : specificationMethod
+        .getCode() ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "job_object_id", jobObjectId == null ? null : jobObjectId.toString() ) );
+      XMLHandler.addTagValue( "job_object_id", jobObjectId == null ? null : jobObjectId.toString() ) );
     // Export a little bit of extra information regarding the reference since it doesn't really matter outside the same
     // repository.
     //
@@ -254,8 +254,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     retval.append( "      " ).append( XMLHandler.addTagValue( "add_date", addDate ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "add_time", addTime ) );
     retval.append( "      " ).append(
-        XMLHandler
-            .addTagValue( "loglevel", logFileLevel != null ? logFileLevel.getCode() : DEFAULT_LOG_LEVEL.getCode() ) );
+      XMLHandler.addTagValue( "loglevel", logFileLevel != null ? logFileLevel.getCode() : DEFAULT_LOG_LEVEL
+        .getCode() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "slave_server_name", remoteSlaveServerName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "wait_until_finished", waitingToFinish ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "follow_abort_remote", followingAbortRemotely ) );
@@ -312,8 +312,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     }
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
 
@@ -342,7 +342,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       passingExport = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "pass_export" ) );
       directory = XMLHandler.getTagValue( entrynode, "directory" );
       createParentFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "create_parent_folder" ) );
-      forcingSeparateLogging = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "force_separate_logging" ) );
+      forcingSeparateLogging =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "force_separate_logging" ) );
 
       String wait = XMLHandler.getTagValue( entrynode, "wait_until_finished" );
       if ( Const.isEmpty( wait ) ) {
@@ -394,7 +395,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    * Load the jobentry from repository
    */
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       String method = rep.getJobEntryAttributeString( id_jobentry, "specification_method" );
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
@@ -452,7 +453,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'job' from the repository with id_jobentry="
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
   }
 
@@ -460,10 +461,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   //
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "specification_method", specificationMethod == null ? null
-          : specificationMethod.getCode() );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "specification_method", specificationMethod == null
+        ? null : specificationMethod.getCode() );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "job_object_id", jobObjectId == null ? null : jobObjectId
-          .toString() );
+        .toString() );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "name", getJobName() );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "dir_path", getDirectory() != null ? getDirectory() : "" );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "file_name", filename );
@@ -476,8 +477,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logfile", logfile );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logext", logext );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "set_append_logfile", setAppendLogfile );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "loglevel", logFileLevel != null ? logFileLevel.getCode()
-          : JobEntryJob.DEFAULT_LOG_LEVEL.getCode() );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "loglevel", logFileLevel != null
+        ? logFileLevel.getCode() : JobEntryJob.DEFAULT_LOG_LEVEL.getCode() );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "slave_server_name", remoteSlaveServerName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "pass_export", passingExport );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "wait_until_finished", waitingToFinish );
@@ -498,14 +499,16 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         for ( int i = 0; i < parameters.length; i++ ) {
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "parameter_name", parameters[i] );
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "parameter_stream_name", Const.NVL(
-              parameterFieldNames[i], "" ) );
-          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "parameter_value", Const.NVL( parameterValues[i], "" ) );
+            parameterFieldNames[i], "" ) );
+          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "parameter_value", Const.NVL(
+            parameterValues[i], "" ) );
         }
       }
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "pass_all_parameters", passingAllParameters );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type job to the repository with id_job=" + id_job, dbe );
+      throw new KettleException(
+        "Unable to save job entry of type job to the repository with id_job=" + id_job, dbe );
     }
   }
 
@@ -534,8 +537,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       }
       try {
         logChannelFileWriter =
-            new LogChannelFileWriter( this.getLogChannelId(), KettleVFS.getFileObject( realLogFilename ),
-                setAppendLogfile );
+          new LogChannelFileWriter(
+            this.getLogChannelId(), KettleVFS.getFileObject( realLogFilename ), setAppendLogfile );
         logChannelFileWriter.startLogging();
       } catch ( KettleException e ) {
         logError( "Unable to open file appender for file [" + getLogFilename() + "] : " + e.toString() );
@@ -554,8 +557,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       String realRemoteSlaveServerName = environmentSubstitute( remoteSlaveServerName );
       remoteSlaveServer = parentJob.getJobMeta().findSlaveServer( realRemoteSlaveServerName );
       if ( remoteSlaveServer == null ) {
-        throw new KettleException( BaseMessages.getString( PKG, "JobJob.Exception.UnableToFindRemoteSlaveServer",
-            realRemoteSlaveServerName ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "JobJob.Exception.UnableToFindRemoteSlaveServer", realRemoteSlaveServerName ) );
       }
     }
     try {
@@ -573,7 +576,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       switch ( specificationMethod ) {
         case REPOSITORY_BY_NAME:
           if ( log.isDetailed() ) {
-            logDetailed( "Loading job from repository : [" + directory + " : " + environmentSubstitute( jobname ) + "]" );
+            logDetailed( "Loading job from repository : ["
+              + directory + " : " + environmentSubstitute( jobname ) + "]" );
           }
           break;
         case FILENAME:
@@ -596,7 +600,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       //
       if ( jobMeta == null ) {
         throw new KettleException(
-            "Unable to load the job: please specify the name and repository directory OR a filename" );
+          "Unable to load the job: please specify the name and repository directory OR a filename" );
       }
 
       verifyRecursiveExecution( parentJob, jobMeta );
@@ -628,7 +632,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>( result.getRows() );
 
       while ( ( first && !execPerRow )
-          || ( execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0 ) ) {
+        || ( execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0 ) ) {
         first = false;
 
         // Clear the result rows of the result
@@ -682,7 +686,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
               if ( Const.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
                 namedParam.setParameterValue( parameters[idx], Const.NVL(
-                    environmentSubstitute( parameterValues[idx] ), "" ) );
+                  environmentSubstitute( parameterValues[idx] ), "" ) );
               } else {
                 // something filled in, in the field column...
                 //
@@ -700,11 +704,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
         List<RowMetaAndData> sourceRows = null;
 
-        if ( execPerRow ) // Execute for each input row
-        {
-          if ( argFromPrevious ) // Copy the input row to the (command line)
-                                 // arguments
-          {
+        if ( execPerRow ) {
+          // Execute for each input row
+
+          if ( argFromPrevious ) {
+            // Copy the input row to the (command line) arguments
+
             args = null;
             if ( resultRow != null ) {
               args = new String[resultRow.size()];
@@ -727,7 +732,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                   // We have a parameter
                   if ( Const.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
                     namedParam.setParameterValue( parameters[idx], Const.NVL(
-                        environmentSubstitute( parameterValues[idx] ), "" ) );
+                      environmentSubstitute( parameterValues[idx] ), "" ) );
                   } else {
                     String fieldValue = "";
 
@@ -764,7 +769,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                   // We have a parameter
                   if ( Const.isEmpty( Const.trim( parameterFieldNames[idx] ) ) ) {
                     namedParam.setParameterValue( parameters[idx], Const.NVL(
-                        environmentSubstitute( parameterValues[idx] ), "" ) );
+                      environmentSubstitute( parameterValues[idx] ), "" ) );
                   } else {
                     String fieldValue = "";
 
@@ -863,8 +868,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           // added UUID to thread name, otherwise threads do share names if jobs entries are executed in parallel in a
           // parent job
           // if that happens, contained transformations start closing each other's connections
-          jobRunnerThread.setName( Const.NVL( job.getJobMeta().getName(), job.getJobMeta().getFilename() ) + " UUID: "
-              + UUID.randomUUID().toString() );
+          jobRunnerThread.setName( Const.NVL( job.getJobMeta().getName(), job.getJobMeta().getFilename() )
+            + " UUID: " + UUID.randomUUID().toString() );
           jobRunnerThread.start();
 
           // Keep running until we're done.
@@ -873,6 +878,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             try {
               Thread.sleep( 0, 1 );
             } catch ( InterruptedException e ) {
+              // Ignore
             }
           }
 
@@ -941,8 +947,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 break;
               }
             } catch ( Exception e1 ) {
-              logError( "Unable to contact slave server [" + remoteSlaveServer + "] to verify the status of job ["
-                  + jobMeta.getName() + "]", e1 );
+              logError( "Unable to contact slave server ["
+                + remoteSlaveServer + "] to verify the status of job [" + jobMeta.getName() + "]", e1 );
               oneResult.setNrErrors( 1L );
               break; // Stop looking too, chances are too low the server will
                      // come back on-line
@@ -974,8 +980,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 remoteSlaveServer.stopJob( jobMeta.getName(), carteObjectId );
               }
             } catch ( Exception e1 ) {
-              logError( "Unable to contact slave server [" + remoteSlaveServer + "] to stop job [" + jobMeta.getName()
-                  + "]", e1 );
+              logError( "Unable to contact slave server ["
+                + remoteSlaveServer + "] to stop job [" + jobMeta.getName() + "]", e1 );
               oneResult.setNrErrors( 1L );
               break; // Stop looking too, chances are too low the server will
                      // come back on-line
@@ -1011,8 +1017,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         logChannelFileWriter.stopLogging();
 
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_LOG, logChannelFileWriter.getLogFile(), parentJob.getJobname(),
-                getName() );
+          new ResultFile(
+            ResultFile.FILE_TYPE_LOG, logChannelFileWriter.getLogFile(), parentJob.getJobname(), getName() );
         result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
 
         // See if anything went wrong during file writing...
@@ -1046,29 +1052,29 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       if ( !parentfolder.exists() ) {
         if ( createParentFolder ) {
           if ( log.isDebug() ) {
-            log.logDebug( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderNotExist", parentfolder.getName()
-                .toString() ) );
+            log.logDebug( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderNotExist", parentfolder
+              .getName().toString() ) );
           }
           parentfolder.createFolder();
           if ( log.isDebug() ) {
-            log.logDebug( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderCreated", parentfolder.getName()
-                .toString() ) );
+            log.logDebug( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderCreated", parentfolder
+              .getName().toString() ) );
           }
         } else {
-          log.logError( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderNotExist", parentfolder.getName()
-              .toString() ) );
+          log.logError( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderNotExist", parentfolder
+            .getName().toString() ) );
           resultat = false;
         }
       } else {
         if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderExists", parentfolder.getName()
-              .toString() ) );
+          log.logDebug( BaseMessages.getString( PKG, "JobJob.Log.ParentLogFolderExists", parentfolder
+            .getName().toString() ) );
         }
       }
     } catch ( Exception e ) {
       resultat = false;
-      log.logError( BaseMessages.getString( PKG, "JobJob.Error.ChekingParentLogFolderTitle" ), BaseMessages.getString(
-          PKG, "JobJob.Error.ChekingParentLogFolder", parentfolder.getName().toString() ), e );
+      log.logError( BaseMessages.getString( PKG, "JobJob.Error.ChekingParentLogFolderTitle" ), BaseMessages
+        .getString( PKG, "JobJob.Error.ChekingParentLogFolder", parentfolder.getName().toString() ), e );
     } finally {
       if ( parentfolder != null ) {
         try {
@@ -1085,7 +1091,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
   /**
    * Make sure that we are not loading jobs recursively...
-   * 
+   *
    * @param parentJobMeta
    *          the parent job metadata
    * @param jobMeta
@@ -1162,8 +1168,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     return true;
   }
 
-  public List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore, VariableSpace space )
-    throws KettleException {
+  public List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     this.copyVariablesFrom( space );
     JobMeta jobMeta = getJobMeta( repository, metaStore, space );
     return jobMeta.getSQLStatements( repository, null );
@@ -1184,23 +1189,27 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       switch ( specificationMethod ) {
         case FILENAME:
           jobMeta =
-              new JobMeta( ( space != null ? space.environmentSubstitute( getFilename() ) : getFilename() ), rep, null );
+            new JobMeta(
+              ( space != null ? space.environmentSubstitute( getFilename() ) : getFilename() ), rep, null );
           break;
         case REPOSITORY_BY_NAME:
           if ( rep != null ) {
-            String realDirectory = ( space != null ? space.environmentSubstitute( getDirectory() ) : getDirectory() );
+            String realDirectory =
+              ( space != null ? space.environmentSubstitute( getDirectory() ) : getDirectory() );
             RepositoryDirectoryInterface repositoryDirectory =
-                rep.loadRepositoryDirectoryTree().findDirectory( realDirectory );
+              rep.loadRepositoryDirectoryTree().findDirectory( realDirectory );
             if ( repositoryDirectory == null ) {
-              throw new KettleException( "Unable to find repository directory [" + Const.NVL( realDirectory, "" ) + "]" );
+              throw new KettleException( "Unable to find repository directory ["
+                + Const.NVL( realDirectory, "" ) + "]" );
             }
             jobMeta =
-                rep.loadJob( ( space != null ? space.environmentSubstitute( getJobName() ) : getJobName() ),
-                    repositoryDirectory, null, null ); // reads
+              rep.loadJob(
+                ( space != null ? space.environmentSubstitute( getJobName() ) : getJobName() ),
+                repositoryDirectory, null, null ); // reads
             break;
           } else {
             throw new KettleException(
-                "Could not execute job specified in a repository since we're not connected to one" );
+              "Could not execute job specified in a repository since we're not connected to one" );
           }
         case REPOSITORY_BY_REFERENCE:
           if ( rep != null ) {
@@ -1210,11 +1219,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             break;
           } else {
             throw new KettleException(
-                "Could not execute job specified in a repository since we're not connected to one" );
+              "Could not execute job specified in a repository since we're not connected to one" );
           }
         default:
-          throw new KettleException( "The specified object location specification method '" + specificationMethod
-              + "' is not yet supported in this job entry." );
+          throw new KettleException( "The specified object location specification method '"
+            + specificationMethod + "' is not yet supported in this job entry." );
       }
 
       if ( jobMeta != null ) {
@@ -1259,7 +1268,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    * Exports the object to a flat-file system, adding content with filename keys to a set of definitions. The supplied
    * resource naming interface allows the object to name appropriately without worrying about those parts of the
    * implementation specific details.
-   * 
+   *
    * @param space
    *          The variable space to resolve (environment) variables with.
    * @param definitions
@@ -1270,13 +1279,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    *          The repository to load resources from
    * @param metaStore
    *          the metaStore to load external metadata from
-   * 
+   *
    * @return The filename for this object. (also contained in the definitions map)
    * @throws KettleException
    *           in case something goes wrong during the export
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     // Try to load the transformation from repository or file.
     // Modify this recursively too...
     //
@@ -1291,7 +1300,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     // Also go down into the job and export the files there. (going down
     // recursively)
     //
-    String proposedNewFilename = jobMeta.exportResources( jobMeta, definitions, namingInterface, repository, metaStore );
+    String proposedNewFilename =
+      jobMeta.exportResources( jobMeta, definitions, namingInterface, repository, metaStore );
 
     // To get a relative path to it, we inject
     // ${Internal.Job.Filename.Directory}
@@ -1319,8 +1329,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     if ( setLogfile ) {
       andValidator().validate( this, "logfile", remarks, putValidators( notBlankValidator() ) );
     }
@@ -1446,7 +1456,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
   /**
    * Look up the references after import
-   * 
+   *
    * @param repository
    *          the repository to reference.
    */
@@ -1454,13 +1464,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     // The correct reference is stored in the job name and directory attributes...
     //
     RepositoryDirectoryInterface repositoryDirectoryInterface =
-        RepositoryImportLocation.getRepositoryImportLocation().findDirectory( directory );
+      RepositoryImportLocation.getRepositoryImportLocation().findDirectory( directory );
     jobObjectId = repository.getJobId( jobname, repositoryDirectoryInterface );
   }
 
   private boolean isJobDefined() {
-    return !Const.isEmpty( filename ) || jobObjectId != null
-        || ( !Const.isEmpty( this.directory ) && !Const.isEmpty( jobname ) );
+    return !Const.isEmpty( filename )
+      || jobObjectId != null || ( !Const.isEmpty( this.directory ) && !Const.isEmpty( jobname ) );
   }
 
   public boolean[] isReferencedObjectEnabled() {
@@ -1476,7 +1486,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
   /**
    * Load the referenced object
-   * 
+   *
    * @param index
    *          the referenced object index to load (in case there are multiple references)
    * @param rep
@@ -1488,8 +1498,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
-    throws KettleException {
+  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     return getJobMeta( rep, metaStore, space );
   }
 

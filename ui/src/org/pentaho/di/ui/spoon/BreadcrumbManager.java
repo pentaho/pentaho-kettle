@@ -27,9 +27,9 @@ import java.util.Map;
 
 /**
  * A class to manage breadcrumbing so that we know which document/tab/perspective opened a given document.
- * 
+ *
  * @author jamesdixon
- * 
+ *
  */
 public class BreadcrumbManager {
 
@@ -43,7 +43,7 @@ public class BreadcrumbManager {
 
   /**
    * Adds a link between a caller id a callee id.
-   * 
+   *
    * @param caller
    * @param callee
    */
@@ -54,7 +54,7 @@ public class BreadcrumbManager {
   /**
    * Returns the id of the caller for a given callee id. Will return null if there is no caller registered for the
    * callee id.
-   * 
+   *
    * @param callee
    * @return
    */
@@ -64,7 +64,7 @@ public class BreadcrumbManager {
 
   /**
    * Removes the caller id of the callee from the breadcrumb manager
-   * 
+   *
    * @param callee
    */
   public void removeCaller( String callee ) {

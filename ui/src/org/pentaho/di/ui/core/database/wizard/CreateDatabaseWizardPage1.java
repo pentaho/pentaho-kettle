@@ -50,14 +50,14 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
 /**
- * 
+ *
  * On page one we select the database connection name, the database type and the access type.
- * 
+ *
  * @author Matt
  * @since 04-apr-2005
  */
 public class CreateDatabaseWizardPage1 extends WizardPage {
-  private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
   private Text wName;
@@ -77,7 +77,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage {
   private Map<String, String> wDBIDtoNameMap = new HashMap<String, String>();
 
   public CreateDatabaseWizardPage1( String arg, PropsUI props, DatabaseMeta databaseMeta,
-      java.util.List<DatabaseMeta> databases ) {
+    java.util.List<DatabaseMeta> databases ) {
     super( arg );
     this.props = props;
     this.databaseMeta = databaseMeta;
@@ -260,7 +260,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.wizard.WizardPage#getNextPage()
    */
   public IWizardPage getNextPage() {

@@ -37,6 +37,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.mail.Flags.Flag;
+
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
@@ -66,14 +68,14 @@ import org.w3c.dom.Node;
 
 /**
  * This defines an get pop job entry.
- * 
+ *
  * @author Samatar
  * @since 01-03-2007
- * 
+ *
  */
 
 public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!!
 
   public int actiontype;
 
@@ -170,7 +172,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     createlocalfolder = false;
     aftergetimap = MailConnectionMeta.AFTER_GET_IMAP_NOTHING;
     includesubfolders = false;
-    setID( -1L );
   }
 
   public JobEntryGetPOP() {
@@ -188,7 +189,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     retval.append( "      " ).append( XMLHandler.addTagValue( "servername", servername ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "username", username ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "usessl", usessl ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "sslport", sslport ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "outputdirectory", outputdirectory ) );
@@ -199,12 +200,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     retval.append( "      " ).append( XMLHandler.addTagValue( "savemessage", savemessage ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "saveattachment", saveattachment ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "usedifferentfolderforattachment", usedifferentfolderforattachment ) );
+      XMLHandler.addTagValue( "usedifferentfolderforattachment", usedifferentfolderforattachment ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "protocol", protocol ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "attachmentfolder", attachmentfolder ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "attachmentwildcard", attachmentwildcard ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "valueimaplist", MailConnectionMeta.getValueImapListCode( valueimaplist ) ) );
+      XMLHandler.addTagValue( "valueimaplist", MailConnectionMeta.getValueImapListCode( valueimaplist ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "imapfirstmails", imapfirstmails ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "imapfolder", imapfolder ) );
     // search term
@@ -212,33 +213,35 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     retval.append( "      " ).append( XMLHandler.addTagValue( "nottermsendersearch", notTermSenderSearch ) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "receipientsearch", receipientSearch ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "nottermreceipientsearch", notTermReceipientSearch ) );
+    retval
+      .append( "      " ).append( XMLHandler.addTagValue( "nottermreceipientsearch", notTermReceipientSearch ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "subjectsearch", subjectSearch ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "nottermsubjectsearch", notTermSubjectSearch ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "bodysearch", bodySearch ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "nottermbodysearch", notTermBodySearch ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "conditionreceiveddate", MailConnectionMeta
-            .getConditionDateCode( conditionReceivedDate ) ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "nottermreceiveddatesearch", notTermReceivedDateSearch ) );
+      XMLHandler.addTagValue( "conditionreceiveddate", MailConnectionMeta
+        .getConditionDateCode( conditionReceivedDate ) ) );
+    retval.append( "      " ).append(
+      XMLHandler.addTagValue( "nottermreceiveddatesearch", notTermReceivedDateSearch ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "receiveddate1", receivedDate1 ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "receiveddate2", receivedDate2 ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "actiontype", MailConnectionMeta.getActionTypeCode( actiontype ) ) );
+      XMLHandler.addTagValue( "actiontype", MailConnectionMeta.getActionTypeCode( actiontype ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "movetoimapfolder", moveToIMAPFolder ) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "createmovetofolder", createmovetofolder ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "createlocalfolder", createlocalfolder ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "aftergetimap", MailConnectionMeta.getAfterGetIMAPCode( aftergetimap ) ) );
+      XMLHandler.addTagValue( "aftergetimap", MailConnectionMeta.getAfterGetIMAPCode( aftergetimap ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "includesubfolders", includesubfolders ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "useproxy", useproxy ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyusername", proxyusername ) );
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       servername = XMLHandler.getTagValue( entrynode, "servername" );
@@ -255,7 +258,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       firstmails = XMLHandler.getTagValue( entrynode, "firstmails" );
       delete = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "delete" ) );
 
-      protocol = Const.NVL( XMLHandler.getTagValue( entrynode, "protocol" ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
+      protocol =
+        Const.NVL( XMLHandler.getTagValue( entrynode, "protocol" ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
 
       String sm = XMLHandler.getTagValue( entrynode, "savemessage" );
       if ( Const.isEmpty( sm ) ) {
@@ -272,38 +276,40 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       }
 
       usedifferentfolderforattachment =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "usedifferentfolderforattachment" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "usedifferentfolderforattachment" ) );
       attachmentfolder = XMLHandler.getTagValue( entrynode, "attachmentfolder" );
       attachmentwildcard = XMLHandler.getTagValue( entrynode, "attachmentwildcard" );
       valueimaplist =
-          MailConnectionMeta.getValueImapListByCode( Const.NVL( XMLHandler.getTagValue( entrynode, "valueimaplist" ),
-              "" ) );
+        MailConnectionMeta.getValueImapListByCode( Const.NVL( XMLHandler
+          .getTagValue( entrynode, "valueimaplist" ), "" ) );
       imapfirstmails = XMLHandler.getTagValue( entrynode, "imapfirstmails" );
       imapfolder = XMLHandler.getTagValue( entrynode, "imapfolder" );
       // search term
       senderSearch = XMLHandler.getTagValue( entrynode, "sendersearch" );
       notTermSenderSearch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "nottermsendersearch" ) );
       receipientSearch = XMLHandler.getTagValue( entrynode, "receipientsearch" );
-      notTermReceipientSearch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "nottermreceipientsearch" ) );
+      notTermReceipientSearch =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "nottermreceipientsearch" ) );
       subjectSearch = XMLHandler.getTagValue( entrynode, "subjectsearch" );
       notTermSubjectSearch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "nottermsubjectsearch" ) );
       bodySearch = XMLHandler.getTagValue( entrynode, "bodysearch" );
       notTermBodySearch = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "nottermbodysearch" ) );
       conditionReceivedDate =
-          MailConnectionMeta.getConditionByCode( Const.NVL(
-              XMLHandler.getTagValue( entrynode, "conditionreceiveddate" ), "" ) );
+        MailConnectionMeta.getConditionByCode( Const.NVL( XMLHandler.getTagValue(
+          entrynode, "conditionreceiveddate" ), "" ) );
       notTermReceivedDateSearch =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "nottermreceiveddatesearch" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "nottermreceiveddatesearch" ) );
       receivedDate1 = XMLHandler.getTagValue( entrynode, "receivedDate1" );
       receivedDate2 = XMLHandler.getTagValue( entrynode, "receivedDate2" );
       actiontype =
-          MailConnectionMeta.getActionTypeByCode( Const.NVL( XMLHandler.getTagValue( entrynode, "actiontype" ), "" ) );
+        MailConnectionMeta.getActionTypeByCode( Const
+          .NVL( XMLHandler.getTagValue( entrynode, "actiontype" ), "" ) );
       moveToIMAPFolder = XMLHandler.getTagValue( entrynode, "movetoimapfolder" );
       createmovetofolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "createmovetofolder" ) );
       createlocalfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "createlocalfolder" ) );
       aftergetimap =
-          MailConnectionMeta
-              .getAfterGetIMAPByCode( Const.NVL( XMLHandler.getTagValue( entrynode, "aftergetimap" ), "" ) );
+        MailConnectionMeta.getAfterGetIMAPByCode( Const.NVL(
+          XMLHandler.getTagValue( entrynode, "aftergetimap" ), "" ) );
       includesubfolders = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "includesubfolders" ) );
       useproxy = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "useproxy" ) );
       proxyusername = XMLHandler.getTagValue( entrynode, "proxyusername" );
@@ -321,11 +327,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       servername = rep.getJobEntryAttributeString( id_jobentry, "servername" );
       username = rep.getJobEntryAttributeString( id_jobentry, "username" );
-      password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
+      password =
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
       usessl = rep.getJobEntryAttributeBoolean( id_jobentry, "usessl" );
       sslport = rep.getJobEntryAttributeString( id_jobentry, "sslport" ); // backward compatible.
       outputdirectory = rep.getJobEntryAttributeString( id_jobentry, "outputdirectory" );
@@ -338,8 +345,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       delete = rep.getJobEntryAttributeBoolean( id_jobentry, "delete" );
 
       protocol =
-          Const
-              .NVL( rep.getJobEntryAttributeString( id_jobentry, "protocol" ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
+        Const.NVL(
+          rep.getJobEntryAttributeString( id_jobentry, "protocol" ), MailConnectionMeta.PROTOCOL_STRING_POP3 );
 
       String sv = rep.getStepAttributeString( id_jobentry, "savemessage" );
       if ( Const.isEmpty( sv ) ) {
@@ -356,12 +363,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       }
 
       usedifferentfolderforattachment =
-          rep.getJobEntryAttributeBoolean( id_jobentry, "usedifferentfolderforattachment" );
+        rep.getJobEntryAttributeBoolean( id_jobentry, "usedifferentfolderforattachment" );
       attachmentfolder = rep.getJobEntryAttributeString( id_jobentry, "attachmentfolder" );
       attachmentwildcard = rep.getJobEntryAttributeString( id_jobentry, "attachmentwildcard" );
       valueimaplist =
-          MailConnectionMeta.getValueListImapListByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry,
-              "valueimaplist" ), "" ) );
+        MailConnectionMeta.getValueListImapListByCode( Const.NVL( rep.getJobEntryAttributeString(
+          id_jobentry, "valueimaplist" ), "" ) );
       imapfirstmails = rep.getJobEntryAttributeString( id_jobentry, "imapfirstmails" );
       imapfolder = rep.getJobEntryAttributeString( id_jobentry, "imapfolder" );
       // search term
@@ -374,26 +381,27 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       bodySearch = rep.getJobEntryAttributeString( id_jobentry, "bodysearch" );
       notTermBodySearch = rep.getJobEntryAttributeBoolean( id_jobentry, "nottermbodysearch" );
       conditionReceivedDate =
-          MailConnectionMeta.getConditionByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry,
-              "conditionreceiveddate" ), "" ) );
+        MailConnectionMeta.getConditionByCode( Const.NVL( rep.getJobEntryAttributeString(
+          id_jobentry, "conditionreceiveddate" ), "" ) );
       notTermReceivedDateSearch = rep.getJobEntryAttributeBoolean( id_jobentry, "nottermreceiveddatesearch" );
       receivedDate1 = rep.getJobEntryAttributeString( id_jobentry, "receiveddate1" );
       receivedDate2 = rep.getJobEntryAttributeString( id_jobentry, "receiveddate2" );
       actiontype =
-          MailConnectionMeta.getActionTypeByCode( Const.NVL(
-              rep.getJobEntryAttributeString( id_jobentry, "actiontype" ), "" ) );
+        MailConnectionMeta.getActionTypeByCode( Const.NVL( rep.getJobEntryAttributeString(
+          id_jobentry, "actiontype" ), "" ) );
       moveToIMAPFolder = rep.getJobEntryAttributeString( id_jobentry, "movetoimapfolder" );
       createmovetofolder = rep.getJobEntryAttributeBoolean( id_jobentry, "createmovetofolder" );
       createlocalfolder = rep.getJobEntryAttributeBoolean( id_jobentry, "createlocalfolder" );
       aftergetimap =
-          MailConnectionMeta.getAfterGetIMAPByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry,
-              "aftergetimap" ), "" ) );
+        MailConnectionMeta.getAfterGetIMAPByCode( Const.NVL( rep.getJobEntryAttributeString(
+          id_jobentry, "aftergetimap" ), "" ) );
       includesubfolders = rep.getJobEntryAttributeBoolean( id_jobentry, "includesubfolders" );
       useproxy = rep.getJobEntryAttributeBoolean( id_jobentry, "useproxy" );
       proxyusername = rep.getJobEntryAttributeString( id_jobentry, "proxyusername" );
     } catch ( KettleException dbe ) {
       throw new KettleException(
-          "Unable to load job entry of type 'get pop' exists from the repository for id_jobentry=" + id_jobentry, dbe );
+        "Unable to load job entry of type 'get pop' exists from the repository for id_jobentry=" + id_jobentry,
+        dbe );
     }
   }
 
@@ -402,7 +410,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", servername );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", username );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr
+        .encryptPasswordIfNotUsingVariables( password ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "usessl", usessl );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "sslport", sslport );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "outputdirectory", outputdirectory );
@@ -414,12 +423,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       rep.saveJobEntryAttribute( id_job, getObjectId(), "protocol", protocol );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "savemessage", savemessage );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "saveattachment", saveattachment );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "usedifferentfolderforattachment",
-          usedifferentfolderforattachment );
+      rep.saveJobEntryAttribute(
+        id_job, getObjectId(), "usedifferentfolderforattachment", usedifferentfolderforattachment );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "attachmentfolder", attachmentfolder );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "attachmentwildcard", attachmentwildcard );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "valueimaplist", MailConnectionMeta
-          .getValueImapListCode( valueimaplist ) );
+        .getValueImapListCode( valueimaplist ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "imapfirstmails", imapfirstmails );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "imapfolder", imapfolder );
       // search term
@@ -432,22 +441,23 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       rep.saveJobEntryAttribute( id_job, getObjectId(), "bodysearch", bodySearch );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "nottermbodysearch", notTermBodySearch );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "conditionreceiveddate", MailConnectionMeta
-          .getConditionDateCode( conditionReceivedDate ) );
+        .getConditionDateCode( conditionReceivedDate ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "nottermreceiveddatesearch", notTermReceivedDateSearch );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "receiveddate1", receivedDate1 );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "receiveddate2", receivedDate2 );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "actiontype", MailConnectionMeta.getActionTypeCode( actiontype ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "actiontype", MailConnectionMeta
+        .getActionTypeCode( actiontype ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "movetoimapfolder", moveToIMAPFolder );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "createmovetofolder", createmovetofolder );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "createlocalfolder", createlocalfolder );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "aftergetimap", MailConnectionMeta
-          .getAfterGetIMAPCode( aftergetimap ) );
+        .getAfterGetIMAPCode( aftergetimap ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "includesubfolders", includesubfolders );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "useproxy", useproxy );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyusername", proxyusername );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type 'get pop' to the repository for id_job=" + id_job,
-          dbe );
+      throw new KettleException( "Unable to save job entry of type 'get pop' to the repository for id_job="
+        + id_job, dbe );
     }
 
   }
@@ -652,6 +662,12 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     this.filenamepattern = filenamepattern;
   }
 
+  /**
+   * <li>0 = retrieve all <li>2 = retrieve unread
+   *
+   * @param nr
+   * @see {@link #setValueImapList(int)}
+   */
   public void setRetrievemails( int nr ) {
     retrievemails = nr;
   }
@@ -820,7 +836,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     Result result = previousResult;
     result.setResult( false );
 
-    FileObject fileObject = null;
+    //FileObject fileObject = null;
     MailConnection mailConn = null;
     Date beginDate = null;
     Date endDate = null;
@@ -832,72 +848,81 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       boolean usePOP3 = getProtocol().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 );
       boolean moveafter = false;
       int nbrmailtoretrieve =
-          usePOP3 ? getRetrievemails() == 2 ? Const.toInt( getFirstMails(), 0 ) : 0 : Const.toInt( getFirstIMAPMails(),
-              0 );
+        usePOP3 ? getRetrievemails() == 2 ? Const.toInt( getFirstMails(), 0 ) : 0 : Const.toInt(
+          getFirstIMAPMails(), 0 );
 
       String realOutputFolder = getRealOutputDirectory();
-      fileObject = KettleVFS.getFileObject( realOutputFolder, this );
-
-      // Check if output folder exists
-      if ( fileObject.exists() ) {
-        if ( fileObject.getType() != FileType.FOLDER ) {
-          throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.NotAFolderNot",
-              realOutputFolder ) );
-        }
-        if ( isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Log.OutputFolderExists", realOutputFolder ) );
-        }
-      } else {
-        if ( isCreateLocalFolder() ) {
-          if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Log.OutputFolderNotExist", realOutputFolder ) );
+      String targetAttachmentFolder = null;
+      if ( getActionType() == MailConnectionMeta.ACTION_TYPE_GET ) {
+        FileObject fileObject = KettleVFS.getFileObject( realOutputFolder, this );
+        // Check if output folder exists
+        if ( fileObject.exists() ) {
+          if ( fileObject.getType() != FileType.FOLDER ) {
+            throw new KettleException( BaseMessages.getString(
+              PKG, "JobGetMailsFromPOP.Error.NotAFolderNot", realOutputFolder ) );
           }
-          // create folder
-          fileObject.createFolder();
+          if ( isDebug() ) {
+            logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Log.OutputFolderExists", realOutputFolder ) );
+          }
         } else {
-          throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderNotExists1.Label" )
+          if ( isCreateLocalFolder() ) {
+            if ( isDetailed() ) {
+              logDetailed( BaseMessages.getString(
+                PKG, "JobGetMailsFromPOP.Log.OutputFolderNotExist", realOutputFolder ) );
+            }
+            // create folder
+            fileObject.createFolder();
+          } else {
+            throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderNotExists1.Label" )
               + realOutputFolder + BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderNotExists2.Label" ) );
-        }
-      }
-
-      String targetAttachmentFolder = KettleVFS.getFilename( fileObject );
-      // check for attachment folder
-      boolean useDifferentFolderForAttachment = ( isSaveAttachment() && isDifferentFolderForAttachment() );
-
-      if ( useDifferentFolderForAttachment ) {
-        String realFolderAttachment = environmentSubstitute( getAttachmentFolder() );
-        if ( Const.isEmpty( realFolderAttachment ) ) {
-          throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.AttachmentFolderEmpty" ) );
-        }
-
-        fileObject = KettleVFS.getFileObject( realFolderAttachment, this );
-
-        if ( !fileObject.exists() ) {
-          throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.AttachmentFolderNotExist",
-              realFolderAttachment ) );
-        }
-
-        if ( fileObject.getType() != FileType.FOLDER ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-              "JobGetMailsFromPOP.Error.AttachmentFolderNotAFolder", realFolderAttachment ) );
+          }
         }
 
         targetAttachmentFolder = KettleVFS.getFilename( fileObject );
-      }
-      // Close fileObject! we don't need it anymore ...
-      try {
-        fileObject.close();
-        fileObject = null;
-      } catch ( IOException ex ) { /* Ignore */
-      }
+        // check for attachment folder
+        boolean useDifferentFolderForAttachment = ( isSaveAttachment() && isDifferentFolderForAttachment() );
+
+        if ( useDifferentFolderForAttachment ) {
+          String realFolderAttachment = environmentSubstitute( getAttachmentFolder() );
+          if ( Const.isEmpty( realFolderAttachment ) ) {
+            throw new KettleException( BaseMessages
+              .getString( PKG, "JobGetMailsFromPOP.Error.AttachmentFolderEmpty" ) );
+          }
+          //close old file object
+          try {
+            fileObject.close();
+          } catch ( IOException ex ) { /* Ignore */
+          }
+          //reuse old link
+          fileObject = KettleVFS.getFileObject( realFolderAttachment, this );
+
+          if ( !fileObject.exists() ) {
+            throw new KettleException( BaseMessages.getString(
+              PKG, "JobGetMailsFromPOP.Error.AttachmentFolderNotExist", realFolderAttachment ) );
+          }
+
+          if ( fileObject.getType() != FileType.FOLDER ) {
+            throw new KettleException( BaseMessages.getString(
+              PKG, "JobGetMailsFromPOP.Error.AttachmentFolderNotAFolder", realFolderAttachment ) );
+          }
+          targetAttachmentFolder = KettleVFS.getFilename( fileObject );
+        }
+        // Close fileObject! we don't need it anymore ...
+        try {
+          fileObject.close();
+        } catch ( IOException ex ) { /* Ignore */
+        }
+      } // end if get
 
       // Check destination folder
       String realMoveToIMAPFolder = environmentSubstitute( getMoveToIMAPFolder() );
       if ( getProtocol().equals( MailConnectionMeta.PROTOCOL_STRING_IMAP )
-          && ( getActionType() == MailConnectionMeta.ACTION_TYPE_MOVE )
-          || ( getActionType() == MailConnectionMeta.ACTION_TYPE_GET && getAfterGetIMAP() == MailConnectionMeta.AFTER_GET_IMAP_MOVE ) ) {
+        && ( getActionType() == MailConnectionMeta.ACTION_TYPE_MOVE )
+        || ( getActionType() == MailConnectionMeta.ACTION_TYPE_GET
+        && getAfterGetIMAP() == MailConnectionMeta.AFTER_GET_IMAP_MOVE ) ) {
         if ( Const.isEmpty( realMoveToIMAPFolder ) ) {
-          throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.MoveToIMAPFolderEmpty" ) );
+          throw new KettleException( BaseMessages
+            .getString( PKG, "JobGetMailsFromPOP.Error.MoveToIMAPFolderEmpty" ) );
         }
         moveafter = true;
       }
@@ -910,22 +935,22 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         case MailConnectionMeta.CONDITION_DATE_SMALLER:
           String realBeginDate = environmentSubstitute( getReceivedDate1() );
           if ( Const.isEmpty( realBeginDate ) ) {
-            throw new KettleException( BaseMessages.getString( PKG,
-                "JobGetMailsFromPOP.Error.ReceivedDateSearchTermEmpty" ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "JobGetMailsFromPOP.Error.ReceivedDateSearchTermEmpty" ) );
           }
           beginDate = df.parse( realBeginDate );
           break;
         case MailConnectionMeta.CONDITION_DATE_BETWEEN:
           realBeginDate = environmentSubstitute( getReceivedDate1() );
           if ( Const.isEmpty( realBeginDate ) ) {
-            throw new KettleException( BaseMessages.getString( PKG,
-                "JobGetMailsFromPOP.Error.ReceivedDatesSearchTermEmpty" ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "JobGetMailsFromPOP.Error.ReceivedDatesSearchTermEmpty" ) );
           }
           beginDate = df.parse( realBeginDate );
           String realEndDate = environmentSubstitute( getReceivedDate2() );
           if ( Const.isEmpty( realEndDate ) ) {
-            throw new KettleException( BaseMessages.getString( PKG,
-                "JobGetMailsFromPOP.Error.ReceivedDatesSearchTermEmpty" ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "JobGetMailsFromPOP.Error.ReceivedDatesSearchTermEmpty" ) );
           }
           endDate = df.parse( realEndDate );
           break;
@@ -944,9 +969,9 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       initVariables();
       // create a mail connection object
       mailConn =
-          new MailConnection( log, MailConnectionMeta.getProtocolFromString( getProtocol(),
-              MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realusername, realpassword, isUseSSL(),
-              isUseProxy(), realProxyUsername );
+        new MailConnection(
+          log, MailConnectionMeta.getProtocolFromString( getProtocol(), MailConnectionMeta.PROTOCOL_IMAP ),
+          realserver, realport, realusername, realpassword, isUseSSL(), isUseProxy(), realProxyUsername );
       // connect
       mailConn.connect();
 
@@ -1000,7 +1025,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         if ( getRetrievemails() == 1 ) {
           // New messages
           // POP doesn't support the concept of "new" messages!
-          // TODO : remove this option from the dialog
           mailConn.setFlagTermUnread();
         }
       } else {
@@ -1034,8 +1058,9 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
         }
       }
       // open folder and retrieve messages
-      fetchOneFolder( mailConn, usePOP3, realIMAPFolder, realOutputFolder, targetAttachmentFolder,
-          realMoveToIMAPFolder, realFilenamePattern, nbrmailtoretrieve, df );
+      fetchOneFolder(
+        mailConn, usePOP3, realIMAPFolder, realOutputFolder, targetAttachmentFolder, realMoveToIMAPFolder,
+        realFilenamePattern, nbrmailtoretrieve, df );
 
       if ( isIncludeSubFolders() ) {
         // Fetch also sub folders?
@@ -1049,8 +1074,9 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
           }
         } else {
           for ( int i = 0; i < subfolders.length; i++ ) {
-            fetchOneFolder( mailConn, usePOP3, subfolders[i], realOutputFolder, targetAttachmentFolder,
-                realMoveToIMAPFolder, realFilenamePattern, nbrmailtoretrieve, df );
+            fetchOneFolder(
+              mailConn, usePOP3, subfolders[i], realOutputFolder, targetAttachmentFolder, realMoveToIMAPFolder,
+              realFilenamePattern, nbrmailtoretrieve, df );
           }
         }
       }
@@ -1064,14 +1090,14 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       if ( isDetailed() ) {
         logDetailed( "=======================================" );
         logDetailed( BaseMessages.getString( PKG, "JobGetPOP.Log.Info.SavedMessages", ""
-            + mailConn.getSavedMessagesCounter() ) );
+          + mailConn.getSavedMessagesCounter() ) );
         logDetailed( BaseMessages.getString( PKG, "JobGetPOP.Log.Info.DeletedMessages", ""
-            + mailConn.getDeletedMessagesCounter() ) );
+          + mailConn.getDeletedMessagesCounter() ) );
         logDetailed( BaseMessages.getString( PKG, "JobGetPOP.Log.Info.MovedMessages", ""
-            + mailConn.getMovedMessagesCounter() ) );
+          + mailConn.getMovedMessagesCounter() ) );
         if ( getActionType() == MailConnectionMeta.ACTION_TYPE_GET && isSaveAttachment() ) {
           logDetailed( BaseMessages.getString( PKG, "JobGetPOP.Log.Info.AttachedMessagesSuccess", ""
-              + mailConn.getSavedAttachedFilesCounter() ) );
+            + mailConn.getSavedAttachedFilesCounter() ) );
         }
         logDetailed( "=======================================" );
       }
@@ -1080,13 +1106,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       logError( "Unexpected error: " + e.getMessage() );
       logError( Const.getStackTracker( e ) );
     } finally {
-      if ( fileObject != null ) {
-        try {
-          fileObject.close();
-          fileObject = null;
-        } catch ( IOException ex ) { /* Ignore */
-        }
-      }
       try {
         if ( mailConn != null ) {
           mailConn.disconnect();
@@ -1099,21 +1118,15 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     return result;
   }
 
-  private void fetchOneFolder( MailConnection mailConn, boolean usePOP3, String realIMAPFolder,
-      String realOutputFolder, String targetAttachmentFolder, String realMoveToIMAPFolder, String realFilenamePattern,
-      int nbrmailtoretrieve, SimpleDateFormat df ) throws KettleException {
+  void fetchOneFolder( MailConnection mailConn, boolean usePOP3, String realIMAPFolder,
+    String realOutputFolder, String targetAttachmentFolder, String realMoveToIMAPFolder,
+    String realFilenamePattern, int nbrmailtoretrieve, SimpleDateFormat df ) throws KettleException {
     try {
-      // open folder
+      // if it is not pop3 and we have non-default imap folder...
       if ( !usePOP3 && !Const.isEmpty( realIMAPFolder ) ) {
-        mailConn
-            .openFolder(
-                realIMAPFolder,
-                !( getActionType() == MailConnectionMeta.ACTION_TYPE_GET && getAfterGetIMAP() == MailConnectionMeta.AFTER_GET_IMAP_NOTHING ) );
+        mailConn.openFolder( realIMAPFolder, true );
       } else {
-        // If Protocol is POP3 and "Delete after retrieval" is checked, we should open Folder in READ_WRITE Mode!
-        mailConn
-            .openFolder( !( getActionType() == MailConnectionMeta.ACTION_TYPE_GET && getAfterGetIMAP() == MailConnectionMeta.AFTER_GET_IMAP_NOTHING )
-                || ( usePOP3 && delete ) );
+        mailConn.openFolder( true );
       }
 
       mailConn.retrieveMessages();
@@ -1121,12 +1134,13 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       int messagesCount = mailConn.getMessagesCount();
 
       if ( isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.TotalMessagesFolder.Label", "" + messagesCount,
-            Const.NVL( mailConn.getFolderName(), MailConnectionMeta.INBOX_FOLDER ) ) );
+        logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.TotalMessagesFolder.Label", ""
+          + messagesCount, Const.NVL( mailConn.getFolderName(), MailConnectionMeta.INBOX_FOLDER ) ) );
       }
 
       messagesCount =
-          nbrmailtoretrieve > 0 ? nbrmailtoretrieve > messagesCount ? messagesCount : nbrmailtoretrieve : messagesCount;
+        nbrmailtoretrieve > 0
+          ? nbrmailtoretrieve > messagesCount ? messagesCount : nbrmailtoretrieve : messagesCount;
 
       if ( messagesCount > 0 ) {
         switch ( getActionType() ) {
@@ -1161,16 +1175,16 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
                 // Move this message
                 mailConn.moveMessage();
                 if ( isDebug() ) {
-                  logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageMoved", "" + i,
-                      realMoveToIMAPFolder ) );
+                  logDebug( BaseMessages.getString(
+                    PKG, "JobGetMailsFromPOP.MessageMoved", "" + i, realMoveToIMAPFolder ) );
                 }
               }
             } else {
               // Move all messages
               mailConn.moveMessages();
               if ( isDebug() ) {
-                logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessagesMoved", "" + messagesCount,
-                    realMoveToIMAPFolder ) );
+                logDebug( BaseMessages.getString(
+                  PKG, "JobGetMailsFromPOP.MessagesMoved", "" + messagesCount, realMoveToIMAPFolder ) );
               }
             }
             break;
@@ -1181,8 +1195,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
               // Get next message
               mailConn.fetchNext();
               int messagenumber = mailConn.getMessage().getMessageNumber();
-              boolean okPOP3 = usePOP3 ? true : false;// (mailConn.getMessagesCounter()<nbrmailtoretrieve &&
-                                                      // retrievemails==2)||(retrievemails!=2):false;
+              boolean okPOP3 = usePOP3 ? true : false; // (mailConn.getMessagesCounter()<nbrmailtoretrieve &&
+                                                       // retrievemails==2)||(retrievemails!=2):false;
               boolean okIMAP = !usePOP3;
 
               if ( okPOP3 || okIMAP ) {
@@ -1190,33 +1204,36 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
                 //
                 if ( isDebug() && mailConn.getMessage() != null ) {
                   logDebug( "--------------------------------------------------" );
-                  logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageNumber.Label", "" + messagenumber ) );
+                  logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageNumber.Label", ""
+                    + messagenumber ) );
                   if ( mailConn.getMessage().getReceivedDate() != null ) {
-                    logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.ReceivedDate.Label", df.format( mailConn
-                        .getMessage().getReceivedDate() ) ) );
+                    logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.ReceivedDate.Label", df
+                      .format( mailConn.getMessage().getReceivedDate() ) ) );
                   }
-                  logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.ContentType.Label", mailConn.getMessage()
-                      .getContentType() ) );
+                  logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.ContentType.Label", mailConn
+                    .getMessage().getContentType() ) );
                   logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.EmailFrom.Label", Const.NVL( mailConn
-                      .getMessage().getFrom()[0].toString(), "" ) ) );
-                  logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.EmailSubject.Label", Const.NVL( mailConn
-                      .getMessage().getSubject(), "" ) ) );
+                    .getMessage().getFrom()[0].toString(), "" ) ) );
+                  logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.EmailSubject.Label", Const.NVL(
+                    mailConn.getMessage().getSubject(), "" ) ) );
                 }
                 if ( isSaveMessage() ) {
                   // get local message filename
                   String localfilename_message = replaceTokens( realFilenamePattern, i );
 
                   if ( isDebug() ) {
-                    logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.LocalFilename.Label",
-                        localfilename_message ) );
+                    logDebug( BaseMessages.getString(
+                      PKG, "JobGetMailsFromPOP.LocalFilename.Label", localfilename_message ) );
                   }
 
                   // save message content in the file
                   mailConn.saveMessageContentToFile( localfilename_message, realOutputFolder );
+                  // PDI-10942 explicitly set message as read
+                  mailConn.getMessage().setFlag( Flag.SEEN, true );
 
                   if ( isDetailed() ) {
                     logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageSaved.Label", ""
-                        + messagenumber, localfilename_message, realOutputFolder ) );
+                      + messagenumber, localfilename_message, realOutputFolder ) );
                   }
                 }
 
@@ -1230,7 +1247,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
                   if ( getDelete() ) {
                     mailConn.deleteMessage();
                     if ( isDebug() ) {
-                      logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageDeleted", "" + messagenumber ) );
+                      logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageDeleted", ""
+                        + messagenumber ) );
                     }
                   }
                 } else {
@@ -1239,15 +1257,16 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
                       // Delete messages
                       mailConn.deleteMessage();
                       if ( isDebug() ) {
-                        logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageDeleted", "" + messagenumber ) );
+                        logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageDeleted", ""
+                          + messagenumber ) );
                       }
                       break;
                     case MailConnectionMeta.AFTER_GET_IMAP_MOVE:
                       // Move messages
                       mailConn.moveMessage();
                       if ( isDebug() ) {
-                        logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageMoved", "" + messagenumber,
-                            realMoveToIMAPFolder ) );
+                        logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageMoved", ""
+                          + messagenumber, realMoveToIMAPFolder ) );
                       }
                       break;
                     default:
@@ -1272,7 +1291,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     String localfilename_message = aString;
     localfilename_message = localfilename_message.replaceAll( FILENAME_ID_PATTERN, "" + ( idfile + 1 ) );
     localfilename_message =
-        substituteDate( localfilename_message, FILENAME_SYS_DATE_OPEN, FILENAME_SYS_DATE_CLOSE, new Date() );
+      substituteDate( localfilename_message, FILENAME_SYS_DATE_OPEN, FILENAME_SYS_DATE_CLOSE, new Date() );
     return localfilename_message;
 
   }
@@ -1318,8 +1337,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );

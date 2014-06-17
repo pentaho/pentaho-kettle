@@ -26,10 +26,10 @@ import java.util.Hashtable;
 
 /**
  * This class contains the counters for Kettle, the transformations, jobs and also the repository.
- * 
+ *
  * @author Matt
  * @since 17-apr-2005
- * 
+ *
  */
 public class Counters {
   private static Counters counters = null;

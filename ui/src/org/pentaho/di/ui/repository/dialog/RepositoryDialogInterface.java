@@ -31,7 +31,7 @@ public interface RepositoryDialogInterface {
 
   /**
    * Open the dialog
-   * 
+   *
    * @param mode
    *          (Add or Edit)
    * @return the description of the repository

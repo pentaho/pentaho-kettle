@@ -58,7 +58,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = XMLJoinMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XMLJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlComplexJoin;
   private Button wComplexJoin;
@@ -605,11 +605,11 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
 
   /*
    * private void get() { try { RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-   * 
+   *
    * } catch(KettleException ke) { new ErrorDialog(shell, BaseMessages.getString(PKG,
    * "System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), ke);
    * }
-   * 
+   *
    * }
    */
 

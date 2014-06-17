@@ -52,7 +52,7 @@ import org.w3c.dom.Node;
  */
 
 public class SocketReaderMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = SocketReaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SocketReaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String hostname;
   private String port;
@@ -95,16 +95,14 @@ public class SocketReaderMeta extends BaseStepMeta implements StepMetaInterface 
     compressed = true;
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     hostname = rep.getStepAttributeString( id_step, "hostname" );
     port = rep.getStepAttributeString( id_step, "port" );
     bufferSize = rep.getStepAttributeString( id_step, "buffer_size" );
     compressed = rep.getStepAttributeBoolean( id_step, "compressed" );
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, "hostname", hostname );
     rep.saveStepAttribute( id_transformation, id_step, "port", port );
     rep.saveStepAttribute( id_transformation, id_step, "buffer_size", bufferSize );
@@ -112,42 +110,42 @@ public class SocketReaderMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "SocketReaderMeta.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "SocketReaderMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SocketReaderMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SocketReaderMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SocketReaderMeta.CheckResult.StepRecevingData2" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SocketReaderMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SocketReaderMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SocketReaderMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new SocketReader( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

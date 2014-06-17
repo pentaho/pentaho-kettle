@@ -44,7 +44,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class StyledTextCompReplace extends org.eclipse.swt.widgets.Dialog {
 
-  private static Class<?> PKG = StyledTextCompReplace.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StyledTextCompReplace.class; // for i18n purposes, needed by Translator2!!
 
   private Shell sShell = null;
   private Text searchText;
@@ -156,7 +156,7 @@ public class StyledTextCompReplace extends org.eclipse.swt.widgets.Dialog {
           MessageBox messageBox = new MessageBox( sShell, SWT.ICON_INFORMATION | SWT.OK );
           messageBox.setText( BaseMessages.getString( PKG, "Widget.Styled.CompReplace.FindItem" ) );
           messageBox.setMessage( BaseMessages.getString( PKG, "Widget.Styled.CompReplace.ItemNotFound", searchText
-              .getText() ) );
+            .getText() ) );
           messageBox.open();
         }
       }
@@ -168,8 +168,8 @@ public class StyledTextCompReplace extends org.eclipse.swt.widgets.Dialog {
           if ( !findText() ) {
             MessageBox messageBox = new MessageBox( sShell, SWT.ICON_INFORMATION | SWT.OK );
             messageBox.setText( BaseMessages.getString( PKG, "Widget.Styled.CompReplace.FindItem" ) );
-            messageBox.setMessage( BaseMessages.getString( PKG, "Widget.Styled.CompReplace.ItemNotFound", searchText
-                .getText() ) );
+            messageBox.setMessage( BaseMessages.getString(
+              PKG, "Widget.Styled.CompReplace.ItemNotFound", searchText.getText() ) );
             messageBox.open();
           }
         } else {

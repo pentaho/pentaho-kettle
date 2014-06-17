@@ -47,15 +47,20 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class Carte {
-  private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!!
 
   private WebServer webServer;
   private SlaveServerConfig config;
+  private boolean allOK;
 
   public Carte( final SlaveServerConfig config ) throws Exception {
+    this( config, null );
+  }
+
+  public Carte( final SlaveServerConfig config, Boolean joinOverride ) throws Exception {
     this.config = config;
 
-    boolean allOK = true;
+    allOK = true;
 
     CarteSingleton.setSlaveServerConfig( config );
     LogChannelInterface log = CarteSingleton.getInstance().getLog();
@@ -75,8 +80,8 @@ public class Carte {
       try {
         port = Integer.parseInt( slaveServer.getPort() );
       } catch ( Exception e ) {
-        log.logError(
-            BaseMessages.getString( PKG, "Carte.Error.CanNotPartPort", slaveServer.getHostname(), "" + port ), e );
+        log.logError( BaseMessages.getString( PKG, "Carte.Error.CanNotPartPort", slaveServer.getHostname(), ""
+          + port ), e );
         allOK = false;
       }
     }
@@ -87,8 +92,8 @@ public class Carte {
     //
     if ( config.isReportingToMasters() ) {
       final SlaveServer client =
-          new SlaveServer( "Dynamic slave [" + hostname + ":" + port + "]", hostname, "" + port, slaveServer
-              .getUsername(), slaveServer.getPassword() );
+        new SlaveServer( "Dynamic slave [" + hostname + ":" + port + "]", hostname, "" + port, slaveServer
+          .getUsername(), slaveServer.getPassword() );
       for ( final SlaveServer master : config.getMasters() ) {
         // Here we use the username/password specified in the slave server section of the configuration.
         // This doesn't have to be the same pair as the one used on the master!
@@ -96,11 +101,11 @@ public class Carte {
         try {
           SlaveServerDetection slaveServerDetection = new SlaveServerDetection( client );
           master.sendXML( slaveServerDetection.getXML(), RegisterSlaveServlet.CONTEXT_PATH + "/" );
-          log.logBasic( "Registered this slave server to master slave server [" + master.toString() + "] on address ["
-              + master.getServerAndPort() + "]" );
+          log.logBasic( "Registered this slave server to master slave server ["
+            + master.toString() + "] on address [" + master.getServerAndPort() + "]" );
         } catch ( Exception e ) {
-          log.logError( "Unable to register to master slave server [" + master.toString() + "] on address ["
-              + master.getServerAndPort() + "]" );
+          log.logError( "Unable to register to master slave server ["
+            + master.toString() + "] on address [" + master.getServerAndPort() + "]" );
           allOK = false;
         }
       }
@@ -111,9 +116,13 @@ public class Carte {
     // CarteSingleton.installPurgeTimer(config, log, transformationMap, jobMap);
 
     if ( allOK ) {
+      boolean shouldJoin = config.isJoining();
+      if ( joinOverride != null ) {
+        shouldJoin = joinOverride;
+      }
       this.webServer =
-          new WebServer( log, transformationMap, jobMap, socketRepository, detections, hostname, port, config
-              .isJoining(), config.getPasswordFile() );
+        new WebServer( log, transformationMap, jobMap, socketRepository, detections, hostname, port, shouldJoin,
+            config.getPasswordFile() );
     }
   }
 
@@ -152,9 +161,10 @@ public class Carte {
       System.err.println( BaseMessages.getString( PKG, "Carte.Usage.Example" ) + ": Carte 127.0.0.1 8080" );
       System.err.println( BaseMessages.getString( PKG, "Carte.Usage.Example" ) + ": Carte 192.168.1.221 8081" );
       System.err.println();
-      System.err.println( BaseMessages.getString( PKG, "Carte.Usage.Example" ) + ": Carte /foo/bar/carte-config.xml" );
       System.err.println( BaseMessages.getString( PKG, "Carte.Usage.Example" )
-          + ": Carte http://www.example.com/carte-config.xml" );
+        + ": Carte /foo/bar/carte-config.xml" );
+      System.err.println( BaseMessages.getString( PKG, "Carte.Usage.Example" )
+        + ": Carte http://www.example.com/carte-config.xml" );
 
       System.exit( 1 );
     }
@@ -163,14 +173,14 @@ public class Carte {
   }
 
   public static void runCarte( SlaveServerConfig config ) throws Exception {
-
     KettleLogStore.init( config.getMaxLogLines(), config.getMaxLogTimeoutMinutes() );
 
-    // Join with the process: block
-    //
     config.setJoining( true );
 
-    new Carte( config );
+    Carte carte = new Carte( config, false );
+    CarteSingleton.setCarte( carte );
+
+    carte.getWebServer().join();
   }
 
   public static Trans generateTestTransformation() {
@@ -178,20 +188,20 @@ public class Carte {
     A.allocate( 3 );
     A.setRowLimit( "100000000" );
 
-    A.getFieldName()[0] = "ID";
-    A.getFieldType()[0] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_INTEGER );
-    A.getFieldLength()[0] = 7;
-    A.getValue()[0] = "1234";
+    ( A.getFieldName() )[0] = "ID";
+    ( A.getFieldType() )[0] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_INTEGER );
+    ( A.getFieldLength() )[0] = 7;
+    ( A.getValue() )[0] = "1234";
 
-    A.getFieldName()[1] = "Name";
-    A.getFieldType()[1] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_STRING );
-    A.getFieldLength()[1] = 35;
-    A.getValue()[1] = "Some name";
+    ( A.getFieldName() )[1] = "Name";
+    ( A.getFieldType() )[1] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_STRING );
+    ( A.getFieldLength() )[1] = 35;
+    ( A.getValue() )[1] = "Some name";
 
-    A.getFieldName()[2] = "Last updated";
-    A.getFieldType()[2] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_DATE );
-    A.getFieldFormat()[2] = "yyyy/MM/dd";
-    A.getValue()[2] = "2006/11/13";
+    ( A.getFieldName() )[2] = "Last updated";
+    ( A.getFieldType() )[2] = ValueMeta.getTypeDesc( ValueMetaInterface.TYPE_DATE );
+    ( A.getFieldFormat() )[2] = "yyyy/MM/dd";
+    ( A.getValue() )[2] = "2006/11/13";
 
     TransMeta transMeta = TransPreviewFactory.generatePreviewTransformation( null, A, "A" );
     transMeta.setName( "Row generator test" );

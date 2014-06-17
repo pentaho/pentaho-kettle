@@ -33,7 +33,7 @@ package org.pentaho.di.trans.steps.gpbulkloader;
 //   it.
 // - Filters (besides data and datetime) are not supported as it slows down.
 //
-// 
+//
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -59,14 +59,14 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Performs a bulk load to an Greenplum table.
- * 
+ *
  * Based on (copied from) Sven Boden's Oracle Bulk Loader step
- * 
+ *
  * @author Luke Lonergan
  * @since 28-mar-2008
  */
 public class GPBulkLoader extends BaseStep implements StepInterface {
-  private static Class<?> PKG = GPBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GPBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   Process psqlProcess = null;
 
@@ -114,7 +114,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
   }
 
   public GPBulkLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     if ( Const.getOS().startsWith( "Windows" ) ) {
       enclosure = "\"";
@@ -125,15 +125,15 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
 
   /**
    * Get the contents of the control file as specified in the meta object
-   * 
+   *
    * @param meta
    *          the meta object to model the control file after
-   * 
+   *
    * @return a string containing the control file contents
    */
   public String getControlFileContents( GPBulkLoaderMeta meta, RowMetaInterface rm, Object[] r ) throws KettleException {
     DatabaseMeta dm = meta.getDatabaseMeta();
-    String inputName = String.format( "%s%s%s", enclosure, environmentSubstitute( meta.getDataFile() ), enclosure );
+    String inputName = "'" + environmentSubstitute( meta.getDataFile() ) + "'";
 
     // if ( GPBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
     // {
@@ -147,8 +147,8 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
     StringBuffer contents = new StringBuffer( 500 );
 
     String tableName =
-        dm.getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta
-            .getTableName() ) );
+      dm.getQuotedSchemaTableCombination(
+        environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
     // Create a Postgres / Greenplum COPY string for use with a psql client
     if ( loadAction.equalsIgnoreCase( "truncate" ) ) {
@@ -273,7 +273,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
 
   /**
    * Create a control file.
-   * 
+   *
    * @param filename
    * @param meta
    * @throws KettleException
@@ -294,20 +294,21 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
           fw.close();
         }
       } catch ( Exception ex ) {
+        // Ignore close errors
       }
     }
   }
 
   /**
    * Create the command line for a psql process depending on the meta information supplied.
-   * 
+   *
    * @param meta
    *          The meta data to create the command line from
    * @param password
    *          Use the real password or not
-   * 
+   *
    * @return The string to execute.
-   * 
+   *
    * @throws KettleException
    *           Upon any exception
    */
@@ -316,7 +317,8 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
 
     if ( meta.getPsqlpath() != null ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getPsqlpath() ), getTransMeta() );
+        FileObject fileObject =
+          KettleVFS.getFileObject( environmentSubstitute( meta.getPsqlpath() ), getTransMeta() );
         String psqlexec = KettleVFS.getFilename( fileObject );
         sb.append( enclosure ).append( psqlexec ).append( enclosure );
       } catch ( Exception ex ) {
@@ -329,7 +331,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
     if ( meta.getControlFile() != null ) {
       try {
         FileObject fileObject =
-            KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
+          KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
 
         sb.append( " -n -f " );
         sb.append( enclosure ).append( KettleVFS.getFilename( fileObject ) ).append( enclosure );
@@ -342,7 +344,8 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
 
     if ( meta.getLogFile() != null ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getLogFile() ), getTransMeta() );
+        FileObject fileObject =
+          KettleVFS.getFileObject( environmentSubstitute( meta.getLogFile() ), getTransMeta() );
 
         sb.append( " -o " );
         sb.append( enclosure ).append( KettleVFS.getFilename( fileObject ) ).append( enclosure );
@@ -360,7 +363,8 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
       String pass = Const.NVL( dm.getPassword(), "" );
       if ( password && !pass.equalsIgnoreCase( "" ) ) {
         throw new KettleException(
-            "Passwords are not supported directly, try configuring your connection for trusted access using pg_hba.conf" );
+          "Passwords are not supported directly, try configuring "
+            + "your connection for trusted access using pg_hba.conf" );
       }
       // if ( ! password )
       // {
@@ -433,8 +437,9 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
 
     try {
       Object[] r = getRow(); // Get row from input rowset & set row busy!
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) {
+        // no more input to be expected...
+
         setOutputDone();
 
         if ( !preview ) {
@@ -530,15 +535,18 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
       FileObject fileObject = null;
 
       String method = meta.getLoadMethod();
-      if ( // GPBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(method) ||
-      GPBulkLoaderMeta.METHOD_AUTO_END.equals( method ) ) {
+
+      // GPBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(method) ||
+      if ( GPBulkLoaderMeta.METHOD_AUTO_END.equals( method ) ) {
+
         if ( meta.getControlFile() != null ) {
           try {
             fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getControlFile() ), getTransMeta() );
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {
-            logError( "Error deleting control file \'" + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage() );
+            logError( "Error deleting control file \'"
+              + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage() );
           }
         }
       }
@@ -551,8 +559,8 @@ public class GPBulkLoader extends BaseStep implements StepInterface {
             fileObject.delete();
             fileObject.close();
           } catch ( Exception ex ) {
-            logError( "Error deleting data file \'" + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage(),
-                ex );
+            logError( "Error deleting data file \'"
+              + KettleVFS.getFilename( fileObject ) + "\': " + ex.getMessage(), ex );
           }
         }
       }

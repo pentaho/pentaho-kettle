@@ -39,20 +39,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Check if a file is locked *
- * 
+ *
  * @author Samatar
  * @since 03-Juin-2009
- * 
+ *
  */
 
 public class FileLocked extends BaseStep implements StepInterface {
-  private static Class<?> PKG = FileLockedMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FileLockedMeta.class; // for i18n purposes, needed by Translator2!!
 
   private FileLockedMeta meta;
   private FileLockedData data;
 
   public FileLocked( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -61,8 +61,8 @@ public class FileLocked extends BaseStep implements StepInterface {
     data = (FileLockedData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -88,13 +88,13 @@ public class FileLocked extends BaseStep implements StepInterface {
         data.indexOfFileename = data.previousRowMeta.indexOfValue( meta.getDynamicFilenameField() );
         if ( data.indexOfFileename < 0 ) {
           // The field is unreachable !
-          logError( BaseMessages.getString( PKG, "FileLocked.Exception.CouldnotFindField" ) + "["
-              + meta.getDynamicFilenameField() + "]" );
+          logError( BaseMessages.getString( PKG, "FileLocked.Exception.CouldnotFindField" )
+            + "[" + meta.getDynamicFilenameField() + "]" );
           throw new KettleException( BaseMessages.getString( PKG, "FileLocked.Exception.CouldnotFindField", meta
-              .getDynamicFilenameField() ) );
+            .getDynamicFilenameField() ) );
         }
       }
-    }// End If first
+    } // End If first
 
     try {
       // get filename
@@ -108,8 +108,8 @@ public class FileLocked extends BaseStep implements StepInterface {
         if ( meta.addResultFilenames() ) {
           // Add this to the result file names...
           ResultFile resultFile =
-              new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename ), getTransMeta()
-                  .getName(), getStepname() );
+            new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename ), getTransMeta()
+              .getName(), getStepname() );
           resultFile.setComment( BaseMessages.getString( PKG, "FileLocked.Log.FileAddedResult" ) );
           addResultFile( resultFile );
 
@@ -124,8 +124,8 @@ public class FileLocked extends BaseStep implements StepInterface {
                                                                                                   // rowset(s);
 
       if ( isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "FileLocked.LineNumber", getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "FileLocked.LineNumber", getLinesRead()
+          + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( Exception e ) {
       boolean sendToErrorRow = false;

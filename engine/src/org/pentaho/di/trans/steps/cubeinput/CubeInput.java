@@ -43,12 +43,13 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class CubeInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = CubeInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CubeInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CubeInputMeta meta;
   private CubeInputData data;
 
-  public CubeInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public CubeInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -93,8 +94,9 @@ public class CubeInput extends BaseStep implements StepInterface {
         // Add filename to result filenames ?
         if ( meta.isAddResultFile() ) {
           ResultFile resultFile =
-              new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ),
-                  getTransMeta().getName(), toString() );
+            new ResultFile(
+              ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ),
+              getTransMeta().getName(), toString() );
           resultFile.setComment( "File was read by a Cube Input step" );
           addResultFile( resultFile );
         }

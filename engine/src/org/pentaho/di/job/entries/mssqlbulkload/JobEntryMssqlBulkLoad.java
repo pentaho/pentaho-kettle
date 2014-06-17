@@ -65,12 +65,12 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a MSSQL Bulk job entry.
- * 
+ *
  * @author Samatar Hassan
  * @since Jan-2007
  */
 public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryMssqlBulkLoad.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryMssqlBulkLoad.class; // for i18n purposes, needed by Translator2!!
 
   private String schemaname;
   private String tablename;
@@ -130,7 +130,6 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
     firetriggers = false;
     keepidentity = false;
     truncate = false;
-    setID( -1L );
   }
 
   public JobEntryMssqlBulkLoad() {
@@ -174,13 +173,13 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
     retval.append( "      " ).append( XMLHandler.addTagValue( "truncate", truncate ) );
 
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
+      XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
 
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       schemaname = XMLHandler.getTagValue( entrynode, "schemaname" );
@@ -224,7 +223,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       schemaname = rep.getJobEntryAttributeString( id_jobentry, "schemaname" );
       tablename = rep.getJobEntryAttributeString( id_jobentry, "tablename" );
@@ -262,7 +261,8 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
       connection = rep.loadDatabaseMetaFromJobEntryAttribute( id_jobentry, "connection", "id_database", databases );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException(
-          "Unable to load job entry of type 'MSsql bulk load' from the repository for id_jobentry=" + id_jobentry, dbe );
+        "Unable to load job entry of type 'MSsql bulk load' from the repository for id_jobentry=" + id_jobentry,
+        dbe );
     }
   }
 
@@ -296,8 +296,8 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
       rep.saveDatabaseMetaJobEntryAttribute( id_job, getObjectId(), "connection", "id_database", connection );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'MSsql Bulk Load' to the repository for id_job="
-          + id_job, dbe );
+      throw new KettleException(
+        "Unable to load job entry of type 'MSsql Bulk Load' to the repository for id_job=" + id_job, dbe );
     }
   }
 
@@ -383,8 +383,8 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
         if ( !( fileObject instanceof LocalFile ) ) {
           // MSSQL BUKL INSERT can only use local files, so that's what we limit ourselves to.
           //
-          throw new KettleException( BaseMessages.getString( PKG, "JobMssqlBulkLoad.Error.OnlyLocalFileSupported",
-              vfsFilename ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "JobMssqlBulkLoad.Error.OnlyLocalFileSupported", vfsFilename ) );
         }
 
         // Convert it to a regular platform specific file name
@@ -405,7 +405,8 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
             Database db = new Database( this, connection );
 
             if ( !( db.getDatabaseMeta().getDatabaseInterface() instanceof MSSQLServerDatabaseMeta ) ) {
-              logError( BaseMessages.getString( PKG, "JobMssqlBulkLoad.Error.DbNotMSSQL", connection.getDatabaseName() ) );
+              logError( BaseMessages.getString( PKG, "JobMssqlBulkLoad.Error.DbNotMSSQL", connection
+                .getDatabaseName() ) );
               return result;
             }
             db.shareVariablesWith( this );
@@ -430,7 +431,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                 // FIELDTERMINATOR
                 String Fieldterminator = getRealFieldTerminator();
                 if ( Const.isEmpty( Fieldterminator )
-                    && ( datafiletype.equals( "char" ) || datafiletype.equals( "widechar" ) ) ) {
+                  && ( datafiletype.equals( "char" ) || datafiletype.equals( "widechar" ) ) ) {
                   logError( BaseMessages.getString( PKG, "JobMssqlBulkLoad.Error.FieldTerminatorMissing" ) );
                   return result;
                 } else {
@@ -500,8 +501,9 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
                 // Build BULK Command
                 SQLBULKLOAD =
-                    SQLBULKLOAD + "BULK INSERT " + realTablename + " FROM " + "'" + realFilename.replace( '\\', '/' )
-                        + "'";
+                  SQLBULKLOAD
+                    + "BULK INSERT " + realTablename + " FROM " + "'" + realFilename.replace( '\\', '/' )
+                    + "'";
                 SQLBULKLOAD = SQLBULKLOAD + " WITH (";
                 if ( useFieldSeparator ) {
                   SQLBULKLOAD = SQLBULKLOAD + FieldTerminatedby;
@@ -565,8 +567,9 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                   if ( isAddFileToResult() ) {
                     // Add filename to output files
                     ResultFile resultFile =
-                        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ),
-                            parentJob.getJobname(), toString() );
+                      new ResultFile(
+                        ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ), parentJob
+                          .getJobname(), toString() );
                     result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
                   }
 
@@ -588,7 +591,8 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                 db.disconnect();
                 result.setNrErrors( 1 );
                 if ( log.isDetailed() ) {
-                  logDetailed( BaseMessages.getString( PKG, "JobMssqlBulkLoad.Error.TableNotExists", realTablename ) );
+                  logDetailed( BaseMessages
+                    .getString( PKG, "JobMssqlBulkLoad.Error.TableNotExists", realTablename ) );
                 }
               }
             } catch ( KettleDatabaseException dbe ) {
@@ -616,6 +620,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
             fileObject.close();
           }
         } catch ( Exception e ) {
+          // Ignore errors
         }
       }
     } else {
@@ -823,8 +828,8 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace( ctx, getVariables() );
     putValidators( ctx, notBlankValidator(), fileExistsValidator() );

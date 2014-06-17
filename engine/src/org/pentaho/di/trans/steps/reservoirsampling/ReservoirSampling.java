@@ -43,16 +43,16 @@ public class ReservoirSampling extends BaseStep implements StepInterface {
   /**
    * Creates a new <code>ReservoirSampling</code> instance.
    * <p>
-   * 
+   *
    * Implements the reservoir sampling algorithm "R" by Jeffrey Scott Vitter. (algorithm is implemented in
    * ReservoirSamplingData.java
    * <p>
    * For more information see:<br>
    * <br>
-   * 
+   *
    * Vitter, J. S. Random Sampling with a Reservoir. ACM Transactions on Mathematical Software, Vol. 11, No. 1, March
    * 1985. Pages 37-57.
-   * 
+   *
    * @param stepMeta
    *          holds the step's meta data
    * @param stepDataInterface
@@ -64,14 +64,14 @@ public class ReservoirSampling extends BaseStep implements StepInterface {
    * @param trans
    *          a <code>Trans</code> value
    */
-  public ReservoirSampling( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public ReservoirSampling( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Process an incoming row of data.
-   * 
+   *
    * @param smi
    *          a <code>StepMetaInterface</code> value
    * @param sdi
@@ -96,8 +96,8 @@ public class ReservoirSampling extends BaseStep implements StepInterface {
     // Handle the first row
     if ( first ) {
       first = false;
-      if ( r == null ) // no input to be expected...
-      {
+      if ( r == null ) { // no input to be expected...
+
         setOutputDone();
         return false;
       }
@@ -125,8 +125,9 @@ public class ReservoirSampling extends BaseStep implements StepInterface {
         List<Object[]> samples = m_data.getSample();
 
         int numRows = ( samples != null ) ? samples.size() : 0;
-        logBasic( this.getStepname() + " Actual/Sample: " + numRows + "/" + m_data.m_k + " Seed:"
-            + getTransMeta().environmentSubstitute( m_meta.m_randomSeed ) );
+        logBasic( this.getStepname()
+          + " Actual/Sample: " + numRows + "/" + m_data.m_k + " Seed:"
+          + getTransMeta().environmentSubstitute( m_meta.m_randomSeed ) );
         if ( samples != null ) {
           for ( int i = 0; i < samples.size(); i++ ) {
             Object[] sample = samples.get( i );
@@ -162,7 +163,7 @@ public class ReservoirSampling extends BaseStep implements StepInterface {
 
   /**
    * Initialize the step.
-   * 
+   *
    * @param smi
    *          a <code>StepMetaInterface</code> value
    * @param sdi
@@ -192,8 +193,11 @@ public class ReservoirSampling extends BaseStep implements StepInterface {
   public void run() {
     logBasic( "Starting to run..." );
     try {
-      while ( processRow( m_meta, m_data ) && !isStopped() ) {
-        // Wait
+      // Wait
+      while ( processRow( m_meta, m_data ) ) {
+        if ( isStopped() ) {
+          break;
+        }
       }
     } catch ( Exception e ) {
       logError( "Unexpected error : " + e.toString() );

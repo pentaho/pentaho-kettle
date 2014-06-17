@@ -22,6 +22,7 @@
 
 package org.pentaho.di.repository.kdr.delegates;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,6 +37,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
@@ -55,16 +57,16 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
 
   /**
    * Retrieve the ID for a namespace
-   * 
-   * @param namespace
-   *          The namespace to look up
+   *
+   * @param namespace The namespace to look up
    * @return the ID of the namespace
    * @throws KettleException
    */
   public synchronized LongObjectId getNamespaceId( String namespace ) throws KettleException {
-    return repository.connectionDelegate.getIDWithValue( quoteTable( KettleDatabaseRepository.TABLE_R_NAMESPACE ),
-        quote( KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE ),
-        quote( KettleDatabaseRepository.FIELD_NAMESPACE_NAME ), namespace );
+    return repository.connectionDelegate.getIDWithValue(
+      quoteTable( KettleDatabaseRepository.TABLE_R_NAMESPACE ),
+      quote( KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE ),
+      quote( KettleDatabaseRepository.FIELD_NAMESPACE_NAME ), namespace );
   }
 
   public ObjectId verifyNamespace( String namespace ) throws MetaStoreException {
@@ -79,37 +81,40 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     }
   }
 
-  public synchronized LongObjectId getElementTypeId( LongObjectId namespaceId, String elementTypeName )
-    throws KettleException {
-    return repository.connectionDelegate.getIDWithValue( quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE ),
-        quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE ),
-        quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_NAME ), elementTypeName,
-        new String[] { quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_NAMESPACE ), },
-        new ObjectId[] { namespaceId, } );
+  public synchronized LongObjectId getElementTypeId( LongObjectId namespaceId, String elementTypeName ) throws KettleException {
+    return repository.connectionDelegate.getIDWithValue(
+      quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE ),
+      quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE ),
+      quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_NAME ), elementTypeName,
+      new String[] { quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_NAMESPACE ), },
+      new ObjectId[] { namespaceId, } );
   }
 
-  public synchronized LongObjectId getElementId( LongObjectId elementTypeId, String elementName )
-    throws KettleException {
-    return repository.connectionDelegate.getIDWithValue( quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT ),
-        quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT ),
-        quote( KettleDatabaseRepository.FIELD_ELEMENT_NAME ), elementName,
-        new String[] { quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT_TYPE ), },
-        new ObjectId[] { elementTypeId, } );
+  public synchronized LongObjectId getElementId( LongObjectId elementTypeId, String elementName ) throws KettleException {
+    return repository.connectionDelegate.getIDWithValue(
+      quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT ),
+      quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT ),
+      quote( KettleDatabaseRepository.FIELD_ELEMENT_NAME ), elementName,
+      new String[] { quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT_TYPE ), },
+      new ObjectId[] { elementTypeId, } );
   }
 
   public RowMetaAndData getElementType( LongObjectId elementTypeId ) throws KettleException {
-    return repository.connectionDelegate.getOneRow( quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE ),
-        quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE ), elementTypeId );
+    return repository.connectionDelegate.getOneRow(
+      quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE ),
+      quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE ), elementTypeId );
   }
 
   public RowMetaAndData getElement( LongObjectId elementId ) throws KettleException {
-    return repository.connectionDelegate.getOneRow( quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT ),
-        quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT ), elementId );
+    return repository.connectionDelegate.getOneRow(
+      quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT ),
+      quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT ), elementId );
   }
 
   public RowMetaAndData getElementAttribute( LongObjectId elementAttributeId ) throws KettleException {
-    return repository.connectionDelegate.getOneRow( quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_ATTRIBUTE ),
-        quote( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE ), elementAttributeId );
+    return repository.connectionDelegate.getOneRow(
+      quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_ATTRIBUTE ),
+      quote( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE ), elementAttributeId );
   }
 
   public Collection<RowMetaAndData> getNamespaces() throws KettleDatabaseException, KettleValueException {
@@ -133,8 +138,9 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
 
     String sql =
-        "SELECT * FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE ) + " WHERE "
-            + quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_NAMESPACE ) + " = " + namespaceId.getId();
+      "SELECT * FROM "
+        + quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_NAMESPACE ) + " = " + namespaceId.getId();
 
     List<Object[]> rows = repository.connectionDelegate.getRows( sql, 0 );
     for ( Object[] row : rows ) {
@@ -152,8 +158,9 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
 
     String sql =
-        "SELECT * FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT ) + " WHERE "
-            + quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT_TYPE ) + " = " + elementTypeId.getId();
+      "SELECT * FROM "
+        + quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT_TYPE ) + " = " + elementTypeId.getId();
 
     List<Object[]> rows = repository.connectionDelegate.getRows( sql, 0 );
     for ( Object[] row : rows ) {
@@ -166,24 +173,26 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     return attrs;
   }
 
-  public Collection<RowMetaAndData> getElementAttributes( ObjectId elementId, ObjectId parentAttributeId )
-    throws KettleDatabaseException, KettleValueException {
+  public Collection<RowMetaAndData> getElementAttributes( ObjectId elementId, ObjectId parentAttributeId ) throws KettleDatabaseException, KettleValueException {
     List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
 
     String sql =
-        "SELECT * FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_ATTRIBUTE ) + " WHERE "
-            + quote( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT ) + " = " + elementId.getId();
+      "SELECT * FROM "
+        + quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_ATTRIBUTE ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT ) + " = " + elementId.getId();
     if ( parentAttributeId != null ) {
       sql +=
-          " AND " + quote( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE_PARENT ) + " = "
-              + parentAttributeId.getId();
+        " AND "
+          + quote( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE_PARENT ) + " = "
+          + parentAttributeId.getId();
     }
 
     List<Object[]> rows = repository.connectionDelegate.getRows( sql, 0 );
     for ( Object[] row : rows ) {
       RowMetaAndData rowWithMeta = new RowMetaAndData( repository.connectionDelegate.getReturnRowMeta(), row );
       long id =
-          rowWithMeta.getInteger( quote( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE ), 0 );
+        rowWithMeta.getInteger(
+          quote( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE ), 0 );
       if ( id > 0 ) {
         attrs.add( rowWithMeta );
       }
@@ -193,17 +202,18 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
 
   public ObjectId insertNamespace( String namespace ) throws KettleException {
     ObjectId idNamespace =
-        repository.connectionDelegate.getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_NAMESPACE ),
-            quote( KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE ) );
+      repository.connectionDelegate.getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_NAMESPACE ),
+        quote( KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE ) );
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE,
-        ValueMetaInterface.TYPE_INTEGER ), idNamespace );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_NAMESPACE_NAME, ValueMetaInterface.TYPE_STRING ),
-        namespace );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE, ValueMetaInterface.TYPE_INTEGER ), idNamespace );
+    table.addValue(
+      new ValueMeta( KettleDatabaseRepository.FIELD_NAMESPACE_NAME, ValueMetaInterface.TYPE_STRING ), namespace );
 
-    repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(),
-        KettleDatabaseRepository.TABLE_R_NAMESPACE );
+    repository.connectionDelegate.getDatabase().prepareInsert(
+      table.getRowMeta(), KettleDatabaseRepository.TABLE_R_NAMESPACE );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );
     repository.connectionDelegate.getDatabase().insertRow();
     repository.connectionDelegate.getDatabase().closeInsert();
@@ -217,21 +227,24 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
 
   public ObjectId insertElementType( KDBRMetaStoreElementType type ) throws KettleException {
     ObjectId idType =
-        repository.connectionDelegate.getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE ),
-            quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE ) );
+      repository.connectionDelegate.getNextID(
+        quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE ),
+        quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE ) );
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE,
-        ValueMetaInterface.TYPE_INTEGER ), idType );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_NAMESPACE,
-        ValueMetaInterface.TYPE_INTEGER ), type.getNamespaceId() );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_NAME, ValueMetaInterface.TYPE_STRING ),
-        type.getName() );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_DESCRIPTION,
-        ValueMetaInterface.TYPE_STRING ), type.getDescription() );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE, ValueMetaInterface.TYPE_INTEGER ), idType );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_NAMESPACE, ValueMetaInterface.TYPE_INTEGER ), type
+      .getNamespaceId() );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_ELEMENT_TYPE_NAME, ValueMetaInterface.TYPE_STRING ), type.getName() );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_ELEMENT_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING ), type
+      .getDescription() );
 
-    repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(),
-        KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE );
+    repository.connectionDelegate.getDatabase().prepareInsert(
+      table.getRowMeta(), KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );
     repository.connectionDelegate.getDatabase().insertRow();
     repository.connectionDelegate.getDatabase().closeInsert();
@@ -245,22 +258,25 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     return idType;
   }
 
-  public ObjectId updateElementType( ObjectId namespaceId, ObjectId elementTypeId, IMetaStoreElementType type )
-    throws KettleException {
+  public ObjectId updateElementType( ObjectId namespaceId, ObjectId elementTypeId, IMetaStoreElementType type ) throws KettleException {
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE,
-        ValueMetaInterface.TYPE_INTEGER ), elementTypeId );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_NAMESPACE,
-        ValueMetaInterface.TYPE_INTEGER ), namespaceId );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_NAME, ValueMetaInterface.TYPE_STRING ),
-        type.getName() );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_DESCRIPTION,
-        ValueMetaInterface.TYPE_STRING ), type.getDescription() );
+    table.addValue(
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE, ValueMetaInterface.TYPE_INTEGER ),
+      elementTypeId );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_NAMESPACE, ValueMetaInterface.TYPE_INTEGER ), namespaceId );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_ELEMENT_TYPE_NAME, ValueMetaInterface.TYPE_STRING ), type.getName() );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_ELEMENT_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING ), type
+      .getDescription() );
 
-    repository.connectionDelegate.updateTableRow( KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE,
-        KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE, table );
+    repository.connectionDelegate.updateTableRow(
+      KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE,
+      KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE, table );
 
     if ( log.isDebug() ) {
       log.logDebug( "Updated element type [" + type.getName() + "]" );
@@ -270,7 +286,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
   }
 
   public KDBRMetaStoreElementType parseElementType( String namespace, ObjectId namespaceId,
-      RowMetaAndData elementTypeRow ) throws KettleValueException {
+    RowMetaAndData elementTypeRow ) throws KettleValueException {
 
     Long id = elementTypeRow.getInteger( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE );
     String name = elementTypeRow.getString( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_NAME, null );
@@ -284,18 +300,17 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
 
   public void deleteElementType( ObjectId elementTypeId ) throws KettleException {
     repository.connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE ) + " = ? ", elementTypeId );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE ) + " = ? ", elementTypeId );
   }
 
   public void deleteNamespace( ObjectId namespaceId ) throws KettleException {
     repository.connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_NAMESPACE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE ) + " = ? ", namespaceId );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_NAMESPACE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE ) + " = ? ", namespaceId );
   }
 
-  public KDBRMetaStoreElement parseElement( IMetaStoreElementType elementType, RowMetaAndData elementRow )
-    throws KettleException {
+  public KDBRMetaStoreElement parseElement( IMetaStoreElementType elementType, RowMetaAndData elementRow ) throws KettleException {
 
     Long elementId = elementRow.getInteger( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT );
     String name = elementRow.getString( KettleDatabaseRepository.FIELD_ELEMENT_NAME, null );
@@ -310,8 +325,8 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     return element;
   }
 
-  private void addAttributes( IMetaStoreAttribute parentAttribute, ObjectId elementId, LongObjectId parentAttributeId )
-    throws KettleException {
+  private void addAttributes( IMetaStoreAttribute parentAttribute, ObjectId elementId,
+    LongObjectId parentAttributeId ) throws KettleException {
 
     Collection<RowMetaAndData> attributeRows = getElementAttributes( elementId, parentAttributeId );
     for ( RowMetaAndData attributeRow : attributeRows ) {
@@ -323,11 +338,10 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     }
   }
 
-  private KDBRMetaStoreAttribute parseAttribute( ObjectId elementId, RowMetaAndData attributeRow )
-    throws KettleException {
+  private KDBRMetaStoreAttribute parseAttribute( ObjectId elementId, RowMetaAndData attributeRow ) throws KettleException {
     try {
       Long attributeId =
-          attributeRow.getInteger( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE );
+        attributeRow.getInteger( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE );
       String key = attributeRow.getString( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_KEY, null );
       String value = attributeRow.getString( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_VALUE, null );
 
@@ -344,14 +358,14 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
 
   /**
    * supported types:
-   * 
+   * <p/>
    * <pre>
    * S : String (java.lang.String)
    * D : Date (java.util.Date)
    * N : Number (Double)
    * I : Integer (Long)
    * B : Boolean (Boolean)
-   * 
+   *
    * Examples
    * S:Pentaho Data Integration
    * D:2013/08/23 17:25:00
@@ -359,11 +373,10 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
    * I:12345678
    * B:true
    * </pre>
-   * 
+   *
    * @param value
    * @return The native value
-   * @throws Exception
-   *           in case of conversion trouble
+   * @throws Exception in case of conversion trouble
    */
   public Object parseAttributeValue( String value ) throws Exception {
     if ( Const.isEmpty( value ) || value.length() < 3 ) {
@@ -374,6 +387,8 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     switch ( type ) {
       case 'S':
         return valueString;
+      case 'T':
+        return new SimpleTimestampFormat( ValueMetaBase.DEFAULT_TIMESTAMP_FORMAT_MASK ).parse( valueString );
       case 'D':
         return new SimpleDateFormat( ValueMetaBase.DEFAULT_DATE_FORMAT_MASK ).parse( valueString );
       case 'N':
@@ -394,6 +409,10 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     if ( object instanceof String ) {
       return "S:" + object.toString();
     }
+    if ( object instanceof Timestamp ) {
+      return "T:" + new SimpleTimestampFormat(
+        ValueMetaBase.DEFAULT_TIMESTAMP_FORMAT_MASK ).format( (Timestamp) object );
+    }
     if ( object instanceof Date ) {
       return "D:" + new SimpleDateFormat( ValueMetaBase.DEFAULT_DATE_FORMAT_MASK ).format( (Date) object );
     }
@@ -410,25 +429,27 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     throw new KettleException( "Can't encode object of class : " + object.getClass().getName() );
   }
 
-  public ObjectId insertElement( IMetaStoreElementType elementType, IMetaStoreElement element )
-    throws MetaStoreException {
+  public ObjectId insertElement( IMetaStoreElementType elementType, IMetaStoreElement element ) throws MetaStoreException {
     try {
 
       LongObjectId elementId =
-          repository.connectionDelegate.getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT ),
-              quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT ) );
+        repository.connectionDelegate.getNextID(
+          quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT ),
+          quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT ) );
       RowMetaAndData table = new RowMetaAndData();
 
+      table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT, ValueMetaInterface.TYPE_INTEGER ), elementId
+        .longValue() );
+      table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT_TYPE, ValueMetaInterface.TYPE_INTEGER ), Long
+        .valueOf( elementType.getId() ) );
       table.addValue(
-          new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT, ValueMetaInterface.TYPE_INTEGER ),
-          elementId.longValue() );
-      table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT_TYPE,
-          ValueMetaInterface.TYPE_INTEGER ), Long.valueOf( elementType.getId() ) );
-      table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_NAME, ValueMetaInterface.TYPE_STRING ),
-          element.getName() );
+        new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_NAME, ValueMetaInterface.TYPE_STRING ), element
+          .getName() );
 
-      repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(),
-          KettleDatabaseRepository.TABLE_R_ELEMENT );
+      repository.connectionDelegate.getDatabase().prepareInsert(
+        table.getRowMeta(), KettleDatabaseRepository.TABLE_R_ELEMENT );
       repository.connectionDelegate.getDatabase().setValuesInsert( table );
       repository.connectionDelegate.getDatabase().insertRow();
       repository.connectionDelegate.getDatabase().closeInsert();
@@ -450,26 +471,33 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
   }
 
   private void insertAttributes( List<IMetaStoreAttribute> children, LongObjectId elementId,
-      LongObjectId parentAttributeId ) throws Exception {
+    LongObjectId parentAttributeId ) throws Exception {
     for ( IMetaStoreAttribute child : children ) {
       LongObjectId attributeId =
-          repository.connectionDelegate.getNextID( quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_ATTRIBUTE ),
-              quote( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE ) );
+        repository.connectionDelegate.getNextID(
+          quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_ATTRIBUTE ),
+          quote( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE ) );
       RowMetaAndData table = new RowMetaAndData();
 
-      table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE,
+      table.addValue(
+        new ValueMeta(
+          KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE,
           ValueMetaInterface.TYPE_INTEGER ), attributeId.longValue() );
-      table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT,
-          ValueMetaInterface.TYPE_INTEGER ), elementId.longValue() );
-      table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE_PARENT,
-          ValueMetaInterface.TYPE_INTEGER ), parentAttributeId.longValue() );
-      table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_KEY,
-          ValueMetaInterface.TYPE_STRING ), child.getId() );
-      table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_VALUE,
-          ValueMetaInterface.TYPE_STRING ), encodeAttributeValue( child.getValue() ) );
+      table.addValue(
+        new ValueMeta(
+          KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT, ValueMetaInterface.TYPE_INTEGER ),
+        elementId.longValue() );
+      table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE_PARENT,
+        ValueMetaInterface.TYPE_INTEGER ), parentAttributeId.longValue() );
+      table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_KEY, ValueMetaInterface.TYPE_STRING ), child.getId() );
+      table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_VALUE, ValueMetaInterface.TYPE_STRING ),
+        encodeAttributeValue( child.getValue() ) );
 
-      repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(),
-          KettleDatabaseRepository.TABLE_R_ELEMENT_ATTRIBUTE );
+      repository.connectionDelegate.getDatabase().prepareInsert(
+        table.getRowMeta(), KettleDatabaseRepository.TABLE_R_ELEMENT_ATTRIBUTE );
       repository.connectionDelegate.getDatabase().setValuesInsert( table );
       repository.connectionDelegate.getDatabase().insertRow();
       repository.connectionDelegate.getDatabase().closeInsert();
@@ -480,10 +508,11 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
 
   public void deleteElement( ObjectId elementId ) throws KettleException {
     repository.connectionDelegate.performDelete( "DELETE FROM "
-        + quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_ATTRIBUTE ) + " WHERE "
-        + quote( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT ) + " = ? ", elementId );
-    repository.connectionDelegate.performDelete( "DELETE FROM " + quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT )
-        + " WHERE " + quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT ) + " = ? ", elementId );
+      + quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_ATTRIBUTE ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT ) + " = ? ", elementId );
+    repository.connectionDelegate.performDelete( "DELETE FROM "
+      + quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT ) + " WHERE "
+      + quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT ) + " = ? ", elementId );
   }
 
 }

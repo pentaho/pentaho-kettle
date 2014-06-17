@@ -25,24 +25,28 @@ package org.pentaho.di.core.gui;
 /**
  * When we draw something in Spoon (TransPainter) we keep a list of all the things we draw and the object that's behind
  * it. That should make it a lot easier to track what was drawn, setting tooltips, etc.
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public class AreaOwner {
 
   public enum AreaType {
-    NOTE, REMOTE_INPUT_STEP, REMOTE_OUTPUT_STEP, STEP_PARTITIONING, STEP_ICON, STEP_ERROR_ICON, STEP_INPUT_HOP_ICON, STEP_OUTPUT_HOP_ICON, STEP_INFO_HOP_ICON, STEP_ERROR_HOP_ICON, STEP_TARGET_HOP_ICON, HOP_COPY_ICON, ROW_DISTRIBUTION_ICON, HOP_ERROR_ICON, HOP_INFO_ICON, HOP_INFO_STEP_COPIES_ERROR,
+    NOTE, REMOTE_INPUT_STEP, REMOTE_OUTPUT_STEP, STEP_PARTITIONING, STEP_ICON, STEP_ERROR_ICON,
+      STEP_INPUT_HOP_ICON, STEP_OUTPUT_HOP_ICON, STEP_INFO_HOP_ICON, STEP_ERROR_HOP_ICON, STEP_TARGET_HOP_ICON,
+      HOP_COPY_ICON, ROW_DISTRIBUTION_ICON, HOP_ERROR_ICON, HOP_INFO_ICON, HOP_INFO_STEP_COPIES_ERROR,
 
-    MINI_ICONS_BALLOON,
+      MINI_ICONS_BALLOON,
 
-    STEP_TARGET_HOP_ICON_OPTION, STEP_EDIT_ICON, STEP_MENU_ICON, STEP_COPIES_TEXT, STEP_DATA_SERVICE,
+      STEP_TARGET_HOP_ICON_OPTION, STEP_EDIT_ICON, STEP_MENU_ICON, STEP_COPIES_TEXT, STEP_DATA_SERVICE,
 
-    JOB_ENTRY_ICON, JOB_HOP_ICON, JOB_HOP_PARALLEL_ICON, JOB_ENTRY_MINI_ICON_INPUT, JOB_ENTRY_MINI_ICON_OUTPUT, JOB_ENTRY_MINI_ICON_CONTEXT, JOB_ENTRY_MINI_ICON_EDIT,
+      JOB_ENTRY_ICON, JOB_HOP_ICON, JOB_HOP_PARALLEL_ICON, JOB_ENTRY_MINI_ICON_INPUT, JOB_ENTRY_MINI_ICON_OUTPUT,
+      JOB_ENTRY_MINI_ICON_CONTEXT, JOB_ENTRY_MINI_ICON_EDIT,
 
-    JOB_ENTRY_BUSY, JOB_ENTRY_RESULT_SUCCESS, JOB_ENTRY_RESULT_FAILURE, JOB_ENTRY_RESULT_CHECKPOINT, STEP_INJECT_ICON,
+      JOB_ENTRY_BUSY, JOB_ENTRY_RESULT_SUCCESS, JOB_ENTRY_RESULT_FAILURE, JOB_ENTRY_RESULT_CHECKPOINT,
+      STEP_INJECT_ICON,
 
-    CUSTOM,
+      CUSTOM,
 
   }
 
@@ -58,7 +62,8 @@ public class AreaOwner {
    * @param heigth
    * @param owner
    */
-  public AreaOwner( AreaType areaType, int x, int y, int width, int heigth, Point offset, Object parent, Object owner ) {
+  public AreaOwner( AreaType areaType, int x, int y, int width, int heigth, Point offset, Object parent,
+    Object owner ) {
     super();
     this.areaType = areaType;
     this.area = new Rectangle( x - offset.x, y - offset.y, width, heigth );
@@ -68,7 +73,7 @@ public class AreaOwner {
 
   /**
    * Validate if a certain coordinate is contained in the area
-   * 
+   *
    * @param x
    *          x-coordinate
    * @param y

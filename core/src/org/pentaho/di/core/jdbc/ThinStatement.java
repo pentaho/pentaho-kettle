@@ -114,8 +114,8 @@ public class ThinStatement implements Statement {
   public ResultSet executeQuery( String sql ) throws SQLException {
     try {
       String url =
-          HttpUtil.constructUrl( new Variables(), connection.getHostname(), connection.getPort(), connection
-              .getWebAppName(), connection.getService() + "/sql/" );
+        HttpUtil.constructUrl( new Variables(), connection.getHostname(), connection.getPort(), connection
+          .getWebAppName(), connection.getService() + "/sql/" );
       resultSet = new ThinResultSet( this, url, connection.getUsername(), connection.getPassword(), sql );
       return resultSet;
     } catch ( Exception e ) {

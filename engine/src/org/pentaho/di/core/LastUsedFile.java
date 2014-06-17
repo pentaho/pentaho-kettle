@@ -55,7 +55,7 @@ public class LastUsedFile {
    * @param openItemTypes
    */
   public LastUsedFile( String fileType, String filename, String directory, boolean sourceRepository,
-      String repositoryName, boolean opened, int openItemTypes ) {
+    String repositoryName, boolean opened, int openItemTypes ) {
     this.fileType = fileType;
     this.filename = filename;
     this.directory = directory;

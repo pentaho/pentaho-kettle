@@ -1,0 +1,37 @@
+<overlay>
+    <hbox id="overlay_real_estate" flex="1">
+
+        <groupbox id="general-settings-box" flex="1">
+            <grid id="method_grid" flex="1">
+                <columns>
+                    <column/>
+                    <column flex="1"/>
+                    <column/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="${kerberos.principal}"/>
+                        <textbox flex="1" id="principal"/>
+                        <spacer/>
+                    </row>
+                    <row>
+                        <label value="${kerberos.password}"/>
+                        <textbox flex="1" id="password" type="password"/>
+                        <spacer/>
+                    </row>
+                    <row>
+                        <label value="${kerberos.usekeytab}"/>
+                        <checkbox id="useKeytab" />
+                        <spacer/>
+                    </row>
+                    <row>
+                        <label value="${kerberos.keytab}"/>
+                        <textbox flex="1" id="keytab"/>
+                        <button id="browse" label="..."  onclick="handler.browse()"/>
+                    </row>
+                </rows>
+            </grid>
+        </groupbox>
+
+    </hbox>
+</overlay>

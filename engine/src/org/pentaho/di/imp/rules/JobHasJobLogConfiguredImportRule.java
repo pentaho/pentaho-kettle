@@ -37,9 +37,9 @@ import org.w3c.dom.Node;
 
 /**
  * This rule verifies that a job contains a certain job log table configuration.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class JobHasJobLogConfiguredImportRule extends BaseImportRule implements ImportRuleInterface {
 
@@ -67,42 +67,44 @@ public class JobHasJobLogConfiguredImportRule extends BaseImportRule implements 
     JobLogTable jobLogTable = jobMeta.getJobLogTable();
 
     if ( !jobLogTable.isDefined() ) {
-      feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-          "The logging table is not defined" ) );
+      feedback.add( new ImportValidationFeedback(
+        this, ImportValidationResultType.ERROR, "The logging table is not defined" ) );
     } else {
       if ( !Const.isEmpty( schemaName ) ) {
         if ( schemaName.equals( jobLogTable.getSchemaName() ) ) {
-          feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.APPROVAL,
-              "The schema name is set to: " + schemaName ) );
+          feedback.add( new ImportValidationFeedback(
+            this, ImportValidationResultType.APPROVAL, "The schema name is set to: " + schemaName ) );
         } else {
-          feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-              "The schema name is not set to: " + schemaName ) );
+          feedback.add( new ImportValidationFeedback(
+            this, ImportValidationResultType.ERROR, "The schema name is not set to: " + schemaName ) );
         }
       }
 
       if ( !Const.isEmpty( tableName ) ) {
         if ( tableName.equals( jobLogTable.getTableName() ) ) {
-          feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.APPROVAL,
-              "The table name is set to: " + tableName ) );
+          feedback.add( new ImportValidationFeedback(
+            this, ImportValidationResultType.APPROVAL, "The table name is set to: " + tableName ) );
         } else {
-          feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-              "The table name is not set to: " + tableName ) );
+          feedback.add( new ImportValidationFeedback(
+            this, ImportValidationResultType.ERROR, "The table name is not set to: " + tableName ) );
         }
       }
 
       if ( !Const.isEmpty( connectionName ) ) {
         if ( connectionName.equals( jobLogTable.getDatabaseMeta().getName() ) ) {
-          feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.APPROVAL,
-              "The database connection used for logging is: " + connectionName ) );
+          feedback.add( new ImportValidationFeedback(
+            this, ImportValidationResultType.APPROVAL, "The database connection used for logging is: "
+              + connectionName ) );
         } else {
-          feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-              "The database connection used for logging is not: " + connectionName ) );
+          feedback.add( new ImportValidationFeedback(
+            this, ImportValidationResultType.ERROR, "The database connection used for logging is not: "
+              + connectionName ) );
         }
       }
 
       if ( feedback.isEmpty() ) {
-        feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.APPROVAL,
-            "The logging table is correctly defined" ) );
+        feedback.add( new ImportValidationFeedback(
+          this, ImportValidationResultType.APPROVAL, "The logging table is correctly defined" ) );
       }
     }
 

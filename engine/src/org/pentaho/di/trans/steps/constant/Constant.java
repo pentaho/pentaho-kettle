@@ -26,6 +26,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.sql.Timestamp;
+
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.RowMetaAndData;
@@ -35,6 +37,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -47,32 +50,39 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Generates a number of (empty or the same) rows
- * 
+ *
  * @author Matt
  * @since 4-apr-2003
  */
 public class Constant extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ConstantMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ConstantMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ConstantMeta meta;
   private ConstantData data;
 
-  public Constant( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public Constant( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (ConstantMeta) getStepMeta().getStepMetaInterface();
     data = (ConstantData) stepDataInterface;
   }
 
-  public static final RowMetaAndData
-    buildRow( ConstantMeta meta, ConstantData data, List<CheckResultInterface> remarks ) {
+  public static final RowMetaAndData buildRow( ConstantMeta meta, ConstantData data,
+    List<CheckResultInterface> remarks ) {
     RowMetaInterface rowMeta = new RowMeta();
     Object[] rowData = new Object[meta.getFieldName().length];
 
     for ( int i = 0; i < meta.getFieldName().length; i++ ) {
       int valtype = ValueMeta.getType( meta.getFieldType()[i] );
       if ( meta.getFieldName()[i] != null ) {
-        ValueMetaInterface value = new ValueMeta( meta.getFieldName()[i], valtype ); // build a value!
+        ValueMetaInterface value = null;
+        try {
+          value = ValueMetaFactory.createValueMeta( meta.getFieldName()[i], valtype );
+        } catch ( Exception exception ) {
+          remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, exception.getMessage(), null ) );
+          continue;
+        }
         value.setLength( meta.getFieldLength()[i] );
         value.setPrecision( meta.getFieldPrecision()[i] );
 
@@ -89,15 +99,17 @@ public class Constant extends BaseStep implements StepInterface {
 
             if ( value.getType() == ValueMetaInterface.TYPE_NONE ) {
               String message =
-                  BaseMessages.getString( PKG, "Constant.CheckResult.SpecifyTypeError", value.getName(), stringValue );
+                BaseMessages.getString(
+                  PKG, "Constant.CheckResult.SpecifyTypeError", value.getName(), stringValue );
               remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
             }
           } else {
             switch ( value.getType() ) {
               case ValueMetaInterface.TYPE_NUMBER:
                 try {
-                  if ( meta.getFieldFormat()[i] != null || meta.getDecimal()[i] != null || meta.getGroup()[i] != null
-                      || meta.getCurrency()[i] != null ) {
+                  if ( meta.getFieldFormat()[i] != null
+                    || meta.getDecimal()[i] != null || meta.getGroup()[i] != null
+                    || meta.getCurrency()[i] != null ) {
                     if ( meta.getFieldFormat()[i] != null && meta.getFieldFormat()[i].length() >= 1 ) {
                       data.df.applyPattern( meta.getFieldFormat()[i] );
                     }
@@ -117,8 +129,9 @@ public class Constant extends BaseStep implements StepInterface {
                   rowData[i] = new Double( data.nf.parse( stringValue ).doubleValue() );
                 } catch ( Exception e ) {
                   String message =
-                      BaseMessages.getString( PKG, "Constant.BuildRow.Error.Parsing.Number", value.getName(),
-                          stringValue, e.toString() );
+                    BaseMessages.getString(
+                      PKG, "Constant.BuildRow.Error.Parsing.Number", value.getName(), stringValue, e
+                        .toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
                 }
                 break;
@@ -137,8 +150,8 @@ public class Constant extends BaseStep implements StepInterface {
                   rowData[i] = data.daf.parse( stringValue );
                 } catch ( Exception e ) {
                   String message =
-                      BaseMessages.getString( PKG, "Constant.BuildRow.Error.Parsing.Date", value.getName(),
-                          stringValue, e.toString() );
+                    BaseMessages.getString(
+                      PKG, "Constant.BuildRow.Error.Parsing.Date", value.getName(), stringValue, e.toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
                 }
                 break;
@@ -148,8 +161,9 @@ public class Constant extends BaseStep implements StepInterface {
                   rowData[i] = new Long( Long.parseLong( stringValue ) );
                 } catch ( Exception e ) {
                   String message =
-                      BaseMessages.getString( PKG, "Constant.BuildRow.Error.Parsing.Integer", value.getName(),
-                          stringValue, e.toString() );
+                    BaseMessages.getString(
+                      PKG, "Constant.BuildRow.Error.Parsing.Integer", value.getName(), stringValue, e
+                        .toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
                 }
                 break;
@@ -159,24 +173,39 @@ public class Constant extends BaseStep implements StepInterface {
                   rowData[i] = new BigDecimal( stringValue );
                 } catch ( Exception e ) {
                   String message =
-                      BaseMessages.getString( PKG, "Constant.BuildRow.Error.Parsing.BigNumber", value.getName(),
-                          stringValue, e.toString() );
+                    BaseMessages.getString(
+                      PKG, "Constant.BuildRow.Error.Parsing.BigNumber", value.getName(), stringValue, e
+                        .toString() );
                   remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
                 }
                 break;
 
               case ValueMetaInterface.TYPE_BOOLEAN:
                 rowData[i] =
-                    Boolean.valueOf( "Y".equalsIgnoreCase( stringValue ) || "TRUE".equalsIgnoreCase( stringValue ) );
+                  Boolean
+                    .valueOf( "Y".equalsIgnoreCase( stringValue ) || "TRUE".equalsIgnoreCase( stringValue ) );
                 break;
 
               case ValueMetaInterface.TYPE_BINARY:
                 rowData[i] = stringValue.getBytes();
                 break;
 
+              case ValueMetaInterface.TYPE_TIMESTAMP:
+                try {
+                  rowData[i] = Timestamp.valueOf( stringValue );
+                } catch ( Exception e ) {
+                  String message =
+                    BaseMessages.getString(
+                      PKG, "Constant.BuildRow.Error.Parsing.Timestamp", value.getName(), stringValue, e
+                        .toString() );
+                  remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
+                }
+                break;
+
               default:
                 String message =
-                    BaseMessages.getString( PKG, "Constant.CheckResult.SpecifyTypeError", value.getName(), stringValue );
+                  BaseMessages.getString(
+                    PKG, "Constant.CheckResult.SpecifyTypeError", value.getName(), stringValue );
                 remarks.add( new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, message, null ) );
             }
           }
@@ -185,7 +214,7 @@ public class Constant extends BaseStep implements StepInterface {
         // This is in fact a copy from the fields row, but now with data.
         rowMeta.addValueMeta( value );
 
-      }// end if
+      } // end if
     } // end for
 
     return new RowMetaAndData( rowMeta, rowData );
@@ -195,8 +224,7 @@ public class Constant extends BaseStep implements StepInterface {
     Object[] r = null;
     r = getRow();
 
-    if ( r == null ) // no more rows to be expected from the previous step(s)
-    {
+    if ( r == null ) { // no more rows to be expected from the previous step(s)
       setOutputDone();
       return false;
     }
@@ -218,8 +246,8 @@ public class Constant extends BaseStep implements StepInterface {
     putRow( data.outputMeta, r );
 
     if ( log.isRowLevel() ) {
-      logRowlevel( BaseMessages.getString( PKG, "Constant.Log.Wrote.Row", Long.toString( getLinesWritten() ),
-          getInputRowMeta().getString( r ) ) );
+      logRowlevel( BaseMessages.getString(
+        PKG, "Constant.Log.Wrote.Row", Long.toString( getLinesWritten() ), getInputRowMeta().getString( r ) ) );
     }
 
     if ( checkFeedback( getLinesWritten() ) ) {

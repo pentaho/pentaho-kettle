@@ -38,20 +38,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Check if a column exists in table on a specified connection *
- * 
+ *
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 
 public class ColumnExists extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ColumnExistsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ColumnExistsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ColumnExistsMeta meta;
   private ColumnExistsData data;
 
   public ColumnExists( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -63,8 +63,8 @@ public class ColumnExists extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    // if no more input to be expected set done
+    if ( r == null ) {
       setOutputDone();
       return false;
     }
@@ -94,15 +94,16 @@ public class ColumnExists extends BaseStep implements StepInterface {
           data.indexOfTablename = getInputRowMeta().indexOfValue( meta.getDynamicTablenameField() );
           if ( data.indexOfTablename < 0 ) {
             // The field is unreachable !
-            logError( BaseMessages.getString( PKG, "ColumnExists.Exception.CouldnotFindField" ) + "["
-                + meta.getDynamicTablenameField() + "]" );
-            throw new KettleException( BaseMessages.getString( PKG, "ColumnExists.Exception.CouldnotFindField", meta
-                .getDynamicTablenameField() ) );
+            logError( BaseMessages.getString( PKG, "ColumnExists.Exception.CouldnotFindField" )
+              + "[" + meta.getDynamicTablenameField() + "]" );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "ColumnExists.Exception.CouldnotFindField", meta.getDynamicTablenameField() ) );
           }
         }
       } else {
         if ( !Const.isEmpty( data.schemaname ) ) {
-          data.tablename = data.db.getDatabaseMeta().getQuotedSchemaTableCombination( data.schemaname, data.tablename );
+          data.tablename =
+            data.db.getDatabaseMeta().getQuotedSchemaTableCombination( data.schemaname, data.tablename );
         } else {
           data.tablename = data.db.getDatabaseMeta().quoteField( data.tablename );
         }
@@ -113,21 +114,23 @@ public class ColumnExists extends BaseStep implements StepInterface {
         data.indexOfColumnname = getInputRowMeta().indexOfValue( meta.getDynamicColumnnameField() );
         if ( data.indexOfColumnname < 0 ) {
           // The field is unreachable !
-          logError( BaseMessages.getString( PKG, "ColumnExists.Exception.CouldnotFindField" ) + "["
-              + meta.getDynamicColumnnameField() + "]" );
+          logError( BaseMessages.getString( PKG, "ColumnExists.Exception.CouldnotFindField" )
+            + "[" + meta.getDynamicColumnnameField() + "]" );
           throw new KettleException( BaseMessages.getString( PKG, "ColumnExists.Exception.CouldnotFindField", meta
-              .getDynamicColumnnameField() ) );
+            .getDynamicColumnnameField() ) );
         }
       }
 
-    }// End If first
+      // End If first
+    }
 
     try {
       // get tablename
       if ( meta.isTablenameInField() ) {
         data.tablename = getInputRowMeta().getString( r, data.indexOfTablename );
         if ( !Const.isEmpty( data.schemaname ) ) {
-          data.tablename = data.db.getDatabaseMeta().getQuotedSchemaTableCombination( data.schemaname, data.tablename );
+          data.tablename =
+            data.db.getDatabaseMeta().getQuotedSchemaTableCombination( data.schemaname, data.tablename );
         } else {
           data.tablename = data.db.getDatabaseMeta().quoteField( data.tablename );
         }
@@ -145,8 +148,8 @@ public class ColumnExists extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "ColumnExists.LineNumber", getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "ColumnExists.LineNumber", getLinesRead()
+          + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( KettleException e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {

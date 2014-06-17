@@ -66,7 +66,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class StreamLookupDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = StreamLookupMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StreamLookupMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlStep;
   private CCombo wStep;
@@ -196,15 +196,18 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 
     ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.Field" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.LookupField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.LookupField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
 
     wKey =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrKeyRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+        nrKeyRows, lsMod, props );
 
     fdKey = new FormData();
     fdKey.left = new FormAttachment( 0, 0 );
@@ -227,21 +230,28 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.FieldReturn" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.FieldReturn" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.NewName" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.NewName" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.Default" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.Default" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     ciReturn[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.Type" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StreamLookupDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        ValueMeta.getTypes() );
 
     wReturn =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
+        UpInsRows, lsMod, props );
+
+    // START MEMORY PRESERVE GROUP
 
     fdReturn = new FormData();
     fdReturn.left = new FormAttachment( 0, 0 );
@@ -279,7 +289,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
     fdlIntegerPair.top = new FormAttachment( wPreserveMemory, margin );
     fdlIntegerPair.right = new FormAttachment( middle, -margin );
     wlIntegerPair.setLayoutData( fdlIntegerPair );
-    wIntegerPair = new Button( shell, SWT.CHECK );
+    wIntegerPair = new Button( shell, SWT.RADIO );
+    wIntegerPair.setEnabled( false );
     props.setLook( wIntegerPair );
     fdIntegerPair = new FormData();
     fdIntegerPair.left = new FormAttachment( middle, 0 );
@@ -300,7 +311,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
     fdlSortedList.top = new FormAttachment( wIntegerPair, margin );
     fdlSortedList.right = new FormAttachment( middle, -margin );
     wlSortedList.setLayoutData( fdlSortedList );
-    wSortedList = new Button( shell, SWT.CHECK );
+    wSortedList = new Button( shell, SWT.RADIO );
+    wSortedList.setEnabled( false );
     props.setLook( wSortedList );
     fdSortedList = new FormData();
     fdSortedList.left = new FormAttachment( middle, 0 );
@@ -312,6 +324,17 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         input.setChanged();
       }
     } );
+    // PDI-2107 preserve memory should be enabled to have this options on.
+    wPreserveMemory.addListener( SWT.Selection, new Listener() {
+      @Override
+      public void handleEvent( Event event ) {
+        boolean selection = wPreserveMemory.getSelection();
+        wSortedList.setEnabled( selection );
+        wIntegerPair.setEnabled( selection );
+      }
+    } );
+
+    // END MEMORY PRESERVE
 
     // THE BUTTONS
     wOK = new Button( shell, SWT.PUSH );
@@ -501,7 +524,16 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 
     StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get( 0 );
     wStep.setText( Const.NVL( infoStream.getStepname(), "" ) );
-    wPreserveMemory.setSelection( input.isMemoryPreservationActive() );
+
+    boolean isPreserveMemory = input.isMemoryPreservationActive();
+    wPreserveMemory.setSelection( isPreserveMemory );
+    if ( isPreserveMemory ) {
+      wSortedList.setEnabled( true );
+      wIntegerPair.setEnabled( true );
+    }
+    // PDI-2107 usually this is sorted list or integer pair
+    // for backward compatibility they can be set both
+    // but user will be forced to choose only one option later.
     wSortedList.setSelection( input.isUsingSortedList() );
     wIntegerPair.setSelection( input.isUsingIntegerPair() );
 
@@ -535,6 +567,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "StreamLookupDialog.Log.FoundKeys", nrkeys + "" ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wKey.getNonEmpty( i );
       input.getKeystream()[i] = item.getText( 1 );
@@ -544,6 +577,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "StreamLookupDialog.Log.FoundFields", nrvalues + "" ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrvalues; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       input.getValue()[i] = item.getText( 1 );
@@ -561,10 +595,10 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       if ( Const.isEmpty( wStep.getText() ) ) {
         mb.setMessage( BaseMessages.getString( PKG, "StreamLookupDialog.NotStepSpecified.DialogMessage", wStep
-            .getText() ) );
+          .getText() ) );
       } else {
-        mb.setMessage( BaseMessages
-            .getString( PKG, "StreamLookupDialog.StepCanNotFound.DialogMessage", wStep.getText() ) );
+        mb.setMessage( BaseMessages.getString( PKG, "StreamLookupDialog.StepCanNotFound.DialogMessage", wStep
+          .getText() ) );
       }
 
       mb.setText( BaseMessages.getString( PKG, "StreamLookupDialog.StepCanNotFound.DialogTitle" ) );
@@ -579,7 +613,9 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
   private void get() {
     if ( transMeta.findStep( wStep.getText() ) == null ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "StreamLookupDialog.PleaseSelectAStepToReadFrom.DialogMessage" ) );
+      mb
+        .setMessage( BaseMessages
+          .getString( PKG, "StreamLookupDialog.PleaseSelectAStepToReadFrom.DialogMessage" ) );
       mb.setText( BaseMessages.getString( PKG, "StreamLookupDialog.PleaseSelectAStepToReadFrom.DialogTitle" ) );
       mb.open();
       return;
@@ -609,8 +645,9 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         }
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -634,8 +671,9 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "StreamLookupDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 }

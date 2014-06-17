@@ -87,7 +87,6 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = GPLoadMeta.class; // for i18n purposes, needed
   // by Translator2!!
-  // $NON-NLS-1$
 
   private CTabFolder wTabFolder;
 
@@ -730,6 +729,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       logDebug( BaseMessages.getString( PKG, "GPLoadDialog.Log.FoundFields", "" + nrfields ) );
     }
 
+    // CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
 
       TableItem item = wReturn.getNonEmpty( i );

@@ -45,18 +45,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Reads information from a database table by using freehand SQL
- * 
+ *
  * @author Matt
  * @since 8-apr-2003
  */
 public class TableInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = TableInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TableInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private TableInputMeta meta;
   private TableInputData data;
 
   public TableInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -79,12 +79,12 @@ public class TableInput extends BaseStep implements StepInterface {
       }
 
       if ( parametersMeta.size() == 0 ) {
-        throw new KettleException( "Expected to read parameters from step [" + data.infoStream.getStepname()
-            + "] but none were found." );
+        throw new KettleException( "Expected to read parameters from step ["
+          + data.infoStream.getStepname() + "] but none were found." );
       }
     } else {
-      throw new KettleException( "Unable to find rowset to read from, perhaps step [" + data.infoStream.getStepname()
-          + "] doesn't exist. (or perhaps you are trying a preview?)" );
+      throw new KettleException( "Unable to find rowset to read from, perhaps step ["
+        + data.infoStream.getStepname() + "] doesn't exist. (or perhaps you are trying a preview?)" );
     }
 
     RowMetaAndData parameters = new RowMetaAndData( parametersMeta, parametersData );
@@ -93,8 +93,8 @@ public class TableInput extends BaseStep implements StepInterface {
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
-    if ( first ) // we just got started
-    {
+    if ( first ) { // we just got started
+
       Object[] parameters;
       RowMetaInterface parametersMeta;
       first = false;
@@ -108,7 +108,7 @@ public class TableInput extends BaseStep implements StepInterface {
           data.rowSet = findInputRowSet( data.infoStream.getStepname() );
           if ( data.rowSet == null ) {
             throw new KettleException( "Unable to find rowset to read from, perhaps step ["
-                + data.infoStream.getStepname() + "] doesn't exist. (or perhaps you are trying a preview?)" );
+              + data.infoStream.getStepname() + "] doesn't exist. (or perhaps you are trying a preview?)" );
           }
           parameters = getRowFrom( data.rowSet );
           parametersMeta = data.rowSet.getRowMeta();
@@ -140,8 +140,8 @@ public class TableInput extends BaseStep implements StepInterface {
         return false;
       }
     } else {
-      if ( data.thisrow != null ) // We can expect more rows
-      {
+      if ( data.thisrow != null ) { // We can expect more rows
+
         data.nextrow = data.db.getRow( data.rs, meta.isLazyConversionActive() );
         if ( data.nextrow != null ) {
           incrementLinesInput();
@@ -149,14 +149,14 @@ public class TableInput extends BaseStep implements StepInterface {
       }
     }
 
-    if ( data.thisrow == null ) // Finished reading?
-    {
+    if ( data.thisrow == null ) { // Finished reading?
+
       boolean done = false;
       if ( meta.isExecuteEachInputRow() ) // Try to get another row from the input stream
       {
         Object[] nextRow = getRowFrom( data.rowSet );
-        if ( nextRow == null ) // Nothing more to get!
-        {
+        if ( nextRow == null ) { // Nothing more to get!
+
           done = true;
         } else {
           // First close the previous query, otherwise we run out of cursors!
@@ -224,7 +224,8 @@ public class TableInput extends BaseStep implements StepInterface {
       data.rs = data.db.openQuery( sql, null, null, ResultSet.FETCH_FORWARD, meta.isLazyConversionActive() );
     } else {
       data.rs =
-          data.db.openQuery( sql, parametersMeta, parameters, ResultSet.FETCH_FORWARD, meta.isLazyConversionActive() );
+        data.db.openQuery( sql, parametersMeta, parameters, ResultSet.FETCH_FORWARD, meta
+          .isLazyConversionActive() );
     }
     if ( data.rs == null ) {
       logError( "Couldn't open Query [" + sql + "]" );

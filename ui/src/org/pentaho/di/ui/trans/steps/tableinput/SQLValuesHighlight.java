@@ -120,7 +120,7 @@ public class SQLValuesHighlight implements LineStyleListener {
       GUIResource.getInstance().getColor( 0, 0, 255 ), // blue
       GUIResource.getInstance().getColor( 255, 0, 255 ) // SQL Functions / Rose
 
-        };
+    };
     tokenColors = new int[MAXIMUM_TOKEN];
     tokenColors[WORD] = 0;
     tokenColors[WHITE] = 0;
@@ -154,34 +154,34 @@ public class SQLValuesHighlight implements LineStyleListener {
     }
     token = scanner.nextToken();
     while ( token != EOF ) {
-      if ( token == OTHER ) {
-        // do nothing
-      } else if ( ( token == WHITE ) && ( !styles.isEmpty() ) ) {
-        int start = scanner.getStartOffset() + event.lineOffset;
-        lastStyle = styles.lastElement();
-        if ( lastStyle.fontStyle != SWT.NORMAL ) {
-          if ( lastStyle.start + lastStyle.length == start ) {
-            // have the white space take on the style before it to minimize font style
-            // changes
-            lastStyle.length += scanner.getLength();
+      if ( token != OTHER ) {
+        if ( ( token == WHITE ) && ( !styles.isEmpty() ) ) {
+          int start = scanner.getStartOffset() + event.lineOffset;
+          lastStyle = styles.lastElement();
+          if ( lastStyle.fontStyle != SWT.NORMAL ) {
+            if ( lastStyle.start + lastStyle.length == start ) {
+              // have the white space take on the style before it to minimize font style
+              // changes
+              lastStyle.length += scanner.getLength();
+            }
           }
-        }
-      } else {
-        Color color = getColor( token );
-        if ( color != colors[0] ) { // hardcoded default foreground color, black
-          StyleRange style =
+        } else {
+          Color color = getColor( token );
+          if ( color != colors[0] ) { // hardcoded default foreground color, black
+            StyleRange style =
               new StyleRange( scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null );
-          if ( token == KEY ) {
+            // if ( token == KEY ) {
             // style.fontStyle = SWT.BOLD;
-          }
-          if ( styles.isEmpty() ) {
-            styles.addElement( style );
-          } else {
-            lastStyle = styles.lastElement();
-            if ( lastStyle.similarTo( style ) && ( lastStyle.start + lastStyle.length == style.start ) ) {
-              lastStyle.length += style.length;
-            } else {
+            // }
+            if ( styles.isEmpty() ) {
               styles.addElement( style );
+            } else {
+              lastStyle = styles.lastElement();
+              if ( lastStyle.similarTo( style ) && ( lastStyle.start + lastStyle.length == style.start ) ) {
+                lastStyle.length += style.length;
+              } else {
+                styles.addElement( style );
+              }
             }
           }
         }
@@ -292,47 +292,51 @@ public class SQLValuesHighlight implements LineStyleListener {
     protected int fStartToken;
     protected boolean fEofSeen = false;
 
-    private String[] kfKeywords = { "getdate", "case", "convert", "left", "right", "isnumeric", "isdate", "isnumber",
-      "number", "finally", "cast", "var", "fetch_status", "isnull", "charindex", "difference", "len", "nchar",
-      "quotename", "replicate", "reverse", "str", "stuff", "unicode", "ascii", "char",
+    private String[] kfKeywords = {
+      "getdate", "case", "convert", "left", "right", "isnumeric", "isdate", "isnumber", "number", "finally",
+      "cast", "var", "fetch_status", "isnull", "charindex", "difference", "len", "nchar", "quotename",
+      "replicate", "reverse", "str", "stuff", "unicode", "ascii", "char",
 
-      "to_char", "to_date", "to_number", "nvl", "sysdate", "corr", "count", "grouping", "max", "min", "stdev", "sum",
-      "concat", "length", "locate", "ltrim", "posstr", "repeat", "replace", "rtrim", "soundex", "space", "substr",
-      "substring", "trunc", "nextval", "currval", "getclobval",
+      "to_char", "to_date", "to_number", "nvl", "sysdate", "corr", "count", "grouping", "max", "min", "stdev",
+      "sum", "concat", "length", "locate", "ltrim", "posstr", "repeat", "replace", "rtrim", "soundex", "space",
+      "substr", "substring", "trunc", "nextval", "currval", "getclobval",
 
       "char_length", "compare", "patindex", "sortkey", "uscalar",
 
-      "current_date", "current_time", "current_timestamp", "current_user", "session_user", "system_user", "curdate",
-      "curtime", "database", "now", "sysdate", "today", "user", "version", "coalesce", "nullif", "octet_length",
-      "datalength", "decode", "greatest", "ifnull", "least", "||", "char_length", "character_length", "collate",
-      "concatenate", "like", "lower", "position", "translate", "upper", "char_octet_length",
-      "character_maximum_length", "character_octet_length", "ilike", "initcap", "instr", "lcase", "lpad", "patindex",
-      "rpad", "ucase", "bit_length", "&", "|", "^", "%", "+", "-", "*", "/", "(", ")", "abs", "asin", "atan",
-      "ceiling", "cos", "cot", "exp", "floor", "ln", "log", "log10", "mod", "pi", "power", "rand", "round", "sign",
-      "sin", "sqrt", "tan", "trunc", "extract", "interval", "overlaps", "adddate", "age", "date_add", "dateformat",
-      "date_part", "date_sub", "datediff", "dateadd", "datename", "datepart", "day", "dayname", "dayofmonth",
-      "dayofweek", "dayofyear", "hour", "last_day", "minute", "month", "month_between", "monthname", "next_day",
-      "second", "sub_date", "week", "year", "dbo", "log", "objectproperty" };
+      "current_date", "current_time", "current_timestamp", "current_user", "session_user", "system_user",
+      "curdate", "curtime", "database", "now", "sysdate", "today", "user", "version", "coalesce", "nullif",
+      "octet_length", "datalength", "decode", "greatest", "ifnull", "least", "||", "char_length",
+      "character_length", "collate", "concatenate", "like", "lower", "position", "translate", "upper",
+      "char_octet_length", "character_maximum_length", "character_octet_length", "ilike", "initcap", "instr",
+      "lcase", "lpad", "patindex", "rpad", "ucase", "bit_length", "&", "|", "^", "%", "+", "-", "*", "/", "(",
+      ")", "abs", "asin", "atan", "ceiling", "cos", "cot", "exp", "floor", "ln", "log", "log10", "mod", "pi",
+      "power", "rand", "round", "sign", "sin", "sqrt", "tan", "trunc", "extract", "interval", "overlaps",
+      "adddate", "age", "date_add", "dateformat", "date_part", "date_sub", "datediff", "dateadd", "datename",
+      "datepart", "day", "dayname", "dayofmonth", "dayofweek", "dayofyear", "hour", "last_day", "minute",
+      "month", "month_between", "monthname", "next_day", "second", "sub_date", "week", "year", "dbo", "log",
+      "objectproperty" };
 
-    private String[] fgKeywords = { "create", "procedure", "as", "set", "nocount", "on", "declare", "varchar", "print",
-      "table", "int", "tintytext", "select", "from", "where", "and", "or", "insert", "into", "cursor", "read_only",
-      "for", "open", "fetch", "next", "end", "deallocate", "table", "drop", "exec", "begin", "close", "update",
-      "delete", "truncate", "inner", "outer", "join", "union", "all", "float", "when", "nolock", "with", "false",
-      "datetime", "dare", "time", "hour", "array", "minute", "second", "millisecond", "view", "function", "catch",
-      "const", "continue", "compute", "browse", "option", "date", "default", "do", "raw", "auto", "explicit",
-      "xmldata", "elements", "binary", "base64", "read", "outfile", "asc", "desc", "else", "eval", "escape", "having",
-      "limit", "offset", "of", "intersect", "except", "using", "variance", "specific", "language", "body", "returns",
-      "specific", "deterministic", "not", "external", "action", "reads", "static", "inherit", "called", "order",
-      "group", "by", "natural", "full", "exists", "between", "some", "any", "unique", "match", "value", "limite",
-      "minus", "references", "grant", "on", "top", "index", "bigint", "text", "char", "use", "move", "exec", "init",
-      "name", "noskip", "skip", "noformat", "format", "stats", "disk", "from", "to", "rownum", "alter", "add",
-      "remove", "move", "alter", "add", "remove", "lineno", "modify", "if", "else", "in", "is", "new", "Number",
-      "null", "string", "switch", "this", "then", "throw", "true", "false", "try", "return", "with", "while", "start",
-      "connect", "optimize", "first", "only", "rows", "sequence", "blob", "clob", "image", "binary", "column",
-      "decimal", "distinct", "primary", "key", "timestamp", "varbinary", "nvarchar", "nchar", "longnvarchar", "nclob",
-      "numeric", "constraint", "dbcc", "backup", "bit", "clustered", "pad_index", "off", "statistics_norecompute",
-      "ignore_dup_key", "allow_row_locks", "allow_page_locks", "textimage_on", "double", "rollback", "tran",
-      "transaction", "commit" };
+    private String[] fgKeywords = {
+      "create", "procedure", "as", "set", "nocount", "on", "declare", "varchar", "print", "table", "int",
+      "tintytext", "select", "from", "where", "and", "or", "insert", "into", "cursor", "read_only", "for",
+      "open", "fetch", "next", "end", "deallocate", "table", "drop", "exec", "begin", "close", "update",
+      "delete", "truncate", "inner", "outer", "join", "union", "all", "float", "when", "nolock", "with",
+      "false", "datetime", "dare", "time", "hour", "array", "minute", "second", "millisecond", "view",
+      "function", "catch", "const", "continue", "compute", "browse", "option", "date", "default", "do", "raw",
+      "auto", "explicit", "xmldata", "elements", "binary", "base64", "read", "outfile", "asc", "desc", "else",
+      "eval", "escape", "having", "limit", "offset", "of", "intersect", "except", "using", "variance",
+      "specific", "language", "body", "returns", "specific", "deterministic", "not", "external", "action",
+      "reads", "static", "inherit", "called", "order", "group", "by", "natural", "full", "exists", "between",
+      "some", "any", "unique", "match", "value", "limite", "minus", "references", "grant", "on", "top", "index",
+      "bigint", "text", "char", "use", "move", "exec", "init", "name", "noskip", "skip", "noformat", "format",
+      "stats", "disk", "from", "to", "rownum", "alter", "add", "remove", "move", "alter", "add", "remove",
+      "lineno", "modify", "if", "else", "in", "is", "new", "Number", "null", "string", "switch", "this", "then",
+      "throw", "true", "false", "try", "return", "with", "while", "start", "connect", "optimize", "first",
+      "only", "rows", "sequence", "blob", "clob", "image", "binary", "column", "decimal", "distinct", "primary",
+      "key", "timestamp", "varbinary", "nvarchar", "nchar", "longnvarchar", "nclob", "numeric", "constraint",
+      "dbcc", "backup", "bit", "clustered", "pad_index", "off", "statistics_norecompute", "ignore_dup_key",
+      "allow_row_locks", "allow_page_locks", "textimage_on", "double", "rollback", "tran", "transaction",
+      "commit" };
 
     public JavaScanner() {
       initialize();

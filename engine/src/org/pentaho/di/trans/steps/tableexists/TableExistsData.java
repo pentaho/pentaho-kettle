@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 public class TableExistsData extends BaseStepData implements StepDataInterface {
   public Database db;
@@ -38,9 +38,6 @@ public class TableExistsData extends BaseStepData implements StepDataInterface {
   public String realSchemaname;
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public TableExistsData() {
     super();
     indexOfTablename = -1;

@@ -138,8 +138,7 @@ public class SwingDirectGC implements GCInterface {
 
   private boolean drawingPixelatedImages;
 
-  public SwingDirectGC( ImageObserver observer, Point area, int iconsize, int xOffset, int yOffset )
-    throws KettleException {
+  public SwingDirectGC( ImageObserver observer, Point area, int iconsize, int xOffset, int yOffset ) throws KettleException {
     this.image = new BufferedImage( area.x, area.y, BufferedImage.TYPE_INT_RGB );
     this.gc = image.createGraphics();
     this.observer = observer;
@@ -153,8 +152,7 @@ public class SwingDirectGC implements GCInterface {
     init();
   }
 
-  public SwingDirectGC( Graphics2D gc, Rectangle2D rect, int iconsize, int xOffset, int yOffset )
-    throws KettleException {
+  public SwingDirectGC( Graphics2D gc, Rectangle2D rect, int iconsize, int xOffset, int yOffset ) throws KettleException {
     this.image = null;
     this.gc = gc;
     this.observer = null;
@@ -286,8 +284,8 @@ public class SwingDirectGC implements GCInterface {
           int rgb = bi.getRGB( x, y );
           gc.setColor( new Color( rgb ) );
           gc.setStroke( new BasicStroke( 1.0f ) );
-          gc.drawLine( locationX + xOffset + x, locationY + yOffset + y, locationX + xOffset + x, locationY + yOffset
-              + y );
+          gc.drawLine( locationX + xOffset + x, locationY + yOffset + y, locationX + xOffset + x, locationY
+            + yOffset + y );
           // gc.drawLine(locationX+xOffset+x, locationY+yOffset+y,
           // locationX+xOffset+x+1, locationY+yOffset+y);
           // gc.drawLine(locationX+xOffset+x, locationY+yOffset+y+1,
@@ -296,8 +294,10 @@ public class SwingDirectGC implements GCInterface {
         }
       }
     } else {
-      while ( !gc.drawImage( img, locationX, locationY, observer ) ) {
-        // Wait
+      // Wait
+      boolean changed = true;
+      while ( changed ) {
+        changed = !gc.drawImage( img, locationX, locationY, observer );
       }
     }
 
@@ -565,8 +565,8 @@ public class SwingDirectGC implements GCInterface {
     gc.fillRect( x + xOffset, y + yOffset, iconsize, iconsize );
     String steptype = stepMeta.getStepID();
     BufferedImage im = stepImages.get( steptype );
-    if ( im != null ) // Draw the icon!
-    {
+    if ( im != null ) { // Draw the icon!
+
       drawPixelatedImage( im, x + xOffset, y + xOffset );
 
       // gc.drawImage(im, x+xOffset, y+yOffset, observer);
@@ -605,7 +605,7 @@ public class SwingDirectGC implements GCInterface {
     if ( antiAlias ) {
 
       RenderingHints hints =
-          new RenderingHints( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON );
+        new RenderingHints( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON );
       hints.add( new RenderingHints( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY ) );
       hints.add( new RenderingHints( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON ) );
       // hints.add(new RenderingHints(RenderingHints.KEY_ALPHA_INTERPOLATION,

@@ -40,20 +40,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Execute a process *
- * 
+ *
  * @author Samatar
  * @since 03-11-2008
- * 
+ *
  */
 
 public class ExecProcess extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ExecProcessMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExecProcessMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ExecProcessMeta meta;
   private ExecProcessData data;
 
   public ExecProcess( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -62,8 +62,8 @@ public class ExecProcess extends BaseStep implements StepInterface {
     data = (ExecProcessData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -87,13 +87,13 @@ public class ExecProcess extends BaseStep implements StepInterface {
         data.indexOfProcess = data.previousRowMeta.indexOfValue( meta.getProcessField() );
         if ( data.indexOfProcess < 0 ) {
           // The field is unreachable !
-          logError( BaseMessages.getString( PKG, "ExecProcess.Exception.CouldnotFindField" ) + "["
-              + meta.getProcessField() + "]" );
+          logError( BaseMessages.getString( PKG, "ExecProcess.Exception.CouldnotFindField" )
+            + "[" + meta.getProcessField() + "]" );
           throw new KettleException( BaseMessages.getString( PKG, "ExecProcess.Exception.CouldnotFindField", meta
-              .getProcessField() ) );
+            .getProcessField() ) );
         }
       }
-    }// End If first
+    } // End If first
 
     Object[] outputRow = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
     for ( int i = 0; i < data.NrPrevFields; i++ ) {
@@ -136,8 +136,8 @@ public class ExecProcess extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRow ); // copy row to output rowset(s);
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "ExecProcess.LineNumber", getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "ExecProcess.LineNumber", getLinesRead()
+          + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( KettleException e ) {
 
@@ -178,12 +178,12 @@ public class ExecProcess extends BaseStep implements StepInterface {
         processresult.setErrorStream( errorMsg );
       } else {
         // get output stream
-        processresult
-            .setOutputStream( getOutputString( new BufferedReader( new InputStreamReader( p.getInputStream() ) ) ) );
+        processresult.setOutputStream( getOutputString( new BufferedReader( new InputStreamReader( p
+          .getInputStream() ) ) ) );
 
         // get error message
-        processresult
-            .setErrorStream( getOutputString( new BufferedReader( new InputStreamReader( p.getErrorStream() ) ) ) );
+        processresult.setErrorStream( getOutputString( new BufferedReader( new InputStreamReader( p
+          .getErrorStream() ) ) ) );
 
         // Wait until end
         p.waitFor();

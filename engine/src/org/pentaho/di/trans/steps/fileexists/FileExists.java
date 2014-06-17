@@ -39,20 +39,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Check if a table exists in a Database *
- * 
+ *
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 
 public class FileExists extends BaseStep implements StepInterface {
-  private static Class<?> PKG = FileExistsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FileExistsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private FileExistsMeta meta;
   private FileExistsData data;
 
   public FileExists( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -64,8 +64,8 @@ public class FileExists extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -93,13 +93,13 @@ public class FileExists extends BaseStep implements StepInterface {
           data.indexOfFileename = data.previousRowMeta.indexOfValue( meta.getDynamicFilenameField() );
           if ( data.indexOfFileename < 0 ) {
             // The field is unreachable !
-            logError( BaseMessages.getString( PKG, "FileExists.Exception.CouldnotFindField" ) + "["
-                + meta.getDynamicFilenameField() + "]" );
+            logError( BaseMessages.getString( PKG, "FileExists.Exception.CouldnotFindField" )
+              + "[" + meta.getDynamicFilenameField() + "]" );
             throw new KettleException( BaseMessages.getString( PKG, "FileExists.Exception.CouldnotFindField", meta
-                .getDynamicFilenameField() ) );
+              .getDynamicFilenameField() ) );
           }
         }
-      }// End If first
+      } // End If first
 
       Object[] outputRow = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
       for ( int i = 0; i < data.NrPrevFields; i++ ) {
@@ -122,7 +122,7 @@ public class FileExists extends BaseStep implements StepInterface {
         if ( meta.addResultFilenames() && fileexists && data.file.getType() == FileType.FILE ) {
           // Add this to the result file names...
           ResultFile resultFile =
-              new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
+            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
           resultFile.setComment( BaseMessages.getString( PKG, "FileExists.Log.FileAddedResult" ) );
           addResultFile( resultFile );
 
@@ -145,8 +145,8 @@ public class FileExists extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRow ); // copy row to output rowset(s);
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "FileExists.LineNumber", getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "FileExists.LineNumber", getLinesRead()
+          + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( Exception e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {
@@ -190,6 +190,7 @@ public class FileExists extends BaseStep implements StepInterface {
         data.file.close();
         data.file = null;
       } catch ( Exception e ) {
+        // Ignore close errors
       }
 
     }

@@ -32,9 +32,9 @@ import org.pentaho.di.core.lifecycle.LifecycleListener;
 
 /**
  * This class represents the repository plugin type.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @PluginMainClassType( LifecycleListener.class )
 @PluginExtraClassTypes( classTypes = { GUIOption.class } )
@@ -121,7 +121,7 @@ public class LifecyclePluginType extends BasePluginType implements PluginTypeInt
 
   /**
    * Extract extra classes information from a plugin annotation.
-   * 
+   *
    * @param classMap
    * @param annotation
    */
@@ -146,4 +146,8 @@ public class LifecyclePluginType extends BasePluginType implements PluginTypeInt
     return null;
   }
 
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (LifecyclePlugin) annotation ).classLoaderGroup();
+  }
 }

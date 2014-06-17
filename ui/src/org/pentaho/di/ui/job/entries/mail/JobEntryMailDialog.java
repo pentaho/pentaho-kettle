@@ -76,16 +76,19 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Dialog that allows you to edit a JobEntryMail object.
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryMail.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryMail.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String[] IMAGES_FILE_TYPES = new String[] {
-    BaseMessages.getString( PKG, "JobMail.Filetype.Png" ), BaseMessages.getString( PKG, "JobMail.Filetype.Jpeg" ),
-    BaseMessages.getString( PKG, "JobMail.Filetype.Gif" ), BaseMessages.getString( PKG, "JobMail.Filetype.All" ) };
+  private static final String[] IMAGES_FILE_TYPES =
+    new String[] {
+      BaseMessages.getString( PKG, "JobMail.Filetype.Png" ),
+      BaseMessages.getString( PKG, "JobMail.Filetype.Jpeg" ),
+      BaseMessages.getString( PKG, "JobMail.Filetype.Gif" ),
+      BaseMessages.getString( PKG, "JobMail.Filetype.All" ) };
 
   private LabelText wName;
 
@@ -233,16 +236,12 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
   private FormData fdGeneralComp, fdContentComp, fdAttachedComp, fdMessageComp;
   private FormData fdTabFolder;
 
-  private Group wDestinationGroup, wReplyGroup, wServerGroup, wAuthentificationGroup, wMessageSettingsGroup,
-      wMessageGroup, wResultFilesGroup, wEmbeddedImagesGroup;
-  private FormData fdDestinationGroup, fdReplyGroup, fdServerGroup, fdAuthentificationGroup, fdMessageSettingsGroup,
-      fdMessageGroup, fdResultFilesGroup, fdEmbeddedImagesGroup;
+  private Group wDestinationGroup, wReplyGroup, wServerGroup, wAuthentificationGroup;
+  private Group wMessageSettingsGroup, wMessageGroup, wResultFilesGroup, wEmbeddedImagesGroup;
 
   private Label wlImageFilename, wlContentID, wlFields;
   private Button wbImageFilename, wbaImageFilename, wbdImageFilename, wbeImageFilename;
   private TextVar wImageFilename, wContentID;
-  private FormData fdlImageFilename, fdbImageFilename, fdImageFilename, fdlContentID, fdContentID, fdbaImageFilename,
-      fdbdImageFilename, fdbeImageFilename, fdlFields, fdFields;
   private TableView wFields;
 
   public JobEntryMailDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
@@ -278,8 +277,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 
     // Name line
     wName =
-        new LabelText( shell, BaseMessages.getString( PKG, "JobMail.NameOfEntry.Label" ), BaseMessages.getString( PKG,
-            "JobMail.NameOfEntry.Tooltip" ) );
+      new LabelText( shell, BaseMessages.getString( PKG, "JobMail.NameOfEntry.Label" ), BaseMessages.getString(
+        PKG, "JobMail.NameOfEntry.Tooltip" ) );
     wName.addModifyListener( lsMod );
     fdName = new FormData();
     fdName.top = new FormAttachment( 0, 0 );
@@ -319,10 +318,9 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wDestinationGroup.setLayout( destinationgroupLayout );
 
     // Destination line
-    wDestination =
-        new LabelTextVar( jobMeta, wDestinationGroup,
-            BaseMessages.getString( PKG, "JobMail.DestinationAddress.Label" ), BaseMessages.getString( PKG,
-                "JobMail.DestinationAddress.Tooltip" ) );
+    wDestination = new LabelTextVar( jobMeta, wDestinationGroup,
+      BaseMessages.getString( PKG, "JobMail.DestinationAddress.Label" ),
+      BaseMessages.getString( PKG, "JobMail.DestinationAddress.Tooltip" ) );
     wDestination.addModifyListener( lsMod );
     fdDestination = new FormData();
     fdDestination.left = new FormAttachment( 0, 0 );
@@ -331,10 +329,9 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wDestination.setLayoutData( fdDestination );
 
     // Destination Cc
-    wDestinationCc =
-        new LabelTextVar( jobMeta, wDestinationGroup, BaseMessages
-            .getString( PKG, "JobMail.DestinationAddressCc.Label" ), BaseMessages.getString( PKG,
-            "JobMail.DestinationAddressCc.Tooltip" ) );
+    wDestinationCc = new LabelTextVar( jobMeta, wDestinationGroup,
+      BaseMessages.getString( PKG, "JobMail.DestinationAddressCc.Label" ),
+      BaseMessages.getString( PKG, "JobMail.DestinationAddressCc.Tooltip" ) );
     wDestinationCc.addModifyListener( lsMod );
     fdDestinationCc = new FormData();
     fdDestinationCc.left = new FormAttachment( 0, 0 );
@@ -344,9 +341,9 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 
     // Destination BCc
     wDestinationBCc =
-        new LabelTextVar( jobMeta, wDestinationGroup, BaseMessages.getString( PKG,
-            "JobMail.DestinationAddressBCc.Label" ), BaseMessages.getString( PKG,
-            "JobMail.DestinationAddressBCc.Tooltip" ) );
+      new LabelTextVar( jobMeta, wDestinationGroup,
+        BaseMessages.getString( PKG, "JobMail.DestinationAddressBCc.Label" ),
+        BaseMessages.getString( PKG, "JobMail.DestinationAddressBCc.Tooltip" ) );
     wDestinationBCc.addModifyListener( lsMod );
     fdDestinationBCc = new FormData();
     fdDestinationBCc.left = new FormAttachment( 0, 0 );
@@ -354,7 +351,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     fdDestinationBCc.right = new FormAttachment( 100, 0 );
     wDestinationBCc.setLayoutData( fdDestinationBCc );
 
-    fdDestinationGroup = new FormData();
+    FormData fdDestinationGroup = new FormData();
     fdDestinationGroup.left = new FormAttachment( 0, margin );
     fdDestinationGroup.top = new FormAttachment( wName, margin );
     fdDestinationGroup.right = new FormAttachment( 100, -margin );
@@ -378,9 +375,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wReplyGroup.setLayout( replygroupLayout );
 
     // Reply name
-    wReplyName =
-        new LabelTextVar( jobMeta, wReplyGroup, BaseMessages.getString( PKG, "JobMail.ReplyName.Label" ), BaseMessages
-            .getString( PKG, "JobMail.ReplyName.Tooltip" ) );
+    wReplyName = new LabelTextVar( jobMeta, wReplyGroup, BaseMessages.getString( PKG, "JobMail.ReplyName.Label" ),
+      BaseMessages.getString( PKG, "JobMail.ReplyName.Tooltip" ) );
     wReplyName.addModifyListener( lsMod );
     fdReplyName = new FormData();
     fdReplyName.left = new FormAttachment( 0, 0 );
@@ -389,9 +385,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wReplyName.setLayoutData( fdReplyName );
 
     // Reply line
-    wReply =
-        new LabelTextVar( jobMeta, wReplyGroup, BaseMessages.getString( PKG, "JobMail.ReplyAddress.Label" ),
-            BaseMessages.getString( PKG, "JobMail.ReplyAddress.Tooltip" ) );
+    wReply = new LabelTextVar( jobMeta, wReplyGroup, BaseMessages.getString( PKG, "JobMail.ReplyAddress.Label" ),
+      BaseMessages.getString( PKG, "JobMail.ReplyAddress.Tooltip" ) );
     wReply.addModifyListener( lsMod );
     fdReply = new FormData();
     fdReply.left = new FormAttachment( 0, 0 );
@@ -399,7 +394,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     fdReply.right = new FormAttachment( 100, 0 );
     wReply.setLayoutData( fdReply );
 
-    fdReplyGroup = new FormData();
+    FormData fdReplyGroup = new FormData();
     fdReplyGroup.left = new FormAttachment( 0, margin );
     fdReplyGroup.top = new FormAttachment( wDestinationGroup, margin );
     fdReplyGroup.right = new FormAttachment( 100, -margin );
@@ -410,9 +405,9 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     // ///////////////////////////////////////////////////////////
 
     // Reply to
-    wReplyToAddress =
-        new LabelTextVar( jobMeta, wGeneralComp, BaseMessages.getString( PKG, "JobMail.ReplyToAddress.Label" ),
-            BaseMessages.getString( PKG, "JobMail.ReplyToAddress.Tooltip" ) );
+    wReplyToAddress = new LabelTextVar( jobMeta, wGeneralComp,
+      BaseMessages.getString( PKG, "JobMail.ReplyToAddress.Label" ),
+      BaseMessages.getString( PKG, "JobMail.ReplyToAddress.Tooltip" ) );
     wReplyToAddress.addModifyListener( lsMod );
     fdReplyToAddress = new FormData();
     fdReplyToAddress.left = new FormAttachment( 0, 0 );
@@ -421,9 +416,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wReplyToAddress.setLayoutData( fdReplyToAddress );
 
     // Contact line
-    wPerson =
-        new LabelTextVar( jobMeta, wGeneralComp, BaseMessages.getString( PKG, "JobMail.ContactPerson.Label" ),
-            BaseMessages.getString( PKG, "JobMail.ContactPerson.Tooltip" ) );
+    wPerson = new LabelTextVar( jobMeta, wGeneralComp, BaseMessages.getString( PKG, "JobMail.ContactPerson.Label" ),
+      BaseMessages.getString( PKG, "JobMail.ContactPerson.Tooltip" ) );
     wPerson.addModifyListener( lsMod );
     fdPerson = new FormData();
     fdPerson.left = new FormAttachment( 0, 0 );
@@ -432,9 +426,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wPerson.setLayoutData( fdPerson );
 
     // Phone line
-    wPhone =
-        new LabelTextVar( jobMeta, wGeneralComp, BaseMessages.getString( PKG, "JobMail.ContactPhone.Label" ),
-            BaseMessages.getString( PKG, "JobMail.ContactPhone.Tooltip" ) );
+    wPhone = new LabelTextVar( jobMeta, wGeneralComp, BaseMessages.getString( PKG, "JobMail.ContactPhone.Label" ),
+      BaseMessages.getString( PKG, "JobMail.ContactPhone.Tooltip" ) );
     wPhone.addModifyListener( lsMod );
     fdPhone = new FormData();
     fdPhone.left = new FormAttachment( 0, 0 );
@@ -486,9 +479,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wServerGroup.setLayout( servergroupLayout );
 
     // Server line
-    wServer =
-        new LabelTextVar( jobMeta, wServerGroup, BaseMessages.getString( PKG, "JobMail.SMTPServer.Label" ),
-            BaseMessages.getString( PKG, "JobMail.SMTPServer.Tooltip" ) );
+    wServer = new LabelTextVar( jobMeta, wServerGroup, BaseMessages.getString( PKG, "JobMail.SMTPServer.Label" ),
+      BaseMessages.getString( PKG, "JobMail.SMTPServer.Tooltip" ) );
     wServer.addModifyListener( lsMod );
     fdServer = new FormData();
     fdServer.left = new FormAttachment( 0, 0 );
@@ -497,9 +489,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wServer.setLayoutData( fdServer );
 
     // Port line
-    wPort =
-        new LabelTextVar( jobMeta, wServerGroup, BaseMessages.getString( PKG, "JobMail.Port.Label" ), BaseMessages
-            .getString( PKG, "JobMail.Port.Tooltip" ) );
+    wPort = new LabelTextVar( jobMeta, wServerGroup, BaseMessages.getString( PKG, "JobMail.Port.Label" ), BaseMessages
+      .getString( PKG, "JobMail.Port.Tooltip" ) );
     wPort.addModifyListener( lsMod );
     fdPort = new FormData();
     fdPort.left = new FormAttachment( 0, 0 );
@@ -507,7 +498,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     fdPort.right = new FormAttachment( 100, 0 );
     wPort.setLayoutData( fdPort );
 
-    fdServerGroup = new FormData();
+    FormData fdServerGroup = new FormData();
     fdServerGroup.left = new FormAttachment( 0, margin );
     fdServerGroup.top = new FormAttachment( wName, margin );
     fdServerGroup.right = new FormAttachment( 100, -margin );
@@ -554,9 +545,9 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     } );
 
     // AuthUser line
-    wAuthUser =
-        new LabelTextVar( jobMeta, wAuthentificationGroup, BaseMessages.getString( PKG,
-            "JobMail.AuthenticationUser.Label" ), BaseMessages.getString( PKG, "JobMail.AuthenticationUser.Tooltip" ) );
+    wAuthUser = new LabelTextVar( jobMeta, wAuthentificationGroup,
+      BaseMessages.getString( PKG, "JobMail.AuthenticationUser.Label" ),
+      BaseMessages.getString( PKG, "JobMail.AuthenticationUser.Tooltip" ) );
     wAuthUser.addModifyListener( lsMod );
     fdAuthUser = new FormData();
     fdAuthUser.left = new FormAttachment( 0, 0 );
@@ -565,10 +556,9 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wAuthUser.setLayoutData( fdAuthUser );
 
     // AuthPass line
-    wAuthPass =
-        new LabelTextVar( jobMeta, wAuthentificationGroup, BaseMessages.getString( PKG,
-            "JobMail.AuthenticationPassword.Label" ), BaseMessages.getString( PKG,
-            "JobMail.AuthenticationPassword.Tooltip" ) );
+    wAuthPass = new LabelTextVar( jobMeta, wAuthentificationGroup,
+      BaseMessages.getString( PKG, "JobMail.AuthenticationPassword.Label" ),
+      BaseMessages.getString( PKG, "JobMail.AuthenticationPassword.Tooltip" ) );
     wAuthPass.setEchoChar( '*' );
     wAuthPass.addModifyListener( lsMod );
     fdAuthPass = new FormData();
@@ -629,7 +619,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
       }
     } );
 
-    fdAuthentificationGroup = new FormData();
+    FormData fdAuthentificationGroup = new FormData();
     fdAuthentificationGroup.left = new FormAttachment( 0, margin );
     fdAuthentificationGroup.top = new FormAttachment( wServerGroup, margin );
     fdAuthentificationGroup.right = new FormAttachment( 100, -margin );
@@ -871,7 +861,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     fdSensitivity.right = new FormAttachment( 100, 0 );
     wSensitivity.setLayoutData( fdSensitivity );
 
-    fdMessageSettingsGroup = new FormData();
+    FormData fdMessageSettingsGroup = new FormData();
     fdMessageSettingsGroup.left = new FormAttachment( 0, margin );
     fdMessageSettingsGroup.top = new FormAttachment( wName, margin );
     fdMessageSettingsGroup.right = new FormAttachment( 100, -margin );
@@ -896,8 +886,9 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 
     // Subject line
     wSubject =
-        new LabelTextVar( jobMeta, wMessageGroup, BaseMessages.getString( PKG, "JobMail.Subject.Label" ), BaseMessages
-            .getString( PKG, "JobMail.Subject.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wMessageGroup, BaseMessages.getString( PKG, "JobMail.Subject.Label" ), BaseMessages
+          .getString( PKG, "JobMail.Subject.Tooltip" ) );
     wSubject.addModifyListener( lsMod );
     fdSubject = new FormData();
     fdSubject.left = new FormAttachment( 0, 0 );
@@ -927,7 +918,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     // SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment, jobMeta);
     wComment.addKeyListener( new ControlSpaceKeyAdapter( jobMeta, wComment ) );
 
-    fdMessageGroup = new FormData();
+    FormData fdMessageGroup = new FormData();
     fdMessageGroup.left = new FormAttachment( 0, margin );
     fdMessageGroup.top = new FormAttachment( wMessageSettingsGroup, margin );
     fdMessageGroup.bottom = new FormAttachment( 100, -margin );
@@ -1049,8 +1040,9 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 
     // ZipFilename line
     wZipFilename =
-        new LabelTextVar( jobMeta, wResultFilesGroup, BaseMessages.getString( PKG, "JobMail.ZipFilename.Label" ),
-            BaseMessages.getString( PKG, "JobMail.ZipFilename.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wResultFilesGroup, BaseMessages.getString( PKG, "JobMail.ZipFilename.Label" ), BaseMessages
+          .getString( PKG, "JobMail.ZipFilename.Tooltip" ) );
     wZipFilename.addModifyListener( lsMod );
     fdZipFilename = new FormData();
     fdZipFilename.left = new FormAttachment( 0, 0 );
@@ -1058,7 +1050,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     fdZipFilename.right = new FormAttachment( 100, 0 );
     wZipFilename.setLayoutData( fdZipFilename );
 
-    fdResultFilesGroup = new FormData();
+    FormData fdResultFilesGroup = new FormData();
     fdResultFilesGroup.left = new FormAttachment( 0, margin );
     fdResultFilesGroup.top = new FormAttachment( 0, margin );
     // fdResultFilesGroup.bottom = new FormAttachment(100, -margin);
@@ -1086,7 +1078,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wlImageFilename = new Label( wEmbeddedImagesGroup, SWT.RIGHT );
     wlImageFilename.setText( BaseMessages.getString( PKG, "JobMail.ImageFilename.Label" ) );
     props.setLook( wlImageFilename );
-    fdlImageFilename = new FormData();
+    FormData fdlImageFilename = new FormData();
     fdlImageFilename.left = new FormAttachment( 0, 0 );
     fdlImageFilename.top = new FormAttachment( wResultFilesGroup, margin );
     fdlImageFilename.right = new FormAttachment( middle, -margin );
@@ -1095,7 +1087,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wbImageFilename = new Button( wEmbeddedImagesGroup, SWT.PUSH | SWT.CENTER );
     props.setLook( wbImageFilename );
     wbImageFilename.setText( BaseMessages.getString( PKG, "JobMail.BrowseFiles.Label" ) );
-    fdbImageFilename = new FormData();
+    FormData fdbImageFilename = new FormData();
     fdbImageFilename.right = new FormAttachment( 100, 0 );
     fdbImageFilename.top = new FormAttachment( wResultFilesGroup, margin );
     fdbImageFilename.right = new FormAttachment( 100, -margin );
@@ -1104,7 +1096,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wbaImageFilename = new Button( wEmbeddedImagesGroup, SWT.PUSH | SWT.CENTER );
     props.setLook( wbaImageFilename );
     wbaImageFilename.setText( BaseMessages.getString( PKG, "JobMail.ImageFilenameAdd.Button" ) );
-    fdbaImageFilename = new FormData();
+    FormData fdbaImageFilename = new FormData();
     fdbaImageFilename.right = new FormAttachment( wbImageFilename, -margin );
     fdbaImageFilename.top = new FormAttachment( wResultFilesGroup, margin );
     wbaImageFilename.setLayoutData( fdbaImageFilename );
@@ -1112,7 +1104,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wImageFilename = new TextVar( jobMeta, wEmbeddedImagesGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wImageFilename );
     wImageFilename.addModifyListener( lsMod );
-    fdImageFilename = new FormData();
+    FormData fdImageFilename = new FormData();
     fdImageFilename.left = new FormAttachment( middle, 0 );
     fdImageFilename.top = new FormAttachment( wResultFilesGroup, margin );
     fdImageFilename.right = new FormAttachment( wbImageFilename, -40 );
@@ -1145,17 +1137,17 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wlContentID = new Label( wEmbeddedImagesGroup, SWT.RIGHT );
     wlContentID.setText( BaseMessages.getString( PKG, "JobMail.ContentID.Label" ) );
     props.setLook( wlContentID );
-    fdlContentID = new FormData();
+    FormData fdlContentID = new FormData();
     fdlContentID.left = new FormAttachment( 0, 0 );
     fdlContentID.top = new FormAttachment( wImageFilename, margin );
     fdlContentID.right = new FormAttachment( middle, -margin );
     wlContentID.setLayoutData( fdlContentID );
     wContentID =
-        new TextVar( jobMeta, wEmbeddedImagesGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobMail.ContentID.Tooltip" ) );
+      new TextVar( jobMeta, wEmbeddedImagesGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobMail.ContentID.Tooltip" ) );
     props.setLook( wContentID );
     wContentID.addModifyListener( lsMod );
-    fdContentID = new FormData();
+    FormData fdContentID = new FormData();
     fdContentID.left = new FormAttachment( middle, 0 );
     fdContentID.top = new FormAttachment( wImageFilename, margin );
     fdContentID.right = new FormAttachment( wbImageFilename, -40 );
@@ -1166,7 +1158,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     props.setLook( wbdImageFilename );
     wbdImageFilename.setText( BaseMessages.getString( PKG, "JobMail.ImageFilenameDelete.Button" ) );
     wbdImageFilename.setToolTipText( BaseMessages.getString( PKG, "JobMail.ImageFilenameDelete.Tooltip" ) );
-    fdbdImageFilename = new FormData();
+    FormData fdbdImageFilename = new FormData();
     fdbdImageFilename.right = new FormAttachment( 100, 0 );
     fdbdImageFilename.top = new FormAttachment( wContentID, 40 );
     wbdImageFilename.setLayoutData( fdbdImageFilename );
@@ -1175,7 +1167,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     props.setLook( wbeImageFilename );
     wbeImageFilename.setText( BaseMessages.getString( PKG, "JobMail.ImageFilenameEdit.Button" ) );
     wbeImageFilename.setToolTipText( BaseMessages.getString( PKG, "JobMail.ImageFilenameEdit.Tooltip" ) );
-    fdbeImageFilename = new FormData();
+    FormData fdbeImageFilename = new FormData();
     fdbeImageFilename.right = new FormAttachment( 100, 0 );
     fdbeImageFilename.left = new FormAttachment( wbdImageFilename, 0, SWT.LEFT );
     fdbeImageFilename.top = new FormAttachment( wbdImageFilename, margin );
@@ -1184,23 +1176,24 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     wlFields = new Label( wEmbeddedImagesGroup, SWT.NONE );
     wlFields.setText( BaseMessages.getString( PKG, "JobMail.Fields.Label" ) );
     props.setLook( wlFields );
-    fdlFields = new FormData();
+    FormData fdlFields = new FormData();
     fdlFields.left = new FormAttachment( 0, 0 );
     fdlFields.right = new FormAttachment( middle, -margin );
     fdlFields.top = new FormAttachment( wContentID, margin );
     wlFields.setLayoutData( fdlFields );
 
     int rows =
-        jobEntry.embeddedimages == null ? 1 : ( jobEntry.embeddedimages.length == 0 ? 0
-            : jobEntry.embeddedimages.length );
+      jobEntry.embeddedimages == null ? 1 : ( jobEntry.embeddedimages.length == 0
+        ? 0 : jobEntry.embeddedimages.length );
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobMail.Fields.Image.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobMail.Fields.ContentID.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobMail.Fields.Image.Label" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobMail.Fields.ContentID.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobMail.Fields.Image.Tooltip" ) );
@@ -1208,10 +1201,11 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     colinf[1].setToolTip( BaseMessages.getString( PKG, "JobMail.Fields.ContentID.Tooltip" ) );
 
     wFields =
-        new TableView( jobMeta, wEmbeddedImagesGroup, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
-            lsMod, props );
+      new TableView(
+        jobMeta, wEmbeddedImagesGroup, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
+        props );
 
-    fdFields = new FormData();
+    FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
     fdFields.top = new FormAttachment( wlFields, margin );
     fdFields.right = new FormAttachment( wbeImageFilename, -margin );
@@ -1257,7 +1251,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
       }
     } );
 
-    fdEmbeddedImagesGroup = new FormData();
+    FormData fdEmbeddedImagesGroup = new FormData();
     fdEmbeddedImagesGroup.left = new FormAttachment( 0, margin );
     fdEmbeddedImagesGroup.top = new FormAttachment( wResultFilesGroup, margin );
     fdEmbeddedImagesGroup.bottom = new FormAttachment( 100, -margin );

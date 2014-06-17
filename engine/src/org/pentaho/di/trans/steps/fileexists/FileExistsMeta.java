@@ -52,11 +52,11 @@ import org.w3c.dom.Node;
 
 /*
  * Created on 03-Juin-2008
- * 
+ *
  */
 
 public class FileExistsMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = FileExistsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FileExistsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private boolean addresultfilenames;
 
@@ -153,16 +153,18 @@ public class FileExistsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output fields (String)
     if ( !Const.isEmpty( resultfieldname ) ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( resultfieldname ), ValueMeta.TYPE_BOOLEAN );
+      ValueMetaInterface v =
+        new ValueMeta( space.environmentSubstitute( resultfieldname ), ValueMeta.TYPE_BOOLEAN );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
 
     if ( includefiletype && !Const.isEmpty( filetypefieldname ) ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( filetypefieldname ), ValueMeta.TYPE_STRING );
+      ValueMetaInterface v =
+        new ValueMeta( space.environmentSubstitute( filetypefieldname ), ValueMeta.TYPE_STRING );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
@@ -187,12 +189,12 @@ public class FileExistsMeta extends BaseStepMeta implements StepMetaInterface {
       filetypefieldname = XMLHandler.getTagValue( stepnode, "filetypefieldname" );
       addresultfilenames = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addresultfilenames" ) );
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "FileExistsMeta.Exception.UnableToReadStepInfo" ), e );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "FileExistsMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       filenamefield = rep.getStepAttributeString( id_step, "filenamefield" );
       resultfieldname = rep.getStepAttributeString( id_step, "resultfieldname" );
@@ -200,13 +202,12 @@ public class FileExistsMeta extends BaseStepMeta implements StepMetaInterface {
       filetypefieldname = rep.getStepAttributeString( id_step, "filetypefieldname" );
       addresultfilenames = rep.getStepAttributeBoolean( id_step, "addresultfilenames" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages
-          .getString( PKG, "FileExistsMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "FileExistsMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "filenamefield", filenamefield );
       rep.saveStepAttribute( id_transformation, id_step, "resultfieldname", resultfieldname );
@@ -215,13 +216,13 @@ public class FileExistsMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "addresultfilenames", addresultfilenames );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "FileExistsMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -246,20 +247,20 @@ public class FileExistsMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FileExistsMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "FileExistsMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FileExistsMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "FileExistsMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new FileExists( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

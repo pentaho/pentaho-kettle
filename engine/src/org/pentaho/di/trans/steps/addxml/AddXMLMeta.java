@@ -51,13 +51,13 @@ import org.w3c.dom.Node;
 
 /**
  * This class knows how to handle the MetaData for the XML output step
- * 
+ *
  * @since 14-jan-2006
- * 
+ *
  */
 
 public class AddXMLMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = AddXMLMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AddXMLMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** The base name of the output file */
 
@@ -154,8 +154,8 @@ public class AddXMLMeta extends BaseStepMeta implements StepMetaInterface {
       valueName = XMLHandler.getTagValue( stepnode, "valueName" );
       rootNode = XMLHandler.getTagValue( stepnode, "xml_repeat_element" );
 
-      omitXMLheader = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "omitXMLheader" ) ); //$NON-NLS-3$
-      omitNullValues = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "omitNullValues" ) ); //$NON-NLS-3$
+      omitXMLheader = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "omitXMLheader" ) );
+      omitNullValues = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "omitNullValues" ) );
 
       Node fields = XMLHandler.getSubNode( stepnode, "fields" );
       int nrfields = XMLHandler.countNodes( fields, "field" );
@@ -215,7 +215,7 @@ public class AddXMLMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     ValueMetaInterface v = new ValueMeta( this.getValueName(), ValueMetaInterface.TYPE_STRING );
     v.setOrigin( name );
@@ -251,7 +251,7 @@ public class AddXMLMeta extends BaseStepMeta implements StepMetaInterface {
         retval.append( "        " ).append( XMLHandler.addTagValue( "precision", field.getPrecision() ) );
         retval.append( "        " ).append( XMLHandler.addTagValue( "attribute", field.isAttribute() ) );
         retval.append( "        " ).append(
-            XMLHandler.addTagValue( "attributeParentName", field.getAttributeParentName() ) );
+          XMLHandler.addTagValue( "attributeParentName", field.getAttributeParentName() ) );
         retval.append( "        </field>" ).append( Const.CR );
       }
     }
@@ -260,8 +260,7 @@ public class AddXMLMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       encoding = rep.getStepAttributeString( id_step, "encoding" );
       valueName = rep.getStepAttributeString( id_step, "valueName" );
@@ -295,8 +294,7 @@ public class AddXMLMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "encoding", encoding );
       rep.saveStepAttribute( id_transformation, id_step, "valueName", valueName );
@@ -318,16 +316,17 @@ public class AddXMLMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_length", field.getLength() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", field.getPrecision() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_attribute", field.isAttribute() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_attributeName", field.getAttributeParentName() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_attributeName", field
+          .getAttributeParentName() );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
     // TODO - add checks for empty fieldnames
@@ -335,8 +334,8 @@ public class AddXMLMeta extends BaseStepMeta implements StepMetaInterface {
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AddXMLMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "AddXMLMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -356,8 +355,8 @@ public class AddXMLMeta extends BaseStepMeta implements StepMetaInterface {
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "AddXMLMeta.CheckResult.AllFieldsFound" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "AddXMLMeta.CheckResult.AllFieldsFound" ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -365,24 +364,24 @@ public class AddXMLMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AddXMLMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "AddXMLMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "AddXMLMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "AddXMLMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
 
     cr =
-        new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString( PKG,
-            "AddXMLMeta.CheckResult.FilesNotChecked" ), stepMeta );
+      new CheckResult( CheckResult.TYPE_RESULT_COMMENT, BaseMessages.getString(
+        PKG, "AddXMLMeta.CheckResult.FilesNotChecked" ), stepMeta );
     remarks.add( cr );
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new AddXML( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

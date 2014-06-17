@@ -39,13 +39,14 @@ public abstract class AbstractFileValidator implements JobEntryValidator {
   }
 
   protected VariableSpace getVariableSpace( CheckResultSourceInterface source, String propertyName,
-      List<CheckResultInterface> remarks, ValidatorContext context ) {
+    List<CheckResultInterface> remarks, ValidatorContext context ) {
     Object obj = context.get( KEY_VARIABLE_SPACE );
     if ( obj instanceof VariableSpace ) {
       return (VariableSpace) obj;
     } else {
-      JobEntryValidatorUtils.addGeneralRemark( source, propertyName, getName(), remarks, "messages.failed.missingKey",
-          CheckResultInterface.TYPE_RESULT_ERROR );
+      JobEntryValidatorUtils.addGeneralRemark(
+        source, propertyName, getName(), remarks, "messages.failed.missingKey",
+        CheckResultInterface.TYPE_RESULT_ERROR );
       return null;
     }
   }

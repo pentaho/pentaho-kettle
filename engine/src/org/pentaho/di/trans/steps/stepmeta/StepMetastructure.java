@@ -37,7 +37,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Return the structure of the stream
- * 
+ *
  * @author Ingo Klose
  * @since 22-april-2008
  */
@@ -46,8 +46,8 @@ public class StepMetastructure extends BaseStep implements StepInterface {
   private StepMetastructureMeta meta;
   private StepMetastructureData data;
 
-  public StepMetastructure( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public StepMetastructure( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -95,8 +95,8 @@ public class StepMetastructure extends BaseStep implements StepInterface {
 
         ValueMetaInterface v_position = data.outputRowMeta.getValueMeta( 0 );
         metastructureRow =
-            RowDataUtil.addValueData( metastructureRow, 0, v_position.convertDataCompatible( v_position, new Long(
-                i + 1 ) ) );
+          RowDataUtil.addValueData( metastructureRow, 0, v_position.convertDataCompatible( v_position, new Long(
+            i + 1 ) ) );
 
         metastructureRow = RowDataUtil.addValueData( metastructureRow, 1, v.getName() );
         metastructureRow = RowDataUtil.addValueData( metastructureRow, 2, v.getComments() );
@@ -104,21 +104,21 @@ public class StepMetastructure extends BaseStep implements StepInterface {
 
         ValueMetaInterface v_length = data.outputRowMeta.getValueMeta( 4 );
         metastructureRow =
-            RowDataUtil.addValueData( metastructureRow, 4, v_length.convertDataCompatible( v_length, new Long( v
-                .getLength() ) ) );
+          RowDataUtil.addValueData( metastructureRow, 4, v_length.convertDataCompatible( v_length, new Long( v
+            .getLength() ) ) );
 
         ValueMetaInterface v_precision = data.outputRowMeta.getValueMeta( 5 );
         metastructureRow =
-            RowDataUtil.addValueData( metastructureRow, 5, v_precision.convertDataCompatible( v_precision, new Long( v
-                .getPrecision() ) ) );
+          RowDataUtil.addValueData( metastructureRow, 5, v_precision.convertDataCompatible(
+            v_precision, new Long( v.getPrecision() ) ) );
 
         metastructureRow = RowDataUtil.addValueData( metastructureRow, 6, v.getOrigin() );
 
         if ( meta.isOutputRowcount() ) {
           ValueMetaInterface v_rowCount = data.outputRowMeta.getValueMeta( 7 );
           metastructureRow =
-              RowDataUtil.addValueData( metastructureRow, 7, v_rowCount.convertDataCompatible( v_rowCount, new Long(
-                  data.rowCount ) ) );
+            RowDataUtil.addValueData( metastructureRow, 7, v_rowCount.convertDataCompatible(
+              v_rowCount, new Long( data.rowCount ) ) );
         }
         putRow( data.outputRowMeta, metastructureRow.clone() );
       }

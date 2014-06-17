@@ -57,7 +57,7 @@ import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class TableCompareDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = TableCompare.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TableCompare.class; // for i18n purposes, needed by Translator2!!
 
   private TableCompareMeta input;
 
@@ -143,9 +143,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
 
     // Reference DB + schema + table
     //
-    wReferenceDB =
-        new LabelComboVar( transMeta, shell, BaseMessages.getString( PKG, "TableCompareDialog.ReferenceDB.Label" ),
-            BaseMessages.getString( PKG, "TableCompareDialog.ReferenceDB.Tooltip" ) );
+    wReferenceDB = new LabelComboVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.ReferenceDB.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.ReferenceDB.Tooltip" ) );
     props.setLook( wReferenceDB );
     FormData fdReferenceDB = new FormData();
     fdReferenceDB.left = new FormAttachment( 0, 0 );
@@ -154,10 +154,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
     wReferenceDB.setLayoutData( fdReferenceDB );
     lastControl = wReferenceDB;
 
-    wReferenceSchema =
-        new LabelComboVar( transMeta, shell, BaseMessages.getString( PKG,
-            "TableCompareDialog.ReferenceSchemaField.Label" ), BaseMessages.getString( PKG,
-            "TableCompareDialog.ReferenceSchemaField.Tooltip" ) );
+    wReferenceSchema = new LabelComboVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.ReferenceSchemaField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.ReferenceSchemaField.Tooltip" ) );
     props.setLook( wReferenceSchema );
     FormData fdReferenceSchema = new FormData();
     fdReferenceSchema.left = new FormAttachment( 0, 0 );
@@ -166,10 +165,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
     wReferenceSchema.setLayoutData( fdReferenceSchema );
     lastControl = wReferenceSchema;
 
-    wReferenceTable =
-        new LabelComboVar( transMeta, shell, BaseMessages.getString( PKG,
-            "TableCompareDialog.ReferenceTableField.Label" ), BaseMessages.getString( PKG,
-            "TableCompareDialog.ReferenceTableField.Tooltip" ) );
+    wReferenceTable = new LabelComboVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.ReferenceTableField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.ReferenceTableField.Tooltip" ) );
     props.setLook( wReferenceTable );
     FormData fdReferenceTable = new FormData();
     fdReferenceTable.left = new FormAttachment( 0, 0 );
@@ -180,10 +178,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
 
     // Reference DB + schema + table
     //
-
-    wCompareDB =
-        new LabelComboVar( transMeta, shell, BaseMessages.getString( PKG, "TableCompareDialog.CompareDB.Label" ),
-            BaseMessages.getString( PKG, "TableCompareDialog.CompareDB.Tooltip" ) );
+    wCompareDB = new LabelComboVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.CompareDB.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.CompareDB.Tooltip" ) );
     props.setLook( wCompareDB );
     FormData fdCompareDB = new FormData();
     fdCompareDB.left = new FormAttachment( 0, 0 );
@@ -192,10 +189,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
     wCompareDB.setLayoutData( fdCompareDB );
     lastControl = wCompareDB;
 
-    wCompareSchema =
-        new LabelComboVar( transMeta, shell, BaseMessages
-            .getString( PKG, "TableCompareDialog.CompareSchemaField.Label" ), BaseMessages.getString( PKG,
-            "TableCompareDialog.CompareSchemaField.Tooltip" ) );
+    wCompareSchema = new LabelComboVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.CompareSchemaField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.CompareSchemaField.Tooltip" ) );
     props.setLook( wCompareSchema );
     FormData fdCompareSchema = new FormData();
     fdCompareSchema.left = new FormAttachment( 0, 0 );
@@ -204,10 +200,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
     wCompareSchema.setLayoutData( fdCompareSchema );
     lastControl = wCompareSchema;
 
-    wCompareTable =
-        new LabelComboVar( transMeta, shell,
-            BaseMessages.getString( PKG, "TableCompareDialog.CompareTableField.Label" ), BaseMessages.getString( PKG,
-                "TableCompareDialog.CompareTableField.Tooltip" ) );
+    wCompareTable = new LabelComboVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.CompareTableField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.CompareTableField.Tooltip" ) );
     props.setLook( wCompareTable );
     FormData fdCompareTable = new FormData();
     fdCompareTable.left = new FormAttachment( 0, 0 );
@@ -216,9 +211,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
     wCompareTable.setLayoutData( fdCompareTable );
     lastControl = wCompareTable;
 
-    wKeyFields =
-        new LabelComboVar( transMeta, shell, BaseMessages.getString( PKG, "TableCompareDialog.KeyFieldsField.Label" ),
-            BaseMessages.getString( PKG, "TableCompareDialog.KeyFieldsField.Tooltip" ) );
+    wKeyFields = new LabelComboVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.KeyFieldsField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.KeyFieldsField.Tooltip" ) );
     props.setLook( wKeyFields );
     FormData fdKeyFields = new FormData();
     fdKeyFields.left = new FormAttachment( 0, 0 );
@@ -227,10 +222,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
     wKeyFields.setLayoutData( fdKeyFields );
     lastControl = wKeyFields;
 
-    wExcludeFields =
-        new LabelComboVar( transMeta, shell, BaseMessages
-            .getString( PKG, "TableCompareDialog.ExcludeFieldsField.Label" ), BaseMessages.getString( PKG,
-            "TableCompareDialog.ExcludeFieldsField.Tooltip" ) );
+    wExcludeFields = new LabelComboVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.ExcludeFieldsField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.ExcludeFieldsField.Tooltip" ) );
     props.setLook( wExcludeFields );
     FormData fdExcludeFields = new FormData();
     fdExcludeFields.left = new FormAttachment( 0, 0 );
@@ -241,9 +235,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
 
     // The nr of errors field
     //
-    wNrErrors =
-        new LabelTextVar( transMeta, shell, BaseMessages.getString( PKG, "TableCompareDialog.NrErrorsField.Label" ),
-            BaseMessages.getString( PKG, "TableCompareDialog.NrErrorsField.Tooltip" ) );
+    wNrErrors = new LabelTextVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.NrErrorsField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.NrErrorsField.Tooltip" ) );
     props.setLook( wNrErrors );
     FormData fdNrErrors = new FormData();
     fdNrErrors.left = new FormAttachment( 0, 0 );
@@ -254,10 +248,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
 
     // The nr of records in the reference table
     //
-    wNrRecordsReference =
-        new LabelTextVar( transMeta, shell, BaseMessages.getString( PKG,
-            "TableCompareDialog.NrRecordsReferenceField.Label" ), BaseMessages.getString( PKG,
-            "TableCompareDialog.NrRecordsReferenceField.Tooltip" ) );
+    wNrRecordsReference = new LabelTextVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.NrRecordsReferenceField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.NrRecordsReferenceField.Tooltip" ) );
     props.setLook( wNrRecordsReference );
     FormData fdNrRecordsReference = new FormData();
     fdNrRecordsReference.left = new FormAttachment( 0, 0 );
@@ -268,10 +261,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
 
     // The nr of records in the Compare table
     //
-    wNrRecordsCompare =
-        new LabelTextVar( transMeta, shell, BaseMessages.getString( PKG,
-            "TableCompareDialog.NrRecordsCompareField.Label" ), BaseMessages.getString( PKG,
-            "TableCompareDialog.NrRecordsCompareField.Tooltip" ) );
+    wNrRecordsCompare = new LabelTextVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.NrRecordsCompareField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.NrRecordsCompareField.Tooltip" ) );
     props.setLook( wNrRecordsCompare );
     FormData fdNrRecordsCompare = new FormData();
     fdNrRecordsCompare.left = new FormAttachment( 0, 0 );
@@ -282,10 +274,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
 
     // The nr of errors in the left join
     //
-    wNrErrorsLeftJoin =
-        new LabelTextVar( transMeta, shell, BaseMessages.getString( PKG,
-            "TableCompareDialog.NrErrorsLeftJoinField.Label" ), BaseMessages.getString( PKG,
-            "TableCompareDialog.NrErrorsLeftJoinField.Tooltip" ) );
+    wNrErrorsLeftJoin = new LabelTextVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.NrErrorsLeftJoinField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.NrErrorsLeftJoinField.Tooltip" ) );
     props.setLook( wNrErrorsLeftJoin );
     FormData fdNrErrorsLeftJoin = new FormData();
     fdNrErrorsLeftJoin.left = new FormAttachment( 0, 0 );
@@ -296,10 +287,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
 
     // The nr of errors in the Inner join
     //
-    wNrErrorsInnerJoin =
-        new LabelTextVar( transMeta, shell, BaseMessages.getString( PKG,
-            "TableCompareDialog.NrErrorsInnerJoinField.Label" ), BaseMessages.getString( PKG,
-            "TableCompareDialog.NrErrorsInnerJoinField.Tooltip" ) );
+    wNrErrorsInnerJoin = new LabelTextVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.NrErrorsInnerJoinField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.NrErrorsInnerJoinField.Tooltip" ) );
     props.setLook( wNrErrorsInnerJoin );
     FormData fdNrErrorsInnerJoin = new FormData();
     fdNrErrorsInnerJoin.left = new FormAttachment( 0, 0 );
@@ -310,10 +300,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
 
     // The nr of errors in the Right join
     //
-    wNrErrorsRightJoin =
-        new LabelTextVar( transMeta, shell, BaseMessages.getString( PKG,
-            "TableCompareDialog.NrErrorsRightJoinField.Label" ), BaseMessages.getString( PKG,
-            "TableCompareDialog.NrErrorsRightJoinField.Tooltip" ) );
+    wNrErrorsRightJoin = new LabelTextVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.NrErrorsRightJoinField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.NrErrorsRightJoinField.Tooltip" ) );
     props.setLook( wNrErrorsRightJoin );
     FormData fdNrErrorsRightJoin = new FormData();
     fdNrErrorsRightJoin.left = new FormAttachment( 0, 0 );
@@ -322,9 +311,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
     wNrErrorsRightJoin.setLayoutData( fdNrErrorsRightJoin );
     lastControl = wNrErrorsRightJoin;
 
-    wKeyDesc =
-        new LabelComboVar( transMeta, shell, BaseMessages.getString( PKG, "TableCompareDialog.KeyDescField.Label" ),
-            BaseMessages.getString( PKG, "TableCompareDialog.KeyDescField.Tooltip" ) );
+    wKeyDesc = new LabelComboVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.KeyDescField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.KeyDescField.Tooltip" ) );
     props.setLook( wKeyDesc );
     FormData fdKeyDesc = new FormData();
     fdKeyDesc.left = new FormAttachment( 0, 0 );
@@ -333,10 +322,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
     wKeyDesc.setLayoutData( fdKeyDesc );
     lastControl = wKeyDesc;
 
-    wReferenceValue =
-        new LabelComboVar( transMeta, shell, BaseMessages.getString( PKG,
-            "TableCompareDialog.ReferenceValueField.Label" ), BaseMessages.getString( PKG,
-            "TableCompareDialog.ReferenceValueField.Tooltip" ) );
+    wReferenceValue = new LabelComboVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.ReferenceValueField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.ReferenceValueField.Tooltip" ) );
     props.setLook( wReferenceValue );
     FormData fdReferenceValue = new FormData();
     fdReferenceValue.left = new FormAttachment( 0, 0 );
@@ -345,10 +333,9 @@ public class TableCompareDialog extends BaseStepDialog implements StepDialogInte
     wReferenceValue.setLayoutData( fdReferenceValue );
     lastControl = wReferenceValue;
 
-    wCompareValue =
-        new LabelComboVar( transMeta, shell,
-            BaseMessages.getString( PKG, "TableCompareDialog.CompareValueField.Label" ), BaseMessages.getString( PKG,
-                "TableCompareDialog.CompareValueField.Tooltip" ) );
+    wCompareValue = new LabelComboVar( transMeta, shell,
+      BaseMessages.getString( PKG, "TableCompareDialog.CompareValueField.Label" ),
+      BaseMessages.getString( PKG, "TableCompareDialog.CompareValueField.Tooltip" ) );
     props.setLook( wCompareValue );
     FormData fdCompareValue = new FormData();
     fdCompareValue.left = new FormAttachment( 0, 0 );

@@ -129,8 +129,8 @@ public class CarteServlet extends HttpServlet {
       } catch ( IllegalAccessException e ) {
         log.logError( "Unable to access configured " + paramName + " of " + className, e );
       } catch ( ClassCastException e ) {
-        log.logError( "Unable to cast configured " + paramName + " of " + className + " to "
-            + CartePluginInterface.class, e );
+        log.logError( "Unable to cast configured "
+          + paramName + " of " + className + " to " + CartePluginInterface.class, e );
       }
     }
 

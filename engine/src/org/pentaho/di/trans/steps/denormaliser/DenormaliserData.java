@@ -32,10 +32,10 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Data structure used by Denormaliser during processing
- * 
+ *
  * @author Matt
  * @since 19-jan-2006
- * 
+ *
  */
 public class DenormaliserData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;
@@ -61,9 +61,6 @@ public class DenormaliserData extends BaseStepData implements StepDataInterface 
 
   public RowMetaInterface inputRowMeta;
 
-  /**
-	 * 
-	 */
   public DenormaliserData() {
     super();
 

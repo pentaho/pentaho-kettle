@@ -27,16 +27,16 @@ import java.io.InputStream;
 
 /**
  * Converts a DIB (Device Independent Bitmap) taken from the clipboard, into a Bitmap File.
- * 
+ *
  * To do this, this InputStream prepends a BITMAPFILEHEADER to the stream.
- * 
+ *
  * See msdn.microsoft.com/library/en-us/winui/winui/windowsuserinterface/dataexchange/clipboard/clipboardformats.asp#
  * _win32_Standard_Clipboard_Formats
- * 
- * 
+ *
+ *
  * If you found this class useful (or made some improvements) drop me a line.
- * 
- * 
+ *
+ *
  * @author Philip Schatz ( www.philschatz.com )
  */
 class PrependWinBMPHeaderFilterInputStream extends InputStream {

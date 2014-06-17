@@ -74,7 +74,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = AddXMLMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AddXMLMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -343,34 +343,42 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface 
     }
 
     colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Fieldname.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.ElementName.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              ValueMeta.getTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Format.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              formats ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Precision.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Currency.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Decimal.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Null.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.Attribute.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "AddXMLDialog.AttributeParentName.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ) };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AddXMLDialog.Fieldname.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AddXMLDialog.ElementName.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AddXMLDialog.Type.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          ValueMeta.getTypes() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AddXMLDialog.Format.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          formats ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AddXMLDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AddXMLDialog.Precision.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AddXMLDialog.Currency.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AddXMLDialog.Decimal.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AddXMLDialog.Group.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AddXMLDialog.Null.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AddXMLDialog.Attribute.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          new String[] {
+            BaseMessages.getString( PKG, "System.Combo.Yes" ),
+            BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "AddXMLDialog.AttributeParentName.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ) };
     wFields =
-        new TableView( transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+      new TableView(
+        transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -587,7 +595,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface 
         item.setText( 10, field.getNullString() );
       }
       item.setText( 11, field.isAttribute() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages
-          .getString( PKG, "System.Combo.No" ) );
+        .getString( PKG, "System.Combo.No" ) );
       if ( field.getAttributeParentName() != null ) {
         item.setText( 12, field.getAttributeParentName() );
       }
@@ -643,6 +651,7 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface 
       field.setAttribute( BaseMessages.getString( PKG, "System.Combo.Yes" ).equals( item.getText( 11 ) ) );
       field.setAttributeParentName( item.getText( 12 ) );
 
+      //CHECKSTYLE:Indentation:OFF
       tfoi.getOutputFields()[i] = field;
     }
   }
@@ -663,45 +672,45 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface 
     try {
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null ) {
-        BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, 5, 6,
-            new TableItemInsertListener() {
-              public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
-                if ( v.isNumber() ) {
-                  if ( v.getLength() > 0 ) {
-                    int le = v.getLength();
-                    int pr = v.getPrecision();
+        BaseStepDialog.getFieldsFromPrevious(
+          r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, 5, 6, new TableItemInsertListener() {
+            public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
+              if ( v.isNumber() ) {
+                if ( v.getLength() > 0 ) {
+                  int le = v.getLength();
+                  int pr = v.getPrecision();
 
-                    if ( v.getPrecision() <= 0 ) {
-                      pr = 0;
-                    }
-
-                    String mask = " ";
-                    for ( int m = 0; m < le - pr; m++ ) {
-                      mask += "0";
-                    }
-                    if ( pr > 0 ) {
-                      mask += ".";
-                    }
-                    for ( int m = 0; m < pr; m++ ) {
-                      mask += "0";
-                    }
-                    tableItem.setText( 4, mask );
+                  if ( v.getPrecision() <= 0 ) {
+                    pr = 0;
                   }
+
+                  String mask = " ";
+                  for ( int m = 0; m < le - pr; m++ ) {
+                    mask += "0";
+                  }
+                  if ( pr > 0 ) {
+                    mask += ".";
+                  }
+                  for ( int m = 0; m < pr; m++ ) {
+                    mask += "0";
+                  }
+                  tableItem.setText( 4, mask );
                 }
-                return true;
               }
-            } );
+              return true;
+            }
+          } );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+        .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
 
   }
 
   /**
    * Sets the output width to minimal width...
-   * 
+   *
    */
   public void setMinimalWidth() {
     int nrNonEmptyFields = wFields.nrNonEmpty();

@@ -36,10 +36,11 @@ import org.pentaho.di.trans.steps.pentahoreporting.PentahoReportingOutputMeta.Pr
 
 /**
  * To keep it simple, this metadata injection interface only supports the fields in the spreadsheet for the time being.
- * 
+ *
  * @author Matt
  */
-public class PentahoReportingOutputMetaInjection extends BaseStepMetaInjection implements StepMetaInjectionInterface {
+public class PentahoReportingOutputMetaInjection extends BaseStepMetaInjection implements
+  StepMetaInjectionInterface {
 
   private PentahoReportingOutputMeta meta;
 
@@ -49,15 +50,17 @@ public class PentahoReportingOutputMetaInjection extends BaseStepMetaInjection i
 
   private enum Entry implements StepMetaInjectionEnumEntry {
 
-    INPUT_FILE_FIELD( ValueMetaInterface.TYPE_STRING, "The name of the field containing the report file path (.prpt)" ), OUTPUT_FILE_FIELD(
-        ValueMetaInterface.TYPE_STRING, "The name of the field containing the output file name" ), OUTPUT_PROCESSOR_TYPE(
+    INPUT_FILE_FIELD(
+      ValueMetaInterface.TYPE_STRING, "The name of the field containing the report file path (.prpt)" ),
+      OUTPUT_FILE_FIELD( ValueMetaInterface.TYPE_STRING, "The name of the field containing the output file name" ),
+      OUTPUT_PROCESSOR_TYPE(
         ValueMetaInterface.TYPE_STRING,
         "The output processor type, one of PDF, PagedHtml, StreamingHtml, CSV, Excel, Excel 2007 or RTF" ),
 
-    PARAMETERS( ValueMetaInterface.TYPE_NONE, "All the parameters for the report" ), PARAMETER(
-        ValueMetaInterface.TYPE_NONE, "One parameter" ), PARAMETER_NAME( PARAMETER, ValueMetaInterface.TYPE_STRING,
-        "The name of the report parameter" ), FIELDNAME( PARAMETER, ValueMetaInterface.TYPE_STRING,
-        "The field name providing the source data" ), ;
+      PARAMETERS( ValueMetaInterface.TYPE_NONE, "All the parameters for the report" ), PARAMETER(
+        ValueMetaInterface.TYPE_NONE, "One parameter" ), PARAMETER_NAME(
+        PARAMETER, ValueMetaInterface.TYPE_STRING, "The name of the report parameter" ), FIELDNAME(
+        PARAMETER, ValueMetaInterface.TYPE_STRING, "The field name providing the source data" );
 
     private int valueType;
     private String description;
@@ -131,7 +134,7 @@ public class PentahoReportingOutputMetaInjection extends BaseStepMetaInjection i
       Entry fieldsEntry = Entry.findEntry( lookFields.getKey() );
       if ( fieldsEntry != null ) {
         switch ( fieldsEntry ) {
-          case PARAMETERS: {
+          case PARAMETERS:
             for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
               Entry fieldEntry = Entry.findEntry( lookField.getKey() );
               if ( fieldEntry != null ) {
@@ -172,8 +175,8 @@ public class PentahoReportingOutputMetaInjection extends BaseStepMetaInjection i
                 }
               }
             }
-          }
             break;
+
           case INPUT_FILE_FIELD:
             meta.setInputFileField( (String) lookFields.getValue() );
             break;
@@ -188,6 +191,10 @@ public class PentahoReportingOutputMetaInjection extends BaseStepMetaInjection i
         }
       }
     }
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
   }
 
   public PentahoReportingOutputMeta getMeta() {

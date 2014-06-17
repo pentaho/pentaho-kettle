@@ -57,10 +57,10 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] RequiredFilesDesc = new String[] {
+    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
 
   public static final String DEFAULT_ENCODING = "UTF-8";
@@ -693,7 +693,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       retval.append( "        " ).append( XMLHandler.addTagValue( "format", inputFields[i].getFormat() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "length", inputFields[i].getLength() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "precision", inputFields[i].getPrecision() ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "currency", inputFields[i].getCurrencySymbol() ) );
+      retval
+        .append( "        " ).append( XMLHandler.addTagValue( "currency", inputFields[i].getCurrencySymbol() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", inputFields[i].getDecimalSymbol() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "group", inputFields[i].getGroupSymbol() ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "trim_type", inputFields[i].getTrimTypeCode() ) );
@@ -706,7 +707,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
     retval.append( "    " ).append( XMLHandler.addTagValue( "pathFieldName", pathFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "hiddenFieldName", hiddenFieldName ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "lastModificationTimeFieldName", lastModificationTimeFieldName ) );
+      XMLHandler.addTagValue( "lastModificationTimeFieldName", lastModificationTimeFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "uriNameFieldName", uriNameFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "rootUriNameFieldName", rootUriNameFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "extensionFieldName", extensionFieldName ) );
@@ -851,7 +852,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     int i;
     for ( i = 0; i < inputFields.length; i++ ) {
@@ -862,7 +863,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
         type = ValueMeta.TYPE_STRING;
       }
       try {
-        ValueMetaInterface v = ValueMetaFactory.createValueMeta( space.environmentSubstitute( field.getName() ), type );
+        ValueMetaInterface v =
+          ValueMetaFactory.createValueMeta( space.environmentSubstitute( field.getName() ), type );
         v.setLength( field.getLength() );
         v.setPrecision( field.getPrecision() );
         v.setOrigin( name );
@@ -903,13 +905,14 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
     if ( getShortFileNameField() != null && getShortFileNameField().length() > 0 ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( getShortFileNameField() ), ValueMeta.TYPE_STRING );
+        new ValueMeta( space.environmentSubstitute( getShortFileNameField() ), ValueMeta.TYPE_STRING );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
     if ( getExtensionField() != null && getExtensionField().length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( getExtensionField() ), ValueMeta.TYPE_STRING );
+      ValueMetaInterface v =
+        new ValueMeta( space.environmentSubstitute( getExtensionField() ), ValueMeta.TYPE_STRING );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
@@ -927,14 +930,15 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       r.addValueMeta( v );
     }
     if ( isHiddenField() != null && isHiddenField().length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( isHiddenField() ), ValueMeta.TYPE_BOOLEAN );
+      ValueMetaInterface v =
+        new ValueMeta( space.environmentSubstitute( isHiddenField() ), ValueMeta.TYPE_BOOLEAN );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
 
     if ( getLastModificationDateField() != null && getLastModificationDateField().length() > 0 ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( getLastModificationDateField() ), ValueMeta.TYPE_DATE );
+        new ValueMeta( space.environmentSubstitute( getLastModificationDateField() ), ValueMeta.TYPE_DATE );
       v.setOrigin( name );
       r.addValueMeta( v );
     }
@@ -946,7 +950,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     if ( getRootUriField() != null && getRootUriField().length() > 0 ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( getRootUriField() ), ValueMeta.TYPE_STRING );
+      ValueMetaInterface v =
+        new ValueMeta( space.environmentSubstitute( getRootUriField() ), ValueMeta.TYPE_STRING );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       r.addValueMeta( v );
@@ -975,8 +980,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
     return 0;
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       fileType = rep.getStepAttributeString( id_step, "file_type" );
       section = rep.getStepAttributeString( id_step, "section" );
@@ -1024,8 +1028,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
         PropertyInputField field = new PropertyInputField();
 
         field.setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
-        field
-            .setColumn( PropertyInputField.getColumnByCode( rep.getStepAttributeString( id_step, i, "field_column" ) ) );
+        field.setColumn( PropertyInputField.getColumnByCode( rep.getStepAttributeString(
+          id_step, i, "field_column" ) ) );
         field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         field.setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
         field.setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
@@ -1033,8 +1037,8 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
         field.setGroupSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
         field.setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         field.setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
-        field.setTrimType( PropertyInputField.getTrimTypeByCode( rep.getStepAttributeString( id_step, i,
-            "field_trim_type" ) ) );
+        field.setTrimType( PropertyInputField.getTrimTypeByCode( rep.getStepAttributeString(
+          id_step, i, "field_trim_type" ) ) );
         field.setRepeated( rep.getStepAttributeBoolean( id_step, i, "field_repeat" ) );
 
         inputFields[i] = field;
@@ -1047,12 +1051,12 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       extensionFieldName = rep.getStepAttributeString( id_step, "extensionFieldName" );
       sizeFieldName = rep.getStepAttributeString( id_step, "sizeFieldName" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "PropertyInputMeta.Exception.ErrorReadingRepository" ), e );
+      throw new KettleException( BaseMessages
+        .getString( PKG, "PropertyInputMeta.Exception.ErrorReadingRepository" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "file_type", fileType );
       rep.saveStepAttribute( id_transformation, id_step, "section", section );
@@ -1097,13 +1101,14 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute( id_transformation, id_step, "shortFileFieldName", shortFileFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "pathFieldName", pathFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "hiddenFieldName", hiddenFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "PropertyInputMeta.Exception.ErrorSavingToRepository", ""
-          + id_step ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "PropertyInputMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
     }
   }
 
@@ -1117,22 +1122,22 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
 
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "PropertyInputMeta.CheckResult.NoInputExpected" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "PropertyInputMeta.CheckResult.NoInputExpected" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "PropertyInputMeta.CheckResult.NoInput" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "PropertyInputMeta.CheckResult.NoInput" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -1140,20 +1145,20 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
 
     if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "PropertyInputMeta.CheckResult.NoFiles" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "PropertyInputMeta.CheckResult.NoFiles" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "PropertyInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "PropertyInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
       remarks.add( cr );
     }
 
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new PropertyInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -1170,7 +1175,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
    * what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -1179,12 +1184,11 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

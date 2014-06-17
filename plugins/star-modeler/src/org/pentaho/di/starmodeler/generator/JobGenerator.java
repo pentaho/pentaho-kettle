@@ -66,14 +66,14 @@ import org.pentaho.metadata.model.concept.types.TableType;
 /**
  * The job generator creates a template job based on a star domain.
  * It creates one job to create all possible target dimensions, fact table, lookup indexes and so forth.
- * 
+ *
  * @author matt
  *
  */
 public class JobGenerator {
   private static Class<?> PKG = JobGenerator.class; // for i18n
 
-  
+
   protected StarDomain starDomain;
   protected Repository repository;
   protected RepositoryDirectoryInterface targetDirectory;
@@ -99,28 +99,28 @@ public class JobGenerator {
     this.targetDirectory = targetDirectory;
     this.databases = databases;
     this.locale = locale;
-    
+
     this.domain = starDomain.getDomain();
   }
-  
+
   public JobMeta generateSqlJob() throws KettleException {
     DatabaseMeta databaseMeta = findTargetDatabaseMeta();
     Database db = new Database(Spoon.loggingObject, databaseMeta);
-    
+
     try {
       db.connect();
-      
+
       JobMeta jobMeta = new JobMeta();
-      
+
       jobMeta.setName("Create tables for '"+ConceptUtil.getName(domain, locale)+"'");
       jobMeta.setDescription(ConceptUtil.getDescription(domain, locale));
-      
+
       // Let's not forget to add the database connection
       //
       jobMeta.addDatabase(databaseMeta);
-      
+
       Point location = new Point(GRAPH_LEFT, GRAPH_TOP);
-  
+
       // Create a job entry
       //
       JobEntryCopy startEntry = JobMeta.createStartEntry();
@@ -129,7 +129,7 @@ public class JobGenerator {
       jobMeta.addJobEntry(startEntry);
       JobEntryCopy lastEntry = startEntry;
       nextLocation(location);
-      
+
       // Create one SQL entry for all the physically unique dimensions and facts
       // We need to get a list of all known dimensions with physical table name.
       //
@@ -143,15 +143,15 @@ public class JobGenerator {
         boolean isFact = tableType==TableType.FACT;
         boolean isDimension = tableType==TableType.DIMENSION;
         boolean isJunk = isDimension && dimensionType==DimensionType.JUNK_DIMENSION;
-        
+
         JobEntrySQL sqlEntry = new JobEntrySQL(phTable);
         sqlEntry.setDatabase(databaseMeta);
-        
+
         // Get the SQL for this table...
         //
         String schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, phTable);
         String phKeyField = null;
-        
+
         // The technical key is the first KEY field...
         //
         LogicalColumn keyColumn = null;
@@ -165,11 +165,11 @@ public class JobGenerator {
         // Get all the fields for the logical table...
         //
         RowMetaInterface fields = getRowForLogicalTable(databaseMeta, logicalTable);
-        
+
         // Generate the required SQL to make this happen
         //
         String sql = db.getCreateTableStatement(schemaTable, fields, phKeyField, databaseMeta.supportsAutoinc() && !isFact, null, true);
-        
+
         // Also generate an index for the technical key field
         //
         if (keyColumn!=null) {
@@ -178,7 +178,7 @@ public class JobGenerator {
           String indexSql = db.getCreateIndexStatement(schemaTable, indexName, new String[] { keyValueMeta.getName(), }, true, false, true, true);
           sql+=Const.CR+indexSql;
         }
-        
+
         // In case it's a fact table generate an index for each TK column
         //
         if (isFact) {
@@ -193,7 +193,7 @@ public class JobGenerator {
             }
           }
         }
-        
+
         // Put an index on all natural keys too...
         //
         if (isDimension) {
@@ -222,20 +222,20 @@ public class JobGenerator {
             sql+=Const.CR+indexSql;
           }
         }
-        
-        
-        // If it's 
-        
+
+
+        // If it's
+
         sqlEntry.setSQL(sql);
-        
+
         sqlEntry.setDescription("Generated based on logical table '"+tableName+"'"+Const.CR+Const.CR+Const.NVL(tableDescription, ""));
-        
+
         JobEntryCopy sqlCopy = new JobEntryCopy(sqlEntry);
         sqlCopy.setLocation(location.x, location.y);
         sqlCopy.setDrawn();
         nextLocation(location);
         jobMeta.addJobEntry(sqlCopy);
-        
+
         // Hook up with the previous job entry too...
         //
         JobHopMeta jobHop = new JobHopMeta(lastEntry, sqlCopy);
@@ -245,11 +245,11 @@ public class JobGenerator {
         if (lastEntry.isStart()) {
           jobHop.setUnconditional();
         }
-        
+
         jobMeta.addJobHop(jobHop);
         lastEntry = sqlCopy;
       }
-      
+
       return jobMeta;
     } catch(Exception e) {
       throw new KettleException("There was an error during the generation of the SQL job", e);
@@ -259,9 +259,9 @@ public class JobGenerator {
       }
     }
   }
-  
+
   protected DatabaseMeta findTargetDatabaseMeta() throws KettleException {
-    
+
     String targetDbName = ConceptUtil.getString(starDomain.getDomain(), DefaultIDs.DOMAIN_TARGET_DATABASE);
     if (Const.isEmpty(targetDbName)) {
       throw new KettleException(BaseMessages.getString(PKG, "LogicalModelerPerspective.MessageBox.NoTargetDBSpecified.Message"));
@@ -272,9 +272,9 @@ public class JobGenerator {
     }
     return databaseMeta;
   }
-  
+
   protected DatabaseMeta findSourceDatabaseMeta(String databaseName) throws KettleException {
-    
+
     DatabaseMeta databaseMeta = DatabaseMeta.findDatabase(databases, databaseName);
     if (databaseMeta==null) {
       throw new KettleException(BaseMessages.getString(PKG, "LogicalModelerPerspective.MessageBox.SourceDBNotFound.Message", databaseName));
@@ -290,7 +290,7 @@ public class JobGenerator {
     }
     return fields;
   }
-  
+
   private ValueMetaInterface getValueForLogicalColumn(DatabaseMeta databaseMeta, LogicalColumn column) {
     String columnName = ConceptUtil.getName(column, locale);
     String phColumnName = ConceptUtil.getString(column, DefaultIDs.LOGICAL_COLUMN_PHYSICAL_COLUMN_NAME);
@@ -305,11 +305,11 @@ public class JobGenerator {
     case UNKNOWN:
     case URL:
     case STRING: precision=-1; break;
-    case IMAGE: 
+    case IMAGE:
     case BINARY: type = ValueMetaInterface.TYPE_BINARY; precision=-1; break;
     case BOOLEAN: type = ValueMetaInterface.TYPE_BOOLEAN; length=-1; precision=-1; break;
     case DATE: type = ValueMetaInterface.TYPE_DATE; length=-1; precision=-1; break;
-    case NUMERIC: 
+    case NUMERIC:
       if (precision<=0 && length<15) {
         type = ValueMetaInterface.TYPE_INTEGER;
       } else {
@@ -346,13 +346,13 @@ public class JobGenerator {
         }
       }
     }
-    
+
     return tables;
   }
 
   /**
    * Calculate the next location for a job entry to be placed.
-   * 
+   *
    * @param location
    */
   private void nextLocation(Point location) {
@@ -365,16 +365,16 @@ public class JobGenerator {
 
   /**
    * This method generates a list of transformations: one for each dimension.
-   * 
+   *
    * @return the list of generated transformations
    */
   public List<TransMeta> generateDimensionTransformations() throws KettleException {
     DatabaseMeta databaseMeta = findTargetDatabaseMeta();
-    
+
     List<TransMeta> transMetas = new ArrayList<TransMeta>();
-    
+
     List<LogicalTable> logicalTables = getUniqueLogicalTables();
-    
+
     for (LogicalTable logicalTable : logicalTables) {
       TableType tableType = ConceptUtil.getTableType(logicalTable);
       DimensionType dimensionType = ConceptUtil.getDimensionType(logicalTable);
@@ -404,7 +404,7 @@ public class JobGenerator {
         }
       }
     }
-    
+
     return transMetas;
   }
 
@@ -414,7 +414,7 @@ public class JobGenerator {
     String filename = "/org/pentaho/di/resources/Generate date dimension.ktr";
     InputStream inputStream = getClass().getResourceAsStream(filename);
     TransMeta transMeta = new TransMeta(inputStream, Spoon.getInstance().rep, true, new Variables(), null);
-    
+
     // Find the table output step and inject the target table name and database...
     //
     StepMeta stepMeta = transMeta.findStep("TARGET");
@@ -424,7 +424,7 @@ public class JobGenerator {
       String phTable = ConceptUtil.getString(logicalTable, DefaultIDs.LOGICAL_TABLE_PHYSICAL_TABLE_NAME);
       meta.setTableName(phTable);
     }
-    
+
     return transMeta;
   }
 
@@ -434,7 +434,7 @@ public class JobGenerator {
     String filename = "/org/pentaho/di/resources/Generate time dimension.ktr";
     InputStream inputStream = getClass().getResourceAsStream(filename);
     TransMeta transMeta = new TransMeta(inputStream, Spoon.getInstance().rep, true, new Variables(), null);
-    
+
     // Find the table output step and inject the target table name and database...
     //
     StepMeta stepMeta = transMeta.findStep("TARGET");
@@ -444,32 +444,32 @@ public class JobGenerator {
       String phTable = ConceptUtil.getString(logicalTable, DefaultIDs.LOGICAL_TABLE_PHYSICAL_TABLE_NAME);
       meta.setTableName(phTable);
     }
-    
+
     return transMeta;
   }
 
   /**
-   * Generates a template 
-   * @param databaseMeta 
+   * Generates a template
+   * @param databaseMeta
    * @param logicalModel
    * @return
    */
   public TransMeta generateDimensionTransformation(DatabaseMeta databaseMeta, LogicalTable logicalTable) {
     TransMeta transMeta = new TransMeta();
-    
+
     String tableName = ConceptUtil.getName(logicalTable, locale);
     String tableDescription = ConceptUtil.getDescription(logicalTable, locale);
     DimensionType dimensionType = ConceptUtil.getDimensionType(logicalTable);
-    
+
     transMeta.setName("Update dimension '"+tableName+"'");
     transMeta.setDescription(tableDescription);
-    
+
     // Let's not forget to add the target database
-    // 
+    //
     transMeta.addDatabase(databaseMeta);
-    
+
     Point location = new Point(GRAPH_LEFT, GRAPH_TOP);
-    
+
     // Find all the source columns and source tables and put them into a table input step...
     //
     StepMeta inputStep = generateTableInputStepFromLogicalTable(logicalTable);
@@ -479,7 +479,7 @@ public class JobGenerator {
     nextLocation(location);
     transMeta.addStep(inputStep);
     StepMeta lastStep = inputStep;
-    
+
     // Generate an dimension lookup/update step for each table
     //
     StepMeta dimensionStep;
@@ -491,20 +491,20 @@ public class JobGenerator {
     dimensionStep.setLocation(location.x, location.y);
     nextLocation(location);
     transMeta.addStep(dimensionStep);
-    
+
     TransHopMeta transHop = new TransHopMeta(lastStep, dimensionStep);
     transMeta.addTransHop(transHop);
-    
+
     return transMeta;
   }
 
   private StepMeta generateTableInputStepFromLogicalTable(LogicalTable logicalTable) {
-    
+
     String name = ConceptUtil.getName(logicalTable, locale);
     String description = ConceptUtil.getDescription(logicalTable, locale);
-    
+
     TableInputMeta meta = new TableInputMeta();
-    
+
     // Source database, retain first
     // Source table, retain first
     // Source columns, retain all
@@ -527,9 +527,9 @@ public class JobGenerator {
       }
     }
     String sql = "SELECT * FROM --< Source query for dimension '"+name+"'";
-    
+
     meta.setDatabaseMeta(sourceDatabaseMeta);
-    
+
     if (sourceDatabaseMeta!=null && !Const.isEmpty(sourceTable)) {
       sql = "SELECT ";
       if (sourceColumns.isEmpty()) {
@@ -549,13 +549,13 @@ public class JobGenerator {
       sql+="FROM "+sourceDatabaseMeta.getQuotedSchemaTableCombination(null, sourceTable);
     }
     meta.setSQL(sql);
-    
+
     // Wrap it up...
     //
     StepMeta stepMeta = new StepMeta("Source data for '"+name+"'", meta);
     stepMeta.drawStep();
     stepMeta.setDescription("Reads data for '"+name+"' : "+description);
-    
+
     return stepMeta;
   }
 
@@ -564,7 +564,7 @@ public class JobGenerator {
     String description = ConceptUtil.getDescription(logicalTable, locale);
     String phTable = ConceptUtil.getString(logicalTable, DefaultIDs.LOGICAL_TABLE_PHYSICAL_TABLE_NAME);
     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, Const.NVL(phTable, name));
-    
+
     DimensionLookupMeta meta = new DimensionLookupMeta();
     meta.setDatabaseMeta(databaseMeta);
     meta.setSchemaName(null); // TODO
@@ -573,7 +573,7 @@ public class JobGenerator {
     meta.setCacheSize(5000);
     meta.setCommitSize(500);
     meta.setUpdate(true);
-    
+
     // Find the technical key (if any defined)
     //
     LogicalColumn keyColumn = ConceptUtil.findLogicalColumn(logicalTable, AttributeType.TECHNICAL_KEY);
@@ -593,7 +593,7 @@ public class JobGenerator {
       meta.getKeyLookup()[i] = valueMeta.getName();
       meta.getKeyStream()[i] = valueMeta.getName();
     }
-    
+
     // All other attribute columns go in the fields tab
     //
     List<LogicalColumn> attributes = new ArrayList<LogicalColumn>();
@@ -620,7 +620,7 @@ public class JobGenerator {
         meta.getFieldUpdate()[i] = DimensionLookupMeta.TYPE_UPDATE_DIM_INSERT;
       }
     }
-    
+
     // The version field...
     //
     LogicalColumn versionColumn = ConceptUtil.findLogicalColumn(logicalTable, AttributeType.VERSION_FIELD);
@@ -649,13 +649,13 @@ public class JobGenerator {
 
     return stepMeta;
   }
-  
+
   protected StepMeta generateCombinationLookupStepFromLogicalTable(DatabaseMeta databaseMeta, LogicalTable logicalTable) {
     String name = ConceptUtil.getName(logicalTable, locale);
     String description = ConceptUtil.getDescription(logicalTable, locale);
     String phTable = ConceptUtil.getString(logicalTable, DefaultIDs.LOGICAL_TABLE_PHYSICAL_TABLE_NAME);
     String schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, Const.NVL(phTable, name));
-    
+
     CombinationLookupMeta meta = new CombinationLookupMeta();
     meta.setDatabaseMeta(databaseMeta);
     meta.setSchemaName(null); // TODO
@@ -664,7 +664,7 @@ public class JobGenerator {
     meta.setCacheSize(5000);
     meta.setCommitSize(500);
     meta.setReplaceFields(true); // replace attribute fields with a TK
-    
+
     // Find the technical key (if any defined)
     //
     LogicalColumn keyColumn = ConceptUtil.findLogicalColumn(logicalTable, AttributeType.TECHNICAL_KEY);
@@ -684,7 +684,7 @@ public class JobGenerator {
       meta.getKeyLookup()[i] = valueMeta.getName();
       meta.getKeyField()[i] = valueMeta.getName();
     }
-    
+
     StepMeta stepMeta = new StepMeta(name, meta);
     stepMeta.drawStep();
     stepMeta.setDescription(description);

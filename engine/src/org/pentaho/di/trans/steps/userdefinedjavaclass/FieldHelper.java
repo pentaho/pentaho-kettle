@@ -40,8 +40,8 @@ public class FieldHelper {
     this.index = rowMeta.indexOfValue( fieldName );
     if ( this.index == -1 ) {
       throw new IllegalArgumentException( String.format(
-          "FieldHelper could not be initialized. The field named '%s' not found in RowMeta: %s", fieldName, rowMeta
-              .toStringMeta() ) );
+        "FieldHelper could not be initialized. The field named '%s' not found in RowMeta: %s", fieldName,
+        rowMeta.toStringMeta() ) );
     }
   }
 
@@ -139,8 +139,9 @@ public class FieldHelper {
       sb.append( "value" );
     }
     String typeDesc = v.getTypeDesc();
-    sb.append( " = " ).append( accessor ).append( ".get" ).append( "-".equals( typeDesc ) ? "Object" : typeDesc )
-        .append( "(r);" );
+    sb
+      .append( " = " ).append( accessor ).append( ".get" ).append( "-".equals( typeDesc ) ? "Object" : typeDesc )
+      .append( "(r);" );
 
     return sb.toString();
   }

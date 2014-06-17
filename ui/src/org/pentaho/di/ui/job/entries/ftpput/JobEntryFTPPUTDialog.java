@@ -23,8 +23,6 @@
 package org.pentaho.di.ui.job.entries.ftpput;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -52,13 +50,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.ftpput.JobEntryFTPPUT;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -70,13 +68,13 @@ import com.enterprisedt.net.ftp.FTPClient;
 
 /**
  * This dialog allows you to edit the FTP Put job entry settings
- * 
+ *
  * @author Samatar
  * @since 15-09-2007
  */
 
 public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryFTPPUT.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryFTPPUT.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
 
@@ -402,17 +400,17 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
       }
     } );
 
     // Proxy host line
     wProxyHost =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPPUT.ProxyHost.Label" ),
-            BaseMessages.getString( PKG, "JobFTPPUT.ProxyHost.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPPUT.ProxyHost.Label" ), BaseMessages
+          .getString( PKG, "JobFTPPUT.ProxyHost.Tooltip" ) );
     props.setLook( wProxyHost );
     wProxyHost.addModifyListener( lsMod );
     fdProxyHost = new FormData();
@@ -423,8 +421,9 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 
     // Proxy port line
     wProxyPort =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPPUT.ProxyPort.Label" ),
-            BaseMessages.getString( PKG, "JobFTPPUT.ProxyPort.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPPUT.ProxyPort.Label" ), BaseMessages
+          .getString( PKG, "JobFTPPUT.ProxyPort.Tooltip" ) );
     props.setLook( wProxyPort );
     wProxyPort.addModifyListener( lsMod );
     fdProxyPort = new FormData();
@@ -435,8 +434,9 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 
     // Proxy username line
     wProxyUsername =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPPUT.ProxyUsername.Label" ),
-            BaseMessages.getString( PKG, "JobFTPPUT.ProxyUsername.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPPUT.ProxyUsername.Label" ), BaseMessages
+          .getString( PKG, "JobFTPPUT.ProxyUsername.Tooltip" ) );
     props.setLook( wProxyUsername );
     wProxyUsername.addModifyListener( lsMod );
     fdProxyUsername = new FormData();
@@ -447,8 +447,9 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 
     // Proxy password line
     wProxyPassword =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPPUT.ProxyPassword.Label" ),
-            BaseMessages.getString( PKG, "JobFTPPUT.ProxyPassword.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPPUT.ProxyPassword.Label" ), BaseMessages
+          .getString( PKG, "JobFTPPUT.ProxyPassword.Tooltip" ) );
     props.setLook( wProxyPassword );
     wProxyPassword.setEchoChar( '*' );
     wProxyPassword.addModifyListener( lsMod );
@@ -458,10 +459,9 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     fdProxyPasswd.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPasswd );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkProxyPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wProxyPassword.getTextWidget() );
       }
     } );
 
@@ -523,8 +523,8 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     fdlTimeout.right = new FormAttachment( middle, 0 );
     wlTimeout.setLayoutData( fdlTimeout );
     wTimeout =
-        new TextVar( jobMeta, wAdvancedSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobFTPPUT.Timeout.Tooltip" ) );
+      new TextVar( jobMeta, wAdvancedSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobFTPPUT.Timeout.Tooltip" ) );
     props.setLook( wTimeout );
     wTimeout.setToolTipText( BaseMessages.getString( PKG, "JobFTPPUT.Timeout.Tooltip" ) );
     fdTimeout = new FormData();
@@ -643,8 +643,8 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     wbLocalDirectory.setLayoutData( fdbLocalDirectory );
 
     wLocalDirectory =
-        new TextVar( jobMeta, wSourceSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobFTPPUT.LocalDir.Tooltip" ) );
+      new TextVar( jobMeta, wSourceSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobFTPPUT.LocalDir.Tooltip" ) );
     props.setLook( wLocalDirectory );
     wLocalDirectory.addModifyListener( lsMod );
     fdLocalDirectory = new FormData();
@@ -663,8 +663,8 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     fdlWildcard.right = new FormAttachment( middle, -margin );
     wlWildcard.setLayoutData( fdlWildcard );
     wWildcard =
-        new TextVar( jobMeta, wSourceSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobFTPPUT.Wildcard.Tooltip" ) );
+      new TextVar( jobMeta, wSourceSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobFTPPUT.Wildcard.Tooltip" ) );
     props.setLook( wWildcard );
     wWildcard.addModifyListener( lsMod );
     fdWildcard = new FormData();
@@ -749,8 +749,8 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     wbTestRemoteDirectoryExists.setLayoutData( fdbTestRemoteDirectoryExists );
 
     wRemoteDirectory =
-        new TextVar( jobMeta, wTargetSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobFTPPUT.RemoteDir.Tooltip" ) );
+      new TextVar( jobMeta, wTargetSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobFTPPUT.RemoteDir.Tooltip" ) );
     props.setLook( wRemoteDirectory );
     wRemoteDirectory.addModifyListener( lsMod );
     fdRemoteDirectory = new FormData();
@@ -811,8 +811,9 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 
     // host line
     wSocksProxyHost =
-        new LabelTextVar( jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyHost.Label" ),
-            BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyHost.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyHost.Label" ), BaseMessages
+          .getString( PKG, "JobFTPPUT.SocksProxyHost.Tooltip" ) );
     props.setLook( wSocksProxyHost );
     wSocksProxyHost.addModifyListener( lsMod );
     fdSocksProxyHost = new FormData();
@@ -823,8 +824,9 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 
     // port line
     wSocksProxyPort =
-        new LabelTextVar( jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyPort.Label" ),
-            BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyPort.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyPort.Label" ), BaseMessages
+          .getString( PKG, "JobFTPPUT.SocksProxyPort.Tooltip" ) );
     props.setLook( wSocksProxyPort );
     wSocksProxyPort.addModifyListener( lsMod );
     fdSocksProxyPort = new FormData();
@@ -835,8 +837,9 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 
     // username line
     wSocksProxyUsername =
-        new LabelTextVar( jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyUsername.Label" ),
-            BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyPassword.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyUsername.Label" ),
+        BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyPassword.Tooltip" ) );
     props.setLook( wSocksProxyUsername );
     wSocksProxyUsername.addModifyListener( lsMod );
     fdSocksProxyUsername = new FormData();
@@ -847,8 +850,9 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 
     // password line
     wSocksProxyPassword =
-        new LabelTextVar( jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyPassword.Label" ),
-            BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyPassword.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyPassword.Label" ),
+        BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyPassword.Tooltip" ) );
     props.setLook( wSocksProxyPort );
     wSocksProxyPassword.setEchoChar( '*' );
     wSocksProxyPassword.addModifyListener( lsMod );
@@ -858,10 +862,9 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     fdSocksProxyPassword.right = new FormAttachment( 100, margin );
     wSocksProxyPassword.setLayoutData( fdSocksProxyPassword );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wSocksProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkSocksProxyPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wSocksProxyPassword.getTextWidget() );
       }
     } );
 
@@ -984,6 +987,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         ftpclient.quit();
         ftpclient = null;
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }
@@ -997,7 +1001,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.Connected.NOK.ConnectionBad", wServerName.getText() )
-          + Const.CR );
+        + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.Connected.Title.Bad" ) );
       mb.open();
     }
@@ -1027,33 +1031,32 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         // Create ftp client to host:port ...
         ftpclient = new FTPClient();
         String realServername = jobMeta.environmentSubstitute( wServerName.getText() );
+        int realPort = Const.toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 21 );
         ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
+        ftpclient.setRemotePort( realPort );
 
         if ( !Const.isEmpty( wProxyHost.getText() ) ) {
           String realProxy_host = jobMeta.environmentSubstitute( wProxyHost.getText() );
           ftpclient.setRemoteAddr( InetAddress.getByName( realProxy_host ) );
 
-          // FIXME: Proper default port for proxy
-          int port = Const.toInt( jobMeta.environmentSubstitute( wProxyHost.getText() ), 21 );
+          int port = Const.toInt( jobMeta.environmentSubstitute( wProxyPort.getText() ), 21 );
           if ( port != 0 ) {
             ftpclient.setRemotePort( port );
           }
-        } else {
-          ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
         }
 
         // login to ftp host ...
         ftpclient.connect();
         String realUsername =
-            jobMeta.environmentSubstitute( wUserName.getText() )
-                + ( !Const.isEmpty( wProxyHost.getText() ) ? "@" + realServername : "" )
-                + ( !Const.isEmpty( wProxyUsername.getText() ) ? " "
-                    + jobMeta.environmentSubstitute( wProxyUsername.getText() ) : "" );
+          jobMeta.environmentSubstitute( wUserName.getText() )
+            + ( !Const.isEmpty( wProxyHost.getText() ) ? "@" + realServername : "" )
+            + ( !Const.isEmpty( wProxyUsername.getText() ) ? " "
+              + jobMeta.environmentSubstitute( wProxyUsername.getText() ) : "" );
 
         String realPassword =
-            jobMeta.environmentSubstitute( wPassword.getText() )
-                + ( !Const.isEmpty( wProxyPassword.getText() ) ? " "
-                    + jobMeta.environmentSubstitute( wProxyPassword.getText() ) : "" );
+          jobMeta.environmentSubstitute( wPassword.getText() )
+            + ( !Const.isEmpty( wProxyPassword.getText() ) ? " "
+              + jobMeta.environmentSubstitute( wProxyPassword.getText() ) : "" );
         // login now ...
         ftpclient.login( realUsername, realPassword );
 
@@ -1169,38 +1172,5 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 
   public boolean isUnconditional() {
     return false;
-  }
-
-  public void checkPasswordVisible() {
-    String password = wPassword.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wPassword.setEchoChar( '*' );
-    } else {
-      wPassword.setEchoChar( '\0' ); // Show it all...
-    }
-  }
-
-  public void checkProxyPasswordVisible() {
-    String password = wProxyPassword.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wProxyPassword.setEchoChar( '*' );
-    } else {
-      wProxyPassword.setEchoChar( '\0' ); // Show it all...
-    }
-  }
-
-  public void checkSocksProxyPasswordVisible() {
-    String password = wSocksProxyPassword.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wSocksProxyPassword.setEchoChar( '*' );
-    } else {
-      wSocksProxyPassword.setEchoChar( '\0' ); // Show it all...
-    }
   }
 }

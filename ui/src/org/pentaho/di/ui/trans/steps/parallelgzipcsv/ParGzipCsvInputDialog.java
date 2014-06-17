@@ -89,7 +89,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
 
 public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ParGzipCsvInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ParGzipCsvInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ParGzipCsvInputMeta inputMeta;
 
@@ -174,9 +174,9 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
       try {
         previousFields = transMeta.getPrevStepFields( stepMeta );
       } catch ( KettleStepException e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG,
-            "ParGzipCsvInputDialog.ErrorDialog.UnableToGetInputFields.Title" ), BaseMessages.getString( PKG,
-            "ParGzipCsvInputDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "ParGzipCsvInputDialog.ErrorDialog.UnableToGetInputFields.Title" ),
+          BaseMessages.getString( PKG, "ParGzipCsvInputDialog.ErrorDialog.UnableToGetInputFields.Message" ), e );
         previousFields = new RowMeta();
       }
 
@@ -204,7 +204,8 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
       // Checkbox to include the filename in the output...
       //
       Label wlIncludeFilename = new Label( shell, SWT.RIGHT );
-      wlIncludeFilename.setText( BaseMessages.getString( PKG, "ParGzipCsvInputDialog.IncludeFilenameField.Label" ) );
+      wlIncludeFilename
+        .setText( BaseMessages.getString( PKG, "ParGzipCsvInputDialog.IncludeFilenameField.Label" ) );
       props.setLook( wlIncludeFilename );
       FormData fdlIncludeFilename = new FormData();
       fdlIncludeFilename.top = new FormAttachment( lastControl, margin );
@@ -463,25 +464,34 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 
     // Fields
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "ParGzipCsvInputDialog.NameColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ParGzipCsvInputDialog.TypeColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ParGzipCsvInputDialog.FormatColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ParGzipCsvInputDialog.LengthColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ParGzipCsvInputDialog.PrecisionColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ParGzipCsvInputDialog.CurrencyColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ParGzipCsvInputDialog.DecimalColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ParGzipCsvInputDialog.GroupColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "ParGzipCsvInputDialog.TrimTypeColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "ParGzipCsvInputDialog.NameColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "ParGzipCsvInputDialog.TypeColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "ParGzipCsvInputDialog.FormatColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_FORMAT, 2 ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "ParGzipCsvInputDialog.LengthColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "ParGzipCsvInputDialog.PrecisionColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "ParGzipCsvInputDialog.CurrencyColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "ParGzipCsvInputDialog.DecimalColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "ParGzipCsvInputDialog.GroupColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "ParGzipCsvInputDialog.TrimTypeColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc ), };
 
     colinf[2].setComboValuesSelectionListener( new ComboValuesSelectionListener() {
 
@@ -582,7 +592,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 
           dialog.setFilterNames( new String[] {
             BaseMessages.getString( PKG, "System.FileType.CSVFiles" ) + ", "
-                + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+              + BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
             BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
             BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
             BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
@@ -716,6 +726,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
 
     for ( int i = 0; i < nrNonEmptyFields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
+      //CHECKSTYLE:Indentation:OFF
       inputMeta.getInputFields()[i] = new TextFileInputField();
 
       int colnr = 1;
@@ -771,8 +782,8 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
       // Read a line of data to determine the number of rows...
       //
       String line =
-          TextFileInput.getLine( log, reader, encodingType, TextFileInputMeta.FILE_FORMAT_MIXED, new StringBuilder(
-              1000 ) );
+        TextFileInput.getLine(
+          log, reader, encodingType, TextFileInputMeta.FILE_FORMAT_MIXED, new StringBuilder( 1000 ) );
 
       // Split the string, header or data into parts...
       //
@@ -782,15 +793,15 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
         // Don't use field names from the header...
         // Generate field names F1 ... F10
         //
-        DecimalFormat df = new DecimalFormat( "000" ); // $NON-NLS-1$
+        DecimalFormat df = new DecimalFormat( "000" );
         for ( int i = 0; i < fieldNames.length; i++ ) {
-          fieldNames[i] = "Field_" + df.format( i ); // $NON-NLS-1$
+          fieldNames[i] = "Field_" + df.format( i );
         }
       } else {
         if ( !Const.isEmpty( meta.getEnclosure() ) ) {
           for ( int i = 0; i < fieldNames.length; i++ ) {
-            if ( fieldNames[i].startsWith( meta.getEnclosure() ) && fieldNames[i].endsWith( meta.getEnclosure() )
-                && fieldNames[i].length() > 1 ) {
+            if ( fieldNames[i].startsWith( meta.getEnclosure() )
+              && fieldNames[i].endsWith( meta.getEnclosure() ) && fieldNames[i].length() > 1 ) {
               fieldNames[i] = fieldNames[i].substring( 1, fieldNames[i].length() - 1 );
             }
           }
@@ -825,7 +836,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
         getInfo( meta );
 
         TextFileCSVImportProgressDialog pd =
-            new TextFileCSVImportProgressDialog( shell, meta, transMeta, reader, samples, true );
+          new TextFileCSVImportProgressDialog( shell, meta, transMeta, reader, samples, true );
         String message = pd.open();
         if ( message != null ) {
           wFields.removeAll();
@@ -836,24 +847,25 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
           wFields.setRowNums();
           wFields.optWidth( true );
 
-          EnterTextDialog etd =
-              new EnterTextDialog( shell,
-                  BaseMessages.getString( PKG, "ParGzipCsvInputDialog.ScanResults.DialogTitle" ), BaseMessages
-                      .getString( PKG, "ParGzipCsvInputDialog.ScanResults.DialogMessage" ), message, true );
+          EnterTextDialog etd = new EnterTextDialog( shell,
+            BaseMessages.getString( PKG, "ParGzipCsvInputDialog.ScanResults.DialogTitle" ),
+            BaseMessages.getString( PKG, "ParGzipCsvInputDialog.ScanResults.DialogMessage" ), message, true );
           etd.setReadOnly();
           etd.open();
         }
       }
     } catch ( IOException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "ParGzipCsvInputDialog.IOError.DialogTitle" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "ParGzipCsvInputDialog.IOError.DialogTitle" ), BaseMessages
           .getString( PKG, "ParGzipCsvInputDialog.IOError.DialogMessage" ), e );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString( PKG,
-          "ParGzipCsvInputDialog.ErrorGettingFileDesc.DialogMessage" ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
+        PKG, "ParGzipCsvInputDialog.ErrorGettingFileDesc.DialogMessage" ), e );
     } finally {
       try {
         inputStream.close();
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }
@@ -864,17 +876,18 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
     ParGzipCsvInputMeta oneMeta = new ParGzipCsvInputMeta();
     getInfo( oneMeta );
 
-    TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+    TransMeta previewMeta =
+      TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-            "ParGzipCsvInputDialog.PreviewSize.DialogTitle" ), BaseMessages.getString( PKG,
-            "ParGzipCsvInputDialog.PreviewSize.DialogMessage" ) );
+      new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString(
+        PKG, "ParGzipCsvInputDialog.PreviewSize.DialogTitle" ), BaseMessages.getString(
+        PKG, "ParGzipCsvInputDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-              new int[] { previewSize } );
+        new TransPreviewProgressDialog(
+          shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       Trans trans = progressDialog.getTrans();
@@ -883,17 +896,18 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
       if ( !progressDialog.isCancelled() ) {
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                  BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+            new EnterTextDialog(
+              shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
+                .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
       }
 
       PreviewRowsDialog prd =
-          new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-              .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-              loggingText );
+        new PreviewRowsDialog(
+          shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+            .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
       prd.open();
     }
   }

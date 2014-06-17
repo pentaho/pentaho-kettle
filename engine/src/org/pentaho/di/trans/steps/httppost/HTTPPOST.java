@@ -68,7 +68,8 @@ public class HTTPPOST extends BaseStep implements StepInterface {
   private HTTPPOSTMeta meta;
   private HTTPPOSTData data;
 
-  public HTTPPOST( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public HTTPPOST( StepMeta stepMeta, StepDataInterface stepDataInterface,
+                   int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -216,54 +217,58 @@ public class HTTPPOST extends BaseStep implements StepInterface {
         }
         String body = null;
         if ( statusCode != -1 ) {
-          // if the response is not 401: HTTP Authentication required
-          if ( statusCode != 401 ) {
+          if ( statusCode == 204 ) {
+            body = "";
+          } else {
+            // if the response is not 401: HTTP Authentication required
+            if ( statusCode != 401 ) {
 
-            // Use request encoding if specified in component to avoid strange response encodings
-            // See PDI-3815
-            String encoding = data.realEncoding;
+              // Use request encoding if specified in component to avoid strange response encodings
+              // See PDI-3815
+              String encoding = data.realEncoding;
 
-            // Try to determine the encoding from the Content-Type value
-            //
-            if ( Const.isEmpty( encoding ) ) {
-              String contentType = post.getResponseHeader( "Content-Type" ).getValue();
-              if ( contentType != null && contentType.contains( "charset" ) ) {
-                encoding = contentType.replaceFirst( "^.*;\\s*charset\\s*=\\s*", "" ).replace( "\"", "" ).trim();
+              // Try to determine the encoding from the Content-Type value
+              //
+              if ( Const.isEmpty( encoding ) ) {
+                String contentType = post.getResponseHeader( "Content-Type" ).getValue();
+                if ( contentType != null && contentType.contains( "charset" ) ) {
+                  encoding = contentType.replaceFirst( "^.*;\\s*charset\\s*=\\s*", "" ).replace( "\"", "" ).trim();
+                }
               }
-            }
 
-            // Get the response, but only specify encoding if we've got one
-            // otherwise the default charset ISO-8859-1 is used by HttpClient
-            if ( Const.isEmpty( encoding ) ) {
+              // Get the response, but only specify encoding if we've got one
+              // otherwise the default charset ISO-8859-1 is used by HttpClient
+              if ( Const.isEmpty( encoding ) ) {
+                if ( isDebug() ) {
+                  logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.Encoding", "ISO-8859-1" ) );
+                }
+                inputStreamReader = new InputStreamReader( post.getResponseBodyAsStream() );
+              } else {
+                if ( isDebug() ) {
+                  logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.Encoding", encoding ) );
+                }
+                inputStreamReader = new InputStreamReader( post.getResponseBodyAsStream(), encoding );
+              }
+
+              StringBuffer bodyBuffer = new StringBuffer();
+
+              int c;
+              while ( ( c = inputStreamReader.read() ) != -1 ) {
+                bodyBuffer.append( (char) c );
+              }
+              inputStreamReader.close();
+
+              // Display response
+              body = bodyBuffer.toString();
+
               if ( isDebug() ) {
-                logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.Encoding", "ISO-8859-1" ) );
+                logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.ResponseBody", body ) );
               }
-              inputStreamReader = new InputStreamReader( post.getResponseBodyAsStream() );
-            } else {
-              if ( isDebug() ) {
-                logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.Encoding", encoding ) );
-              }
-              inputStreamReader = new InputStreamReader( post.getResponseBodyAsStream(), encoding );
+            } else { // the status is a 401
+              throw new KettleStepException( BaseMessages.getString( PKG, "HTTPPOST.Exception.Authentication",
+                  data.realUrl ) );
+
             }
-
-            StringBuffer bodyBuffer = new StringBuffer();
-
-            int c;
-            while ( ( c = inputStreamReader.read() ) != -1 ) {
-              bodyBuffer.append( (char) c );
-            }
-            inputStreamReader.close();
-
-            // Display response
-            body = bodyBuffer.toString();
-
-            if ( isDebug() ) {
-              logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.ResponseBody", body ) );
-            }
-          } else { // the status is a 401
-            throw new KettleStepException( BaseMessages.getString( PKG, "HTTPPOST.Exception.Authentication",
-                data.realUrl ) );
-
           }
         }
         int returnFieldsOffset = data.inputRowMeta.size();
@@ -291,7 +296,8 @@ public class HTTPPOST extends BaseStep implements StepInterface {
       }
       return newRow;
     } catch ( UnknownHostException uhe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "HTTPPOST.Error.UnknownHostException", uhe.getMessage() ) );
+      throw new KettleException( BaseMessages.getString( PKG,
+              "HTTPPOST.Error.UnknownHostException", uhe.getMessage() ) );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "HTTPPOST.Error.CanNotReadURL", data.realUrl ), e );
 
@@ -307,8 +313,7 @@ public class HTTPPOST extends BaseStep implements StepInterface {
     data = (HTTPPOSTData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -346,8 +351,7 @@ public class HTTPPOST extends BaseStep implements StepInterface {
         data.contentTypeHeaderOverwrite = false;
         int nrheader = 0;
         int nrbody = 0;
-        for ( int i = 0; i < nrargs; i++ ) // split into body / header
-        {
+        for ( int i = 0; i < nrargs; i++ ) {  // split into body / header
           if ( meta.getArgumentHeader()[i] ) {
             data.useHeaderParameters = true; // at least one header parameter
             nrheader++;
@@ -465,7 +469,8 @@ public class HTTPPOST extends BaseStep implements StepInterface {
 
       data.realSocketTimeout = Const.toInt( environmentSubstitute( meta.getSocketTimeout() ), -1 );
       data.realConnectionTimeout = Const.toInt( environmentSubstitute( meta.getSocketTimeout() ), -1 );
-      data.realcloseIdleConnectionsTime = Const.toInt( environmentSubstitute( meta.getCloseIdleConnectionsTime() ), -1 );
+      data.realcloseIdleConnectionsTime =
+              Const.toInt( environmentSubstitute( meta.getCloseIdleConnectionsTime() ), -1 );
 
       return true;
     }

@@ -26,9 +26,9 @@ package org.pentaho.di.core.logging;
  * This is a single log table field.<br>
  * The user can select this field or not, sees a field name, a description in the UI too. The user can also specify a
  * subject like a step name.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class LogTableField implements Cloneable {
   private String id;
@@ -60,7 +60,8 @@ public class LogTableField implements Cloneable {
    * @param subject
    * @param description
    */
-  public LogTableField( String id, boolean enabled, String fieldName, Object subject, String name, String description ) {
+  public LogTableField( String id, boolean enabled, String fieldName, Object subject, String name,
+    String description ) {
     this.id = id;
     this.enabled = enabled;
     this.fieldName = fieldName;
@@ -80,7 +81,7 @@ public class LogTableField implements Cloneable {
    * @param length
    */
   public LogTableField( String id, boolean enabled, boolean subjectAllowed, String fieldName, String name,
-      String description, int dataType, int length ) {
+    String description, int dataType, int length ) {
     this.id = id;
     this.enabled = enabled;
     this.subjectAllowed = subjectAllowed;
@@ -94,7 +95,7 @@ public class LogTableField implements Cloneable {
 
   /**
    * Create a new enabled log table field with the specified field name for the specified subject.
-   * 
+   *
    * @param fieldname
    * @param subject
    */

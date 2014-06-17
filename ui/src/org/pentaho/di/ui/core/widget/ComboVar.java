@@ -44,12 +44,12 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 /**
  * A Widget that combines a Text widget with a Variable button that will insert an Environment variable. The tool tip of
  * the text widget shows the content of the Text widget with expanded variables.
- * 
+ *
  * @author Matt
  * @since 17-may-2006
  */
 public class ComboVar extends Composite {
-  private static Class<?> PKG = ComboVar.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ComboVar.class; // for i18n purposes, needed by Translator2!!
 
   private String toolTipText;
 
@@ -78,12 +78,12 @@ public class ComboVar extends Composite {
   }
 
   public ComboVar( VariableSpace space, Composite composite, int flags,
-      GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface ) {
+    GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface ) {
     this( space, composite, flags, null, getCaretPositionInterface, insertTextInterface );
   }
 
   public ComboVar( VariableSpace space, Composite composite, int flags, String toolTipText,
-      GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface ) {
+    GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface ) {
     super( composite, SWT.NONE );
     this.toolTipText = toolTipText;
     this.getCaretPositionInterface = getCaretPositionInterface;
@@ -120,7 +120,7 @@ public class ComboVar extends Composite {
     // insertTextInterface));
 
     controlSpaceKeyAdapter =
-        new ControlSpaceKeyAdapter( variables, wCombo, getCaretPositionInterface, insertTextInterface );
+      new ControlSpaceKeyAdapter( variables, wCombo, getCaretPositionInterface, insertTextInterface );
     wCombo.addKeyListener( controlSpaceKeyAdapter );
 
     FormData fdText = new FormData();
@@ -198,7 +198,7 @@ public class ComboVar extends Composite {
 
   /**
    * Add a modify listener to the text widget
-   * 
+   *
    * @param modifyListener
    */
   public void addModifyListener( ModifyListener modifyListener ) {

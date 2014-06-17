@@ -35,18 +35,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Step that will abort after having seen 'x' number of rows on its input.
- * 
+ *
  * @author Sven Boden
  */
 public class Abort extends BaseStep implements StepInterface {
 
-  private static Class<?> PKG = Abort.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Abort.class; // for i18n purposes, needed by Translator2!!
 
   private AbortMeta meta;
   private int nrInputRows;
   private int nrThresholdRows;
 
-  public Abort( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public Abort( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -71,8 +72,8 @@ public class Abort extends BaseStep implements StepInterface {
     meta = (AbortMeta) smi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    // no more input to be expected...
+    if ( r == null ) {
       setOutputDone();
       return false;
     } else {
@@ -82,8 +83,8 @@ public class Abort extends BaseStep implements StepInterface {
         //
         // Here we abort!!
         //
-        logError( BaseMessages.getString( PKG, "Abort.Log.Wrote.AbortRow", Long.toString( nrInputRows ),
-            getInputRowMeta().getString( r ) ) );
+        logError( BaseMessages.getString(
+          PKG, "Abort.Log.Wrote.AbortRow", Long.toString( nrInputRows ), getInputRowMeta().getString( r ) ) );
 
         String message = environmentSubstitute( meta.getMessage() );
         if ( message == null || message.length() == 0 ) {
@@ -96,12 +97,12 @@ public class Abort extends BaseStep implements StepInterface {
       } else {
         // seen a row but not yet reached the threshold
         if ( meta.isAlwaysLogRows() ) {
-          logMinimal( BaseMessages.getString( PKG, "Abort.Log.Wrote.Row", Long.toString( nrInputRows ),
-              getInputRowMeta().getString( r ) ) );
+          logMinimal( BaseMessages.getString(
+            PKG, "Abort.Log.Wrote.Row", Long.toString( nrInputRows ), getInputRowMeta().getString( r ) ) );
         } else {
           if ( log.isRowLevel() ) {
-            logRowlevel( BaseMessages.getString( PKG, "Abort.Log.Wrote.Row", Long.toString( nrInputRows ),
-                getInputRowMeta().getString( r ) ) );
+            logRowlevel( BaseMessages.getString(
+              PKG, "Abort.Log.Wrote.Row", Long.toString( nrInputRows ), getInputRowMeta().getString( r ) ) );
           }
         }
       }

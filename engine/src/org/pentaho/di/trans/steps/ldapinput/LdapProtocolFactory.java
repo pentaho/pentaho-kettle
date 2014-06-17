@@ -31,7 +31,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 
 public class LdapProtocolFactory {
-  private static final List<Class<? extends LdapProtocol>> protocols = initProtocols();
+  protected static final List<Class<? extends LdapProtocol>> protocols = initProtocols();
 
   private static List<Class<? extends LdapProtocol>> initProtocols() {
     List<Class<? extends LdapProtocol>> protocols = new ArrayList<Class<? extends LdapProtocol>>();
@@ -53,7 +53,7 @@ public class LdapProtocolFactory {
 
   /**
    * Returns the connection types understood by the factory
-   * 
+   *
    * @return the connection types understood by the factory
    * @throws KettleException
    */
@@ -77,7 +77,7 @@ public class LdapProtocolFactory {
 
   /**
    * Creates the LdapProtocol appropriate for the LdapMeta
-   * 
+   *
    * @param variableSpace
    *          the variable space for environment substitutions
    * @param meta
@@ -88,15 +88,18 @@ public class LdapProtocolFactory {
    * @throws KettleException
    */
   public LdapProtocol createLdapProtocol( VariableSpace variableSpace, LdapMeta meta,
-      Collection<String> binaryAttributes ) throws KettleException {
+    Collection<String> binaryAttributes ) throws KettleException {
     String connectionType = meta.getProtocol();
 
     synchronized ( protocols ) {
       for ( Class<? extends LdapProtocol> protocol : protocols ) {
         if ( getName( protocol ).equals( connectionType ) ) {
           try {
-            return protocol.getConstructor( LogChannelInterface.class, VariableSpace.class, LdapMeta.class,
-                Collection.class ).newInstance( log, variableSpace, meta, binaryAttributes );
+            return protocol.getConstructor(
+              LogChannelInterface.class,
+              VariableSpace.class,
+              LdapMeta.class,
+              Collection.class ).newInstance( log, variableSpace, meta, binaryAttributes );
           } catch ( Exception e ) {
             throw new KettleException( e );
           }

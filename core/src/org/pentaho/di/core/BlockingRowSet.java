@@ -31,10 +31,10 @@ import org.pentaho.di.core.row.RowMetaInterface;
 /**
  * Contains a buffer of rows. Getting rows from the buffer or putting rows in the buffer is synchronized to allow
  * concurrent use of multiple Threads.
- * 
+ *
  * @author Matt
  * @since 04-04-2003
- * 
+ *
  */
 public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, RowSet {
   private BlockingQueue<Object[]> queArray;
@@ -44,7 +44,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
 
   /**
    * Create new non-blocking-queue with maxSize capacity.
-   * 
+   *
    * @param maxSize
    */
   public BlockingRowSet( int maxSize ) {
@@ -59,7 +59,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.RowSetInterface#putRow(org.pentaho.di.core.row.RowMetaInterface, java.lang.Object[])
    */
   @Override
@@ -69,7 +69,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.RowSetInterface#putRowWait(org.pentaho.di.core.row.RowMetaInterface, java.lang.Object[],
    * long, java.util.concurrent.TimeUnit)
    */
@@ -91,7 +91,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
   //
   /*
    * (non-Javadoc) System.getProperty("KETTLE_ROWSET_PUT_TIMEOUT")
-   * 
+   *
    * @see org.pentaho.di.core.RowSetInterface#getRow()
    */
   @Override
@@ -101,7 +101,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.RowSetInterface#getRowImmediate()
    */
   @Override
@@ -112,7 +112,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.RowSetInterface#getRowWait(long, java.util.concurrent.TimeUnit)
    */
   @Override

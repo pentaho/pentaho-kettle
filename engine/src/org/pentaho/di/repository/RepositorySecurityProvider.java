@@ -30,11 +30,11 @@ import org.pentaho.di.core.exception.KettleSecurityException;
 /**
  * This is the interface to the security provider for the repositories out there.
  * <p>
- * 
+ *
  * This allows the repository to transparently implement any kind of authentication supported by Kettle.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public interface RepositorySecurityProvider extends IRepositoryService {
 
@@ -45,7 +45,7 @@ public interface RepositorySecurityProvider extends IRepositoryService {
 
   /**
    * Validates the supplied operation.
-   * 
+   *
    * @throws KettleSecurityException
    *           in case the provided user is not know or the password is incorrect
    * @throws KettleException
@@ -75,7 +75,7 @@ public interface RepositorySecurityProvider extends IRepositoryService {
 
   /**
    * Retrieves all users in the system
-   * 
+   *
    * @return list of username
    * @throws KettleSecurityException
    *           in case anything went wrong
@@ -84,7 +84,7 @@ public interface RepositorySecurityProvider extends IRepositoryService {
 
   /**
    * Retrieves all roles in the system
-   * 
+   *
    * @return list of role
    * @throws KettleSecurityException
    *           in case anything went wrong

@@ -36,7 +36,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class JobExecutorData extends BaseStepData implements StepDataInterface {
   public Job executorJob;
@@ -58,9 +58,6 @@ public class JobExecutorData extends BaseStepData implements StepDataInterface {
   public RowSet resultFilesRowSet;
   public RowSet executionResultRowSet;
 
-  /**
-	 * 
-	 */
   public JobExecutorData() {
     super();
   }

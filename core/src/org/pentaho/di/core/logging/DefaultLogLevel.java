@@ -24,7 +24,7 @@ package org.pentaho.di.core.logging;
 
 /**
  * Retains the default log level during execution
- * 
+ *
  * @author matt
  */
 public class DefaultLogLevel {

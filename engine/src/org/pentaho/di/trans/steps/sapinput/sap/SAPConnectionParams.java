@@ -33,7 +33,7 @@ public class SAPConnectionParams {
   private String lang;
 
   public SAPConnectionParams( String name, String host, String sysnr, String client, String user, String password,
-      String lang ) {
+    String lang ) {
     super();
     this.name = name;
     this.host = host;

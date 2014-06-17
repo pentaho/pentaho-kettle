@@ -58,7 +58,7 @@ import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 
 public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   private static final String XUL_FILE_TRANS_LOG_TOOLBAR = "ui/trans-log-toolbar.xul";
 
@@ -161,9 +161,10 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
       swtToolBar.layout( true, true );
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );
-      new ErrorDialog( transLogComposite.getShell(), BaseMessages.getString( PKG,
-          "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString( PKG,
-          "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR ), new Exception( t ) );
+      new ErrorDialog( transLogComposite.getShell(),
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ),
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR ),
+        new Exception( t ) );
     }
   }
 
@@ -217,9 +218,9 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
         String line = all.substring( startpos, i );
         String uLine = line.toUpperCase();
         if ( uLine.indexOf( BaseMessages.getString( PKG, "TransLog.System.ERROR" ) ) >= 0
-            || uLine.indexOf( BaseMessages.getString( PKG, "TransLog.System.EXCEPTION" ) ) >= 0
-            || uLine.indexOf( "ERROR" ) >= 0 || // i18n for compatibilty to non translated steps a.s.o.
-            uLine.indexOf( "EXCEPTION" ) >= 0 // i18n for compatibilty to non translated steps a.s.o.
+          || uLine.indexOf( BaseMessages.getString( PKG, "TransLog.System.EXCEPTION" ) ) >= 0
+          || uLine.indexOf( "ERROR" ) >= 0 || // i18n for compatibilty to non translated steps a.s.o.
+          uLine.indexOf( "EXCEPTION" ) >= 0 // i18n for compatibilty to non translated steps a.s.o.
         ) {
           err.add( line );
         }
@@ -232,9 +233,9 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
     String line = all.substring( startpos );
     String uLine = line.toUpperCase();
     if ( uLine.indexOf( BaseMessages.getString( PKG, "TransLog.System.ERROR2" ) ) >= 0
-        || uLine.indexOf( BaseMessages.getString( PKG, "TransLog.System.EXCEPTION2" ) ) >= 0
-        || uLine.indexOf( "ERROR" ) >= 0 || // i18n for compatibilty to non translated steps a.s.o.
-        uLine.indexOf( "EXCEPTION" ) >= 0 // i18n for compatibilty to non translated steps a.s.o.
+      || uLine.indexOf( BaseMessages.getString( PKG, "TransLog.System.EXCEPTION2" ) ) >= 0
+      || uLine.indexOf( "ERROR" ) >= 0 || // i18n for compatibilty to non translated steps a.s.o.
+      uLine.indexOf( "EXCEPTION" ) >= 0 // i18n for compatibilty to non translated steps a.s.o.
     ) {
       err.add( line );
     }
@@ -245,9 +246,9 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
         err_lines[i] = err.get( i );
       }
 
-      EnterSelectionDialog esd =
-          new EnterSelectionDialog( transGraph.getShell(), err_lines, BaseMessages.getString( PKG,
-              "TransLog.Dialog.ErrorLines.Title" ), BaseMessages.getString( PKG, "TransLog.Dialog.ErrorLines.Message" ) );
+      EnterSelectionDialog esd = new EnterSelectionDialog( transGraph.getShell(), err_lines,
+        BaseMessages.getString( PKG, "TransLog.Dialog.ErrorLines.Title" ),
+        BaseMessages.getString( PKG, "TransLog.Dialog.ErrorLines.Message" ) );
       line = esd.open();
       if ( line != null ) {
         TransMeta transMeta = transGraph.getManagedObject();
@@ -301,7 +302,7 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
    */
   public Object getData() {
@@ -311,7 +312,7 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
   public String getName() {
@@ -320,7 +321,7 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
   public XulDomContainer getXulDomContainer() {
@@ -330,7 +331,7 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
    */
   public void setData( Object data ) {
@@ -340,7 +341,7 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
    */
   public void setName( String name ) {
@@ -350,7 +351,7 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
   public void setXulDomContainer( XulDomContainer xulDomContainer ) {

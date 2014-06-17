@@ -33,12 +33,12 @@ import org.w3c.dom.Node;
  * This class defines the location of a transformation, job or schema in the repository. That means that it's just an
  * extra parameter for recognizing a transformation, job or schema. It allows for sub-directories by linking back to
  * itself.
- * 
+ *
  * TODO: This class is referenced in a large amount of Interfaces. We should convert it into an interface.
- * 
+ *
  * @author Matt
  * @since 09-nov-2004
- * 
+ *
  */
 public class RepositoryDirectory implements RepositoryDirectoryInterface {
   public static final String DIRECTORY_SEPARATOR = "/";
@@ -59,7 +59,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Create a new sub-directory in a certain other directory.
-   * 
+   *
    * @param parent
    *          The directory to create the sub-directory in
    * @param directoryname
@@ -74,7 +74,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Create an empty repository directory. With the name and parent set to empty, this is the root directory.
-   * 
+   *
    */
   public RepositoryDirectory() {
     this( null, (String) null );
@@ -109,7 +109,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Get the database ID in the repository for this object.
-   * 
+   *
    * @return the database ID in the repository for this object.
    */
   @Override
@@ -119,7 +119,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Set the database ID for this object in the repository.
-   * 
+   *
    * @param id
    *          the database ID for this object in the repository.
    */
@@ -130,7 +130,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Change the parent of this directory. (move directory)
-   * 
+   *
    * @param parent
    *          The new parent of this directory.
    */
@@ -141,7 +141,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * get the parent directory for this directory.
-   * 
+   *
    * @return The parent directory of null if this is the root directory.
    */
   @Override
@@ -151,7 +151,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Set the directory name (rename)
-   * 
+   *
    * @param directoryname
    *          The new directory name
    */
@@ -162,7 +162,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Get the name of this directory...
-   * 
+   *
    * @return the name of this directory
    */
   @Override
@@ -175,7 +175,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Check whether or not this is the root of the directory trees. (default)
-   * 
+   *
    * @return true if this is the root directory node. False if it is not.
    */
   @Override
@@ -186,7 +186,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
   /**
    * Describe the complete path to ( and including) this directory, separated by the
    * RepositoryDirectory.DIRECTORY_SEPARATOR property (slash).
-   * 
+   *
    * @return The complete path to this directory.
    */
   @Override
@@ -205,7 +205,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Describe the complete path to ( and including) this directory, as an array of strings.
-   * 
+   *
    * @return The complete path to this directory.
    */
   @Override
@@ -236,7 +236,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Add a subdirectory to this directory.
-   * 
+   *
    * @param subdir
    *          The subdirectory to add.
    */
@@ -248,7 +248,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Counts the number of subdirectories in this directory.
-   * 
+   *
    * @return The number of subdirectories
    */
   @Override
@@ -258,7 +258,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Get a subdirectory on a certain position.
-   * 
+   *
    * @param i
    *          The subdirectory position
    * @return The subdirectory with on a certain position
@@ -273,7 +273,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Find the directory by following the path of strings
-   * 
+   *
    * @param path
    *          The path to the directory we're looking for.
    * @return The directory if one can be found, null if no directory was found.
@@ -324,10 +324,10 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
        * for (int i=0;i<getNrSubdirectories();i++) { RepositoryDirectory subdir = getSubdirectory(i); if
        * (subdir.getDirectoryName().equalsIgnoreCase(directoryPath[0])) { if (directoryPath.length==1) return subdir; //
        * we arrived at the destination...
-       * 
+       *
        * // Copy the path exception the highest level, we go down one... String subpath[] = new
        * String[directoryPath.length-1]; for (int x=0;x<subpath.length;x++) subpath[x]=directoryPath[x+1];
-       * 
+       *
        * // Perhaps the rest of the path is the same too? RepositoryDirectory look = subdir.findDirectory(subpath); if
        * (look!=null) return look; } }
        */
@@ -338,7 +338,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Find a directory using the path to the directory with file.separator between the dir-names.
-   * 
+   *
    * @param path
    *          The path to the directory
    * @return The directory if one was found, null if nothing was found.
@@ -376,7 +376,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Find the sub-directory with a certain ID
-   * 
+   *
    * @param id_directory
    *          the directory ID to look for.
    * @return The RepositoryDirectory if the ID was found, null if nothing could be found.
@@ -405,7 +405,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Return the description of this directory & the subdirectories in XML.
-   * 
+   *
    * @return The XML describing this directory.
    */
   public String getXML() {
@@ -435,7 +435,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Load the directory & subdirectories from XML
-   * 
+   *
    * @param repdirnode
    *          The node in which the Repository directory information resides.
    * @return True if all went well, false if an error occured.
@@ -467,7 +467,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Get all the directory-id in this directory and the subdirectories.
-   * 
+   *
    * @return an array of all the directory id's (this directory & subdirectories)
    */
   @Override
@@ -480,7 +480,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Fill an arraylist with all the ID_DIRECTORY values in the tree below and including this directory.
-   * 
+   *
    * @param ids
    *          The arraylist that will contain the directory IDs.
    */
@@ -496,7 +496,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
 
   /**
    * Find the root of the directory tree starting from this directory.
-   * 
+   *
    * @return the root of the directory tree
    */
   @Override

@@ -22,9 +22,9 @@ public class AbortTest {
   @Before
   public void setup() {
     stepMockHelper =
-        new StepMockHelper<AbortMeta, StepDataInterface>( "ABORT TEST", AbortMeta.class, StepDataInterface.class );
-    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        stepMockHelper.logChannelInterface );
+      new StepMockHelper<AbortMeta, StepDataInterface>( "ABORT TEST", AbortMeta.class, StepDataInterface.class );
+    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+      .thenReturn( stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
 
@@ -36,8 +36,9 @@ public class AbortTest {
   @Test
   public void testAbortDoesntAbortWithoutInputRow() throws KettleException {
     Abort abort =
-        new Abort( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
-            stepMockHelper.trans );
+      new Abort(
+        stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        stepMockHelper.trans );
     abort.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
     abort.getInputRowSets().add( stepMockHelper.getMockInputRowSet() );
     assertFalse( abort.isStopped() );
@@ -49,8 +50,9 @@ public class AbortTest {
   @Test
   public void testAbortAbortsWithInputRow() throws KettleException {
     Abort abort =
-        new Abort( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
-            stepMockHelper.trans );
+      new Abort(
+        stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+        stepMockHelper.trans );
     abort.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
     abort.getInputRowSets().add( stepMockHelper.getMockInputRowSet( new Object[] {} ) );
     assertFalse( abort.isStopped() );

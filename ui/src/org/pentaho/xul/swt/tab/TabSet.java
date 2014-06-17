@@ -106,7 +106,7 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
 
   /**
    * Add a tab item to the tab usage history
-   * 
+   *
    * @param item
    *          the tab item to add
    */
@@ -120,14 +120,16 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
 
   /**
    * Remove all occurrences of the specified item from the last used list.
-   * 
+   *
    * @param item
    *          the tab item to remove
    */
   private void removeItemFromHistory( TabItem item ) {
-    while ( lastUsedTabs.remove( item ) ) {
-      // Remove
-    }
+    // Remove
+    boolean removed;
+    do {
+      removed = lastUsedTabs.remove( item );
+    } while ( removed );
   }
 
   public void notifyDeselectListeners( TabItem item ) {
@@ -141,8 +143,10 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
     for ( int i = 0; i < listeners.size(); i++ ) {
       doit &= ( listeners.get( i ) ).tabClose( item );
     }
-    removeItemFromHistory( item );
-    selectLastUsedTab();
+    if ( doit ) {
+      removeItemFromHistory( item );
+      selectLastUsedTab();
+    }
     return doit;
   }
 
@@ -216,11 +220,7 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
   }
 
   public Font getUnchangedFont() {
-    return unchangedFont;
-  }
-
-  public void setUnchangedFont( Font unchangedFont ) {
-    this.unchangedFont = unchangedFont;
+    return tabfolder.getDisplay().getSystemFont();
   }
 
   public void addListener( TabListener listener ) {

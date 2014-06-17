@@ -50,7 +50,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class PreviewSelectDialog extends Dialog {
-  private static Class<?> PKG = PreviewSelectDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PreviewSelectDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFields;
 
@@ -110,14 +110,18 @@ public class PreviewSelectDialog extends Dialog {
     final int FieldsRows = usedSteps.size();
 
     ColumnInfo[] colinf =
-        {
-          new ColumnInfo( BaseMessages.getString( PKG, "PreviewSelectDialog.Column.Stepname" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Stepname
-          new ColumnInfo( BaseMessages.getString( PKG, "PreviewSelectDialog.Column.PreviewSize" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Preview size
-        };
+    {
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "PreviewSelectDialog.Column.Stepname" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false, true ), // Stepname
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "PreviewSelectDialog.Column.PreviewSize" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Preview size
+    };
 
-    wFields = new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, true, // read-only
+    wFields =
+      new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows,
+        true, // read-only
         null, props );
 
     fdFields = new FormData();

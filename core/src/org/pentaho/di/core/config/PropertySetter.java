@@ -34,9 +34,9 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Helper class that allows properties to be set based on predefined prefixes, such as ognl:.
- * 
+ *
  * @author Alex Silva
- * 
+ *
  */
 public class PropertySetter {
   // for later maybe; when we have a centralized message repository.
@@ -56,8 +56,8 @@ public class PropertySetter {
     Object val;
 
     if ( expression.length == 0 ) {
-      throw new KettleConfigException( "No value found for property [" + property + "] and obbject class ["
-          + obj.getClass().getName() + "]" );
+      throw new KettleConfigException( "No value found for property ["
+        + property + "] and obbject class [" + obj.getClass().getName() + "]" );
     }
 
     String directive = expression[0];
@@ -71,8 +71,8 @@ public class PropertySetter {
         val = BaseMessages.getString( packageName, key );
       } else {
         throw new KettleConfigException(
-            "the i18, directive need 3 parameters: i18n, the package name and the key, but " + expression.length
-                + " parameters were found in [" + value + "]" );
+          "the i18, directive need 3 parameters: i18n, the package name and the key, but "
+            + expression.length + " parameters were found in [" + value + "]" );
       }
     } else if ( OGNL.equalsIgnoreCase( directive ) ) {
 
@@ -93,10 +93,12 @@ public class PropertySetter {
         try {
           val = expr.getValue( octx, this );
         } catch ( OgnlException e ) {
-          throw new KettleConfigException( "Unable to get value for expression [" + expression[1] + "] with Ognl", e );
+          throw new KettleConfigException(
+            "Unable to get value for expression [" + expression[1] + "] with Ognl", e );
         }
       } else {
-        throw new KettleConfigException( "the ognl, directive need at least 2 parameters: ongl and the expression but "
+        throw new KettleConfigException(
+          "the ognl, directive need at least 2 parameters: ongl and the expression but "
             + expression.length + " parameters were found in [" + value + "]" );
       }
     } else {

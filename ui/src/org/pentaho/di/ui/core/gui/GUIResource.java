@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -62,10 +63,10 @@ import org.pentaho.di.ui.util.ImageUtil;
 
 /*
  * colors etc. are allocated once and released once at the end of the program.
- * 
+ *
  * @author Matt
  * @since 27/10/2005
- * 
+ *
  */
 public class GUIResource {
 
@@ -140,6 +141,8 @@ public class GUIResource {
   private ManagedFont fontTiny;
 
   private ManagedFont fontSmall;
+
+  private ManagedFont fontBold;
 
   /* * * Images * * */
   private Map<String, Image> imagesSteps = new Hashtable<String, Image>();
@@ -341,8 +344,6 @@ public class GUIResource {
 
   private Map<RGB, Color> colorMap;
 
-  private ManagedFont fontBold;
-
   private Image imageSpoonHigh;
 
   private Image imageHadoop;
@@ -473,8 +474,9 @@ public class GUIResource {
 
     disposeColors( colorMap.values() );
 
-    if ( !reload ) // display shutdown, clean up our mess
-    {
+    if ( !reload ) {
+      // display shutdown, clean up our mess
+
       // Fonts
       fontGraph.dispose();
       fontNote.dispose();
@@ -620,7 +622,7 @@ public class GUIResource {
 
   /**
    * Load all step images from files.
-   * 
+   *
    */
   private void loadStepImages() {
     // imagesSteps.clear();
@@ -646,7 +648,7 @@ public class GUIResource {
         image = ImageUtil.getImage( display, classLoader, filename );
       } catch ( Exception e ) {
         log.logError( "Unable to find required step image file or image format not supported (e.g. interlaced) ["
-            + filename + " : ", e );
+          + filename + " : ", e );
         image = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         GC gc = new GC( image );
         gc.drawRectangle( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
@@ -681,238 +683,314 @@ public class GUIResource {
 
     // Create a medium size version of the graph font
     FontData mediumFontData =
-        new FontData( props.getGraphFont().getName(), (int) Math.round( props.getGraphFont().getHeight() * 1.2 ), props
-            .getGraphFont().getStyle() );
+      new FontData(
+        props.getGraphFont().getName(), (int) Math.round( props.getGraphFont().getHeight() * 1.2 ), props
+          .getGraphFont().getStyle() );
     fontMedium = new ManagedFont( display, mediumFontData );
 
     // Create a medium bold size version of the graph font
     FontData mediumFontBoldData =
-        new FontData( props.getGraphFont().getName(), (int) Math.round( props.getGraphFont().getHeight() * 1.2 ), props
-            .getGraphFont().getStyle()
-            | SWT.BOLD );
+      new FontData(
+        props.getGraphFont().getName(), (int) Math.round( props.getGraphFont().getHeight() * 1.2 ), props
+          .getGraphFont().getStyle()
+          | SWT.BOLD );
     fontMediumBold = new ManagedFont( display, mediumFontBoldData );
 
     // Create a large version of the graph font
     FontData largeFontData =
-        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() * 3, props.getGraphFont()
-            .getStyle() );
+      new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() * 3, props
+        .getGraphFont().getStyle() );
     fontLarge = new ManagedFont( display, largeFontData );
 
     // Create a tiny version of the graph font
     FontData tinyFontData =
-        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 2, props.getGraphFont()
-            .getStyle() );
+      new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 2, props
+        .getGraphFont().getStyle() );
     fontTiny = new ManagedFont( display, tinyFontData );
 
     // Create a small version of the graph font
     FontData smallFontData =
-        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 1, props.getGraphFont()
-            .getStyle() );
+      new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 1, props
+        .getGraphFont().getStyle() );
     fontSmall = new ManagedFont( display, smallFontData );
 
-    // Create a bold version of the default font to display shared objects
-    // in the trees
-    int extraHeigth = 0;
-    if ( Const.isOSX() ) {
-      extraHeigth = 3;
-    }
     FontData boldFontData =
-        new FontData( props.getDefaultFont().getName(), props.getDefaultFont().getHeight() + extraHeigth, props
-            .getDefaultFont().getStyle()
-            | SWT.BOLD );
+      new FontData( props.getDefaultFontData().getName(), props.getDefaultFontData().getHeight(), props
+        .getDefaultFontData().getStyle()
+        | SWT.BOLD );
     fontBold = new ManagedFont( display, boldFontData );
-
   }
 
   private void loadCommonImages() {
-    imageHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HOP_image" ) ); // "ui/images/HOP.png"
-    imageConnection = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CNC_image" ) ); // ,
-                                                                                                               // "ui/images/CNC.png"
-    imageAdd = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Add_image" ) ); // ,
-                                                                                                        // "ui/images/Add.png"
+    // "ui/images/HOP.png"
+    imageHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HOP_image" ) );
+
+    // "ui/images/CNC.png"
+    imageConnection = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CNC_image" ) );
+
+    // "ui/images/Add.png"
+    imageAdd = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Add_image" ) );
 
     imageDisabledHop =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "Disabled_HOP_image" ) ), new RGB( 255, 255, 255 ) );
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "Disabled_HOP_image" ) ), new RGB( 255, 255, 255 ) );
 
-    imageTable = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Table_image" ) ); // ,
-                                                                                                            // "ui/images/table.png"
-    imageSchema = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Schema_image" ) ); // ,
-                                                                                                              // "ui/images/schema.png"
-    imageSynonym = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Synonym_image" ) ); // ,
-                                                                                                                // "ui/images/synonym.png"
-    imageView = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "View_image" ) ); // ,
-                                                                                                          // "ui/images/view.png"
-    imageColor = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Color_image" ) ); // ,
-                                                                                                            // "ui/images/color.png.png"
-    imageNoteSmall = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Note_image" ) ); // ,
-                                                                                                               // "ui/images/noteSmall.png"
-    imageProcedure = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ProcedureSmall_image" ) ); // ,
-                                                                                                                         // "ui/images/proc.png"
+    // "ui/images/table.png"
+    imageTable = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Table_image" ) );
+
+    // "ui/images/schema.png"
+    imageSchema = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Schema_image" ) );
+
+    // "ui/images/synonym.png"
+    imageSynonym = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Synonym_image" ) );
+
+    // "ui/images/view.png"
+    imageView = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "View_image" ) );
+
+    // "ui/images/color.png.png"
+    imageColor = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Color_image" ) );
+
+    // "ui/images/noteSmall.png"
+    imageNoteSmall = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Note_image" ) );
+
+    // "ui/images/proc.png"
+    imageProcedure =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ProcedureSmall_image" ) );
+
+    // , "ui/images/exploreDbSmall.png"
     imageExploreDbSmall =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "ExploreDbSmall_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/exploreDbSmall.png"
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "ExploreDbSmall_image" ) ), new RGB( 255, 255, 255 ) );
 
-    imageCluster = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Cluster_image" ) ); // ,
-                                                                                                                // "ui/images/cluster.png"
+    // "ui/images/cluster.png"
+    imageCluster = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Cluster_image" ) );
+
+    // , "ui/images/slave.png"
     imageSlave =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "Slave_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/slave.png"
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "Slave_image" ) ), new RGB( 255, 255, 255 ) );
 
-    imageKettleLogo = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Logo_lrg_image" ) ); // ,
-                                                                                                                    // "ui/images/logo_kettle_lrg.png"
-    imageBanner = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Banner_bg_image" ) ); // ,
-                                                                                                                 // "ui/images/bg_banner.png"
-    imageBol = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "BOL_image" ) ); // ,
-                                                                                                        // "ui/images/BOL.png"
+    // "ui/images/logo_kettle_lrg.png"
+    imageKettleLogo = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Logo_lrg_image" ) );
+    // "ui/images/bg_banner.png"
+    imageBanner = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Banner_bg_image" ) );
+
+    // "ui/images/BOL.png"
+    imageBol = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "BOL_image" ) );
+
     imageCalendar =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "Calendar_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/Calendar.png"
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "Calendar_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/Calendar.png"
 
-    imageCredits = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Credits_image" ) ); // ,
-                                                                                                                // "ui/images/credits.png"
-    imageStart = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "STR_image" ) ); // ,
-                                                                                                          // "ui/images/STR.png"
-    imageDummy = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DUM_image" ) ); // ,
-                                                                                                          // "ui/images/DUM.png"
-    imageSpoon = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "spoon_image" ) ); // ,
-                                                                                                            // "ui/images/spoon.ico"
-    imageSpoonHigh = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "spoon_image_high" ) ); // ,
-                                                                                                                     // "ui/images/spoon_highres.png"
+    // "ui/images/credits.png"
+    imageCredits = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Credits_image" ) );
 
-    imageJob = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Chef_image" ) ); // ,
-                                                                                                         // "ui/images/chef.png"
-    imagePentaho = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CorpLogo_image" ) ); // ,
-                                                                                                                 // "ui/images/PentahoLogo.png"
-    imagePentahoSwirl = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CorpSwirl_image" ) ); // ,
-                                                                                                                       // "ui/images/pentaho-swirl.png"
-    imageVariable = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Variable_image" ) ); // ,
-                                                                                                                  // "ui/images/variable.png"
+    // "ui/images/STR.png"
+    imageStart = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "STR_image" ) );
+
+    // "ui/images/DUM.png"
+    imageDummy = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DUM_image" ) );
+
+    // "ui/images/spoon.ico"
+    imageSpoon = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "spoon_image" ) );
+
+    // "ui/images/spoon_highres.png"
+    imageSpoonHigh = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "spoon_image_high" ) );
+
+    // "ui/images/chef.png"
+    imageJob = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Chef_image" ) );
+
+    // "ui/images/PentahoLogo.png"
+    imagePentaho = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CorpLogo_image" ) );
+
+    // "ui/images/pentaho-swirl.png"
+    imagePentahoSwirl =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CorpSwirl_image" ) );
+
+    // "ui/images/variable.png"
+    imageVariable = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Variable_image" ) );
+
+    // "ui/images/edit_option.png"
     imageEditOptionButton =
-        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "EditOption_image" ) ); // ,
-                                                                                                        // "ui/images/edit_option.png"
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "EditOption_image" ) );
+
+    // "ui/images/reset_option.png"
     imageResetOptionButton =
-        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ResetOption_image" ) ); // ,
-                                                                                                         // "ui/images/reset_option.png"
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ResetOption_image" ) );
 
-    imageEditSmall = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "EditSmall_image" ) ); // ,
-                                                                                                                    // "ui/images/Edit.png"
+    // "ui/images/Edit.png"
+    imageEditSmall = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "EditSmall_image" ) );
+
+    // "ui/images/exploreSolution.png"
     imageExploreSolutionSmall =
-        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ExploreSolutionSmall_image" ) ); // ,
-                                                                                                                  // "ui/images/exploreSolution.png"
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ExploreSolutionSmall_image" ) );
 
-    imageShowLog = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowLog_image" ) ); // ,
-                                                                                                                // "ui/images/show-log.png"
-    imageShowGrid = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowGrid_image" ) ); // ,
-                                                                                                                  // "ui/images/show-grid.png"
-    imageShowHistory = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowHistory_image" ) ); // ,
-                                                                                                                        // "ui/images/show-history.png"
-    imageShowPerf = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowPerf_image" ) ); // ,
-                                                                                                                  // "ui/images/show-perf.png"
+    // "ui/images/show-log.png"
+    imageShowLog = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowLog_image" ) );
 
-    imageShowInactive = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowInactive_image" ) ); // ui/images/show-inactive-selected.png
-    imageHideInactive = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HideInactive_image" ) ); // ui/images/show-inactive-selected.png
+    // "ui/images/show-grid.png"
+    imageShowGrid = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowGrid_image" ) );
 
-    imageShowSelected = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowSelected_image" ) ); // ui/images/show-selected.png
-    imageShowAll = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowAll_image" ) ); // ui/images/show-all.png
+    // "ui/images/show-history.png"
+    imageShowHistory =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowHistory_image" ) );
 
-    imageClosePanel = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ClosePanel_image" ) ); // ,
-                                                                                                                      // "ui/images/show-perf.png"
+    // "ui/images/show-perf.png"
+    imageShowPerf = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowPerf_image" ) );
+
+    // ui/images/show-inactive-selected.png
+    imageShowInactive =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowInactive_image" ) );
+
+    // ui/images/show-inactive-selected.png
+    imageHideInactive =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HideInactive_image" ) );
+
+    // ui/images/show-selected.png
+    imageShowSelected =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowSelected_image" ) );
+
+    // ui/images/show-all.png
+    imageShowAll = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowAll_image" ) );
+
+    // "ui/images/show-perf.png"
+    imageClosePanel =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ClosePanel_image" ) );
+
+    // "ui/images/show-perf.png"
     imageMaximizePanel =
-        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "MaximizePanel_image" ) ); // ,
-                                                                                                           // "ui/images/show-perf.png"
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "MaximizePanel_image" ) );
+
+    // "ui/images/show-perf.png"
     imageMinimizePanel =
-        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "MinimizePanel_image" ) ); // ,
-                                                                                                           // "ui/images/show-perf.png"
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "MinimizePanel_image" ) );
 
+    // "ui/images/show-perf.png"
     imageShowErrorLines =
-        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowErrorLines_image" ) ); // ,
-                                                                                                            // "ui/images/show-perf.png"
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowErrorLines_image" ) );
 
-    imageShowResults = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowResults_image" ) ); // ,
-                                                                                                                        // "ui/images/show-results.png
-    imageHideResults = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HideResults_image" ) ); // ,
-                                                                                                                        // "ui/images/hide-results.png
+    // "ui/images/show-results.png
+    imageShowResults =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowResults_image" ) );
 
-    imageDesignPanel = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DesignPanel_image" ) ); // ,
-                                                                                                                        // "ui/images/Design.png;
-    imageViewPanel = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ViewPanel_image" ) ); // ,
-                                                                                                                    // "ui/images/View.png;
-    imageExpandAll = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ExpandAll_image" ) ); // ,
-                                                                                                                    // "ui/images/ExpandAll.png;
-    imageCollapseAll = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CollapseAll_image" ) ); // ,
-                                                                                                                        // "ui/images/CollapseAll.png;
-    imageStepError = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "StepErrorLines_image" ) ); // ,
-                                                                                                                         // "ui/images/show-error-lines.png;
-    imageCopyHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CopyHop_image" ) ); // ,
-                                                                                                                // "ui/images/copy-hop.png;
-    imageErrorHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ErrorHop_image" ) ); // ,
-                                                                                                                  // "ui/images/error-hop.png;
-    imageInfoHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "InfoHop_image" ) ); // ,
-                                                                                                                // "ui/images/info-hop.png;
-    imageWarning = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Warning_image" ) ); // ,
-                                                                                                                // "ui/images/warning.png;
+    // "ui/images/hide-results.png
+    imageHideResults =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HideResults_image" ) );
+
+    // "ui/images/Design.png;
+    imageDesignPanel =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DesignPanel_image" ) );
+
+    // "ui/images/View.png;
+    imageViewPanel = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ViewPanel_image" ) );
+
+    // "ui/images/ExpandAll.png;
+    imageExpandAll = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ExpandAll_image" ) );
+
+    // "ui/images/CollapseAll.png;
+    imageCollapseAll =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CollapseAll_image" ) );
+
+    // "ui/images/show-error-lines.png;
+    imageStepError =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "StepErrorLines_image" ) );
+
+    // "ui/images/copy-hop.png;
+    imageCopyHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CopyHop_image" ) );
+
+    // "ui/images/error-hop.png;
+    imageErrorHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ErrorHop_image" ) );
+
+    // "ui/images/info-hop.png;
+    imageInfoHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "InfoHop_image" ) );
+
+    // "ui/images/warning.png;
+    imageWarning = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Warning_image" ) );
+
+    // "ui/images/version-history.png;
     imageVersionBrowser =
-        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "VersionBrowser_image" ) ); // ,
-                                                                                                            // "ui/images/version-history.png;
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "VersionBrowser_image" ) );
 
-    imageNew = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "New_image" ) ); // ,
-                                                                                                        // "ui/images/generic-new.png;
-    imageEdit = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Edit_image" ) ); // ,
-                                                                                                          // "ui/images/generic-edit.png;
-    imageDelete = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Delete_image" ) ); // ,
-                                                                                                              // "ui/images/generic-delete.png;
-    imageShowDeleted = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowDeleted_image" ) ); // ,
-                                                                                                                        // "ui/images/show-deleted.png;
+    // "ui/images/generic-new.png;
+    imageNew = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "New_image" ) );
 
-    imagePauseLog = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "PauseLog_image" ) ); // ,
-                                                                                                                  // "ui/images/pause-log.png;
-    imageContinueLog = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ContinueLog_image" ) ); // ,
-                                                                                                                        // "ui/images/continue-log.png;
+    // "ui/images/generic-edit.png;
+    imageEdit = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Edit_image" ) );
 
-    imageImport = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Import_image" ) ); // ,
-                                                                                                              // "ui/images/import.png;
-    imageExport = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Export_image" ) ); // ,
-                                                                                                              // "ui/images/export.png;
+    // "ui/images/generic-delete.png;
+    imageDelete = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Delete_image" ) );
 
-    imageHopInput = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopInput_image" ) ); // ,
-                                                                                                                  // "ui/images/hop-input.png;
-    imageHopOutput = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopOutput_image" ) ); // ,
-                                                                                                                    // "ui/images/hop-output.png;
-    imageHopTarget = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopTarget_image" ) ); // ,
-                                                                                                                    // "ui/images/hop-target.png;
+    // "ui/images/show-deleted.png;
+    imageShowDeleted =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ShowDeleted_image" ) );
 
-    imageLocked = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Locked_image" ) ); // ,
-                                                                                                              // "ui/images/locked.png;
+    // "ui/images/pause-log.png;
+    imagePauseLog = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "PauseLog_image" ) );
 
-    imageTrue = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "True_image" ) ); // ,
-                                                                                                          // "ui/images/true.png;
-    imageFalse = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "False_image" ) ); // ,
-                                                                                                            // "ui/images/false.png;
-    imageContextMenu = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ContextMenu_image" ) ); // ,
-                                                                                                                        // "ui/images/context_menu.png;
+    // "ui/images/continue-log.png;
+    imageContinueLog =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ContinueLog_image" ) );
 
-    imageParallelHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ParallelHop_image" ) ); // ,
-                                                                                                                        // "ui/images/parallel-hop.png
+    // "ui/images/import.png;
+    imageImport = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Import_image" ) );
+
+    // "ui/images/export.png;
+    imageExport = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Export_image" ) );
+
+    // "ui/images/hop-input.png;
+    imageHopInput = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopInput_image" ) );
+
+    // "ui/images/hop-output.png;
+    imageHopOutput = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopOutput_image" ) );
+
+    // "ui/images/hop-target.png;
+    imageHopTarget = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopTarget_image" ) );
+
+    // "ui/images/locked.png;
+    imageLocked = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Locked_image" ) );
+
+    // "ui/images/true.png;
+    imageTrue = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "True_image" ) );
+
+    // "ui/images/false.png;
+    imageFalse = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "False_image" ) );
+
+    // "ui/images/context_menu.png;
+    imageContextMenu =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ContextMenu_image" ) );
+
+    // "ui/images/parallel-hop.png
+    imageParallelHop =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ParallelHop_image" ) );
+
+    // "ui/images/unconditional-hop.png
     imageUnconditionalHop =
-        ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "UnconditionalHop_image" ) ); // ,
-                                                                                                              // "ui/images/unconditional-hop.png
-    imageBusy = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Busy_image" ) ); // ,
-                                                                                                          // "ui/images/busy.png
-    imageInject = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Inject_image" ) ); // ,
-                                                                                                              // "ui/images/inject.png
-    imageBalance = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "LoadBalance_image" ) ); // ,
-                                                                                                                    // "ui/images/scales.png
-    imageCheckpoint = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CheckeredFlag_image" ) ); // ,
-                                                                                                                         // "ui/images/scales.png
-    imageGantt = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Gantt_image" ) ); // ,
-                                                                                                            // "ui/images/gantt.png
-    imageHelpWeb = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HelpWeb_image" ) ); // ,
-                                                                                                                // "ui/images/help_web.png
-    imageHadoop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Hadoop_image" ) ); // ,
-                                                                                                              // "ui/images/hadoop.png
-    imageDropHere = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DropHere_image" ) ); // ,
-                                                                                                                  // "ui/images/drop_here.png
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "UnconditionalHop_image" ) );
+
+    // "ui/images/busy.png
+    imageBusy = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Busy_image" ) );
+
+    // "ui/images/inject.png
+    imageInject = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Inject_image" ) );
+
+    // "ui/images/scales.png
+    imageBalance = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "LoadBalance_image" ) );
+
+    // "ui/images/scales.png
+    imageCheckpoint =
+      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CheckeredFlag_image" ) );
+
+    // "ui/images/gantt.png
+    imageGantt = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Gantt_image" ) );
+
+    // "ui/images/help_web.png
+    imageHelpWeb = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HelpWeb_image" ) );
+
+    // "ui/images/hadoop.png
+    imageHadoop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Hadoop_image" ) );
+
+    // "ui/images/drop_here.png
+    imageDropHere = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DropHere_image" ) );
 
     imageEmpty16x16 = new Image( display, 16, 16 );
 
@@ -928,61 +1006,62 @@ public class GUIResource {
     // Makes transparent images "on the fly"
     //
     imageTransGraph =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "SpoonIcon_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/spoongraph.png"
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "SpoonIcon_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/spoongraph.png"
     imageJobGraph =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "ChefIcon_image" ) ), // , "ui/images/chefgraph.png"
-            new RGB( 255, 255, 255 ) );
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "ChefIcon_image" ) ), // , "ui/images/chefgraph.png"
+        new RGB( 255, 255, 255 ) );
     imageLogoSmall =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "Logo_sml_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/kettle_logo_small.png"
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "Logo_sml_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/kettle_logo_small.png"
     imageArrow =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "ArrowIcon_image" ) ), // , "ui/images/arrow.png"
-            new RGB( 255, 255, 255 ) );
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "ArrowIcon_image" ) ), // , "ui/images/arrow.png"
+        new RGB( 255, 255, 255 ) );
 
-    imageWizard = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Wizard_image" ) ); // ,
-                                                                                                              // "ui/images/wizard.png"
+    // "ui/images/wizard.png"
+    imageWizard = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Wizard_image" ) );
+
     imageBanner =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "Banner_bg_image" ) ), // , "ui/images/bg_banner.png"
-            new RGB( 255, 255, 255 ) );
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "Banner_bg_image" ) ), // , "ui/images/bg_banner.png"
+        new RGB( 255, 255, 255 ) );
 
     imageUser =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "User_image" ) ), // , "ui/images/user.png"
-            new RGB( 255, 255, 255 ) );
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "User_image" ) ), // , "ui/images/user.png"
+        new RGB( 255, 255, 255 ) );
     imageProfil =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "Profil_image" ) ), // , "ui/images/profil.png"
-            new RGB( 255, 255, 255 ) );
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "Profil_image" ) ), // , "ui/images/profil.png"
+        new RGB( 255, 255, 255 ) );
 
     imageFolderConnections =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "FolderConnections_image" ) ), // , "ui/images/folder_connection.png"
-            new RGB( 255, 255, 255 ) );
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "FolderConnections_image" ) ), // , "ui/images/folder_connection.png"
+        new RGB( 255, 255, 255 ) );
 
     imageRegExSmall =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "RegExSmall_image" ) ), new RGB( 255, 255, 255 ) );
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "RegExSmall_image" ) ), new RGB( 255, 255, 255 ) );
 
     imageSearchSmall =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "SearchSmall_image" ) ), new RGB( 255, 255, 255 ) );
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "SearchSmall_image" ) ), new RGB( 255, 255, 255 ) );
     imageKeySmall =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "KeySmall_image" ) ), new RGB( 255, 255, 255 ) );
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "KeySmall_image" ) ), new RGB( 255, 255, 255 ) );
 
     imageColumnSmall =
-        ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-            .getProperty( "ColumnSmall_image" ) ), new RGB( 255, 255, 255 ) );
+      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
+        .getProperty( "ColumnSmall_image" ) ), new RGB( 255, 255, 255 ) );
 
   }
 
   /**
    * Load all step images from files.
-   * 
+   *
    */
   private void loadJobEntryImages() {
     imagesJobentries = new Hashtable<String, Image>();
@@ -1009,8 +1088,8 @@ public class GUIResource {
         ClassLoader classLoader = registry.getClassLoader( plugin );
         image = ImageUtil.getImage( display, classLoader, filename );
       } catch ( Exception e ) {
-        log.logError( "Unable to find required job entry image file [" + filename + "] for id [" + plugin.getIds()[0]
-            + "] : " + e.toString() );
+        log.logError( "Unable to find required job entry image file ["
+          + filename + "] for id [" + plugin.getIds()[0] + "] : " + e.toString() );
         image = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         GC gc = new GC( image );
         gc.drawRectangle( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
@@ -1664,7 +1743,7 @@ public class GUIResource {
 
   /**
    * Generic popup with a toggle option
-   * 
+   *
    * @param dialogTitle
    * @param image
    * @param message
@@ -1676,7 +1755,7 @@ public class GUIResource {
    * @return
    */
   public Object[] messageDialogWithToggle( Shell shell, String dialogTitle, Image image, String message,
-      int dialogImageType, String[] buttonLabels, int defaultIndex, String toggleMessage, boolean toggleState ) {
+    int dialogImageType, String[] buttonLabels, int defaultIndex, String toggleMessage, boolean toggleState ) {
     int imageType = 0;
     switch ( dialogImageType ) {
       case Const.WARNING:
@@ -1687,8 +1766,8 @@ public class GUIResource {
     }
 
     MessageDialogWithToggle md =
-        new MessageDialogWithToggle( shell, dialogTitle, image, message, imageType, buttonLabels, defaultIndex,
-            toggleMessage, toggleState );
+      new MessageDialogWithToggle(
+        shell, dialogTitle, image, message, imageType, buttonLabels, defaultIndex, toggleMessage, toggleState );
     int idx = md.open();
     return new Object[] { Integer.valueOf( idx ), Boolean.valueOf( md.getToggleState() ) };
   }
@@ -1703,14 +1782,14 @@ public class GUIResource {
 
     /*
      * Point location = control.getLocation();
-     * 
+     *
      * Composite parent = control.getParent(); while (parent!=null) {
-     * 
+     *
      * Composite newParent = parent.getParent(); if (newParent!=null) { location.x+=parent.getLocation().x;
      * location.y+=parent.getLocation().y; } else { if (parent instanceof Shell) { // Top level shell. Shell shell =
      * (Shell)parent; Rectangle bounds = shell.getBounds(); Rectangle clientArea = shell.getClientArea(); location.x +=
      * bounds.width-clientArea.width; location.y += bounds.height-clientArea.height; } } parent = newParent; }
-     * 
+     *
      * return location;
      */
   }
@@ -1921,7 +2000,7 @@ public class GUIResource {
    * Loads an image from a location once. The second time, the image comes from a cache. Because of this, it's important
    * to never dispose of the image you get from here. (easy!) The images are automatically disposed when the application
    * ends.
-   * 
+   *
    * @param location
    * @return
    */

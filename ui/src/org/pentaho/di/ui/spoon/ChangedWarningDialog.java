@@ -64,7 +64,8 @@ public class ChangedWarningDialog implements ChangedWarningInterface {
     return runXulChangedWarningDialog( fileName ).open();
   }
 
-  protected XulMessageBox runXulChangedWarningDialog( String fileName ) throws IllegalArgumentException, XulException {
+  protected XulMessageBox runXulChangedWarningDialog( String fileName ) throws IllegalArgumentException,
+    XulException {
     container = Spoon.getInstance().getMainSpoonContainer();
 
     XulMessageBox messageBox = (XulMessageBox) container.getDocumentRoot().createElement( "messagebox" );

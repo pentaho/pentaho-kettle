@@ -70,10 +70,10 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = GetFileNamesMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetFileNamesMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String[] YES_NO_COMBO = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  private static final String[] YES_NO_COMBO = new String[] {
+    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
 
   // do not fail if no files?
   private Label wldoNotFailIfNoFile;
@@ -330,7 +330,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
     // ExcludeWildcard field
     wlExcludeWildcardField = new Label( wOriginFiles, SWT.RIGHT );
-    wlExcludeWildcardField.setText( BaseMessages.getString( PKG, "GetFileNamesDialog.wlExcludeWildcardField.Label" ) );
+    wlExcludeWildcardField.setText( BaseMessages
+      .getString( PKG, "GetFileNamesDialog.wlExcludeWildcardField.Label" ) );
     props.setLook( wlExcludeWildcardField );
     fdlExcludeWildcardField = new FormData();
     fdlExcludeWildcardField.left = new FormAttachment( 0, -margin );
@@ -360,7 +361,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
     wIncludeSubFolder = new Button( wOriginFiles, SWT.CHECK );
     props.setLook( wIncludeSubFolder );
-    wIncludeSubFolder.setToolTipText( BaseMessages.getString( PKG, "GetFileNamesDialog.includeSubFolder.Tooltip" ) );
+    wIncludeSubFolder
+      .setToolTipText( BaseMessages.getString( PKG, "GetFileNamesDialog.includeSubFolder.Tooltip" ) );
     fdIncludeSubFolder = new FormData();
     fdIncludeSubFolder.left = new FormAttachment( middle, -margin );
     fdIncludeSubFolder.top = new FormAttachment( wExcludeWildcardField, margin );
@@ -486,17 +488,22 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     wbShowFiles.setLayoutData( fdbShowFiles );
 
     ColumnInfo[] colinfo =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "GetFileNamesDialog.FileDirColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "GetFileNamesDialog.WildcardColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "GetFileNamesDialog.ExcludeWildcardColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "GetFileNamesDialog.Required.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO ),
-          new ColumnInfo( BaseMessages.getString( PKG, "GetFileNamesDialog.IncludeSubDirs.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO ) };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "GetFileNamesDialog.FileDirColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "GetFileNamesDialog.WildcardColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "GetFileNamesDialog.ExcludeWildcardColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "GetFileNamesDialog.Required.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "GetFileNamesDialog.IncludeSubDirs.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO ) };
 
     colinfo[0].setUsingVariables( true );
     colinfo[1].setUsingVariables( true );
@@ -507,8 +514,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     colinfo[4].setToolTip( BaseMessages.getString( PKG, "GetFileNamesDialog.IncludeSubDirs.ToolTip" ) );
 
     wFilenameList =
-        new TableView( transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, colinfo.length,
-            lsMod, props );
+      new TableView(
+        transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, colinfo.length, lsMod,
+        props );
     props.setLook( wFilenameList );
     fdFilenameList = new FormData();
     fdFilenameList.left = new FormAttachment( middle, 0 );
@@ -639,7 +647,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     wldoNotFailIfNoFile.setLayoutData( fdldoNotFailIfNoFile );
     wdoNotFailIfNoFile = new Button( wFilterComp, SWT.CHECK );
     props.setLook( wdoNotFailIfNoFile );
-    wdoNotFailIfNoFile.setToolTipText( BaseMessages.getString( PKG, "GetFileNamesDialog.doNotFailIfNoFile.Tooltip" ) );
+    wdoNotFailIfNoFile.setToolTipText( BaseMessages
+      .getString( PKG, "GetFileNamesDialog.doNotFailIfNoFile.Tooltip" ) );
     fddoNotFailIfNoFile = new FormData();
     fddoNotFailIfNoFile.left = new FormAttachment( middle, 0 );
     fddoNotFailIfNoFile.top = new FormAttachment( wAdditionalGroup, 2 * margin );
@@ -758,7 +767,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFilenameList.add( new String[] { wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
+        wFilenameList.add( new String[] {
+          wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
           GetFileNamesMeta.RequiredFilesCode[0], GetFileNamesMeta.RequiredFilesCode[0] } );
         wFilename.setText( "" );
         wFilemask.setText( "" );
@@ -904,8 +914,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
         }
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "GetFileNamesDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "GetFileNamesDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "GetFileNamesDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "GetFileNamesDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -943,7 +954,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
   /**
    * Read the data from the GetFileNamesMeta object and show it in this dialog.
-   * 
+   *
    * @param meta
    *          The TextFileInputMeta object to obtain the data from.
    */
@@ -954,10 +965,10 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
       wFilenameList.removeAll();
 
       for ( int i = 0; i < meta.getFileName().length; i++ ) {
-        wFilenameList
-            .add( new String[] { in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
-              in.getRequiredFilesDesc( in.getFileRequired()[i] ),
-              in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
+        wFilenameList.add( new String[] {
+          in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
+          in.getRequiredFilesDesc( in.getFileRequired()[i] ),
+          in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
       }
 
       wdoNotFailIfNoFile.setSelection( in.isdoNotFailIfNoFile() );
@@ -1041,17 +1052,18 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     GetFileNamesMeta oneMeta = new GetFileNamesMeta();
     getInfo( oneMeta );
 
-    TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+    TransMeta previewMeta =
+      TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-            "GetFileNamesDialog.PreviewSize.DialogTitle" ), BaseMessages.getString( PKG,
-            "GetFileNamesDialog.PreviewSize.DialogMessage" ) );
+      new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "GetFileNamesDialog.PreviewSize.DialogTitle" ),
+        BaseMessages.getString( PKG, "GetFileNamesDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-              new int[] { previewSize } );
+        new TransPreviewProgressDialog(
+          shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       if ( !progressDialog.isCancelled() ) {
@@ -1060,16 +1072,16 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
-                  .getString( PKG, "GetFileNamesDialog.ErrorInPreview.DialogMessage" ), loggingText, true );
+            new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+              .getString( PKG, "GetFileNamesDialog.ErrorInPreview.DialogMessage" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
 
         PreviewRowsDialog prd =
-            new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                loggingText );
+          new PreviewRowsDialog(
+            shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+              .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
         prd.open();
       }
     }

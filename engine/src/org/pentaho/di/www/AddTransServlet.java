@@ -59,7 +59,8 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
     super( transformationMap, socketRepository );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getRequestURI().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -124,7 +125,8 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
       final Repository repository = transExecutionConfiguration.getRepository();
 
       String carteObjectId = UUID.randomUUID().toString();
-      SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
+      SimpleLoggingObject servletLoggingObject =
+        new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
       servletLoggingObject.setContainerObjectId( carteObjectId );
       servletLoggingObject.setLogLevel( transExecutionConfiguration.getLogLevel() );
 
@@ -137,10 +139,10 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
         final LogChannelFileWriter logChannelFileWriter;
         try {
           FileUtil.createParentFolder( AddTransServlet.class, realLogFilename, transExecutionConfiguration
-              .isCreateParentFolder(), trans.getLogChannel(), trans );
+            .isCreateParentFolder(), trans.getLogChannel(), trans );
           logChannelFileWriter =
-              new LogChannelFileWriter( servletLoggingObject.getLogChannelId(), KettleVFS
-                  .getFileObject( realLogFilename ), transExecutionConfiguration.isSetAppendLogfile() );
+            new LogChannelFileWriter( servletLoggingObject.getLogChannelId(), KettleVFS
+              .getFileObject( realLogFilename ), transExecutionConfiguration.isSetAppendLogfile() );
           logChannelFileWriter.startLogging();
 
           trans.addTransListener( new TransAdapter() {
@@ -183,8 +185,9 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
         out.println( new WebResult( WebResult.STRING_OK, message, carteObjectId ) );
       } else {
         out.println( "<H1>" + message + "</H1>" );
-        out.println( "<p><a href=\"" + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-            + trans.getName() + "&id=" + carteObjectId + "\">Go to the transformation status page</a><p>" );
+        out.println( "<p><a href=\""
+          + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name=" + trans.getName() + "&id="
+          + carteObjectId + "\">Go to the transformation status page</a><p>" );
       }
     } catch ( Exception ex ) {
       if ( useXML ) {

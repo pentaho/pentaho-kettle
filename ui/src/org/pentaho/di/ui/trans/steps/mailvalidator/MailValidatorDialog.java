@@ -56,7 +56,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MailValidatorDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = MailValidatorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MailValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private boolean gotPreviousFields = false;
 
@@ -308,8 +308,8 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
     wldynamicDefaultSMTP.setLayoutData( fdldynamicDefaultSMTP );
     wdynamicDefaultSMTP = new Button( wSettingsGroup, SWT.CHECK );
     props.setLook( wdynamicDefaultSMTP );
-    wdynamicDefaultSMTP
-        .setToolTipText( BaseMessages.getString( PKG, "MailValidatorDialog.dynamicDefaultSMTP.Tooltip" ) );
+    wdynamicDefaultSMTP.setToolTipText( BaseMessages.getString(
+      PKG, "MailValidatorDialog.dynamicDefaultSMTP.Tooltip" ) );
     fddynamicDefaultSMTP = new FormData();
     fddynamicDefaultSMTP.left = new FormAttachment( middle, -margin );
     fddynamicDefaultSMTP.top = new FormAttachment( wDefaultSMTP, margin );
@@ -427,8 +427,8 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
     wlResultStringTrue.setLayoutData( fdlResultStringTrue );
 
     wResultStringTrue = new TextVar( transMeta, wResultGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wResultStringTrue
-        .setToolTipText( BaseMessages.getString( PKG, "MailValidatorDialog.ResultStringTrueField.Tooltip" ) );
+    wResultStringTrue.setToolTipText( BaseMessages.getString(
+      PKG, "MailValidatorDialog.ResultStringTrueField.Tooltip" ) );
     props.setLook( wResultStringTrue );
     wResultStringTrue.addModifyListener( lsMod );
     fdResultStringTrue = new FormData();
@@ -439,7 +439,8 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 
     // ResultStringFalse fieldname ...
     wlResultStringFalse = new Label( wResultGroup, SWT.RIGHT );
-    wlResultStringFalse.setText( BaseMessages.getString( PKG, "MailValidatorDialog.ResultStringFalseField.Label" ) );
+    wlResultStringFalse
+      .setText( BaseMessages.getString( PKG, "MailValidatorDialog.ResultStringFalseField.Label" ) );
     props.setLook( wlResultStringFalse );
     fdlResultStringFalse = new FormData();
     fdlResultStringFalse.left = new FormAttachment( 0, 0 );
@@ -448,8 +449,8 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
     wlResultStringFalse.setLayoutData( fdlResultStringFalse );
 
     wResultStringFalse = new TextVar( transMeta, wResultGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wResultStringFalse.setToolTipText( BaseMessages.getString( PKG,
-        "MailValidatorDialog.ResultStringFalseField.Tooltip" ) );
+    wResultStringFalse.setToolTipText( BaseMessages.getString(
+      PKG, "MailValidatorDialog.ResultStringFalseField.Tooltip" ) );
     props.setLook( wResultStringFalse );
     wResultStringFalse.addModifyListener( lsMod );
     fdResultStringFalse = new FormData();
@@ -582,14 +583,8 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
     if ( input.getErrorsField() != null ) {
       wErrorMsg.setText( input.getErrorsField() );
     }
-    if ( input.getTimeOut() != null ) {
-      int i = Const.toInt( input.getTimeOut(), 0 );
-      if ( i == 0 ) {
-        wTimeOut.setText( "0" );
-      } else {
-        wTimeOut.setText( input.getTimeOut() );
-      }
-    }
+    int timeout = Const.toInt( input.getTimeOut(), 0 );
+    wTimeOut.setText( String.valueOf( timeout ) );
     wSMTPCheck.setSelection( input.isSMTPCheck() );
     if ( input.getDefaultSMTP() != null ) {
       wDefaultSMTP.setText( input.getDefaultSMTP() );
@@ -669,8 +664,9 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
         }
         gotPreviousFields = true;
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "MailValidatorDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "MailValidatorDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "MailValidatorDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "MailValidatorDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

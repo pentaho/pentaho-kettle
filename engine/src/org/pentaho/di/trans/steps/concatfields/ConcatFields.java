@@ -45,13 +45,13 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileOutput;
  */
 public class ConcatFields extends TextFileOutput implements StepInterface {
 
-  private static Class<?> PKG = ConcatFields.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ConcatFields.class; // for i18n purposes, needed by Translator2!!
 
   public ConcatFieldsMeta meta;
   public ConcatFieldsData data;
 
   public ConcatFields( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans ); // allocate TextFileOutput
   }
 
@@ -74,31 +74,21 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
       // the field precisions and lengths are altered! see TextFileOutputMeta.getFields().
       // otherwise trim(), padding etc. will not work
       data.inputRowMetaModified = getInputRowMeta().clone();
-      meta.getFieldsModifyInput( data.inputRowMetaModified, getStepname(), null, null, this, repository, metaStore );
+      meta
+        .getFieldsModifyInput( data.inputRowMetaModified, getStepname(), null, null, this, repository, metaStore );
 
       data.posTargetField = data.outputRowMeta.indexOfValue( meta.getTargetFieldName() );
       if ( data.posTargetField < 0 ) {
-        throw new KettleStepException( BaseMessages.getString( PKG,
-            "ConcatFields.Error.TargetFieldNotFoundOutputStream", "" + meta.getTargetFieldName() ) );
-      }
-
-      if ( !meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled() ) ) // See if we have to write a
-                                                                                            // header-line)
-      {
-        if ( !meta.isFileNameInField() && meta.isHeaderEnabled() && data.outputRowMeta != null ) {
-          writeHeader();
-          // add an empty line for the header
-          Object[] row = new Object[data.outputRowMeta.size()];
-          putRowFromStream( row );
-        }
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "ConcatFields.Error.TargetFieldNotFoundOutputStream", "" + meta.getTargetFieldName() ) );
       }
 
       data.fieldnrs = new int[meta.getOutputFields().length];
       for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
         data.fieldnrs[i] = data.inputRowMetaModified.indexOfValue( meta.getOutputFields()[i].getName() );
         if ( data.fieldnrs[i] < 0 ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "ConcatFields.Error.FieldNotFoundInputStream", ""
-              + meta.getOutputFields()[i].getName() ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "ConcatFields.Error.FieldNotFoundInputStream", "" + meta.getOutputFields()[i].getName() ) );
         }
       }
 
@@ -111,25 +101,14 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
           data.targetFieldLengthFastDataDump = 50 * meta.getOutputFields().length;
         }
       }
+      prepareForReMap();
 
-      // prepare for re-map when removeSelectedFields
-      if ( meta.isRemoveSelectedFields() ) {
-        data.remainingFieldsInputOutputMapping = new int[data.outputRowMeta.size() - 1]; // -1: don't need the new
-                                                                                         // target field
-        String[] fieldNames = data.outputRowMeta.getFieldNames();
-        for ( int i = 0; i < fieldNames.length - 1; i++ ) { // -1: don't search the new target field
-          data.remainingFieldsInputOutputMapping[i] = data.inputRowMetaModified.indexOfValue( fieldNames[i] );
-          if ( data.remainingFieldsInputOutputMapping[i] < 0 ) {
-            throw new KettleStepException( BaseMessages.getString( PKG,
-                "ConcatFields.Error.RemainingFieldNotFoundInputStream", "" + fieldNames[i] ) );
-          }
-        }
-      }
+      checkAndWriteHeader();
     }
 
     if ( ( r == null && data.outputRowMeta != null && meta.isFooterEnabled() )
-        || ( r != null && getLinesWritten() > 0 && meta.getSplitEvery() > 0 && ( ( getLinesWritten() + 1 ) % meta
-            .getSplitEvery() ) == 0 ) ) {
+        || ( r != null && getLinesWritten() > 0 && meta.getSplitEvery() > 0
+            && ( ( getLinesWritten() + 1 ) % meta.getSplitEvery() ) == 0 ) ) {
       if ( data.outputRowMeta != null ) {
         if ( meta.isFooterEnabled() ) {
           writeHeader();
@@ -148,8 +127,8 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
 
     }
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       if ( false == bEndedLineWrote ) {
         // add tag to last line if needed
         writeEndedLine();
@@ -172,8 +151,8 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     }
 
     if ( log.isRowLevel() ) {
-      logRowlevel( BaseMessages.getString( PKG, "ConcatFields.Log.WriteRow" ) + getLinesWritten() + " : "
-          + data.outputRowMeta.getString( r ) );
+      logRowlevel( BaseMessages.getString( PKG, "ConcatFields.Log.WriteRow" )
+        + getLinesWritten() + " : " + data.outputRowMeta.getString( r ) );
     }
     if ( checkFeedback( getLinesRead() ) ) {
       if ( log.isBasic() ) {
@@ -184,8 +163,36 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     return result;
   }
 
+  void checkAndWriteHeader() throws KettleStepException {
+    // See if we have to write a header-line)
+    if ( !meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled() ) ) {
+      if ( !meta.isFileNameInField() && meta.isHeaderEnabled() && data.outputRowMeta != null ) {
+        writeHeader();
+        // add an empty line for the header
+        Object[] row = new Object[data.outputRowMeta.size()];
+        putRowFromStream( row );
+      }
+    }
+  }
+
+  void prepareForReMap() throws KettleStepException {
+    // prepare for re-map when removeSelectedFields
+    if ( meta.isRemoveSelectedFields() ) {
+      data.remainingFieldsInputOutputMapping = new int[data.outputRowMeta.size() - 1]; // -1: don't need the new
+                                                                                       // target field
+      String[] fieldNames = data.outputRowMeta.getFieldNames();
+      for ( int i = 0; i < fieldNames.length - 1; i++ ) { // -1: don't search the new target field
+        data.remainingFieldsInputOutputMapping[i] = data.inputRowMetaModified.indexOfValue( fieldNames[i] );
+        if ( data.remainingFieldsInputOutputMapping[i] < 0 ) {
+          throw new KettleStepException( BaseMessages.getString( PKG,
+              "ConcatFields.Error.RemainingFieldNotFoundInputStream", "" + fieldNames[i] ) );
+        }
+      }
+    }
+  }
+
   // reads the row from the stream, flushs, add target field and call putRow()
-  private void putRowFromStream( Object[] r ) throws KettleStepException {
+  void putRowFromStream( Object[] r ) throws KettleStepException {
 
     byte[] targetBinary = ( (ConcatFieldsOutputStream) data.writer ).read();
     if ( r == null && targetBinary == null ) {
@@ -206,7 +213,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
           outputRowData[data.posTargetField] = new String( targetBinary, meta.getEncoding() );
         } catch ( UnsupportedEncodingException e ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "ConcatFields.Error.UnsupportedEncoding", ""
-              + meta.getEncoding() ) );
+            + meta.getEncoding() ) );
         }
       }
     } else {
@@ -218,7 +225,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
 
   // concat as a fast data dump (no formatting) and call putRow()
   // this method is only called from a normal line, never from header/footer/split stuff
-  private void putRowFastDataDump( Object[] r ) throws KettleStepException {
+  void putRowFastDataDump( Object[] r ) throws KettleStepException {
 
     Object[] outputRowData = prepareOutputRow( r );
 
@@ -262,7 +269,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
   }
 
   // reserve room for the target field and eventually re-map the fields
-  private Object[] prepareOutputRow( Object[] r ) {
+  Object[] prepareOutputRow( Object[] r ) {
     Object[] outputRowData = null;
     if ( !meta.isRemoveSelectedFields() ) {
       // reserve room for the target field

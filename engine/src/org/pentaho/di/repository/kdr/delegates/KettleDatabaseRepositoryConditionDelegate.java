@@ -34,21 +34,22 @@ import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
-  // private static Class<?> PKG = Condition.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  // private static Class<?> PKG = Condition.class; // for i18n purposes, needed by Translator2!!
 
   public KettleDatabaseRepositoryConditionDelegate( KettleDatabaseRepository repository ) {
     super( repository );
   }
 
   public RowMetaAndData getCondition( ObjectId id_condition ) throws KettleException {
-    return repository.connectionDelegate.getOneRow( quoteTable( KettleDatabaseRepository.TABLE_R_CONDITION ),
-        quote( KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION ), id_condition );
+    return repository.connectionDelegate.getOneRow(
+      quoteTable( KettleDatabaseRepository.TABLE_R_CONDITION ),
+      quote( KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION ), id_condition );
   }
 
   /**
-   * 
+   *
    * Read a condition from the repository.
-   * 
+   *
    * @param id_condition
    *          The condition id
    * @throws KettleException
@@ -89,11 +90,12 @@ public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRep
 
         return condition;
       } else {
-        throw new KettleException( "Condition with id_condition=" + id_condition
-            + " could not be found in the repository" );
+        throw new KettleException( "Condition with id_condition="
+          + id_condition + " could not be found in the repository" );
       }
     } catch ( KettleException dbe ) {
-      throw new KettleException( "Error loading condition from the repository (id_condition=" + id_condition + ")", dbe );
+      throw new KettleException(
+        "Error loading condition from the repository (id_condition=" + id_condition + ")", dbe );
     }
   }
 
@@ -115,28 +117,32 @@ public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRep
     }
   }
 
-  public synchronized ObjectId insertCondition( ObjectId id_condition_parent, Condition condition )
-    throws KettleException {
+  public synchronized ObjectId insertCondition( ObjectId id_condition_parent, Condition condition ) throws KettleException {
     ObjectId id = repository.connectionDelegate.getNextConditionID();
 
     String tablename = KettleDatabaseRepository.TABLE_R_CONDITION;
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION,
-        ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION_PARENT,
-        ValueMetaInterface.TYPE_INTEGER ), id_condition_parent );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CONDITION_NEGATED, ValueMetaInterface.TYPE_BOOLEAN ),
-        Boolean.valueOf( condition.isNegated() ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CONDITION_OPERATOR, ValueMetaInterface.TYPE_STRING ),
-        condition.getOperatorDesc() );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION, ValueMetaInterface.TYPE_INTEGER ), id );
     table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_CONDITION_LEFT_NAME, ValueMetaInterface.TYPE_STRING ), condition
-            .getLeftValuename() );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CONDITION_CONDITION_FUNCTION,
-        ValueMetaInterface.TYPE_STRING ), condition.getFunctionDesc() );
-    table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_CONDITION_RIGHT_NAME, ValueMetaInterface.TYPE_STRING ), condition
-            .getRightValuename() );
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION_PARENT, ValueMetaInterface.TYPE_INTEGER ),
+      id_condition_parent );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_CONDITION_NEGATED, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+      .valueOf( condition.isNegated() ) );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_CONDITION_OPERATOR, ValueMetaInterface.TYPE_STRING ), condition
+      .getOperatorDesc() );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_CONDITION_LEFT_NAME, ValueMetaInterface.TYPE_STRING ), condition
+      .getLeftValuename() );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_CONDITION_CONDITION_FUNCTION, ValueMetaInterface.TYPE_STRING ), condition
+      .getFunctionDesc() );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_CONDITION_RIGHT_NAME, ValueMetaInterface.TYPE_STRING ), condition
+      .getRightValuename() );
 
     ObjectId id_value = null;
     ValueMetaAndData v = condition.getRightExact();
@@ -165,12 +171,12 @@ public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRep
       String stringValue = valueMeta.getString( v.getValueData() );
 
       id_value =
-          insertValue( valueMeta.getName(), valueMeta.getTypeDesc(), stringValue, valueMeta.isNull( v.getValueData() ),
-              condition.getRightExactID() );
+        insertValue( valueMeta.getName(), valueMeta.getTypeDesc(), stringValue, valueMeta.isNull( v
+          .getValueData() ), condition.getRightExactID() );
       condition.setRightExactID( id_value );
     }
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CONDITION_ID_VALUE_RIGHT,
-        ValueMetaInterface.TYPE_INTEGER ), id_value );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_CONDITION_ID_VALUE_RIGHT, ValueMetaInterface.TYPE_INTEGER ), id_value );
 
     repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(), tablename );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );
@@ -181,7 +187,7 @@ public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRep
   }
 
   public synchronized ObjectId insertValue( String name, String type, String value_str, boolean isnull,
-      ObjectId id_value_prev ) throws KettleException {
+    ObjectId id_value_prev ) throws KettleException {
     ObjectId id_value = lookupValue( name, type, value_str, isnull );
     // if it didn't exist yet: insert it!!
 
@@ -191,15 +197,17 @@ public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRep
       // Let's see if the same value is not yet available?
       String tablename = KettleDatabaseRepository.TABLE_R_VALUE;
       RowMetaAndData table = new RowMetaAndData();
-      table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_ID_VALUE, ValueMetaInterface.TYPE_INTEGER ),
-          id_value );
-      table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING ), name );
-      table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING ),
-          type );
-      table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING ),
-          value_str );
-      table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN ),
-          Boolean.valueOf( isnull ) );
+      table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_VALUE_ID_VALUE, ValueMetaInterface.TYPE_INTEGER ), id_value );
+      table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING ), name );
+      table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING ), type );
+      table.addValue( new ValueMeta(
+        KettleDatabaseRepository.FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING ), value_str );
+      table.addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+          .valueOf( isnull ) );
 
       repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(), tablename );
       repository.connectionDelegate.getDatabase().setValuesInsert( table );
@@ -210,20 +218,24 @@ public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRep
     return id_value;
   }
 
-  public synchronized ObjectId lookupValue( String name, String type, String value_str, boolean isnull )
-    throws KettleException {
+  public synchronized ObjectId lookupValue( String name, String type, String value_str, boolean isnull ) throws KettleException {
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING ), name );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING ),
-        type );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING ),
+    table.addValue(
+      new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_NAME, ValueMetaInterface.TYPE_STRING ), name );
+    table.addValue(
+      new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE, ValueMetaInterface.TYPE_STRING ), type );
+    table
+      .addValue(
+        new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_VALUE_STR, ValueMetaInterface.TYPE_STRING ),
         value_str );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN ),
-        Boolean.valueOf( isnull ) );
+    table.addValue(
+      new ValueMeta( KettleDatabaseRepository.FIELD_VALUE_IS_NULL, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+        .valueOf( isnull ) );
 
     String sql =
-        "SELECT " + quote( KettleDatabaseRepository.FIELD_VALUE_ID_VALUE ) + " FROM "
-            + quoteTable( KettleDatabaseRepository.TABLE_R_VALUE ) + " ";
+      "SELECT "
+        + quote( KettleDatabaseRepository.FIELD_VALUE_ID_VALUE ) + " FROM "
+        + quoteTable( KettleDatabaseRepository.TABLE_R_VALUE ) + " ";
     sql += "WHERE " + quote( KettleDatabaseRepository.FIELD_VALUE_NAME ) + "       = ? ";
     sql += "AND   " + quote( KettleDatabaseRepository.FIELD_VALUE_VALUE_TYPE ) + " = ? ";
     sql += "AND   " + quote( KettleDatabaseRepository.FIELD_VALUE_VALUE_STR ) + "  = ? ";

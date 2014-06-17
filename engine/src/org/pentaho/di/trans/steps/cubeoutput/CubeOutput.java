@@ -41,19 +41,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Outputs a stream/series of rows to a file, effectively building a sort of (compressed) microcube.
- * 
+ *
  * @author Matt
  * @since 4-apr-2003
  */
 
 public class CubeOutput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = CubeOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CubeOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CubeOutputMeta meta;
   private CubeOutputData data;
 
   public CubeOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -183,8 +183,9 @@ public class CubeOutput extends BaseStep implements StepInterface {
       if ( meta.isAddToResultFiles() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ),
-                getTransMeta().getName(), getStepname() );
+          new ResultFile(
+            ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ), getTransMeta()
+              .getName(), getStepname() );
         resultFile.setComment( "This file was created with a cube file output step" );
         addResultFile( resultFile );
       }

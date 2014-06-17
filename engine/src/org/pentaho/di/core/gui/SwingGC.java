@@ -33,7 +33,9 @@ import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.ImageObserver;
+import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,6 +51,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.reporting.libraries.base.util.WaitingImageObserver;
+
 
 public class SwingGC implements GCInterface {
 
@@ -139,9 +142,15 @@ public class SwingGC implements GCInterface {
 
   private boolean drawingPixelatedImages;
 
-  public SwingGC( ImageObserver observer, Point area, int iconsize, int xOffset, int yOffset ) throws KettleException {
-    this.image = new BufferedImage( area.x, area.y, BufferedImage.TYPE_INT_RGB );
-    this.gc = image.createGraphics();
+  private AffineTransform originalTransform;
+
+  private SwingGC( BufferedImage image, Graphics2D gc, ImageObserver observer,
+      Point area, int iconsize, int xOffset, int yOffset ) throws KettleException {
+    this.image = image;
+    this.gc = gc;
+    if ( gc == null && image != null ) {
+      this.gc = image.createGraphics();
+    }
     this.observer = observer;
     this.stepImages = SwingGUIResource.getInstance().getStepImages();
     this.entryImages = SwingGUIResource.getInstance().getEntryImages();
@@ -149,22 +158,19 @@ public class SwingGC implements GCInterface {
     this.area = area;
     this.xOffset = xOffset;
     this.yOffset = yOffset;
+    this.originalTransform = this.gc.getTransform();
 
     init();
   }
 
-  public SwingGC( Graphics2D gc, Rectangle2D rect, int iconsize, int xOffset, int yOffset ) throws KettleException {
-    this.image = null;
-    this.gc = gc;
-    this.observer = null;
-    this.stepImages = SwingGUIResource.getInstance().getStepImages();
-    this.entryImages = SwingGUIResource.getInstance().getEntryImages();
-    this.iconsize = iconsize;
-    this.area = new Point( (int) rect.getWidth(), (int) rect.getHeight() );
-    this.xOffset = xOffset;
-    this.yOffset = yOffset;
+  public SwingGC( ImageObserver observer, Point area, int iconsize, int xOffset, int yOffset ) throws KettleException {
+    this( new BufferedImage( area.x, area.y, BufferedImage.TYPE_INT_RGB ), null, observer,
+        area, iconsize, xOffset, yOffset );
+  }
 
-    init();
+  public SwingGC( Graphics2D gc, Rectangle2D rect, int iconsize, int xOffset, int yOffset ) throws KettleException {
+    this( null, gc, null,
+        new Point( (int) rect.getWidth(), (int) rect.getHeight() ), iconsize, xOffset, yOffset );
   }
 
   private void init() throws KettleException {
@@ -230,9 +236,10 @@ public class SwingGC implements GCInterface {
       if ( image == null ) {
         image = ImageIO.read( new File( "/" + fileName ) );
       }
-    } // we fail silently as the images may be available in a jar
-    catch ( IIOException iioe ) {
+    } catch ( IIOException iioe ) {
+      // we fail silently as the images may be available in a jar
     } catch ( IOException ioe ) {
+      // we fail silently as the images may be available in a jar
     }
 
     if ( image == null ) {
@@ -284,30 +291,25 @@ public class SwingGC implements GCInterface {
   public void drawPixelatedImage( BufferedImage img, int locationX, int locationY ) {
 
     if ( isDrawingPixelatedImages() ) {
-      BufferedImage bi = new BufferedImage( img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB );
-      Graphics2D g2 = (Graphics2D) bi.getGraphics();
-      g2.setColor( Color.WHITE );
-      g2.fillRect( 0, 0, img.getWidth(), img.getHeight() );
-      g2.drawImage( img, 0, 0, observer );
-      g2.dispose();
+      gc.setBackground( Color.white );
+      ColorModel cm = img.getColorModel();
+      Raster raster = img.getRaster();
 
-      for ( int x = 0; x < bi.getWidth( observer ); x++ ) {
-        for ( int y = 0; y < bi.getHeight( observer ); y++ ) {
-          int rgb = bi.getRGB( x, y );
-          gc.setColor( new Color( rgb ) );
+      for ( int x = 0; x < img.getWidth( observer ); x++ ) {
+        for ( int y = 0; y < img.getHeight( observer ); y++ ) {
+          Object pix = raster.getDataElements( x, y, null );
+          gc.setColor( new Color( cm.getRed( pix ), cm.getGreen( pix ), cm.getBlue( pix ) ) ); //, cm.getAlpha( pixel )
           gc.setStroke( new BasicStroke( 1.0f ) );
-          gc.drawLine( locationX + xOffset + x, locationY + yOffset + y, locationX + xOffset + x, locationY + yOffset
-              + y );
-          // gc.drawLine(locationX+xOffset+x, locationY+yOffset+y,
-          // locationX+xOffset+x+1, locationY+yOffset+y);
-          // gc.drawLine(locationX+xOffset+x, locationY+yOffset+y+1,
-          // locationX+xOffset+x+1, locationY+yOffset+y+1);
-          // gc.fillRect(locationX+xOffset+x, locationY+yOffset+y, 1, 1);
+          gc.drawLine(
+              locationX + xOffset + x,
+              locationY + yOffset + y,
+              locationX + xOffset + x + 1,
+              locationY + yOffset + y + 1 );
         }
       }
     } else {
       while ( !gc.drawImage( img, locationX, locationY, observer ) ) {
-        // Wait
+        continue;
       }
     }
 
@@ -548,10 +550,15 @@ public class SwingGC implements GCInterface {
   }
 
   public void setTransform( float translationX, float translationY, int shadowsize, float magnification ) {
-    AffineTransform transform = new AffineTransform();
+    // PDI-9953 - always use original GC's transform.
+    AffineTransform transform = (AffineTransform) originalTransform.clone();
     transform.translate( translationX + shadowsize * magnification, translationY + shadowsize * magnification );
     transform.scale( magnification, magnification );
     gc.setTransform( transform );
+  }
+
+  public AffineTransform getTransform() {
+    return gc.getTransform();
   }
 
   public Point textExtent( String text ) {
@@ -575,8 +582,8 @@ public class SwingGC implements GCInterface {
     gc.fillRect( x + xOffset, y + yOffset, iconsize, iconsize );
     String steptype = stepMeta.getStepID();
     BufferedImage im = stepImages.get( steptype );
-    if ( im != null ) // Draw the icon!
-    {
+    if ( im != null ) { // Draw the icon!
+
       drawPixelatedImage( im, x + xOffset, y + xOffset );
 
       // gc.drawImage(im, x+xOffset, y+yOffset, observer);
@@ -615,7 +622,7 @@ public class SwingGC implements GCInterface {
     if ( antiAlias ) {
 
       RenderingHints hints =
-          new RenderingHints( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON );
+        new RenderingHints( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON );
       hints.add( new RenderingHints( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY ) );
       hints.add( new RenderingHints( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON ) );
       // hints.add(new RenderingHints(RenderingHints.KEY_ALPHA_INTERPOLATION,

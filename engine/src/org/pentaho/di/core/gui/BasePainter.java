@@ -69,9 +69,9 @@ public class BasePainter {
 
   private int noteFontHeight;
 
-  public BasePainter( GCInterface gc, Object subject, Point area, ScrollBarInterface hori, ScrollBarInterface vert,
-      Point drop_candidate, Rectangle selrect, List<AreaOwner> areaOwners, int iconsize, int linewidth, int gridsize,
-      int shadowSize, boolean antiAliasing, String noteFontName, int noteFontHeight ) {
+  public BasePainter( GCInterface gc, Object subject, Point area, ScrollBarInterface hori,
+    ScrollBarInterface vert, Point drop_candidate, Rectangle selrect, List<AreaOwner> areaOwners, int iconsize,
+    int linewidth, int gridsize, int shadowSize, boolean antiAliasing, String noteFontName, int noteFontHeight ) {
     this.gc = gc;
     this.subject = subject;
     this.area = area;
@@ -134,7 +134,7 @@ public class BasePainter {
     } else {
 
       gc.setFont( Const.NVL( notePadMeta.getFontName(), noteFontName ), notePadMeta.getFontSize() == -1
-          ? noteFontHeight : notePadMeta.getFontSize(), notePadMeta.isFontBold(), notePadMeta.isFontItalic() );
+        ? noteFontHeight : notePadMeta.getFontSize(), notePadMeta.isFontBold(), notePadMeta.isFontItalic() );
 
       ext = gc.textExtent( notePadMeta.getNote() );
     }
@@ -153,7 +153,8 @@ public class BasePainter {
       height = p.y;
     }
 
-    int[] noteshape = new int[] { note.x, note.y, // Top left
+    int[] noteshape = new int[] {
+      note.x, note.y, // Top left
       note.x + width + 2 * margin, note.y, // Top right
       note.x + width + 2 * margin, note.y + height, // bottom right 1
       note.x + width, note.y + height + 2 * margin, // bottom right 2
@@ -166,7 +167,8 @@ public class BasePainter {
     // Draw shadow around note?
     if ( notePadMeta.isDrawShadow() ) {
       int s = shadowSize;
-      int[] shadowa = new int[] { note.x + s, note.y + s, // Top left
+      int[] shadowa = new int[] {
+        note.x + s, note.y + s, // Top left
         note.x + width + 2 * margin + s, note.y + s, // Top right
         note.x + width + 2 * margin + s, note.y + height + s, // bottom right 1
         note.x + width + s, note.y + height + 2 * margin + s, // bottom right 2
@@ -176,15 +178,16 @@ public class BasePainter {
       gc.fillPolygon( shadowa );
     }
     gc.setBackground( notePadMeta.getBackGroundColorRed(), notePadMeta.getBackGroundColorGreen(), notePadMeta
-        .getBackGroundColorBlue() );
+      .getBackGroundColorBlue() );
     gc.setForeground( notePadMeta.getBorderColorRed(), notePadMeta.getBorderColorGreen(), notePadMeta
-        .getBorderColorBlue() );
+      .getBorderColorBlue() );
 
     gc.fillPolygon( noteshape );
     gc.drawPolygon( noteshape );
 
     if ( !Const.isEmpty( notePadMeta.getNote() ) ) {
-      gc.setForeground( notePadMeta.getFontColorRed(), notePadMeta.getFontColorGreen(), notePadMeta.getFontColorBlue() );
+      gc.setForeground( notePadMeta.getFontColorRed(), notePadMeta.getFontColorGreen(), notePadMeta
+        .getFontColorBlue() );
       gc.drawText( notePadMeta.getNote(), note.x + margin, note.y + margin, true );
     }
 
@@ -297,5 +300,153 @@ public class BasePainter {
    */
   public void setMagnification( float magnification ) {
     this.magnification = magnification;
+  }
+
+  public Point getArea() {
+    return area;
+  }
+
+  public void setArea( Point area ) {
+    this.area = area;
+  }
+
+  public ScrollBarInterface getHori() {
+    return hori;
+  }
+
+  public void setHori( ScrollBarInterface hori ) {
+    this.hori = hori;
+  }
+
+  public ScrollBarInterface getVert() {
+    return vert;
+  }
+
+  public void setVert( ScrollBarInterface vert ) {
+    this.vert = vert;
+  }
+
+  public List<AreaOwner> getAreaOwners() {
+    return areaOwners;
+  }
+
+  public void setAreaOwners( List<AreaOwner> areaOwners ) {
+    this.areaOwners = areaOwners;
+  }
+
+  public Point getOffset() {
+    return offset;
+  }
+
+  public void setOffset( Point offset ) {
+    this.offset = offset;
+  }
+
+  public Point getDrop_candidate() {
+    return drop_candidate;
+  }
+
+  public void setDrop_candidate( Point drop_candidate ) {
+    this.drop_candidate = drop_candidate;
+  }
+
+  public int getIconsize() {
+    return iconsize;
+  }
+
+  public void setIconsize( int iconsize ) {
+    this.iconsize = iconsize;
+  }
+
+  public int getGridSize() {
+    return gridSize;
+  }
+
+  public void setGridSize( int gridSize ) {
+    this.gridSize = gridSize;
+  }
+
+  public Rectangle getSelrect() {
+    return selrect;
+  }
+
+  public void setSelrect( Rectangle selrect ) {
+    this.selrect = selrect;
+  }
+
+  public int getLinewidth() {
+    return linewidth;
+  }
+
+  public void setLinewidth( int linewidth ) {
+    this.linewidth = linewidth;
+  }
+
+  public float getTranslationX() {
+    return translationX;
+  }
+
+  public void setTranslationX( float translationX ) {
+    this.translationX = translationX;
+  }
+
+  public float getTranslationY() {
+    return translationY;
+  }
+
+  public void setTranslationY( float translationY ) {
+    this.translationY = translationY;
+  }
+
+  public boolean isShadow() {
+    return shadow;
+  }
+
+  public void setShadow( boolean shadow ) {
+    this.shadow = shadow;
+  }
+
+  public Object getSubject() {
+    return subject;
+  }
+
+  public void setSubject( Object subject ) {
+    this.subject = subject;
+  }
+
+  public GCInterface getGc() {
+    return gc;
+  }
+
+  public void setGc( GCInterface gc ) {
+    this.gc = gc;
+  }
+
+  public int getShadowSize() {
+    return shadowSize;
+  }
+
+  public void setShadowSize( int shadowSize ) {
+    this.shadowSize = shadowSize;
+  }
+
+  public String getNoteFontName() {
+    return noteFontName;
+  }
+
+  public void setNoteFontName( String noteFontName ) {
+    this.noteFontName = noteFontName;
+  }
+
+  public int getNoteFontHeight() {
+    return noteFontHeight;
+  }
+
+  public void setNoteFontHeight( int noteFontHeight ) {
+    this.noteFontHeight = noteFontHeight;
+  }
+
+  public double getTheta() {
+    return theta;
   }
 }

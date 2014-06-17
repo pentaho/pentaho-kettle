@@ -54,11 +54,11 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Dialog for the append step.
- * 
+ *
  * @author Sven Boden
  */
 public class AppendDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = Append.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Append.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlHeadHop;
   private CCombo wHeadHop;

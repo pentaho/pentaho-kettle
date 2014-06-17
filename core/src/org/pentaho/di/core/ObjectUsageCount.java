@@ -67,7 +67,7 @@ public class ObjectUsageCount implements Comparator<ObjectUsageCount>, Comparabl
 
   /**
    * Increment the nr of uses with 1
-   * 
+   *
    * @return the nr of uses
    */
   public int increment() {

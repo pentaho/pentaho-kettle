@@ -67,7 +67,7 @@ import org.w3c.dom.Node;
  */
 
 public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int FILE_TYPE_NONE = 0;
   public static final int FILE_TYPE_UNIX = 1;
@@ -180,8 +180,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       filename = rep.getStepAttributeString( id_step, "filename" );
       lineWidth = rep.getStepAttributeString( id_step, "line_width" );
@@ -204,7 +203,8 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
         field.setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
         field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         field.setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
-        field.setTrimType( ValueMeta.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
+        field.setTrimType( ValueMeta
+          .getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
         field.setCurrency( rep.getStepAttributeString( id_step, i, "field_currency" ) );
         field.setDecimal( rep.getStepAttributeString( id_step, i, "field_decimal" ) );
         field.setGrouping( rep.getStepAttributeString( id_step, i, "field_group" ) );
@@ -219,8 +219,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "filename", filename );
       rep.saveStepAttribute( id_transformation, id_step, "line_width", lineWidth );
@@ -235,17 +234,19 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       for ( int i = 0; i < fieldDefinition.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldDefinition[i].getName() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta.getTypeDesc( fieldDefinition[i]
-            .getType() ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_type", ValueMeta
+          .getTypeDesc( fieldDefinition[i].getType() ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_format", fieldDefinition[i].getFormat() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type", ValueMeta
-            .getTrimTypeCode( fieldDefinition[i].getTrimType() ) );
+          .getTrimTypeCode( fieldDefinition[i].getTrimType() ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", fieldDefinition[i].getCurrency() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", fieldDefinition[i].getDecimal() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_group", fieldDefinition[i].getGrouping() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_width", fieldDefinition[i].getWidth() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_length", fieldDefinition[i].getLength() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", fieldDefinition[i].getPrecision() );
+        rep
+          .saveStepAttribute( id_transformation, id_step, i, "field_precision", fieldDefinition[i]
+            .getPrecision() );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
@@ -253,7 +254,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     try {
       for ( int i = 0; i < fieldDefinition.length; i++ ) {
         FixedFileInputField field = fieldDefinition[i];
@@ -275,7 +276,7 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
         // In case we want to convert Strings...
         //
         ValueMetaInterface storageMetadata =
-            ValueMetaFactory.cloneValueMeta( valueMeta, ValueMetaInterface.TYPE_STRING );
+          ValueMetaFactory.cloneValueMeta( valueMeta, ValueMetaInterface.TYPE_STRING );
         storageMetadata.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
 
         valueMeta.setStorageMetadata( storageMetadata );
@@ -289,38 +290,38 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FixedInputMeta.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "FixedInputMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FixedInputMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "FixedInputMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( Const.isEmpty( filename ) ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FixedInputMeta.CheckResult.NoFilenameSpecified" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "FixedInputMeta.CheckResult.NoFilenameSpecified" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FixedInputMeta.CheckResult.FilenameSpecified" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "FixedInputMeta.CheckResult.FilenameSpecified" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new FixedInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -459,7 +460,8 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
     if ( !Const.isEmpty( filename ) ) {
       // Add the filename to the references, including a reference to this step meta data.
       //
-      reference.getEntries().add( new ResourceEntry( transMeta.environmentSubstitute( filename ), ResourceType.FILE ) );
+      reference.getEntries().add(
+        new ResourceEntry( transMeta.environmentSubstitute( filename ), ResourceType.FILE ) );
     }
     return references;
   }
@@ -563,12 +565,11 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

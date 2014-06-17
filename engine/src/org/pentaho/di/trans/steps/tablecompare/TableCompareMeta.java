@@ -51,15 +51,15 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 //@Step(
-//		id = "TableCompare",
-//		image = "be/kjube/plugins/images/table_compare.png",
-//		description ="kJube.Plugins.TableCompare.Description",
-//		name = "kJube.Plugins.TableCompare.Name",
-//		categoryDescription="kJube.Category.Name",
-//		i18nPackageName="be.kjube.plugins" 
-//	)
+//    id = "TableCompare",
+//    image = "be/kjube/plugins/images/table_compare.png",
+//    description ="kJube.Plugins.TableCompare.Description",
+//    name = "kJube.Plugins.TableCompare.Name",
+//    categoryDescription="kJube.Category.Name",
+//    i18nPackageName="be.kjube.plugins"
+//  )
 public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = TableCompare.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TableCompare.class; // for i18n purposes, needed by Translator2!!
 
   private DatabaseMeta referenceConnection;
   private String referenceSchemaField;
@@ -354,31 +354,31 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
 
   @Override
   public void getFields( RowMetaInterface inputRowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( Const.isEmpty( nrErrorsField ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "TableCompareMeta.Exception.NrErrorsFieldIsNotSpecified" ) );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "TableCompareMeta.Exception.NrErrorsFieldIsNotSpecified" ) );
     }
     if ( Const.isEmpty( nrRecordsReferenceField ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "TableCompareMeta.Exception.NrRecordsReferenceFieldNotSpecified" ) );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "TableCompareMeta.Exception.NrRecordsReferenceFieldNotSpecified" ) );
     }
     if ( Const.isEmpty( nrRecordsCompareField ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "TableCompareMeta.Exception.NrRecordsCompareFieldNotSpecified" ) );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "TableCompareMeta.Exception.NrRecordsCompareFieldNotSpecified" ) );
     }
     if ( Const.isEmpty( nrErrorsLeftJoinField ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "TableCompareMeta.Exception.NrErrorsLeftJoinFieldNotSpecified" ) );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "TableCompareMeta.Exception.NrErrorsLeftJoinFieldNotSpecified" ) );
     }
     if ( Const.isEmpty( nrErrorsInnerJoinField ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "TableCompareMeta.Exception.NrErrorsInnerJoinFieldNotSpecified" ) );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "TableCompareMeta.Exception.NrErrorsInnerJoinFieldNotSpecified" ) );
     }
     if ( Const.isEmpty( nrErrorsRightJoinField ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "TableCompareMeta.Exception.NrErrorsRightJoinFieldNotSpecified" ) );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "TableCompareMeta.Exception.NrErrorsRightJoinFieldNotSpecified" ) );
     }
 
     ValueMetaInterface nrErrorsValueMeta = new ValueMeta( nrErrorsField, ValueMetaInterface.TYPE_INTEGER );
@@ -386,7 +386,8 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     nrErrorsValueMeta.setOrigin( origin );
     inputRowMeta.addValueMeta( nrErrorsValueMeta );
 
-    ValueMetaInterface nrRecordsReference = new ValueMeta( nrRecordsReferenceField, ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface nrRecordsReference =
+      new ValueMeta( nrRecordsReferenceField, ValueMetaInterface.TYPE_INTEGER );
     nrRecordsReference.setLength( 9 );
     nrRecordsReference.setOrigin( origin );
     inputRowMeta.addValueMeta( nrRecordsReference );
@@ -415,12 +416,12 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
   private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       referenceConnection =
-          DatabaseMeta.findDatabase( databases, XMLHandler.getTagValue( stepnode, "reference_connection" ) );
+        DatabaseMeta.findDatabase( databases, XMLHandler.getTagValue( stepnode, "reference_connection" ) );
       referenceSchemaField = XMLHandler.getTagValue( stepnode, "reference_schema_field" );
       referenceTableField = XMLHandler.getTagValue( stepnode, "reference_table_field" );
 
       compareConnection =
-          DatabaseMeta.findDatabase( databases, XMLHandler.getTagValue( stepnode, "compare_connection" ) );
+        DatabaseMeta.findDatabase( databases, XMLHandler.getTagValue( stepnode, "compare_connection" ) );
       compareSchemaField = XMLHandler.getTagValue( stepnode, "compare_schema_field" );
       compareTableField = XMLHandler.getTagValue( stepnode, "compare_table_field" );
 
@@ -447,13 +448,14 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     StringBuffer retval = new StringBuffer();
 
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "reference_connection", referenceConnection == null ? null : referenceConnection
-            .getName() ) );
+      XMLHandler.addTagValue( "reference_connection", referenceConnection == null ? null : referenceConnection
+        .getName() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "reference_schema_field", referenceSchemaField ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "reference_table_field", referenceTableField ) );
 
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "compare_connection", compareConnection == null ? null : compareConnection.getName() ) );
+      XMLHandler.addTagValue( "compare_connection", compareConnection == null ? null : compareConnection
+        .getName() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "compare_schema_field", compareSchemaField ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "compare_table_field", compareTableField ) );
 
@@ -461,11 +463,15 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     retval.append( "      " ).append( XMLHandler.addTagValue( "exclude_fields_field", excludeFieldsField ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "nr_errors_field", nrErrorsField ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "nr_records_reference_field", nrRecordsReferenceField ) );
+    retval.append( "      " ).append(
+      XMLHandler.addTagValue( "nr_records_reference_field", nrRecordsReferenceField ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "nr_records_compare_field", nrRecordsCompareField ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "nr_errors_left_join_field", nrErrorsLeftJoinField ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "nr_errors_inner_join_field", nrErrorsInnerJoinField ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "nr_errors_right_join_field", nrErrorsRightJoinField ) );
+    retval
+      .append( "      " ).append( XMLHandler.addTagValue( "nr_errors_left_join_field", nrErrorsLeftJoinField ) );
+    retval.append( "      " ).append(
+      XMLHandler.addTagValue( "nr_errors_inner_join_field", nrErrorsInnerJoinField ) );
+    retval.append( "      " ).append(
+      XMLHandler.addTagValue( "nr_errors_right_join_field", nrErrorsRightJoinField ) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "key_description_field", keyDescriptionField ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "value_reference_field", valueReferenceField ) );
@@ -483,8 +489,7 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     nrErrorsRightJoinField = "nrErrorsRightJoin";
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
       referenceConnection = rep.loadDatabaseMetaFromStepAttribute( id_step, "reference_connection_id", databases );
@@ -513,10 +518,10 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
-      rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "reference_connection_id", referenceConnection );
+      rep.saveDatabaseMetaStepAttribute(
+        id_transformation, id_step, "reference_connection_id", referenceConnection );
       rep.saveStepAttribute( id_transformation, id_step, "reference_schema_field", referenceSchemaField );
       rep.saveStepAttribute( id_transformation, id_step, "reference_table_field", referenceTableField );
 
@@ -542,38 +547,38 @@ public class TableCompareMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "IfNullMeta.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "IfNullMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "IfNullMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "IfNullMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "IfNullMeta.CheckResult.StepRecevingData2" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "IfNullMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "IfNullMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "IfNullMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new TableCompare( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

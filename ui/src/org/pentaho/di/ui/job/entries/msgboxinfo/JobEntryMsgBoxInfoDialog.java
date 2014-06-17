@@ -57,12 +57,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit a JobEntryEval object.
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryMsgBoxInfo.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryMsgBoxInfo.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
 

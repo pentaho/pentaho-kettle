@@ -41,8 +41,8 @@ public class JobDialogLogTableExtension {
   public ModifyListener lsMod;
   public JobDialog jobDialog;
 
-  public JobDialogLogTableExtension( Direction direction, Shell shell, JobMeta jobMeta, LogTableInterface logTable,
-      Composite wLogOptionsComposite, ModifyListener lsMod, JobDialog jobDialog ) {
+  public JobDialogLogTableExtension( Direction direction, Shell shell, JobMeta jobMeta,
+    LogTableInterface logTable, Composite wLogOptionsComposite, ModifyListener lsMod, JobDialog jobDialog ) {
     super();
     this.direction = direction;
     this.shell = shell;

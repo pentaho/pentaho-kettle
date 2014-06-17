@@ -26,10 +26,10 @@ import org.pentaho.di.core.row.ValueMeta;
 
 /**
  * Describes a single field in an XML output file
- * 
+ *
  * @author Matt
  * @since 14-jan-2006
- * 
+ *
  */
 public class XMLField implements Cloneable {
 
@@ -59,8 +59,8 @@ public class XMLField implements Cloneable {
 
   private ContentType contentType;
 
-  public XMLField( ContentType contentType, String fieldName, String elementName, int type, String format, int length,
-      int precision, String currencySymbol, String decimalSymbol, String groupSymbol, String nullString ) {
+  public XMLField( ContentType contentType, String fieldName, String elementName, int type, String format,
+    int length, int precision, String currencySymbol, String decimalSymbol, String groupSymbol, String nullString ) {
     this.contentType = contentType;
     this.fieldName = fieldName;
     this.elementName = elementName;

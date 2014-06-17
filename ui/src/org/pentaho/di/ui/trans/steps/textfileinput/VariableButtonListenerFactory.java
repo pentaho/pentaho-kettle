@@ -36,18 +36,18 @@ import org.pentaho.di.ui.core.widget.GetCaretPositionInterface;
 import org.pentaho.di.ui.core.widget.InsertTextInterface;
 
 public class VariableButtonListenerFactory {
-  private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   // Listen to the Variable... button
   public static final SelectionAdapter getSelectionAdapter( final Composite composite, final Text destination,
-      VariableSpace space ) {
+    VariableSpace space ) {
     return getSelectionAdapter( composite, destination, null, null, space );
   }
 
   // Listen to the Variable... button
   public static final SelectionAdapter getSelectionAdapter( final Composite composite, final Text destination,
-      final GetCaretPositionInterface getCaretPositionInterface, final InsertTextInterface insertTextInterface,
-      final VariableSpace space ) {
+    final GetCaretPositionInterface getCaretPositionInterface, final InsertTextInterface insertTextInterface,
+    final VariableSpace space ) {
     return new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         String[] keys = space.listVariables();
@@ -70,10 +70,9 @@ public class VariableButtonListenerFactory {
           position = getCaretPositionInterface.getCaretPosition();
         }
 
-        EnterSelectionDialog esd =
-            new EnterSelectionDialog( composite.getShell(), str, BaseMessages.getString( PKG,
-                "System.Dialog.SelectEnvironmentVar.Title" ), BaseMessages.getString( PKG,
-                "System.Dialog.SelectEnvironmentVar.Message" ) );
+        EnterSelectionDialog esd = new EnterSelectionDialog( composite.getShell(), str,
+          BaseMessages.getString( PKG, "System.Dialog.SelectEnvironmentVar.Title" ),
+          BaseMessages.getString( PKG, "System.Dialog.SelectEnvironmentVar.Message" ) );
         if ( esd.open() != null ) {
           int nr = esd.getSelectionNr();
           String var = "${" + key[nr] + "}";

@@ -30,10 +30,11 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 
 public class StepInitThread implements Runnable {
-  private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!
 
   public boolean ok;
   public boolean finished;
+  public boolean doIt;
 
   private StepMetaDataCombi combi;
 
@@ -44,6 +45,7 @@ public class StepInitThread implements Runnable {
     this.log = combi.step.getLogChannel();
     this.ok = false;
     this.finished = false;
+    this.doIt = true;
   }
 
   public String toString() {
@@ -53,6 +55,13 @@ public class StepInitThread implements Runnable {
   public void run() {
     // Set the internal variables also on the initialization thread!
     // ((BaseStep)combi.step).setInternalVariables();
+
+    if ( !doIt ) {
+      // An extension point plugin decided we should not initialize the step.
+      // Logging, error handling, finished flag... should all be handled in the extension point.
+      //
+      return;
+    }
 
     try {
       combi.step.getLogChannel().snap( Metrics.METRIC_STEP_INIT_START );
@@ -95,5 +104,19 @@ public class StepInitThread implements Runnable {
    */
   public void setCombi( StepMetaDataCombi combi ) {
     this.combi = combi;
+  }
+
+  /**
+   * @return the doIt
+   */
+  public boolean isDoIt() {
+    return doIt;
+  }
+
+  /**
+   * @param doIt the doIt to set
+   */
+  public void setDoIt( boolean doIt ) {
+    this.doIt = doIt;
   }
 }

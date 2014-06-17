@@ -111,14 +111,16 @@ public class TransformationHasTransLogConfiguredImportRuleComposite implements I
   }
 
   public void setCompositeData( ImportRuleInterface importRule ) {
-    TransformationHasTransLogConfiguredImportRule rule = (TransformationHasTransLogConfiguredImportRule) importRule;
+    TransformationHasTransLogConfiguredImportRule rule =
+      (TransformationHasTransLogConfiguredImportRule) importRule;
     schemaText.setText( Const.NVL( rule.getSchemaName(), "" ) );
     tableText.setText( Const.NVL( rule.getTableName(), "" ) );
     connectionText.setText( Const.NVL( rule.getConnectionName(), "" ) );
   }
 
   public void getCompositeData( ImportRuleInterface importRule ) {
-    TransformationHasTransLogConfiguredImportRule rule = (TransformationHasTransLogConfiguredImportRule) importRule;
+    TransformationHasTransLogConfiguredImportRule rule =
+      (TransformationHasTransLogConfiguredImportRule) importRule;
     rule.setSchemaName( schemaText.getText() );
     rule.setTableName( tableText.getText() );
     rule.setConnectionName( connectionText.getText() );

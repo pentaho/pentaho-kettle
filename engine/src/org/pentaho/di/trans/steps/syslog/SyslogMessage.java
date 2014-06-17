@@ -34,17 +34,18 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.productivity.java.syslog4j.Syslog;
+import org.productivity.java.syslog4j.SyslogIF;
 
 /**
  * Write message to SyslogMessage *
  * 
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 
 public class SyslogMessage extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SyslogMessageMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SyslogMessageMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SyslogMessageMeta meta;
   private SyslogMessageData data;
@@ -59,8 +60,8 @@ public class SyslogMessage extends BaseStep implements StepInterface {
     data = (SyslogMessageData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -155,13 +156,13 @@ public class SyslogMessage extends BaseStep implements StepInterface {
 
       try {
         // Connect to syslog ...
-        data.syslog = Syslog.getInstance( SyslogDefs.DEFAULT_PROTOCOL_UDP );
+        data.syslog = getSyslog();
         data.syslog.getConfig().setHost( servername );
         data.syslog.getConfig().setPort( nrPort );
         data.syslog.getConfig().setFacility( meta.getFacility() );
         data.syslog.getConfig().setSendLocalName( false );
         data.syslog.getConfig().setSendLocalTimestamp( false );
-
+        data.syslog.initialize( SyslogDefs.DEFAULT_PROTOCOL_UDP, data.syslog.getConfig() );
       } catch ( Exception ex ) {
         logError( BaseMessages.getString( PKG, "SyslogMessage.UnknownHost", servername, ex.getMessage() ) );
         logError( Const.getStackTracker( ex ) );
@@ -170,6 +171,10 @@ public class SyslogMessage extends BaseStep implements StepInterface {
       return true;
     }
     return false;
+  }
+
+  protected SyslogIF getSyslog() {
+    return Syslog.getInstance( SyslogDefs.DEFAULT_PROTOCOL_UDP );
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {

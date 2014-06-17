@@ -34,9 +34,9 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 
 /**
  * This singleton keeps a repository of all the server sockets.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class SocketRepository {
 
@@ -75,18 +75,19 @@ public class SocketRepository {
         long startTime = System.currentTimeMillis();
 
         IOException ioException = null;
-        log.logMinimal( "Carte socket repository : Starting a retry loop to bind the server socket on port " + port
-            + ".  We retry for 5 minutes until the socket clears in your operating system." );
+        log.logMinimal( "Carte socket repository : Starting a retry loop to bind the server socket on port "
+          + port + ".  We retry for 5 minutes until the socket clears in your operating system." );
         while ( !serverSocket.isBound() && totalWait < 300000 ) {
           try {
             totalWait = System.currentTimeMillis() - startTime;
-            log.logMinimal( "Carte socket repository : Retry binding the server socket on port " + port + " after a "
-                + ( totalWait / 1000 ) + " seconds wait..." );
+            log.logMinimal( "Carte socket repository : Retry binding the server socket on port "
+              + port + " after a " + ( totalWait / 1000 ) + " seconds wait..." );
             Thread.sleep( 10000 ); // wait 10 seconds, try again...
             serverSocket.bind( new InetSocketAddress( port ), 100 );
           } catch ( IOException ioe ) {
             ioException = ioe;
           } catch ( Exception ex ) {
+            serverSocket.close();
             throw new IOException( ex.getMessage() );
           }
 
@@ -96,8 +97,8 @@ public class SocketRepository {
           serverSocket.close();
           throw ioException;
         }
-        log.logDetailed( "Carte socket repository : Succesfully bound the server socket on port " + port + " after "
-            + ( totalWait / 1000 ) + " seconds." );
+        log.logDetailed( "Carte socket repository : Succesfully bound the server socket on port "
+          + port + " after " + ( totalWait / 1000 ) + " seconds." );
       }
       entry = new SocketRepositoryEntry( port, serverSocket, true, user );
 
@@ -119,7 +120,7 @@ public class SocketRepository {
 
   /**
    * We don't actually ever close a server socket, we re-use them as much as possible.
-   * 
+   *
    * @param port
    * @throws IOException
    */
@@ -149,17 +150,20 @@ public class SocketRepository {
 
   /**
    * Closes all sockets on application end...
-   * 
+   *
    * @throws IOException
    *           in case there is an error
    */
   public synchronized void closeAll() {
-    for ( Iterator<SocketRepositoryEntry> iterator = socketMap.values().iterator(); iterator.hasNext(); ) {
-      SocketRepositoryEntry entry = iterator.next();
+    for ( Iterator<Map.Entry<Integer, SocketRepositoryEntry>> iterator = socketMap.entrySet().iterator();
+          iterator.hasNext(); ) {
+      Map.Entry<Integer, SocketRepositoryEntry> repositoryEntry = iterator.next();
+      SocketRepositoryEntry entry = repositoryEntry.getValue();
       ServerSocket serverSocket = entry.getServerSocket();
       try {
         if ( serverSocket != null ) {
           serverSocket.close();
+          iterator.remove();
         }
       } catch ( IOException e ) {
         log.logError( "Carte socket repository : Failed to close socket during shutdown", e );
@@ -171,6 +175,7 @@ public class SocketRepository {
     try {
       closeAll();
     } catch ( Exception e ) {
+      // Ignore errors
     } finally {
       super.finalize();
     }

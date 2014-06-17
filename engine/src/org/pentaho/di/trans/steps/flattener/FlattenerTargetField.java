@@ -26,7 +26,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class FlattenerTargetField {
-  private static Class<?> PKG = FlattenerMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FlattenerMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String fieldName;
   private String keyValue;
@@ -50,13 +50,18 @@ public class FlattenerTargetField {
   public static final int TYPE_AGGR_CONCAT_COMMA = 6;
 
   public static final String[] typeAggrCode = /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */
-  { "-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA" //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+  { "-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA"
   };
 
   public static final String[] typeAggrLongDesc =
-      {
-        "-", BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.SUM" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.AVERAGE" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.MIN" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.MAX" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.COUNT_ALL" ), BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.CONCAT_COMMA" ) //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-      };
+  {
+    "-", BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.SUM" ),
+    BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.AVERAGE" ),
+    BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.MIN" ),
+    BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.MAX" ),
+    BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.COUNT_ALL" ),
+    BaseMessages.getString( PKG, "FlattenerTargetField.TypeAggrLongDesc.CONCAT_COMMA" )
+  };
 
   /**
    * @return Returns the fieldName.
@@ -238,7 +243,7 @@ public class FlattenerTargetField {
 
   /**
    * Set the target type
-   * 
+   *
    * @param typeDesc
    *          the target value type description
    */

@@ -380,7 +380,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
     for ( int i = 0; i < nrPositions; i++ ) {
       try {
         inputPosition[i] =
-            new XMLInputSaxFieldPosition( "position" + ( i + 1 ), XMLInputSaxFieldPosition.XML_ELEMENT_POS );
+          new XMLInputSaxFieldPosition( "position" + ( i + 1 ), XMLInputSaxFieldPosition.XML_ELEMENT_POS );
       } catch ( KettleValueException e ) {
         log.logError( Const.getStackTracker( e ) );
       }
@@ -390,7 +390,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < inputFields.length; i++ ) {
       XMLInputSaxField field = inputFields[i];
 
@@ -428,8 +428,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       includeFilename = rep.getStepAttributeBoolean( id_step, "include" );
       filenameField = rep.getStepAttributeString( id_step, "include_field" );
@@ -468,7 +467,8 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
         field.setGroupSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
         field.setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         field.setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
-        field.setTrimType( XMLInputSaxField.getTrimType( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
+        field.setTrimType( XMLInputSaxField.getTrimType( rep
+          .getStepAttributeString( id_step, i, "field_trim_type" ) ) );
         field.setRepeated( rep.getStepAttributeBoolean( id_step, i, "field_repeat" ) );
 
         String fieldPositionCode = rep.getStepAttributeString( id_step, i, "field_position_code" );
@@ -489,8 +489,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "include", includeFilename );
       rep.saveStepAttribute( id_transformation, id_step, "include_field", filenameField );
@@ -521,7 +520,9 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", field.getPrecision() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type", field.getTrimTypeDesc() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_repeat", field.isRepeated() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_position_code", field.getFieldPositionsCode() );
+        rep
+          .saveStepAttribute( id_transformation, id_step, i, "field_position_code", field
+            .getFieldPositionsCode() );
       }
 
       for ( int i = 0; i < inputPosition.length; i++ ) {
@@ -535,7 +536,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
   public String[] getFilePaths( VariableSpace space ) {
     String[] fileRequired = new String[fileName.length];
     for ( int i = 0; i < fileRequired.length; i++ ) {
-      fileRequired[i] = "N"; // $NON-NLS-1$
+      fileRequired[i] = "N";
     }
     return FileInputList.createFilePathList( space, fileName, fileMask, new String[] { null }, fileRequired );
   }
@@ -543,24 +544,26 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
   public FileInputList getTextFileList( VariableSpace space ) {
     String[] fileRequired = new String[fileName.length];
     for ( int i = 0; i < fileRequired.length; i++ ) {
-      fileRequired[i] = "N"; // $NON-NLS-1$
+      fileRequired[i] = "N";
     }
     return FileInputList.createFileList( space, fileName, fileMask, new String[] { null }, fileRequired );
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "This step is not expecting nor reading any input",
-              stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_ERROR, "This step is not expecting nor reading any input", stepMeta );
       remarks.add( cr );
     } else {
-      cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "Not receiving any input from other steps.", stepMeta );
+      cr =
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_OK, "Not receiving any input from other steps.", stepMeta );
       remarks.add( cr );
     }
 
@@ -570,35 +573,41 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "This step is reading " + files.length + " files.",
-              stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_OK, "This step is reading " + files.length + " files.", stepMeta );
       remarks.add( cr );
     }
 
     if ( getInputPosition().length == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR,
-              "No location elements given. Please specify the location of the repeating node in the XML document.",
-              stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_ERROR,
+          "No location elements given. Please specify the location of the repeating node in the XML document.",
+          stepMeta );
       remarks.add( cr );
     } else {
-      cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "At least one location element specified.", stepMeta );
+      cr =
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_OK, "At least one location element specified.", stepMeta );
       remarks.add( cr );
     }
 
     if ( getInputFields().length == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR,
-              "No field elements given. Please specify the fields you wish to extract from the XML document.", stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_ERROR,
+          "No field elements given. Please specify the fields you wish to extract from the XML document.",
+          stepMeta );
       remarks.add( cr );
     } else {
-      cr = new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "At least one field element specified.", stepMeta );
+      cr =
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, "At least one field element specified.", stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new XMLInputSax( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -655,7 +664,8 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
       XMLInputSaxFieldPosition[] positions = field.getFieldPosition();
       for ( int p = 0; p < positions.length; p++ ) {
         XMLInputSaxFieldPosition position = positions[p];
-        if ( position.getType() == XMLInputSaxFieldPosition.XML_ATTRIBUTE && position.getName().equals( attributeName ) ) {
+        if ( position.getType() == XMLInputSaxFieldPosition.XML_ATTRIBUTE
+          && position.getName().equals( attributeName ) ) {
           return i;
         }
       }
@@ -705,7 +715,7 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
    * what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -714,12 +724,11 @@ public class XMLInputSaxMeta extends BaseStepMeta implements StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

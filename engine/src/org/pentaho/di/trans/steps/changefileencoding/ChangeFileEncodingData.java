@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 public class ChangeFileEncodingData extends BaseStepData implements StepDataInterface {
   public int indexOfFileename;
@@ -42,9 +42,6 @@ public class ChangeFileEncodingData extends BaseStepData implements StepDataInte
 
   public RowMetaInterface inputRowMeta;
 
-  /**
-	 * 
-	 */
   public ChangeFileEncodingData() {
     super();
     indexOfFileename = -1;

@@ -69,7 +69,6 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = FieldsChangeSequenceMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   private FieldsChangeSequenceMeta input;
 
@@ -220,10 +219,12 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "FieldsChangeSequenceDialog.Fieldname.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "FieldsChangeSequenceDialog.Fieldname.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -310,7 +311,7 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
 
           } catch ( KettleException e ) {
             logError( BaseMessages.getString( PKG, "FieldsChangeSequenceDialog.ErrorGettingPreviousFields", e
-                .getMessage() ) );
+              .getMessage() ) );
           }
         }
       }
@@ -355,11 +356,12 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
             return true;
           }
         };
-        BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, insertListener );
+        BaseStepDialog
+          .getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, insertListener );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+        .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
 
   }
@@ -409,18 +411,21 @@ public class FieldsChangeSequenceDialog extends BaseStepDialog implements StepDi
     input.allocate( nrfields );
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
+      //CHECKSTYLE:Indentation:OFF
       input.getFieldName()[i] = ti.getText( 1 );
     }
 
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-          new MessageDialogWithToggle( shell, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceDialog.InputNeedSort.DialogMessage", Const.CR )
-              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG,
-              "FieldsChangeSequenceDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
-              STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, "Y" ) ) );
+        new MessageDialogWithToggle( shell,
+          BaseMessages.getString( PKG, "FieldsChangeSequenceDialog.InputNeedSort.DialogTitle" ),
+          null,
+          BaseMessages.getString( PKG, "FieldsChangeSequenceDialog.InputNeedSort.DialogMessage", Const.CR ) + Const.CR,
+          MessageDialog.WARNING,
+          new String[] { BaseMessages.getString( PKG, "FieldsChangeSequenceDialog.InputNeedSort.Option1" ) },
+          0,
+          BaseMessages.getString( PKG, "FieldsChangeSequenceDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase(
+            props.getCustomParameter( STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_CHANGE_SEQUENCE_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );

@@ -44,14 +44,14 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 
 /**
- * 
+ *
  * On page one we select the name of the target transformation and the directory.
- * 
+ *
  * @author Matt
  * @since 29-mar-05
  */
 public class CopyTableWizardPage3 extends WizardPage {
-  private static Class<?> PKG = CopyTableWizard.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CopyTableWizard.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlTransname;
 

@@ -53,11 +53,11 @@ import org.w3c.dom.Node;
 
 /*
  * Created on 03-Juin-2008
- * 
+ *
  */
 
 public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = PGPDecryptStreamMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PGPDecryptStreamMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** GPG location */
   private String gpglocation;
@@ -182,7 +182,7 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output fields (String)
     if ( !Const.isEmpty( resultfieldname ) ) {
       ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( resultfieldname ), ValueMeta.TYPE_STRING );
@@ -196,7 +196,7 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     StringBuffer retval = new StringBuffer();
     retval.append( "    " + XMLHandler.addTagValue( "gpglocation", gpglocation ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "passhrase", Encr.encryptPasswordIfNotUsingVariables( passhrase ) ) );
+      XMLHandler.addTagValue( "passhrase", Encr.encryptPasswordIfNotUsingVariables( passhrase ) ) );
     retval.append( "    " + XMLHandler.addTagValue( "streamfield", streamfield ) );
     retval.append( "    " + XMLHandler.addTagValue( "resultfieldname", resultfieldname ) );
     retval.append( "    " + XMLHandler.addTagValue( "passphraseFromField", passphraseFromField ) );
@@ -213,13 +213,12 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
       passphraseFromField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "passphraseFromField" ) );
       passphraseFieldName = XMLHandler.getTagValue( stepnode, "passphraseFieldName" );
     } catch ( Exception e ) {
-      throw new KettleXMLException(
-          BaseMessages.getString( PKG, "PGPDecryptStreamMeta.Exception.UnableToReadStepInfo" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "PGPDecryptStreamMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       gpglocation = rep.getStepAttributeString( id_step, "gpglocation" );
       passhrase = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "passhrase" ) );
@@ -229,30 +228,30 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
       passphraseFromField = rep.getStepAttributeBoolean( id_step, "passphraseFromField" );
       passphraseFieldName = rep.getStepAttributeString( id_step, "passphraseFieldName" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "PGPDecryptStreamMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "PGPDecryptStreamMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "gpglocation", gpglocation );
       rep.saveStepAttribute( id_transformation, id_step, "passhrase", Encr
-          .encryptPasswordIfNotUsingVariables( passhrase ) );
+        .encryptPasswordIfNotUsingVariables( passhrase ) );
       rep.saveStepAttribute( id_transformation, id_step, "streamfield", streamfield );
       rep.saveStepAttribute( id_transformation, id_step, "resultfieldname", resultfieldname );
       rep.saveStepAttribute( id_transformation, id_step, "passphraseFromField", passphraseFromField );
       rep.saveStepAttribute( id_transformation, id_step, "passphraseFieldName", passphraseFieldName );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "PGPDecryptStreamMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "PGPDecryptStreamMeta.Exception.UnableToSaveStepInfo" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -264,10 +263,8 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
       error_message = BaseMessages.getString( PKG, "PGPDecryptStreamMeta.CheckResult.GPGLocationOK" );
       cr = new CheckResult( CheckResult.TYPE_RESULT_OK, error_message, stepMeta );
     }
-    if ( isPassphraseFromField() ) {
-      // check dynamic passphrase
-    } else {
-      // Check static passphrase
+    if ( !isPassphraseFromField() ) {
+      // Check static pass-phrase
       if ( Const.isEmpty( passhrase ) ) {
         error_message = BaseMessages.getString( PKG, "PGPDecryptStreamMeta.CheckResult.PassphraseMissing" );
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
@@ -298,20 +295,20 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "PGPDecryptStreamMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "PGPDecryptStreamMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "PGPDecryptStreamMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "PGPDecryptStreamMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new PGPDecryptStream( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

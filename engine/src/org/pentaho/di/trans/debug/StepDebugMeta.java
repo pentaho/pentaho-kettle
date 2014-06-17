@@ -32,9 +32,9 @@ import org.pentaho.di.trans.step.StepMeta;
 /**
  * This class is used to define debugging meta data for a certain step. Basically it defines for which condition a
  * break-point becomes active.
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public class StepDebugMeta {
 
@@ -100,7 +100,7 @@ public class StepDebugMeta {
 
   /**
    * Add a break-point listener to the debug information. The listener will be called whenever a condition is hit
-   * 
+   *
    * @param breakPointListener
    *          the break point listener to add
    */
@@ -110,7 +110,7 @@ public class StepDebugMeta {
 
   /**
    * Remove a break-point listener from the debug information.
-   * 
+   *
    * @param breakPointListener
    *          the break point listener to remove
    */

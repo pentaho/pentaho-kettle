@@ -33,7 +33,7 @@ import org.pentaho.di.core.util.StringListPluginProperty;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  */
 public class FastloadControlBuilder {
 
@@ -56,7 +56,7 @@ public class FastloadControlBuilder {
 
   /**
    * Append new line.
-   * 
+   *
    * @return this.
    */
   public FastloadControlBuilder newline() {
@@ -67,7 +67,7 @@ public class FastloadControlBuilder {
 
   /**
    * Append log on. Connection string must be in form [DBHOST]/[USER],[PASSWORD], e.g. localtd/user,pass;
-   * 
+   *
    * @param connectionString
    *          the connection string.
    * @return this.
@@ -82,7 +82,7 @@ public class FastloadControlBuilder {
 
   /**
    * Append log on.
-   * 
+   *
    * @param dbhost
    *          DB host, e.g localtd
    * @param user
@@ -93,8 +93,7 @@ public class FastloadControlBuilder {
    * @throws IllegalArgumentException
    *           if input is invalid.
    */
-  public FastloadControlBuilder logon( final String dbhost, final String user, final String password )
-    throws IllegalArgumentException {
+  public FastloadControlBuilder logon( final String dbhost, final String user, final String password ) throws IllegalArgumentException {
     Assert.assertNotBlank( dbhost, "DB host must not be blank" );
     Assert.assertNotBlank( user, "User must not be blank" );
     Assert.assertNotNull( password, "Password must not be null" );
@@ -108,7 +107,7 @@ public class FastloadControlBuilder {
   }
 
   /**
-   * 
+   *
    * @param format
    *          the format.
    * @return this.
@@ -121,7 +120,7 @@ public class FastloadControlBuilder {
   }
 
   /**
-   * 
+   *
    * @param sessions
    *          the sesssions.
    * @return this.
@@ -134,7 +133,7 @@ public class FastloadControlBuilder {
   }
 
   /**
-   * 
+   *
    * @param errorLimit
    *          the errorLimit.
    * @return this.
@@ -154,7 +153,7 @@ public class FastloadControlBuilder {
    * @return this
    */
   public FastloadControlBuilder define( final RowMetaInterface targetTableFields,
-      StringListPluginProperty tableFieldList, final String dataFile ) {
+    StringListPluginProperty tableFieldList, final String dataFile ) {
     Assert.assertNotNull( targetTableFields, "fields cannot be null" );
     Assert.assertNotNull( dataFile, "dataFile cannot be null" );
 
@@ -171,8 +170,9 @@ public class FastloadControlBuilder {
         } else {
           length = value.getLength();
         }
-        this.builder.append( "(" + "VARCHAR(" + length + "), nullif = '"
-            + String.format( "%1$" + length + "s", DEFAULT_NULL_VALUE ) + "'), " );
+        this.builder.append( "("
+          + "VARCHAR(" + length + "), nullif = '" + String.format( "%1$" + length + "s", DEFAULT_NULL_VALUE )
+          + "'), " );
         this.builder.append( SystemUtils.LINE_SEPARATOR );
       }
     }
@@ -190,7 +190,7 @@ public class FastloadControlBuilder {
    * @return ...
    */
   public FastloadControlBuilder insert( final RowMetaInterface targetTableFields,
-      StringListPluginProperty tableFieldList, final String tableName ) {
+    StringListPluginProperty tableFieldList, final String tableName ) {
     Assert.assertNotNull( targetTableFields, "targetTableFields cannot be null." );
     Assert.assertNotNull( tableName, "TableName cannot be null." );
 
@@ -215,7 +215,7 @@ public class FastloadControlBuilder {
 
   /**
    * show field definition.
-   * 
+   *
    * @return this
    */
   public FastloadControlBuilder show() {
@@ -223,7 +223,7 @@ public class FastloadControlBuilder {
   }
 
   /**
-   * 
+   *
    * @return this
    */
   public FastloadControlBuilder endLoading() {
@@ -232,15 +232,14 @@ public class FastloadControlBuilder {
 
   /**
    * Issue begin loading with default error tables.
-   * 
+   *
    * @param table
    *          the target table.
    * @return this.
    * @throws IllegalArgumentException
    *           if table is invalid.
    */
-  public FastloadControlBuilder beginLoading( final String schemaName, final String table )
-    throws IllegalArgumentException {
+  public FastloadControlBuilder beginLoading( final String schemaName, final String table ) throws IllegalArgumentException {
     Assert.assertNotBlank( table );
     this.builder.append( "BEGIN LOADING " );
     this.builder.append( table );
@@ -263,7 +262,7 @@ public class FastloadControlBuilder {
 
   /**
    * Append line, nothing if line is blank.
-   * 
+   *
    * @param line
    *          line to append.
    * @return this.
@@ -278,7 +277,7 @@ public class FastloadControlBuilder {
 
   /**
    * Append log off.
-   * 
+   *
    * @return this.
    */
   public FastloadControlBuilder logoff() {
@@ -288,7 +287,7 @@ public class FastloadControlBuilder {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override

@@ -94,7 +94,7 @@ public class TimedRow {
 
   /**
    * Get the logging time for this row.
-   * 
+   *
    * @return the logging time for this row.
    */
   public long getLogtime() {

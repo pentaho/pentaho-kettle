@@ -51,11 +51,11 @@ import org.w3c.dom.Node;
 
 /*
  * Created on 03-Juin-2008
- * 
+ *
  */
 
 public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = MailValidatorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MailValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** dynamic email address */
   private String emailfield;
@@ -277,7 +277,7 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     String realResultFieldName = space.environmentSubstitute( resultfieldname );
     if ( ResultAsString ) {
@@ -340,13 +340,12 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
       isdynamicDefaultSMTP = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "isdynamicDefaultSMTP" ) );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "MailValidatorMeta.Exception.UnableToReadStepInfo" ),
-          e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "MailValidatorMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       emailfield = rep.getStepAttributeString( id_step, "emailfield" );
       resultfieldname = rep.getStepAttributeString( id_step, "resultfieldname" );
@@ -364,13 +363,12 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
       isdynamicDefaultSMTP = rep.getStepAttributeBoolean( id_step, "isdynamicDefaultSMTP" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "MailValidatorMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "MailValidatorMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "emailfield", emailfield );
       rep.saveStepAttribute( id_transformation, id_step, "resultfieldname", resultfieldname );
@@ -389,92 +387,92 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "MailValidatorMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( Const.isEmpty( resultfieldname ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MailValidatorMeta.CheckResult.ResultFieldMissing" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "MailValidatorMeta.CheckResult.ResultFieldMissing" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MailValidatorMeta.CheckResult.ResultFieldOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "MailValidatorMeta.CheckResult.ResultFieldOk" ), stepMeta );
     }
     remarks.add( cr );
 
     if ( this.ResultAsString ) {
       if ( Const.isEmpty( emailValideMsg ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "MailValidatorMeta.CheckResult.EmailValidMsgMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "MailValidatorMeta.CheckResult.EmailValidMsgMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "MailValidatorMeta.CheckResult.EmailValidMsgOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "MailValidatorMeta.CheckResult.EmailValidMsgOk" ), stepMeta );
       }
       remarks.add( cr );
 
       if ( Const.isEmpty( emailNotValideMsg ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "MailValidatorMeta.CheckResult.EmailNotValidMsgMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "MailValidatorMeta.CheckResult.EmailNotValidMsgMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "MailValidatorMeta.CheckResult.EmailNotValidMsgOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "MailValidatorMeta.CheckResult.EmailNotValidMsgOk" ), stepMeta );
       }
       remarks.add( cr );
     }
 
     if ( Const.isEmpty( emailfield ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MailValidatorMeta.CheckResult.eMailFieldMissing" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "MailValidatorMeta.CheckResult.eMailFieldMissing" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MailValidatorMeta.CheckResult.eMailFieldOK" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "MailValidatorMeta.CheckResult.eMailFieldOK" ), stepMeta );
     }
     remarks.add( cr );
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MailValidatorMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "MailValidatorMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MailValidatorMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "MailValidatorMeta.CheckResult.NoInpuReceived" ), stepMeta );
     }
     remarks.add( cr );
     if ( ResultAsString ) {
       if ( Const.isEmpty( emailValideMsg ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "MailValidatorMeta.CheckResult.eMailValidMsgMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "MailValidatorMeta.CheckResult.eMailValidMsgMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "MailValidatorMeta.CheckResult.eMailValidMsgOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "MailValidatorMeta.CheckResult.eMailValidMsgOk" ), stepMeta );
       }
       remarks.add( cr );
 
       if ( Const.isEmpty( emailNotValideMsg ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "MailValidatorMeta.CheckResult.eMailNotValidMsgMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "MailValidatorMeta.CheckResult.eMailNotValidMsgMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "MailValidatorMeta.CheckResult.eMailNotValidMsgOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "MailValidatorMeta.CheckResult.eMailNotValidMsgOk" ), stepMeta );
       }
       remarks.add( cr );
     }
@@ -483,12 +481,12 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
       // sender
       if ( Const.isEmpty( emailSender ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "MailValidatorMeta.CheckResult.eMailSenderMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "MailValidatorMeta.CheckResult.eMailSenderMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "MailValidatorMeta.CheckResult.eMailSenderOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "MailValidatorMeta.CheckResult.eMailSenderOk" ), stepMeta );
       }
       remarks.add( cr );
 
@@ -496,12 +494,12 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
       if ( isdynamicDefaultSMTP ) {
         if ( Const.isEmpty( defaultSMTPField ) ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "MailValidatorMeta.CheckResult.dynamicDefaultSMTPFieldMissing" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "MailValidatorMeta.CheckResult.dynamicDefaultSMTPFieldMissing" ), stepMeta );
         } else {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "MailValidatorMeta.CheckResult.dynamicDefaultSMTPFieldOk" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MailValidatorMeta.CheckResult.dynamicDefaultSMTPFieldOk" ), stepMeta );
         }
         remarks.add( cr );
       }
@@ -509,8 +507,8 @@ public class MailValidatorMeta extends BaseStepMeta implements StepMetaInterface
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new MailValidator( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

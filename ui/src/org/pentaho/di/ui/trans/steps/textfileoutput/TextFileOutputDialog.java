@@ -58,6 +58,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.compress.CompressionProviderFactory;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -79,7 +80,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class TextFileOutputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -379,8 +380,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     fdlCreateParentFolder.right = new FormAttachment( middle, -margin );
     wlCreateParentFolder.setLayoutData( fdlCreateParentFolder );
     wCreateParentFolder = new Button( wFileComp, SWT.CHECK );
-    wCreateParentFolder
-        .setToolTipText( BaseMessages.getString( PKG, "TextFileOutputDialog.CreateParentFolder.Tooltip" ) );
+    wCreateParentFolder.setToolTipText( BaseMessages.getString(
+      PKG, "TextFileOutputDialog.CreateParentFolder.Tooltip" ) );
     props.setLook( wCreateParentFolder );
     fdCreateParentFolder = new FormData();
     fdCreateParentFolder.left = new FormAttachment( middle, 0 );
@@ -395,7 +396,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
     // Open new File at Init
     wlDoNotOpenNewFileInit = new Label( wFileComp, SWT.RIGHT );
-    wlDoNotOpenNewFileInit.setText( BaseMessages.getString( PKG, "TextFileOutputDialog.DoNotOpenNewFileInit.Label" ) );
+    wlDoNotOpenNewFileInit.setText( BaseMessages
+      .getString( PKG, "TextFileOutputDialog.DoNotOpenNewFileInit.Label" ) );
     props.setLook( wlDoNotOpenNewFileInit );
     fdlDoNotOpenNewFileInit = new FormData();
     fdlDoNotOpenNewFileInit.left = new FormAttachment( 0, 0 );
@@ -403,8 +405,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     fdlDoNotOpenNewFileInit.right = new FormAttachment( middle, -margin );
     wlDoNotOpenNewFileInit.setLayoutData( fdlDoNotOpenNewFileInit );
     wDoNotOpenNewFileInit = new Button( wFileComp, SWT.CHECK );
-    wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString( PKG,
-        "TextFileOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
+    wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString(
+      PKG, "TextFileOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
     props.setLook( wDoNotOpenNewFileInit );
     fdDoNotOpenNewFileInit = new FormData();
     fdDoNotOpenNewFileInit.left = new FormAttachment( middle, 0 );
@@ -556,7 +558,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     wAddDate.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
-        // System.out.println("wAddDate.getSelection()="+wAddDate.getSelection());
       }
     } );
     // Create multi-part file?
@@ -638,13 +639,12 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     wbShowFiles.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         TextFileOutputMeta tfoi = new TextFileOutputMeta();
-        getInfo( tfoi );
+        saveInfoInMeta( tfoi );
         String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
-          EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                  "TextFileOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString( PKG,
-                  "TextFileOutputDialog.SelectOutputFiles.DialogMessage" ) );
+          EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+            BaseMessages.getString( PKG, "TextFileOutputDialog.SelectOutputFiles.DialogTitle" ),
+            BaseMessages.getString( PKG, "TextFileOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -727,6 +727,15 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     wAppend.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
+
+        if ( checkAppendNoHeaderVariable( "y" ) ) {
+          headerDisabling();
+        }
+      }
+
+      private void headerDisabling() {
+        wHeader.setSelection( false );
+        wHeader.setEnabled( !wAppend.getSelection() );
       }
     } );
 
@@ -802,7 +811,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     } );
 
     wlDisableEnclosureFix = new Label( wContentComp, SWT.RIGHT );
-    wlDisableEnclosureFix.setText( BaseMessages.getString( PKG, "TextFileOutputDialog.DisableEnclosureFix.Label" ) );
+    wlDisableEnclosureFix
+      .setText( BaseMessages.getString( PKG, "TextFileOutputDialog.DisableEnclosureFix.Label" ) );
     props.setLook( wlDisableEnclosureFix );
     fdlDisableEnclosureFix = new FormData();
     fdlDisableEnclosureFix.left = new FormAttachment( 0, 0 );
@@ -842,7 +852,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         input.setChanged();
       }
     } );
-
     wlFooter = new Label( wContentComp, SWT.RIGHT );
     wlFooter.setText( BaseMessages.getString( PKG, "TextFileOutputDialog.Footer.Label" ) );
     props.setLook( wlFooter );
@@ -879,7 +888,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     for ( int i = 0; i < TextFileOutputMeta.formatMapperLineTerminator.length; i++ ) {
       // add e.g. TextFileOutputDialog.Format.DOS, .UNIX, .CR, .None
       wFormat.add( BaseMessages.getString( PKG, "TextFileOutputDialog.Format."
-          + TextFileOutputMeta.formatMapperLineTerminator[i] ) );
+        + TextFileOutputMeta.formatMapperLineTerminator[i] ) );
     }
     wFormat.select( 0 );
     wFormat.addModifyListener( lsMod );
@@ -901,7 +910,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     wCompression.setText( BaseMessages.getString( PKG, "TextFileOutputDialog.Compression.Label" ) );
     props.setLook( wCompression );
 
-    wCompression.setItems( TextFileOutputMeta.fileCompressionTypeCodes );
+    wCompression.setItems( CompressionProviderFactory.getInstance().getCompressionProviderNames() );
     wCompression.addModifyListener( lsMod );
     fdCompression = new FormData();
     fdCompression.left = new FormAttachment( middle, 0 );
@@ -1073,39 +1082,49 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.NameColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TextFileOutputDialog.NameColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.TypeColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TextFileOutputDialog.TypeColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.FormatColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, formats );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TextFileOutputDialog.FormatColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, formats );
     colinf[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.LengthColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TextFileOutputDialog.LengthColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[4] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.PrecisionColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TextFileOutputDialog.PrecisionColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[5] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.CurrencyColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TextFileOutputDialog.CurrencyColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[6] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.DecimalColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TextFileOutputDialog.DecimalColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[7] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.GroupColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TextFileOutputDialog.GroupColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinf[8] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.TrimTypeColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TextFileOutputDialog.TrimTypeColumn.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.trimTypeDesc, true );
     colinf[9] =
-        new ColumnInfo( BaseMessages.getString( PKG, "TextFileOutputDialog.NullColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TextFileOutputDialog.NullColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
 
     wFields =
-        new TableView( transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+      new TableView(
+        transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -1213,19 +1232,23 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         if ( wFilename.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+        dialog.setFilterNames( new String[] {
+          BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
           BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
           BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           String extension = wExtension.getText();
-          if ( extension != null && dialog.getFileName() != null && dialog.getFileName().endsWith( "." + extension ) ) {
+          if ( extension != null
+            && dialog.getFileName() != null && dialog.getFileName().endsWith( "." + extension ) ) {
             // The extension is filled in and matches the end
             // of the selected file => Strip off the extension.
             String fileName = dialog.getFileName();
-            wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" )
-                + fileName.substring( 0, fileName.length() - ( extension.length() + 1 ) ) );
+            wFilename.setText( dialog.getFilterPath()
+              + System.getProperty( "file.separator" )
+              + fileName.substring( 0, fileName.length() - ( extension.length() + 1 ) ) );
           } else {
-            wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
+            wFilename.setText( dialog.getFilterPath()
+              + System.getProperty( "file.separator" ) + dialog.getFileName() );
           }
         }
       }
@@ -1254,6 +1277,12 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     setSize();
 
     getData();
+
+    if ( checkAppendNoHeaderVariable( "y" ) ) {
+      // Actual info just after getData() calling
+      wHeader.setEnabled( !wAppend.getSelection() );
+    }
+
     activeFileNameField();
     enableParentFolder();
     input.setChanged( changed );
@@ -1407,8 +1436,9 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
           wFileNameField.setText( field );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "TextFileOutputDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "TextFileOutputDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "TextFileOutputDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "TextFileOutputDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }
@@ -1522,7 +1552,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     dispose();
   }
 
-  private void getInfo( TextFileOutputMeta tfoi ) {
+  private void saveInfoInMeta( TextFileOutputMeta tfoi ) {
     tfoi.setFileName( wFilename.getText() );
     tfoi.setFileAsCommand( wFileIsCommand.getSelection() );
     tfoi.setServletOutput( wServletOutput.getSelection() );
@@ -1545,6 +1575,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     tfoi.setHeaderEnabled( wHeader.getSelection() );
     tfoi.setFooterEnabled( wFooter.getSelection() );
     tfoi.setFileAppended( wAppend.getSelection() );
+    System.out.println( "wAppend.getSelection()-1: " + wAppend.getSelection() );
     tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
     tfoi.setPartNrInFilename( wAddPartnr.getSelection() );
     tfoi.setDateInFilename( wAddDate.getSelection() );
@@ -1576,6 +1607,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
       field.setGroupingSymbol( item.getText( 8 ) );
       field.setTrimType( ValueMeta.getTrimTypeByDesc( item.getText( 9 ) ) );
       field.setNullString( item.getText( 10 ) );
+      //CHECKSTYLE:Indentation:OFF
       tfoi.getOutputFields()[i] = field;
     }
   }
@@ -1587,7 +1619,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
     stepname = wStepname.getText(); // return value
 
-    getInfo( input );
+    saveInfoInMeta( input );
 
     dispose();
   }
@@ -1646,14 +1678,14 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+        .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
 
   }
 
   /**
    * Sets the output width to minimal width...
-   * 
+   *
    */
   public void setMinimalWidth() {
     int nrNonEmptyFields = wFields.nrNonEmpty();
@@ -1692,5 +1724,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
   private void enableParentFolder() {
     wlCreateParentFolder.setEnabled( !wFileIsCommand.getSelection() );
     wCreateParentFolder.setEnabled( !wFileIsCommand.getSelection() );
+  }
+
+  private boolean checkAppendNoHeaderVariable( String expectedResult ) {
+    String value = Const.NVL( System.getProperty( Const.KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER ), "N" );
+    return value.equalsIgnoreCase( expectedResult );
   }
 }

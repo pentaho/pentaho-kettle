@@ -60,11 +60,12 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = XsdValidatorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XsdValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private FormData fdResultField, fdlXMLStream, fdXMLStream, fdTabFolder, fdOutputStringField, fdlOutputStringField,
-      fdlFilename, fdbFilename, fdFilename, fdValidationMsg, fdIfXMLValid, fdIfXMLUnValid, fdXSDSource, fdlXSDSource,
-      fdXMLSourceFile, fdlXMLSourceFile, fdXSDDefinedColumn, fdlXSDDefinedColumn;
+  private FormData fdResultField, fdlXMLStream, fdXMLStream, fdTabFolder, fdOutputStringField;
+  private FormData fdlOutputStringField, fdlFilename, fdbFilename, fdFilename, fdValidationMsg;
+  private FormData fdIfXMLValid, fdIfXMLUnValid, fdXSDSource, fdlXSDSource, fdXMLSourceFile;
+  private FormData fdlXMLSourceFile, fdXSDDefinedColumn, fdlXSDDefinedColumn;
 
   private LabelTextVar wResultField, wValidationMsg, wIfXMLValid, wIfXMLUnValid;
 
@@ -72,8 +73,8 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 
   private FormData fdlAddValidationMsg, fdAddValidationMsg;
 
-  private Label wlXMLStream, wlFilename, wlAddValidationMsg, wlOutputStringField, wlXSDSource, wlXMLSourceFile,
-      wlXSDDefinedColumn;
+  private Label wlXMLStream, wlFilename, wlAddValidationMsg, wlOutputStringField;
+  private Label wlXSDSource, wlXMLSourceFile, wlXSDDefinedColumn;
 
   private Button wbbFilename, wAddValidationMsg, wOutputStringField, wXMLSourceFile;
 
@@ -244,10 +245,9 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
     wOutputFields.setLayout( groupLayout );
 
     // Output Fieldame
-    wResultField =
-        new LabelTextVar( transMeta, wOutputFields, BaseMessages
-            .getString( PKG, "XsdValidatorDialog.ResultField.Label" ), BaseMessages.getString( PKG,
-            "XsdValidatorDialog.ResultField.Tooltip" ) );
+    wResultField = new LabelTextVar( transMeta, wOutputFields,
+      BaseMessages.getString( PKG, "XsdValidatorDialog.ResultField.Label" ),
+      BaseMessages.getString( PKG, "XsdValidatorDialog.ResultField.Tooltip" ) );
     props.setLook( wResultField );
     wResultField.addModifyListener( lsMod );
     fdResultField = new FormData();
@@ -267,7 +267,8 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
     wlOutputStringField.setLayoutData( fdlOutputStringField );
     wOutputStringField = new Button( wOutputFields, SWT.CHECK );
     props.setLook( wOutputStringField );
-    wOutputStringField.setToolTipText( BaseMessages.getString( PKG, "XsdValidatorDialog.OutputStringField.Tooltip" ) );
+    wOutputStringField.setToolTipText( BaseMessages
+      .getString( PKG, "XsdValidatorDialog.OutputStringField.Tooltip" ) );
     fdOutputStringField = new FormData();
     fdOutputStringField.left = new FormAttachment( middle, margin );
     fdOutputStringField.top = new FormAttachment( wResultField, 2 * margin );
@@ -279,10 +280,9 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
     } );
 
     // Output if XML is valid field
-    wIfXMLValid =
-        new LabelTextVar( transMeta, wOutputFields,
-            BaseMessages.getString( PKG, "XsdValidatorDialog.IfXMLValid.Label" ), BaseMessages.getString( PKG,
-                "XsdValidatorDialog.IfXMLValid.Tooltip" ) );
+    wIfXMLValid = new LabelTextVar( transMeta, wOutputFields,
+      BaseMessages.getString( PKG, "XsdValidatorDialog.IfXMLValid.Label" ),
+      BaseMessages.getString( PKG, "XsdValidatorDialog.IfXMLValid.Tooltip" ) );
     props.setLook( wIfXMLValid );
     wIfXMLValid.addModifyListener( lsMod );
     fdIfXMLValid = new FormData();
@@ -292,10 +292,9 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
     wIfXMLValid.setLayoutData( fdIfXMLValid );
 
     // Output if XML is not valid field
-    wIfXMLUnValid =
-        new LabelTextVar( transMeta, wOutputFields, BaseMessages.getString( PKG,
-            "XsdValidatorDialog.IfXMLUnValid.Label" ), BaseMessages.getString( PKG,
-            "XsdValidatorDialog.IfXMLUnValid.Tooltip" ) );
+    wIfXMLUnValid = new LabelTextVar( transMeta, wOutputFields,
+      BaseMessages.getString( PKG, "XsdValidatorDialog.IfXMLUnValid.Label" ),
+      BaseMessages.getString( PKG, "XsdValidatorDialog.IfXMLUnValid.Tooltip" ) );
     props.setLook( wIfXMLUnValid );
     wIfXMLUnValid.addModifyListener( lsMod );
     fdIfXMLUnValid = new FormData();
@@ -315,7 +314,8 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
     wlAddValidationMsg.setLayoutData( fdlAddValidationMsg );
     wAddValidationMsg = new Button( wOutputFields, SWT.CHECK );
     props.setLook( wAddValidationMsg );
-    wAddValidationMsg.setToolTipText( BaseMessages.getString( PKG, "XsdValidatorDialog.AddValidationMsg.Tooltip" ) );
+    wAddValidationMsg
+      .setToolTipText( BaseMessages.getString( PKG, "XsdValidatorDialog.AddValidationMsg.Tooltip" ) );
     fdAddValidationMsg = new FormData();
     fdAddValidationMsg.left = new FormAttachment( middle, margin );
     fdAddValidationMsg.top = new FormAttachment( wIfXMLUnValid, 2 * margin );
@@ -327,10 +327,9 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
     } );
 
     // Validation Msg Fieldame
-    wValidationMsg =
-        new LabelTextVar( transMeta, wOutputFields, BaseMessages.getString( PKG,
-            "XsdValidatorDialog.ValidationMsg.Label" ), BaseMessages.getString( PKG,
-            "XsdValidatorDialog.ValidationMsg.Tooltip" ) );
+    wValidationMsg = new LabelTextVar( transMeta, wOutputFields,
+      BaseMessages.getString( PKG, "XsdValidatorDialog.ValidationMsg.Label" ),
+      BaseMessages.getString( PKG, "XsdValidatorDialog.ValidationMsg.Tooltip" ) );
     props.setLook( wValidationMsg );
     wValidationMsg.addModifyListener( lsMod );
     fdValidationMsg = new FormData();
@@ -536,7 +535,8 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
           dialog.setFileName( fname );
         }
 
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "XsdValidatorDialog.FileType" ),
+        dialog.setFilterNames( new String[] {
+          BaseMessages.getString( PKG, "XsdValidatorDialog.FileType" ),
           BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
         if ( dialog.open() != null ) {
@@ -612,8 +612,9 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
           wXSDDefinedColumn.setItems( r.getFieldNames() );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "XsdValidatorDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "XsdValidatorDialogMod.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "XsdValidatorDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "XsdValidatorDialogMod.FailedToGetFields.DialogMessage" ), ke );
       }
       if ( fieldXML != null ) {
         wXMLStream.setText( fieldXML );

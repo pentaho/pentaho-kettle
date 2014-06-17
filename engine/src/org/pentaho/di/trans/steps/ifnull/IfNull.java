@@ -41,18 +41,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Sets a field value to a constant if it is null
- * 
+ *
  * @author Samatar
  * @since 30-06-2008
  */
 
 public class IfNull extends BaseStep implements StepInterface {
-  private static Class<?> PKG = IfNullMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = IfNullMeta.class; // for i18n purposes, needed by Translator2!!
 
   private IfNullMeta meta;
   private IfNullData data;
 
-  public IfNull( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public IfNull( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -61,8 +62,8 @@ public class IfNull extends BaseStep implements StepInterface {
     data = (IfNullData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -92,8 +93,8 @@ public class IfNull extends BaseStep implements StepInterface {
             data.fieldnrs[i] = data.outputRowMeta.indexOfValue( meta.getFieldName()[i] );
             if ( data.fieldnrs[i] < 0 ) {
               logError( BaseMessages.getString( PKG, "IfNull.Log.CanNotFindField", meta.getFieldName()[i] ) );
-              throw new KettleException( BaseMessages.getString( PKG, "IfNull.Log.CanNotFindField",
-                  meta.getFieldName()[i] ) );
+              throw new KettleException( BaseMessages.getString( PKG, "IfNull.Log.CanNotFindField", meta
+                .getFieldName()[i] ) );
             }
             data.defaultValues[i] = environmentSubstitute( meta.getReplaceValue()[i] );
             data.defaultMasks[i] = environmentSubstitute( meta.getReplaceMask()[i] );
@@ -119,7 +120,7 @@ public class IfNull extends BaseStep implements StepInterface {
           for ( int i = 0; i < meta.getTypeName().length; i++ ) {
             if ( !AlllistTypes.contains( meta.getTypeName()[i] ) ) {
               throw new KettleException( BaseMessages.getString( PKG, "IfNull.Log.CanNotFindValueType", meta
-                  .getTypeName()[i] ) );
+                .getTypeName()[i] ) );
             }
 
             data.ListTypes.put( meta.getTypeName()[i], i );
@@ -196,16 +197,20 @@ public class IfNull extends BaseStep implements StepInterface {
           ValueMetaInterface fieldMeta = data.outputRowMeta.getValueMeta( data.fieldnrs[i] );
           int pos = data.ListTypes.get( fieldMeta.getTypeDesc() );
 
-          replaceNull( r, sourceValueMeta, data.fieldnrs[i], data.defaultValues[pos], data.defaultMasks[pos],
-              data.setEmptyString[pos] );
+          replaceNull(
+            r, sourceValueMeta, data.fieldnrs[i], data.defaultValues[pos], data.defaultMasks[pos],
+            data.setEmptyString[pos] );
         } else if ( meta.isSelectFields() ) {
-          replaceNull( r, sourceValueMeta, data.fieldnrs[i], data.defaultValues[i], data.defaultMasks[i],
-              data.setEmptyString[i] );
+          replaceNull(
+            r, sourceValueMeta, data.fieldnrs[i], data.defaultValues[i], data.defaultMasks[i],
+            data.setEmptyString[i] );
         } else { // all
           if ( data.outputRowMeta.getValueMeta( data.fieldnrs[i] ).isDate() ) {
-            replaceNull( r, sourceValueMeta, data.fieldnrs[i], data.realReplaceByValue, data.realconversionMask, false );
+            replaceNull(
+              r, sourceValueMeta, data.fieldnrs[i], data.realReplaceByValue, data.realconversionMask, false );
           } else { // don't use any special date format when not a date
-            replaceNull( r, sourceValueMeta, data.fieldnrs[i], data.realReplaceByValue, null, data.realSetEmptyString );
+            replaceNull(
+              r, sourceValueMeta, data.fieldnrs[i], data.realReplaceByValue, null, data.realSetEmptyString );
           }
         }
 
@@ -214,7 +219,7 @@ public class IfNull extends BaseStep implements StepInterface {
   }
 
   public void replaceNull( Object[] row, ValueMetaInterface sourceValueMeta, int i, String realReplaceByValue,
-      String realconversionMask, boolean setEmptystring ) throws Exception {
+    String realconversionMask, boolean setEmptystring ) throws Exception {
     if ( setEmptystring ) {
       row[i] = StringUtil.EMPTY_STRING;
     } else {

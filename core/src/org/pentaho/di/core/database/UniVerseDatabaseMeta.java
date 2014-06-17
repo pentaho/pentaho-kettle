@@ -27,7 +27,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains IBM UniVerse database specific information through static final members
- * 
+ *
  * @author Matt
  * @since 16-nov-2006
  */
@@ -37,7 +37,8 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   /**
@@ -72,7 +73,7 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   /**
    * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
-   * 
+   *
    * @return true is setFetchSize() is supported!
    */
   @Override
@@ -98,14 +99,6 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
   }
 
   /**
-   * @return true if Kettle can create a repository on this type of database.
-   */
-  @Override
-  public boolean supportsRepository() {
-    return false;
-  }
-
-  /**
    * @param tableName
    *          The table to be truncated.
    * @return The SQL statement to truncate a table: remove all rows from it without a transaction
@@ -126,7 +119,7 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
   /**
    * Generates the SQL statement to add a column to the specified table For this generic type, i set it to the most
    * common possibility.
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -143,13 +136,13 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -166,13 +159,13 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " MODIFY " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -195,7 +188,7 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
-            fieldname.equalsIgnoreCase( pk ) // Primary key
+          fieldname.equalsIgnoreCase( pk ) // Primary key
         ) {
           retval += "INTEGER";
         } else {
@@ -232,26 +225,29 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   @Override
   public String[] getReservedWords() {
-    return new String[] { "@NEW", "@OLD", "ACTION", "ADD", "AL", "ALL", "ALTER", "AND", "AR", "AS", "ASC", "ASSOC",
-      "ASSOCIATED", "ASSOCIATION", "AUTHORIZATION", "AVERAGE", "AVG", "BEFORE", "BETWEEN", "BIT", "BOTH", "BY", "CALC",
+    return new String[] {
+      "@NEW", "@OLD", "ACTION", "ADD", "AL", "ALL", "ALTER", "AND", "AR", "AS", "ASC", "ASSOC", "ASSOCIATED",
+      "ASSOCIATION", "AUTHORIZATION", "AVERAGE", "AVG", "BEFORE", "BETWEEN", "BIT", "BOTH", "BY", "CALC",
       "CASCADE", "CASCADED", "CAST", "CHAR", "CHAR_LENGTH", "CHARACTER", "CHARACTER_LENGTH", "CHECK", "COL.HDG",
       "COL.SPACES", "COL.SPCS", "COL.SUP", "COLUMN", "COMPILED", "CONNECT", "CONSTRAINT", "CONV", "CONVERSION",
-      "COUNT", "COUNT.SUP", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_TIME", "DATA", "DATE", "DBA", "DBL.SPC", "DEC",
-      "DECIMAL", "DEFAULT", "DELETE", "DESC", "DET.SUP", "DICT", "DISPLAY.NAME", "DISPLAYLIKE", "DISPLAYNAME",
-      "DISTINCT", "DL", "DOUBLE", "DR", "DROP", "DYNAMIC", "E.EXIST", "EMPTY", "EQ", "EQUAL", "ESCAPE", "EVAL",
-      "EVERY", "EXISTING", "EXISTS", "EXPLAIN", "EXPLICIT", "FAILURE", "FIRST", "FLOAT", "FMT", "FOOTER", "FOOTING",
-      "FOR", "FOREIGN", "FORMAT", "FROM", "FULL", "GE", "GENERAL", "GRAND", "GRAND.TOTAL", "GRANT", "GREATER", "GROUP",
-      "GROUP.SIZE", "GT", "HAVING", "HEADER", "HEADING", "HOME", "IMPLICIT", "IN", "INDEX", "INNER", "INQUIRING",
-      "INSERT", "INT", "INTEGER", "INTO", "IS", "JOIN", "KEY", "LARGE.RECORD", "LAST", "LE", "LEADING", "LEFT", "LESS",
-      "LIKE", "LOCAL", "LOWER", "LPTR", "MARGIN", "MATCHES", "MATCHING", "MAX", "MERGE.LOAD", "MIN", "MINIMIZE.SPACE",
-      "MINIMUM.MODULUS", "MODULO", "MULTI.VALUE", "MULTIVALUED", "NATIONAL", "NCHAR", "NE", "NO", "NO.INDEX",
-      "NO.OPTIMIZE", "NO.PAGE", "NOPAGE", "NOT", "NRKEY", "NULL", "NUMERIC", "NVARCHAR", "ON", "OPTION", "OR", "ORDER",
-      "OUTER", "PCT", "PRECISION", "PRESERVING", "PRIMARY", "PRIVILEGES", "PUBLIC", "REAL", "RECORD.SIZE",
-      "REFERENCES", "REPORTING", "RESOURCE", "RESTORE", "RESTRICT", "REVOKE", "RIGHT", "ROWUNIQUE", "SAID", "SAMPLE",
+      "COUNT", "COUNT.SUP", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_TIME", "DATA", "DATE", "DBA", "DBL.SPC",
+      "DEC", "DECIMAL", "DEFAULT", "DELETE", "DESC", "DET.SUP", "DICT", "DISPLAY.NAME", "DISPLAYLIKE",
+      "DISPLAYNAME", "DISTINCT", "DL", "DOUBLE", "DR", "DROP", "DYNAMIC", "E.EXIST", "EMPTY", "EQ", "EQUAL",
+      "ESCAPE", "EVAL", "EVERY", "EXISTING", "EXISTS", "EXPLAIN", "EXPLICIT", "FAILURE", "FIRST", "FLOAT",
+      "FMT", "FOOTER", "FOOTING", "FOR", "FOREIGN", "FORMAT", "FROM", "FULL", "GE", "GENERAL", "GRAND",
+      "GRAND.TOTAL", "GRANT", "GREATER", "GROUP", "GROUP.SIZE", "GT", "HAVING", "HEADER", "HEADING", "HOME",
+      "IMPLICIT", "IN", "INDEX", "INNER", "INQUIRING", "INSERT", "INT", "INTEGER", "INTO", "IS", "JOIN", "KEY",
+      "LARGE.RECORD", "LAST", "LE", "LEADING", "LEFT", "LESS", "LIKE", "LOCAL", "LOWER", "LPTR", "MARGIN",
+      "MATCHES", "MATCHING", "MAX", "MERGE.LOAD", "MIN", "MINIMIZE.SPACE", "MINIMUM.MODULUS", "MODULO",
+      "MULTI.VALUE", "MULTIVALUED", "NATIONAL", "NCHAR", "NE", "NO", "NO.INDEX", "NO.OPTIMIZE", "NO.PAGE",
+      "NOPAGE", "NOT", "NRKEY", "NULL", "NUMERIC", "NVARCHAR", "ON", "OPTION", "OR", "ORDER", "OUTER", "PCT",
+      "PRECISION", "PRESERVING", "PRIMARY", "PRIVILEGES", "PUBLIC", "REAL", "RECORD.SIZE", "REFERENCES",
+      "REPORTING", "RESOURCE", "RESTORE", "RESTRICT", "REVOKE", "RIGHT", "ROWUNIQUE", "SAID", "SAMPLE",
       "SAMPLED", "SCHEMA", "SELECT", "SEPARATION", "SEQ.NUM", "SET", "SINGLE.VALUE", "SINGLEVALUED", "SLIST",
       "SMALLINT", "SOME", "SPLIT.LOAD", "SPOKEN", "SUBSTRING", "SUCCESS", "SUM", "SUPPRESS", "SYNONYM", "TABLE",
-      "TIME", "TO", "TOTAL", "TRAILING", "TRIM", "TYPE", "UNION", "UNIQUE", "UNNEST", "UNORDERED", "UPDATE", "UPPER",
-      "USER", "USING", "VALUES", "VARBIT", "VARCHAR", "VARYING", "VERT", "VERTICALLY", "VIEW", "WHEN", "WHERE", "WITH", };
+      "TIME", "TO", "TOTAL", "TRAILING", "TRIM", "TYPE", "UNION", "UNIQUE", "UNNEST", "UNORDERED", "UPDATE",
+      "UPPER", "USER", "USING", "VALUES", "VARBIT", "VARCHAR", "VARYING", "VERT", "VERTICALLY", "VIEW", "WHEN",
+      "WHERE", "WITH", };
   }
 
   @Override

@@ -58,12 +58,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Displays an ArrayList of rows in a TableView.
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class PreviewRowsDialog {
-  private static Class<?> PKG = PreviewRowsDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PreviewRowsDialog.class; // for i18n purposes, needed by Translator2!!
 
   public static final int MAX_BINARY_STRING_PREVIEW_SIZE = 1000000;
 
@@ -125,13 +125,13 @@ public class PreviewRowsDialog {
 
   private List<DialogClosedListener> dialogClosedListeners;
 
-  public PreviewRowsDialog( Shell parent, VariableSpace space, int style, String stepName, RowMetaInterface rowMeta,
-      List<Object[]> rowBuffer ) {
+  public PreviewRowsDialog( Shell parent, VariableSpace space, int style, String stepName,
+    RowMetaInterface rowMeta, List<Object[]> rowBuffer ) {
     this( parent, space, style, stepName, rowMeta, rowBuffer, null );
   }
 
-  public PreviewRowsDialog( Shell parent, VariableSpace space, int style, String stepName, RowMetaInterface rowMeta,
-      List<Object[]> rowBuffer, String loggingText ) {
+  public PreviewRowsDialog( Shell parent, VariableSpace space, int style, String stepName,
+    RowMetaInterface rowMeta, List<Object[]> rowBuffer, String loggingText ) {
     this.stepname = stepName;
     this.buffer = rowBuffer;
     this.loggingText = loggingText;
@@ -238,7 +238,8 @@ public class PreviewRowsDialog {
 
     // Position the buttons...
     //
-    BaseStepDialog.positionBottomButtons( shell, buttons.toArray( new Button[buttons.size()] ), Const.MARGIN, null );
+    BaseStepDialog
+      .positionBottomButtons( shell, buttons.toArray( new Button[buttons.size()] ), Const.MARGIN, null );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
@@ -287,9 +288,9 @@ public class PreviewRowsDialog {
     if ( !dynamic ) {
       // Mmm, if we don't get any rows in the buffer: show a dialog box.
       if ( buffer == null || buffer.size() == 0 ) {
-        ShowMessageDialog dialog =
-            new ShowMessageDialog( shell, SWT.OK | SWT.ICON_WARNING, BaseMessages.getString( PKG,
-                "PreviewRowsDialog.NoRows.Text" ), BaseMessages.getString( PKG, "PreviewRowsDialog.NoRows.Message" ) );
+        ShowMessageDialog dialog = new ShowMessageDialog( shell, SWT.OK | SWT.ICON_WARNING,
+          BaseMessages.getString( PKG, "PreviewRowsDialog.NoRows.Text" ),
+          BaseMessages.getString( PKG, "PreviewRowsDialog.NoRows.Message" ) );
         dialog.open();
         shell.dispose();
         return true;
@@ -305,7 +306,8 @@ public class PreviewRowsDialog {
       colinf[i].setValueMeta( v );
     }
 
-    wFields = new TableView( variables, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 0, null, props );
+    wFields =
+      new TableView( variables, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 0, null, props );
     wFields.setShowingBlueNullValues( true );
 
     fdFields = new FormData();
@@ -419,8 +421,9 @@ public class PreviewRowsDialog {
   private void log() {
     if ( loggingText != null ) {
       EnterTextDialog etd =
-          new EnterTextDialog( shell, BaseMessages.getString( PKG, "PreviewRowsDialog.ShowLogging.Title" ),
-              BaseMessages.getString( PKG, "PreviewRowsDialog.ShowLogging.Message" ), loggingText );
+        new EnterTextDialog(
+          shell, BaseMessages.getString( PKG, "PreviewRowsDialog.ShowLogging.Title" ), BaseMessages.getString(
+            PKG, "PreviewRowsDialog.ShowLogging.Message" ), loggingText );
       etd.open();
     }
   }

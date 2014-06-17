@@ -39,17 +39,18 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 /**
  * Read all rows from a hop until the end, and then read the rows from another hop.
- * 
+ *
  * @author Sven Boden
  * @since 3-june-2007
  */
 public class Append extends BaseStep implements StepInterface {
-  private static Class<?> PKG = Append.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Append.class; // for i18n purposes, needed by Translator2!!
 
   private AppendMeta meta;
   private AppendData data;
 
-  public Append( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public Append( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -143,18 +144,17 @@ public class Append extends BaseStep implements StepInterface {
 
   /**
    * Checks whether 2 template rows are compatible for the mergestep.
-   * 
+   *
    * @param referenceRow
    *          Reference row
    * @param compareRow
    *          Row to compare to
-   * 
+   *
    * @return true when templates are compatible.
    * @throws KettleRowException
    *           in case there is a compatibility error.
    */
-  protected void checkInputLayoutValid( RowMetaInterface referenceRowMeta, RowMetaInterface compareRowMeta )
-    throws KettleRowException {
+  protected void checkInputLayoutValid( RowMetaInterface referenceRowMeta, RowMetaInterface compareRowMeta ) throws KettleRowException {
     if ( referenceRowMeta != null && compareRowMeta != null ) {
       BaseStep.safeModeChecking( referenceRowMeta, compareRowMeta );
     }

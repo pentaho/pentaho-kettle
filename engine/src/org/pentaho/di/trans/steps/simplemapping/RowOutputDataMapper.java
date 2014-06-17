@@ -32,9 +32,9 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 /**
  * This class takes care of mapping output data from the mapping step back to the parent transformation, renaming
  * columns mainly.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class RowOutputDataMapper extends RowAdapter {
 
@@ -45,7 +45,7 @@ public class RowOutputDataMapper extends RowAdapter {
   private PutRowInterface putRowInterface;
 
   public RowOutputDataMapper( MappingIODefinition inputDefinition, MappingIODefinition outputDefinition,
-      PutRowInterface putRowInterface ) {
+    PutRowInterface putRowInterface ) {
     this.inputDefinition = inputDefinition;
     this.outputDefinition = outputDefinition;
     this.putRowInterface = putRowInterface;

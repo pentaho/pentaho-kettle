@@ -56,12 +56,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the ping job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since Mar-2007
  */
 public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryPing.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryPing.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
   private Text wName;
@@ -300,13 +300,13 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
 
   private void setPingType() {
     wlTimeOut.setEnabled( wPingType.getSelectionIndex() == jobEntry.isystemPing
-        || wPingType.getSelectionIndex() == jobEntry.ibothPings );
+      || wPingType.getSelectionIndex() == jobEntry.ibothPings );
     wTimeOut.setEnabled( wPingType.getSelectionIndex() == jobEntry.isystemPing
-        || wPingType.getSelectionIndex() == jobEntry.ibothPings );
+      || wPingType.getSelectionIndex() == jobEntry.ibothPings );
     wlNbrPackets.setEnabled( wPingType.getSelectionIndex() == jobEntry.iclassicPing
-        || wPingType.getSelectionIndex() == jobEntry.ibothPings );
+      || wPingType.getSelectionIndex() == jobEntry.ibothPings );
     wNbrPackets.setEnabled( wPingType.getSelectionIndex() == jobEntry.iclassicPing
-        || wPingType.getSelectionIndex() == jobEntry.ibothPings );
+      || wPingType.getSelectionIndex() == jobEntry.ibothPings );
   }
 
   public void dispose() {

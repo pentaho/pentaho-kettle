@@ -38,20 +38,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Decrypt a stream with GPG *
- * 
+ *
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 
 public class PGPDecryptStream extends BaseStep implements StepInterface {
-  private static Class<?> PKG = PGPDecryptStreamMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PGPDecryptStreamMeta.class; // for i18n purposes, needed by Translator2!!
 
   private PGPDecryptStreamMeta meta;
   private PGPDecryptStreamData data;
 
-  public PGPDecryptStream( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public PGPDecryptStream( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -63,8 +63,8 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -87,17 +87,19 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
           // Passphrase from field
           String fieldname = meta.getPassphraseFieldName();
           if ( Const.isEmpty( fieldname ) ) {
-            throw new KettleException( BaseMessages.getString( PKG, "PGPDecryptStream.Error.PassphraseFieldMissing" ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "PGPDecryptStream.Error.PassphraseFieldMissing" ) );
           }
           data.indexOfPassphraseField = data.previousRowMeta.indexOfValue( fieldname );
           if ( data.indexOfPassphraseField < 0 ) {
             // The field is unreachable !
-            throw new KettleException( BaseMessages.getString( PKG, "PGPDecryptStream.Exception.CouldnotFindField",
-                fieldname ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "PGPDecryptStream.Exception.CouldnotFindField", fieldname ) );
           }
         } else {
           // Check is passphrase is provided
-          data.passPhrase = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getPassphrase() ) );
+          data.passPhrase =
+            Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getPassphrase() ) );
           if ( Const.isEmpty( data.passPhrase ) ) {
             throw new KettleException( BaseMessages.getString( PKG, "PGPDecryptStream.Error.PassphraseMissing" ) );
           }
@@ -108,11 +110,11 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
           data.indexOfField = data.previousRowMeta.indexOfValue( meta.getStreamField() );
           if ( data.indexOfField < 0 ) {
             // The field is unreachable !
-            throw new KettleException( BaseMessages.getString( PKG, "PGPDecryptStream.Exception.CouldnotFindField",
-                meta.getStreamField() ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "PGPDecryptStream.Exception.CouldnotFindField", meta.getStreamField() ) );
           }
         }
-      }// End If first
+      } // End If first
 
       // allocate output row
       Object[] outputRow = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
@@ -144,8 +146,8 @@ public class PGPDecryptStream extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRow ); // copy row to output rowset(s);
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "PGPDecryptStream.LineNumber", getLinesRead() + " : "
-            + getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "PGPDecryptStream.LineNumber", getLinesRead()
+          + " : " + getInputRowMeta().getString( r ) ) );
       }
     } catch ( Exception e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {

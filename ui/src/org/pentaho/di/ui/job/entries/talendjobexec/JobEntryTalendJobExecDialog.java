@@ -61,14 +61,14 @@ import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 /**
  * This dialog allows you to edit the SQL job entry settings. (select the connection and the sql script to be executed)
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryTalendJobExec.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryTalendJobExec.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String[] EXTENSIONS = new String[] { "*.ZIP;*.zip", "*" }; //$NON-NLS-3$
+  private static final String[] EXTENSIONS = new String[] { "*.ZIP;*.zip", "*" };
 
   private static final String[] FILETYPES = new String[] {
     BaseMessages.getString( PKG, "JobEntryTalendJobExec.Filetype.ZIP" ),
@@ -199,8 +199,8 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
 
             if ( curFile.trim().length() > 0 ) {
               fileName =
-                  KettleVFS.getInstance().getFileSystemManager().resolveFile(
-                      jobMeta.environmentSubstitute( wFilename.getText() ) );
+                KettleVFS.getInstance().getFileSystemManager().resolveFile(
+                  jobMeta.environmentSubstitute( wFilename.getText() ) );
             } else {
               fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
             }
@@ -210,10 +210,10 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
           }
 
           VfsFileChooserDialog vfsFileChooser =
-              Spoon.getInstance().getVfsFileChooserDialog( fileName.getParent(), fileName );
+            Spoon.getInstance().getVfsFileChooserDialog( fileName.getParent(), fileName );
 
           FileObject selected =
-              vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
+            vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
           wFilename.setText( selected != null ? selected.getURL().toString() : Const.EMPTY_STRING );
         } catch ( FileSystemException ex ) {
           ex.printStackTrace();

@@ -25,9 +25,9 @@ public class DatabaseLookupMetaTest {
 
     ValueMetaInterface v1 = new ValueMetaString( "match" );
     ValueMetaInterface v2 = new ValueMetaString( "match1" );
-    RowMetaInterface[] info = new RowMetaInterface[ 1 ];
-    info[ 0 ] = new RowMeta();
-    info[ 0 ].setValueMetaList( Arrays.asList( v1, v2 ) );
+    RowMetaInterface[] info = new RowMetaInterface[1];
+    info[0] = new RowMeta();
+    info[0].setValueMetaList( Arrays.asList( v1, v2 ) );
 
     ValueMetaInterface r1 = new ValueMetaString( "value" );
     RowMetaInterface row = new RowMeta();
@@ -35,11 +35,9 @@ public class DatabaseLookupMetaTest {
 
     databaseLookupMeta.getFields( row, "", info, null, null, null, null );
 
-    List<ValueMetaInterface> expectedRow = Arrays.asList( new ValueMetaInterface[] {
-      new ValueMetaString( "value" ),
-      new ValueMetaString( "v1" ),
-      new ValueMetaString( "v2" ),
-    } );
+    List<ValueMetaInterface> expectedRow =
+      Arrays.asList( new ValueMetaInterface[] {
+        new ValueMetaString( "value" ), new ValueMetaString( "v1" ), new ValueMetaString( "v2" ), } );
     assertEquals( 3, row.getValueMetaList().size() );
     for ( int i = 0; i < 3; i++ ) {
       assertEquals( expectedRow.get( i ).getName(), row.getValueMetaList().get( i ).getName() );

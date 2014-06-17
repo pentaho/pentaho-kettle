@@ -67,7 +67,7 @@ public class BatchFolderIterator implements Iterator<Message> {
     this.batchLast = this.start - 1;
 
     messages = new Message[0];
-    // if (!getNextBatch() || msgCount == SIZE_ERR) throw new RuntimeException("TODO:");//TODO
+    // if (!getNextBatch() || msgCount == SIZE_ERR) throw new RuntimeException("TODO:"); //TODO
 
   }
 
@@ -75,8 +75,9 @@ public class BatchFolderIterator implements Iterator<Message> {
     return null;
   }
 
+  // TODO:search
   @Override
-  public boolean hasNext() {// TODO:search
+  public boolean hasNext() {
     return buffIndex < Math.min( messages.length, end ) || getNextBatch();
   }
 
@@ -86,7 +87,7 @@ public class BatchFolderIterator implements Iterator<Message> {
     } else {
       batchFirst = batchLast + 1;
       batchLast = Math.min( batchFirst + batchSize - 1, end );
-      if ( batchLast <= batchFirst ) {
+      if ( batchLast < batchFirst ) {
         return false;
       }
       try {
@@ -106,7 +107,7 @@ public class BatchFolderIterator implements Iterator<Message> {
 
   /**
    * Not implemented.
-   * 
+   *
    * @throws UnsupportedOperationException
    */
   @Override

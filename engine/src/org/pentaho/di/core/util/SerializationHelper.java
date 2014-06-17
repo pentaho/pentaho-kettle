@@ -53,7 +53,7 @@ public class SerializationHelper {
    * This method will perform the work that used to be done by hand in each kettle input meta for: readData(Node
    * stepnode). We handle all primitive types, complex user types, arrays, lists and any number of nested object levels,
    * via recursion of this method.
-   * 
+   *
    * @param object
    *          The object to be persisted
    * @param node
@@ -66,8 +66,8 @@ public class SerializationHelper {
     for ( Field field : fields ) {
 
       // ignore fields which are final, static or transient
-      if ( Modifier.isFinal( field.getModifiers() ) || Modifier.isStatic( field.getModifiers() )
-          || Modifier.isTransient( field.getModifiers() ) ) {
+      if ( Modifier.isFinal( field.getModifiers() )
+        || Modifier.isStatic( field.getModifiers() ) || Modifier.isTransient( field.getModifiers() ) ) {
         continue;
       }
 
@@ -186,8 +186,8 @@ public class SerializationHelper {
             }
 
             // create an instance of 'fieldClassName'
-            if ( String.class.isAssignableFrom( clazz ) || Number.class.isAssignableFrom( clazz )
-                || Boolean.class.isAssignableFrom( clazz ) ) {
+            if ( String.class.isAssignableFrom( clazz )
+              || Number.class.isAssignableFrom( clazz ) || Boolean.class.isAssignableFrom( clazz ) ) {
               Constructor<?> constructor = clazz.getConstructor( String.class );
               Object instance = constructor.newInstance( XMLHandler.getTagAttribute( child, "value" ) );
               list.add( instance );
@@ -212,43 +212,44 @@ public class SerializationHelper {
           }
           // System.out.println("Setting " + field.getName() + "(" + field.getType().getSimpleName() + ") = " + value +
           // " on: " + object.getClass().getName());
-          if ( field.getType().isPrimitive() && "".equals( value ) ) {
+          if ( !( field.getType().isPrimitive() && "".equals( value ) ) ) {
             // skip setting of primitives if we see null
-          } else if ( "".equals( value ) ) {
-            field.set( object, value );
-          } else if ( field.getType().isPrimitive() ) {
-            // special primitive handling
-            if ( double.class.isAssignableFrom( field.getType() ) ) {
-              field.set( object, Double.parseDouble( value.toString() ) );
-            } else if ( float.class.isAssignableFrom( field.getType() ) ) {
-              field.set( object, Float.parseFloat( value.toString() ) );
-            } else if ( long.class.isAssignableFrom( field.getType() ) ) {
-              field.set( object, Long.parseLong( value.toString() ) );
-            } else if ( int.class.isAssignableFrom( field.getType() ) ) {
-              field.set( object, Integer.parseInt( value.toString() ) );
-            } else if ( byte.class.isAssignableFrom( field.getType() ) ) {
-              field.set( object, value.toString().getBytes() );
-            } else if ( boolean.class.isAssignableFrom( field.getType() ) ) {
-              field.set( object, "true".equalsIgnoreCase( value.toString() ) );
-            }
-          } else if ( String.class.isAssignableFrom( field.getType() )
+            if ( "".equals( value ) ) {
+              field.set( object, value );
+            } else if ( field.getType().isPrimitive() ) {
+              // special primitive handling
+              if ( double.class.isAssignableFrom( field.getType() ) ) {
+                field.set( object, Double.parseDouble( value.toString() ) );
+              } else if ( float.class.isAssignableFrom( field.getType() ) ) {
+                field.set( object, Float.parseFloat( value.toString() ) );
+              } else if ( long.class.isAssignableFrom( field.getType() ) ) {
+                field.set( object, Long.parseLong( value.toString() ) );
+              } else if ( int.class.isAssignableFrom( field.getType() ) ) {
+                field.set( object, Integer.parseInt( value.toString() ) );
+              } else if ( byte.class.isAssignableFrom( field.getType() ) ) {
+                field.set( object, value.toString().getBytes() );
+              } else if ( boolean.class.isAssignableFrom( field.getType() ) ) {
+                field.set( object, "true".equalsIgnoreCase( value.toString() ) );
+              }
+            } else if ( String.class.isAssignableFrom( field.getType() )
               || Number.class.isAssignableFrom( field.getType() ) ) {
-            Constructor<?> constructor = field.getType().getConstructor( String.class );
-            Object instance = constructor.newInstance( value );
-            field.set( object, instance );
-          } else {
-            // we don't know what we're handling, but we'll give it a shot
-            Node fieldNode = XMLHandler.getSubNode( node, field.getName() );
-            if ( fieldNode == null ) {
-              // doesn't exist (this is possible if fields were empty/null when persisted)
-              continue;
+              Constructor<?> constructor = field.getType().getConstructor( String.class );
+              Object instance = constructor.newInstance( value );
+              field.set( object, instance );
+            } else {
+              // we don't know what we're handling, but we'll give it a shot
+              Node fieldNode = XMLHandler.getSubNode( node, field.getName() );
+              if ( fieldNode == null ) {
+                // doesn't exist (this is possible if fields were empty/null when persisted)
+                continue;
+              }
+              // get the Java classname for the array elements
+              String fieldClassName = XMLHandler.getTagAttribute( fieldNode, "class" );
+              Class<?> clazz = Class.forName( fieldClassName );
+              Object instance = clazz.newInstance();
+              field.set( object, instance );
+              read( instance, fieldNode );
             }
-            // get the Java classname for the array elements
-            String fieldClassName = XMLHandler.getTagAttribute( fieldNode, "class" );
-            Class<?> clazz = Class.forName( fieldClassName );
-            Object instance = clazz.newInstance();
-            field.set( object, instance );
-            read( instance, fieldNode );
           }
         } catch ( Throwable t ) {
           // TODO: log this
@@ -262,7 +263,7 @@ public class SerializationHelper {
    * This method will perform the work that used to be done by hand in each kettle input meta for: getXML(). We handle
    * all primitive types, complex user types, arrays, lists and any number of nested object levels, via recursion of
    * this method.
-   * 
+   *
    * @param object
    * @param buffer
    */
@@ -279,8 +280,8 @@ public class SerializationHelper {
     for ( Field field : fields ) {
 
       // ignore fields which are final, static or transient
-      if ( Modifier.isFinal( field.getModifiers() ) || Modifier.isStatic( field.getModifiers() )
-          || Modifier.isTransient( field.getModifiers() ) ) {
+      if ( Modifier.isFinal( field.getModifiers() )
+        || Modifier.isStatic( field.getModifiers() ) || Modifier.isTransient( field.getModifiers() ) ) {
         continue;
       }
 
@@ -296,8 +297,8 @@ public class SerializationHelper {
 
           continue;
         }
-        if ( field.getType().isPrimitive() || String.class.isAssignableFrom( field.getType() )
-            || Number.class.isAssignableFrom( field.getType() ) ) {
+        if ( field.getType().isPrimitive()
+          || String.class.isAssignableFrom( field.getType() ) || Number.class.isAssignableFrom( field.getType() ) ) {
           indent( buffer, indentLevel );
           buffer.append( XMLHandler.addTagValue( field.getName(), fieldValue.toString() ) );
         } else if ( field.getType().isArray() ) {
@@ -306,20 +307,21 @@ public class SerializationHelper {
 
           // open node (add class name attribute)
           indent( buffer, indentLevel );
-          buffer.append(
+          buffer
+            .append(
               "<" + field.getName() + " class=\"" + fieldValue.getClass().getComponentType().getName() + "\">" )
-              .append( Const.CR );
+            .append( Const.CR );
 
           for ( int i = 0; i < length; i++ ) {
             Object childObject = Array.get( fieldValue, i );
             // handle all strings/numbers
             if ( String.class.isAssignableFrom( childObject.getClass() )
-                || Number.class.isAssignableFrom( childObject.getClass() ) ) {
+              || Number.class.isAssignableFrom( childObject.getClass() ) ) {
               indent( buffer, indentLevel + 1 );
               buffer.append( "<" ).append( fieldValue.getClass().getComponentType().getSimpleName() );
               buffer.append( " value=\"" + childObject.toString() + "\"/>" ).append( Const.CR );
             } else if ( Boolean.class.isAssignableFrom( childObject.getClass() )
-                || boolean.class.isAssignableFrom( childObject.getClass() ) ) {
+              || boolean.class.isAssignableFrom( childObject.getClass() ) ) {
               // handle booleans (special case)
               indent( buffer, indentLevel + 1 );
               buffer.append( "<" ).append( fieldValue.getClass().getComponentType().getSimpleName() );
@@ -327,10 +329,12 @@ public class SerializationHelper {
             } else {
               // array element is a user defined/complex type, recurse into it
               indent( buffer, indentLevel + 1 );
-              buffer.append( "<" + fieldValue.getClass().getComponentType().getSimpleName() + ">" ).append( Const.CR );
+              buffer.append( "<" + fieldValue.getClass().getComponentType().getSimpleName() + ">" ).append(
+                Const.CR );
               write( childObject, indentLevel + 1, buffer );
               indent( buffer, indentLevel + 1 );
-              buffer.append( "</" + fieldValue.getClass().getComponentType().getSimpleName() + ">" ).append( Const.CR );
+              buffer.append( "</" + fieldValue.getClass().getComponentType().getSimpleName() + ">" ).append(
+                Const.CR );
             }
           }
           // close node
@@ -350,12 +354,12 @@ public class SerializationHelper {
           for ( Object childObject : list ) {
             // handle all strings/numbers
             if ( String.class.isAssignableFrom( childObject.getClass() )
-                || Number.class.isAssignableFrom( childObject.getClass() ) ) {
+              || Number.class.isAssignableFrom( childObject.getClass() ) ) {
               indent( buffer, indentLevel + 1 );
               buffer.append( "<" ).append( listClass.getSimpleName() );
               buffer.append( " value=\"" + childObject.toString() + "\"/>" ).append( Const.CR );
             } else if ( Boolean.class.isAssignableFrom( childObject.getClass() )
-                || boolean.class.isAssignableFrom( childObject.getClass() ) ) {
+              || boolean.class.isAssignableFrom( childObject.getClass() ) ) {
               // handle booleans (special case)
               indent( buffer, indentLevel + 1 );
               buffer.append( "<" ).append( listClass.getSimpleName() );
@@ -377,7 +381,7 @@ public class SerializationHelper {
           // open node (add class name attribute)
           indent( buffer, indentLevel );
           buffer.append( "<" + field.getName() + " class=\"" + fieldValue.getClass().getName() + "\">" ).append(
-              Const.CR );
+            Const.CR );
           write( fieldValue, indentLevel + 1, buffer );
           // close node
           indent( buffer, indentLevel );
@@ -394,15 +398,14 @@ public class SerializationHelper {
   /**
    * Handle saving of the input (object) to the kettle repository using the most simple method available, by calling
    * write and then saving the job-xml as a job attribute.
-   * 
+   *
    * @param object
    * @param rep
    * @param id_transformation
    * @param id_step
    * @throws KettleException
    */
-  public static void saveJobRep( Object object, Repository rep, ObjectId id_job, ObjectId id_job_entry )
-    throws KettleException {
+  public static void saveJobRep( Object object, Repository rep, ObjectId id_job, ObjectId id_job_entry ) throws KettleException {
     StringBuffer sb = new StringBuffer( 1024 );
     write( object, 0, sb );
     rep.saveJobEntryAttribute( id_job, id_job_entry, "job-xml", sb.toString() );
@@ -411,15 +414,14 @@ public class SerializationHelper {
   /**
    * Handle reading of the input (object) from the kettle repository by getting the job-xml from the repository step
    * attribute string and then re-hydrate the job entry (object) with our already existing read method.
-   * 
+   *
    * @param object
    * @param rep
    * @param id_step
    * @param databases
    * @throws KettleException
    */
-  public static void readJobRep( Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public static void readJobRep( Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       String jobXML = rep.getJobEntryAttributeString( id_step, "job-xml" );
       ByteArrayInputStream bais = new ByteArrayInputStream( jobXML.getBytes() );
@@ -437,15 +439,14 @@ public class SerializationHelper {
   /**
    * Handle saving of the input (object) to the kettle repository using the most simple method available, by calling
    * write and then saving the step-xml as a step attribute.
-   * 
+   *
    * @param object
    * @param rep
    * @param id_transformation
    * @param id_step
    * @throws KettleException
    */
-  public static void saveStepRep( Object object, Repository rep, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public static void saveStepRep( Object object, Repository rep, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     StringBuffer sb = new StringBuffer( 1024 );
     write( object, 0, sb );
     rep.saveStepAttribute( id_transformation, id_step, "step-xml", sb.toString() );
@@ -454,7 +455,7 @@ public class SerializationHelper {
   /**
    * Handle reading of the input (object) from the kettle repository by getting the step-xml from the repository step
    * attribute string and then re-hydrate the step (object) with our already existing read method.
-   * 
+   *
    * @param object
    * @param rep
    * @param id_step
@@ -462,8 +463,7 @@ public class SerializationHelper {
    * @param counters
    * @throws KettleException
    */
-  public static void readStepRep( Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public static void readStepRep( Object object, Repository rep, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       String stepXML = rep.getStepAttributeString( id_step, "step-xml" );
       ByteArrayInputStream bais = new ByteArrayInputStream( stepXML.getBytes() );

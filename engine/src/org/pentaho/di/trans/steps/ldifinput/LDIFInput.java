@@ -49,17 +49,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read all LDIF files, convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Samatar
  * @since 24-05-2007
  */
 public class LDIFInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = LDIFInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LDIFInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private LDIFInputMeta meta;
   private LDIFInputData data;
 
-  public LDIFInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public LDIFInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -231,7 +232,7 @@ public class LDIFInput extends BaseStep implements StepInterface {
 
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "LDIFInput.Exception.UnableToReadFile", data.file
-          .toString() ), e );
+        .toString() ), e );
     }
 
     return outputRowData;
@@ -281,8 +282,9 @@ public class LDIFInput extends BaseStep implements StepInterface {
   private boolean openNextFile() {
     try {
       if ( !meta.isFileField() ) {
-        if ( data.filenr >= data.files.nrOfFiles() ) // finished processing!
-        {
+        if ( data.filenr >= data.files.nrOfFiles() ) {
+          // finished processing!
+
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "LDIFInput.Log.FinishedProcessing" ) );
           }
@@ -328,18 +330,18 @@ public class LDIFInput extends BaseStep implements StepInterface {
             data.indexOfFilenameField = getInputRowMeta().indexOfValue( meta.getDynamicFilenameField() );
             if ( data.indexOfFilenameField < 0 ) {
               // The field is unreachable !
-              logError( BaseMessages.getString( PKG, "LDIFInput.Log.ErrorFindingField" ) + "["
-                  + meta.getDynamicFilenameField() + "]" );
-              throw new KettleException( BaseMessages.getString( PKG, "LDIFInput.Exception.CouldnotFindField", meta
-                  .getDynamicFilenameField() ) );
+              logError( BaseMessages.getString( PKG, "LDIFInput.Log.ErrorFindingField" )
+                + "[" + meta.getDynamicFilenameField() + "]" );
+              throw new KettleException( BaseMessages.getString(
+                PKG, "LDIFInput.Exception.CouldnotFindField", meta.getDynamicFilenameField() ) );
             }
           }
 
-        }// End if first
+        } // End if first
         String filename = getInputRowMeta().getString( data.readrow, data.indexOfFilenameField );
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "LDIFInput.Log.FilenameInStream", meta.getDynamicFilenameField(),
-              filename ) );
+          logDetailed( BaseMessages.getString( PKG, "LDIFInput.Log.FilenameInStream", meta
+            .getDynamicFilenameField(), filename ) );
         }
 
         data.file = KettleVFS.getFileObject( filename, getTransMeta() );
@@ -382,7 +384,7 @@ public class LDIFInput extends BaseStep implements StepInterface {
       if ( meta.AddToResultFilename() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
         resultFile.setComment( BaseMessages.getString( PKG, "LDIFInput.Log.FileAddedResult" ) );
         addResultFile( resultFile );
       }
@@ -394,8 +396,8 @@ public class LDIFInput extends BaseStep implements StepInterface {
       }
 
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "LDIFInput.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(),
-          e.toString() ) );
+      logError( BaseMessages.getString( PKG, "LDIFInput.Log.UnableToOpenFile", "" + data.filenr, data.file
+        .toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       return false;
@@ -429,7 +431,7 @@ public class LDIFInput extends BaseStep implements StepInterface {
 
   /**
    * Build an empty row based on the meta-data.
-   * 
+   *
    * @return
    */
   private Object[] buildEmptyRow() {
@@ -480,6 +482,7 @@ public class LDIFInput extends BaseStep implements StepInterface {
       try {
         data.file.close();
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
     if ( data.InputLDIF != null ) {

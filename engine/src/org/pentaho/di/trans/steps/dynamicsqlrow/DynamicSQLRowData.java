@@ -51,9 +51,6 @@ public class DynamicSQLRowData extends BaseStepData implements StepDataInterface
 
   public boolean isCanceled;
 
-  /**
-	 * 
-	 */
   public DynamicSQLRowData() {
     super();
 

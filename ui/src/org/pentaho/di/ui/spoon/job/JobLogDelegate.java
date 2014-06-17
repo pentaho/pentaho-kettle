@@ -58,7 +58,7 @@ import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 
 public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
-  private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!
 
   private static final String XUL_FILE_TRANS_LOG_TOOLBAR = "ui/job-log-toolbar.xul";
 
@@ -164,9 +164,10 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
       swtToolbar.layout( true, true );
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );
-      new ErrorDialog( jobLogComposite.getShell(), BaseMessages.getString( PKG,
-          "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages.getString( PKG,
-          "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR ), new Exception( t ) );
+      new ErrorDialog( jobLogComposite.getShell(),
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ),
+        BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_TRANS_LOG_TOOLBAR ),
+        new Exception( t ) );
     }
   }
 
@@ -195,7 +196,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
         line = all.substring( startpos, i );
         lineUpper = line.toUpperCase();
         if ( lineUpper.indexOf( BaseMessages.getString( PKG, "JobLog.System.ERROR" ) ) >= 0
-            || lineUpper.indexOf( BaseMessages.getString( PKG, "JobLog.System.EXCEPTION" ) ) >= 0 ) {
+          || lineUpper.indexOf( BaseMessages.getString( PKG, "JobLog.System.EXCEPTION" ) ) >= 0 ) {
           err.add( line );
         }
         // New start of line
@@ -207,7 +208,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
     line = all.substring( startpos );
     lineUpper = line.toUpperCase();
     if ( lineUpper.indexOf( BaseMessages.getString( PKG, "JobLog.System.ERROR" ) ) >= 0
-        || lineUpper.indexOf( BaseMessages.getString( PKG, "JobLog.System.EXCEPTION" ) ) >= 0 ) {
+      || lineUpper.indexOf( BaseMessages.getString( PKG, "JobLog.System.EXCEPTION" ) ) >= 0 ) {
       err.add( line );
     }
 
@@ -217,9 +218,9 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
         err_lines[i] = err.get( i );
       }
 
-      EnterSelectionDialog esd =
-          new EnterSelectionDialog( jobGraph.getShell(), err_lines, BaseMessages.getString( PKG,
-              "JobLog.Dialog.ErrorLines.Title" ), BaseMessages.getString( PKG, "JobLog.Dialog.ErrorLines.Message" ) );
+      EnterSelectionDialog esd = new EnterSelectionDialog( jobGraph.getShell(), err_lines,
+        BaseMessages.getString( PKG, "JobLog.Dialog.ErrorLines.Title" ),
+        BaseMessages.getString( PKG, "JobLog.Dialog.ErrorLines.Message" ) );
       line = esd.open();
       if ( line != null ) {
         JobMeta jobMeta = jobGraph.getManagedObject();
@@ -260,7 +261,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
    */
   public Object getData() {
@@ -270,7 +271,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
   public String getName() {
@@ -279,7 +280,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
   public XulDomContainer getXulDomContainer() {
@@ -289,7 +290,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
    */
   public void setData( Object data ) {
@@ -299,7 +300,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
    */
   public void setName( String name ) {
@@ -309,7 +310,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
   public void setXulDomContainer( XulDomContainer xulDomContainer ) {

@@ -45,25 +45,26 @@ import org.w3c.dom.NodeList;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Matt
  * @since 4-apr-2003
  */
 public class XMLInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private XMLInputMeta meta;
 
   private XMLInputData data;
 
-  public XMLInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public XMLInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
 
-    if ( first ) // we just got started
-    {
+    if ( first ) { // we just got started
+
       first = false;
       data.outputRowMeta = new RowMeta();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
@@ -135,51 +136,45 @@ public class XMLInput extends BaseStep implements StepInterface {
         XMLInputFieldPosition pos = xmlInputField.getFieldPosition()[p];
 
         switch ( pos.getType() ) {
-          case XMLInputFieldPosition.XML_ELEMENT: {
+          case XMLInputFieldPosition.XML_ELEMENT:
             if ( pos.getElementNr() <= 1 ) {
               Node subNode = XMLHandler.getSubNode( node, pos.getName() );
               if ( subNode != null ) {
-                if ( p == xmlInputField.getFieldPosition().length - 1 ) // last
-                // level
-                {
+                if ( p == xmlInputField.getFieldPosition().length - 1 ) { // last level
+
                   value = XMLHandler.getNodeValue( subNode );
                 }
               } else {
                 if ( log.isDebug() ) {
                   logDebug( BaseMessages.getString( PKG, "XMLInput.Log.UnableToFindPosition", pos.toString(), node
-                      .toString() ) );
+                    .toString() ) );
                 }
               }
               node = subNode;
-            } else
-            // Multiple possible values: get number
-            // pos.getElementNr()!
-            {
+            } else {
+              // Multiple possible values: get number
+              // pos.getElementNr()!
+
               Node subNode = XMLHandler.getSubNodeByNr( node, pos.getName(), pos.getElementNr() - 1, false );
               if ( subNode != null ) {
-                if ( p == xmlInputField.getFieldPosition().length - 1 ) // last
-                // level
-                {
+                if ( p == xmlInputField.getFieldPosition().length - 1 ) { // last level
                   value = XMLHandler.getNodeValue( subNode );
                 }
               } else {
                 if ( log.isDebug() ) {
                   logDebug( BaseMessages.getString( PKG, "XMLInput.Log.UnableToFindPosition", pos.toString(), node
-                      .toString() ) );
+                    .toString() ) );
                 }
               }
               node = subNode;
             }
-          }
             break;
 
-          case XMLInputFieldPosition.XML_ATTRIBUTE: {
+          case XMLInputFieldPosition.XML_ATTRIBUTE:
             value = XMLHandler.getTagAttribute( node, pos.getName() );
-          }
             break;
-          case XMLInputFieldPosition.XML_ROOT: {
+          case XMLInputFieldPosition.XML_ROOT:
             value = XMLHandler.getNodeValue( node );
-          }
             break;
           default:
             break;
@@ -250,7 +245,7 @@ public class XMLInput extends BaseStep implements StepInterface {
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
   private Object[] buildEmptyRow() {
@@ -259,8 +254,7 @@ public class XMLInput extends BaseStep implements StepInterface {
 
   private boolean openNextFile() {
     try {
-      if ( data.filenr >= data.files.size() ) // finished processing!
-      {
+      if ( data.filenr >= data.files.size() ) { // finished processing!
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "XMLInput.Log.FinishedProcessing" ) );
         }
@@ -282,11 +276,12 @@ public class XMLInput extends BaseStep implements StepInterface {
       }
 
       // Open the XML document
-      data.document = XMLHandler.loadXMLFile( data.file, baseURI, meta.isIgnoreEntities(), meta.isNamespaceAware() );
+      data.document =
+        XMLHandler.loadXMLFile( data.file, baseURI, meta.isIgnoreEntities(), meta.isNamespaceAware() );
 
       // Add this to the result file names...
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
       resultFile.setComment( "File was read by an XML input step" );
       addResultFile( resultFile );
 
@@ -306,8 +301,8 @@ public class XMLInput extends BaseStep implements StepInterface {
       data.itemCount = XMLHandler.countNodes( data.section, data.itemElement );
       data.itemPosition = meta.getNrRowsToSkip();
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "XMLInput.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(), e
-          .toString() ) );
+      logError( BaseMessages.getString( PKG, "XMLInput.Log.UnableToOpenFile", "" + data.filenr, data.file
+        .toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       return false;

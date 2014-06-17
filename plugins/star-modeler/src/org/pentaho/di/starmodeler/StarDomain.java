@@ -52,16 +52,16 @@ public class StarDomain implements EngineMetaInterface {
   private String createdUser;
   private Date modifiedDate;
   private String modifiedUser;
-  
+
   private List<LogicalTable> sharedDimensions;
-  
+
   public StarDomain() {
     this.domain = new Domain();
     locale = LanguageChoice.getInstance().getDefaultLocale().toString();
     changed=true;
     sharedDimensions = new ArrayList<LogicalTable>();
   }
-  
+
   @Override
   public void setRepositoryDirectory(RepositoryDirectoryInterface repositoryDirectory) {
     this.repositoryDirectory = repositoryDirectory;
@@ -230,15 +230,15 @@ public class StarDomain implements EngineMetaInterface {
   public void setDomain(Domain domain) {
     this.domain = domain;
   }
-  
+
   public boolean hasChanged() {
     return changed;
   }
-  
+
   public void setChanged(boolean changed) {
     this.changed = changed;
   }
-  
+
   public List<LogicalTable> getSharedDimensions() {
     return sharedDimensions;
   }

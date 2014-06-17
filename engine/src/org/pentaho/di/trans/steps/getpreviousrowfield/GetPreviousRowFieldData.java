@@ -28,7 +28,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * return field value from previous row.
- * 
+ *
  * @author Samatar Hassan
  * @since 07 September 2008
  */

@@ -24,7 +24,7 @@ package org.pentaho.di.core.database;
 
 /**
  * Contains PostgreSQL specific information through static final members
- * 
+ *
  * @author Matt
  * @since 11-mrt-2005
  */

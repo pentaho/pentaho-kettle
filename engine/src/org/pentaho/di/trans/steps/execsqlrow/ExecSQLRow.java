@@ -42,18 +42,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Execute one or more SQL statements in a script, one time or parameterised (for every row)
- * 
+ *
  * @author Matt
  * @since 10-sep-2005
  */
 public class ExecSQLRow extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ExecSQLRowMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExecSQLRowMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ExecSQLRowMeta meta;
   private ExecSQLRowData data;
 
   public ExecSQLRow( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -95,14 +95,14 @@ public class ExecSQLRow extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] row = getRow();
-    if ( row == null ) // no more input to be expected...
-    {
+    if ( row == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
 
-    if ( first ) // we just got started
-    {
+    if ( first ) { // we just got started
+
       first = false;
 
       data.outputRowMeta = getInputRowMeta().clone();
@@ -119,7 +119,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface {
         if ( data.indexOfSQLFieldname < 0 ) {
           // The field is unreachable !
           throw new KettleException( BaseMessages.getString( PKG, "ExecSQLRow.Exception.CouldnotFindField", meta
-              .getSqlFieldName() ) );
+            .getSqlFieldName() ) );
         }
       }
 
@@ -150,8 +150,8 @@ public class ExecSQLRow extends BaseStep implements StepInterface {
       }
 
       RowMetaAndData add =
-          getResultRow( data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta
-              .getReadField() );
+        getResultRow( data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta
+          .getReadField() );
       row = RowDataUtil.addRowData( row, getInputRowMeta().size(), add.getData() );
 
       if ( meta.getCommitSize() > 0 ) {
@@ -208,8 +208,8 @@ public class ExecSQLRow extends BaseStep implements StepInterface {
           }
         }
       } catch ( KettleDatabaseException e ) {
-        logError( BaseMessages.getString( PKG, "Update.Log.UnableToCommitUpdateConnection" ) + data.db + "] :"
-            + e.toString() );
+        logError( BaseMessages.getString( PKG, "Update.Log.UnableToCommitUpdateConnection" )
+          + data.db + "] :" + e.toString() );
         setErrors( 1 );
       } finally {
         data.db.disconnect();

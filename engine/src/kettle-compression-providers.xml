@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<compression-providers>
+  <compression-provider id="None"> 
+    <description>None</description>
+    <tooltip>No compression</tooltip>
+    <classname>org.pentaho.di.core.compress.NoneCompressionProvider</classname> 
+    <documentation_url/> 
+    <cases_url/>
+    <forum_url/> 
+  </compression-provider>
+  <compression-provider id="Zip"> 
+    <description>Zip</description>
+    <tooltip>ZIP compression</tooltip> 
+    <classname>org.pentaho.di.core.compress.zip.ZIPCompressionProvider</classname> 
+    <documentation_url/> 
+    <cases_url/>
+    <forum_url/> 
+  </compression-provider>
+  <compression-provider id="GZIP"> 
+    <description>GZip</description> 
+    <tooltip>GZIP compression</tooltip>
+    <classname>org.pentaho.di.core.compress.gzip.GZIPCompressionProvider</classname> 
+    <documentation_url/> 
+    <cases_url/>
+    <forum_url/> 
+  </compression-provider>
+  <compression-provider id="SNAPPY"> 
+    <description>Snappy</description> 
+    <tooltip>Snappy compression</tooltip>
+    <classname>org.pentaho.di.core.compress.snappy.SnappyCompressionProvider</classname> 
+    <documentation_url/> 
+    <cases_url/>
+    <forum_url/> 
+  </compression-provider>
+  <compression-provider id="HADOOPSNAPPY"> 
+    <description>Hadoop-snappy</description> 
+    <tooltip>Hadoop Snappy compression</tooltip>
+    <classname>org.pentaho.di.core.compress.hadoopsnappy.HadoopSnappyCompressionProvider</classname> 
+    <documentation_url/> 
+    <cases_url/>
+    <forum_url/> 
+  </compression-provider>
+</compression-providers>

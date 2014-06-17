@@ -31,12 +31,12 @@ import java.lang.annotation.Target;
 /**
  * An alternate way of defining steps. Classes annotated with "Step" are automatically recognized and registered as a
  * step.
- * 
+ *
  * Important: The XML definitions alienate annotated steps and the two methods of definition are therefore mutually
  * exclusive.
- * 
+ *
  * @author Alex Silva
- * 
+ *
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
@@ -59,6 +59,8 @@ public @interface Step {
    * @return True if a separate class loader is needed every time this class is instantiated
    */
   boolean isSeparateClassLoaderNeeded() default false;
+
+  String classLoaderGroup() default "";
 
   String categoryDescription() default "";
 

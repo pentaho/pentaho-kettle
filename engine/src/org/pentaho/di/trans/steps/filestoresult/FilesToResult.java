@@ -36,19 +36,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Writes filenames to a next job entry in a Job
- * 
+ *
  * @author matt
  * @since 26-may-2006
  */
 public class FilesToResult extends BaseStep implements StepInterface {
-  private static Class<?> PKG = FilesToResultMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FilesToResultMeta.class; // for i18n purposes, needed by Translator2!!
 
   private FilesToResultMeta meta;
 
   private FilesToResultData data;
 
   public FilesToResult( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -57,13 +57,13 @@ public class FilesToResult extends BaseStep implements StepInterface {
     data = (FilesToResultData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       for ( ResultFile resultFile : data.filenames ) {
         addResultFile( resultFile );
       }
-      logBasic( BaseMessages
-          .getString( PKG, "FilesToResult.Log.AddedNrOfFiles", String.valueOf( data.filenames.size() ) ) );
+      logBasic( BaseMessages.getString( PKG, "FilesToResult.Log.AddedNrOfFiles", String.valueOf( data.filenames
+        .size() ) ) );
       setOutputDone();
       return false;
     }
@@ -86,8 +86,8 @@ public class FilesToResult extends BaseStep implements StepInterface {
 
     try {
       ResultFile resultFile =
-          new ResultFile( meta.getFileType(), KettleVFS.getFileObject( filename, getTransMeta() ),
-              getTrans().getName(), getStepname() );
+        new ResultFile( meta.getFileType(), KettleVFS.getFileObject( filename, getTransMeta() ), getTrans()
+          .getName(), getStepname() );
 
       // Add all rows to rows buffer...
       data.filenames.add( resultFile );

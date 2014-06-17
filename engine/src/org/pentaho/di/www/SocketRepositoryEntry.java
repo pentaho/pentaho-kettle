@@ -26,9 +26,9 @@ import java.net.ServerSocket;
 
 /**
  * This entry contains a server socket as well as detailed about the process that is using it.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class SocketRepositoryEntry {
   private int port;

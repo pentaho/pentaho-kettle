@@ -32,12 +32,12 @@ import org.w3c.dom.Node;
 
 /**
  * Describes a Json field.
- * 
+ *
  * @author Samatar
  * @since 20-06-20010
  */
 public class JsonInputField implements Cloneable {
-  private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int TYPE_TRIM_NONE = 0;
   public static final int TYPE_TRIM_LEFT = 1;
@@ -46,7 +46,8 @@ public class JsonInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "JsonInputField.TrimType.None" ),
+  public static final String[] trimTypeDesc = {
+    BaseMessages.getString( PKG, "JsonInputField.TrimType.None" ),
     BaseMessages.getString( PKG, "JsonInputField.TrimType.Left" ),
     BaseMessages.getString( PKG, "JsonInputField.TrimType.Right" ),
     BaseMessages.getString( PKG, "JsonInputField.TrimType.Both" ) };

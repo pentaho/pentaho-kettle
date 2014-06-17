@@ -45,7 +45,7 @@ import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepInterface;
 
 public class SniffStepServlet extends BaseHttpServlet implements CartePluginInterface {
-  private static Class<?> PKG = GetTransStatusServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetTransStatusServlet.class; // for i18n purposes, needed by Translator2!!
 
   private static final long serialVersionUID = 3634806745372015720L;
   public static final String CONTEXT_PATH = "/kettle/sniffStep";
@@ -67,7 +67,8 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
     super( transformationMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -164,8 +165,8 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
 
         // Wait until we have enough rows...
         //
-        while ( metaData.bufferRowData.size() < nrLines && step.isRunning() && !trans.isFinished()
-            && !trans.isStopped() ) {
+        while ( metaData.bufferRowData.size() < nrLines
+          && step.isRunning() && !trans.isFinished() && !trans.isStopped() ) {
 
           try {
             Thread.sleep( 100 );
@@ -218,14 +219,15 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
           out.println( "<HTML>" );
           out.println( "<HEAD>" );
           out.println( "<TITLE>" + BaseMessages.getString( PKG, "SniffStepServlet.SniffResults" ) + "</TITLE>" );
-          out.println( "<META http-equiv=\"Refresh\" content=\"10;url=" + convertContextPath( CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">" );
+          out.println( "<META http-equiv=\"Refresh\" content=\"10;url="
+            + convertContextPath( CONTEXT_PATH ) + "?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
+            + URLEncoder.encode( id, "UTF-8" ) + "\">" );
           out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
           out.println( "</HEAD>" );
           out.println( "<BODY>" );
           out.println( "<H1>"
-              + encoder.encodeForHTML( BaseMessages.getString( PKG, "SniffStepServlet.SniffResultsForStep", stepName ) )
-              + "</H1>" );
+            + encoder.encodeForHTML( BaseMessages.getString(
+              PKG, "SniffStepServlet.SniffResultsForStep", stepName ) ) + "</H1>" );
 
           try {
             out.println( "<table border=\"1\">" );
@@ -271,27 +273,28 @@ public class SniffStepServlet extends BaseHttpServlet implements CartePluginInte
         }
       } else {
         if ( useXML ) {
-          out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-              "SniffStepServlet.Log.CoundNotFindSpecStep", stepName ) ).getXML() );
+          out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+            PKG, "SniffStepServlet.Log.CoundNotFindSpecStep", stepName ) ).getXML() );
         } else {
           out.println( "<H1>"
-              + encoder.encodeForHTML( BaseMessages.getString( PKG, "SniffStepServlet.Log.CoundNotFindSpecStep",
-                  stepName ) ) + "</H1>" );
-          out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-              + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+            + encoder.encodeForHTML( BaseMessages.getString(
+              PKG, "SniffStepServlet.Log.CoundNotFindSpecStep", stepName ) ) + "</H1>" );
+          out.println( "<a href=\""
+            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
         }
       }
     } else {
       if ( useXML ) {
-        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-            "SniffStepServlet.Log.CoundNotFindSpecTrans", transName ) ).getXML() );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+          PKG, "SniffStepServlet.Log.CoundNotFindSpecTrans", transName ) ).getXML() );
       } else {
         out.println( "<H1>"
-            + encoder
-                .encodeForHTML( BaseMessages.getString( PKG, "SniffStepServlet.Log.CoundNotFindTrans", transName ) )
-            + "</H1>" );
-        out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+          + encoder.encodeForHTML( BaseMessages.getString(
+            PKG, "SniffStepServlet.Log.CoundNotFindTrans", transName ) ) + "</H1>" );
+        out.println( "<a href=\""
+          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+          + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
       }
     }
   }

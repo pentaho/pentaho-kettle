@@ -29,7 +29,7 @@ import org.pentaho.di.trans.steps.symmetriccrypto.symmetricalgorithm.SymmetricCr
 
 /**
  * Generate secret key. for symmetric algorithms
- * 
+ *
  * @author Samatar
  * @since 01-4-2011
  */
@@ -51,9 +51,6 @@ public class SecretKeyGeneratorData extends BaseStepData implements StepDataInte
   public boolean readsRows;
   public int prevNrField;
 
-  /**
-	 * 
-	 */
   public SecretKeyGeneratorData() {
     super();
     addAlgorithmOutput = false;

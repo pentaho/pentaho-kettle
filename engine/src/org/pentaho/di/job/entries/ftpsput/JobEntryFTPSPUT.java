@@ -61,14 +61,14 @@ import org.w3c.dom.Node;
 
 /**
  * This defines an FTPS put job entry.
- * 
+ *
  * @author Samatar
  * @since 15-03-2010
- * 
+ *
  */
 
 public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryFTPSPUT.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryFTPSPUT.class; // for i18n purposes, needed by Translator2!!
 
   private String serverName;
   private String serverPort;
@@ -99,7 +99,6 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
     remoteDirectory = null;
     localDirectory = null;
     connectionType = FTPSConnection.CONNECTION_TYPE_FTP;
-    setID( -1L );
   }
 
   public JobEntryFTPSPUT() {
@@ -120,7 +119,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
     retval.append( "      " ).append( XMLHandler.addTagValue( "serverport", serverPort ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "username", userName ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( getPassword() ) ) );
+      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( getPassword() ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "remoteDirectory", remoteDirectory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "localDirectory", localDirectory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "wildcard", wildcard ) );
@@ -135,13 +134,13 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_username", proxyUsername ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_password", proxyPassword ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "connection_type", FTPSConnection.getConnectionTypeCode( connectionType ) ) );
+      XMLHandler.addTagValue( "connection_type", FTPSConnection.getConnectionTypeCode( connectionType ) ) );
 
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       serverName = XMLHandler.getTagValue( entrynode, "servername" );
@@ -162,15 +161,15 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       proxyUsername = XMLHandler.getTagValue( entrynode, "proxy_username" );
       proxyPassword = XMLHandler.getTagValue( entrynode, "proxy_password" );
       connectionType =
-          FTPSConnection.getConnectionTypeByCode( Const
-              .NVL( XMLHandler.getTagValue( entrynode, "connection_type" ), "" ) );
+        FTPSConnection.getConnectionTypeByCode( Const.NVL(
+          XMLHandler.getTagValue( entrynode, "connection_type" ), "" ) );
     } catch ( KettleXMLException xe ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "JobFTPSPUT.Log.UnableToLoadFromXml" ), xe );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       serverName = rep.getJobEntryAttributeString( id_jobentry, "servername" );
       int intServerPort = (int) rep.getJobEntryAttributeInteger( id_jobentry, "serverport" );
@@ -180,7 +179,8 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       }
 
       userName = rep.getJobEntryAttributeString( id_jobentry, "username" );
-      password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
+      password =
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
       remoteDirectory = rep.getJobEntryAttributeString( id_jobentry, "remoteDirectory" );
       localDirectory = rep.getJobEntryAttributeString( id_jobentry, "localDirectory" );
       wildcard = rep.getJobEntryAttributeString( id_jobentry, "wildcard" );
@@ -195,11 +195,11 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       proxyUsername = rep.getJobEntryAttributeString( id_jobentry, "proxy_username" );
       proxyPassword = rep.getJobEntryAttributeString( id_jobentry, "proxy_password" );
       connectionType =
-          FTPSConnection.getConnectionTypeByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry,
-              "connection_type" ), "" ) );
+        FTPSConnection.getConnectionTypeByCode( Const.NVL( rep.getJobEntryAttributeString(
+          id_jobentry, "connection_type" ), "" ) );
     } catch ( KettleException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobFTPSPUT.UnableToLoadFromRepo", String
-          .valueOf( id_jobentry ) ), dbe );
+        .valueOf( id_jobentry ) ), dbe );
     }
   }
 
@@ -208,7 +208,8 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "serverport", serverPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr
+        .encryptPasswordIfNotUsingVariables( password ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "remoteDirectory", remoteDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "localDirectory", localDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "wildcard", wildcard );
@@ -223,11 +224,11 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_username", proxyUsername );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_password", proxyPassword );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "connection_type", FTPSConnection
-          .getConnectionType( connectionType ) );
+        .getConnectionType( connectionType ) );
 
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages
-          .getString( PKG, "JobFTPSPUT.UnableToSaveToRepo", String.valueOf( id_job ) ), dbe );
+      throw new KettleException( BaseMessages.getString( PKG, "JobFTPSPUT.UnableToSaveToRepo", String
+        .valueOf( id_job ) ), dbe );
     }
   }
 
@@ -505,65 +506,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       // Define a new connection
       connection = new FTPSConnection( getConnectionType(), realServerName, realPort, realUsername, realPassword );
 
-      if ( !Const.isEmpty( proxyHost ) ) {
-        String realProxy_host = environmentSubstitute( proxyHost );
-        String realProxy_username = environmentSubstitute( proxyUsername );
-        String realProxy_password = environmentSubstitute( proxyPassword );
-        connection.setProxyHost( realProxy_host );
-        if ( !Const.isEmpty( realProxy_username ) ) {
-          connection.setProxyUser( realProxy_username );
-        }
-        if ( !Const.isEmpty( realProxy_password ) ) {
-          connection.setProxyPassword( realProxy_password );
-        }
-        if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntryFTPSPUT.OpenedProxyConnectionOn", realProxy_host ) );
-        }
-
-        int proxyport = Const.toInt( environmentSubstitute( proxyPort ), 21 );
-        if ( proxyport != 0 ) {
-          connection.setProxyPort( proxyport );
-        }
-      } else {
-        if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntryFTPSPUT.OpenedConnectionTo", realServerName ) );
-        }
-      }
-
-      // set activeConnection connectmode ...
-      if ( activeConnection ) {
-        connection.setPassiveMode( false );
-        if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetActiveConnection" ) );
-        }
-      } else {
-        connection.setPassiveMode( true );
-        if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetPassiveConnection" ) );
-        }
-      }
-
-      // Set binary mode
-      if ( isBinaryMode() ) {
-        connection.setBinaryMode( true );
-        if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.BinaryMod" ) );
-        }
-      }
-
-      // Set the timeout
-      connection.setTimeOut( timeout );
-      if ( isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetTimeout", timeout ) );
-      }
-
-      // login to FTPS host ...
-      connection.connect();
-      if ( isDetailed() ) {
-        // Remove password from logging, you don't know where it ends up.
-        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.Logged", realUsername ) );
-        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.WorkingDirectory", connection.getWorkingDirectory() ) );
-      }
+      this.buildFTPSConnection( connection );
 
       // move to spool dir ...
       if ( !Const.isEmpty( realRemoteDirectory ) ) {
@@ -572,10 +515,19 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
           logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.ChangedDirectory", realRemoteDirectory ) );
         }
       }
+
       realRemoteDirectory = Const.NVL( realRemoteDirectory, FTPSConnection.HOME_FOLDER );
 
       ArrayList<String> myFileList = new ArrayList<String>();
       File localFiles = new File( realLocalDirectory );
+
+      if ( !localFiles.exists() ) {
+        // if local directory uses ${ signature this will be fail to MessageFormat.format ...
+        String error = BaseMessages.getString(
+            PKG, "JobFTPSPUT.LocalFileDirectoryNotExists" ) + realLocalDirectory;
+        throw new Exception( error );
+      }
+
       File[] children = localFiles.listFiles();
       for ( int i = 0; i < children.length; i++ ) {
         // Get filename of file or directory
@@ -588,8 +540,8 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
       myFileList.toArray( filelist );
 
       if ( isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.FoundFileLocalDirectory", filelist.length,
-            realLocalDirectory ) );
+        logDetailed( BaseMessages.getString(
+          PKG, "JobFTPSPUT.Log.FoundFileLocalDirectory", filelist.length, realLocalDirectory ) );
       }
 
       Pattern pattern = null;
@@ -624,8 +576,8 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
 
             String localFilename = realLocalDirectory + Const.FILE_SEPARATOR + filelist[i];
             if ( isDebug() ) {
-              logDebug( BaseMessages.getString( PKG, "JobFTPSPUT.Log.PuttingFileToRemoteDirectory", localFilename,
-                  realRemoteDirectory ) );
+              logDebug( BaseMessages.getString(
+                PKG, "JobFTPSPUT.Log.PuttingFileToRemoteDirectory", localFilename, realRemoteDirectory ) );
             }
 
             connection.uploadFile( localFilename, filelist[i] );
@@ -681,14 +633,78 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "localDirectory", remarks,
-        putValidators( notBlankValidator(), fileExistsValidator() ) );
+    andValidator().validate(
+      this, "localDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
     andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
     andValidator().validate( this, "serverPort", remarks, putValidators( integerValidator() ) );
+  }
+
+  void buildFTPSConnection( FTPSConnection connection ) throws Exception {
+    if ( !Const.isEmpty( proxyHost ) ) {
+      String realProxy_host = environmentSubstitute( proxyHost );
+      String realProxy_username = environmentSubstitute( proxyUsername );
+      String realProxy_password = environmentSubstitute( proxyPassword );
+      realProxy_password = Encr.decryptPasswordOptionallyEncrypted( realProxy_password );
+
+      connection.setProxyHost( realProxy_host );
+      if ( !Const.isEmpty( realProxy_username ) ) {
+        connection.setProxyUser( realProxy_username );
+      }
+      if ( !Const.isEmpty( realProxy_password ) ) {
+        connection.setProxyPassword( realProxy_password );
+      }
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobEntryFTPSPUT.OpenedProxyConnectionOn", realProxy_host ) );
+      }
+
+      int proxyport = Const.toInt( environmentSubstitute( proxyPort ), 21 );
+      if ( proxyport != 0 ) {
+        connection.setProxyPort( proxyport );
+      }
+    } else {
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobEntryFTPSPUT.OpenedConnectionTo", connection.getHostName() ) );
+      }
+    }
+
+    // set activeConnection connectmode ...
+    if ( activeConnection ) {
+      connection.setPassiveMode( false );
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetActiveConnection" ) );
+      }
+    } else {
+      connection.setPassiveMode( true );
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetPassiveConnection" ) );
+      }
+    }
+
+    // Set the timeout
+    connection.setTimeOut( timeout );
+    if ( isDetailed() ) {
+      logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.SetTimeout", timeout ) );
+    }
+
+    // login to FTPS host ...
+    connection.connect();
+    if ( isDetailed() ) {
+      // Remove password from logging, you don't know where it ends up.
+      logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.Logged", connection.getUserName() ) );
+      logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.WorkingDirectory", connection.getWorkingDirectory() ) );
+    }
+
+    // Set binary mode
+    if ( isBinaryMode() ) {
+      connection.setBinaryMode( true );
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobFTPSPUT.Log.BinaryMod" ) );
+      }
+    }
   }
 
 }

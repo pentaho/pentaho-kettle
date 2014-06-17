@@ -63,14 +63,14 @@ import org.w3c.dom.Node;
 /**
  * This defines a 'copymoveresultfilenames' job entry. Its main use would be to copy or move files in the result
  * filenames to a destination folder. that can be used to control the flow in ETL cycles.
- * 
+ *
  * @author Samatar
  * @since 25-02-2008
- * 
+ *
  */
 public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryCopyMoveResultFilenames.class; // for i18n purposes, needed by Translator2!!
-                                                                       // $NON-NLS-1$
+
   private String foldername;
   private boolean specifywildcard;
   private String wildcard;
@@ -124,7 +124,6 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 
     action = "copy";
     success_condition = SUCCESS_IF_NO_ERRORS;
-    setID( -1L );
   }
 
   public JobEntryCopyMoveResultFilenames() {
@@ -154,15 +153,16 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
     retval.append( "      " ).append( XMLHandler.addTagValue( "action", action ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "AddDateBeforeExtension", AddDateBeforeExtension ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "OverwriteFile", OverwriteFile ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "CreateDestinationFolder", CreateDestinationFolder ) );
+    retval
+      .append( "      " ).append( XMLHandler.addTagValue( "CreateDestinationFolder", CreateDestinationFolder ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "RemovedSourceFilename", RemovedSourceFilename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "AddDestinationFilename", AddDestinationFilename ) );
 
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       foldername = XMLHandler.getTagValue( entrynode, "foldername" );
@@ -175,24 +175,27 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
       add_date = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "add_date" ) );
       add_time = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "add_time" ) );
       SpecifyFormat = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "SpecifyFormat" ) );
-      AddDateBeforeExtension = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "AddDateBeforeExtension" ) );
+      AddDateBeforeExtension =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "AddDateBeforeExtension" ) );
 
       date_time_format = XMLHandler.getTagValue( entrynode, "date_time_format" );
       action = XMLHandler.getTagValue( entrynode, "action" );
 
       OverwriteFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "OverwriteFile" ) );
-      CreateDestinationFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "CreateDestinationFolder" ) );
+      CreateDestinationFolder =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "CreateDestinationFolder" ) );
       RemovedSourceFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "RemovedSourceFilename" ) );
-      AddDestinationFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "AddDestinationFilename" ) );
+      AddDestinationFilename =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "AddDestinationFilename" ) );
 
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.CanNotLoadFromXML",
-          xe.getMessage() ) );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "JobEntryCopyMoveResultFilenames.CanNotLoadFromXML", xe.getMessage() ) );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       foldername = rep.getJobEntryAttributeString( id_jobentry, "foldername" );
       specifywildcard = rep.getJobEntryAttributeBoolean( id_jobentry, "specify_wildcard" );
@@ -214,8 +217,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
       AddDestinationFilename = rep.getJobEntryAttributeBoolean( id_jobentry, "AddDestinationFilename" );
 
     } catch ( KettleException dbe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.CanNotLoadFromRep",
-          "" + id_jobentry, dbe.getMessage() ) );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "JobEntryCopyMoveResultFilenames.CanNotLoadFromRep", "" + id_jobentry, dbe.getMessage() ) );
     }
   }
 
@@ -242,8 +245,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
       rep.saveJobEntryAttribute( id_job, getObjectId(), "AddDestinationFilename", AddDestinationFilename );
 
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.CanNotSaveToRep", ""
-          + id_job, dbe.getMessage() ) );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "JobEntryCopyMoveResultFilenames.CanNotSaveToRep", "" + id_job, dbe.getMessage() ) );
     }
   }
 
@@ -429,18 +432,19 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
         if ( resultFiles != null && resultFiles.size() > 0 ) {
           for ( Iterator<ResultFile> it = resultFiles.iterator(); it.hasNext() && !parentJob.isStopped(); ) {
             if ( successConditionBroken ) {
-              logError( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.Error.SuccessConditionbroken", ""
-                  + NrErrors ) );
-              throw new Exception( BaseMessages.getString( PKG,
-                  "JobEntryCopyMoveResultFilenames.Error.SuccessConditionbroken", "" + NrErrors ) );
+              logError( BaseMessages.getString(
+                PKG, "JobEntryCopyMoveResultFilenames.Error.SuccessConditionbroken", "" + NrErrors ) );
+              throw new Exception( BaseMessages.getString(
+                PKG, "JobEntryCopyMoveResultFilenames.Error.SuccessConditionbroken", "" + NrErrors ) );
             }
 
             ResultFile resultFile = it.next();
             file = resultFile.getFile();
             if ( file != null && file.exists() ) {
               if ( !specifywildcard
-                  || ( CheckFileWildcard( file.getName().getBaseName(), wildcardPattern, true )
-                      && !CheckFileWildcard( file.getName().getBaseName(), wildcardExcludePattern, false ) && specifywildcard ) ) {
+                || ( CheckFileWildcard( file.getName().getBaseName(), wildcardPattern, true )
+                  && !CheckFileWildcard( file.getName().getBaseName(), wildcardExcludePattern, false )
+                  && specifywildcard ) ) {
                 // Copy or Move file
                 if ( !processFile( file, realdestinationFolder, result, parentJob, deleteFile ) ) {
                   // Update Errors
@@ -449,12 +453,12 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
               }
 
             } else {
-              logError( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.log.ErrorCanNotFindFile", file
-                  .toString() ) );
+              logError( BaseMessages.getString(
+                PKG, "JobEntryCopyMoveResultFilenames.log.ErrorCanNotFindFile", file.toString() ) );
               // Update Errors
               updateErrors();
             }
-          }// end for
+          } // end for
         }
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.Error", e.toString() ) );
@@ -489,7 +493,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
   private boolean checkIfSuccessConditionBroken() {
     boolean retval = false;
     if ( ( NrErrors > 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
-        || ( NrErrors >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
+      || ( NrErrors >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
       retval = true;
     }
     return retval;
@@ -499,8 +503,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
     boolean retval = false;
 
     if ( ( NrErrors == 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
-        || ( NrSuccess >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED ) )
-        || ( NrErrors <= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
+      || ( NrSuccess >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED ) )
+      || ( NrErrors <= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
       retval = true;
     }
 
@@ -524,13 +528,14 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
         }
       } else {
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.Log.FolderExists", foldername ) );
+          logDetailed( BaseMessages
+            .getString( PKG, "JobEntryCopyMoveResultFilenames.Log.FolderExists", foldername ) );
         }
       }
       return true;
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.Log.CanNotCreatedFolder", foldername, e
-          .toString() ) );
+      logError( BaseMessages.getString(
+        PKG, "JobEntryCopyMoveResultFilenames.Log.CanNotCreatedFolder", foldername, e.toString() ) );
 
     } finally {
       if ( folder != null ) {
@@ -545,7 +550,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
   }
 
   private boolean processFile( FileObject sourcefile, String destinationFolder, Result result, Job parentJob,
-      boolean deleteFile ) {
+    boolean deleteFile ) {
     boolean retval = false;
 
     try {
@@ -553,20 +558,20 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
         // delete file
         if ( sourcefile.delete() ) {
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.log.DeletedFile", sourcefile
-                .toString() ) );
+            logDetailed( BaseMessages.getString(
+              PKG, "JobEntryCopyMoveResultFilenames.log.DeletedFile", sourcefile.toString() ) );
           }
 
           // Remove source file from result files list
           result.getResultFiles().remove( sourcefile.toString() );
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.RemovedFileFromResult",
-                sourcefile.toString() ) );
+            logDetailed( BaseMessages.getString(
+              PKG, "JobEntryCopyMoveResultFilenames.RemovedFileFromResult", sourcefile.toString() ) );
           }
 
         } else {
           logError( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.CanNotDeletedFile", sourcefile
-              .toString() ) );
+            .toString() ) );
         }
       } else {
         // return destination short filename
@@ -577,8 +582,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
         boolean filexists = destinationfile.exists();
         if ( filexists ) {
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.Log.FileExists",
-                destinationFilename ) );
+            logDetailed( BaseMessages.getString(
+              PKG, "JobEntryCopyMoveResultFilenames.Log.FileExists", destinationFilename ) );
           }
         }
         if ( ( !filexists ) || ( filexists && isOverwriteFile() ) ) {
@@ -586,34 +591,34 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
             // Copy file
             FileUtil.copyContent( sourcefile, destinationfile );
             if ( log.isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.log.CopiedFile", sourcefile
-                  .toString(), destinationFolder ) );
+              logDetailed( BaseMessages.getString(
+                PKG, "JobEntryCopyMoveResultFilenames.log.CopiedFile", sourcefile.toString(), destinationFolder ) );
             }
           } else {
             // Move file
             sourcefile.moveTo( destinationfile );
             if ( log.isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.log.MovedFile", sourcefile
-                  .toString(), destinationFolder ) );
+              logDetailed( BaseMessages.getString(
+                PKG, "JobEntryCopyMoveResultFilenames.log.MovedFile", sourcefile.toString(), destinationFolder ) );
             }
           }
           if ( isRemovedSourceFilename() ) {
             // Remove source file from result files list
             result.getResultFiles().remove( sourcefile.toString() );
             if ( log.isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.RemovedFileFromResult",
-                  sourcefile.toString() ) );
+              logDetailed( BaseMessages.getString(
+                PKG, "JobEntryCopyMoveResultFilenames.RemovedFileFromResult", sourcefile.toString() ) );
             }
           }
           if ( isAddDestinationFilename() ) {
             // Add destination filename to Resultfilenames ...
             ResultFile resultFile =
-                new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS
-                    .getFileObject( destinationfile.toString(), this ), parentJob.getJobname(), toString() );
+              new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(
+                destinationfile.toString(), this ), parentJob.getJobname(), toString() );
             result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
             if ( log.isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "JobEntryCopyMoveResultFilenames.AddedFileToResult",
-                  destinationfile.toString() ) );
+              logDetailed( BaseMessages.getString(
+                PKG, "JobEntryCopyMoveResultFilenames.AddedFileToResult", destinationfile.toString() ) );
             }
           }
         }
@@ -661,7 +666,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
   }
 
   /**********************************************************
-   * 
+   *
    * @param selectedfile
    * @param wildcard
    * @return True if the selectedfile matches the wildcard
@@ -679,8 +684,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
     return true;
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace( ctx, getVariables() );
     putValidators( ctx, notNullValidator(), fileDoesNotExistValidator() );

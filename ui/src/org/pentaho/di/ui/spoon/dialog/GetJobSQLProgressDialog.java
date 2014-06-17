@@ -39,12 +39,12 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while getting the SQL for a job...
- * 
+ *
  * @author Matt
  * @since 29-mrt-2006
  */
 public class GetJobSQLProgressDialog {
-  private static Class<?> PKG = GetJobSQLProgressDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetJobSQLProgressDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Shell shell;
   private JobMeta jobMeta;
@@ -72,11 +72,12 @@ public class GetJobSQLProgressDialog {
         try {
           stats = jobMeta.getSQLStatements( repository, new ProgressMonitorAdapter( monitor ) );
         } catch ( KettleException e ) {
-          throw new InvocationTargetException( e, BaseMessages.getString( PKG,
-              "GetJobSQLProgressDialog.RuntimeError.UnableToGenerateSQL.Exception", e.getMessage() ) ); // Error
-                                                                                                        // generating
-                                                                                                        // SQL for job:
-                                                                                                        // \n{0}
+          throw new InvocationTargetException( e, BaseMessages.getString(
+            PKG, "GetJobSQLProgressDialog.RuntimeError.UnableToGenerateSQL.Exception", e.getMessage() ) ); // Error
+                                                                                                           // generating
+                                                                                                           // SQL for
+                                                                                                           // job:
+                                                                                                           // \n{0}
         }
       }
     };
@@ -85,22 +86,12 @@ public class GetJobSQLProgressDialog {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
       pmd.run( false, false, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( shell,
-          BaseMessages.getString( PKG, "GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Title" ), BaseMessages
-              .getString( PKG, "GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Message" ), e ); // "Error generating SQL for job","An
-                                                                                                    // error occured
-                                                                                                    // generating the
-                                                                                                    // SQL for this
-                                                                                                    // job\!"
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Title" ),
+        BaseMessages.getString( PKG, "GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Message" ), e );
       stats = null;
     } catch ( InterruptedException e ) {
-      new ErrorDialog( shell,
-          BaseMessages.getString( PKG, "GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Title" ), BaseMessages
-              .getString( PKG, "GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Message" ), e ); // "Error generating SQL for job","An
-                                                                                                    // error occured
-                                                                                                    // generating the
-                                                                                                    // SQL for this
-                                                                                                    // job\!"
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Title" ),
+        BaseMessages.getString( PKG, "GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Message" ), e );
       stats = null;
     }
 

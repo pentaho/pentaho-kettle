@@ -64,7 +64,7 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = XBaseInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XBaseInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFilename;
   private Button wbFilename;
@@ -447,7 +447,8 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
           dialog.setFileName( wFilename.getText() );
         }
 
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "XBaseInputDialog.Filter.DBaseFiles" ),
+        dialog.setFilterNames( new String[] {
+          BaseMessages.getString( PKG, "XBaseInputDialog.Filter.DBaseFiles" ),
           BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
         if ( dialog.open() != null ) {
@@ -568,29 +569,27 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 
       if ( oneMeta.isAcceptingFilenames() ) {
         MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-        mb.setMessage( BaseMessages.getString( PKG, "XBaseInputDialog.Dialog.SpecifyASampleFile.Message" ) ); // Nothing
-                                                                                                              // found
-                                                                                                              // that
-                                                                                                              // matches
-                                                                                                              // your
-                                                                                                              // criteria
-        mb.setText( BaseMessages.getString( PKG, "XBaseInputDialog.Dialog.SpecifyASampleFile.Title" ) ); // Sorry!
+        mb.setMessage( BaseMessages.getString( PKG, "XBaseInputDialog.Dialog.SpecifyASampleFile.Message" ) );
+        mb.setText( BaseMessages.getString( PKG, "XBaseInputDialog.Dialog.SpecifyASampleFile.Title" ) );
         mb.open();
         return;
       }
 
-      TransMeta previewMeta =
-          TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+      TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(
+        transMeta,
+        oneMeta,
+        wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "XBaseInputDialog.PreviewSize.DialogTitle" ), BaseMessages.getString( PKG,
-              "XBaseInputDialog.PreviewSize.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "XBaseInputDialog.PreviewSize.DialogTitle" ),
+        BaseMessages.getString( PKG, "XBaseInputDialog.PreviewSize.DialogMessage" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
-        TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+        TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(
+          shell,
+          previewMeta,
+          new String[] { wStepname.getText() },
+          new int[] { previewSize } );
         progressDialog.open();
 
         Trans trans = progressDialog.getTrans();
@@ -599,22 +598,23 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
         if ( !progressDialog.isCancelled() ) {
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
+                  .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
         }
 
         PreviewRowsDialog prd =
-            new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                loggingText );
+          new PreviewRowsDialog(
+            shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+              .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
         prd.open();
       }
     } catch ( Exception e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.PreviewError.Message" ), e );
+        .getString( PKG, "System.Dialog.PreviewError.Message" ), e );
     }
   }
 }

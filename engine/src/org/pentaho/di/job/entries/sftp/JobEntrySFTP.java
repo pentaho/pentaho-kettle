@@ -68,13 +68,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a SFTP job entry.
- * 
+ *
  * @author Matt
  * @since 05-11-2003
- * 
+ *
  */
 public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntrySFTP.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySFTP.class; // for i18n purposes, needed by Translator2!!
 
   private static final int DEFAULT_PORT = 22;
   private String serverName;
@@ -115,7 +115,6 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
     proxyPort = null;
     proxyUsername = null;
     proxyPassword = null;
-    setID( -1L );
   }
 
   public JobEntrySFTP() {
@@ -136,7 +135,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append( "      " ).append( XMLHandler.addTagValue( "serverport", serverPort ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "username", userName ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( getPassword() ) ) );
+      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( getPassword() ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "sftpdirectory", sftpDirectory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "targetdirectory", targetDirectory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "wildcard", wildcard ) );
@@ -148,7 +147,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append( "      " ).append( XMLHandler.addTagValue( "usekeyfilename", usekeyfilename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "keyfilename", keyfilename ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "keyfilepass", Encr.encryptPasswordIfNotUsingVariables( keyfilepass ) ) );
+      XMLHandler.addTagValue( "keyfilepass", Encr.encryptPasswordIfNotUsingVariables( keyfilepass ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "compression", compression ) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyType", proxyType ) );
@@ -156,13 +155,13 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyPort", proxyPort ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyUsername", proxyUsername ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "proxyPassword", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
+      XMLHandler.addTagValue( "proxyPassword", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
 
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       serverName = XMLHandler.getTagValue( entrynode, "servername" );
@@ -194,20 +193,22 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       proxyHost = XMLHandler.getTagValue( entrynode, "proxyHost" );
       proxyPort = XMLHandler.getTagValue( entrynode, "proxyPort" );
       proxyUsername = XMLHandler.getTagValue( entrynode, "proxyUsername" );
-      proxyPassword = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "proxyPassword" ) );
+      proxyPassword =
+        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "proxyPassword" ) );
     } catch ( KettleXMLException xe ) {
       throw new KettleXMLException( "Unable to load job entry of type 'SFTP' from XML node", xe );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       serverName = rep.getJobEntryAttributeString( id_jobentry, "servername" );
       serverPort = rep.getJobEntryAttributeString( id_jobentry, "serverport" );
 
       userName = rep.getJobEntryAttributeString( id_jobentry, "username" );
-      password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
+      password =
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
 
       sftpDirectory = rep.getJobEntryAttributeString( id_jobentry, "sftpdirectory" );
       targetDirectory = rep.getJobEntryAttributeString( id_jobentry, "targetdirectory" );
@@ -227,7 +228,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       usekeyfilename = rep.getJobEntryAttributeBoolean( id_jobentry, "usekeyfilename" );
       keyfilename = rep.getJobEntryAttributeString( id_jobentry, "keyfilename" );
       keyfilepass =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "keyfilepass" ) );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "keyfilepass" ) );
       compression = rep.getJobEntryAttributeString( id_jobentry, "compression" );
 
       proxyType = rep.getJobEntryAttributeString( id_jobentry, "proxyType" );
@@ -235,11 +236,11 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       proxyPort = rep.getJobEntryAttributeString( id_jobentry, "proxyPort" );
       proxyUsername = rep.getJobEntryAttributeString( id_jobentry, "proxyUsername" );
       proxyPassword =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "proxyPassword" ) );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "proxyPassword" ) );
 
     } catch ( KettleException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'SFTP' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
   }
 
@@ -248,7 +249,8 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "serverport", serverPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr
+        .encryptPasswordIfNotUsingVariables( password ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "sftpdirectory", sftpDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "targetdirectory", targetDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "wildcard", wildcard );
@@ -260,7 +262,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute( id_job, getObjectId(), "usekeyfilename", usekeyfilename );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "keyfilename", keyfilename );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "keyfilepass", Encr
-          .encryptPasswordIfNotUsingVariables( keyfilepass ) );
+        .encryptPasswordIfNotUsingVariables( keyfilepass ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "compression", compression );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyType", proxyType );
@@ -268,9 +270,10 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyPort", proxyPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyUsername", proxyUsername );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxyPassword", Encr
-          .encryptPasswordIfNotUsingVariables( proxyPassword ) );
+        .encryptPasswordIfNotUsingVariables( proxyPassword ) );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type 'SFTP' to the repository for id_job=" + id_job, dbe );
+      throw new KettleException(
+        "Unable to save job entry of type 'SFTP' to the repository for id_job=" + id_job, dbe );
     }
   }
 
@@ -597,11 +600,12 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
       // Create sftp client to host ...
       sftpclient =
-          new SFTPClient( InetAddress.getByName( realServerName ), Const.toInt( realServerPort, DEFAULT_PORT ),
-              realUsername, realKeyFilename, realPassPhrase );
+        new SFTPClient(
+          InetAddress.getByName( realServerName ), Const.toInt( realServerPort, DEFAULT_PORT ), realUsername,
+          realKeyFilename, realPassPhrase );
       if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobSFTP.Log.OpenedConnection", realServerName, realServerPort,
-            realUsername ) );
+        logDetailed( BaseMessages.getString(
+          PKG, "JobSFTP.Log.OpenedConnection", realServerName, realServerPort, realUsername ) );
       }
 
       // Set compression
@@ -611,8 +615,9 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
       String realProxyHost = environmentSubstitute( getProxyHost() );
       if ( !Const.isEmpty( realProxyHost ) ) {
         // Set proxy
-        sftpclient.setProxy( realProxyHost, environmentSubstitute( getProxyPort() ),
-            environmentSubstitute( getProxyUsername() ), environmentSubstitute( getProxyPassword() ), getProxyType() );
+        sftpclient.setProxy(
+          realProxyHost, environmentSubstitute( getProxyPort() ), environmentSubstitute( getProxyUsername() ),
+          environmentSubstitute( getProxyPassword() ), getProxyType() );
       }
 
       // login to ftp host ...
@@ -682,8 +687,9 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
           if ( isaddresult ) {
             // Add to the result files...
             ResultFile resultFile =
-                new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( targetFilename, this ),
-                    parentJob.getJobname(), toString() );
+              new ResultFile(
+                ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( targetFilename, this ), parentJob
+                  .getJobname(), toString() );
             result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "JobSFTP.Log.FilenameAddedToResultFilenames", filelist[i] ) );
@@ -728,6 +734,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
           list_previous_filenames = null;
         }
       } catch ( Exception e ) {
+        // Ignore errors
       }
 
     }
@@ -751,8 +758,8 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
 
     ValidatorContext ctx = new ValidatorContext();

@@ -47,13 +47,13 @@ public class ConceptUtil {
     if (localizedString==null) return null;
     return localizedString.getLocalizedString(locale);
   }
-  
+
   public static TableType getTableType(Concept concept) {
     TableType tableType = (TableType) concept.getProperty(DefaultPropertyID.TABLE_TYPE.getId());
     if (tableType==null) return TableType.OTHER;
     return tableType;
   }
-  
+
   public static TableType getTableType(String typeString) {
     try {
       return TableType.valueOf(typeString);
@@ -61,12 +61,12 @@ public class ConceptUtil {
       return TableType.OTHER;
     }
   }
-  
+
   public static String getString(Concept concept, String id) {
     String string = (String) concept.getProperty(id);
     return string;
   }
-  
+
   public static LogicalColumn findFirstKeyColumn(LogicalTable logicalTable) {
     for (LogicalColumn column : logicalTable.getLogicalColumns()) {
       FieldType fieldType = column.getFieldType();
@@ -76,7 +76,7 @@ public class ConceptUtil {
     }
     return null;
   }
-  
+
   public static DimensionType getDimensionType(LogicalTable logicalTable) {
     String typeString = getString(logicalTable, DefaultIDs.LOGICAL_TABLE_DIMENSION_TYPE);
     return DimensionType.getDimensionType(typeString);
@@ -86,32 +86,32 @@ public class ConceptUtil {
     String typeString = getString(column, DefaultIDs.LOGICAL_COLUMN_ATTRIBUTE_TYPE);
     return AttributeType.getAttributeType(typeString);
   }
-  
+
   public static LogicalColumn findLogicalColumn(LogicalTable logicalTable, AttributeType attributeType) {
     for (LogicalColumn logicalColumn : logicalTable.getLogicalColumns()) {
       AttributeType type = getAttributeType(logicalColumn);
-      if (type == attributeType) return logicalColumn; 
+      if (type == attributeType) return logicalColumn;
     }
     return null;
   }
-  
+
   public static List<LogicalColumn> findLogicalColumns(LogicalTable logicalTable, AttributeType attributeType) {
     List<LogicalColumn> logicalColumns = new ArrayList<LogicalColumn>();
     for (LogicalColumn logicalColumn : logicalTable.getLogicalColumns()) {
       AttributeType type = getAttributeType(logicalColumn);
       if (type == attributeType) {
-        logicalColumns.add(logicalColumn); 
+        logicalColumns.add(logicalColumn);
       }
     }
     return logicalColumns;
   }
-  
+
   public static List<LogicalTable> findLogicalTables(LogicalModel logicalModel, TableType tableType) {
     List<LogicalTable> logicalColumns = new ArrayList<LogicalTable>();
     for (LogicalTable logicalTable : logicalModel.getLogicalTables()) {
       TableType type = getTableType(logicalTable);
       if (type == tableType) {
-        logicalColumns.add(logicalTable); 
+        logicalColumns.add(logicalTable);
       }
     }
     return logicalColumns;
@@ -122,7 +122,7 @@ public class ConceptUtil {
       LogicalTable logicalTable = logicalModel.getLogicalTables().get(i);
       TableType type = getTableType(logicalTable);
       if (type == TableType.FACT) {
-        return i; 
+        return i;
       }
     }
     return -1;

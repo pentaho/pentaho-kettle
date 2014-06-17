@@ -51,7 +51,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
 
 public class TextFileImportWizardPage2 extends WizardPage {
-  private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private List wFields;
   private FormData fdFields;
@@ -124,7 +124,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
   private Shell shell;
 
   public TextFileImportWizardPage2( String arg, PropsUI props, java.util.List<String> rows,
-      Vector<TextFileInputFieldInterface> fields ) {
+    Vector<TextFileInputFieldInterface> fields ) {
     super( arg );
     this.props = props;
     this.rows = rows;
@@ -522,7 +522,8 @@ public class TextFileImportWizardPage2 extends WizardPage {
     wGuessAll.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
-        mb.setMessage( BaseMessages.getString( PKG, "TextFileImportWizardPage2.OverwriteTypeSettings.DialogMessage" ) );
+        mb.setMessage( BaseMessages.getString(
+          PKG, "TextFileImportWizardPage2.OverwriteTypeSettings.DialogMessage" ) );
         mb.setText( BaseMessages.getString( PKG, "TextFileImportWizardPage2.OverwriteTypeSettings.DialogTitle" ) );
         int answer = mb.open();
         if ( answer == SWT.YES ) {

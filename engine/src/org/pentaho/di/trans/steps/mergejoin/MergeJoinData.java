@@ -32,7 +32,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Biswapesh
  * @since 24-nov-2005
- * 
+ *
  */
 
 public class MergeJoinData extends BaseStepData implements StepDataInterface {

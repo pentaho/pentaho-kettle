@@ -33,7 +33,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class MemoryGroupByData extends BaseStepData implements StepDataInterface {
   public class HashEntry {
@@ -90,9 +90,6 @@ public class MemoryGroupByData extends BaseStepData implements StepDataInterface
 
   public boolean newBatch;
 
-  /**
-	 * 
-	 */
   public MemoryGroupByData() {
     super();
 
@@ -102,4 +99,10 @@ public class MemoryGroupByData extends BaseStepData implements StepDataInterface
     return new HashEntry( groupData );
   }
 
+  /**
+   * Method responsible for clearing out memory hogs
+   */
+  public void clear() {
+    map = new HashMap<MemoryGroupByData.HashEntry, Aggregate>();
+  }
 }

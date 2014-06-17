@@ -57,10 +57,10 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
  * This wizard page let's you select the tables that need to be ripped.
- * 
+ *
  * @author Matt
  * @since 17-apr-04
- * 
+ *
  */
 public class RipDatabaseWizardPage2 extends WizardPage {
   private PropsUI props;
@@ -390,11 +390,9 @@ public class RipDatabaseWizardPage2 extends WizardPage {
       for ( int i = 0; i < input.length; i++ ) {
         Integer idx = Integer.valueOf( i );
         String str = selection.get( idx );
-        if ( str == null ) // Not selected: show in source!
-        {
+        if ( str == null ) { // Not selected: show in source!
           wListSource.add( input[i] );
-        } else // Selected, show in destination!
-        {
+        } else { // Selected, show in destination!
           wListDest.add( input[i] );
         }
       }

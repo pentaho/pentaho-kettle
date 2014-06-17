@@ -63,13 +63,13 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Output rows to Properties file and create a file.
- * 
+ *
  * @author Samatar
  * @since 13-Apr-2008
  */
 
 public class PropertyOutputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = PropertyOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PropertyOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlAddToResult;
   private Button wAddToResult;
@@ -406,8 +406,8 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
     fdlCreateParentFolder.right = new FormAttachment( middle, -margin );
     wlCreateParentFolder.setLayoutData( fdlCreateParentFolder );
     wCreateParentFolder = new Button( wFileName, SWT.CHECK );
-    wCreateParentFolder
-        .setToolTipText( BaseMessages.getString( PKG, "PropertyOutputDialog.CreateParentFolder.Tooltip" ) );
+    wCreateParentFolder.setToolTipText( BaseMessages.getString(
+      PKG, "PropertyOutputDialog.CreateParentFolder.Tooltip" ) );
     props.setLook( wCreateParentFolder );
     fdCreateParentFolder = new FormData();
     fdCreateParentFolder.left = new FormAttachment( middle, 0 );
@@ -563,10 +563,9 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
         getInfo( tfoi );
         String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
-          EnterSelectionDialog esd =
-              new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                  "PropertyOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString( PKG,
-                  "PropertyOutputDialog.SelectOutputFiles.DialogMessage" ) );
+          EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+            BaseMessages.getString( PKG, "PropertyOutputDialog.SelectOutputFiles.DialogTitle" ),
+            BaseMessages.getString( PKG, "PropertyOutputDialog.SelectOutputFiles.DialogMessage" ) );
           esd.setViewOnly();
           esd.open();
         } else {
@@ -696,19 +695,23 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
         if ( wFilename.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+        dialog.setFilterNames( new String[] {
+          BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
           BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
           BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           String extension = wExtension.getText();
-          if ( extension != null && dialog.getFileName() != null && dialog.getFileName().endsWith( "." + extension ) ) {
+          if ( extension != null
+            && dialog.getFileName() != null && dialog.getFileName().endsWith( "." + extension ) ) {
             // The extension is filled in and matches the end
             // of the selected file => Strip off the extension.
             String fileName = dialog.getFileName();
-            wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" )
-                + fileName.substring( 0, fileName.length() - ( extension.length() + 1 ) ) );
+            wFilename.setText( dialog.getFilterPath()
+              + System.getProperty( "file.separator" )
+              + fileName.substring( 0, fileName.length() - ( extension.length() + 1 ) ) );
           } else {
-            wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
+            wFilename.setText( dialog.getFilterPath()
+              + System.getProperty( "file.separator" ) + dialog.getFileName() );
           }
         }
       }
@@ -772,8 +775,9 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
           fieldNames = r.getFieldNames();
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "PropertyOutputDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "PropertyOutputDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "PropertyOutputDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "PropertyOutputDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }

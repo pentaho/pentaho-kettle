@@ -30,7 +30,7 @@ import org.apache.commons.collections.Closure;
  * @param <T>
  *          type.
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  */
 public class AddClosureArrayList<T> extends ArrayList<T> implements Closure {
 
@@ -41,7 +41,7 @@ public class AddClosureArrayList<T> extends ArrayList<T> implements Closure {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.apache.commons.collections.Closure#execute(java.lang.Object)
    */
   @SuppressWarnings( "unchecked" )

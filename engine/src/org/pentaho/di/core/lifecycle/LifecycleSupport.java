@@ -41,7 +41,8 @@ public class LifecycleSupport {
   private LifeEventHandler handler;
 
   public LifecycleSupport() {
-    lifeListeners = Collections.synchronizedSet( loadPlugins( LifecyclePluginType.class, LifecycleListener.class ) );
+    lifeListeners =
+      Collections.synchronizedSet( loadPlugins( LifecyclePluginType.class, LifecycleListener.class ) );
 
     final PluginRegistry registry = PluginRegistry.getInstance();
     registry.addPluginListener( LifecyclePluginType.class, new PluginTypeListener() {
@@ -77,7 +78,7 @@ public class LifecycleSupport {
   /**
    * Instantiate the main plugin class types for the plugin type provided from the set of registered plugins via
    * {@link PluginRegistry}.
-   * 
+   *
    * @param pluginType
    *          Type of plugin whose main class types should be instanticated
    * @return Set of plugin main class instances (a.k.a. plugins)

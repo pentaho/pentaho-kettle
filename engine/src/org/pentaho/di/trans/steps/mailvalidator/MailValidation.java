@@ -45,7 +45,7 @@ import org.pentaho.di.i18n.BaseMessages;
 
 public class MailValidation {
 
-  private static Class<?> PKG = MailValidatorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MailValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static boolean isRegExValid( String emailAdress ) {
     return GenericValidator.isEmail( emailAdress );
@@ -132,7 +132,7 @@ public class MailValidation {
 
   /**
    * Validate an email address This code is from : http://www.rgagnon.com/javadetails/java-0452.html
-   * 
+   *
    * @param email
    *          address
    * @param sender
@@ -144,8 +144,8 @@ public class MailValidation {
    *          (if we want to perform a SMTP check
    * @return true or false
    */
-  public static MailValidationResult isAddressValid( LogChannelInterface log, String address, String senderAddress,
-      String defaultSMTPServer, int timeout, boolean deepCheck ) {
+  public static MailValidationResult isAddressValid( LogChannelInterface log, String address,
+    String senderAddress, String defaultSMTPServer, int timeout, boolean deepCheck ) {
 
     MailValidationResult result = new MailValidationResult();
 
@@ -187,7 +187,7 @@ public class MailValidation {
         }
       } catch ( Exception ex ) {
         result.setErrorMessage( BaseMessages.getString( PKG, "MailValidator.ErrorGettingMachinesInDomain", ex
-            .getMessage() ) );
+          .getMessage() ) );
         return result;
       }
     } else {
@@ -223,9 +223,8 @@ public class MailValidation {
         }
 
         if ( log.isDebug() ) {
-          log.logDebug( className(), BaseMessages.getString( PKG, "MailValidator.ConnectingTo", exhanger, "25", skt
-              .isConnected()
-              + "" ) );
+          log.logDebug( className(), BaseMessages.getString(
+            PKG, "MailValidator.ConnectingTo", exhanger, "25", skt.isConnected() + "" ) );
         }
 
         rdr = new BufferedReader( new InputStreamReader( skt.getInputStream() ) );
@@ -279,7 +278,8 @@ public class MailValidation {
         }
 
         if ( log.isDebug() ) {
-          log.logDebug( className(), BaseMessages.getString( PKG, "MailValidator.ReceiverAccepted", address, "" + res ) );
+          log.logDebug( className(), BaseMessages.getString( PKG, "MailValidator.ReceiverAccepted", address, ""
+            + res ) );
         }
         valid = true;
 

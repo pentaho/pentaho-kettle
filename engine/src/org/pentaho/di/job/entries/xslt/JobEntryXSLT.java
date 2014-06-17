@@ -73,13 +73,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a 'xslt' job entry.
- * 
+ *
  * @author Samatar Hassan
  * @since 02-03-2007
- * 
+ *
  */
 public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryXSLT.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryXSLT.class; // for i18n purposes, needed by Translator2!!
 
   public static String FACTORY_JAXP = "JAXP";
   public static String FACTORY_SAXON = "SAXON";
@@ -133,7 +133,6 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
       outputPropertyName[i] = "outputprop" + i;
       outputPropertyValue[i] = "outputprop";
     }
-    setID( -1L );
   }
 
   public void allocate( int nrParameters, int outputProps ) {
@@ -201,8 +200,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       xmlfilename = XMLHandler.getTagValue( entrynode, "xmlfilename" );
@@ -239,7 +238,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       xmlfilename = rep.getJobEntryAttributeString( id_jobentry, "xmlfilename" );
       xslfilename = rep.getJobEntryAttributeString( id_jobentry, "xslfilename" );
@@ -266,7 +265,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
       }
     } catch ( KettleException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'xslt' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
   }
 
@@ -289,7 +288,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
         rep.saveJobEntryAttribute( id_job, getObjectId(), i, "output_property_value", outputPropertyValue[i] );
       }
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type 'xslt' to the repository for id_job=" + id_job, dbe );
+      throw new KettleException(
+        "Unable to save job entry of type 'xslt' to the repository for id_job=" + id_job, dbe );
     }
   }
 
@@ -345,7 +345,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
         String name = environmentSubstitute( getParameterName()[i] );
         String value = environmentSubstitute( getParameterField()[i] );
         if ( Const.isEmpty( value ) ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ParameterFieldMissing", name, i ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "Xslt.Exception.ParameterFieldMissing", name, i ) );
         }
         nameOfParams[i] = name;
         valueOfParams[i] = value;
@@ -357,8 +358,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
     if ( isFilenamesFromPrevious() ) {
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "JobEntryXSLT.Log.ArgFromPrevious.Found", ( rows != null ? rows
-            .size() : 0 )
-            + "" ) );
+          .size() : 0 )
+          + "" ) );
       }
     }
 
@@ -373,9 +374,10 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
         String xslfilename_previous = resultRow.getString( 1, null );
         String ouputfilename_previous = resultRow.getString( 2, null );
 
-        if ( !Const.isEmpty( xmlfilename_previous ) && !Const.isEmpty( xslfilename_previous )
-            && !Const.isEmpty( ouputfilename_previous ) ) {
-          if ( processOneXMLFile( xmlfilename_previous, xslfilename_previous, ouputfilename_previous, result, parentJob ) ) {
+        if ( !Const.isEmpty( xmlfilename_previous )
+          && !Const.isEmpty( xslfilename_previous ) && !Const.isEmpty( ouputfilename_previous ) ) {
+          if ( processOneXMLFile(
+            xmlfilename_previous, xslfilename_previous, ouputfilename_previous, result, parentJob ) ) {
             NrSuccess++;
           } else {
             NrErrors++;
@@ -391,8 +393,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
       String realxmlfilename = getRealxmlfilename();
       String realxslfilename = getRealxslfilename();
       String realoutputfilename = getoutputfilename();
-      if ( !Const.isEmpty( realxmlfilename ) && !Const.isEmpty( realxslfilename )
-          && !Const.isEmpty( realoutputfilename ) ) {
+      if ( !Const.isEmpty( realxmlfilename )
+        && !Const.isEmpty( realxslfilename ) && !Const.isEmpty( realoutputfilename ) ) {
         if ( processOneXMLFile( realxmlfilename, realxslfilename, realoutputfilename, result, parentJob ) ) {
           NrSuccess++;
         } else {
@@ -413,7 +415,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   private boolean processOneXMLFile( String xmlfilename, String xslfilename, String outputfilename, Result result,
-      Job parentJob ) {
+    Job parentJob ) {
     boolean retval = false;
     FileObject xmlfile = null;
     FileObject xslfile = null;
@@ -428,19 +430,19 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
         if ( outputfile.exists() && iffileexists == 2 ) {
           // Output file exists
           // User want to fail
-          logError( BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileExists1.Label" ) + outputfilename
-              + BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileExists2.Label" ) );
+          logError( BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileExists1.Label" )
+            + outputfilename + BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileExists2.Label" ) );
           return retval;
-        }
 
-        else if ( outputfile.exists() && iffileexists == 1 ) {
+        } else if ( outputfile.exists() && iffileexists == 1 ) {
           // Do nothing
           if ( log.isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileExists1.Label" ) + outputfilename
-                + BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileExists2.Label" ) );
+            logDebug( BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileExists1.Label" )
+              + outputfilename + BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileExists2.Label" ) );
           }
           retval = true;
           return retval;
+
         } else {
           if ( outputfile.exists() && iffileexists == 0 ) {
             // the output file exists and user want to create new one with unique name
@@ -451,17 +453,17 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
             if ( wildcard.substring( 0, 1 ).equals( "." ) ) {
               // Find wildcard
               outputfilename =
-                  outputfilename.substring( 0, outputfilename.length() - 4 ) + "_"
-                      + StringUtil.getFormattedDateTimeNow( true ) + wildcard;
+                outputfilename.substring( 0, outputfilename.length() - 4 )
+                  + "_" + StringUtil.getFormattedDateTimeNow( true ) + wildcard;
             } else {
               // did not find wildcard
               outputfilename = outputfilename + "_" + StringUtil.getFormattedDateTimeNow( true );
             }
             if ( log.isDebug() ) {
-              logDebug( BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileExists1.Label" ) + outputfilename
-                  + BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileExists2.Label" ) );
-              logDebug( BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileNameChange1.Label" ) + outputfilename
-                  + BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileNameChange2.Label" ) );
+              logDebug( BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileExists1.Label" )
+                + outputfilename + BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileExists2.Label" ) );
+              logDebug( BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileNameChange1.Label" )
+                + outputfilename + BaseMessages.getString( PKG, "JobEntryXSLT.OuputFileNameChange2.Label" ) );
             }
           }
 
@@ -474,8 +476,9 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
           }
 
           if ( log.isDetailed() ) {
-            log.logDetailed( BaseMessages.getString( PKG, "JobEntryXSL.Log.TransformerFactoryInfos" ), BaseMessages
-                .getString( PKG, "JobEntryXSL.Log.TransformerFactory", factory.getClass().getName() ) );
+            log.logDetailed(
+              BaseMessages.getString( PKG, "JobEntryXSL.Log.TransformerFactoryInfos" ), BaseMessages.getString(
+                PKG, "JobEntryXSL.Log.TransformerFactory", factory.getClass().getName() ) );
           }
 
           InputStream xslInputStream = KettleVFS.getInputStream( xslfile );
@@ -489,8 +492,9 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
             Transformer xformer = template.newTransformer();
 
             if ( log.isDetailed() ) {
-              log.logDetailed( BaseMessages.getString( PKG, "JobEntryXSL.Log.TransformerClassInfos" ), BaseMessages
-                  .getString( PKG, "JobEntryXSL.Log.TransformerClass", xformer.getClass().getName() ) );
+              log.logDetailed(
+                BaseMessages.getString( PKG, "JobEntryXSL.Log.TransformerClassInfos" ), BaseMessages.getString(
+                  PKG, "JobEntryXSL.Log.TransformerClass", xformer.getClass().getName() ) );
             }
 
             // Do we need to set output properties?
@@ -516,8 +520,9 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
             if ( isAddFileToResult() ) {
               // Add output filename to output files
               ResultFile resultFile =
-                  new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( outputfilename, this ),
-                      parentJob.getJobname(), toString() );
+                new ResultFile(
+                  ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( outputfilename, this ), parentJob
+                    .getJobname(), toString() );
               result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
             }
 
@@ -546,20 +551,20 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
       } else {
 
         if ( !xmlfile.exists() ) {
-          logError( BaseMessages.getString( PKG, "JobEntryXSLT.FileDoesNotExist1.Label" ) + xmlfilename
-              + BaseMessages.getString( PKG, "JobEntryXSLT.FileDoesNotExist2.Label" ) );
+          logError( BaseMessages.getString( PKG, "JobEntryXSLT.FileDoesNotExist1.Label" )
+            + xmlfilename + BaseMessages.getString( PKG, "JobEntryXSLT.FileDoesNotExist2.Label" ) );
         }
         if ( !xslfile.exists() ) {
-          logError( BaseMessages.getString( PKG, "JobEntryXSLT.FileDoesNotExist1.Label" ) + xmlfilename
-              + BaseMessages.getString( PKG, "JobEntryXSLT.FileDoesNotExist2.Label" ) );
+          logError( BaseMessages.getString( PKG, "JobEntryXSLT.FileDoesNotExist1.Label" )
+            + xmlfilename + BaseMessages.getString( PKG, "JobEntryXSLT.FileDoesNotExist2.Label" ) );
         }
       }
     } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "JobEntryXSLT.ErrorXLST.Label" )
-          + BaseMessages.getString( PKG, "JobEntryXSLT.ErrorXLSTXML1.Label" ) + xmlfilename
-          + BaseMessages.getString( PKG, "JobEntryXSLT.ErrorXLSTXML2.Label" )
-          + BaseMessages.getString( PKG, "JobEntryXSLT.ErrorXLSTXSL1.Label" ) + xslfilename
-          + BaseMessages.getString( PKG, "JobEntryXSLT.ErrorXLSTXSL2.Label" ) + e.getMessage() );
+        + BaseMessages.getString( PKG, "JobEntryXSLT.ErrorXLSTXML1.Label" ) + xmlfilename
+        + BaseMessages.getString( PKG, "JobEntryXSLT.ErrorXLSTXML2.Label" )
+        + BaseMessages.getString( PKG, "JobEntryXSLT.ErrorXLSTXSL1.Label" ) + xslfilename
+        + BaseMessages.getString( PKG, "JobEntryXSLT.ErrorXLSTXSL2.Label" ) + e.getMessage() );
     } finally {
       try {
         if ( xmlfile != null ) {
@@ -573,6 +578,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
           outputfile.close();
         }
       } catch ( IOException e ) {
+        logError( "Unable to close file", e );
       }
     }
 
@@ -629,8 +635,8 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace( ctx, getVariables() );
     putValidators( ctx, notBlankValidator(), fileExistsValidator() );

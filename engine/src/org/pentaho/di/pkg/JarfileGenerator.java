@@ -36,6 +36,7 @@ import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.version.BuildVersion;
 
 public class JarfileGenerator {
   private static LogChannelInterface log;
@@ -64,7 +65,7 @@ public class JarfileGenerator {
       // The manifest file
       String strManifest = "";
       strManifest += "Manifest-Version: 1.0" + Const.CR;
-      strManifest += "Created-By: Kettle version " + Const.VERSION + Const.CR;
+      strManifest += "Created-By: Kettle version " + BuildVersion.getInstance().getVersion() + Const.CR;
       strManifest += Attributes.Name.MAIN_CLASS.toString() + ": " + ( JarPan.class.getName() ) + Const.CR;
 
       // Create a new manifest file in the root.
@@ -84,16 +85,16 @@ public class JarfileGenerator {
 
       // Execute the jar command...
       executeJarCommand( kar, karFile, new File( "manifest.mf" ), new File( TRANSFORMATION_FILENAME ), deps
-          .getLibraryFiles() );
+        .getLibraryFiles() );
     } catch ( Exception e ) {
-      log.logError( JarfileGenerator.class.getName(), "Error zipping files into archive [" + karFile.getPath() + "] : "
-          + e.toString() );
+      log.logError( JarfileGenerator.class.getName(), "Error zipping files into archive ["
+        + karFile.getPath() + "] : " + e.toString() );
       log.logError( JarfileGenerator.class.getName(), Const.getStackTracker( e ) );
     }
   }
 
   private static final void executeJarCommand( File karDirectory, File karFile, File manifestFile, File transFile,
-      String[] libs ) throws IOException, InterruptedException {
+    String[] libs ) throws IOException, InterruptedException {
     for ( int i = 0; i < libs.length; i++ ) {
       List<String> commands = new ArrayList<String>();
       commands.add( "jar" );

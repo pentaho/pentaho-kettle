@@ -61,14 +61,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a 'check files locked' job entry.
- * 
+ *
  * @author Samatar Hassan
  * @since 06-05-2007
  */
 
 public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryCheckFilesLocked.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   public boolean argFromPrevious;
 
@@ -86,8 +85,6 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
     arguments = null;
 
     includeSubfolders = false;
-    setID( -1L );
-
   }
 
   public JobEntryCheckFilesLocked() {
@@ -120,8 +117,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "arg_from_previous" ) );
@@ -142,12 +139,13 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
         filemasks[i] = XMLHandler.getTagValue( fnode, "filemask" );
       }
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.UnableToLoadFromXml" ), xe );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.UnableToLoadFromXml" ), xe );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       argFromPrevious = rep.getJobEntryAttributeBoolean( id_jobentry, "arg_from_previous" );
       includeSubfolders = rep.getJobEntryAttributeBoolean( id_jobentry, "include_subfolders" );
@@ -163,8 +161,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
         filemasks[a] = rep.getJobEntryAttributeString( id_jobentry, a, "filemask" );
       }
     } catch ( KettleException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.UnableToLoadFromRepo", String
-          .valueOf( id_jobentry ) ), dbe );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "JobEntryCheckFilesLocked.UnableToLoadFromRepo", String.valueOf( id_jobentry ) ), dbe );
     }
   }
 
@@ -182,8 +180,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
         }
       }
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.UnableToSaveToRepo", String
-          .valueOf( id_job ) ), dbe );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "JobEntryCheckFilesLocked.UnableToSaveToRepo", String.valueOf( id_job ) ), dbe );
     }
   }
 
@@ -200,7 +198,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
       if ( argFromPrevious ) {
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.FoundPreviousRows", String
-              .valueOf( ( rows != null ? rows.size() : 0 ) ) ) );
+            .valueOf( ( rows != null ? rows.size() : 0 ) ) ) );
         }
       }
 
@@ -215,8 +213,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 
           // ok we can process this file/folder
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.ProcessingRow", filefolder_previous,
-                fmasks_previous ) );
+            logDetailed( BaseMessages.getString(
+              PKG, "JobEntryCheckFilesLocked.ProcessingRow", filefolder_previous, fmasks_previous ) );
           }
 
           ProcessFile( filefolder_previous, fmasks_previous );
@@ -226,8 +224,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
         for ( int i = 0; i < arguments.length && !parentJob.isStopped(); i++ ) {
           // ok we can process this file/folder
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.ProcessingArg", arguments[i],
-                filemasks[i] ) );
+            logDetailed( BaseMessages.getString(
+              PKG, "JobEntryCheckFilesLocked.ProcessingArg", arguments[i], filemasks[i] ) );
           }
 
           ProcessFile( arguments[i], filemasks[i] );
@@ -259,19 +257,21 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
         if ( filefolder.getType() == FileType.FOLDER ) {
           // It's a folder
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.ProcessingFolder", realFilefoldername ) );
+            logDetailed( BaseMessages.getString(
+              PKG, "JobEntryCheckFilesLocked.ProcessingFolder", realFilefoldername ) );
           }
           // Retrieve all files
           files = filefolder.findFiles( new TextFileSelector( filefolder.toString(), realwilcard ) );
 
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.TotalFilesToCheck", String
-                .valueOf( files.length ) ) );
+              .valueOf( files.length ) ) );
           }
         } else {
           // It's a file
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.ProcessingFile", realFilefoldername ) );
+            logDetailed( BaseMessages.getString(
+              PKG, "JobEntryCheckFilesLocked.ProcessingFile", realFilefoldername ) );
           }
         }
         // Check files locked
@@ -282,7 +282,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
       }
     } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.CouldNotProcess", realFilefoldername, e
-          .getMessage() ) );
+        .getMessage() ) );
     } finally {
       if ( filefolder != null ) {
         try {
@@ -312,16 +312,17 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
   }
 
   private class TextFileSelector implements FileSelector {
-    String file_wildcard = null, source_folder = null;
+    String fileWildcard = null;
+    String sourceFolder = null;
 
     public TextFileSelector( String sourcefolderin, String filewildcard ) {
 
       if ( !Const.isEmpty( sourcefolderin ) ) {
-        source_folder = sourcefolderin;
+        sourceFolder = sourcefolderin;
       }
 
       if ( !Const.isEmpty( filewildcard ) ) {
-        file_wildcard = filewildcard;
+        fileWildcard = filewildcard;
       }
     }
 
@@ -330,7 +331,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
       FileObject file_name = null;
       try {
 
-        if ( !info.getFile().toString().equals( source_folder ) ) {
+        if ( !info.getFile().toString().equals( sourceFolder ) ) {
           // Pass over the Base folder itself
 
           String short_filename = info.getFile().getName().getBaseName();
@@ -338,11 +339,11 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
           if ( !info.getFile().getParent().equals( info.getBaseFolder() ) ) {
 
             // Not in the Base Folder..Only if include sub folders
-            if ( includeSubfolders && ( info.getFile().getType() == FileType.FILE )
-                && GetFileWildcard( short_filename, file_wildcard ) ) {
+            if ( includeSubfolders
+              && ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, fileWildcard ) ) {
               if ( isDetailed() ) {
-                logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.CheckingFile", info.getFile()
-                    .toString() ) );
+                logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.CheckingFile", info
+                  .getFile().toString() ) );
               }
 
               returncode = true;
@@ -351,10 +352,10 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
           } else {
             // In the Base Folder...
 
-            if ( ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, file_wildcard ) ) {
+            if ( ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, fileWildcard ) ) {
               if ( isDetailed() ) {
-                logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.CheckingFile", info.getFile()
-                    .toString() ) );
+                logDetailed( BaseMessages.getString( PKG, "JobEntryCheckFilesLocked.CheckingFile", info
+                  .getFile().toString() ) );
               }
 
               returncode = true;
@@ -365,7 +366,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
 
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "JobCheckFilesLocked.Error.Exception.ProcessError" ), BaseMessages
-            .getString( PKG, "JobCheckFilesLocked.Error.Exception.Process", info.getFile().toString(), e.getMessage() ) );
+          .getString( PKG, "JobCheckFilesLocked.Error.Exception.Process", info.getFile().toString(), e
+            .getMessage() ) );
         returncode = false;
       } finally {
         if ( file_name != null ) {
@@ -386,7 +388,7 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
   }
 
   /**********************************************************
-   * 
+   *
    * @param selectedfile
    * @param wildcard
    * @return True if the selectedfile matches the wildcard
@@ -435,8 +437,8 @@ public class JobEntryCheckFilesLocked extends JobEntryBase implements Cloneable,
     return includeSubfolders;
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
 
     if ( res == false ) {

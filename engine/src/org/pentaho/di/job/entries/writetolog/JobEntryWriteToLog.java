@@ -50,13 +50,13 @@ import org.w3c.dom.Node;
 
 /**
  * Job entry type to output message to the job log.
- * 
+ *
  * @author Samatar
  * @since 08-08-2007
  */
 
 public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryWriteToLog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryWriteToLog.class; // for i18n purposes, needed by Translator2!!
 
   private String logmessage;
   public LogLevel entryLogLevel;
@@ -83,14 +83,14 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "logmessage", logmessage ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "loglevel", ( entryLogLevel == null ) ? null : entryLogLevel.getCode() ) );
+      XMLHandler.addTagValue( "loglevel", ( entryLogLevel == null ) ? null : entryLogLevel.getCode() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "logsubject", logsubject ) );
 
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       logmessage = XMLHandler.getTagValue( entrynode, "logmessage" );
@@ -103,14 +103,14 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       logmessage = rep.getJobEntryAttributeString( id_jobentry, "logmessage" );
       entryLogLevel = LogLevel.getLogLevelForCode( rep.getJobEntryAttributeString( id_jobentry, "loglevel" ) );
       logsubject = rep.getJobEntryAttributeString( id_jobentry, "logsubject" );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "WriteToLog.Error.UnableToLoadFromRepository.Label" )
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
 
     }
   }
@@ -120,12 +120,12 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logmessage", logmessage );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "loglevel", ( entryLogLevel != null ? entryLogLevel.getCode()
-          : "" ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "loglevel", ( entryLogLevel != null ? entryLogLevel
+        .getCode() : "" ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logsubject", logsubject );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "WriteToLog.Error.UnableToSaveToRepository.Label" )
-          + id_job, dbe );
+        + id_job, dbe );
     }
   }
 
@@ -264,9 +264,9 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
       return true;
     } catch ( Exception e ) {
       result.setNrErrors( 1 );
-      log.logError( BaseMessages.getString( PKG, "WriteToLog.Error.Label" ), BaseMessages.getString( PKG,
-          "WriteToLog.Error.Description" )
-          + " : " + e.toString() );
+      log.logError( BaseMessages.getString( PKG, "WriteToLog.Error.Label" ), BaseMessages.getString(
+        PKG, "WriteToLog.Error.Description" )
+        + " : " + e.toString() );
       return false;
     }
 
@@ -275,7 +275,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
   /**
    * Execute this job entry and return the result. In this case it means, just set the result boolean in the Result
    * class.
-   * 
+   *
    * @param prev_result
    *          The result of the previous execution
    * @return The Result of the execution.

@@ -36,7 +36,7 @@ public interface ResourceNamingInterface {
 
   /**
    * Create a (file) name for a resource based on a prefix and an extension.
-   * 
+   *
    * @param prefix
    *          The prefix, usually the name of the object that is being exported
    * @param originalFilePath
@@ -55,7 +55,7 @@ public interface ResourceNamingInterface {
 
   /**
    * Create a (file) name based on the passed FileObject
-   * 
+   *
    * @param FileObject
    *          fileObject The file in which the name ....
    * @param VariableSpace

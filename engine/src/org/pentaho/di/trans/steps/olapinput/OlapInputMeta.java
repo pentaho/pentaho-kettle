@@ -114,13 +114,21 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     password = "password";
     catalog = "SampleData";
     mdx =
-        "SELECT NON EMPTY Hierarchize(Union(Crossjoin({[Measures].[Actual]}, Union(Crossjoin({[Region].[All Regions]}, \n {[Department].[All Departments]}), Crossjoin({[Region].[All Regions]}, [Department].[All Departments].Children))), Crossjoin({[Measures].[Actual]}, \n Union(Crossjoin([Region].[All Regions].Children, {[Department].[All Departments]}),  Crossjoin([Region].[All Regions].Children, [Department].[All Departments].Children))))) ON COLUMNS, \n NON EMPTY Hierarchize(Union({[Positions].[All Positions]}, [Positions].[All Positions].Children)) ON ROWS \n from [Quadrant Analysis]";
+      "SELECT NON EMPTY Hierarchize(Union(Crossjoin({[Measures].[Actual]}, Union(Crossjoin({[Region].[All Regions]},"
+        + " \n {[Department].[All Departments]}), "
+        + "Crossjoin({[Region].[All Regions]}, [Department].[All Departments].Children))), "
+        + "Crossjoin({[Measures].[Actual]}, "
+        + "\n Union(Crossjoin([Region].[All Regions].Children, {[Department].[All Departments]}),  "
+        + "Crossjoin([Region].[All Regions].Children, [Department].[All Departments].Children))))) "
+        + "ON COLUMNS, "
+        + "\n NON EMPTY Hierarchize(Union({[Positions].[All Positions]}, [Positions].[All Positions].Children)) "
+        + "ON ROWS \n from [Quadrant Analysis]";
     variableReplacementActive = false;
 
   }
 
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     RowMetaInterface add = null;
 
@@ -155,8 +163,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       olap4jUrl = rep.getStepAttributeString( id_step, "url" );
       username = rep.getStepAttributeString( id_step, "username" );
@@ -169,8 +176,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
 
       rep.saveStepAttribute( id_transformation, id_step, "url", olap4jUrl );
@@ -185,9 +191,9 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     // TODO: perform tests to see if connection is valid
     // CheckResult cr;
     // cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use",
@@ -195,8 +201,8 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     // remarks.add(cr);
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     data = (OlapData) stepDataInterface;
     return new OlapInput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
@@ -206,8 +212,8 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-      IMetaStore metaStore ) throws KettleStepException {
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+    IMetaStore metaStore ) throws KettleStepException {
     // you can't really analyze the database impact since it runs on a remote XML/A server
   }
 
@@ -299,14 +305,21 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     String catalog = space.environmentSubstitute( this.getCatalog() );
 
     // mdx =
-    // "select NON EMPTY Hierarchize(Union(Crossjoin({[Measures].[Actual]}, Union(Crossjoin({[Region].[All Regions]},  {[Department].[All Departments]}), Crossjoin({[Region].[All Regions]}, [Department].[All Departments].Children))), Crossjoin({[Measures].[Actual]}, Union(Crossjoin([Region].[All Regions].Children, {[Department].[All Departments]}),  Crossjoin([Region].[All Regions].Children, [Department].[All Departments].Children))))) ON COLUMNS,NON EMPTY Hierarchize(Union({[Positions].[All Positions]}, [Positions].[All Positions].Children)) ON ROWS from [Quadrant Analysis]";
+    // "select NON EMPTY Hierarchize(Union(Crossjoin({[Measures].[Actual]},
+    // Union(Crossjoin({[Region].[All Regions]}, {[Department].[All Departments]}),
+    // Crossjoin({[Region].[All Regions]}, [Department].[All Departments].Children))),
+    // Crossjoin({[Measures].[Actual]}, Union(Crossjoin([Region].[All Regions].Children,
+    // {[Department].[All Departments]}),
+    // Crossjoin([Region].[All Regions].Children, [Department].[All Departments].Children))))) ON COLUMNS,NON EMPTY
+    // Hierarchize(Union({[Positions].[All Positions]}, [Positions].[All Positions].Children)) ON ROWS from [Quadrant
+    // Analysis]";
     // data.olapHelper = new OlapHelper(driver,"http://localhost:8080/pentaho/Xmla", "joe", "password","SampleData",mdx,
     // this);
     data.olapHelper = new OlapHelper( driver, url, username, password, catalog, mdx );
     data.olapHelper.openQuery();
     data.olapHelper.createRectangularOutput();
     data.outputRowMeta =
-        this.createRowMeta( data.olapHelper.getHeaderValues(), data.olapHelper.getCellValues() ).clone();
+      this.createRowMeta( data.olapHelper.getHeaderValues(), data.olapHelper.getCellValues() ).clone();
 
   }
 }

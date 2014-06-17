@@ -24,22 +24,22 @@ package org.pentaho.di.core.parameters;
 
 /**
  * Interface to implement named parameters.
- * 
+ *
  * @author Sven Boden
  */
 public interface NamedParams {
   /**
    * Add a parameter definition to this set.
-   * 
+   *
    * TODO: default, throw exception
-   * 
+   *
    * @param key
    *          Name of the parameter.
    * @param defValue
    *          default value.
    * @param description
    *          Description of the parameter.
-   * 
+   *
    * @throws DuplicateParamException
    *           Upon duplicate parameter definitions
    */
@@ -47,12 +47,12 @@ public interface NamedParams {
 
   /**
    * Set the value of a parameter.
-   * 
+   *
    * @param key
    *          key to set value of
    * @param value
    *          value to set it to.
-   * 
+   *
    * @throws UnknownParamException
    *           Parameter 'key' is unknown.
    */
@@ -60,12 +60,12 @@ public interface NamedParams {
 
   /**
    * Get the value of a parameter.
-   * 
+   *
    * @param key
    *          Key to get value for.
-   * 
+   *
    * @return value of parameter key.
-   * 
+   *
    * @throws UnknownParamException
    *           Parameter 'key' is unknown.
    */
@@ -73,12 +73,12 @@ public interface NamedParams {
 
   /**
    * Get the description of a parameter.
-   * 
+   *
    * @param key
    *          Key to get value for.
-   * 
+   *
    * @return description of parameter key.
-   * 
+   *
    * @throws UnknownParamException
    *           Parameter 'key' is unknown.
    */
@@ -86,12 +86,12 @@ public interface NamedParams {
 
   /**
    * Get the default value of a parameter.
-   * 
+   *
    * @param key
    *          Key to get value for.
-   * 
+   *
    * @return default value for parameter key.
-   * 
+   *
    * @throws UnknownParamException
    *           Parameter 'key' is unknown.
    */
@@ -99,7 +99,7 @@ public interface NamedParams {
 
   /**
    * List the parameters.
-   * 
+   *
    * @return Array of parameters.
    */
   String[] listParameters();
@@ -111,7 +111,7 @@ public interface NamedParams {
 
   /**
    * Copy params to these named parameters (clearing out first).
-   * 
+   *
    * @param params
    *          the parameters to copy from.
    */

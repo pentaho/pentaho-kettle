@@ -38,19 +38,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Convert Values in a certain fields to other values
- * 
+ *
  * @author Matt
  * @since 3-apr-2006
  */
 public class ValueMapper extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ValueMapperMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ValueMapperMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ValueMapperMeta meta;
   private ValueMapperData data;
   private boolean nonMatchActivated = false;
 
   public ValueMapper( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -61,8 +61,8 @@ public class ValueMapper extends BaseStep implements StepInterface {
     // Get one row from one of the rowsets...
     //
     Object[] r = getRow();
-    if ( r == null ) // means: no more input to be expected...
-    {
+    if ( r == null ) { // means: no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -77,8 +77,8 @@ public class ValueMapper extends BaseStep implements StepInterface {
       data.keynr = data.previousMeta.indexOfValue( meta.getFieldToUse() );
       if ( data.keynr < 0 ) {
         String message =
-            BaseMessages.getString( PKG, "ValueMapper.RuntimeError.FieldToUseNotFound.VALUEMAPPER0001", meta
-                .getFieldToUse(), Const.CR, getInputRowMeta().getString( r ) );
+          BaseMessages.getString( PKG, "ValueMapper.RuntimeError.FieldToUseNotFound.VALUEMAPPER0001", meta
+            .getFieldToUse(), Const.CR, getInputRowMeta().getString( r ) );
         logError( message );
         setErrors( 1 );
         stopAll();
@@ -93,8 +93,8 @@ public class ValueMapper extends BaseStep implements StepInterface {
           if ( data.emptyFieldIndex < 0 ) {
             data.emptyFieldIndex = i;
           } else {
-            throw new KettleException( BaseMessages.getString( PKG,
-                "ValueMapper.RuntimeError.OnlyOneEmptyMappingAllowed.VALUEMAPPER0004" ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "ValueMapper.RuntimeError.OnlyOneEmptyMappingAllowed.VALUEMAPPER0004" ) );
           }
         }
       }

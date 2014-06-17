@@ -28,7 +28,7 @@ public class SourceToTargetMapping {
 
   /**
    * Creates a new source-to-target mapping
-   * 
+   *
    * @param sourcePosition
    * @param targetPosition
    */

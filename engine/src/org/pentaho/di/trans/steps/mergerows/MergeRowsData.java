@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class MergeRowsData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;
@@ -42,9 +42,6 @@ public class MergeRowsData extends BaseStepData implements StepDataInterface {
   public RowSet oneRowSet;
   public RowSet twoRowSet;
 
-  /**
-	 * 
-	 */
   public MergeRowsData() {
     super();
   }

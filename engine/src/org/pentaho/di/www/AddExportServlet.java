@@ -22,8 +22,8 @@
 
 package org.pentaho.di.www;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Map;
@@ -52,11 +52,11 @@ import org.w3c.dom.Document;
 /**
  * This servlet allows you to transport an exported job or transformation over to the carte server as a zip file. It
  * ends up in a temporary file.
- * 
+ *
  * The servlet returns the name of the file stored.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class AddExportServlet extends BaseHttpServlet implements CartePluginInterface {
   public static final String PARAMETER_LOAD = "load";
@@ -75,7 +75,8 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
     super( transformationMap, jobMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getRequestURI().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -85,7 +86,7 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
     }
 
     PrintWriter out = response.getWriter();
-    BufferedReader in = request.getReader(); // read from the client
+    InputStream in = request.getInputStream(); // read from the client
     if ( log.isDetailed() ) {
       logDetailed( "Encoding: " + request.getCharacterEncoding() );
     }
@@ -121,7 +122,8 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
       String fileUrl = null;
 
       String carteObjectId = null;
-      SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
+      SimpleLoggingObject servletLoggingObject =
+        new SimpleLoggingObject( CONTEXT_PATH, LoggingObjectType.CARTE, null );
 
       // Now open the top level resource...
       //
@@ -140,7 +142,7 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
           String configUrl = "zip:" + archiveUrl + "!" + Job.CONFIGURATION_IN_EXPORT_FILENAME;
           Document configDoc = XMLHandler.loadXMLFile( configUrl );
           JobExecutionConfiguration jobExecutionConfiguration =
-              new JobExecutionConfiguration( XMLHandler.getSubNode( configDoc, JobExecutionConfiguration.XML_TAG ) );
+            new JobExecutionConfiguration( XMLHandler.getSubNode( configDoc, JobExecutionConfiguration.XML_TAG ) );
 
           carteObjectId = UUID.randomUUID().toString();
           servletLoggingObject.setContainerObjectId( carteObjectId );
@@ -158,8 +160,8 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
           // store it all in the map...
           //
           synchronized ( getJobMap() ) {
-            getJobMap().addJob( job.getJobname(), carteObjectId, job,
-                new JobConfiguration( jobMeta, jobExecutionConfiguration ) );
+            getJobMap().addJob(
+              job.getJobname(), carteObjectId, job, new JobConfiguration( jobMeta, jobExecutionConfiguration ) );
           }
 
           // Apply the execution configuration...
@@ -185,7 +187,8 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
           String configUrl = "zip:" + archiveUrl + "!" + Trans.CONFIGURATION_IN_EXPORT_FILENAME;
           Document configDoc = XMLHandler.loadXMLFile( configUrl );
           TransExecutionConfiguration executionConfiguration =
-              new TransExecutionConfiguration( XMLHandler.getSubNode( configDoc, TransExecutionConfiguration.XML_TAG ) );
+            new TransExecutionConfiguration( XMLHandler.getSubNode(
+              configDoc, TransExecutionConfiguration.XML_TAG ) );
 
           carteObjectId = UUID.randomUUID().toString();
           servletLoggingObject.setContainerObjectId( carteObjectId );
@@ -195,8 +198,8 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
 
           // store it all in the map...
           //
-          getTransformationMap().addTransformation( trans.getName(), carteObjectId, trans,
-              new TransConfiguration( transMeta, executionConfiguration ) );
+          getTransformationMap().addTransformation(
+            trans.getName(), carteObjectId, trans, new TransConfiguration( transMeta, executionConfiguration ) );
         }
       } else {
         fileUrl = archiveUrl;

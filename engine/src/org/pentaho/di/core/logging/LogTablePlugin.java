@@ -30,9 +30,9 @@ import java.lang.annotation.Target;
 
 /**
  * Classes painted with this annotation are logging table plugins
- * 
+ *
  * @author matt
- * 
+ *
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
@@ -47,4 +47,5 @@ public @interface LogTablePlugin {
 
   String description();
 
+  String classLoaderGroup() default "";
 }

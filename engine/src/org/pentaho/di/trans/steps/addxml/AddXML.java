@@ -56,12 +56,12 @@ import org.w3c.dom.NodeList;
 
 /**
  * Converts input rows to one or more XML files.
- * 
+ *
  * @author Matt
  * @since 14-jan-2006
  */
 public class AddXML extends BaseStep implements StepInterface {
-  private static Class<?> PKG = AddXML.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AddXML.class; // for i18n purposes, needed by Translator2!!
 
   private AddXMLMeta meta;
   private AddXMLData data;
@@ -69,8 +69,8 @@ public class AddXML extends BaseStep implements StepInterface {
   private DOMImplementation domImplentation;
   private Transformer serializer;
 
-  public AddXML( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
-    super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  public AddXML( StepMeta stepMeta, StepDataInterface sdi, int copyNr, TransMeta tm, Trans trans ) {
+    super( stepMeta, sdi, copyNr, tm, trans );
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
@@ -78,8 +78,8 @@ public class AddXML extends BaseStep implements StepInterface {
     data = (AddXMLData) sdi;
 
     Object[] r = getRow(); // This also waits for a row to be finished.
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) {
+      // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -171,8 +171,7 @@ public class AddXML extends BaseStep implements StepInterface {
     return true;
   }
 
-  private String formatField( ValueMetaInterface valueMeta, Object valueData, XMLField field )
-    throws KettleValueException {
+  private String formatField( ValueMetaInterface valueMeta, Object valueData, XMLField field ) throws KettleValueException {
     String retval = "";
     if ( field == null ) {
       return "";
@@ -215,8 +214,8 @@ public class AddXML extends BaseStep implements StepInterface {
         retval = data.df.format( valueMeta.getBigNumber( valueData ) );
       } else if ( valueMeta.isNumber() ) {
         retval = data.df.format( valueMeta.getNumber( valueData ) );
-      } else // Integer
-      {
+      } else {
+        // Integer
         retval = data.df.format( valueMeta.getInteger( valueData ) );
       }
     } else if ( valueMeta.isDate() ) {
@@ -255,8 +254,8 @@ public class AddXML extends BaseStep implements StepInterface {
           retval = Const.NULL_BINARY;
         }
       }
-    } else // Boolean
-    {
+    } else {
+      // Boolean
       retval = valueMeta.getString( valueData );
     }
 

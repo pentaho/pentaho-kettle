@@ -24,9 +24,9 @@ package org.pentaho.di.core.logging;
 
 /**
  * The logging hierarchy of a transformation or job
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class LoggingHierarchy {
   private String rootChannelId; // from the xform or job

@@ -52,7 +52,7 @@ import org.pentaho.di.trans.steps.closure.ClosureGeneratorMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ClosureGeneratorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ClosureGeneratorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlRootZero;
   private Button wRootZero;

@@ -61,14 +61,13 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * This dialog represents an explorer type of interface on a given database connection. It shows the tables defined in
  * the visible schemas or catalogs on that connection. The interface also allows you to get all kinds of information on
  * those tables.
- * 
+ *
  * @author Matt
  * @since 18-05-2003
- * 
+ *
  */
 public class SelectDirectoryDialog extends Dialog {
   private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!
-                                                                 // $NON-NLS-1$
 
   private PropsUI props;
   private Repository rep;
@@ -118,9 +117,9 @@ public class SelectDirectoryDialog extends Dialog {
     try {
       repositoryTree = rep.loadRepositoryDirectoryTree();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ), BaseMessages.getString( PKG,
-          "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ),
+        BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
       return null;
     }
 
@@ -246,11 +245,10 @@ public class SelectDirectoryDialog extends Dialog {
               //
               // What's the name of the new directory?
               //
-              EnterStringDialog etd =
-                  new EnterStringDialog( shell, BaseMessages.getString( PKG,
-                      "SelectDirectoryDialog.Dialog.EnterDirectoryName.Title" ), BaseMessages.getString( PKG,
-                      "SelectDirectoryDialog.Dialog.EnterDirectoryName.Message" ), BaseMessages.getString( PKG,
-                      "SelectDirectoryDialog.Dialog.EnterDirectoryName.Default" ) );
+              EnterStringDialog etd = new EnterStringDialog( shell,
+                BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Title" ),
+                BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Message" ),
+                BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryName.Default" ) );
               String newdir = etd.open();
               if ( newdir != null ) {
                 RepositoryDirectory subdir = new RepositoryDirectory( dir, newdir );
@@ -262,23 +260,24 @@ public class SelectDirectoryDialog extends Dialog {
                   tiNew.setImage( GUIResource.getInstance().getImageArrow() );
                   wTree.setSelection( new TreeItem[] { tiNew } );
                 } catch ( Exception exception ) {
-                  new ErrorDialog( shell, BaseMessages.getString( PKG,
-                      "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Message" ), BaseMessages.getString( PKG,
-                      "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Title" ), exception );
+                  new ErrorDialog( shell, BaseMessages.getString(
+                    PKG, "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Message" ), BaseMessages
+                    .getString( PKG, "SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Title" ), exception );
                 }
               }
             } else {
               MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
-              mb.setMessage( BaseMessages.getString( PKG,
-                  "SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Message" ) );
-              mb.setText( BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Title" ) );
+              mb.setMessage( BaseMessages.getString(
+                PKG, "SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Message" ) );
+              mb.setText( BaseMessages.getString(
+                PKG, "SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Title" ) );
               mb.open();
             }
           } else {
             MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
             mb.setMessage( BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Message1" )
-                + ( rep.getUserInfo() == null ? "" : rep.getUserInfo().getLogin() )
-                + BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Message2" ) );
+              + ( rep.getUserInfo() == null ? "" : rep.getUserInfo().getLogin() )
+              + BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Message2" ) );
             mb.setText( BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.PermissionDenied.Title" ) );
             mb.open();
           }

@@ -60,12 +60,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Dialog to test a regular expression
- * 
+ *
  * @author Samatar
  * @since 20-04-2009
  */
 public class RegexEvalHelperDialog extends Dialog {
-  private static Class<?> PKG = RegexEvalMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RegexEvalMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Button wOK, wCancel;
   private Listener lsOK, lsCancel;
@@ -124,7 +124,7 @@ public class RegexEvalHelperDialog extends Dialog {
 
   /**
    * Dialog to allow someone to test regular expression
-   * 
+   *
    * @param parent
    *          The parent shell to use
    * @param RegexScript
@@ -134,7 +134,7 @@ public class RegexEvalHelperDialog extends Dialog {
    * @param canonicalEqualityFlagSet
    */
   public RegexEvalHelperDialog( Shell parent, TransMeta transmeta, String RegexScript, String RegexOptions,
-      boolean canonicalEqualityFlagSet ) {
+    boolean canonicalEqualityFlagSet ) {
     super( parent, SWT.NONE );
     props = PropsUI.getInstance();
     this.regexscript = RegexScript;
@@ -192,8 +192,8 @@ public class RegexEvalHelperDialog extends Dialog {
     wlRegExScript.setLayoutData( fdlRegExScript );
 
     wRegExScript =
-        new StyledTextComp( transmeta, wNoteContentComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL
-            | SWT.V_SCROLL, "" );
+      new StyledTextComp( transmeta, wNoteContentComp, SWT.MULTI
+        | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     wRegExScript.setText( "" );
     props.setLook( wRegExScript, Props.WIDGET_STYLE_FIXED );
     props.setLook( wRegExScript );
@@ -511,15 +511,16 @@ public class RegexEvalHelperDialog extends Dialog {
         wlGroups.setText( BaseMessages.getString( PKG, "RegexEvalHelperDialog.FieldsGroup", nr ) );
       }
       wRegExScriptCompile.setForeground( guiresource.getColorBlue() );
-      wRegExScriptCompile.setText( BaseMessages.getString( PKG, "RegexEvalHelperDialog.ScriptSuccessfullyCompiled" ) );
+      wRegExScriptCompile.setText( BaseMessages
+        .getString( PKG, "RegexEvalHelperDialog.ScriptSuccessfullyCompiled" ) );
       wRegExScriptCompile.setToolTipText( "" );
     } catch ( Exception e ) {
       if ( !errorDisplayed ) {
         wRegExScriptCompile.setForeground( guiresource.getColorRed() );
         wRegExScriptCompile.setText( e.getMessage() );
-        wRegExScriptCompile.setToolTipText( BaseMessages
-            .getString( PKG, "RegexEvalHelperDialog.ErrorCompiling.Message" )
-            + Const.CR + e.toString() );
+        wRegExScriptCompile.setToolTipText( BaseMessages.getString(
+          PKG, "RegexEvalHelperDialog.ErrorCompiling.Message" )
+          + Const.CR + e.toString() );
         this.errorDisplayed = true;
       }
     }

@@ -73,7 +73,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = DatabaseJoinMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DatabaseJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CCombo wConnection;
 
@@ -175,7 +175,8 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
     fdlSQL.top = new FormAttachment( wConnection, margin * 2 );
     wlSQL.setLayoutData( fdlSQL );
 
-    wSQL = new StyledTextComp( transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+    wSQL =
+      new StyledTextComp( transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     props.setLook( wSQL, Props.WIDGET_STYLE_FIXED );
     wSQL.addModifyListener( lsMod );
     fdSQL = new FormData();
@@ -323,15 +324,18 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 
     ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "DatabaseJoinDialog.ColumnInfo.ParameterFieldname" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "DatabaseJoinDialog.ColumnInfo.ParameterFieldname" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciKey[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "DatabaseJoinDialog.ColumnInfo.ParameterType" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "DatabaseJoinDialog.ColumnInfo.ParameterType" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() );
 
     wParam =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrKeyRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+        nrKeyRows, lsMod, props );
 
     fdParam = new FormData();
     fdParam.left = new FormAttachment( 0, 0 );
@@ -445,7 +449,8 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
       colnr++;
     }
 
-    wlPosition.setText( BaseMessages.getString( PKG, "DatabaseJoinDialog.Position.Label", "" + linenr, "" + colnr ) );
+    wlPosition
+      .setText( BaseMessages.getString( PKG, "DatabaseJoinDialog.Position.Label", "" + linenr, "" + colnr ) );
 
   }
 
@@ -505,6 +510,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
     input.setOuterJoin( wOuter.getSelection() );
     input.setVariableReplace( wuseVars.getSelection() );
     logDebug( BaseMessages.getString( PKG, "DatabaseJoinDialog.Log.ParametersFound" ) + nrparam + " parameters" );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrparam; i++ ) {
       TableItem item = wParam.getNonEmpty( i );
       input.getParameterField()[i] = item.getText( 1 );
@@ -532,8 +538,9 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
         BaseStepDialog.getFieldsFromPrevious( r, wParam, 1, new int[] { 1 }, new int[] { 2 }, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "DatabaseJoinDialog.GetFieldsFailed.DialogTitle" ),
-          BaseMessages.getString( PKG, "DatabaseJoinDialog.GetFieldsFailed.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "DatabaseJoinDialog.GetFieldsFailed.DialogTitle" ), BaseMessages
+          .getString( PKG, "DatabaseJoinDialog.GetFieldsFailed.DialogMessage" ), ke );
     }
 
   }

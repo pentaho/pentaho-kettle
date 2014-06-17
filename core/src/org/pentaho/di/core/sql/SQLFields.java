@@ -44,13 +44,12 @@ public class SQLFields {
     this( tableAlias, serviceFields, fieldsClause, false );
   }
 
-  public SQLFields( String tableAlias, RowMetaInterface serviceFields, String fieldsClause, boolean orderClause )
-    throws KettleSQLException {
+  public SQLFields( String tableAlias, RowMetaInterface serviceFields, String fieldsClause, boolean orderClause ) throws KettleSQLException {
     this( tableAlias, serviceFields, fieldsClause, orderClause, null );
   }
 
   public SQLFields( String tableAlias, RowMetaInterface serviceFields, String fieldsClause, boolean orderClause,
-      SQLFields selectFields ) throws KettleSQLException {
+    SQLFields selectFields ) throws KettleSQLException {
     this.tableAlias = tableAlias;
     this.serviceFields = serviceFields;
     this.fieldsClause = fieldsClause;
@@ -99,8 +98,8 @@ public class SQLFields {
         // Add all service fields
         //
         for ( ValueMetaInterface valueMeta : serviceFields.getValueMetaList() ) {
-          fields.add( new SQLField( tableAlias, "\"" + valueMeta.getName() + "\"", serviceFields, orderClause,
-              selectFields ) );
+          fields.add( new SQLField(
+            tableAlias, "\"" + valueMeta.getName() + "\"", serviceFields, orderClause, selectFields ) );
         }
       } else {
         fields.add( new SQLField( tableAlias, fieldString, serviceFields, orderClause, selectFields ) );
@@ -140,7 +139,7 @@ public class SQLFields {
 
   /**
    * Find a field by it's field name (not alias)
-   * 
+   *
    * @param fieldName
    *          the name of the field
    * @return the field or null if nothing was found.

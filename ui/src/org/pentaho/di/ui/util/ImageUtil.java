@@ -138,9 +138,9 @@ public class ImageUtil {
     if ( bufferedImage.getColorModel() instanceof DirectColorModel ) {
       DirectColorModel colorModel = (DirectColorModel) bufferedImage.getColorModel();
       PaletteData palette =
-          new PaletteData( colorModel.getRedMask(), colorModel.getGreenMask(), colorModel.getBlueMask() );
+        new PaletteData( colorModel.getRedMask(), colorModel.getGreenMask(), colorModel.getBlueMask() );
       ImageData data =
-          new ImageData( bufferedImage.getWidth(), bufferedImage.getHeight(), colorModel.getPixelSize(), palette );
+        new ImageData( bufferedImage.getWidth(), bufferedImage.getHeight(), colorModel.getPixelSize(), palette );
       WritableRaster raster = bufferedImage.getRaster();
       int[] pixelArray = new int[3];
       for ( int y = 0; y < data.height; y++ ) {
@@ -166,7 +166,7 @@ public class ImageUtil {
       }
       PaletteData palette = new PaletteData( rgbs );
       ImageData data =
-          new ImageData( bufferedImage.getWidth(), bufferedImage.getHeight(), colorModel.getPixelSize(), palette );
+        new ImageData( bufferedImage.getWidth(), bufferedImage.getHeight(), colorModel.getPixelSize(), palette );
       data.transparentPixel = colorModel.getTransparentPixel();
       WritableRaster raster = bufferedImage.getRaster();
       int[] pixelArray = new int[1];

@@ -68,11 +68,11 @@ public class TransformationHasDescriptionImportRule extends BaseImportRule imple
     String description = transMeta.getDescription();
 
     if ( Const.isEmpty( description ) || ( minLength > 0 && description.length() < minLength ) ) {
-      feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-          "A description is not present or is too short." ) );
+      feedback.add( new ImportValidationFeedback(
+        this, ImportValidationResultType.ERROR, "A description is not present or is too short." ) );
     } else {
-      feedback
-          .add( new ImportValidationFeedback( this, ImportValidationResultType.APPROVAL, "A description is present" ) );
+      feedback.add( new ImportValidationFeedback(
+        this, ImportValidationResultType.APPROVAL, "A description is present" ) );
     }
 
     return feedback;

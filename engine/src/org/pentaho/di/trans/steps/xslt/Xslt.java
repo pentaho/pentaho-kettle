@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.xslt;
 
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Properties;
@@ -34,6 +35,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
+import org.apache.xml.utils.DefaultErrorHandler;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -50,13 +52,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Executes a XSL Transform on the values in the input stream.
- * 
+ *
  * @author Samatar
  * @since 15-Oct-2007
- * 
+ *
  */
 public class Xslt extends BaseStep implements StepInterface {
-  private static Class<?> PKG = XsltMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XsltMeta.class; // for i18n purposes, needed by Translator2!!
 
   private XsltMeta meta;
   private XsltData data;
@@ -74,8 +76,7 @@ public class Xslt extends BaseStep implements StepInterface {
 
     Object[] row = getRow();
 
-    if ( row == null ) // no more input to be expected...
-    {
+    if ( row == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -105,7 +106,7 @@ public class Xslt extends BaseStep implements StepInterface {
         // The field is unreachable !
         logError( BaseMessages.getString( PKG, "Xslt.Log.ErrorFindingField" ) + "[" + meta.getFieldname() + "]" );
         throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.CouldnotFindField", meta
-            .getFieldname() ) );
+          .getFieldname() ) );
       }
 
       // Check if the XSL Filename is contained in a column
@@ -123,10 +124,10 @@ public class Xslt extends BaseStep implements StepInterface {
         // Let's check the Field
         if ( data.fielxslfiledposition < 0 ) {
           // The field is unreachable !
-          logError( BaseMessages.getString( PKG, "Xslt.Log.ErrorXSLFileFieldFinding" ) + "[" + meta.getXSLFileField()
-              + "]" );
-          throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ErrorXSLFileFieldFinding", meta
-              .getXSLFileField() ) );
+          logError( BaseMessages.getString( PKG, "Xslt.Log.ErrorXSLFileFieldFinding" )
+            + "[" + meta.getXSLFileField() + "]" );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "Xslt.Exception.ErrorXSLFileFieldFinding", meta.getXSLFileField() ) );
         }
 
       } else {
@@ -142,13 +143,13 @@ public class Xslt extends BaseStep implements StepInterface {
           file = KettleVFS.getFileObject( data.xslfilename );
           if ( !file.exists() ) {
             logError( BaseMessages.getString( PKG, "Xslt.Log.ErrorXSLFileNotExists", data.xslfilename ) );
-            throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ErrorXSLFileNotExists",
-                data.xslfilename ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "Xslt.Exception.ErrorXSLFileNotExists", data.xslfilename ) );
           }
           if ( file.getType() != FileType.FILE ) {
             logError( BaseMessages.getString( PKG, "Xslt.Log.ErrorXSLNotAFile", data.xslfilename ) );
-            throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ErrorXSLNotAFile",
-                data.xslfilename ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "Xslt.Exception.ErrorXSLNotAFile", data.xslfilename ) );
           }
         } catch ( Exception e ) {
           throw new KettleStepException( e );
@@ -168,7 +169,7 @@ public class Xslt extends BaseStep implements StepInterface {
         data.outputProperties = new Properties();
         for ( int i = 0; i < nrOutputProps; i++ ) {
           data.outputProperties.put( meta.getOutputPropertyName()[i], environmentSubstitute( meta
-              .getOutputPropertyValue()[i] ) );
+            .getOutputPropertyValue()[i] ) );
         }
         data.setOutputProperties = true;
       }
@@ -182,12 +183,13 @@ public class Xslt extends BaseStep implements StepInterface {
           String name = environmentSubstitute( meta.getParameterName()[i] );
           String field = environmentSubstitute( meta.getParameterField()[i] );
           if ( Const.isEmpty( field ) ) {
-            throw new KettleStepException( BaseMessages
-                .getString( PKG, "Xslt.Exception.ParameterFieldMissing", name, i ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "Xslt.Exception.ParameterFieldMissing", name, i ) );
           }
           data.indexOfParams[i] = getInputRowMeta().indexOfValue( field );
           if ( data.indexOfParams[i] < 0 ) {
-            throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.Exception.ParameterFieldNotFound", name ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "Xslt.Exception.ParameterFieldNotFound", name ) );
           }
           data.nameOfParams[i] = name;
         }
@@ -200,7 +202,7 @@ public class Xslt extends BaseStep implements StepInterface {
         // Set the TransformerFactory to the SAXON implementation.
         data.factory = new net.sf.saxon.TransformerFactoryImpl();
       }
-    }// end if first
+    } // end if first
 
     // Get the field value
     String xmlValue = getInputRowMeta().getString( row, data.fieldposition );
@@ -210,7 +212,7 @@ public class Xslt extends BaseStep implements StepInterface {
       data.xslfilename = getInputRowMeta().getString( row, data.fielxslfiledposition );
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "Xslt.Log.XslfileNameFromFied", data.xslfilename, meta
-            .getXSLFileField() ) );
+          .getXSLFileField() ) );
       }
     }
 
@@ -260,20 +262,18 @@ public class Xslt extends BaseStep implements StepInterface {
       putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
 
     } catch ( Exception e ) {
-
-      boolean sendToErrorRow = false;
-      String errorMessage = null;
+      String errorMessage = e.getMessage();
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter( sw );
+      DefaultErrorHandler.printLocation( pw, e );
+      pw.close();
+      errorMessage = sw.toString() + "\n" + errorMessage;
 
       if ( getStepMeta().isDoingErrorHandling() ) {
-        sendToErrorRow = true;
-        errorMessage = e.getMessage();
-      }
-
-      if ( sendToErrorRow ) {
         // Simply add this row to the error row
         putError( getInputRowMeta(), row, 1, errorMessage, meta.getResultfieldname(), "XSLT01" );
       } else {
-        logError( BaseMessages.getString( PKG, "Xslt.ErrorProcesing" + " : " + e.getMessage() ) );
+        logError( BaseMessages.getString( PKG, "Xslt.ErrorProcesing" + " : " + errorMessage ) );
         throw new KettleStepException( BaseMessages.getString( PKG, "Xslt.ErrorProcesing" ), e );
       }
     }

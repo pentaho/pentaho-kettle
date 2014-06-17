@@ -34,13 +34,13 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class UniqueRowsByHashSet extends BaseStep implements StepInterface {
-  private static Class<?> PKG = UniqueRowsByHashSetMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = UniqueRowsByHashSetMeta.class; // for i18n purposes, needed by Translator2!!
 
   private UniqueRowsByHashSetMeta meta;
   private UniqueRowsByHashSetData data;
 
-  public UniqueRowsByHashSet( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public UniqueRowsByHashSet( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (UniqueRowsByHashSetMeta) getStepMeta().getStepMetaInterface();
@@ -56,8 +56,8 @@ public class UniqueRowsByHashSet extends BaseStep implements StepInterface {
     data = (UniqueRowsByHashSetData) sdi;
 
     Object[] r = getRow(); // get row!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       data.clearHashSet();
       setOutputDone();
       return false;
@@ -79,15 +79,15 @@ public class UniqueRowsByHashSet extends BaseStep implements StepInterface {
         data.fieldnrs[i] = getInputRowMeta().indexOfValue( meta.getCompareFields()[i] );
         if ( data.fieldnrs[i] < 0 ) {
           logError( BaseMessages.getString( PKG, "UniqueRowsByHashSet.Log.CouldNotFindFieldInRow", meta
-              .getCompareFields()[i] ) );
+            .getCompareFields()[i] ) );
           setErrors( 1 );
           stopAll();
           return false;
         }
         if ( data.sendDuplicateRows ) {
           data.compareFields =
-              data.compareFields == null ? meta.getCompareFields()[i] : data.compareFields + ","
-                  + meta.getCompareFields()[i];
+            data.compareFields == null ? meta.getCompareFields()[i] : data.compareFields
+              + "," + meta.getCompareFields()[i];
         }
       }
       if ( data.sendDuplicateRows && !Const.isEmpty( meta.getErrorDescription() ) ) {
@@ -101,8 +101,8 @@ public class UniqueRowsByHashSet extends BaseStep implements StepInterface {
       incrementLinesRejected();
       if ( data.sendDuplicateRows ) {
         // Simply add this row to the error row
-        putError( getInputRowMeta(), r, 1, data.realErrorDescription, data.compareFields == "" ? null
-            : data.compareFields, "UNRH001" );
+        putError( getInputRowMeta(), r, 1, data.realErrorDescription, Const.isEmpty( data.compareFields )
+          ? null : data.compareFields, "UNRH001" );
       }
     }
 

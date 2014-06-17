@@ -34,7 +34,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class ScriptData extends BaseStepData implements StepDataInterface {
   public ScriptEngine cx;
@@ -47,9 +47,6 @@ public class ScriptData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;
   public int[] replaceIndex;
 
-  /**
-	 * 
-	 */
   public ScriptData() {
     super();
     cx = null;

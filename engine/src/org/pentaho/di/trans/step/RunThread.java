@@ -58,8 +58,11 @@ public class RunThread implements Runnable {
         log.logDetailed( BaseMessages.getString( "System.Log.StartingToRun" ) );
       }
 
-      while ( step.processRow( meta, data ) && !step.isStopped() ) {
-        // Wait
+      // Wait
+      while ( step.processRow( meta, data ) ) {
+        if ( step.isStopped() ) {
+          break;
+        }
       }
     } catch ( Throwable t ) {
       try {
@@ -79,8 +82,8 @@ public class RunThread implements Runnable {
         String parentLogChannelId = loggingObject.getParent().getLogChannelId();
         List<String> logChannelChildren = LoggingRegistry.getInstance().getLogChannelChildren( parentLogChannelId );
         int childIndex = Const.indexOfString( log.getLogChannelId(), logChannelChildren );
-        System.out.println( "child index = " + childIndex + ", logging object : " + loggingObject.toString()
-            + " parent=" + parentLogChannelId );
+        System.out.println( "child index = "
+          + childIndex + ", logging object : " + loggingObject.toString() + " parent=" + parentLogChannelId );
         KettleLogStore.getAppender().getBuffer( "2bcc6b3f-c660-4a8b-8b17-89e8cbd5b29b", false );
         // baseStep.logError(Const.getStackTracker(t));
       } catch ( OutOfMemoryError e ) {
@@ -101,13 +104,13 @@ public class RunThread implements Runnable {
         long lj = step.getLinesRejected();
         long e = step.getErrors();
         if ( li > 0 || lo > 0 || lr > 0 || lw > 0 || lu > 0 || lj > 0 || e > 0 ) {
-          log.logBasic( BaseMessages
-              .getString( PKG, "BaseStep.Log.SummaryInfo", String.valueOf( li ), String.valueOf( lo ), String
-                  .valueOf( lr ), String.valueOf( lw ), String.valueOf( lu ), String.valueOf( e + lj ) ) );
+          log.logBasic( BaseMessages.getString( PKG, "BaseStep.Log.SummaryInfo", String.valueOf( li ),
+            String.valueOf( lo ), String.valueOf( lr ), String.valueOf( lw ),
+            String.valueOf( lu ), String.valueOf( e + lj ) ) );
         } else {
-          log.logDetailed( BaseMessages
-              .getString( PKG, "BaseStep.Log.SummaryInfo", String.valueOf( li ), String.valueOf( lo ), String
-                  .valueOf( lr ), String.valueOf( lw ), String.valueOf( lu ), String.valueOf( e + lj ) ) );
+          log.logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.SummaryInfo", String.valueOf( li ),
+            String.valueOf( lo ), String.valueOf( lr ), String.valueOf( lw ),
+            String.valueOf( lu ), String.valueOf( e + lj ) ) );
         }
       } catch ( Throwable t ) {
         //

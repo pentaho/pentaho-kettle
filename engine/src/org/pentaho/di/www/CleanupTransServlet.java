@@ -51,7 +51,8 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
     super( transformationMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -78,8 +79,8 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
       out.println( "<HEAD>" );
       out.println( "<TITLE>Transformation cleanup</TITLE>" );
       out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
-          + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-          + URLEncoder.encode( transName, "UTF-8" ) + "\">" );
+        + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+        + URLEncoder.encode( transName, "UTF-8" ) + "\">" );
       out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
       out.println( "</HEAD>" );
       out.println( "<BODY>" );
@@ -123,14 +124,15 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
         } else {
           error = true;
           message =
-              "The specified transformation [" + transName + "] with id [" + Const.NVL( id, "" )
-                  + "] could not be found";
+            "The specified transformation ["
+              + transName + "] with id [" + Const.NVL( id, "" ) + "] could not be found";
           if ( useXML ) {
             out.println( new WebResult( WebResult.STRING_ERROR, message ) );
           } else {
             out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
-            out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-                + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+            out.println( "<a href=\""
+              + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+              + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
           }
         }
       }
@@ -140,16 +142,17 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
           out.println( new WebResult( WebResult.STRING_OK, message ).getXML() );
         } else {
           out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
-          out.println( "<a href=\"" + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( transName, "UTF-8" ) + "\">"
-              + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+          out.println( "<a href=\""
+            + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+            + URLEncoder.encode( transName, "UTF-8" ) + "\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
         }
       }
 
     } catch ( Exception ex ) {
       if ( useXML ) {
         out.println( new WebResult( WebResult.STRING_ERROR, "Unexpected error during transformations cleanup:"
-            + Const.CR + Const.getStackTracker( ex ) ) );
+          + Const.CR + Const.getStackTracker( ex ) ) );
       } else {
         out.println( "<p>" );
         out.println( "<pre>" );

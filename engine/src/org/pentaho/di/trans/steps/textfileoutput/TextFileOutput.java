@@ -1,4 +1,4 @@
-/*! ******************************************************************************
+/*******************************************************************************
  *
  * Pentaho Data Integration
  *
@@ -23,21 +23,20 @@
 package org.pentaho.di.trans.steps.textfileoutput;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.vfs.FileObject;
+import org.drools.util.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.WriterOutputStream;
+import org.pentaho.di.core.compress.CompressionProvider;
+import org.pentaho.di.core.compress.CompressionProviderFactory;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -47,6 +46,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.StreamLogger;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -59,21 +59,15 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Converts input rows to text and then writes this text to one or more files.
- * 
+ *
  * @author Matt
  * @since 4-apr-2003
  */
 public class TextFileOutput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final String FILE_COMPRESSION_TYPE_NONE =
       TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_NONE];
-
-  private static final String FILE_COMPRESSION_TYPE_ZIP =
-      TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_ZIP];
-
-  private static final String FILE_COMPRESSION_TYPE_GZIP =
-      TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_GZIP];
 
   public TextFileOutputMeta meta;
 
@@ -116,7 +110,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         //
         if ( data.fileNameFieldIndex < 0 ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "TextFileOutput.Exception.FileNameFieldNotFound",
-              meta.getFileNameField() ) ); // $NON-NLS-1$
+              meta.getFileNameField() ) );
         }
 
         data.fileNameMeta = getInputRowMeta().getValueMeta( data.fileNameFieldIndex );
@@ -179,7 +173,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
     if ( r == null ) {
       // no more input to be expected...
-      if ( !bEndedLineWrote && meta.getEndedLine() != null ) {
+      if ( !bEndedLineWrote && !StringUtils.isEmpty( meta.getEndedLine() ) ) {
         if ( data.writer == null ) {
           openNewFile( meta.getFileName() );
           data.oneFileOpened = true;
@@ -213,7 +207,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
   /**
    * This method should only be used when you have a filename in the input stream.
-   * 
+   *
    * @param filename
    *          the filename to set the data.writer field for
    * @throws KettleException
@@ -606,64 +600,51 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           createParentFolder( filename );
         }
 
-        OutputStream outputStream;
+        String compressionType = meta.getFileCompression();
 
-        if ( !Const.isEmpty( meta.getFileCompression() )
-            && !meta.getFileCompression().equals( FILE_COMPRESSION_TYPE_NONE ) ) {
-          if ( meta.getFileCompression().equals( FILE_COMPRESSION_TYPE_ZIP ) ) {
-            if ( log.isDetailed() ) {
-              logDetailed( "Opening output stream in zipped mode" );
-            }
-
-            if ( checkPreviouslyOpened( filename ) ) {
-              data.fos = KettleVFS.getOutputStream( filename, getTransMeta(), true );
-            } else {
-              data.fos = KettleVFS.getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
-            }
-            data.zip = new ZipOutputStream( data.fos );
-            // The filename has the ZIP extension and refers to the top-level filename. Thus we
-            // need to add the intended extension to the ZipEntry.
-            File entry = new File( filename + "." + meta.getExtension() );
-            ZipEntry zipentry = new ZipEntry( entry.getName() );
-            zipentry.setComment( "Compressed by Kettle" );
-            data.zip.putNextEntry( zipentry );
-            outputStream = data.zip;
-          } else if ( meta.getFileCompression().equals( FILE_COMPRESSION_TYPE_GZIP ) ) {
-            if ( log.isDetailed() ) {
-              logDetailed( "Opening output stream in gzipped mode" );
-            }
-            if ( checkPreviouslyOpened( filename ) ) {
-              data.fos = KettleVFS.getOutputStream( filename, getTransMeta(), true );
-            } else {
-              data.fos = KettleVFS.getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
-            }
-            data.gzip = new GZIPOutputStream( data.fos );
-            outputStream = data.gzip;
-          } else {
-            throw new KettleFileException( "No compression method specified!" );
-          }
-        } else {
-          if ( log.isDetailed() ) {
-            logDetailed( "Opening output stream in nocompress mode" );
-          }
-          if ( checkPreviouslyOpened( filename ) ) {
-            data.fos = KettleVFS.getOutputStream( filename, getTransMeta(), true );
-          } else {
-            data.fos = KettleVFS.getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
-          }
-          outputStream = data.fos;
+        // If no file compression is specified, use the "None" provider
+        if ( Const.isEmpty( compressionType ) ) {
+          compressionType = FILE_COMPRESSION_TYPE_NONE;
         }
+
+        CompressionProvider compressionProvider =
+            CompressionProviderFactory.getInstance().getCompressionProviderByName( compressionType );
+
+        if ( compressionProvider == null ) {
+          throw new KettleException( "No compression provider found with name = " + compressionType );
+        }
+
+        if ( !compressionProvider.supportsOutput() ) {
+          throw new KettleException( "Compression provider " + compressionType + " does not support output streams!" );
+        }
+
+        if ( log.isDetailed() ) {
+          logDetailed( "Opening output stream using provider: " + compressionProvider.getName() );
+        }
+
+        if ( checkPreviouslyOpened( filename ) ) {
+          data.fos = getOutputStream( filename, getTransMeta(), true );
+        } else {
+          data.fos = getOutputStream( filename, getTransMeta(), meta.isFileAppended() );
+        }
+
+        data.out = compressionProvider.createOutputStream( data.fos );
+
+        // The compression output stream may also archive entries. For this we create the filename
+        // (with appropriate extension) and add it as an entry to the output stream. For providers
+        // that do not archive entries, they should use the default no-op implementation.
+        data.out.addEntry( filename + "." + meta.getExtension() );
 
         if ( !Const.isEmpty( meta.getEncoding() ) ) {
           if ( log.isDetailed() ) {
             logDetailed( "Opening output stream in encoding: " + meta.getEncoding() );
           }
-          data.writer = new BufferedOutputStream( outputStream, 5000 );
+          data.writer = new BufferedOutputStream( data.out, 5000 );
         } else {
           if ( log.isDetailed() ) {
             logDetailed( "Opening output stream in default encoding" );
           }
-          data.writer = new BufferedOutputStream( outputStream, 5000 );
+          data.writer = new BufferedOutputStream( data.out, 5000 );
         }
 
         if ( log.isDetailed() ) {
@@ -679,8 +660,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     if ( meta.isAddToResultFiles() ) {
       // Add this to the result file names...
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ),
-              getTransMeta().getName(), getStepname() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, getFileObject( filename, getTransMeta() ), getTransMeta()
+              .getName(), getStepname() );
       if ( resultFile != null ) {
         resultFile.setComment( BaseMessages.getString( PKG, "TextFileOutput.AddResultFile" ) );
         addResultFile( resultFile );
@@ -735,14 +716,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         if ( log.isDebug() ) {
           logDebug( "Closing normal file ..." );
         }
-        if ( FILE_COMPRESSION_TYPE_ZIP.equals( meta.getFileCompression() ) ) {
-          data.zip.flush();
-          data.zip.closeEntry();
-          data.zip.finish();
-          data.zip.close();
-        } else if ( FILE_COMPRESSION_TYPE_GZIP.equals( meta.getFileCompression() ) ) {
-          data.gzip.finish();
-        }
+        data.out.close();
+
         if ( data.fos != null ) {
           data.fos.close();
           data.fos = null;
@@ -761,7 +736,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
   public boolean checkPreviouslyOpened( String filename ) {
 
-    return data.previouslyOpenedFiles.contains( filename );
+    return data.getPreviouslyOpenedFiles().contains( filename );
 
   }
 
@@ -976,21 +951,21 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     FileObject parentfolder = null;
     try {
       // Get parent folder
-      parentfolder = KettleVFS.getFileObject( filename ).getParent();
+      parentfolder = getFileObject( filename ).getParent();
       if ( parentfolder.exists() ) {
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderExist", parentfolder.getName() ) );
         }
       } else {
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG,
-                  "TextFileOutput.Log.ParentFolderNotExist", parentfolder.getName() ) );
+          logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExist",
+            parentfolder.getName() ) );
         }
         if ( meta.isCreateParentFolder() ) {
           parentfolder.createFolder();
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG,
-                    "TextFileOutput.Log.ParentFolderCreated", parentfolder.getName() ) );
+            logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderCreated",
+              parentfolder.getName() ) );
           }
         } else {
           throw new KettleException( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExistCreateIt",
@@ -1007,4 +982,17 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       }
     }
   }
+
+  protected FileObject getFileObject( String vfsFilename ) throws KettleFileException {
+    return KettleVFS.getFileObject( vfsFilename );
+  }
+
+  protected FileObject getFileObject( String vfsFilename, VariableSpace space ) throws KettleFileException {
+    return KettleVFS.getFileObject( vfsFilename, space );
+  }
+
+  protected OutputStream getOutputStream( String vfsFilename, VariableSpace space, boolean append ) throws KettleFileException {
+    return KettleVFS.getOutputStream( vfsFilename, space, append );
+  }
+
 }

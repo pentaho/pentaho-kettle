@@ -39,7 +39,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Parse XML document using SAX and retreive fields
- * 
+ *
  * @author Youssef
  * @since 22-may-2006
  */
@@ -173,15 +173,16 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler {
             String att1 = attributes.getValue( el.getAttribute() ); // must throw exception
             String att2 = el.getAttributeValue();
             if ( att1.equals( att2 ) ) {
-              _pathToRootElement.add( new XMLInputSaxFieldPosition( qName, el.getAttribute(), el.getAttributeValue() ) ); // to
-                                                                                                                          // test
-                                                                                                                          // with
-                                                                                                                          // clone
+              _pathToRootElement.add( new XMLInputSaxFieldPosition( qName, el.getAttribute(), el
+                .getAttributeValue() ) ); // to
+                                          // test
+                                          // with
+                                          // clone
               if ( counter == pathToRootElement.size() - 1 ) {
                 for ( int i = 0; i < attributes.getLength(); i++ ) {
                   XMLInputSaxFieldPosition tempP =
-                      new XMLInputSaxFieldPosition( attributes.getQName( i ), XMLInputSaxFieldPosition.XML_ATTRIBUTE,
-                          i + 1 );
+                    new XMLInputSaxFieldPosition(
+                      attributes.getQName( i ), XMLInputSaxFieldPosition.XML_ATTRIBUTE, i + 1 );
                   _pathToRootElement.add( tempP );
                   XMLInputSaxFieldPosition[] path = new XMLInputSaxFieldPosition[_pathToRootElement.size()];
                   _pathToRootElement.toArray( path );
@@ -194,29 +195,30 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler {
               }
               counterUp();
             } else {
-              _pathToRootElement.add( new XMLInputSaxFieldPosition( qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS,
-                  position[_counter] + 1 ) );
+              _pathToRootElement.add( new XMLInputSaxFieldPosition(
+                qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS, position[_counter] + 1 ) );
             }
           } else {
-            _pathToRootElement.add( new XMLInputSaxFieldPosition( qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS,
-                position[_counter] + 1 ) );
+            _pathToRootElement.add( new XMLInputSaxFieldPosition(
+              qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS, position[_counter] + 1 ) );
             counterUp();
           }
         } else {
-          _pathToRootElement.add( new XMLInputSaxFieldPosition( qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS,
-              position[_counter] + 1 ) );
+          _pathToRootElement.add( new XMLInputSaxFieldPosition(
+            qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS, position[_counter] + 1 ) );
         }
       } else {
         XMLInputSaxField temp = null;
         if ( attributes.getValue( meta.getDefiningAttribute( qName ) ) == null ) {
-          _pathToRootElement.add( new XMLInputSaxFieldPosition( qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS,
-              position[_counter] + 1 ) );
+          _pathToRootElement.add( new XMLInputSaxFieldPosition(
+            qName, XMLInputSaxFieldPosition.XML_ELEMENT_POS, position[_counter] + 1 ) );
           XMLInputSaxFieldPosition[] path = new XMLInputSaxFieldPosition[_pathToRootElement.size()];
           _pathToRootElement.toArray( path );
           temp = new XMLInputSaxField( naming( path ), path );
         } else {
           String attribute = meta.getDefiningAttribute( qName );
-          _pathToRootElement.add( new XMLInputSaxFieldPosition( qName, attribute, attributes.getValue( attribute ) ) );
+          _pathToRootElement
+            .add( new XMLInputSaxFieldPosition( qName, attribute, attributes.getValue( attribute ) ) );
           XMLInputSaxFieldPosition[] path = new XMLInputSaxFieldPosition[_pathToRootElement.size()];
           _pathToRootElement.toArray( path );
           temp = new XMLInputSaxField( naming( path ), path );
@@ -228,8 +230,8 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler {
       }
     } catch ( KettleValueException e ) {
       log.logError( Const.getStackTracker( e ) );
-      throw new SAXException( _counter + "," + counter
-          + _pathToRootElement.get( _pathToRootElement.size() - 1 ).toString(), e );
+      throw new SAXException( _counter
+        + "," + counter + _pathToRootElement.get( _pathToRootElement.size() - 1 ).toString(), e );
 
     }
   }

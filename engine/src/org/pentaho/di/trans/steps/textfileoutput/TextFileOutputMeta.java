@@ -61,17 +61,15 @@ import org.w3c.dom.Node;
  *
  */
 public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  public static final int FILE_COMPRESSION_TYPE_NONE = 0;
+  protected static final int FILE_COMPRESSION_TYPE_NONE = 0;
 
-  public static final int FILE_COMPRESSION_TYPE_ZIP = 1;
+  protected static final int FILE_COMPRESSION_TYPE_ZIP = 1;
 
-  public static final int FILE_COMPRESSION_TYPE_GZIP = 2;
+  protected static final String[] fileCompressionTypeCodes = new String[] { "None", "Zip" };
 
-  public static final String[] fileCompressionTypeCodes = new String[] { "None", "Zip", "GZip", }; // $NON-NLS-1$
-
-  public static final String[] formatMapperLineTerminator = new String[] { "DOS", "UNIX", "CR", "None" }; // $NON-NLS-1$
+  public static final String[] formatMapperLineTerminator = new String[] { "DOS", "UNIX", "CR", "None" };
 
   /** The base name of the output file */
   private String fileName;
@@ -742,13 +740,13 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     String nl = System.getProperty( "line.separator" );
 
     if ( fformat != null ) {
-      if ( fformat.equalsIgnoreCase( "DOS" ) ) { // $NON-NLS-1$
+      if ( fformat.equalsIgnoreCase( "DOS" ) ) {
         nl = "\r\n";
-      } else if ( fformat.equalsIgnoreCase( "UNIX" ) ) { // $NON-NLS-1$
+      } else if ( fformat.equalsIgnoreCase( "UNIX" ) ) {
         nl = "\n";
-      } else if ( fformat.equalsIgnoreCase( "CR" ) ) { // $NON-NLS-1$
+      } else if ( fformat.equalsIgnoreCase( "CR" ) ) {
         nl = "\r";
-      } else if ( fformat.equalsIgnoreCase( "None" ) ) { // $NON-NLS-1$
+      } else if ( fformat.equalsIgnoreCase( "None" ) ) {
         nl = "";
       }
     }
@@ -1003,8 +1001,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       separator = rep.getStepAttributeString( id_step, "separator" );
       enclosure = rep.getStepAttributeString( id_step, "enclosure" );
@@ -1078,8 +1075,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "separator", separator );
       rep.saveStepAttribute( id_transformation, id_step, "enclosure", enclosure );
@@ -1210,8 +1206,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

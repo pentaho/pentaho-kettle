@@ -45,6 +45,9 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.CartePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
@@ -54,7 +57,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 public class WebServer {
-  private static Class<?> PKG = WebServer.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = WebServer.class; // for i18n purposes, needed by Translator2!!
 
   private LogChannelInterface log;
 
@@ -75,8 +78,8 @@ public class WebServer {
   private String passwordFile;
 
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
-      SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
-      boolean join, String passwordFile ) throws Exception {
+    SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
+    boolean join, String passwordFile ) throws Exception {
     this.log = log;
     this.transformationMap = transformationMap;
     this.jobMap = jobMap;
@@ -92,20 +95,27 @@ public class WebServer {
     //
     startSlaveMonitoring();
 
+    try {
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.CarteStartup.id, this );
+    } catch ( KettleException e ) {
+      // Log error but continue regular operations to make sure Carte continues to run properly
+      //
+      log.logError( "Error calling extension point CarteStartup", e );
+    }
+
     if ( join ) {
       server.join();
     }
   }
 
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
-      SocketRepository socketRepository, List<SlaveServerDetection> slaveServers, String hostname, int port )
-    throws Exception {
+    SocketRepository socketRepository, List<SlaveServerDetection> slaveServers, String hostname, int port ) throws Exception {
     this( log, transformationMap, jobMap, socketRepository, slaveServers, hostname, port, true );
   }
 
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
-      SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port, boolean join )
-    throws Exception {
+    SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
+    boolean join ) throws Exception {
     this( log, transformationMap, jobMap, socketRepository, detections, hostname, port, join, null );
   }
 
@@ -130,22 +140,29 @@ public class WebServer {
     SecurityHandler securityHandler = new SecurityHandler();
 
     if ( System.getProperty( "loginmodulename" ) != null
-        && System.getProperty( "java.security.auth.login.config" ) != null ) {
+      && System.getProperty( "java.security.auth.login.config" ) != null ) {
       JAASUserRealm jaasRealm = new JAASUserRealm( "Kettle" );
       jaasRealm.setLoginModuleName( System.getProperty( "loginmodulename" ) );
       securityHandler.setUserRealm( jaasRealm );
     } else {
-      // See if there is a kettle.pwd file in the KETTLE_HOME directory:
-      //
-      if ( Const.isEmpty( passwordFile ) ) {
-        File homePwdFile = new File( Const.getKettleCartePasswordFile() );
-        if ( homePwdFile.exists() ) {
-          passwordFile = Const.getKettleCartePasswordFile();
-        } else {
-          passwordFile = Const.getKettleLocalCartePasswordFile();
+      HashUserRealm hashUserRealm;
+      SlaveServer slaveServer = transformationMap.getSlaveServerConfig().getSlaveServer();
+      if ( !Const.isEmpty( slaveServer.getPassword() ) ) {
+        hashUserRealm = new HashUserRealm( "Kettle" );
+        hashUserRealm.put( slaveServer.getUsername(), slaveServer.getPassword() );
+      } else {
+        // See if there is a kettle.pwd file in the KETTLE_HOME directory:
+        if ( Const.isEmpty( passwordFile ) ) {
+          File homePwdFile = new File( Const.getKettleCartePasswordFile() );
+          if ( homePwdFile.exists() ) {
+            passwordFile = Const.getKettleCartePasswordFile();
+          } else {
+            passwordFile = Const.getKettleLocalCartePasswordFile();
+          }
         }
+        hashUserRealm = new HashUserRealm( "Kettle", passwordFile );
       }
-      securityHandler.setUserRealm( new HashUserRealm( "Kettle", passwordFile ) );
+      securityHandler.setUserRealm( hashUserRealm );
     }
 
     securityHandler.setConstraintMappings( new ConstraintMapping[] { constraintMapping } );
@@ -176,15 +193,16 @@ public class WebServer {
 
     // setup jersey (REST)
     ServletHolder jerseyServletHolder = new ServletHolder( ServletContainer.class );
-    jerseyServletHolder.setInitParameter( "com.sun.jersey.config.property.resourceConfigClass",
-        "com.sun.jersey.api.core.PackagesResourceConfig" );
+    jerseyServletHolder.setInitParameter(
+      "com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig" );
     jerseyServletHolder.setInitParameter( "com.sun.jersey.config.property.packages", "org.pentaho.di.www.jaxrs" );
     root.addServlet( jerseyServletHolder, "/api/*" );
 
     // setup static resource serving
     // ResourceHandler mobileResourceHandler = new ResourceHandler();
     // mobileResourceHandler.setWelcomeFiles(new String[]{"index.html"});
-    // mobileResourceHandler.setResourceBase(getClass().getClassLoader().getResource("org/pentaho/di/www/mobile").toExternalForm());
+    // mobileResourceHandler.setResourceBase(getClass().getClassLoader().
+    //   getResource("org/pentaho/di/www/mobile").toExternalForm());
     // Context mobileContext = new Context(contexts, "/mobile", Context.SESSIONS);
     // mobileContext.setHandler(mobileResourceHandler);
 
@@ -202,7 +220,20 @@ public class WebServer {
     server.start();
   }
 
+  public void join() throws InterruptedException {
+    server.join();
+  }
+
   public void stopServer() {
+
+    try {
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.CarteShutdown.id, this );
+    } catch ( KettleException e ) {
+      // Log error but continue regular operations to make sure Carte can be shut down properly.
+      //
+      log.logError( "Error calling extension point CarteStartup", e );
+    }
+
     try {
       if ( server != null ) {
 
@@ -222,8 +253,8 @@ public class WebServer {
         server.stop();
       }
     } catch ( Exception e ) {
-      log.logError( BaseMessages.getString( PKG, "WebServer.Error.FailedToStop.Title" ), BaseMessages.getString( PKG,
-          "WebServer.Error.FailedToStop.Msg", "" + e ) );
+      log.logError( BaseMessages.getString( PKG, "WebServer.Error.FailedToStop.Title" ), BaseMessages.getString(
+        PKG, "WebServer.Error.FailedToStop.Msg", "" + e ) );
     }
   }
 
@@ -310,5 +341,53 @@ public class WebServer {
 
   public void setPasswordFile( String passwordFile ) {
     this.passwordFile = passwordFile;
+  }
+
+  public LogChannelInterface getLog() {
+    return log;
+  }
+
+  public void setLog( LogChannelInterface log ) {
+    this.log = log;
+  }
+
+  public TransformationMap getTransformationMap() {
+    return transformationMap;
+  }
+
+  public void setTransformationMap( TransformationMap transformationMap ) {
+    this.transformationMap = transformationMap;
+  }
+
+  public JobMap getJobMap() {
+    return jobMap;
+  }
+
+  public void setJobMap( JobMap jobMap ) {
+    this.jobMap = jobMap;
+  }
+
+  public int getPort() {
+    return port;
+  }
+
+  public void setPort( int port ) {
+    this.port = port;
+  }
+
+  public Timer getSlaveMonitoringTimer() {
+    return slaveMonitoringTimer;
+  }
+
+  public void setSlaveMonitoringTimer( Timer slaveMonitoringTimer ) {
+    this.slaveMonitoringTimer = slaveMonitoringTimer;
+  }
+
+  public void setServer( Server server ) {
+    this.server = server;
+  }
+
+  public void setDetections( List<SlaveServerDetection> detections ) {
+    this.detections = detections;
   }
 }

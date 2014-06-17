@@ -92,9 +92,6 @@ public class XMLInputData extends BaseStepData implements StepDataInterface {
 
   public RowMetaInterface convertRowMeta;
 
-  /**
-	 * 
-	 */
   public XMLInputData() {
     super();
 

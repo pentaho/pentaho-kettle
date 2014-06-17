@@ -30,7 +30,7 @@ import org.apache.commons.collections.Predicate;
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
  * @version $Revision
- * 
+ *
  */
 public final class CollectionPredicates { // NOPMD
 
@@ -38,13 +38,13 @@ public final class CollectionPredicates { // NOPMD
 
   /**
    * Empty collection.
-   * 
+   *
    */
   public static final Predicate EMPTY_COLLECTION = new Predicate() {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
      */
     public boolean evaluate( final Object object ) {
@@ -53,7 +53,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -70,7 +70,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
      */
     public boolean evaluate( final Object object ) {
@@ -79,7 +79,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -96,7 +96,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
      */
     public boolean evaluate( final Object object ) {
@@ -105,7 +105,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -120,7 +120,7 @@ public final class CollectionPredicates { // NOPMD
   public static final Predicate NOT_EMPTY_ARRAY = new Predicate() {
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
      */
     public boolean evaluate( final Object object ) {
@@ -129,7 +129,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -145,7 +145,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
      */
     public boolean evaluate( final Object object ) {
@@ -154,7 +154,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -165,12 +165,12 @@ public final class CollectionPredicates { // NOPMD
 
   /**
    * Not empty map.
-   * 
+   *
    */
   public static final Predicate NOT_EMPTY_MAP = new Predicate() {
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
      */
     public boolean evaluate( final Object object ) {
@@ -179,7 +179,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -195,7 +195,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
      */
     public boolean evaluate( final Object object ) {
@@ -204,7 +204,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -220,7 +220,7 @@ public final class CollectionPredicates { // NOPMD
   public static final Predicate NOT_NULL_OR_EMPTY_ARRAY = new Predicate() {
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
      */
     public boolean evaluate( final Object object ) {
@@ -229,7 +229,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -240,13 +240,13 @@ public final class CollectionPredicates { // NOPMD
 
   /**
    * Not null or empty map.
-   * 
-   * 
+   *
+   *
    */
   public static final Predicate NOT_NULL_OR_EMPTY_MAP = new Predicate() {
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
      */
     public boolean evaluate( final Object object ) {
@@ -255,7 +255,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -270,7 +270,7 @@ public final class CollectionPredicates { // NOPMD
   public static final Predicate NULL_OR_EMPTY_COLLECTION = new Predicate() {
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
      */
     public boolean evaluate( final Object object ) {
@@ -279,7 +279,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -294,7 +294,7 @@ public final class CollectionPredicates { // NOPMD
   public static final Predicate NULL_OR_EMPTY_ARRAY = new Predicate() {
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
      */
     public boolean evaluate( final Object object ) {
@@ -303,7 +303,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -318,7 +318,7 @@ public final class CollectionPredicates { // NOPMD
   public static final Predicate NULL_OR_EMPTY_MAP = new Predicate() {
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
      */
     public boolean evaluate( final Object object ) {
@@ -327,7 +327,7 @@ public final class CollectionPredicates { // NOPMD
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -365,7 +365,7 @@ public final class CollectionPredicates { // NOPMD
    * @param subject
    *          the subject.
    * @return true if null or empty.
-   * 
+   *
    */
   public static boolean isNullOrEmpty( final Object[] subject ) {
     return NULL_OR_EMPTY_ARRAY.evaluate( subject );
@@ -375,7 +375,7 @@ public final class CollectionPredicates { // NOPMD
    * @param subject
    *          the subject.
    * @return true if not null or empty.
-   * 
+   *
    */
   public static boolean isNotNullOrEmpty( final Object[] subject ) {
     return NOT_NULL_OR_EMPTY_ARRAY.evaluate( subject );
@@ -385,7 +385,7 @@ public final class CollectionPredicates { // NOPMD
    * @param subject
    *          the subject.
    * @return true if null or empty.
-   * 
+   *
    */
   public static boolean isNullOrEmpty( final Map<?, ?> subject ) {
     return NULL_OR_EMPTY_MAP.evaluate( subject );
@@ -395,7 +395,7 @@ public final class CollectionPredicates { // NOPMD
    * @param subject
    *          the subject.
    * @return true if not null or empty.
-   * 
+   *
    */
   public static boolean isNotNullOrEmpty( final Map<?, ?> subject ) {
     return NOT_NULL_OR_EMPTY_MAP.evaluate( subject );

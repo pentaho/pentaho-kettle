@@ -29,7 +29,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class AggregateRowsData extends BaseStepData implements StepDataInterface {
   public int[] fieldnrs;
@@ -38,9 +38,6 @@ public class AggregateRowsData extends BaseStepData implements StepDataInterface
   public long[] counts;
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public AggregateRowsData() {
     super();
   }

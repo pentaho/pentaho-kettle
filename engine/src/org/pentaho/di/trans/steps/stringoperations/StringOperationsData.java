@@ -28,7 +28,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Apply certain operations too string.
- * 
+ *
  * @author Samatar Hassan
  * @since 02 April 2009
  */

@@ -62,7 +62,7 @@ import org.w3c.dom.Node;
  */
 
 public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = XBaseInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XBaseInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String dbfFileName;
   private int rowLimit;
@@ -269,8 +269,8 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       acceptingStepName = XMLHandler.getTagValue( stepnode, "accept_stepname" );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "XBaseInputMeta.Exception.UnableToReadStepInformationFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "XBaseInputMeta.Exception.UnableToReadStepInformationFromXML" ), e );
     }
   }
 
@@ -316,8 +316,8 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
       rowMeta.addRowMeta( add );
     } catch ( Exception ke ) {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "XBaseInputMeta.Exception.UnableToReadMetaDataFromXBaseFile" ), ke );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "XBaseInputMeta.Exception.UnableToReadMetaDataFromXBaseFile" ), ke );
     } finally {
       if ( xbi != null ) {
         xbi.close();
@@ -341,11 +341,12 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     FileInputList fileList = getTextFileList( space );
     if ( fileList.nrOfFiles() == 0 ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "XBaseInputMeta.Exception.NoFilesFoundToProcess" ) );
+      throw new KettleStepException( BaseMessages
+        .getString( PKG, "XBaseInputMeta.Exception.NoFilesFoundToProcess" ) );
     }
 
     row.addRowMeta( getOutputFields( fileList, name ) );
@@ -366,13 +367,12 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " + XMLHandler.addTagValue( "accept_filenames", acceptingFilenames ) );
     retval.append( "    " + XMLHandler.addTagValue( "accept_field", acceptingField ) );
     retval.append( "    "
-        + XMLHandler.addTagValue( "accept_stepname", ( acceptingStep != null ? acceptingStep.getName() : "" ) ) );
+      + XMLHandler.addTagValue( "accept_stepname", ( acceptingStep != null ? acceptingStep.getName() : "" ) ) );
 
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       dbfFileName = rep.getStepAttributeString( id_step, "file_dbf" );
       rowLimit = (int) rep.getStepAttributeInteger( id_step, "limit" );
@@ -388,13 +388,12 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       acceptingStepName = rep.getStepAttributeString( id_step, "accept_stepname" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "XBaseInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "XBaseInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "file_dbf", dbfFileName );
       rep.saveStepAttribute( id_transformation, id_step, "limit", rowLimit );
@@ -407,18 +406,18 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       rep.saveStepAttribute( id_transformation, id_step, "accept_filenames", acceptingFilenames );
       rep.saveStepAttribute( id_transformation, id_step, "accept_field", acceptingField );
-      rep.saveStepAttribute( id_transformation, id_step, "accept_stepname", ( acceptingStep != null ? acceptingStep
-          .getName() : "" ) );
+      rep.saveStepAttribute( id_transformation, id_step, "accept_stepname", ( acceptingStep != null
+        ? acceptingStep.getName() : "" ) );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "XBaseInputMeta.Exception.UnableToSaveMetaDataToRepository" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "XBaseInputMeta.Exception.UnableToSaveMetaDataToRepository" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
 
@@ -426,48 +425,48 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       if ( isAcceptingFilenames() ) {
         if ( Const.isEmpty( getAcceptingStepName() ) ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "XBaseInput.Log.Error.InvalidAcceptingStepName" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XBaseInput.Log.Error.InvalidAcceptingStepName" ), stepMeta );
           remarks.add( cr );
         }
 
         if ( Const.isEmpty( getAcceptingField() ) ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "XBaseInput.Log.Error.InvalidAcceptingFieldName" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XBaseInput.Log.Error.InvalidAcceptingFieldName" ), stepMeta );
           remarks.add( cr );
         }
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "XBaseInputMeta.Remark.PleaseSelectFileToUse" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "XBaseInputMeta.Remark.PleaseSelectFileToUse" ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XBaseInputMeta.Remark.FileToUseIsSpecified" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "XBaseInputMeta.Remark.FileToUseIsSpecified" ), stepMeta );
       remarks.add( cr );
 
       XBase xbi = new XBase( getLog(), transMeta.environmentSubstitute( dbfFileName ) );
       try {
         xbi.open();
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "XBaseInputMeta.Remark.FileExistsAndCanBeOpened" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "XBaseInputMeta.Remark.FileExistsAndCanBeOpened" ), stepMeta );
         remarks.add( cr );
 
         RowMetaInterface r = xbi.getFields();
 
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, r.size()
-                + BaseMessages.getString( PKG, "XBaseInputMeta.Remark.OutputFieldsCouldBeDetermined" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, r.size()
+            + BaseMessages.getString( PKG, "XBaseInputMeta.Remark.OutputFieldsCouldBeDetermined" ), stepMeta );
         remarks.add( cr );
       } catch ( KettleException ke ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "XBaseInputMeta.Remark.NoFieldsCouldBeFoundInFileBecauseOfError" )
-                + Const.CR + ke.getMessage(), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "XBaseInputMeta.Remark.NoFieldsCouldBeFoundInFileBecauseOfError" )
+            + Const.CR + ke.getMessage(), stepMeta );
         remarks.add( cr );
       } finally {
         xbi.close();
@@ -476,7 +475,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new XBaseInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -485,13 +484,13 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String[] getFilePaths( VariableSpace space ) {
-    return FileInputList.createFilePathList( space, new String[] { dbfFileName }, new String[] { null },
-        new String[] { null }, new String[] { "N" } );
+    return FileInputList.createFilePathList(
+      space, new String[] { dbfFileName }, new String[] { null }, new String[] { null }, new String[] { "N" } );
   }
 
   public FileInputList getTextFileList( VariableSpace space ) {
-    return FileInputList.createFileList( space, new String[] { dbfFileName }, new String[] { null },
-        new String[] { null }, new String[] { "N" } );
+    return FileInputList.createFileList(
+      space, new String[] { dbfFileName }, new String[] { null }, new String[] { null }, new String[] { "N" } );
   }
 
   public String[] getUsedLibraries() {
@@ -518,7 +517,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
    * what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -527,12 +526,11 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

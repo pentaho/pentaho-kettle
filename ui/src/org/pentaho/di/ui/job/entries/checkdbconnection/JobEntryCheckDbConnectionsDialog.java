@@ -58,14 +58,13 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the check database connection job entry settings.
- * 
+ *
  * @author Samatar
  * @since 12-10-2007
  */
 
 public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryCheckDbConnections.class; // for i18n purposes, needed by Translator2!!
-                                                                  // $NON-NLS-1$
 
   private Label wlName;
 
@@ -96,7 +95,8 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
 
   private String[] connections;
 
-  public JobEntryCheckDbConnectionsDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
+  public JobEntryCheckDbConnectionsDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep,
+    JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
     jobEntry = (JobEntryCheckDbConnections) jobEntryInt;
     if ( this.jobEntry.getName() == null ) {
@@ -160,8 +160,8 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
     wbdSourceFileFolder = new Button( shell, SWT.PUSH | SWT.CENTER );
     props.setLook( wbdSourceFileFolder );
     wbdSourceFileFolder.setText( BaseMessages.getString( PKG, "JobCheckDbConnections.DeleteEntry" ) );
-    wbdSourceFileFolder.setToolTipText( BaseMessages.getString( PKG,
-        "JobCheckDbConnections.DeleteSourceFileButton.Label" ) );
+    wbdSourceFileFolder.setToolTipText( BaseMessages.getString(
+      PKG, "JobCheckDbConnections.DeleteSourceFileButton.Label" ) );
     fdbdSourceFileFolder = new FormData();
     fdbdSourceFileFolder.right = new FormAttachment( 100, -margin );
     fdbdSourceFileFolder.top = new FormAttachment( wlFields, 50 );
@@ -171,7 +171,8 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
     wbgetConnections = new Button( shell, SWT.PUSH | SWT.CENTER );
     props.setLook( wbgetConnections );
     wbgetConnections.setText( BaseMessages.getString( PKG, "JobCheckDbConnections.GetConnections" ) );
-    wbgetConnections.setToolTipText( BaseMessages.getString( PKG, "JobCheckDbConnections.GetConnections.Tooltip" ) );
+    wbgetConnections
+      .setToolTipText( BaseMessages.getString( PKG, "JobCheckDbConnections.GetConnections.Tooltip" ) );
     fdbgetConnections = new FormData();
     fdbgetConnections.right = new FormAttachment( 100, -margin );
     fdbgetConnections.top = new FormAttachment( wlFields, 20 );
@@ -179,25 +180,30 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
 
     addDatabases();
 
-    int rows = jobEntry.connections == null ? 1 : ( jobEntry.connections.length == 0 ? 0 : jobEntry.connections.length );
+    int rows =
+      jobEntry.connections == null ? 1 : ( jobEntry.connections.length == 0 ? 0 : jobEntry.connections.length );
 
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.Argument.Label" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, connections, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.WaitFor.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.WaitForTime.Label" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntryCheckDbConnections.unitTimeDesc, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.Argument.Label" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, connections, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.WaitFor.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.WaitForTime.Label" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntryCheckDbConnections.unitTimeDesc, false ), };
 
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobCheckDbConnections.Fields.Column" ) );
     colinf[1].setUsingVariables( true );
     colinf[1].setToolTip( BaseMessages.getString( PKG, "JobCheckDbConnections.WaitFor.ToolTip" ) );
 
     wFields =
-        new TableView( jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -364,7 +370,8 @@ public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements 
       if ( dbMeta != null ) {
         jobEntry.connections[i] = dbMeta;
         jobEntry.waitfors[i] = "" + Const.toInt( wFields.getNonEmpty( i ).getText( 2 ), 0 );
-        jobEntry.waittimes[i] = JobEntryCheckDbConnections.getWaitTimeByDesc( wFields.getNonEmpty( i ).getText( 3 ) );
+        jobEntry.waittimes[i] =
+          JobEntryCheckDbConnections.getWaitTimeByDesc( wFields.getNonEmpty( i ).getText( 3 ) );
       }
     }
     dispose();

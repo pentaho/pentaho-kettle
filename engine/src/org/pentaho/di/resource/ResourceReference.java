@@ -92,7 +92,8 @@ public class ResourceReference {
 
   public String toXml( ResourceXmlPropertyEmitterInterface injector, int indentLevel ) {
     StringBuffer buff = new StringBuffer();
-    addXmlElementWithAttribute( buff, indentLevel, "ActionComponent", "type", resourceReferenceHolder.getHolderType() );
+    addXmlElementWithAttribute( buff, indentLevel, "ActionComponent", "type", resourceReferenceHolder
+      .getHolderType() );
     indentLevel++;
     addXmlElement( buff, indentLevel, "ComponentName", resourceReferenceHolder.getName() );
     addXmlElement( buff, indentLevel, "ComponentId", resourceReferenceHolder.getTypeId() );
@@ -116,25 +117,28 @@ public class ResourceReference {
   }
 
   public void addXmlElementWithAttribute( StringBuffer buff, int indentLevel, String elementName, String attrName,
-      String attrValue ) {
-    buff.append( StringUtil.getIndent( indentLevel ) )
-        .append( "<" ).append( elementName ).append( " " ).append( attrName ).append( "='" ); //$NON-NLS-3$
+    String attrValue ) {
+    buff
+      .append( StringUtil.getIndent( indentLevel ) )
+      .append( "<" ).append( elementName ).append( " " ).append( attrName ).append( "='" );
     buff.append( attrValue ).append( "'>" ).append( StringUtil.CRLF );
   }
 
   public void addXmlCloseElement( StringBuffer buff, int indentLevel, String elementName ) {
     buff.append( StringUtil.getIndent( indentLevel ) ).append( "</" ).append( elementName ).append( ">" ).append(
-        StringUtil.CRLF );
+      StringUtil.CRLF );
   }
 
   public void addXmlElement( StringBuffer buff, int indentLevel, String elementName ) {
     buff.append( StringUtil.getIndent( indentLevel ) ).append( "<" ).append( elementName ).append( ">" ).append(
-        StringUtil.CRLF );
+      StringUtil.CRLF );
   }
 
   public void addXmlElement( StringBuffer buff, int indentLevel, String elementName, String elementValue ) {
-    buff.append( StringUtil.getIndent( indentLevel ) )
-        .append( "<" ).append( elementName ).append( "><![CDATA[" ).append( elementValue ).append( "]]></" ).append( elementName ).append( ">" ).append( StringUtil.CRLF ); //$NON-NLS-3$ //$NON-NLS-4$
+    buff
+      .append( StringUtil.getIndent( indentLevel ) )
+      .append( "<" ).append( elementName ).append( "><![CDATA[" ).append( elementValue ).append( "]]></" ).append(
+        elementName ).append( ">" ).append( StringUtil.CRLF );
   }
 
 }

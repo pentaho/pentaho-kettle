@@ -97,9 +97,6 @@ public class PropertyInputData extends BaseStepData implements StepDataInterface
   public String rootUriName;
   public long size;
 
-  /**
-	 * 
-	 */
   public PropertyInputData() {
     super();
     previousRow = null;

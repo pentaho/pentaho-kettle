@@ -28,7 +28,7 @@ public class SalesforceConnectionUtils {
 
   public static final int MAX_UPDATED_OBJECTS_IDS = 2000;
 
-  private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String LIB_VERION = "21.0";
 

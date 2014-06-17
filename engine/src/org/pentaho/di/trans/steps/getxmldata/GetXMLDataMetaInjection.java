@@ -37,7 +37,7 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
 /**
  * To keep it simple, this metadata injection interface only supports the fields in the spreadsheet for the time being.
- * 
+ *
  * @author Matt
  */
 public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements StepMetaInjectionInterface {
@@ -50,24 +50,28 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
 
   private enum Entry implements StepMetaInjectionEnumEntry {
 
-    INCLUDE_ROWNUMBER( ValueMetaInterface.TYPE_STRING,
-        "Flag indicating that a row number field should be included in the output (Y/N)" ), ROWNUMBER_FIELD(
-        ValueMetaInterface.TYPE_STRING, "The name of the field in the output containing the row number" ), ROWLIMIT(
-        ValueMetaInterface.TYPE_STRING, "The maximum number or lines to read (integer)" ), LOOP_XPATH(
-        ValueMetaInterface.TYPE_STRING, "The maximum number or lines to read (The XPath location to loop over" ), ENCODING(
-        ValueMetaInterface.TYPE_STRING, "The file encoding" ), XML_FIELD( ValueMetaInterface.TYPE_STRING,
-        "The name of the input field which contains the XML" ), IN_FIELD( ValueMetaInterface.TYPE_STRING,
-        "Flag indicating that the XML source is in a field" ), IN_FILE( ValueMetaInterface.TYPE_STRING,
-        "Flag indicating that the XML source is in a file" ), ADD_RESULT_FILE( ValueMetaInterface.TYPE_STRING,
-        "Add the file(s) to the result? (Y/N)" ), NAMESPACE_AWARE( ValueMetaInterface.TYPE_STRING,
-        "Parse namespace aware? (Y/N)" ), VALIDATE( ValueMetaInterface.TYPE_STRING, "Validate the XML? (Y/N)" ), USE_TOKENS(
+    INCLUDE_ROWNUMBER(
+      ValueMetaInterface.TYPE_STRING,
+      "Flag indicating that a row number field should be included in the output (Y/N)" ), ROWNUMBER_FIELD(
+      ValueMetaInterface.TYPE_STRING, "The name of the field in the output containing the row number" ),
+      ROWLIMIT( ValueMetaInterface.TYPE_STRING, "The maximum number or lines to read (integer)" ), LOOP_XPATH(
+        ValueMetaInterface.TYPE_STRING, "The maximum number or lines to read (The XPath location to loop over" ),
+      ENCODING( ValueMetaInterface.TYPE_STRING, "The file encoding" ), XML_FIELD(
+        ValueMetaInterface.TYPE_STRING, "The name of the input field which contains the XML" ), IN_FIELD(
+        ValueMetaInterface.TYPE_STRING, "Flag indicating that the XML source is in a field" ), IN_FILE(
+        ValueMetaInterface.TYPE_STRING, "Flag indicating that the XML source is in a file" ), ADD_RESULT_FILE(
+        ValueMetaInterface.TYPE_STRING, "Add the file(s) to the result? (Y/N)" ), NAMESPACE_AWARE(
+        ValueMetaInterface.TYPE_STRING, "Parse namespace aware? (Y/N)" ), VALIDATE(
+        ValueMetaInterface.TYPE_STRING, "Validate the XML? (Y/N)" ), USE_TOKENS(
         ValueMetaInterface.TYPE_STRING, "Process using tokens? (Y/N)" ), IGNORE_EMPTY_FILES(
         ValueMetaInterface.TYPE_STRING, "Ignore empty files? (Y/N)" ), IGNORE_MISSING_FILES(
         ValueMetaInterface.TYPE_STRING, "Ignore missing files? (Y/N)" ), IGNORE_COMMENTS(
-        ValueMetaInterface.TYPE_STRING, "Ignore comments? (Y/N)" ), READ_URL( ValueMetaInterface.TYPE_STRING,
-        "Read URL as source? (Y/N)" ), PRUNE_PATH( ValueMetaInterface.TYPE_STRING,
-        "If you set this path, it activates the streaming algorithm to process large files" ), SHORT_FILE_FIELDNAME(
-        ValueMetaInterface.TYPE_STRING, "Output field: short file name" ), FILE_PATH_FIELDNAME(
+        ValueMetaInterface.TYPE_STRING, "Ignore comments? (Y/N)" ), READ_URL(
+        ValueMetaInterface.TYPE_STRING, "Read URL as source? (Y/N)" ), PRUNE_PATH(
+        ValueMetaInterface.TYPE_STRING,
+        "If you set this path, it activates the streaming algorithm to process large files" ),
+      SHORT_FILE_FIELDNAME( ValueMetaInterface.TYPE_STRING, "Output field: short file name" ),
+      FILE_PATH_FIELDNAME(
         ValueMetaInterface.TYPE_STRING, "Output field: file path" ), FILE_HIDDEN_FIELDNAME(
         ValueMetaInterface.TYPE_STRING, "Output field: hidden file" ), FILE_MODIFICATION_FIELDNAME(
         ValueMetaInterface.TYPE_STRING, "Output field: file modification date" ), FILE_URI_NAME_FIELDNAME(
@@ -76,28 +80,38 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
         ValueMetaInterface.TYPE_STRING, "Output field: file extesion" ), FILE_SIZE_FIELDNAME(
         ValueMetaInterface.TYPE_STRING, "Output field: file size" ),
 
-    INPUTFIELDS( ValueMetaInterface.TYPE_NONE, "All the input fields" ), INPUTFIELD( ValueMetaInterface.TYPE_NONE,
-        "One input field" ), INPUTFIELD_NAME( INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The name of the field" ), INPUTFIELD_XPATH(
-        INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The xpath of the field" ), INPUTFIELD_TYPE( INPUTFIELD,
-        ValueMetaInterface.TYPE_STRING, "The type of the field (String, Integer, Date, ...)" ), INPUTFIELD_ELEMENT_TYPE(
-        INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The element type of the field (node, attribute)" ), INPUTFIELD_RESULT_TYPE(
-        INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The element result type (valueof, singlenode)" ), INPUTFIELD_LENGTH(
-        INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The length of the field" ), INPUTFIELD_PRECISION( INPUTFIELD,
-        ValueMetaInterface.TYPE_STRING, "The precision of the field" ), INPUTFIELD_FORMAT( INPUTFIELD,
-        ValueMetaInterface.TYPE_STRING, "The format mask of the field" ), INPUTFIELD_TRIM_TYPE( INPUTFIELD,
-        ValueMetaInterface.TYPE_STRING, "The trim type of the field (none, left, right, both)" ), INPUTFIELD_CURRENCY(
-        INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The currency symbol" ), INPUTFIELD_GROUPING( INPUTFIELD,
-        ValueMetaInterface.TYPE_STRING, "The grouping symbol" ), INPUTFIELD_DECIMAL( INPUTFIELD,
-        ValueMetaInterface.TYPE_STRING, "The decimal symbol" ), INPUTFIELD_REPEAT( INPUTFIELD,
-        ValueMetaInterface.TYPE_STRING,
+      INPUTFIELDS( ValueMetaInterface.TYPE_NONE, "All the input fields" ), INPUTFIELD(
+        ValueMetaInterface.TYPE_NONE, "One input field" ), INPUTFIELD_NAME(
+        INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The name of the field" ), INPUTFIELD_XPATH(
+        INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The xpath of the field" ), INPUTFIELD_TYPE(
+        INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The type of the field (String, Integer, Date, ...)" ),
+      INPUTFIELD_ELEMENT_TYPE(
+        INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The element type of the field (node, attribute)" ),
+      INPUTFIELD_RESULT_TYPE(
+        INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The element result type (valueof, singlenode)" ),
+      INPUTFIELD_LENGTH( INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The length of the field" ),
+      INPUTFIELD_PRECISION( INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The precision of the field" ),
+      INPUTFIELD_FORMAT( INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The format mask of the field" ),
+      INPUTFIELD_TRIM_TYPE(
+        INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The trim type of the field (none, left, right, both)" ),
+      INPUTFIELD_CURRENCY( INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The currency symbol" ),
+      INPUTFIELD_GROUPING(
+        INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The grouping symbol" ), INPUTFIELD_DECIMAL(
+        INPUTFIELD, ValueMetaInterface.TYPE_STRING, "The decimal symbol" ), INPUTFIELD_REPEAT(
+        INPUTFIELD, ValueMetaInterface.TYPE_STRING,
         "Flag to indicate we need to repeat the previous row value if the current value is null (Y/N)" ),
 
-    FILENAMES( ValueMetaInterface.TYPE_NONE, "All the file names" ), FILENAME( ValueMetaInterface.TYPE_NONE,
-        "One file name" ), FILE_PATH( FILENAME, ValueMetaInterface.TYPE_STRING, "The path to the file" ), FILE_INCLUDE_MASK(
-        FILENAME, ValueMetaInterface.TYPE_STRING, "The regular expression to match files to include" ), FILE_EXCLUDE_MASK(
-        FILENAME, ValueMetaInterface.TYPE_STRING, "The regular expression to match files to exclude" ), FILE_REQUIRED(
-        FILENAME, ValueMetaInterface.TYPE_STRING, "Flag to indicate that this file is required or not (Y/N)" ), FILE_INCLUDE_SUBFOLDERS(
-        FILENAME, ValueMetaInterface.TYPE_STRING, "Flag to indicate that subfolders should be included or not (Y/N)" ), ;
+      FILENAMES( ValueMetaInterface.TYPE_NONE, "All the file names" ), FILENAME(
+        ValueMetaInterface.TYPE_NONE, "One file name" ), FILE_PATH(
+        FILENAME, ValueMetaInterface.TYPE_STRING, "The path to the file" ), FILE_INCLUDE_MASK(
+        FILENAME, ValueMetaInterface.TYPE_STRING, "The regular expression to match files to include" ),
+      FILE_EXCLUDE_MASK(
+        FILENAME, ValueMetaInterface.TYPE_STRING, "The regular expression to match files to exclude" ),
+      FILE_REQUIRED(
+        FILENAME, ValueMetaInterface.TYPE_STRING, "Flag to indicate that this file is required or not (Y/N)" ),
+      FILE_INCLUDE_SUBFOLDERS(
+        FILENAME, ValueMetaInterface.TYPE_STRING,
+        "Flag to indicate that subfolders should be included or not (Y/N)" );
 
     private int valueType;
     private String description;
@@ -161,7 +175,7 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
     public String includeSubFolders;
 
     public FilenameLine( String fileName, String fileMask, String fileRequired, String excludeFileMask,
-        String includeSubFolders ) {
+      String includeSubFolders ) {
       super();
       this.fileName = fileName;
       this.fileMask = fileMask;
@@ -174,7 +188,8 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
   @Override
   public void injectStepMetadataEntries( List<StepInjectionMetaEntry> all ) throws KettleException {
 
-    List<GetXMLDataMetaInjection.FilenameLine> filenameLines = new ArrayList<GetXMLDataMetaInjection.FilenameLine>();
+    List<GetXMLDataMetaInjection.FilenameLine> filenameLines =
+      new ArrayList<GetXMLDataMetaInjection.FilenameLine>();
     List<GetXMLDataField> fields = new ArrayList<GetXMLDataField>();
 
     // Parse the fields, inject into the meta class..
@@ -184,7 +199,7 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
       Entry fieldsEntry = Entry.findEntry( lookFields.getKey() );
       if ( fieldsEntry != null ) {
         switch ( fieldsEntry ) {
-          case FILENAMES: {
+          case FILENAMES:
             for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
               Entry fieldEntry = Entry.findEntry( lookField.getKey() );
               if ( fieldEntry != null ) {
@@ -224,15 +239,15 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
                   }
 
                   if ( !Const.isEmpty( fileName ) ) {
-                    filenameLines.add( new FilenameLine( fileName, fileMask, fileRequired, excludeFileMask,
-                        includeSubFolders ) );
+                    filenameLines.add( new FilenameLine(
+                      fileName, fileMask, fileRequired, excludeFileMask, includeSubFolders ) );
                   }
                 }
               }
             }
-          }
             break;
-          case INPUTFIELDS: {
+
+          case INPUTFIELDS:
             for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
               Entry fieldEntry = Entry.findEntry( lookField.getKey() );
               if ( fieldEntry != null ) {
@@ -293,8 +308,8 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
                 }
               }
             }
-          }
             break;
+
           case INCLUDE_ROWNUMBER:
             meta.setIncludeRowNumber( "Y".equalsIgnoreCase( lookFieldsValue ) );
             break;
@@ -383,6 +398,7 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
     }
     if ( filenameLines.size() > 0 ) {
       meta.allocateFiles( filenameLines.size() );
+      //CHECKSTYLE:Indentation:OFF
       for ( int i = 0; i < filenameLines.size(); i++ ) {
         FilenameLine line = filenameLines.get( i );
         meta.getFileName()[i] = line.fileName;
@@ -392,6 +408,10 @@ public class GetXMLDataMetaInjection extends BaseStepMetaInjection implements St
         meta.getIncludeSubFolders()[i] = line.includeSubFolders;
       }
     }
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
   }
 
   public GetXMLDataMeta getMeta() {

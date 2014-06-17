@@ -42,16 +42,16 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 /**
  * Regression test case for Jira PDI-8187: a csv input step with the last column empty in each row.
- * 
+ *
  * In the original problem this caused every other row to be skipped.
- * 
+ *
  * @author Matt Burgess
  */
 public class CsvInput3Test extends CsvInputBase {
 
   /**
    * Write the file to be used as input (as a temporary file).
-   * 
+   *
    * @return Absolute file name/path of the created file.
    * @throws IOException
    *           UPON
@@ -79,8 +79,9 @@ public class CsvInput3Test extends CsvInputBase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-        { new ValueMeta( "a", ValueMeta.TYPE_INTEGER ), new ValueMeta( "b", ValueMeta.TYPE_STRING ),
-          new ValueMeta( "c", ValueMeta.TYPE_STRING ), new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
+    {
+      new ValueMeta( "a", ValueMeta.TYPE_INTEGER ), new ValueMeta( "b", ValueMeta.TYPE_STRING ),
+      new ValueMeta( "c", ValueMeta.TYPE_STRING ), new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -91,7 +92,7 @@ public class CsvInput3Test extends CsvInputBase {
 
   /**
    * Create result data for test case 1.
-   * 
+   *
    * @return list of metadata/data couples of how the result should look like.
    */
   public List<RowMetaAndData> createResultData1() {
@@ -153,7 +154,7 @@ public class CsvInput3Test extends CsvInputBase {
 
   /**
    * Test case for Get XML Data step, very simple example.
-   * 
+   *
    * @throws Exception
    *           Upon any exception
    */
@@ -174,6 +175,7 @@ public class CsvInput3Test extends CsvInputBase {
     StepMeta injectorStep = createInjectorStep( transMeta, registry );
     StepMeta csvInputStep = createCsvInputStep( transMeta, registry, "\"", false );
 
-    createAndTestTrans( registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
+    createAndTestTrans(
+      registry, transMeta, injectorStep, csvInputStep, fileName, createTextFileInputFields().length );
   }
 }

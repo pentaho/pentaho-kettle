@@ -35,7 +35,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Biswapesh
  * @since 24-nov-2005
- * 
+ *
  */
 
 public class MultiMergeJoinData extends BaseStepData implements StepDataInterface {
@@ -55,7 +55,8 @@ public class MultiMergeJoinData extends BaseStepData implements StepDataInterfac
     public int compare( QueueEntry a, QueueEntry b ) {
       try {
         int cmp =
-            data.metas[a.index].compare( a.row, data.metas[b.index], b.row, data.keyNrs[a.index], data.keyNrs[b.index] );
+          data.metas[a.index].compare(
+            a.row, data.metas[b.index], b.row, data.keyNrs[a.index], data.keyNrs[b.index] );
         return cmp > 0 ? 1 : cmp < 0 ? -1 : 0;
       } catch ( KettleException e ) {
         throw new RuntimeException( e.getMessage() );

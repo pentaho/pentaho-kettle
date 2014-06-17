@@ -80,12 +80,13 @@ public class GlobalMessageUtil {
     }
   }
 
-  public static String getErrorString( ResourceBundle bundle, String key, String param1, String param2, String param3 ) {
+  public static String getErrorString( ResourceBundle bundle, String key, String param1, String param2,
+    String param3 ) {
     return formatErrorMessage( key, getString( bundle, key, param1, param2, param3 ) );
   }
 
   public static String getString( ResourceBundle bundle, String key, String param1, String param2, String param3,
-      String param4 ) {
+    String param4 ) {
     try {
       Object[] args = { param1, param2, param3, param4 };
       return MessageFormat.format( bundle.getString( key ), args );
@@ -95,7 +96,7 @@ public class GlobalMessageUtil {
   }
 
   public static String getString( ResourceBundle bundle, String key, String param1, String param2, String param3,
-      String param4, String param5 ) {
+    String param4, String param5 ) {
     try {
       Object[] args = { param1, param2, param3, param4, param5 };
       return MessageFormat.format( bundle.getString( key ), args );
@@ -105,7 +106,7 @@ public class GlobalMessageUtil {
   }
 
   public static String getString( ResourceBundle bundle, String key, String param1, String param2, String param3,
-      String param4, String param5, String param6 ) {
+    String param4, String param5, String param6 ) {
     try {
       Object[] args = { param1, param2, param3, param4, param5, param6 };
       return MessageFormat.format( bundle.getString( key ), args );
@@ -114,27 +115,27 @@ public class GlobalMessageUtil {
     }
   }
 
-  public static String getErrorString( ResourceBundle bundle, String key, String param1, String param2, String param3,
-      String param4 ) {
+  public static String getErrorString( ResourceBundle bundle, String key, String param1, String param2,
+    String param3, String param4 ) {
     return formatErrorMessage( key, getString( bundle, key, param1, param2, param3, param4 ) );
   }
 
   /*
    * public static String formatMessage(String pattern) { try { Object[] args = {}; return MessageFormat.format(pattern,
    * args); } catch (Exception e) { return '!' + pattern + '!'; } }
-   * 
+   *
    * public static String formatMessage(String pattern, String param1) { try { Object[] args = {param1}; return
    * MessageFormat.format(pattern, args); } catch (Exception e) { return '!' + pattern + '!'; } }
-   * 
+   *
    * public static String formatMessage(String pattern, String param1, String param2) { try { Object[] args = {param1,
    * param2}; return MessageFormat.format(pattern, args); } catch (Exception e) { return '!' + pattern + '!'; }
-   * 
+   *
    * }
-   * 
+   *
    * public static String formatMessage(String pattern, String param1, String param2, String param3) { try { Object[]
    * args = {param1, param2, param3}; return MessageFormat.format(pattern, args); } catch (Exception e) { return '!' +
    * pattern + '!'; } }
-   * 
+   *
    * public static String formatMessage(String pattern, String param1, String param2, String param3, String param4) {
    * try { Object[] args = {param1, param2, param3, param4}; return MessageFormat.format(pattern, args); } catch
    * (Exception e) { return '!' + pattern + '!'; } }

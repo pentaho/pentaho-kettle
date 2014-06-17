@@ -36,12 +36,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Detect last row in a stream
- * 
+ *
  * @author Samatar
  * @since 03June2008
  */
 public class DetectLastRow extends BaseStep implements StepInterface {
-  private static Class<?> PKG = DetectLastRowMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DetectLastRowMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DetectLastRowMeta meta;
 
@@ -50,7 +50,7 @@ public class DetectLastRow extends BaseStep implements StepInterface {
   private Object[] previousRow;
 
   public DetectLastRow( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -74,8 +74,8 @@ public class DetectLastRow extends BaseStep implements StepInterface {
     }
     Object[] outputRow = null;
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       if ( previousRow != null ) {
         //
         // Output the last row with last row indicator set to true.
@@ -90,7 +90,7 @@ public class DetectLastRow extends BaseStep implements StepInterface {
 
         if ( log.isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "DetectLastRow.Log.WroteRowToNextStep" )
-              + data.outputRowMeta.getString( outputRow ) );
+            + data.outputRowMeta.getString( outputRow ) );
         }
 
         if ( checkFeedback( getLinesRead() ) ) {
@@ -108,7 +108,7 @@ public class DetectLastRow extends BaseStep implements StepInterface {
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "DetectLastRow.Log.WroteRowToNextStep" )
-            + data.outputRowMeta.getString( outputRow ) );
+          + data.outputRowMeta.getString( outputRow ) );
       }
 
       if ( checkFeedback( getLinesRead() ) ) {

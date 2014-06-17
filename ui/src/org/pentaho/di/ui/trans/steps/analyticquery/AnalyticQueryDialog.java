@@ -64,11 +64,8 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInterface
-
-// Add a comment
-{
-  private static Class<?> PKG = AnalyticQuery.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInterface {
+  private static Class<?> PKG = AnalyticQuery.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_SORT_WARNING_PARAMETER = "AnalyticQuerySortWarning";
   private Label wlGroup;
@@ -152,12 +149,14 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 
     ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "AnalyticQueryDialog.ColumnInfo.GroupField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "AnalyticQueryDialog.ColumnInfo.GroupField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
 
     wGroup =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrKeyRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+        nrKeyRows, lsMod, props );
 
     wGet = new Button( shell, SWT.PUSH );
     wGet.setText( BaseMessages.getString( PKG, "AnalyticQueryDialog.GetFields.Button" ) );
@@ -187,23 +186,28 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "AnalyticQueryDialog.ColumnInfo.Name" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "AnalyticQueryDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "AnalyticQueryDialog.ColumnInfo.Subject" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "AnalyticQueryDialog.ColumnInfo.Subject" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "AnalyticQueryDialog.ColumnInfo.Type" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, AnalyticQueryMeta.typeGroupLongDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "AnalyticQueryDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        AnalyticQueryMeta.typeGroupLongDesc );
     ciReturn[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "AnalyticQueryDialog.ColumnInfo.Value" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "AnalyticQueryDialog.ColumnInfo.Value" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     ciReturn[3].setToolTip( BaseMessages.getString( PKG, "AnalyticQueryDialog.ColumnInfo.Value.Tooltip" ) );
     ciReturn[3].setUsingVariables( true );
 
     wAgg =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
+        UpInsRows, lsMod, props );
 
     wGetAgg = new Button( shell, SWT.PUSH );
     wGetAgg.setText( BaseMessages.getString( PKG, "AnalyticQueryDialog.GetLookupFields.Button" ) );
@@ -385,11 +389,13 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 
     input.allocate( sizegroup, nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < sizegroup; i++ ) {
       TableItem item = wGroup.getNonEmpty( i );
       input.getGroupField()[i] = item.getText( 1 );
     }
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wAgg.getNonEmpty( i );
       input.getAggregateField()[i] = item.getText( 1 );
@@ -402,13 +408,13 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-          new MessageDialogWithToggle( shell, BaseMessages.getString( PKG,
-              "AnalyticQueryDialog.GroupByWarningDialog.DialogTitle" ), null, BaseMessages.getString( PKG,
-              "AnalyticQueryDialog.GroupByWarningDialog.DialogMessage", Const.CR )
-              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG,
-              "AnalyticQueryDialog.GroupByWarningDialog.Option1" ) }, 0, BaseMessages.getString( PKG,
-              "AnalyticQueryDialog.GroupByWarningDialog.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
-              STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
+        new MessageDialogWithToggle( shell,
+          BaseMessages.getString( PKG, "AnalyticQueryDialog.GroupByWarningDialog.DialogTitle" ), null,
+          BaseMessages.getString( PKG, "AnalyticQueryDialog.GroupByWarningDialog.DialogMessage", Const.CR ) + Const.CR,
+          MessageDialog.WARNING,
+          new String[] { BaseMessages.getString( PKG, "AnalyticQueryDialog.GroupByWarningDialog.Option1" ) },
+          0, BaseMessages.getString( PKG, "AnalyticQueryDialog.GroupByWarningDialog.Option2" ),
+          "N".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_SORT_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );
@@ -425,8 +431,9 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
         BaseStepDialog.getFieldsFromPrevious( r, wGroup, 1, new int[] { 1 }, new int[] {}, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "AnalyticQueryDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "AnalyticQueryDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "AnalyticQueryDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "AnalyticQueryDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -437,8 +444,9 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
         BaseStepDialog.getFieldsFromPrevious( r, wAgg, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, null );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "AnalyticQueryDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "AnalyticQueryDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "AnalyticQueryDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "AnalyticQueryDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 }

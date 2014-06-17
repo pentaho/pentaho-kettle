@@ -34,7 +34,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Interface to make the real ScriptValueMod and ScriptValueModDummy similar.
- * 
+ *
  * @author Sven Boden
  */
 public interface ScriptInterface extends StepInterface {

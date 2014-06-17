@@ -84,7 +84,7 @@ public class SqlTransExecutor {
 
   /**
    * Create a new SqlTransExecutor without parameters
-   * 
+   *
    * @param sqlQuery
    * @param services
    * @throws KettleException
@@ -97,11 +97,10 @@ public class SqlTransExecutor {
    * @param sqlQuery
    * @param services
    * @param parameters
-   * 
+   *
    * @throws KettleException
    */
-  public SqlTransExecutor( String sqlQuery, List<TransDataService> services, Map<String, String> parameters )
-    throws KettleException {
+  public SqlTransExecutor( String sqlQuery, List<TransDataService> services, Map<String, String> parameters ) throws KettleException {
     this( sqlQuery, services, parameters, null, 0 );
   }
 
@@ -112,7 +111,7 @@ public class SqlTransExecutor {
    * @throws KettleException
    */
   public SqlTransExecutor( String sqlQuery, List<TransDataService> services, Map<String, String> parameters,
-      Repository repository, int rowLimit ) throws KettleException {
+    Repository repository, int rowLimit ) throws KettleException {
     this.sqlQuery = sqlQuery;
     this.services = services;
     this.parameters = parameters;
@@ -188,16 +187,16 @@ public class SqlTransExecutor {
     for ( FieldVariableMapping mapping : service.getFieldVariableMappings() ) {
 
       switch ( mapping.getMappingType() ) {
-        case SQL_WHERE: {
+        case SQL_WHERE:
           String sql = "WHERE " + convertConditionToSql( condition );
           serviceTransMeta.setParameterValue( mapping.getVariableName(), sql );
-        }
           break;
-        case JSON_QUERY: {
+
+        case JSON_QUERY:
           String json = "{ " + convertConditionToJson( condition ) + " }";
           serviceTransMeta.setParameterValue( mapping.getVariableName(), json );
-        }
           break;
+
         default:
           break;
       }
@@ -209,8 +208,8 @@ public class SqlTransExecutor {
 
     String fieldName = atomicCondition.getLeftValuename();
     FieldVariableMapping mapping =
-        FieldVariableMapping.findFieldVariableMappingByFieldName( service.getFieldVariableMappings(), atomicCondition
-            .getLeftValuename() );
+      FieldVariableMapping.findFieldVariableMappingByFieldName(
+        service.getFieldVariableMappings(), atomicCondition.getLeftValuename() );
     if ( mapping != null ) {
       fieldName = mapping.getTargetName();
     }
@@ -260,8 +259,8 @@ public class SqlTransExecutor {
       //
       String rightName = atomicCondition.getRightValuename();
       FieldVariableMapping mapping =
-          FieldVariableMapping.findFieldVariableMappingByFieldName( service.getFieldVariableMappings(), atomicCondition
-              .getRightValuename() );
+        FieldVariableMapping.findFieldVariableMappingByFieldName(
+          service.getFieldVariableMappings(), atomicCondition.getRightValuename() );
       if ( mapping != null ) {
         rightName = mapping.getVariableName();
       }
@@ -282,8 +281,8 @@ public class SqlTransExecutor {
       case ValueMetaInterface.TYPE_BOOLEAN:
         return right.getValueMeta().getBoolean( right.getValueData() ) ? "TRUE" : "FALSE";
       default:
-        throw new KettleValueException( "Unsupported conversion of value from " + right.getValueMeta().toStringMeta()
-            + " to SQL" );
+        throw new KettleValueException( "Unsupported conversion of value from "
+          + right.getValueMeta().toStringMeta() + " to SQL" );
     }
   }
 
@@ -316,47 +315,47 @@ public class SqlTransExecutor {
 
     if ( atomicCondition.getRightValuename() != null ) {
       throw new KettleValueException(
-          "Converting a condition that compares 2 fields is not yet supported in a JSON query" );
+        "Converting a condition that compares 2 fields is not yet supported in a JSON query" );
     }
 
     String fieldName = atomicCondition.getLeftValuename();
     FieldVariableMapping mapping =
-        FieldVariableMapping.findFieldVariableMappingByFieldName( service.getFieldVariableMappings(), atomicCondition
-            .getLeftValuename() );
+      FieldVariableMapping.findFieldVariableMappingByFieldName(
+        service.getFieldVariableMappings(), atomicCondition.getLeftValuename() );
     if ( mapping != null ) {
       fieldName = mapping.getTargetName();
     }
 
     switch ( atomicCondition.getFunction() ) {
       case Condition.FUNC_EQUAL:
-        sql.append( "'" ).append( fieldName ).append( "' : " )
-            .append( getJsonString( atomicCondition.getRightExact() ) );
+        sql.append( "'" ).append( fieldName ).append( "' : " ).append(
+          getJsonString( atomicCondition.getRightExact() ) );
         break;
       case Condition.FUNC_NOT_EQUAL:
         sql.append( "'" ).append( fieldName ).append( "' : { '$ne' : " ).append(
-            getJsonString( atomicCondition.getRightExact() ) ).append( " }" );
+          getJsonString( atomicCondition.getRightExact() ) ).append( " }" );
         break;
       case Condition.FUNC_LARGER:
         sql.append( ">" );
         sql.append( "'" ).append( fieldName ).append( "' : { '$gt' : " ).append(
-            getJsonString( atomicCondition.getRightExact() ) ).append( " }" );
+          getJsonString( atomicCondition.getRightExact() ) ).append( " }" );
         break;
       case Condition.FUNC_LARGER_EQUAL:
         sql.append( ">" );
         sql.append( "'" ).append( fieldName ).append( "' : { '$gte' : " ).append(
-            getJsonString( atomicCondition.getRightExact() ) ).append( " }" );
+          getJsonString( atomicCondition.getRightExact() ) ).append( " }" );
         break;
       case Condition.FUNC_SMALLER:
         sql.append( "<" );
         sql.append( ">" );
         sql.append( "'" ).append( fieldName ).append( "' : { '$lt' : " ).append(
-            getJsonString( atomicCondition.getRightExact() ) ).append( " }" );
+          getJsonString( atomicCondition.getRightExact() ) ).append( " }" );
         break;
       case Condition.FUNC_SMALLER_EQUAL:
         sql.append( "<=" );
         sql.append( ">" );
         sql.append( "'" ).append( fieldName ).append( "' : { '$lte' : " ).append(
-            getJsonString( atomicCondition.getRightExact() ) ).append( " }" );
+          getJsonString( atomicCondition.getRightExact() ) ).append( " }" );
         break;
       case Condition.FUNC_NULL:
         sql.append( "IS NULL" );
@@ -368,7 +367,7 @@ public class SqlTransExecutor {
         break;
       case Condition.FUNC_CONTAINS:
         sql.append( "'" ).append( fieldName ).append( "' : { '$regex' : '.*" ).append(
-            atomicCondition.getRightExactString() ).append( ".*', '$options' : 'i' }" );
+          atomicCondition.getRightExactString() ).append( ".*', '$options' : 'i' }" );
         break;
       default:
         break;
@@ -393,8 +392,8 @@ public class SqlTransExecutor {
       case ValueMetaInterface.TYPE_DATE:
         return "{ $date : \"" + jsonDateFormat.format( meta.getBigNumber( data ) ) + "\" }";
       default:
-        throw new KettleValueException( "Converting data type " + meta.toStringMeta()
-            + " to a JSON value is not yet supported" );
+        throw new KettleValueException( "Converting data type "
+          + meta.toStringMeta() + " to a JSON value is not yet supported" );
     }
   }
 
@@ -519,6 +518,7 @@ public class SqlTransExecutor {
               log.logRowlevel( "Passing along row: " + rowMeta.getString( row ) );
             }
           } catch ( KettleValueException e ) {
+            // Ignore errors
           }
 
           rowProducer.putRow( rowMeta, row );
@@ -585,7 +585,7 @@ public class SqlTransExecutor {
         //
         transMeta = new TransMeta( service.getFileName(), false );
         transMeta.getLogChannel().logDetailed(
-            "Service transformation was loaded from XML file [" + service.getFileName() + "]" );
+          "Service transformation was loaded from XML file [" + service.getFileName() + "]" );
       } catch ( Exception e ) {
         throw new KettleException( "Unable to load service transformation for service '" + serviceName + "'", e );
       }
@@ -593,10 +593,10 @@ public class SqlTransExecutor {
       try {
         transMeta = repository.loadTransformation( service.getObjectId(), null );
         transMeta.getLogChannel().logDetailed(
-            "Service transformation was loaded from repository for service [" + service.getName() + "]" );
+          "Service transformation was loaded from repository for service [" + service.getName() + "]" );
       } catch ( Exception e ) {
-        throw new KettleException( "Unable to load service transformation for service '" + serviceName
-            + "' from the repository", e );
+        throw new KettleException( "Unable to load service transformation for service '"
+          + serviceName + "' from the repository", e );
       }
     }
     return transMeta;
@@ -689,7 +689,7 @@ public class SqlTransExecutor {
 
   /**
    * Calculate the name of the generated transformation based on the SQL
-   * 
+   *
    * @return the generated name;
    */
   public static String calculateTransname( SQL sql, boolean isService ) {

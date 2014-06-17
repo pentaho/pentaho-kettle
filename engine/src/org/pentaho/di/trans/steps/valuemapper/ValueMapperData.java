@@ -48,9 +48,6 @@ public class ValueMapperData extends BaseStepData implements StepDataInterface {
   public ValueMetaInterface outputValueMeta;
   public ValueMetaInterface sourceValueMeta;
 
-  /**
-	 * 
-	 */
   public ValueMapperData() {
     super();
 

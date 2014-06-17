@@ -50,7 +50,7 @@ import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class DelayDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = DelayMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DelayMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DelayMeta input;
   private CCombo wScaleTime;
@@ -110,8 +110,9 @@ public class DelayDialog extends BaseStepDialog implements StepDialogInterface {
 
     // Timeout line
     wTimeout =
-        new LabelTextVar( transMeta, shell, BaseMessages.getString( PKG, "DelayDialog.Timeout.Label" ), BaseMessages
-            .getString( PKG, "DelayDialog.Timeout.Tooltip" ) );
+      new LabelTextVar(
+        transMeta, shell, BaseMessages.getString( PKG, "DelayDialog.Timeout.Label" ), BaseMessages.getString(
+          PKG, "DelayDialog.Timeout.Tooltip" ) );
     props.setLook( wTimeout );
     wTimeout.addModifyListener( lsMod );
     fdTimeout = new FormData();

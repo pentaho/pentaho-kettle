@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class GetRootServlet extends BaseHttpServlet implements CartePluginInterface {
-  private static Class<?> PKG = GetRootServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetRootServlet.class; // for i18n purposes, needed by Translator2!!
 
   private static final long serialVersionUID = 3634806745372015720L;
   public static final String CONTEXT_PATH = "/";
@@ -40,8 +40,10 @@ public class GetRootServlet extends BaseHttpServlet implements CartePluginInterf
   public GetRootServlet() {
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getRequestURI().equals( CONTEXT_PATH ) ) {
+      response.setStatus( HttpServletResponse.SC_NOT_FOUND );
       return;
     }
 
@@ -55,15 +57,17 @@ public class GetRootServlet extends BaseHttpServlet implements CartePluginInterf
     PrintWriter out = response.getWriter();
 
     out.println( "<HTML>" );
-    out.println( "<HEAD><TITLE>" + BaseMessages.getString( PKG, "GetRootServlet.KettleSlaveServer.Title" ) + "</TITLE>" );
+    out.println( "<HEAD><TITLE>"
+      + BaseMessages.getString( PKG, "GetRootServlet.KettleSlaveServer.Title" ) + "</TITLE>" );
     out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
     out.println( "</HEAD>" );
     out.println( "<BODY>" );
     out.println( "<H2>" + BaseMessages.getString( PKG, "GetRootServlet.SlaveServerMenu" ) + "</H2>" );
 
     out.println( "<p>" );
-    out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-        + BaseMessages.getString( PKG, "GetRootServlet.ShowStatus" ) + "</a><br>" );
+    out.println( "<a href=\""
+      + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+      + BaseMessages.getString( PKG, "GetRootServlet.ShowStatus" ) + "</a><br>" );
 
     out.println( "<p>" );
     out.println( "</BODY>" );

@@ -40,12 +40,13 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
 
   public static final String XML_TAG = "field";
 
-  private static final String[] date_formats = new String[] { "yyyy/MM/dd HH:mm:ss.SSS", "yyyy/MM/dd HH:mm:ss",
-    "dd/MM/yyyy", "dd-MM-yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyyMMdd", "ddMMyyyy", "d-M-yyyy", "d/M/yyyy", "d-M-yy",
-    "d/M/yy", };
+  private static final String[] date_formats = new String[] {
+    "yyyy/MM/dd HH:mm:ss.SSS", "yyyy/MM/dd HH:mm:ss", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy/MM/dd", "yyyy-MM-dd",
+    "yyyyMMdd", "ddMMyyyy", "d-M-yyyy", "d/M/yyyy", "d-M-yy", "d/M/yy", };
 
-  private static final String[] number_formats = new String[] { "", "#", Const.DEFAULT_NUMBER_FORMAT, "0.00",
-    "0000000000000", "###,###,###.#######", "###############.###############", "#####.###############%", };
+  private static final String[] number_formats = new String[] {
+    "", "#", Const.DEFAULT_NUMBER_FORMAT, "0.00", "0000000000000", "###,###,###.#######",
+    "###############.###############", "#####.###############%", };
 
   private String name;
 
@@ -102,7 +103,8 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
     retval.append( "        " ).append( XMLHandler.addTagValue( "name", name ) );
     retval.append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( type ) ) );
     retval.append( "        " ).append( XMLHandler.addTagValue( "format", format ) );
-    retval.append( "        " ).append( XMLHandler.addTagValue( "trim_type", ValueMeta.getTrimTypeCode( trimType ) ) );
+    retval.append( "        " ).append(
+      XMLHandler.addTagValue( "trim_type", ValueMeta.getTrimTypeCode( trimType ) ) );
     retval.append( "        " ).append( XMLHandler.addTagValue( "currency", currency ) );
     retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", decimal ) );
     retval.append( "        " ).append( XMLHandler.addTagValue( "group", grouping ) );
@@ -365,7 +367,8 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
 
       for ( int x = 0; x < field.length() && isnumber; x++ ) {
         char ch = field.charAt( x );
-        if ( !Character.isDigit( ch ) && ch != '.' && ch != ',' && ( ch != '-' || x > 0 ) && ch != 'E' && ch != 'e' // exponential
+        if ( !Character.isDigit( ch )
+          && ch != '.' && ch != ',' && ( ch != '-' || x > 0 ) && ch != 'E' && ch != 'e' // exponential
         ) {
           isnumber = false;
           numfmt_cnt = 0;
@@ -382,20 +385,23 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
       }
       // If it's still a number, try to parse it as a double
       if ( isnumber ) {
-        if ( contains_dot && !contains_comma ) // American style 174.5
-        {
+        if ( contains_dot && !contains_comma ) {
+          // American style 174.5
+
           dfs.setDecimalSeparator( '.' );
           decimal = ".";
           dfs.setGroupingSeparator( ',' );
           grouping = ",";
-        } else if ( !contains_dot && contains_comma ) // European style 174,5
-        {
+        } else if ( !contains_dot && contains_comma ) {
+          // European style 174,5
+
           dfs.setDecimalSeparator( ',' );
           decimal = ",";
           dfs.setGroupingSeparator( '.' );
           grouping = ".";
-        } else if ( contains_dot && contains_comma ) // Both appear!
-        {
+        } else if ( contains_dot && contains_comma ) {
+          // Both appear!
+
           // What's the last occurance: decimal point!
           int idx_dot = field.indexOf( '.' );
           int idx_com = field.indexOf( ',' );
@@ -429,8 +435,9 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
                 }
               }
 
-              if ( !islong ) // Try the double
-              {
+              if ( !islong ) {
+                // Try the double
+
                 df.setDecimalFormatSymbols( dfs );
                 df.applyPattern( number_formats[x] );
 

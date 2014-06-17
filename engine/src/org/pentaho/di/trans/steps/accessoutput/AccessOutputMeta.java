@@ -69,7 +69,7 @@ import com.healthmarketscience.jackcess.Table;
  *
  */
 public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = AccessOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AccessOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
   private boolean fileCreated;
@@ -171,8 +171,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       filename = rep.getStepAttributeString( id_step, "filename" );
       tablename = rep.getStepAttributeString( id_step, "table" );
@@ -193,8 +192,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "filename", filename );
       rep.saveStepAttribute( id_transformation, id_step, "table", tablename );
@@ -210,28 +208,28 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     // TODO: add file checking in case we don't create a table.
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AccessOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "AccessOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "AccessOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "AccessOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new AccessOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -245,8 +243,8 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
     Database db = null;
     try {
       if ( !file.exists() || !file.isFile() ) {
-        throw new KettleException( BaseMessages.getString( PKG, "AccessOutputMeta.Exception.FileDoesNotExist",
-            realFilename ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "AccessOutputMeta.Exception.FileDoesNotExist", realFilename ) );
       }
 
       // open the database and get the table
@@ -254,8 +252,8 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
       String realTablename = space.environmentSubstitute( tablename );
       Table table = db.getTable( realTablename );
       if ( table == null ) {
-        throw new KettleException( BaseMessages.getString( PKG, "AccessOutputMeta.Exception.TableDoesNotExist",
-            realTablename ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "AccessOutputMeta.Exception.TableDoesNotExist", realTablename ) );
       }
 
       RowMetaInterface layout = getLayout( table );
@@ -268,7 +266,8 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
           db.close();
         }
       } catch ( IOException e ) {
-        throw new KettleException( BaseMessages.getString( PKG, "AccessOutputMeta.Exception.ErrorClosingDatabase" ), e );
+        throw new KettleException(
+          BaseMessages.getString( PKG, "AccessOutputMeta.Exception.ErrorClosingDatabase" ), e );
       }
     }
   }
@@ -605,8 +604,9 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public String[] getUsedLibraries() {
-    return new String[] { "jackcess-1.1.13.jar", "commons-collections-3.1.jar", "commons-logging.jar",
-      "commons-lang-2.2.jar", "commons-dbcp-1.2.1.jar", "commons-pool-1.3.jar", };
+    return new String[] {
+      "jackcess-1.1.13.jar", "commons-collections-3.1.jar", "commons-logging.jar", "commons-lang-2.2.jar",
+      "commons-dbcp-1.2.1.jar", "commons-pool-1.3.jar", };
   }
 
   /**
@@ -618,12 +618,11 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

@@ -39,19 +39,19 @@ import org.pentaho.ui.xul.XulException;
 
 /**
  * SpoonPluginManager is a singleton class which loads all SpoonPlugins from the SPOON_HOME/plugins/spoon directory.
- * 
+ *
  * Spoon Plugins are able to listen for SpoonLifeCycleEvents and can register categorized XUL Overlays to be retrieved
  * later.
- * 
+ *
  * Spoon Plugins are deployed as directories under the SPOON_HOME/plugins/spoon directory. Each plugin must provide a
  * build.xml as the root of it's directory and have any required jars under a "lib" directory.
- * 
+ *
  * The plugin.xml format is Spring-based e.g. <beans xmlns="http://www.springframework.org/schema/beans"
  * xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=
  * "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
- * 
+ *
  * <bean id="PLUGIN_ID" class="org.foo.SpoonPluginClassName"></bean> </beans>
- * 
+ *
  * @author nbaker
  */
 public class SpoonPluginManager {
@@ -59,7 +59,8 @@ public class SpoonPluginManager {
   private static SpoonPluginManager instance = new SpoonPluginManager();
   private List<SpoonPluginInterface> plugins = new ArrayList<SpoonPluginInterface>();
 
-  private Map<String, List<SpoonPluginInterface>> pluginCategoryMap = new HashMap<String, List<SpoonPluginInterface>>();
+  private Map<String, List<SpoonPluginInterface>> pluginCategoryMap =
+    new HashMap<String, List<SpoonPluginInterface>>();
 
   private SpoonPluginManager() {
     List<PluginInterface> plugins = PluginRegistry.getInstance().getPlugins( SpoonPluginType.class );
@@ -109,7 +110,7 @@ public class SpoonPluginManager {
 
   /**
    * Return the single instance of this class
-   * 
+   *
    * @return SpoonPerspectiveManager
    */
   public static SpoonPluginManager getInstance() {
@@ -129,8 +130,8 @@ public class SpoonPluginManager {
           public void run() {
             try {
               final SpoonPluginInterface sp =
-                  loadPlugin( (SpoonPluginInterface) PluginRegistry.getInstance().loadClass(
-                      (PluginInterface) serviceObject ) );
+                loadPlugin( (SpoonPluginInterface) PluginRegistry.getInstance().loadClass(
+                  (PluginInterface) serviceObject ) );
               if ( sp == null ) { // invalid or already loaded
                 return;
               }
@@ -154,7 +155,7 @@ public class SpoonPluginManager {
 
   /**
    * Returns an unmodifiable list of all Spoon Plugins.
-   * 
+   *
    * @return list of plugins
    */
   public List<SpoonPluginInterface> getPlugins() {
@@ -163,7 +164,7 @@ public class SpoonPluginManager {
 
   /**
    * Notifies all registered SpoonLifecycleListeners of the given SpoonLifeCycleEvent.
-   * 
+   *
    * @param evt
    */
   public void notifyLifecycleListeners( SpoonLifeCycleEvent evt ) {

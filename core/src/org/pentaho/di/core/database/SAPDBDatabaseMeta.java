@@ -27,7 +27,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains SAP DB specific information through static final members
- * 
+ *
  * @author Matt
  * @since 30-06-2005
  */
@@ -35,7 +35,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 public class SAPDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -88,7 +89,7 @@ public class SAPDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -105,13 +106,13 @@ public class SAPDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -128,14 +129,15 @@ public class SAPDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
-    return "ALTER TABLE " + tablename + " ALTER COLUMN " + v.getName() + " TYPE "
-        + getFieldDefinition( v, tk, pk, use_autoinc, false, false );
+    String pk, boolean semicolon ) {
+    return "ALTER TABLE "
+      + tablename + " ALTER COLUMN " + v.getName() + " TYPE "
+      + getFieldDefinition( v, tk, pk, use_autoinc, false, false );
   }
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -162,7 +164,7 @@ public class SAPDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
-            fieldname.equalsIgnoreCase( pk ) // Primary key
+          fieldname.equalsIgnoreCase( pk ) // Primary key
         ) {
           retval += "BIGINT NOT NULL PRIMARY KEY";
         } else {
@@ -216,24 +218,27 @@ public class SAPDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   @Override
   public String[] getReservedWords() {
-    return new String[] { "ABS", "ABSOLUTE", "ACOS", "ADDDATE", "ADDTIME", "ALL", "ALPHA", "ALTER", "ANY", "ASCII",
-      "ASIN", "ATAN", "ATAN2", "AVG", "BINARY", "BIT", "BOOLEAN", "BYTE", "CASE", "CEIL", "CEILING", "CHAR",
-      "CHARACTER", "CHECK", "CHR", "COLUMN", "CONCAT", "CONSTRAINT", "COS", "COSH", "COT", "COUNT", "CROSS", "CURDATE",
-      "CURRENT", "CURTIME", "DATABASE", "DATE", "DATEDIFF", "DAY", "DAYNAME", "DAYOFMONTH", "DAYOFWEEK", "DAYOFYEAR",
-      "DEC", "DECIMAL", "DECODE", "DEFAULT", "DEGREES", "DELETE", "DIGITS", "DISTINCT", "DOUBLE", "EXCEPT", "EXISTS",
-      "EXP", "EXPAND", "FIRST", "FIXED", "FLOAT", "FLOOR", "FOR", "FROM", "FULL", "GET_OBJECTNAME", "GET_SCHEMA",
-      "GRAPHIC", "GREATEST", "GROUP", "HAVING", "HEX", "HEXTORAW", "HOUR", "IFNULL", "IGNORE", "INDEX", "INITCAP",
-      "INNER", "INSERT", "INT", "INTEGER", "INTERNAL", "INTERSECT", "INTO", "JOIN", "KEY", "LAST", "LCASE", "LEAST",
-      "LEFT", "LENGTH", "LFILL", "LIST", "LN", "LOCATE", "LOG", "LOG10", "LONG", "LONGFILE", "LOWER", "LPAD", "LTRIM",
-      "MAKEDATE", "MAKETIME", "MAPCHAR", "MAX", "MBCS", "MICROSECOND", "MIN", "MINUTE", "MOD", "MONTH", "MONTHNAME",
-      "NATURAL", "NCHAR", "NEXT", "NO", "NOROUND", "NOT", "NOW", "NULL", "NUM", "NUMERIC", "OBJECT", "OF", "ON",
-      "ORDER", "PACKED", "PI", "POWER", "PREV", "PRIMARY", "RADIANS", "REAL", "REJECT", "RELATIVE", "REPLACE", "RFILL",
-      "RIGHT", "ROUND", "ROWID", "ROWNO", "RPAD", "RTRIM", "SECOND", "SELECT", "SELUPD", "SERIAL", "SET", "SHOW",
-      "SIGN", "SIN", "SINH", "SMALLINT", "SOME", "SOUNDEX", "SPACE", "SQRT", "STAMP", "STATISTICS", "STDDEV",
-      "SUBDATE", "SUBSTR", "SUBSTRING", "SUBTIME", "SUM", "SYSDBA", "TABLE", "TAN", "TANH", "TIME", "TIMEDIFF",
-      "TIMESTAMP", "TIMEZONE", "TO", "TOIDENTIFIER", "TRANSACTION", "TRANSLATE", "TRIM", "TRUNC", "TRUNCATE", "UCASE",
-      "UID", "UNICODE", "UNION", "UPDATE", "UPPER", "USER", "USERGROUP", "USING", "UTCDATE", "UTCDIFF", "VALUE",
-      "VALUES", "VARCHAR", "VARGRAPHIC", "VARIANCE", "WEEK", "WEEKOFYEAR", "WHEN", "WHERE", "WITH", "YEAR", "ZONED" };
+    return new String[] {
+      "ABS", "ABSOLUTE", "ACOS", "ADDDATE", "ADDTIME", "ALL", "ALPHA", "ALTER", "ANY", "ASCII", "ASIN", "ATAN",
+      "ATAN2", "AVG", "BINARY", "BIT", "BOOLEAN", "BYTE", "CASE", "CEIL", "CEILING", "CHAR", "CHARACTER",
+      "CHECK", "CHR", "COLUMN", "CONCAT", "CONSTRAINT", "COS", "COSH", "COT", "COUNT", "CROSS", "CURDATE",
+      "CURRENT", "CURTIME", "DATABASE", "DATE", "DATEDIFF", "DAY", "DAYNAME", "DAYOFMONTH", "DAYOFWEEK",
+      "DAYOFYEAR", "DEC", "DECIMAL", "DECODE", "DEFAULT", "DEGREES", "DELETE", "DIGITS", "DISTINCT", "DOUBLE",
+      "EXCEPT", "EXISTS", "EXP", "EXPAND", "FIRST", "FIXED", "FLOAT", "FLOOR", "FOR", "FROM", "FULL",
+      "GET_OBJECTNAME", "GET_SCHEMA", "GRAPHIC", "GREATEST", "GROUP", "HAVING", "HEX", "HEXTORAW", "HOUR",
+      "IFNULL", "IGNORE", "INDEX", "INITCAP", "INNER", "INSERT", "INT", "INTEGER", "INTERNAL", "INTERSECT",
+      "INTO", "JOIN", "KEY", "LAST", "LCASE", "LEAST", "LEFT", "LENGTH", "LFILL", "LIST", "LN", "LOCATE", "LOG",
+      "LOG10", "LONG", "LONGFILE", "LOWER", "LPAD", "LTRIM", "MAKEDATE", "MAKETIME", "MAPCHAR", "MAX", "MBCS",
+      "MICROSECOND", "MIN", "MINUTE", "MOD", "MONTH", "MONTHNAME", "NATURAL", "NCHAR", "NEXT", "NO", "NOROUND",
+      "NOT", "NOW", "NULL", "NUM", "NUMERIC", "OBJECT", "OF", "ON", "ORDER", "PACKED", "PI", "POWER", "PREV",
+      "PRIMARY", "RADIANS", "REAL", "REJECT", "RELATIVE", "REPLACE", "RFILL", "RIGHT", "ROUND", "ROWID",
+      "ROWNO", "RPAD", "RTRIM", "SECOND", "SELECT", "SELUPD", "SERIAL", "SET", "SHOW", "SIGN", "SIN", "SINH",
+      "SMALLINT", "SOME", "SOUNDEX", "SPACE", "SQRT", "STAMP", "STATISTICS", "STDDEV", "SUBDATE", "SUBSTR",
+      "SUBSTRING", "SUBTIME", "SUM", "SYSDBA", "TABLE", "TAN", "TANH", "TIME", "TIMEDIFF", "TIMESTAMP",
+      "TIMEZONE", "TO", "TOIDENTIFIER", "TRANSACTION", "TRANSLATE", "TRIM", "TRUNC", "TRUNCATE", "UCASE", "UID",
+      "UNICODE", "UNION", "UPDATE", "UPPER", "USER", "USERGROUP", "USING", "UTCDATE", "UTCDIFF", "VALUE",
+      "VALUES", "VARCHAR", "VARGRAPHIC", "VARIANCE", "WEEK", "WEEKOFYEAR", "WHEN", "WHERE", "WITH", "YEAR",
+      "ZONED" };
   }
 
   @Override

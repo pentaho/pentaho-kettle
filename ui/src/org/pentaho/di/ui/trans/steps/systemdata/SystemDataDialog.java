@@ -49,6 +49,7 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.systemdata.SystemDataMeta;
+import org.pentaho.di.trans.steps.systemdata.SystemDataTypes;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -60,7 +61,7 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class SystemDataDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = SystemDataMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SystemDataMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlStepname;
   private Text wStepname;
@@ -138,24 +139,25 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
     final int FieldsCols = 2;
     final int FieldsRows = input.getFieldName().length;
 
-    final String[] functionDesc = new String[SystemDataMeta.functions.length - 1];
-    for ( int i = 1; i < SystemDataMeta.functions.length; i++ ) {
-      functionDesc[i - 1] = SystemDataMeta.functions[i].getDescription();
+    final String[] functionDesc = new String[SystemDataTypes.values().length - 1];
+    for ( int i = 1; i < SystemDataTypes.values().length; i++ ) {
+      functionDesc[i - 1] = SystemDataTypes.values()[i].getDescription();
     }
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
-    colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SystemDataDialog.NameColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
-    colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SystemDataDialog.TypeColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+    colinf[0] = new ColumnInfo(
+      BaseMessages.getString( PKG, "SystemDataDialog.NameColumn.Column" ),
+      ColumnInfo.COLUMN_TYPE_TEXT,
+      false );
+    colinf[1] = new ColumnInfo(
+      BaseMessages.getString( PKG, "SystemDataDialog.TypeColumn.Column" ),
+      ColumnInfo.COLUMN_TYPE_TEXT,
+      false );
     colinf[1].setSelectionAdapter( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        EnterSelectionDialog esd =
-            new EnterSelectionDialog( shell, functionDesc, BaseMessages.getString( PKG,
-                "SystemDataDialog.SelectInfoType.DialogTitle" ), BaseMessages.getString( PKG,
-                "SystemDataDialog.SelectInfoType.DialogMessage" ) );
+        EnterSelectionDialog esd = new EnterSelectionDialog( shell, functionDesc,
+          BaseMessages.getString( PKG, "SystemDataDialog.SelectInfoType.DialogTitle" ),
+          BaseMessages.getString( PKG, "SystemDataDialog.SelectInfoType.DialogMessage" ) );
         String string = esd.open();
         if ( string != null ) {
           TableView tv = (TableView) e.widget;
@@ -164,8 +166,8 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
       }
     } );
 
-    wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+    wFields = new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
+      colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -276,8 +278,9 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SystemDataDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "SystemDataDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "SystemDataDialog.ErrorParsingData.DialogTitle" ), BaseMessages
+          .getString( PKG, "SystemDataDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -288,6 +291,7 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
     int count = wFields.nrNonEmpty();
     in.allocate( count );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < count; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       in.getFieldName()[i] = item.getText( 1 );
@@ -301,19 +305,20 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
       SystemDataMeta oneMeta = new SystemDataMeta();
       getInfo( oneMeta );
 
-      TransMeta previewMeta =
-          TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+      TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(
+        transMeta,
+        oneMeta,
+        wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "SystemDataDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "SystemDataDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "SystemDataDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "SystemDataDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+            shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -322,23 +327,25 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog( shell,
+                BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
+                BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+            new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "SystemDataDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "SystemDataDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "SystemDataDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+          .getString( PKG, "SystemDataDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 }

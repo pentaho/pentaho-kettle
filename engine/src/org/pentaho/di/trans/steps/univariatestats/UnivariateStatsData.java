@@ -31,7 +31,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Holds temporary data and has routines for computing derived statistics.
- * 
+ *
  * @author Mark Hall (mhall{[at]}pentaho.org)
  * @version 1.0
  */
@@ -49,7 +49,7 @@ public class UnivariateStatsData extends BaseStepData implements StepDataInterfa
 
   /**
    * Inner class used to hold operating field index, intermediate data and final results for a stats calculation.
-   * 
+   *
    * Has functions to compute the mean, standard deviation and arbitrary percentiles. Percentiles can be computed using
    * interpolation or a simple method. See <a href="http://www.itl.nist.gov/div898/handbook/prc/section2/prc252.htm">
    * The Engineering Statistics Handbook</a> for details.
@@ -88,8 +88,8 @@ public class UnivariateStatsData extends BaseStepData implements StepDataInterfa
      * Compute a percentile. Can compute percentiles using interpolation or a simple method (see <a
      * href="http://www.itl.nist.gov/div898/handbook/prc/section2/prc252.htm" The Engineering Statistics Handbook</a>
      * for details).
-     * 
-     * 
+     *
+     *
      * @param p
      *          the percentile to compute (0 <= p <= 1)
      * @param vals
@@ -144,7 +144,7 @@ public class UnivariateStatsData extends BaseStepData implements StepDataInterfa
     /**
      * Constructs an array of Objects containing the requested statistics for one univariate stats meta function using
      * this <code>FieldIndex</code>.
-     * 
+     *
      * @param usmf
      *          the<code>UnivariateStatsMetaFunction</code> to compute stats for. This contains the input field selected
      *          by the user along with which stats to compute for it.
@@ -212,7 +212,7 @@ public class UnivariateStatsData extends BaseStepData implements StepDataInterfa
 
   /**
    * Set the FieldIndexes
-   * 
+   *
    * @param fis
    *          a <code>FieldIndex[]</code> value
    */
@@ -222,7 +222,7 @@ public class UnivariateStatsData extends BaseStepData implements StepDataInterfa
 
   /**
    * Get the fieldIndexes
-   * 
+   *
    * @return a <code>FieldIndex[]</code> value
    */
   public FieldIndex[] getFieldIndexes() {
@@ -231,7 +231,7 @@ public class UnivariateStatsData extends BaseStepData implements StepDataInterfa
 
   /**
    * Get the meta data for the input format
-   * 
+   *
    * @return a <code>RowMetaInterface</code> value
    */
   public RowMetaInterface getInputRowMeta() {
@@ -240,7 +240,7 @@ public class UnivariateStatsData extends BaseStepData implements StepDataInterfa
 
   /**
    * Save the meta data for the input format. (I'm not sure that this is really needed)
-   * 
+   *
    * @param rmi
    *          a <code>RowMetaInterface</code> value
    */
@@ -250,7 +250,7 @@ public class UnivariateStatsData extends BaseStepData implements StepDataInterfa
 
   /**
    * Get the meta data for the output format
-   * 
+   *
    * @return a <code>RowMetaInterface</code> value
    */
   public RowMetaInterface getOutputRowMeta() {
@@ -259,7 +259,7 @@ public class UnivariateStatsData extends BaseStepData implements StepDataInterfa
 
   /**
    * Set the meta data for the output format
-   * 
+   *
    * @param rmi
    *          a <code>RowMetaInterface</code> value
    */

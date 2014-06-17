@@ -45,6 +45,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -337,7 +338,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface rowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < fieldName.length; i++ ) {
       try {
         if ( !Const.isEmpty( fieldName[i] ) ) {
@@ -396,8 +397,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases ) throws KettleException {
 
     try {
       int nrfields = rep.countNrStepAttributes( idStep, "field_name" );
@@ -434,8 +434,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep ) throws KettleException {
     try {
       for ( int i = 0; i < fieldName.length; i++ ) {
         if ( fieldName[i] != null && fieldName[i].length() != 0 ) {
@@ -466,13 +465,18 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new DataGrid( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
   public StepDataInterface getStepData() {
     return new DataGridData();
+  }
+
+  @Override
+  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+    return new DataGridMetaInjection( this );
   }
 
 }

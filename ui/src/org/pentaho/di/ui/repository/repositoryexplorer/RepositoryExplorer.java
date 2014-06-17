@@ -78,13 +78,14 @@ public class RepositoryExplorer {
 
   // private Repository repository;
   public RepositoryExplorer( Shell shell, final Repository rep, RepositoryExplorerCallback callback,
-      VariableSpace variableSpace ) throws XulException {
+    VariableSpace variableSpace ) throws XulException {
     KettleXulLoader xulLoader = new KettleXulLoader();
     xulLoader.setOuterContext( shell );
     xulLoader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
     xulLoader.registerClassLoader( getClass().getClassLoader() );
     container =
-        xulLoader.loadXul( "org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle );
+      xulLoader.loadXul(
+        "org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle );
 
     SpoonPluginManager.getInstance().applyPluginsForContainer( "repository-explorer", container );
 
@@ -107,8 +108,8 @@ public class RepositoryExplorer {
       }
     } catch ( Exception e ) {
       log.error( resourceBundle.getString( "RepositoryExplorer.ErrorStartingXulApplication" ), e );
-      new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString( Spoon.class,
-          "Spoon.Error" ), e.getMessage(), e );
+      new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
+        Spoon.class, "Spoon.Error" ), e.getMessage(), e );
     }
     // Call the init method for all the Active UISupportController
     for ( IRepositoryExplorerUISupport uiSupport : uiSupportList ) {
@@ -116,8 +117,8 @@ public class RepositoryExplorer {
         uiSupport.initControllers( rep );
       } catch ( ControllerInitializationException e ) {
         log.error( resourceBundle.getString( "RepositoryExplorer.ErrorStartingXulApplication" ), e );
-        new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString( Spoon.class,
-            "Spoon.Error" ), e.getMessage(), e );
+        new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
+          Spoon.class, "Spoon.Error" ), e.getMessage(), e );
       }
     }
 
@@ -125,8 +126,8 @@ public class RepositoryExplorer {
       runner.initialize();
     } catch ( XulException e ) {
       log.error( resourceBundle.getString( "RepositoryExplorer.ErrorStartingXulApplication" ), e );
-      new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString( Spoon.class,
-          "Spoon.Error" ), e.getMessage(), e );
+      new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
+        Spoon.class, "Spoon.Error" ), e.getMessage(), e );
     }
   }
 

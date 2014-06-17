@@ -46,25 +46,25 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 /**
  * Merge rows from 2 sorted streams and output joined rows with matched key fields. Use this instead of hash join is
  * both your input streams are too big to fit in memory. Note that both the inputs must be sorted on the join key.
- * 
+ *
  * This is a first prototype implementation that only handles two streams and inner join. It also always outputs all
  * values from both streams. Ideally, we should: 1) Support any number of incoming streams 2) Allow user to choose the
  * join type (inner, outer) for each stream 3) Allow user to choose which fields to push to next step 4) Have multiple
  * output ports as follows: a) Containing matched records b) Unmatched records for each input port 5) Support incoming
  * rows to be sorted either on ascending or descending order. The currently implementation only supports ascending
- * 
+ *
  * @author Biswapesh
  * @since 24-nov-2006
  */
 
 public class MultiMergeJoin extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MultiMergeJoinMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MultiMergeJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MultiMergeJoinMeta meta;
   private MultiMergeJoinData data;
 
   public MultiMergeJoin( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -84,7 +84,8 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
       data.metas = new RowMetaInterface[streamSize];
       data.rowLengths = new int[streamSize];
       data.queue =
-          new PriorityQueue<MultiMergeJoinData.QueueEntry>( streamSize, new MultiMergeJoinData.QueueComparator( data ) );
+        new PriorityQueue<MultiMergeJoinData.QueueEntry>( streamSize, new MultiMergeJoinData.QueueComparator(
+          data ) );
       data.results = new ArrayList<List<Object[]>>( streamSize );
       data.queueEntries = new MultiMergeJoinData.QueueEntry[streamSize];
       data.drainIndices = new int[streamSize];
@@ -94,8 +95,8 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
         data.results.add( new ArrayList<Object[]>() );
         data.rowSets[i] = findInputRowSet( infoStreams.get( i ).getStepname() );
         if ( data.rowSets[i] == null ) {
-          throw new KettleException( BaseMessages.getString( PKG, "MultiMergeJoin.Exception.UnableToFindSpecifiedStep",
-              infoStreams.get( 0 ).getStepname() ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "MultiMergeJoin.Exception.UnableToFindSpecifiedStep", infoStreams.get( 0 ).getStepname() ) );
         }
         data.rows[i] = getRowFrom( data.rowSets[i] );
         if ( data.rows[i] == null ) {
@@ -132,8 +133,8 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
             data.keyNrs[j][i] = data.metas[j].indexOfValue( keyFields[i] );
             if ( data.keyNrs[j][i] < 0 ) {
               String message =
-                  BaseMessages.getString( PKG, "MultiMergeJoin.Exception.UnableToFindFieldInReferenceStream", meta
-                      .getKeyFields()[i] );
+                BaseMessages.getString( PKG, "MultiMergeJoin.Exception.UnableToFindFieldInReferenceStream", meta
+                  .getKeyFields()[i] );
               logError( message );
               throw new KettleStepException( message );
             }
@@ -151,7 +152,8 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
 
     if ( log.isRowLevel() ) {
       String metaString =
-          BaseMessages.getString( PKG, "MultiMergeJoin.Log.DataInfo", data.metas[0].getString( data.rows[0] ) + "" );
+        BaseMessages
+          .getString( PKG, "MultiMergeJoin.Log.DataInfo", data.metas[0].getString( data.rows[0] ) + "" );
       for ( int i = 1; i < data.metas.length; i++ ) {
         metaString += data.metas[i].getString( data.rows[i] );
       }
@@ -185,8 +187,8 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
         index = data.drainIndices[i];
         data.results.get( index ).add( data.rows[index] );
         while ( !isStopped()
-            && ( ( row = getRowFrom( data.rowSets[index] ) ) != null && data.metas[index].compare( data.rows[index],
-                row, data.keyNrs[index] ) == 0 ) ) {
+          && ( ( row = getRowFrom( data.rowSets[index] ) ) != null && data.metas[index].compare(
+            data.rows[index], row, data.keyNrs[index] ) == 0 ) ) {
           data.results.get( index ).add( row );
         }
         if ( isStopped() ) {
@@ -256,8 +258,8 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
         for ( int i = 0; i < streamSize; i++ ) {
           data.results.get( i ).add( data.rows[i] );
           while ( !isStopped()
-              && ( ( row = getRowFrom( data.rowSets[i] ) ) != null && data.metas[i].compare( data.rows[i], row,
-                  data.keyNrs[i] ) == 0 ) ) {
+            && ( ( row = getRowFrom( data.rowSets[i] ) ) != null && data.metas[i].compare(
+              data.rows[i], row, data.keyNrs[i] ) == 0 ) ) {
             data.results.get( i ).add( row );
           }
           if ( isStopped() ) {
@@ -299,9 +301,11 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
 
         for ( int i = 0; i < drainSize; i++ ) {
           int index = data.drainIndices[i];
-          while ( !isStopped()
-              && ( ( row = getRowFrom( data.rowSets[index] ) ) != null && data.metas[index].compare( data.rows[index],
-                  row, data.keyNrs[index] ) == 0 ) ) {
+          while ( ( row = getRowFrom( data.rowSets[index] ) ) != null
+            && data.metas[index].compare( data.rows[index], row, data.keyNrs[index] ) == 0 ) {
+            if ( isStopped() ) {
+              break;
+            }
           }
           if ( isStopped() || row == null ) {
             break;
@@ -351,12 +355,12 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
   /**
    * Checks whether incoming rows are join compatible. This essentially means that the keys being compared should be of
    * the same datatype and both rows should have the same number of keys specified
-   * 
+   *
    * @param row1
    *          Reference row
    * @param row2
    *          Row to compare to
-   * 
+   *
    * @return true when templates are compatible.
    */
   protected boolean isInputLayoutValid( RowMetaInterface[] rows ) {
@@ -365,7 +369,7 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
       String[] keyFields = meta.getKeyFields();
       /*
        * int nrKeyFields = keyFields.length;
-       * 
+       *
        * for (int i=0;i<nrKeyFields;i++) { ValueMetaInterface v1 = rows[0].searchValueMeta(keyFields[i]); if (v1 ==
        * null) { return false; } for (int j = 1; j < rows.length; j++) { ValueMetaInterface v2 =
        * rows[j].searchValueMeta(keyFields[i]); if (v2 == null) { return false; } if ( v1.getType()!=v2.getType() ) {

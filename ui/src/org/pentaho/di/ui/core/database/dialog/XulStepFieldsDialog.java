@@ -48,7 +48,7 @@ public class XulStepFieldsDialog {
   private static final String XUL = "org/pentaho/di/ui/core/database/dialog/step_fields.xul";
 
   public XulStepFieldsDialog( Shell aShell, int aStyle, DatabaseMeta aDatabaseMeta, String aTableName,
-      RowMetaInterface anInput, String schemaName ) {
+    RowMetaInterface anInput, String schemaName ) {
     this.shell = aShell;
     this.schemaTableCombo = aDatabaseMeta.getQuotedSchemaTableCombination( schemaName, aTableName );
     this.databaseMeta = aDatabaseMeta;
@@ -63,7 +63,7 @@ public class XulStepFieldsDialog {
       this.container = theLoader.loadXul( XUL );
 
       this.controller =
-          new XulStepFieldsController( this.shell, this.databaseMeta, this.schemaTableCombo, this.rowMeta );
+        new XulStepFieldsController( this.shell, this.databaseMeta, this.schemaTableCombo, this.rowMeta );
       this.controller.setShowAcceptButton( isAcceptButtonHidden );
       this.container.addEventHandler( this.controller );
 
@@ -71,7 +71,8 @@ public class XulStepFieldsDialog {
       this.runner.addContainer( this.container );
       this.runner.initialize();
 
-      XulDialog thePreviewDialog = (XulDialog) this.container.getDocumentRoot().getElementById( "stepFieldsDialog" );
+      XulDialog thePreviewDialog =
+        (XulDialog) this.container.getDocumentRoot().getElementById( "stepFieldsDialog" );
       thePreviewDialog.show();
       ( (SwtDialog) thePreviewDialog ).dispose();
     } catch ( Exception e ) {

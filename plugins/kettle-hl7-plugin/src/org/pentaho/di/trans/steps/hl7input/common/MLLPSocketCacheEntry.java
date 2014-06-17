@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.di.trans.steps.hl7input.common;
 
@@ -35,7 +35,7 @@ public class MLLPSocketCacheEntry {
    * @param serverSocket
    * @param streamSource
    */
-  public MLLPSocketCacheEntry(ServerSocket serverSocket, StreamSource streamSource, MLLPTransport transport) {
+  public MLLPSocketCacheEntry( ServerSocket serverSocket, StreamSource streamSource, MLLPTransport transport ) {
     this.serverSocket = serverSocket;
     this.streamSource = streamSource;
     this.transport = transport;
@@ -52,7 +52,7 @@ public class MLLPSocketCacheEntry {
    * @param serverSocket
    *          the serverSocket to set
    */
-  public void setServerSocket(ServerSocket serverSocket) {
+  public void setServerSocket( ServerSocket serverSocket ) {
     this.serverSocket = serverSocket;
   }
 
@@ -67,7 +67,7 @@ public class MLLPSocketCacheEntry {
    * @param streamSource
    *          the streamSource to set
    */
-  public void setStreamSource(StreamSource streamSource) {
+  public void setStreamSource( StreamSource streamSource ) {
     this.streamSource = streamSource;
   }
 
@@ -79,9 +79,10 @@ public class MLLPSocketCacheEntry {
   }
 
   /**
-   * @param transport the transport to set
+   * @param transport
+   *          the transport to set
    */
-  public void setTransport(MLLPTransport transport) {
+  public void setTransport( MLLPTransport transport ) {
     this.transport = transport;
   }
 
@@ -93,9 +94,10 @@ public class MLLPSocketCacheEntry {
   }
 
   /**
-   * @param jobListener the jobListener to set
+   * @param jobListener
+   *          the jobListener to set
    */
-  public void setJobListener(JobListener jobListener) {
+  public void setJobListener( JobListener jobListener ) {
     this.jobListener = jobListener;
   }
 }

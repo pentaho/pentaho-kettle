@@ -31,7 +31,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Stores data for the Insert/Update step.
- * 
+ *
  * @author Matt
  * @since 24-jan-2005
  */

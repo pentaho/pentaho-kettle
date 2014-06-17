@@ -67,17 +67,16 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the eval files metrics job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 26-02-2010
  */
 
 public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryEvalFilesMetrics.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG,
-      "JobEvalFilesMetrics.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] { BaseMessages.getString(
+    PKG, "JobEvalFilesMetrics.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -171,7 +170,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
 
   private FormData fdbeSourceFileFolder, fdbaSourceFileFolder, fdbdSourceFileFolder;
 
-  public JobEntryEvalFilesMetricsDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
+  public JobEntryEvalFilesMetricsDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep,
+    JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
     jobEntry = (JobEntryEvalFilesMetrics) jobEntryInt;
     if ( this.jobEntry.getName() == null ) {
@@ -283,8 +283,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
 
     // ResultFilenamesWildcard
     wlResultFilenamesWildcard = new Label( wSettings, SWT.RIGHT );
-    wlResultFilenamesWildcard.setText( BaseMessages
-        .getString( PKG, "JobEvalFilesMetrics.ResultFilenamesWildcard.Label" ) );
+    wlResultFilenamesWildcard.setText( BaseMessages.getString(
+      PKG, "JobEvalFilesMetrics.ResultFilenamesWildcard.Label" ) );
     props.setLook( wlResultFilenamesWildcard );
     fdlResultFilenamesWildcard = new FormData();
     fdlResultFilenamesWildcard.left = new FormAttachment( 0, 0 );
@@ -293,8 +293,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     wlResultFilenamesWildcard.setLayoutData( fdlResultFilenamesWildcard );
 
     wResultFilenamesWildcard = new TextVar( jobMeta, wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wResultFilenamesWildcard.setToolTipText( BaseMessages.getString( PKG,
-        "JobEvalFilesMetrics.ResultFilenamesWildcard.Tooltip" ) );
+    wResultFilenamesWildcard.setToolTipText( BaseMessages.getString(
+      PKG, "JobEvalFilesMetrics.ResultFilenamesWildcard.Tooltip" ) );
     props.setLook( wResultFilenamesWildcard );
     wResultFilenamesWildcard.addModifyListener( lsMod );
     fdResultFilenamesWildcard = new FormData();
@@ -325,7 +325,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
 
     // ResultFieldWildcard
     wlResultFieldWildcard = new Label( wSettings, SWT.RIGHT );
-    wlResultFieldWildcard.setText( BaseMessages.getString( PKG, "JobEvalWildcardsMetrics.ResultFieldWildcard.Label" ) );
+    wlResultFieldWildcard.setText( BaseMessages.getString(
+      PKG, "JobEvalWildcardsMetrics.ResultFieldWildcard.Label" ) );
     props.setLook( wlResultFieldWildcard );
     fdlResultFieldWildcard = new FormData();
     fdlResultFieldWildcard.left = new FormAttachment( 0, 0 );
@@ -334,8 +335,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     wlResultFieldWildcard.setLayoutData( fdlResultFieldWildcard );
 
     wResultFieldWildcard = new TextVar( jobMeta, wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wResultFieldWildcard.setToolTipText( BaseMessages.getString( PKG,
-        "JobEvalWildcardsMetrics.ResultFieldWildcard.Tooltip" ) );
+    wResultFieldWildcard.setToolTipText( BaseMessages.getString(
+      PKG, "JobEvalWildcardsMetrics.ResultFieldWildcard.Tooltip" ) );
     props.setLook( wResultFieldWildcard );
     wResultFieldWildcard.addModifyListener( lsMod );
     fdResultFieldWildcard = new FormData();
@@ -346,8 +347,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
 
     // ResultFieldIncludeSubFolders
     wlResultFieldIncludeSubFolders = new Label( wSettings, SWT.RIGHT );
-    wlResultFieldIncludeSubFolders.setText( BaseMessages.getString( PKG,
-        "JobEvalIncludeSubFolderssMetrics.ResultFieldIncludeSubFolders.Label" ) );
+    wlResultFieldIncludeSubFolders.setText( BaseMessages.getString(
+      PKG, "JobEvalIncludeSubFolderssMetrics.ResultFieldIncludeSubFolders.Label" ) );
     props.setLook( wlResultFieldIncludeSubFolders );
     fdlResultFieldIncludeSubFolders = new FormData();
     fdlResultFieldIncludeSubFolders.left = new FormAttachment( 0, 0 );
@@ -356,8 +357,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     wlResultFieldIncludeSubFolders.setLayoutData( fdlResultFieldIncludeSubFolders );
 
     wResultFieldIncludeSubFolders = new TextVar( jobMeta, wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wResultFieldIncludeSubFolders.setToolTipText( BaseMessages.getString( PKG,
-        "JobEvalIncludeSubFolderssMetrics.ResultFieldIncludeSubFolders.Tooltip" ) );
+    wResultFieldIncludeSubFolders.setToolTipText( BaseMessages.getString(
+      PKG, "JobEvalIncludeSubFolderssMetrics.ResultFieldIncludeSubFolders.Tooltip" ) );
     props.setLook( wResultFieldIncludeSubFolders );
     wResultFieldIncludeSubFolders.addModifyListener( lsMod );
     fdResultFieldIncludeSubFolders = new FormData();
@@ -460,7 +461,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     wbaSourceFileFolder.setLayoutData( fdbaSourceFileFolder );
 
     wSourceFileFolder = new TextVar( jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wSourceFileFolder.setToolTipText( BaseMessages.getString( PKG, "JobEvalFilesMetrics.SourceFileFolder.Tooltip" ) );
+    wSourceFileFolder
+      .setToolTipText( BaseMessages.getString( PKG, "JobEvalFilesMetrics.SourceFileFolder.Tooltip" ) );
 
     props.setLook( wSourceFileFolder );
     wSourceFileFolder.addModifyListener( lsMod );
@@ -495,7 +497,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     wbdSourceFileFolder = new Button( wGeneralComp, SWT.PUSH | SWT.CENTER );
     props.setLook( wbdSourceFileFolder );
     wbdSourceFileFolder.setText( BaseMessages.getString( PKG, "JobEvalFilesMetrics.FilenameDelete.Button" ) );
-    wbdSourceFileFolder.setToolTipText( BaseMessages.getString( PKG, "JobEvalFilesMetrics.FilenameDelete.Tooltip" ) );
+    wbdSourceFileFolder
+      .setToolTipText( BaseMessages.getString( PKG, "JobEvalFilesMetrics.FilenameDelete.Tooltip" ) );
     fdbdSourceFileFolder = new FormData();
     fdbdSourceFileFolder.right = new FormAttachment( 100, 0 );
     fdbdSourceFileFolder.top = new FormAttachment( wSourceFileFolder, 40 );
@@ -540,18 +543,21 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     wlFields.setLayoutData( fdlFields );
 
     int rows =
-        jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0 ? 0
-            : jobEntry.source_filefolder.length );
+      jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0
+        ? 0 : jobEntry.source_filefolder.length );
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Fields.SourceFileFolder.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Fields.Wildcard.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Fields.IncludeSubDirs.Label" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntryEvalFilesMetrics.IncludeSubFoldersDesc ) };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobEvalFilesMetrics.Fields.SourceFileFolder.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobEvalFilesMetrics.Fields.Wildcard.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobEvalFilesMetrics.Fields.IncludeSubDirs.Label" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, JobEntryEvalFilesMetrics.IncludeSubFoldersDesc ) };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Fields.SourceFileFolder.Tooltip" ) );
@@ -559,8 +565,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     colinf[1].setToolTip( BaseMessages.getString( PKG, "JobEvalFilesMetrics.Fields.Wildcard.Tooltip" ) );
 
     wFields =
-        new TableView( jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+      new TableView(
+        jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -683,8 +689,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
 
     // Success number Condition
     wlSuccessNumberCondition = new Label( wSuccessOn, SWT.RIGHT );
-    wlSuccessNumberCondition
-        .setText( BaseMessages.getString( PKG, "JobEvalFilesMetricsDialog.SuccessCondition.Label" ) );
+    wlSuccessNumberCondition.setText( BaseMessages.getString(
+      PKG, "JobEvalFilesMetricsDialog.SuccessCondition.Label" ) );
     props.setLook( wlSuccessNumberCondition );
     fdlSuccessNumberCondition = new FormData();
     fdlSuccessNumberCondition.left = new FormAttachment( 0, 0 );
@@ -720,8 +726,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     wlCompareValue.setLayoutData( fdlCompareValue );
 
     wCompareValue =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobEvalFilesMetricsDialog.CompareValue.Tooltip" ) );
+      new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobEvalFilesMetricsDialog.CompareValue.Tooltip" ) );
     props.setLook( wCompareValue );
     wCompareValue.addModifyListener( lsMod );
     fdCompareValue = new FormData();
@@ -741,8 +747,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     wlMinValue.setLayoutData( fdlMinValue );
 
     wMinValue =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobEvalFilesMetricsDialog.MinValue.Tooltip" ) );
+      new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobEvalFilesMetricsDialog.MinValue.Tooltip" ) );
     props.setLook( wMinValue );
     wMinValue.addModifyListener( lsMod );
     fdMinValue = new FormData();
@@ -762,8 +768,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     wlMaxValue.setLayoutData( fdlMaxValue );
 
     wMaxValue =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobEvalFilesMetricsDialog.MaxValue.Tooltip" ) );
+      new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobEvalFilesMetricsDialog.MaxValue.Tooltip" ) );
     props.setLook( wMaxValue );
     wMaxValue.addModifyListener( lsMod );
     fdMaxValue = new FormData();
@@ -858,7 +864,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
 
   private void RefreshSourceFiles() {
     boolean useStaticFiles =
-        ( JobEntryEvalFilesMetrics.getSourceFilesByDesc( wSourceFiles.getText() ) == JobEntryEvalFilesMetrics.SOURCE_FILES_FILES );
+      ( JobEntryEvalFilesMetrics.getSourceFilesByDesc( wSourceFiles.getText() )
+      == JobEntryEvalFilesMetrics.SOURCE_FILES_FILES );
     wlFields.setEnabled( useStaticFiles );
     wFields.setEnabled( useStaticFiles );
     wbdSourceFileFolder.setEnabled( useStaticFiles );
@@ -873,12 +880,14 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     wbSourceDirectory.setEnabled( useStaticFiles );
 
     boolean setResultWildcard =
-        ( JobEntryEvalFilesMetrics.getSourceFilesByDesc( wSourceFiles.getText() ) == JobEntryEvalFilesMetrics.SOURCE_FILES_FILENAMES_RESULT );
+      ( JobEntryEvalFilesMetrics.getSourceFilesByDesc( wSourceFiles.getText() )
+      == JobEntryEvalFilesMetrics.SOURCE_FILES_FILENAMES_RESULT );
     wlResultFilenamesWildcard.setEnabled( setResultWildcard );
     wResultFilenamesWildcard.setEnabled( setResultWildcard );
 
     boolean setResultFields =
-        ( JobEntryEvalFilesMetrics.getSourceFilesByDesc( wSourceFiles.getText() ) == JobEntryEvalFilesMetrics.SOURCE_FILES_PREVIOUS_RESULT );
+      ( JobEntryEvalFilesMetrics.getSourceFilesByDesc( wSourceFiles.getText() )
+      == JobEntryEvalFilesMetrics.SOURCE_FILES_PREVIOUS_RESULT );
     wlResultFieldIncludeSubFolders.setEnabled( setResultFields );
     wResultFieldIncludeSubFolders.setEnabled( setResultFields );
     wlResultFieldFile.setEnabled( setResultFields );
@@ -889,7 +898,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
 
   private void RefreshSize() {
     boolean useSize =
-        ( JobEntryEvalFilesMetrics.getEvaluationTypeByDesc( wEvaluationType.getText() ) == JobEntryEvalFilesMetrics.EVALUATE_TYPE_SIZE );
+      ( JobEntryEvalFilesMetrics.getEvaluationTypeByDesc( wEvaluationType.getText() )
+      == JobEntryEvalFilesMetrics.EVALUATE_TYPE_SIZE );
     wlScale.setVisible( useSize );
     wScale.setVisible( useSize );
   }
@@ -941,8 +951,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     wSourceFiles.setText( JobEntryEvalFilesMetrics.getSourceFilesDesc( jobEntry.sourceFiles ) );
     wEvaluationType.setText( JobEntryEvalFilesMetrics.getEvaluationTypeDesc( jobEntry.evaluationType ) );
     wScale.setText( JobEntryEvalFilesMetrics.getScaleDesc( jobEntry.scale ) );
-    wSuccessNumberCondition
-        .setText( JobEntrySimpleEval.getSuccessNumberConditionDesc( jobEntry.successnumbercondition ) );
+    wSuccessNumberCondition.setText( JobEntrySimpleEval
+      .getSuccessNumberConditionDesc( jobEntry.successnumbercondition ) );
     if ( jobEntry.getCompareValue() != null ) {
       wCompareValue.setText( jobEntry.getCompareValue() );
     }
@@ -980,7 +990,7 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
     jobEntry.evaluationType = JobEntryEvalFilesMetrics.getEvaluationTypeByDesc( wEvaluationType.getText() );
     jobEntry.scale = JobEntryEvalFilesMetrics.getScaleByDesc( wScale.getText() );
     jobEntry.successnumbercondition =
-        JobEntrySimpleEval.getSuccessNumberConditionByDesc( wSuccessNumberCondition.getText() );
+      JobEntrySimpleEval.getSuccessNumberConditionByDesc( wSuccessNumberCondition.getText() );
     jobEntry.setCompareValue( wCompareValue.getText() );
     jobEntry.setMinValue( wMinValue.getText() );
     jobEntry.setMaxValue( wMaxValue.getText() );
@@ -1012,7 +1022,8 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
 
   private void refresh() {
     boolean compareValue =
-        ( JobEntrySimpleEval.getSuccessNumberConditionByDesc( wSuccessNumberCondition.getText() ) != JobEntrySimpleEval.SUCCESS_NUMBER_CONDITION_BETWEEN );
+      ( JobEntrySimpleEval.getSuccessNumberConditionByDesc( wSuccessNumberCondition.getText() )
+      != JobEntrySimpleEval.SUCCESS_NUMBER_CONDITION_BETWEEN );
     wlCompareValue.setVisible( compareValue );
     wCompareValue.setVisible( compareValue );
     wlMinValue.setVisible( !compareValue );

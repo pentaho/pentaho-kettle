@@ -51,11 +51,11 @@ import org.w3c.dom.Node;
 
 /*
  * Created on 30-06-2008
- * 
+ *
  * @author Samatar Hassan
  */
 public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = CheckSumMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CheckSumMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** by which fields to display? */
   private String[] fieldName;
@@ -79,7 +79,8 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * The result type description
    */
-  public static final String[] resultTypeDesc = { BaseMessages.getString( PKG, "CheckSumDialog.ResultType.String" ),
+  public static final String[] resultTypeDesc = {
+    BaseMessages.getString( PKG, "CheckSumDialog.ResultType.String" ),
     BaseMessages.getString( PKG, "CheckSumDialog.ResultType.Hexadecimal" ),
     BaseMessages.getString( PKG, "CheckSumDialog.ResultType.Binary" ) };
 
@@ -280,8 +281,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       checksumtype = rep.getStepAttributeString( id_step, "checksumtype" );
 
@@ -301,8 +301,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "checksumtype", checksumtype );
 
@@ -319,7 +318,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output field (String)
     if ( !Const.isEmpty( resultfieldName ) ) {
       ValueMetaInterface v = null;
@@ -340,9 +339,9 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -357,13 +356,13 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "CheckSumMeta.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "CheckSumMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "CheckSumMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "CheckSumMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       boolean error_found = false;
@@ -385,13 +384,13 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
       } else {
         if ( fieldName.length > 0 ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "CheckSumMeta.CheckResult.AllFieldsFound" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "CheckSumMeta.CheckResult.AllFieldsFound" ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                  "CheckSumMeta.CheckResult.NoFieldsEntered" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "CheckSumMeta.CheckResult.NoFieldsEntered" ), stepMeta );
           remarks.add( cr );
         }
       }
@@ -401,19 +400,19 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "CheckSumMeta.CheckResult.StepRecevingData2" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "CheckSumMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "CheckSumMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "CheckSumMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new CheckSum( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

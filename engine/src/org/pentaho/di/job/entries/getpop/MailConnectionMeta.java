@@ -23,18 +23,17 @@
 package org.pentaho.di.job.entries.getpop;
 
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.reporting.libraries.base.util.StringUtils;
 
 /**
  * MailConnection handles the process of connecting to, reading from POP3/IMAP.
- * 
+ *
  * @author Samatar
  * @since 01-04-2009
- * 
+ *
  */
 
 public class MailConnectionMeta {
-  private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!!
 
   public static final String FOLDER_SEPARATOR = "/";
 
@@ -72,7 +71,8 @@ public class MailConnectionMeta {
     BaseMessages.getString( PKG, "JobGetPOP.ConditionBetween.Label" )
 
   };
-  public static final String[] conditionDateCode = new String[] { "ignore", "equal", "smaller", "greater", "between" };
+  public static final String[] conditionDateCode = new String[] {
+    "ignore", "equal", "smaller", "greater", "between" };
   public static final int CONDITION_DATE_IGNORE = 0;
   public static final int CONDITION_DATE_EQUAL = 1;
   public static final int CONDITION_DATE_SMALLER = 2;
@@ -93,9 +93,9 @@ public class MailConnectionMeta {
     BaseMessages.getString( PKG, "JobGetPOP.IMAPListGetNotAnswered.Label" ),
 
   };
-  public static final String[] valueIMAPListCode = new String[] { "imaplistall", "imaplistnew", "imaplistold",
-    "imaplistread", "imaplistunread", "imaplistflagged", "imaplistnotflagged", "imaplistdraft", "imaplistnotdraft",
-    "imaplistanswered", "imaplistnotanswered" };
+  public static final String[] valueIMAPListCode = new String[] {
+    "imaplistall", "imaplistnew", "imaplistold", "imaplistread", "imaplistunread", "imaplistflagged",
+    "imaplistnotflagged", "imaplistdraft", "imaplistnotdraft", "imaplistanswered", "imaplistnotanswered" };
   public static final int VALUE_IMAP_LIST_ALL = 0;
   public static final int VALUE_IMAP_LIST_NEW = 1;
   public static final int VALUE_IMAP_LIST_OLD = 2;
@@ -318,11 +318,14 @@ public class MailConnectionMeta {
   }
 
   public static int getProtocolFromString( String protocolCode, int defaultProtocol ) {
-    if ( StringUtils.equals( protocolCode, PROTOCOL_STRING_IMAP ) ) {
+    if ( protocolCode == null ) {
+      return defaultProtocol;
+    }
+    if ( protocolCode.toUpperCase().equals( PROTOCOL_STRING_IMAP ) ) {
       return PROTOCOL_IMAP;
-    } else if ( StringUtils.equals( protocolCode, PROTOCOL_STRING_POP3 ) ) {
+    } else if ( protocolCode.toUpperCase().equals( PROTOCOL_STRING_POP3 ) ) {
       return PROTOCOL_POP3;
-    } else if ( StringUtils.equals( protocolCode, PROTOCOL_STRING_MBOX ) ) {
+    } else if ( protocolCode.toUpperCase().equals( PROTOCOL_STRING_MBOX ) ) {
       return PROTOCOL_MBOX;
     }
     return defaultProtocol;

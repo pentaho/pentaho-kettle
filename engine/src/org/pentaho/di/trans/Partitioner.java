@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans;
 
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -70,7 +69,8 @@ import org.w3c.dom.Node;
  * typically used to conveniently read the settings from the XML node.
  * <p>
  * <i><a href=
- * "#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, org.pentaho.di.repository.ObjectId)"
+ * "#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, 
+ *    org.pentaho.di.repository.ObjectId)"
  * >public void saveRep(...)</a></i>
  * <p>
  * This method is called by PDI whenever a plugin needs to save its settings to a PDI repository. The repository object
@@ -101,14 +101,14 @@ public interface Partitioner {
 
   /**
    * Gets the single instance of Partitioner.
-   * 
+   *
    * @return single instance of Partitioner
    */
   public abstract Partitioner getInstance();
 
   /**
    * Gets the partition.
-   * 
+   *
    * @param rowMeta
    *          the row meta
    * @param r
@@ -121,7 +121,7 @@ public interface Partitioner {
 
   /**
    * Sets the meta.
-   * 
+   *
    * @param meta
    *          the new meta
    */
@@ -129,21 +129,21 @@ public interface Partitioner {
 
   /**
    * Gets the id.
-   * 
+   *
    * @return the id
    */
   public String getId();
 
   /**
    * Gets the description.
-   * 
+   *
    * @return the description
    */
   public String getDescription();
 
   /**
    * Sets the id.
-   * 
+   *
    * @param id
    *          the new id
    */
@@ -151,7 +151,7 @@ public interface Partitioner {
 
   /**
    * Sets the description.
-   * 
+   *
    * @param description
    *          the new description
    */
@@ -159,28 +159,28 @@ public interface Partitioner {
 
   /**
    * Gets the dialog class name.
-   * 
+   *
    * @return the dialog class name
    */
   public String getDialogClassName();
 
   /**
    * Clone.
-   * 
+   *
    * @return the partitioner
    */
   public Partitioner clone();
 
   /**
    * Gets the xml.
-   * 
+   *
    * @return the xml
    */
   public String getXML();
 
   /**
    * Load xml.
-   * 
+   *
    * @param partitioningMethodNode
    *          the partitioning method node
    * @throws KettleXMLException
@@ -190,21 +190,21 @@ public interface Partitioner {
 
   /**
    * Saves partitioning properties in the repository for the given step.
-   * 
+   *
    * @param rep
    *          the repository to save in
    * @param id_transformation
    *          the ID of the transformation
    * @param id_step
    *          the ID of the step
-   * @throws KettleDatabaseException
+   * @throws KettleException
    *           In case anything goes wrong
    */
   public void saveRep( Repository rep, ObjectId id_transformation, ObjectId id_step ) throws KettleException;
 
   /**
    * Load rep.
-   * 
+   *
    * @param rep
    *          the rep
    * @param id_step

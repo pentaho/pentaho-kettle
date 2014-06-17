@@ -90,8 +90,7 @@ public class NonAccessibleFileObject implements FileObject {
   }
 
   @Override
-  public void findFiles( FileSelector arg0, boolean arg1, @SuppressWarnings( "rawtypes" ) List arg2 )
-    throws FileSystemException {
+  public void findFiles( FileSelector arg0, boolean arg1, @SuppressWarnings( "rawtypes" ) List arg2 ) throws FileSystemException {
     throw new NotImplementedException();
   }
 

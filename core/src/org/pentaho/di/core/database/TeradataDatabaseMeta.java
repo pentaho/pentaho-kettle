@@ -29,7 +29,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains NCR Teradata specific information through static final members
- * 
+ *
  * @author Matt
  * @since 26-jul-2006
  */
@@ -37,7 +37,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   /**
@@ -81,7 +82,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
   /**
    * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
-   * 
+   *
    * @return true is setFetchSize() is supported!
    */
   @Override
@@ -104,14 +105,6 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
   @Override
   public boolean supportsBitmapIndex() {
     return false;
-  }
-
-  /**
-   * @return true if Kettle can create a repository on this type of database.
-   */
-  @Override
-  public boolean supportsRepository() {
-    return true;
   }
 
   @Override
@@ -137,7 +130,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
   /**
    * Generates the SQL statement to add a column to the specified table For this generic type, i set it to the most
    * common possibility.
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -154,13 +147,13 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -177,13 +170,13 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " MODIFY " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -206,7 +199,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
-            fieldname.equalsIgnoreCase( pk ) // Primary key
+          fieldname.equalsIgnoreCase( pk ) // Primary key
         ) {
           retval += "INTEGER"; // TERADATA has no Auto-increment functionality nor Sequences!
         } else {
@@ -267,7 +260,7 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
   @Override
   public String getExtraOptionsHelpText() {
     return "http://www.info.ncr.com/eTeradata-BrowseBy-Results.cfm?pl=&PID=&title=%25&release="
-        + "&kword=CJDBC&sbrn=7&nm=Teradata+Tools+and+Utilities+-+Java+Database+Connectivity+(JDBC)";
+      + "&kword=CJDBC&sbrn=7&nm=Teradata+Tools+and+Utilities+-+Java+Database+Connectivity+(JDBC)";
   }
 
   @Override
@@ -285,50 +278,53 @@ public class TeradataDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
    */
   @Override
   public String[] getReservedWords() {
-    return new String[] { "ABORT", "ABORTSESSION", "ABS", "ACCESS_LOCK", "ACCOUNT", "ACOS", "ACOSH", "ADD",
-      "ADD_MONTHS", "ADMIN", "AFTER", "AGGREGATE", "ALL", "ALTER", "AMP", "AND", "ANSIDATE", "ANY", "ARGLPAREN", "AS",
-      "ASC", "ASIN", "ASINH", "AT", "ATAN", "ATAN2", "ATANH", "ATOMIC", "AUTHORIZATION", "AVE", "AVERAGE", "AVG",
-      "BEFORE", "BEGIN", "BETWEEN", "BIGINT", "BINARY", "BLOB", "BOTH", "BT", "BUT", "BY", "BYTE", "BYTEINT", "BYTES",
+    return new String[] {
+      "ABORT", "ABORTSESSION", "ABS", "ACCESS_LOCK", "ACCOUNT", "ACOS", "ACOSH", "ADD", "ADD_MONTHS", "ADMIN",
+      "AFTER", "AGGREGATE", "ALL", "ALTER", "AMP", "AND", "ANSIDATE", "ANY", "ARGLPAREN", "AS", "ASC", "ASIN",
+      "ASINH", "AT", "ATAN", "ATAN2", "ATANH", "ATOMIC", "AUTHORIZATION", "AVE", "AVERAGE", "AVG", "BEFORE",
+      "BEGIN", "BETWEEN", "BIGINT", "BINARY", "BLOB", "BOTH", "BT", "BUT", "BY", "BYTE", "BYTEINT", "BYTES",
       "CALL", "CASE", "CASE_N", "CASESPECIFIC", "CAST", "CD", "CHAR", "CHAR_LENGTH", "CHAR2HEXINT", "CHARACTER",
-      "CHARACTER_LENGTH", "CHARACTERS", "CHARS", "CHECK", "CHECKPOINT", "CLASS", "CLOB", "CLOSE", "CLUSTER", "CM",
-      "COALESCE", "COLLATION", "COLLECT", "COLUMN", "COMMENT", "COMMIT", "COMPRESS", "CONSTRAINT", "CONSTRUCTOR",
-      "CONSUME", "CONTAINS", "CONTINUE", "CONVERT_TABLE_HEADER", "CORR", "COS", "COSH", "COUNT", "COVAR_POP",
-      "COVAR_SAMP", "CREATE", "CROSS", "CS", "CSUM", "CT", "CUBE", "CURRENT", "CURRENT_DATE", "CURRENT_TIME",
-      "CURRENT_TIMESTAMP", "CURSOR", "CV", "CYCLE", "DATABASE", "DATABLOCKSIZE", "DATE", "DATEFORM", "DAY",
-      "DEALLOCATE", "DEC", "DECIMAL", "DECLARE", "DEFAULT", "DEFERRED", "DEGREES", "DEL", "DELETE", "DESC",
-      "DETERMINISTIC", "DIAGNOSTIC", "DISABLED", "DISTINCT", "DO", "DOMAIN", "DOUBLE", "DROP", "DUAL", "DUMP",
-      "DYNAMIC", "EACH", "ECHO", "ELSE", "ELSEIF", "ENABLED", "END", "EQ", "EQUALS", "ERROR", "ERRORFILES",
-      "ERRORTABLES", "ESCAPE", "ET", "EXCEPT", "EXEC", "EXECUTE", "EXISTS", "EXIT", "EXP", "EXPLAIN", "EXTERNAL",
-      "EXTRACT", "FALLBACK", "FASTEXPORT", "FETCH", "FIRST", "FLOAT", "FOR", "FOREIGN", "FORMAT", "FOUND", "FREESPACE",
-      "FROM", "FULL", "FUNCTION", "GE", "GENERATED", "GIVE", "GRANT", "GRAPHIC", "GROUP", "GROUPING", "GT", "HANDLER",
-      "HASH", "HASHAMP", "HASHBAKAMP", "HASHBUCKET", "HASHROW", "HAVING", "HELP", "HOUR", "IDENTITY", "IF",
-      "IMMEDIATE", "IN", "INCONSISTENT", "INDEX", "INITIATE", "INNER", "INOUT", "INPUT", "INS", "INSERT", "INSTANCE",
-      "INSTEAD", "INT", "INTEGER", "INTEGERDATE", "INTERSECT", "INTERVAL", "INTO", "IS", "ITERATE", "JAR", "JOIN",
-      "JOURNAL", "KEY", "KURTOSIS", "LANGUAGE", "LARGE", "LE", "LEADING", "LEAVE", "LEFT", "LIKE", "LIMIT", "LN",
-      "LOADING", "LOCAL", "LOCATOR", "LOCK", "LOCKING", "LOG", "LOGGING", "LOGON", "LONG", "LOOP", "LOWER", "LT",
-      "MACRO", "MAP", "MAVG", "MAX", "MAXIMUM", "MCHARACTERS", "MDIFF", "MERGE", "METHOD", "MIN", "MINDEX", "MINIMUM",
-      "MINUS", "MINUTE", "MLINREG", "MLOAD", "MOD", "MODE", "MODIFIES", "MODIFY", "MONITOR", "MONRESOURCE",
-      "MONSESSION", "MONTH", "MSUBSTR", "MSUM", "MULTISET", "NAMED", "NATURAL", "NE", "NEW", "NEW_TABLE", "NEXT", "NO",
-      "NONE", "NOT", "NOWAIT", "NULL", "NULLIF", "NULLIFZERO", "NUMERIC", "OBJECT", "OBJECTS", "OCTET_LENGTH", "OF",
-      "OFF", "OLD", "OLD_TABLE", "ON", "ONLY", "OPEN", "OPTION", "OR", "ORDER", "ORDERING", "OUT", "OUTER", "OUTPUT",
-      "OVER", "OVERLAPS", "OVERRIDE", "PARAMETER", "PASSWORD", "PERCENT", "PERCENT_RANK", "PERM", "PERMANENT",
-      "POSITION", "PRECISION", "PREPARE", "PRESERVE", "PRIMARY", "PRIVILEGES", "PROCEDURE", "PROFILE", "PROTECTION",
-      "PUBLIC", "QUALIFIED", "QUALIFY", "QUANTILE", "QUEUE", "RADIANS", "RANDOM", "RANGE_N", "RANK", "READS", "REAL",
-      "RECURSIVE", "REFERENCES", "REFERENCING", "REGR_AVGX", "REGR_AVGY", "REGR_COUNT", "REGR_INTERCEPT", "REGR_R2",
-      "REGR_SLOPE", "REGR_SXX", "REGR_SXY", "REGR_SYY", "RELATIVE", "RELEASE", "RENAME", "REPEAT", "REPLACE",
-      "REPLCONTROL", "REPLICATION", "REQUEST", "RESTART", "RESTORE", "RESULT", "RESUME", "RET", "RETRIEVE", "RETURN",
-      "RETURNS", "REVALIDATE", "REVOKE", "RIGHT", "RIGHTS", "ROLE", "ROLLBACK", "ROLLFORWARD", "ROLLUP", "ROW",
-      "ROW_NUMBER", "ROWID", "ROWS", "SAMPLE", "SAMPLEID", "SCROLL", "SECOND", "SEL", "SELECT", "SESSION", "SET",
-      "SETRESRATE", "SETS", "SETSESSRATE", "SHOW", "SIN", "SINH", "SKEW", "SMALLINT", "SOME", "SOUNDEX", "SPECIFIC",
-      "SPOOL", "SQL", "SQLEXCEPTION", "SQLTEXT", "SQLWARNING", "SQRT", "SS", "START", "STARTUP", "STATEMENT",
-      "STATISTICS", "STDDEV_POP", "STDDEV_SAMP", "STEPINFO", "STRING_CS", "SUBSCRIBER", "SUBSTR", "SUBSTRING", "SUM",
-      "SUMMARY", "SUSPEND", "TABLE", "TAN", "TANH", "TBL_CS", "TEMPORARY", "TERMINATE", "THEN", "THRESHOLD", "TIME",
-      "TIMESTAMP", "TIMEZONE_HOUR", "TIMEZONE_MINUTE", "TITLE", "TO", "TOP", "TRACE", "TRAILING", "TRANSACTION",
-      "TRANSFORM", "TRANSLATE", "TRANSLATE_CHK", "TRIGGER", "TRIM", "TRUE", "TYPE", "UC", "UDTCASTAS", "UDTCASTLPAREN",
-      "UDTMETHOD", "UDTTYPE", "UDTUSAGE", "UESCAPE", "UNDEFINED", "UNDO", "UNION", "UNIQUE", "UNTIL", "UPD", "UPDATE",
+      "CHARACTER_LENGTH", "CHARACTERS", "CHARS", "CHECK", "CHECKPOINT", "CLASS", "CLOB", "CLOSE", "CLUSTER",
+      "CM", "COALESCE", "COLLATION", "COLLECT", "COLUMN", "COMMENT", "COMMIT", "COMPRESS", "CONSTRAINT",
+      "CONSTRUCTOR", "CONSUME", "CONTAINS", "CONTINUE", "CONVERT_TABLE_HEADER", "CORR", "COS", "COSH", "COUNT",
+      "COVAR_POP", "COVAR_SAMP", "CREATE", "CROSS", "CS", "CSUM", "CT", "CUBE", "CURRENT", "CURRENT_DATE",
+      "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURSOR", "CV", "CYCLE", "DATABASE", "DATABLOCKSIZE", "DATE",
+      "DATEFORM", "DAY", "DEALLOCATE", "DEC", "DECIMAL", "DECLARE", "DEFAULT", "DEFERRED", "DEGREES", "DEL",
+      "DELETE", "DESC", "DETERMINISTIC", "DIAGNOSTIC", "DISABLED", "DISTINCT", "DO", "DOMAIN", "DOUBLE", "DROP",
+      "DUAL", "DUMP", "DYNAMIC", "EACH", "ECHO", "ELSE", "ELSEIF", "ENABLED", "END", "EQ", "EQUALS", "ERROR",
+      "ERRORFILES", "ERRORTABLES", "ESCAPE", "ET", "EXCEPT", "EXEC", "EXECUTE", "EXISTS", "EXIT", "EXP",
+      "EXPLAIN", "EXTERNAL", "EXTRACT", "FALLBACK", "FASTEXPORT", "FETCH", "FIRST", "FLOAT", "FOR", "FOREIGN",
+      "FORMAT", "FOUND", "FREESPACE", "FROM", "FULL", "FUNCTION", "GE", "GENERATED", "GIVE", "GRANT", "GRAPHIC",
+      "GROUP", "GROUPING", "GT", "HANDLER", "HASH", "HASHAMP", "HASHBAKAMP", "HASHBUCKET", "HASHROW", "HAVING",
+      "HELP", "HOUR", "IDENTITY", "IF", "IMMEDIATE", "IN", "INCONSISTENT", "INDEX", "INITIATE", "INNER",
+      "INOUT", "INPUT", "INS", "INSERT", "INSTANCE", "INSTEAD", "INT", "INTEGER", "INTEGERDATE", "INTERSECT",
+      "INTERVAL", "INTO", "IS", "ITERATE", "JAR", "JOIN", "JOURNAL", "KEY", "KURTOSIS", "LANGUAGE", "LARGE",
+      "LE", "LEADING", "LEAVE", "LEFT", "LIKE", "LIMIT", "LN", "LOADING", "LOCAL", "LOCATOR", "LOCK", "LOCKING",
+      "LOG", "LOGGING", "LOGON", "LONG", "LOOP", "LOWER", "LT", "MACRO", "MAP", "MAVG", "MAX", "MAXIMUM",
+      "MCHARACTERS", "MDIFF", "MERGE", "METHOD", "MIN", "MINDEX", "MINIMUM", "MINUS", "MINUTE", "MLINREG",
+      "MLOAD", "MOD", "MODE", "MODIFIES", "MODIFY", "MONITOR", "MONRESOURCE", "MONSESSION", "MONTH", "MSUBSTR",
+      "MSUM", "MULTISET", "NAMED", "NATURAL", "NE", "NEW", "NEW_TABLE", "NEXT", "NO", "NONE", "NOT", "NOWAIT",
+      "NULL", "NULLIF", "NULLIFZERO", "NUMERIC", "OBJECT", "OBJECTS", "OCTET_LENGTH", "OF", "OFF", "OLD",
+      "OLD_TABLE", "ON", "ONLY", "OPEN", "OPTION", "OR", "ORDER", "ORDERING", "OUT", "OUTER", "OUTPUT", "OVER",
+      "OVERLAPS", "OVERRIDE", "PARAMETER", "PASSWORD", "PERCENT", "PERCENT_RANK", "PERM", "PERMANENT",
+      "POSITION", "PRECISION", "PREPARE", "PRESERVE", "PRIMARY", "PRIVILEGES", "PROCEDURE", "PROFILE",
+      "PROTECTION", "PUBLIC", "QUALIFIED", "QUALIFY", "QUANTILE", "QUEUE", "RADIANS", "RANDOM", "RANGE_N",
+      "RANK", "READS", "REAL", "RECURSIVE", "REFERENCES", "REFERENCING", "REGR_AVGX", "REGR_AVGY", "REGR_COUNT",
+      "REGR_INTERCEPT", "REGR_R2", "REGR_SLOPE", "REGR_SXX", "REGR_SXY", "REGR_SYY", "RELATIVE", "RELEASE",
+      "RENAME", "REPEAT", "REPLACE", "REPLCONTROL", "REPLICATION", "REQUEST", "RESTART", "RESTORE", "RESULT",
+      "RESUME", "RET", "RETRIEVE", "RETURN", "RETURNS", "REVALIDATE", "REVOKE", "RIGHT", "RIGHTS", "ROLE",
+      "ROLLBACK", "ROLLFORWARD", "ROLLUP", "ROW", "ROW_NUMBER", "ROWID", "ROWS", "SAMPLE", "SAMPLEID", "SCROLL",
+      "SECOND", "SEL", "SELECT", "SESSION", "SET", "SETRESRATE", "SETS", "SETSESSRATE", "SHOW", "SIN", "SINH",
+      "SKEW", "SMALLINT", "SOME", "SOUNDEX", "SPECIFIC", "SPOOL", "SQL", "SQLEXCEPTION", "SQLTEXT",
+      "SQLWARNING", "SQRT", "SS", "START", "STARTUP", "STATEMENT", "STATISTICS", "STDDEV_POP", "STDDEV_SAMP",
+      "STEPINFO", "STRING_CS", "SUBSCRIBER", "SUBSTR", "SUBSTRING", "SUM", "SUMMARY", "SUSPEND", "TABLE", "TAN",
+      "TANH", "TBL_CS", "TEMPORARY", "TERMINATE", "THEN", "THRESHOLD", "TIME", "TIMESTAMP", "TIMEZONE_HOUR",
+      "TIMEZONE_MINUTE", "TITLE", "TO", "TOP", "TRACE", "TRAILING", "TRANSACTION", "TRANSFORM", "TRANSLATE",
+      "TRANSLATE_CHK", "TRIGGER", "TRIM", "TRUE", "TYPE", "UC", "UDTCASTAS", "UDTCASTLPAREN", "UDTMETHOD",
+      "UDTTYPE", "UDTUSAGE", "UESCAPE", "UNDEFINED", "UNDO", "UNION", "UNIQUE", "UNTIL", "UPD", "UPDATE",
       "UPPER", "UPPERCASE", "USER", "USING", "VALUE", "VALUES", "VAR_POP", "VAR_SAMP", "VARBYTE", "VARCHAR",
-      "VARGRAPHIC", "VARYING", "VIEW", "VOLATILE", "WHEN", "WHERE", "WHILE", "WIDTH_BUCKET", "WITH", "WITHOUT", "WORK",
-      "YEAR", "ZEROIFNULL", "ZONE" };
+      "VARGRAPHIC", "VARYING", "VIEW", "VOLATILE", "WHEN", "WHERE", "WHILE", "WIDTH_BUCKET", "WITH", "WITHOUT",
+      "WORK", "YEAR", "ZEROIFNULL", "ZONE" };
   }
 
   /**

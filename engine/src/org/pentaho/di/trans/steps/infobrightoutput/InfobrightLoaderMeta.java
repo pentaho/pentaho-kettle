@@ -47,7 +47,7 @@ import com.infobright.io.InfobrightNamedPipeLoader;
 
 /**
  * Metadata for the Infobright loader.
- * 
+ *
  * @author geoffrey.falk@infobright.com
  */
 public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInterface {
@@ -74,19 +74,19 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#getStep(org.pentaho.di.trans.step.StepMeta,
    *      org.pentaho.di.trans.step.StepDataInterface, int, org.pentaho.di.trans.TransMeta, org.pentaho.di.trans.Trans)
    */
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     InfobrightLoader loader = new InfobrightLoader( stepMeta, stepDataInterface, cnr, tr, trans );
     return loader;
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#getStepData()
    */
   public StepDataInterface getStepData() {
@@ -95,7 +95,7 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStepMeta#clone()
    */
   public Object clone() {
@@ -155,10 +155,11 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
     try {
       dataFormat = Enum.valueOf( DataFormat.class, XMLHandler.getTagValue( stepnode, TAG_DATA_FORMAT ) );
       agentPort =
-          Integer.parseInt( Const.NVL( XMLHandler.getTagValue( stepnode, TAG_AGENT_PORT ), Integer
-              .toString( InfobrightNamedPipeLoader.AGENT_DEFAULT_PORT ) ) );
+        Integer.parseInt( Const.NVL( XMLHandler.getTagValue( stepnode, TAG_AGENT_PORT ), Integer
+          .toString( InfobrightNamedPipeLoader.AGENT_DEFAULT_PORT ) ) );
       String charsetName = XMLHandler.getTagValue( stepnode, TAG_CHARSET );
-      charset = ( charsetName == null ? InfobrightNamedPipeLoader.DEFAULT_CHARSET : Charset.forName( charsetName ) );
+      charset =
+        ( charsetName == null ? InfobrightNamedPipeLoader.DEFAULT_CHARSET : Charset.forName( charsetName ) );
       debugFile = XMLHandler.getTagValue( stepnode, TAG_DEBUG_FILE );
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
@@ -166,8 +167,7 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
   }
 
   @Override
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     super.readRep( rep, metaStore, id_step, databases );
     try {
       dataFormat = Enum.valueOf( DataFormat.class, rep.getStepAttributeString( id_step, TAG_DATA_FORMAT ) );
@@ -178,7 +178,8 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
         agentPort = Integer.parseInt( agentPortStr );
       }
       String charsetName = rep.getStepAttributeString( id_step, TAG_CHARSET );
-      charset = ( charsetName == null ? InfobrightNamedPipeLoader.DEFAULT_CHARSET : Charset.forName( charsetName ) );
+      charset =
+        ( charsetName == null ? InfobrightNamedPipeLoader.DEFAULT_CHARSET : Charset.forName( charsetName ) );
       debugFile = rep.getStepAttributeString( id_step, TAG_DEBUG_FILE );
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
@@ -186,8 +187,7 @@ public class InfobrightLoaderMeta extends TableOutputMeta implements StepMetaInt
   }
 
   @Override
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     super.saveRep( rep, metaStore, id_transformation, id_step );
     rep.saveStepAttribute( id_transformation, id_step, TAG_DATA_FORMAT, dataFormat.toString() );
     rep.saveStepAttribute( id_transformation, id_step, TAG_AGENT_PORT, agentPort );

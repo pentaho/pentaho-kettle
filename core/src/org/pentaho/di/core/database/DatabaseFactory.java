@@ -31,16 +31,16 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class DatabaseFactory implements DatabaseFactoryInterface {
 
-  private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!
 
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Database factory",
-      LoggingObjectType.GENERAL, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+    "Database factory", LoggingObjectType.GENERAL, null );
 
   public DatabaseFactory() {
   }
@@ -58,30 +58,32 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
           try {
             db.connect( partitioningInformation[i].getPartitionId() );
             report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionWithPartOk", databaseMeta
-                .getName(), partitioningInformation[i].getPartitionId() )
-                + Const.CR );
+              .getName(), partitioningInformation[i].getPartitionId() )
+              + Const.CR );
           } catch ( KettleException e ) {
-            report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionWithPartError", databaseMeta
-                .getName(), partitioningInformation[i].getPartitionId(), e.toString() )
-                + Const.CR );
+            report.append( BaseMessages.getString(
+              PKG, "DatabaseMeta.report.ConnectionWithPartError", databaseMeta.getName(),
+              partitioningInformation[i].getPartitionId(), e.toString() )
+              + Const.CR );
             report.append( Const.getStackTracker( e ) + Const.CR );
           } finally {
             db.disconnect();
           }
 
           appendConnectionInfo( report, db.environmentSubstitute( partitioningInformation[i].getHostname() ), db
-              .environmentSubstitute( partitioningInformation[i].getPort() ), db
-              .environmentSubstitute( partitioningInformation[i].getDatabaseName() ) );
+            .environmentSubstitute( partitioningInformation[i].getPort() ), db
+            .environmentSubstitute( partitioningInformation[i].getDatabaseName() ) );
           report.append( Const.CR );
         }
       } else {
         try {
           db.connect();
           report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionOk", databaseMeta.getName() )
-              + Const.CR );
+            + Const.CR );
         } catch ( KettleException e ) {
-          report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionError", databaseMeta.getName() )
-              + e.toString() + Const.CR );
+          report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionError", databaseMeta
+            .getName() )
+            + e.toString() + Const.CR );
           report.append( Const.getStackTracker( e ) + Const.CR );
         } finally {
           db.disconnect();
@@ -95,13 +97,14 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
       }
       return report.toString();
     } else {
-      return BaseMessages.getString( PKG, "BaseDatabaseMeta.TestConnectionReportNotImplemented.Message" ); // $NON-NLS-1
+      return BaseMessages.getString( PKG, "BaseDatabaseMeta.TestConnectionReportNotImplemented.Message" );
     }
 
   }
 
   private StringBuffer appendJndiConnectionInfo( StringBuffer report, String jndiName ) {
-    report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.JndiName" ) ).append( jndiName ).append( Const.CR );
+    report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.JndiName" ) ).append( jndiName ).append(
+      Const.CR );
     return report;
   }
 
@@ -111,24 +114,24 @@ public class DatabaseFactory implements DatabaseFactoryInterface {
     if ( databaseMeta.getDatabaseInterface() instanceof GenericDatabaseMeta ) {
       String customUrl = databaseMeta.getAttributes().getProperty( GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL );
       String customDriverClass =
-          databaseMeta.getAttributes().getProperty( GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS );
+        databaseMeta.getAttributes().getProperty( GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS );
 
       return report.append( BaseMessages.getString( PKG, "GenericDatabaseMeta.report.customUrl" ) ).append(
-          db.environmentSubstitute( customUrl ) ).append( Const.CR ).append(
-          BaseMessages.getString( PKG, "GenericDatabaseMeta.report.customDriverClass" ) ).append(
-          db.environmentSubstitute( customDriverClass ) ).append( Const.CR );
+        db.environmentSubstitute( customUrl ) ).append( Const.CR ).append(
+        BaseMessages.getString( PKG, "GenericDatabaseMeta.report.customDriverClass" ) ).append(
+        db.environmentSubstitute( customDriverClass ) ).append( Const.CR );
     }
 
     return appendConnectionInfo( report, db.environmentSubstitute( databaseMeta.getHostname() ), db
-        .environmentSubstitute( databaseMeta.getDatabasePortNumberString() ), db.environmentSubstitute( databaseMeta
-        .getDatabaseName() ) );
+      .environmentSubstitute( databaseMeta.getDatabasePortNumberString() ), db
+      .environmentSubstitute( databaseMeta.getDatabaseName() ) );
   }
 
+  //CHECKSTYLE:LineLength:OFF
   private StringBuffer appendConnectionInfo( StringBuffer report, String hostName, String portNumber, String dbName ) {
     report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.Hostname" ) ).append( hostName ).append( Const.CR );
     report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.Port" ) ).append( portNumber ).append( Const.CR );
-    report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.DatabaseName" ) ).append( dbName ).append(
-        Const.CR );
+    report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.DatabaseName" ) ).append( dbName ).append( Const.CR );
     return report;
   }
 }

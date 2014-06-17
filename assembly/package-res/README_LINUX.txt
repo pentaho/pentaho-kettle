@@ -1,7 +1,16 @@
 
-If you want support for the built-in browser in Linux, please install Mozilla XULRunner.
-A lot of distributions ship with this software these days, so we used this as the default configuration option.
-If you want you can change the location in spoon.sh with the MOZILLA_FIVE_HOME environment variable.
+On Ubuntu 12 and higher library libwebkitgtk-1.0-0 needs to be installed.
 
-On Ubuntu 12 (as documented in Jira case PDI-8430), the libwebkitgtk-1.0-0 library needs to be installed.
-See the wiki at http://wiki.pentaho.com/display/COM/PDI+with+Agile+BI+plug-in+on+Ubuntu+12 for instructions on how to install the libary.
+sudo apt-get install libwebkitgtk-1.0.0
+ 
+On Centos you might also need to install this library:
+
+yum install libwebkitgtk
+
+It is installed in the standard desktop installation of Centos 6.5
+
+
+On some installations of Ubuntu 14.04, Unity doesn't display the menu bar.
+In order to fix that, spoon.sh has a setting to disable this integration,
+export UBUNTU_MENUPROXY=0 . You can try to remove that setting if you wish 
+to see if it works propery on your machine

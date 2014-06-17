@@ -62,10 +62,10 @@ import org.w3c.dom.Node;
  * Meta data for the Excel step.
  */
 public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] RequiredFilesDesc = new String[] {
+    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
 
   private static final String NO = "N";
@@ -78,7 +78,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   public static final String[] type_trim_code = { "none", "left", "right", "both" };
 
-  public static final String[] type_trim_desc = { BaseMessages.getString( PKG, "ExcelInputMeta.TrimType.None" ),
+  public static final String[] type_trim_desc = {
+    BaseMessages.getString( PKG, "ExcelInputMeta.TrimType.None" ),
     BaseMessages.getString( PKG, "ExcelInputMeta.TrimType.Left" ),
     BaseMessages.getString( PKG, "ExcelInputMeta.TrimType.Right" ),
     BaseMessages.getString( PKG, "ExcelInputMeta.TrimType.Both" ) };
@@ -726,7 +727,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       errorFilesDestinationDirectory = XMLHandler.getTagValue( stepnode, "error_line_files_destination_directory" );
       errorFilesExtension = XMLHandler.getTagValue( stepnode, "error_line_files_extension" );
       lineNumberFilesDestinationDirectory =
-          XMLHandler.getTagValue( stepnode, "line_number_files_destination_directory" );
+        XMLHandler.getTagValue( stepnode, "line_number_files_destination_directory" );
       lineNumberFilesExtension = XMLHandler.getTagValue( stepnode, "line_number_files_extension" );
 
       shortFileFieldName = XMLHandler.getTagValue( stepnode, "shortFileFieldName" );
@@ -810,7 +811,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < field.length; i++ ) {
       int type = field[i].getType();
       if ( type == ValueMetaInterface.TYPE_NONE ) {
@@ -861,48 +862,49 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( getShortFileNameField() != null && getShortFileNameField().length() > 0 ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( getShortFileNameField() ), ValueMetaInterface.TYPE_STRING );
+        new ValueMeta( space.environmentSubstitute( getShortFileNameField() ), ValueMetaInterface.TYPE_STRING );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( getExtensionField() != null && getExtensionField().length() > 0 ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( getExtensionField() ), ValueMetaInterface.TYPE_STRING );
+        new ValueMeta( space.environmentSubstitute( getExtensionField() ), ValueMetaInterface.TYPE_STRING );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( getPathField() != null && getPathField().length() > 0 ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( getPathField() ), ValueMetaInterface.TYPE_STRING );
+        new ValueMeta( space.environmentSubstitute( getPathField() ), ValueMetaInterface.TYPE_STRING );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( getSizeField() != null && getSizeField().length() > 0 ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( getSizeField() ), ValueMetaInterface.TYPE_INTEGER );
+        new ValueMeta( space.environmentSubstitute( getSizeField() ), ValueMetaInterface.TYPE_INTEGER );
       v.setOrigin( name );
       v.setLength( 9 );
       row.addValueMeta( v );
     }
     if ( isHiddenField() != null && isHiddenField().length() > 0 ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( isHiddenField() ), ValueMetaInterface.TYPE_BOOLEAN );
+        new ValueMeta( space.environmentSubstitute( isHiddenField() ), ValueMetaInterface.TYPE_BOOLEAN );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
 
     if ( getLastModificationDateField() != null && getLastModificationDateField().length() > 0 ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( getLastModificationDateField() ), ValueMetaInterface.TYPE_DATE );
+        new ValueMeta(
+          space.environmentSubstitute( getLastModificationDateField() ), ValueMetaInterface.TYPE_DATE );
       v.setOrigin( name );
       row.addValueMeta( v );
     }
     if ( getUriField() != null && getUriField().length() > 0 ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( getUriField() ), ValueMetaInterface.TYPE_STRING );
+        new ValueMeta( space.environmentSubstitute( getUriField() ), ValueMetaInterface.TYPE_STRING );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
@@ -910,7 +912,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( getRootUriField() != null && getRootUriField().length() > 0 ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( getRootUriField() ), ValueMetaInterface.TYPE_STRING );
+        new ValueMeta( space.environmentSubstitute( getRootUriField() ), ValueMetaInterface.TYPE_STRING );
       v.setLength( 100, -1 );
       v.setOrigin( name );
       row.addValueMeta( v );
@@ -937,7 +939,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "accept_filenames", acceptingFilenames ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "accept_field", acceptingField ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "accept_stepname", ( acceptingStep != null ? acceptingStep.getName() : "" ) ) );
+      XMLHandler.addTagValue( "accept_stepname", ( acceptingStep != null ? acceptingStep.getName() : "" ) ) );
 
     /*
      * Describe the files to read
@@ -993,20 +995,21 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "error_line_skipped", errorLineSkipped ) );
 
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "bad_line_files_destination_directory", warningFilesDestinationDirectory ) );
+      XMLHandler.addTagValue( "bad_line_files_destination_directory", warningFilesDestinationDirectory ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "bad_line_files_extension", warningFilesExtension ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "error_line_files_destination_directory", errorFilesDestinationDirectory ) );
+      XMLHandler.addTagValue( "error_line_files_destination_directory", errorFilesDestinationDirectory ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "error_line_files_extension", errorFilesExtension ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "line_number_files_destination_directory", lineNumberFilesDestinationDirectory ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "line_number_files_extension", lineNumberFilesExtension ) );
+      XMLHandler.addTagValue( "line_number_files_destination_directory", lineNumberFilesDestinationDirectory ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "line_number_files_extension", lineNumberFilesExtension ) );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "shortFileFieldName", shortFileFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "pathFieldName", pathFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "hiddenFieldName", hiddenFieldName ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "lastModificationTimeFieldName", lastModificationTimeFieldName ) );
+      XMLHandler.addTagValue( "lastModificationTimeFieldName", lastModificationTimeFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "uriNameFieldName", uriNameFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "rootUriNameFieldName", rootUriNameFieldName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "extensionFieldName", extensionFieldName ) );
@@ -1017,8 +1020,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       startsWithHeader = rep.getStepAttributeBoolean( id_step, "header" );
       ignoreEmptyRows = rep.getStepAttributeBoolean( id_step, "noempty" );
@@ -1112,8 +1114,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "header", startsWithHeader );
       rep.saveStepAttribute( id_transformation, id_step, "noempty", ignoreEmptyRows );
@@ -1128,8 +1129,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       rep.saveStepAttribute( id_transformation, id_step, "accept_filenames", acceptingFilenames );
       rep.saveStepAttribute( id_transformation, id_step, "accept_field", acceptingField );
-      rep.saveStepAttribute( id_transformation, id_step, "accept_stepname", ( acceptingStep != null ? acceptingStep
-          .getName() : "" ) );
+      rep.saveStepAttribute( id_transformation, id_step, "accept_stepname", ( acceptingStep != null
+        ? acceptingStep.getName() : "" ) );
 
       for ( int i = 0; i < fileName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "file_name", fileName[i] );
@@ -1164,18 +1165,21 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "error_ignored", errorIgnored );
       rep.saveStepAttribute( id_transformation, id_step, "error_line_skipped", errorLineSkipped );
 
-      rep.saveStepAttribute( id_transformation, id_step, "bad_line_files_dest_dir", warningFilesDestinationDirectory );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "bad_line_files_dest_dir", warningFilesDestinationDirectory );
       rep.saveStepAttribute( id_transformation, id_step, "bad_line_files_ext", warningFilesExtension );
-      rep.saveStepAttribute( id_transformation, id_step, "error_line_files_dest_dir", errorFilesDestinationDirectory );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "error_line_files_dest_dir", errorFilesDestinationDirectory );
       rep.saveStepAttribute( id_transformation, id_step, "error_line_files_ext", errorFilesExtension );
-      rep.saveStepAttribute( id_transformation, id_step, "line_number_files_dest_dir",
-          lineNumberFilesDestinationDirectory );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "line_number_files_dest_dir", lineNumberFilesDestinationDirectory );
       rep.saveStepAttribute( id_transformation, id_step, "line_number_files_ext", lineNumberFilesExtension );
 
       rep.saveStepAttribute( id_transformation, id_step, "shortFileFieldName", shortFileFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "pathFieldName", pathFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "hiddenFieldName", hiddenFieldName );
-      rep.saveStepAttribute( id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "lastModificationTimeFieldName", lastModificationTimeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
@@ -1224,13 +1228,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String[] getFilePaths( VariableSpace space ) {
-    return FileInputList.createFilePathList( space, fileName, fileMask, excludeFileMask, fileRequired,
-        includeSubFolderBoolean() );
+    return FileInputList.createFilePathList(
+      space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
   public FileInputList getFileList( VariableSpace space ) {
-    return FileInputList.createFileList( space, fileName, fileMask, excludeFileMask, fileRequired,
-        includeSubFolderBoolean() );
+    return FileInputList.createFileList(
+      space, fileName, fileMask, excludeFileMask, fileRequired, includeSubFolderBoolean() );
   }
 
   private boolean[] includeSubFolderBoolean() {
@@ -1257,28 +1261,28 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     return null;
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // See if we get input...
     if ( input.length > 0 ) {
       if ( !isAcceptingFilenames() ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "ExcelInputMeta.CheckResult.NoInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "ExcelInputMeta.CheckResult.NoInputError" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "ExcelInputMeta.CheckResult.AcceptFilenamesOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "ExcelInputMeta.CheckResult.AcceptFilenamesOk" ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ExcelInputMeta.CheckResult.NoInputOk" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ExcelInputMeta.CheckResult.NoInputOk" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -1286,14 +1290,14 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     if ( fileList.nrOfFiles() == 0 ) {
       if ( !isAcceptingFilenames() ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "ExcelInputMeta.CheckResult.ExpectedFilesError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "ExcelInputMeta.CheckResult.ExpectedFilesError" ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ExcelInputMeta.CheckResult.ExpectedFilesOk", "" + fileList.nrOfFiles() ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ExcelInputMeta.CheckResult.ExpectedFilesOk", "" + fileList.nrOfFiles() ), stepMeta );
       remarks.add( cr );
     }
   }
@@ -1308,8 +1312,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     return row;
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new ExcelInput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -1496,7 +1500,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Read all sheets if the sheet names are left blank.
-   * 
+   *
    * @return true if all sheets are read.
    */
   public boolean readAllSheets() {
@@ -1512,12 +1516,11 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

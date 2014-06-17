@@ -62,12 +62,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit a JobEntryEval object.
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryEval.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryEval.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
 
@@ -171,7 +171,8 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
     fdlScript.left = new FormAttachment( 0, 0 );
     fdlScript.top = new FormAttachment( wName, margin );
     wlScript.setLayoutData( fdlScript );
-    wScript = new StyledTextComp( jobEntry, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+    wScript =
+      new StyledTextComp( jobEntry, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     wScript.setText( BaseMessages.getString( PKG, "JobEval.Script.Default" ) );
     props.setLook( wScript, Props.WIDGET_STYLE_FIXED );
     wScript.addModifyListener( lsMod );

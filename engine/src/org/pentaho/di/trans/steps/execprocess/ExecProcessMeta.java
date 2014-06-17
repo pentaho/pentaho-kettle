@@ -52,11 +52,11 @@ import org.w3c.dom.Node;
 
 /*
  * Created on 03-11-2008
- * 
+ *
  */
 
 public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = ExecProcessMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExecProcessMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** dynamic process field name */
   private String processfield;
@@ -173,7 +173,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output fields (String)
     String realOutputFieldname = space.environmentSubstitute( resultfieldname );
     if ( !Const.isEmpty( realOutputFieldname ) ) {
@@ -222,12 +222,12 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
         outputLineDelimiter = ""; // default to empty string for backward compatibility
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "ExecProcessMeta.Exception.UnableToReadStepInfo" ), e );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "ExecProcessMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       processfield = rep.getStepAttributeString( id_step, "processfield" );
       resultfieldname = rep.getStepAttributeString( id_step, "resultfieldname" );
@@ -239,13 +239,12 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
         outputLineDelimiter = ""; // default to empty string for backward compatibility
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "ExecProcessMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "ExecProcessMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "processfield", processfield );
       rep.saveStepAttribute( id_transformation, id_step, "resultfieldname", resultfieldname );
@@ -255,13 +254,13 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "outputlinedelimiter", outputLineDelimiter );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "ExecProcessMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -286,19 +285,19 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ExecProcessMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ExecProcessMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ExecProcessMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "ExecProcessMeta.CheckResult.NoInpuReceived" ), stepMeta );
     }
     remarks.add( cr );
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new ExecProcess( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

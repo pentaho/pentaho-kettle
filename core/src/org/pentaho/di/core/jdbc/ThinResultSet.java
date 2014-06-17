@@ -91,8 +91,7 @@ public class ThinResultSet implements ResultSet {
   private String sqlObjectId;
   private AtomicBoolean stopped;
 
-  public ThinResultSet( ThinStatement statement, String urlString, String username, String password, String sql )
-    throws SQLException {
+  public ThinResultSet( ThinStatement statement, String urlString, String username, String password, String sql ) throws SQLException {
     this.statement = statement;
     this.connection = (ThinConnection) statement.getConnection();
 
@@ -109,9 +108,11 @@ public class ThinResultSet implements ResultSet {
         client.getHttpConnectionManager().getParams().setConnectionTimeout( 0 );
         client.getHttpConnectionManager().getParams().setSoTimeout( 0 );
 
-        HttpUtil.addCredentials( client, new Variables(), connection.getHostname(), connection.getPort(), connection
-            .getWebAppName(), connection.getUsername(), connection.getPassword() );
-        HttpUtil.addProxy( client, new Variables(), connection.getHostname(), connection.getProxyHostname(), connection
+        HttpUtil.addCredentials(
+          client, new Variables(), connection.getHostname(), connection.getPort(), connection.getWebAppName(),
+          connection.getUsername(), connection.getPassword() );
+        HttpUtil.addProxy(
+          client, new Variables(), connection.getHostname(), connection.getProxyHostname(), connection
             .getProxyPort(), connection.getNonProxyHosts() );
 
         method = new PostMethod( urlString );
@@ -129,19 +130,19 @@ public class ThinResultSet implements ResultSet {
 
         if ( result == 500 ) {
           String response = getErrorString( method.getResponseBodyAsStream() );
-          throw new KettleException( "Error 500 reading data from slave server, url='" + urlString + "', response: "
-              + response );
+          throw new KettleException( "Error 500 reading data from slave server, url='"
+            + urlString + "', response: " + response );
         }
         if ( result == 401 ) {
           String response = getErrorString( method.getResponseBodyAsStream() );
           throw new KettleException(
-              "Access denied error 401 received while attempting to read data from server, url='" + urlString
-                  + "', response: " + response );
+            "Access denied error 401 received while attempting to read data from server, url='"
+              + urlString + "', response: " + response );
         }
         if ( result != 200 ) {
           String response = getErrorString( method.getResponseBodyAsStream() );
-          throw new KettleException( "Error received while attempting to read data from server, url='" + urlString
-              + "', response: " + response );
+          throw new KettleException( "Error received while attempting to read data from server, url='"
+            + urlString + "', response: " + response );
         }
 
         dataInputStream = new DataInputStream( method.getResponseBodyAsStream() );
@@ -164,7 +165,8 @@ public class ThinResultSet implements ResultSet {
         close();
       }
     } catch ( Exception e ) {
-      throw new SQLException( "Unable to get open query for SQL: " + sql + Const.CR + Const.getStackTracker( e ), e );
+      throw new SQLException(
+        "Unable to get open query for SQL: " + sql + Const.CR + Const.getStackTracker( e ), e );
     }
   }
 
@@ -177,12 +179,13 @@ public class ThinResultSet implements ResultSet {
       stopped.set( true );
       try {
         String reply =
-            HttpUtil.execService( new Variables(), connection.getHostname(), connection.getPort(), connection
-                .getWebAppName(),
-                connection.getService() + "/stopTrans" + "/?name=" + URLEncoder.encode( serviceTransName, "UTF-8" )
-                    + "&id=" + Const.NVL( serviceObjectId, "" ) + "&xml=Y", connection.getUsername(), connection
-                    .getPassword(), connection.getProxyHostname(), connection.getProxyPort(), connection
-                    .getNonProxyHosts() );
+          HttpUtil.execService(
+            new Variables(), connection.getHostname(), connection.getPort(), connection.getWebAppName(),
+            connection.getService()
+              + "/stopTrans" + "/?name=" + URLEncoder.encode( serviceTransName, "UTF-8" ) + "&id="
+              + Const.NVL( serviceObjectId, "" ) + "&xml=Y", connection.getUsername(), connection
+              .getPassword(), connection.getProxyHostname(), connection.getProxyPort(), connection
+              .getNonProxyHosts() );
 
         WebResult webResult = new WebResult( XMLHandler.loadXMLString( reply, WebResult.XML_TAG ) );
         if ( !"OK".equals( webResult.getResult() ) ) {
@@ -235,26 +238,29 @@ public class ThinResultSet implements ResultSet {
   private void checkTransStatus( String transformationName, String transformationObjectId ) throws SQLException {
     try {
       String xml =
-          HttpUtil.execService( new Variables(), connection.getHostname(), connection.getPort(), connection
-              .getWebAppName(), connection.getService() + "/transStatus/?name="
-              + URLEncoder.encode( transformationName, "UTF-8" ) + "&id=" + Const.NVL( transformationObjectId, "" )
-              + "&xml=Y", connection.getUsername(), connection.getPassword(), connection.getProxyHostname(), connection
-              .getProxyPort(), connection.getNonProxyHosts() );
+        HttpUtil.execService( new Variables(), connection.getHostname(), connection.getPort(), connection
+          .getWebAppName(), connection.getService()
+          + "/transStatus/?name=" + URLEncoder.encode( transformationName, "UTF-8" ) + "&id="
+          + Const.NVL( transformationObjectId, "" ) + "&xml=Y", connection.getUsername(), connection
+          .getPassword(), connection.getProxyHostname(), connection.getProxyPort(), connection
+          .getNonProxyHosts() );
       Document doc = XMLHandler.loadXMLString( xml );
       Node resultNode = XMLHandler.getSubNode( doc, "transstatus", "result" );
       Result result = new Result( resultNode );
-      String loggingString64 = XMLHandler.getNodeValue( XMLHandler.getSubNode( doc, "transstatus", "logging_string" ) );
+      String loggingString64 =
+        XMLHandler.getNodeValue( XMLHandler.getSubNode( doc, "transstatus", "logging_string" ) );
       String log = "";
       if ( !Const.isEmpty( loggingString64 ) ) {
         String dataString64 =
-            loggingString64.substring( "<![CDATA[".length(), loggingString64.length() - "]]>".length() );
+          loggingString64.substring( "<![CDATA[".length(), loggingString64.length() - "]]>".length() );
         log = HttpUtil.decodeBase64ZippedString( dataString64 );
       }
 
       // Check for errors
       //
       if ( !result.getResult() || result.getNrErrors() > 0 ) {
-        throw new KettleException( "The SQL query transformation failed with the following log text:" + Const.CR + log );
+        throw new KettleException( "The SQL query transformation failed with the following log text:"
+          + Const.CR + log );
       }
 
       // See if the transformation was stopped remotely
@@ -272,7 +278,7 @@ public class ThinResultSet implements ResultSet {
 
     } catch ( Exception e ) {
       throw new SQLException( "Couldn't validate correct execution of SQL query for transformation ["
-          + transformationName + "]", e );
+        + transformationName + "]", e );
     }
 
   }

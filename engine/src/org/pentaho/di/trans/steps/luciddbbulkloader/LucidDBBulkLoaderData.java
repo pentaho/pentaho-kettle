@@ -32,7 +32,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Stores data for the LucidDB bulk load step.
- * 
+ *
  * @author Matt
  * @since 14-nov-2008
  */

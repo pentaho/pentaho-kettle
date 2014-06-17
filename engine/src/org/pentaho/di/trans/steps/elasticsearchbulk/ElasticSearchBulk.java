@@ -65,7 +65,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Does bulk insert of data into ElasticSearch
- * 
+ *
  * @author webdetails
  * @since 16-02-2011
  */
@@ -109,8 +109,8 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
 
   private IndexRequest.OpType opType = OpType.CREATE;
 
-  public ElasticSearchBulk( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public ElasticSearchBulk( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -149,12 +149,12 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
 
   /**
    * Initialize <code>this.data</code>
-   * 
+   *
    * @throws KettleStepException
    */
   private void setupData() throws KettleStepException {
     data.nextBufferRowIdx = 0;
-    data.inputRowMeta = getInputRowMeta().clone();// only available after first getRow();
+    data.inputRowMeta = getInputRowMeta().clone(); // only available after first getRow();
     data.inputRowBuffer = new Object[batchSize][];
     data.outputRowMeta = data.inputRowMeta.clone();
     meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
@@ -197,8 +197,8 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   }
 
   /**
-   * 
-   * 
+   *
+   *
    * @param outputRowData
    */
 
@@ -209,7 +209,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
       requestBuilder.setOpType( this.opType );
 
       if ( idFieldIndex != null ) {
-        requestBuilder.setId( "" + row[idFieldIndex] );// "" just in case field isn't string
+        requestBuilder.setId( "" + row[idFieldIndex] ); // "" just in case field isn't string
       }
 
       if ( isJsonInsert ) {
@@ -233,7 +233,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
       throw new KettleStepException( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Error.NoNodesFound" ) );
     } catch ( Exception e ) {
       throw new KettleStepException( BaseMessages.getString( PKG, "ElasticSearchBulk.Log.Exception", e
-          .getLocalizedMessage() ), e );
+        .getLocalizedMessage() ), e );
     }
   }
 
@@ -258,12 +258,11 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
    * @param row
    * @throws IOException
    */
-  private void addSourceFromRowFields( IndexRequestBuilder requestBuilder, RowMetaInterface rowMeta, Object[] row )
-    throws IOException {
+  private void addSourceFromRowFields( IndexRequestBuilder requestBuilder, RowMetaInterface rowMeta, Object[] row ) throws IOException {
     XContentBuilder jsonBuilder = XContentFactory.jsonBuilder().startObject();
 
     for ( int i = 0; i < rowMeta.size(); i++ ) {
-      if ( idFieldIndex != null && i == idFieldIndex ) {// skip id
+      if ( idFieldIndex != null && i == idFieldIndex ) { // skip id
         continue;
       }
 
@@ -301,7 +300,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
 
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "ElasticSearchBulk.Log.ErrorOccurredDuringStepInitialize" )
-            + e.getMessage() );
+          + e.getMessage() );
       }
       return true;
     }
@@ -326,7 +325,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     this.hasFields = columnsToJson.size() > 0;
 
     this.opType =
-        StringUtils.isNotBlank( meta.getIdInField() ) && meta.isOverWriteIfSameId() ? OpType.INDEX : OpType.CREATE;
+      StringUtils.isNotBlank( meta.getIdInField() ) && meta.isOverWriteIfSameId() ? OpType.INDEX : OpType.CREATE;
 
   }
 
@@ -343,7 +342,8 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
         response = actionFuture.actionGet();
       }
     } catch ( ElasticSearchException e ) {
-      String msg = BaseMessages.getString( PKG, "ElasticSearchBulk.Error.BatchExecuteFail", e.getLocalizedMessage() );
+      String msg =
+        BaseMessages.getString( PKG, "ElasticSearchBulk.Error.BatchExecuteFail", e.getLocalizedMessage() );
       if ( e instanceof ElasticSearchTimeoutException ) {
         msg = BaseMessages.getString( PKG, "ElasticSearchBulk.Error.Timeout" );
       }
@@ -354,7 +354,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     if ( response != null ) {
       responseOk = handleResponse( response );
       requestsBuffer.clear();
-    } else {// have to assume all failed
+    } else { // have to assume all failed
       numberOfErrors += currentRequest.numberOfActions();
       setErrors( numberOfErrors );
     }
@@ -421,14 +421,14 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   private void addIdToRow( String id, int rowIndex ) {
 
     data.inputRowBuffer[rowIndex] =
-        RowDataUtil.resizeArray( data.inputRowBuffer[rowIndex], getInputRowMeta().size() + 1 );
+      RowDataUtil.resizeArray( data.inputRowBuffer[rowIndex], getInputRowMeta().size() + 1 );
     data.inputRowBuffer[rowIndex][getInputRowMeta().size()] = id;
 
   }
 
   /**
    * Send input row to output
-   * 
+   *
    * @param rowIndex
    */
   private void echoRow( int rowIndex ) {
@@ -445,7 +445,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
 
   /**
    * Send input row to error.
-   * 
+   *
    * @param index
    * @param errorMsg
    */
@@ -470,7 +470,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   private void initClient() {
 
     ImmutableSettings.Builder settingsBuilder = ImmutableSettings.settingsBuilder();
-    settingsBuilder.put( ImmutableSettings.Builder.EMPTY_SETTINGS );// keep default classloader
+    settingsBuilder.put( ImmutableSettings.Builder.EMPTY_SETTINGS ); // keep default classloader
     settingsBuilder.put( meta.getSettings() );
     Settings settings = settingsBuilder.build();
 
@@ -485,7 +485,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     } else {
       NodeBuilder nodeBuilder = NodeBuilder.nodeBuilder();
       nodeBuilder.settings( settings );
-      node = nodeBuilder.client( true ).node();// this node will not hold data
+      node = nodeBuilder.client( true ).node(); // this node will not hold data
       client = node.client();
       node.start();
     }

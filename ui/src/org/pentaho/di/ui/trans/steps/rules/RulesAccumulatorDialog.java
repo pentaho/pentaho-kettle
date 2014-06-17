@@ -80,8 +80,9 @@ public class RulesAccumulatorDialog extends BaseStepXulDialog implements StepDia
       bf.createBinding( "rule-file-radio-button", "selected", "rule-file", "!disabled" ).fireSourceChanged();
       bf.createBinding( "rule-file-radio-button", "selected", "rule-definition", "disabled" ).fireSourceChanged();
 
-      bf.createBinding( "rule-definition-radio-button", "selected", "rule-definition", "!disabled" )
-          .fireSourceChanged();
+      bf
+        .createBinding( "rule-definition-radio-button", "selected", "rule-definition", "!disabled" )
+        .fireSourceChanged();
       bf.createBinding( "rule-definition-radio-button", "selected", "rule-file", "disabled" ).fireSourceChanged();
     } catch ( Exception e ) {
       e.printStackTrace();

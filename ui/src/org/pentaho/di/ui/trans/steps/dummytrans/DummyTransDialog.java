@@ -48,7 +48,7 @@ import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class DummyTransDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = DummyTransMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DummyTransMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DummyTransMeta input;
 

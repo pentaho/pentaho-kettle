@@ -62,12 +62,12 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a MySQL job entry.
- * 
+ *
  * @author Samatar Hassan
  * @since Jan-2007
  */
 public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryMysqlBulkLoad.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryMysqlBulkLoad.class; // for i18n purposes, needed by Translator2!!
 
   private String schemaname;
   private String tablename;
@@ -102,7 +102,6 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
     localinfile = true;
     connection = null;
     addfiletoresult = false;
-    setID( -1L );
   }
 
   public JobEntryMysqlBulkLoad() {
@@ -138,13 +137,13 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
     retval.append( "      " ).append( XMLHandler.addTagValue( "addfiletoresult", addfiletoresult ) );
 
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
+      XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
 
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       schemaname = XMLHandler.getTagValue( entrynode, "schemaname" );
@@ -170,7 +169,7 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       schemaname = rep.getJobEntryAttributeString( id_jobentry, "schemaname" );
       tablename = rep.getJobEntryAttributeString( id_jobentry, "tablename" );
@@ -190,7 +189,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
       connection = rep.loadDatabaseMetaFromJobEntryAttribute( id_jobentry, "connection", "id_database", databases );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException(
-          "Unable to load job entry of type 'Mysql bulk load' from the repository for id_jobentry=" + id_jobentry, dbe );
+        "Unable to load job entry of type 'Mysql bulk load' from the repository for id_jobentry=" + id_jobentry,
+        dbe );
     }
   }
 
@@ -213,8 +213,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
       rep.saveDatabaseMetaJobEntryAttribute( id_job, getObjectId(), "connection", "id_database", connection );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'Mysql Bulk Load' to the repository for id_job="
-          + id_job, dbe );
+      throw new KettleException(
+        "Unable to load job entry of type 'Mysql Bulk Load' to the repository for id_job=" + id_job, dbe );
     }
   }
 
@@ -278,8 +278,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
         if ( !( fileObject instanceof LocalFile ) ) {
           // MySQL LOAD DATA can only use local files, so that's what we limit ourselves to.
           //
-          throw new KettleException( "Only local files are supported at this time, file [" + vfsFilename
-              + "] is not a local file." );
+          throw new KettleException( "Only local files are supported at this time, file ["
+            + vfsFilename + "] is not a local file." );
         }
 
         // Convert it to a regular platform specific file name
@@ -355,17 +355,18 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 
                   if ( getRealSeparator() != null ) {
                     FieldTerminatedby =
-                        FieldTerminatedby + "TERMINATED BY '" + Const.replace( getRealSeparator(), "'", "''" ) + "'";
+                      FieldTerminatedby
+                        + "TERMINATED BY '" + Const.replace( getRealSeparator(), "'", "''" ) + "'";
                   }
                   if ( getRealEnclosed() != null ) {
                     FieldTerminatedby =
-                        FieldTerminatedby + " ENCLOSED BY '" + Const.replace( getRealEnclosed(), "'", "''" ) + "'";
+                      FieldTerminatedby + " ENCLOSED BY '" + Const.replace( getRealEnclosed(), "'", "''" ) + "'";
 
                   }
                   if ( getRealEscaped() != null ) {
 
                     FieldTerminatedby =
-                        FieldTerminatedby + " ESCAPED BY '" + Const.replace( getRealEscaped(), "'", "''" ) + "'";
+                      FieldTerminatedby + " ESCAPED BY '" + Const.replace( getRealEscaped(), "'", "''" ) + "'";
 
                   }
                 }
@@ -377,21 +378,23 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                   // Line starting By
                   if ( getRealLinestarted() != null ) {
                     LineTerminatedby =
-                        LineTerminatedby + "STARTING BY '" + Const.replace( getRealLinestarted(), "'", "''" ) + "'";
+                      LineTerminatedby
+                        + "STARTING BY '" + Const.replace( getRealLinestarted(), "'", "''" ) + "'";
                   }
 
                   // Line terminating By
                   if ( getRealLineterminated() != null ) {
                     LineTerminatedby =
-                        LineTerminatedby + " TERMINATED BY '" + Const.replace( getRealLineterminated(), "'", "''" )
-                            + "'";
+                      LineTerminatedby
+                        + " TERMINATED BY '" + Const.replace( getRealLineterminated(), "'", "''" ) + "'";
                   }
                 }
 
                 String SQLBULKLOAD =
-                    "LOAD DATA " + PriorityText + " " + LocalExec + " INFILE '" + realFilename.replace( '\\', '/' )
-                        + "' " + ReplaceIgnore + " INTO TABLE " + realTablename + " " + FieldTerminatedby + " "
-                        + LineTerminatedby + " " + IgnoreNbrLignes + " " + ListOfColumn + ";";
+                  "LOAD DATA "
+                    + PriorityText + " " + LocalExec + " INFILE '" + realFilename.replace( '\\', '/' ) + "' "
+                    + ReplaceIgnore + " INTO TABLE " + realTablename + " " + FieldTerminatedby + " "
+                    + LineTerminatedby + " " + IgnoreNbrLignes + " " + ListOfColumn + ";";
 
                 try {
                   // Run the SQL
@@ -403,8 +406,9 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                   if ( isAddFileToResult() ) {
                     // Add zip filename to output files
                     ResultFile resultFile =
-                        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ),
-                            parentJob.getJobname(), toString() );
+                      new ResultFile(
+                        ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ), parentJob
+                          .getJobname(), toString() );
                     result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
                   }
 
@@ -612,8 +616,8 @@ public class JobEntryMysqlBulkLoad extends JobEntryBase implements Cloneable, Jo
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace( ctx, getVariables() );
     putValidators( ctx, notBlankValidator(), fileExistsValidator() );

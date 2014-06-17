@@ -61,14 +61,13 @@ import com.healthmarketscience.jackcess.Database;
 
 /**
  * This defines a 'MS Access Bulk Load' job entry. It will compare to load data from files into Microsoft Access files
- * 
+ *
  * @author Samatar Hassan
  * @since 24-07-2008
- * 
+ *
  */
 public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryMSAccessBulkLoad.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   private boolean add_result_filenames;
   private boolean include_subfolders;
@@ -103,8 +102,6 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
     delimiter = null;
     target_Db = null;
     target_table = null;
-
-    setID( -1L );
   }
 
   public JobEntryMSAccessBulkLoad() {
@@ -167,8 +164,8 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       include_subfolders = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "include_subfolders" ) );
@@ -199,12 +196,12 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
       }
     } catch ( KettleXMLException xe ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Meta.UnableLoadXML", xe
-          .getMessage() ), xe );
+        .getMessage() ), xe );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       include_subfolders = rep.getJobEntryAttributeBoolean( id_jobentry, "include_subfolders" );
       add_result_filenames = rep.getJobEntryAttributeBoolean( id_jobentry, "add_result_filenames" );
@@ -231,14 +228,15 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
       }
     } catch ( KettleException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Meta.UnableLoadRep", ""
-          + id_jobentry, dbe.getMessage() ), dbe );
+        + id_jobentry, dbe.getMessage() ), dbe );
     }
   }
 
   private void displayResults() {
     if ( log.isDetailed() ) {
       logDetailed( "=======================================" );
-      logDetailed( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.Info.FilesToLoad", "" + NrFilesToProcess ) );
+      logDetailed( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.Info.FilesToLoad", ""
+        + NrFilesToProcess ) );
       logDetailed( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.Info.FilesLoaded", "" + NrSuccess ) );
       logDetailed( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.Info.NrErrors", "" + NrErrors ) );
       logDetailed( "=======================================" );
@@ -264,17 +262,19 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
   private void addFileToResultFilenames( String fileaddentry, Result result, Job parentJob ) {
     try {
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileaddentry, this ), parentJob
-              .getJobname(), toString() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileaddentry, this ), parentJob
+          .getJobname(), toString() );
       result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
 
       if ( log.isDebug() ) {
         logDebug( " ------ " );
-        logDebug( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.FileAddedToResultFilesName", fileaddentry ) );
+        logDebug( BaseMessages.getString(
+          PKG, "JobEntryMSAccessBulkLoad.Log.FileAddedToResultFilesName", fileaddentry ) );
       }
     } catch ( Exception e ) {
-      log.logError( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Error.AddingToFilenameResult" ),
-          fileaddentry + "" + e.getMessage() );
+      log.logError(
+        BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Error.AddingToFilenameResult" ), fileaddentry
+          + "" + e.getMessage() );
     }
   }
 
@@ -297,13 +297,13 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
         }
       }
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Meta.UnableSave", "" + id_job,
-          dbe.getMessage() ), dbe );
+      throw new KettleException( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Meta.UnableSave", ""
+        + id_job, dbe.getMessage() ), dbe );
     }
   }
 
   /**********************************************************
-   * 
+   *
    * @param selectedfile
    * @param wildcard
    * @return True if the selectedfile matches the wildcard
@@ -323,8 +323,8 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
     return getIt;
   }
 
-  private boolean processOneRow( String sourceFileFolder, String SourceWildcard, String Delimiter, String targetDb,
-      String targetTable, Job parentJob, Result result ) {
+  private boolean processOneRow( String sourceFileFolder, String SourceWildcard, String Delimiter,
+    String targetDb, String targetTable, Job parentJob, Result result ) {
     boolean retval = false;
     try {
       File sourcefilefolder = new File( sourceFileFolder );
@@ -375,7 +375,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
   }
 
   private boolean importFile( String sourceFilename, String delimiter, String targetFilename, String tablename,
-      Result result, Job parentJob ) {
+    Result result, Job parentJob ) {
     boolean retval = false;
 
     try {
@@ -407,8 +407,8 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
       // load data from file
       Database.open( targetDbFile ).importFile( tablename, sourceDataFile, delimiter );
 
-      logBasic( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.FileImported", sourceFilename, tablename,
-          targetFilename ) );
+      logBasic( BaseMessages.getString(
+        PKG, "JobEntryMSAccessBulkLoad.Log.FileImported", sourceFilename, tablename, targetFilename ) );
 
       // add filename to result filename
       if ( add_result_filenames ) {
@@ -417,8 +417,8 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 
       retval = true;
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Error.LoadingDataToFile", sourceFilename,
-          targetFilename, e.getMessage() ) );
+      logError( BaseMessages.getString(
+        PKG, "JobEntryMSAccessBulkLoad.Error.LoadingDataToFile", sourceFilename, targetFilename, e.getMessage() ) );
 
     }
     if ( retval ) {
@@ -440,7 +440,7 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
   private boolean checkIfSuccessConditionBroken() {
     boolean retval = false;
     if ( ( NrErrors > 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
-        || ( NrErrors >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
+      || ( NrErrors >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
       retval = true;
     }
     return retval;
@@ -478,12 +478,14 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
 
       if ( is_args_from_previous ) {
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.ArgFromPrevious.Found",
-              ( rows != null ? rows.size() : 0 ) + "" ) );
+          logDetailed( BaseMessages.getString(
+            PKG, "JobEntryMSAccessBulkLoad.Log.ArgFromPrevious.Found", ( rows != null ? rows.size() : 0 ) + "" ) );
         }
       }
       if ( is_args_from_previous && rows != null ) {
-        for ( int iteration = 0; iteration < rows.size() && !parentJob.isStopped() && continueProcessing; iteration++ ) {
+        for ( int iteration = 0; iteration < rows.size()
+          && !parentJob.isStopped()
+          && continueProcessing; iteration++ ) {
           resultRow = rows.get( iteration );
 
           // Get source and destination file names, also wildcard
@@ -493,8 +495,9 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
           String vTargetDb_previous = resultRow.getString( 3, null );
           String vTargetTable_previous = resultRow.getString( 4, null );
 
-          processOneRow( vSourceFileFolder_previous, vSourceWildcard_previous, vDelimiter_previous, vTargetDb_previous,
-              vTargetTable_previous, parentJob, result );
+          processOneRow(
+            vSourceFileFolder_previous, vSourceWildcard_previous, vDelimiter_previous, vTargetDb_previous,
+            vTargetTable_previous, parentJob, result );
 
         }
       } else if ( vsourceFilefolder != null && targetDb != null && targetTable != null ) {
@@ -506,8 +509,9 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
           String realTargetDb = environmentSubstitute( targetDb[i] );
           String realTargetTable = environmentSubstitute( targetTable[i] );
 
-          processOneRow( realSourceFileFolder, realSourceWildcard, realSourceDelimiter, realTargetDb, realTargetTable,
-              parentJob, result );
+          processOneRow(
+            realSourceFileFolder, realSourceWildcard, realSourceDelimiter, realTargetDb, realTargetTable,
+            parentJob, result );
         }
       }
     } catch ( Exception e ) {
@@ -531,8 +535,8 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
     boolean retval = false;
 
     if ( ( NrErrors == 0 && getSuccessCondition().equals( SUCCESS_IF_NO_ERRORS ) )
-        || ( NrSuccess >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_AT_LEAST ) )
-        || ( NrErrors <= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
+      || ( NrSuccess >= limitFiles && getSuccessCondition().equals( SUCCESS_IF_AT_LEAST ) )
+      || ( NrErrors <= limitFiles && getSuccessCondition().equals( SUCCESS_IF_ERRORS_LESS ) ) ) {
       retval = true;
     }
 
@@ -543,8 +547,8 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
     return true;
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
 
     if ( res == false ) {

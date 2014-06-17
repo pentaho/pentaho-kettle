@@ -113,7 +113,7 @@ public class MDXValuesHighlight implements LineStyleListener {
       new Color( display, new RGB( 0, 0, 255 ) ), // blue
       new Color( display, new RGB( 255, 0, 255 ) ) // SQL Functions / Rose
 
-        };
+    };
     tokenColors = new int[MAXIMUM_TOKEN];
     tokenColors[WORD] = 0;
     tokenColors[WHITE] = 0;
@@ -153,34 +153,34 @@ public class MDXValuesHighlight implements LineStyleListener {
     }
     token = scanner.nextToken();
     while ( token != EOF ) {
-      if ( token == OTHER ) {
-        // do nothing
-      } else if ( ( token == WHITE ) && ( !styles.isEmpty() ) ) {
-        int start = scanner.getStartOffset() + event.lineOffset;
-        lastStyle = styles.lastElement();
-        if ( lastStyle.fontStyle != SWT.NORMAL ) {
-          if ( lastStyle.start + lastStyle.length == start ) {
-            // have the white space take on the style before it to minimize font style
-            // changes
-            lastStyle.length += scanner.getLength();
+      if ( token != OTHER ) {
+        if ( ( token == WHITE ) && ( !styles.isEmpty() ) ) {
+          int start = scanner.getStartOffset() + event.lineOffset;
+          lastStyle = styles.lastElement();
+          if ( lastStyle.fontStyle != SWT.NORMAL ) {
+            if ( lastStyle.start + lastStyle.length == start ) {
+              // have the white space take on the style before it to minimize font style
+              // changes
+              lastStyle.length += scanner.getLength();
+            }
           }
-        }
-      } else {
-        Color color = getColor( token );
-        if ( color != colors[0] ) { // hardcoded default foreground color, black
-          StyleRange style =
+        } else {
+          Color color = getColor( token );
+          if ( color != colors[0] ) { // hardcoded default foreground color, black
+            StyleRange style =
               new StyleRange( scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null );
-          if ( token == KEY ) {
+            // if ( token == KEY ) {
             // style.fontStyle = SWT.BOLD;
-          }
-          if ( styles.isEmpty() ) {
-            styles.addElement( style );
-          } else {
-            lastStyle = styles.lastElement();
-            if ( lastStyle.similarTo( style ) && ( lastStyle.start + lastStyle.length == style.start ) ) {
-              lastStyle.length += style.length;
-            } else {
+            // }
+            if ( styles.isEmpty() ) {
               styles.addElement( style );
+            } else {
+              lastStyle = styles.lastElement();
+              if ( lastStyle.similarTo( style ) && ( lastStyle.start + lastStyle.length == style.start ) ) {
+                lastStyle.length += style.length;
+              } else {
+                styles.addElement( style );
+              }
             }
           }
         }
@@ -264,23 +264,26 @@ public class MDXValuesHighlight implements LineStyleListener {
     protected int fStartToken;
     protected boolean fEofSeen = false;
 
-    private String[] kfKeywords = { "Ancestor", "ClosingPeriod", "Cousin", "FirstChild", "FirstSibling", "Item", "Lag",
-      "LastChild", "LastSibling", "Lead", "LinkMember", "OpeningPeriod", "ParallelPeriod", "Parent", "PrevMember",
-      "StrToMember", "UnknownMember", "ValidMeasure", "Error", "Current", "Item", "Root", "StrToTuple", "Leaves",
-      "This", "UserName", "UniqueName", "TupleToStr", "SetToStr", "Properties", "Name", "MemberToStr", "LookupCube",
-      "IIf", "Generate", "CoalesceEmpty", "CalculationPassValue", "ISEMPTY", "ABSOLUTE", "COUNT", "AVERAGE", "min",
-      "max"
+    private String[] kfKeywords = {
+      "Ancestor", "ClosingPeriod", "Cousin", "FirstChild", "FirstSibling", "Item", "Lag", "LastChild",
+      "LastSibling", "Lead", "LinkMember", "OpeningPeriod", "ParallelPeriod", "Parent", "PrevMember",
+      "StrToMember", "UnknownMember", "ValidMeasure", "Error", "Current", "Item", "Root", "StrToTuple",
+      "Leaves", "This", "UserName", "UniqueName", "TupleToStr", "SetToStr", "Properties", "Name", "MemberToStr",
+      "LookupCube", "IIf", "Generate", "CoalesceEmpty", "CalculationPassValue", "ISEMPTY", "ABSOLUTE", "COUNT",
+      "AVERAGE", "min", "max"
 
     };
 
-    private String[] fgKeywords = { "ABSOLUTE", "DESC", "LEAVES", "SELF_BEFORE_AFTER", "INTERSECT", "SELECT", "on",
-      "column", "crossjoin", "join", "or", "by", "non", "set", "all", "after", "distinct", "asc", "as", "and", "axis",
-      "false", "true", "for", "null", "union", "global", "select", "columns", "row", "rows", "from", "cell", "call",
-      "filter", "topsum", "freeze", "tree", "totals", "topcount", "type", "unique", "use", "pass", "post", "ignore",
-      "value", "where", "with", "xor", "lead", "LASTCHILD", "value", "group", "generate", "cell", "calculations",
-      "totals", "drop", "sort", "level", "sort", "DESCENDANTS", "DRILLDOWNLEVEL", "DRILLDOWNLEVELBOTTOM", "members",
-      "DEFAULT_MEMBER", "DEFAULTMEMBER", "CHILDREN", "PAGES", "DIMENSIONS", "DIMENSION", "INDEX", "var", "RECURSIVE",
-      "WITH", "CACHE", "filter", "NEXTMEMBER", "EMPTY", "MEASURE", "DISTINCTCOUNT", "UPDATE", "CUBE", "error" };
+    private String[] fgKeywords = {
+      "ABSOLUTE", "DESC", "LEAVES", "SELF_BEFORE_AFTER", "INTERSECT", "SELECT", "on", "column", "crossjoin",
+      "join", "or", "by", "non", "set", "all", "after", "distinct", "asc", "as", "and", "axis", "false", "true",
+      "for", "null", "union", "global", "select", "columns", "row", "rows", "from", "cell", "call", "filter",
+      "topsum", "freeze", "tree", "totals", "topcount", "type", "unique", "use", "pass", "post", "ignore",
+      "value", "where", "with", "xor", "lead", "LASTCHILD", "value", "group", "generate", "cell",
+      "calculations", "totals", "drop", "sort", "level", "sort", "DESCENDANTS", "DRILLDOWNLEVEL",
+      "DRILLDOWNLEVELBOTTOM", "members", "DEFAULT_MEMBER", "DEFAULTMEMBER", "CHILDREN", "PAGES", "DIMENSIONS",
+      "DIMENSION", "INDEX", "var", "RECURSIVE", "WITH", "CACHE", "filter", "NEXTMEMBER", "EMPTY", "MEASURE",
+      "DISTINCTCOUNT", "UPDATE", "CUBE", "error" };
 
     public JavaScanner() {
       initialize();

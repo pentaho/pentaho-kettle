@@ -29,7 +29,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 public class ProcessFilesData extends BaseStepData implements StepDataInterface {
   public int indexOfSourceFilename;
@@ -37,9 +37,6 @@ public class ProcessFilesData extends BaseStepData implements StepDataInterface 
   public FileObject sourceFile;
   public FileObject targetFile;
 
-  /**
-	 * 
-	 */
   public ProcessFilesData() {
     super();
     indexOfSourceFilename = -1;

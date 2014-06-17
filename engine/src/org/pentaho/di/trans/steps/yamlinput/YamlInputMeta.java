@@ -59,12 +59,12 @@ import org.w3c.dom.Node;
  * Store run-time data on the YamlInput step.
  */
 public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = YamlInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = YamlInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final String YES = "Y";
 
-  public static final String[] RequiredFilesDesc = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  public static final String[] RequiredFilesDesc = new String[] {
+    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
 
   /** Array of filenames */
@@ -506,7 +506,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
       yamlField = XMLHandler.getTagValue( stepnode, "YamlField" );
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "YamlInputMeta.Exception.ErrorLoadingXML", e
-          .toString() ) );
+        .toString() ) );
     }
   }
 
@@ -552,7 +552,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     int i;
     for ( i = 0; i < inputFields.length; i++ ) {
       YamlInputField field = inputFields[i];
@@ -588,8 +588,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
 
     try {
       includeFilename = rep.getStepAttributeBoolean( id_step, "include" );
@@ -629,8 +628,8 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
         field.setGroupSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
         field.setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         field.setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
-        field.setTrimType( YamlInputField
-            .getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
+        field.setTrimType( YamlInputField.getTrimTypeByCode( rep.getStepAttributeString(
+          id_step, i, "field_trim_type" ) ) );
 
         inputFields[i] = field;
       }
@@ -639,12 +638,12 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       yamlField = rep.getStepAttributeString( id_step, "YamlField" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "YamlInputMeta.Exception.ErrorReadingRepository" ), e );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "YamlInputMeta.Exception.ErrorReadingRepository" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "include", includeFilename );
       rep.saveStepAttribute( id_transformation, id_step, "include_field", filenameField );
@@ -685,8 +684,8 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       rep.saveStepAttribute( id_transformation, id_step, "YamlField", yamlField );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "YamlInputMeta.Exception.ErrorSavingToRepository", ""
-          + id_step ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "YamlInputMeta.Exception.ErrorSavingToRepository", "" + id_step ), e );
     }
   }
 
@@ -703,41 +702,41 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
     return includeSubFolderBoolean;
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // See if we get input...
     if ( input.length <= 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "YamlInputMeta.CheckResult.NoInputExpected" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "YamlInputMeta.CheckResult.NoInputExpected" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages
-              .getString( PKG, "YamlInputMeta.CheckResult.NoInput" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "YamlInputMeta.CheckResult.NoInput" ), stepMeta );
       remarks.add( cr );
     }
 
     if ( getInputFields().length <= 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "YamlInputMeta.CheckResult.NoInputField" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "YamlInputMeta.CheckResult.NoInputField" ), stepMeta );
       remarks.add( cr );
     }
 
     if ( isInFields() ) {
       if ( Const.isEmpty( getYamlField() ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "YamlInputMeta.CheckResult.NoField" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "YamlInputMeta.CheckResult.NoField" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "YamlInputMeta.CheckResult.FieldOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "YamlInputMeta.CheckResult.FieldOk" ), stepMeta );
         remarks.add( cr );
       }
     } else {
@@ -745,20 +744,20 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
       // String files[] = getFiles();
       if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "YamlInputMeta.CheckResult.NoFiles" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "YamlInputMeta.CheckResult.NoFiles" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "YamlInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "YamlInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
         remarks.add( cr );
       }
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new YamlInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -775,7 +774,7 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
    * what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -784,12 +783,11 @@ public class YamlInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

@@ -4,6 +4,11 @@
   <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local" override="true" />
   <property name="ivy.local.default.artifact.pattern" value="[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]"
     override="false" />
+    
+  <!-- Repository for Pentaho-hosted artifacts -->  
+  <property name="pentaho.resolve.repo" value="http://repo.pentaho.org/artifactory/repo" override="false" />
+  <!-- Repository for External-hosted artifacts (Optional. Defaults to Pentaho-hosted.) -->
+  <property name="public.resolve.repo" value="${pentaho.resolve.repo}" override="false" />
 
   <settings defaultResolver="pentaho-chained-resolver" />
   <include url="${ivy.default.settings.dir}/ivysettings-public.xml" />
@@ -13,12 +18,11 @@
       <resolver ref="local" />
       <dual name="pentaho">
         <url name="pentaho-ivy">
-          <ivy pattern="http://repo.pentaho.org/artifactory/repo/[organisation]/[module]/[revision]/[module]-[revision].ivy.xml" />
+          <ivy pattern="${pentaho.resolve.repo}/[organisation]/[module]/[revision]/[module]-[revision].ivy.xml" />
         </url>
-        <ibiblio name="pentaho-mvn" m2compatible="true" root="http://repo.pentaho.org/artifactory/repo" />
+        <ibiblio name="pentaho-mvn" m2compatible="true" root="${pentaho.resolve.repo}" />
       </dual>
-      <resolver ref="public" />
-      <ibiblio name="java-net-maven2" root="http://download.java.net/maven/2/" m2compatible="true" />
+      <ibiblio name="public-maven" root="${public.resolve.repo}" m2compatible="true" />
     </chain>
   </resolvers>
   <caches lockStrategy="artifact-lock" resolutionCacheDir="${ivy.default.ivy.user.dir}/resol-cache${env.EXECUTOR_NUMBER}" />

@@ -41,6 +41,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransStoppedListener;
@@ -55,20 +56,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read a simple CSV file Just output Strings found in the file...
- * 
+ *
  * @author Matt
  * @since 2007-07-05
  */
 public class MetaInject extends BaseStep implements StepInterface {
   private static Class<?> PKG = MetaInject.class; // for i18n purposes, needed
                                                   // by Translator2!!
-                                                  // $NON-NLS-1$
 
   private MetaInjectMeta meta;
   private MetaInjectData data;
 
   public MetaInject( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -77,22 +77,27 @@ public class MetaInject extends BaseStep implements StepInterface {
     data = (MetaInjectData) sdi;
 
     // Read the data from all input steps and keep it in memory...
+    // Skip the step from which we stream data.  Keep that available for runtime action.
     //
     data.rowMap = new HashMap<String, List<RowMetaAndData>>();
     for ( String prevStepName : getTransMeta().getPrevStepNames( getStepMeta() ) ) {
-      List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
-      RowSet rowSet = findInputRowSet( prevStepName );
-      Object[] row = getRowFrom( rowSet );
-      while ( row != null ) {
-        RowMetaAndData rd = new RowMetaAndData();
-        rd.setRowMeta( rowSet.getRowMeta() );
-        rd.setData( row );
-        list.add( rd );
+      // Don't read from the streaming source step
+      //
+      if ( !data.streaming || !prevStepName.equalsIgnoreCase( data.streamingSourceStepname ) ) {
+        List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+        RowSet rowSet = findInputRowSet( prevStepName );
+        Object[] row = getRowFrom( rowSet );
+        while ( row != null ) {
+          RowMetaAndData rd = new RowMetaAndData();
+          rd.setRowMeta( rowSet.getRowMeta() );
+          rd.setData( row );
+          list.add( rd );
 
-        row = getRowFrom( rowSet );
-      }
-      if ( !list.isEmpty() ) {
-        data.rowMap.put( prevStepName, list );
+          row = getRowFrom( rowSet );
+        }
+        if ( !list.isEmpty() ) {
+          data.rowMap.put( prevStepName, list );
+        }
       }
     }
 
@@ -183,8 +188,8 @@ public class MetaInject extends BaseStep implements StepInterface {
                         setEntryValue( rowEntry, row, detailSource );
                       } else {
                         if ( log.isDetailed() ) {
-                          logDetailed( "No detail source found for key: " + rowEntry.getKey() + " and target step: "
-                              + targetStep );
+                          logDetailed( "No detail source found for key: "
+                            + rowEntry.getKey() + " and target step: " + targetStep );
                         }
                       }
                     }
@@ -227,7 +232,8 @@ public class MetaInject extends BaseStep implements StepInterface {
         os.write( XMLHandler.getXMLHeader().getBytes( Const.XML_ENCODING ) );
         os.write( data.transMeta.getXML().getBytes( Const.XML_ENCODING ) );
       } catch ( IOException e ) {
-        throw new KettleException( "Unable to write target file (ktr after injection) to file '" + targetFile + "'", e );
+        throw new KettleException( "Unable to write target file (ktr after injection) to file '"
+          + targetFile + "'", e );
       } finally {
         if ( os != null ) {
           try {
@@ -250,6 +256,13 @@ public class MetaInject extends BaseStep implements StepInterface {
       } );
       injectTrans.prepareExecution( null );
 
+      // See if we need to stream some data over...
+      // 
+      RowProducer rowProducer = null;
+      if ( data.streaming ) {
+        rowProducer = injectTrans.addRowProducer( data.streamingTargetStepname, 0 );
+      }
+
       // Finally, add the mapping transformation to the active sub-transformations
       // map in the parent transformation
       //
@@ -271,13 +284,32 @@ public class MetaInject extends BaseStep implements StepInterface {
       }
 
       injectTrans.startThreads();
-      while ( !injectTrans.isFinished() && !injectTrans.isStopped() ) {
+
+      if ( data.streaming ) {
+        // Deplete all the rows from the parent transformation into the modified transformation
+        //
+        RowSet rowSet = findInputRowSet( data.streamingSourceStepname );
+        if ( rowSet == null ) {
+          throw new KettleException( "Unable to find step '" + data.streamingSourceStepname + "' to stream data from" );
+        }
+        Object[] row = getRowFrom( rowSet );
+        while ( row != null && !isStopped() ) {
+          rowProducer.putRow( rowSet.getRowMeta(), row );
+          row = getRowFrom( rowSet );
+        }
+        rowProducer.finished();
+      }
+
+      // Wait until the child transformation finished processing...
+      //
+      while ( !injectTrans.isFinished() && !injectTrans.isStopped() && !isStopped() ) {
         copyResult( injectTrans );
 
         // Wait a little bit.
         try {
           Thread.sleep( 50 );
         } catch ( Exception e ) {
+          // Ignore errors
         }
       }
       copyResult( injectTrans );
@@ -302,7 +334,7 @@ public class MetaInject extends BaseStep implements StepInterface {
   }
 
   private StepInjectionMetaEntry findDetailRootEntry( List<StepInjectionMetaEntry> metadataEntries,
-      StepInjectionMetaEntry entry ) {
+    StepInjectionMetaEntry entry ) {
     for ( StepInjectionMetaEntry rowsEntry : metadataEntries ) {
       for ( StepInjectionMetaEntry rowEntry : rowsEntry.getDetails() ) {
         for ( StepInjectionMetaEntry detailEntry : rowEntry.getDetails() ) {
@@ -315,8 +347,8 @@ public class MetaInject extends BaseStep implements StepInterface {
     return null;
   }
 
-  private SourceStepField findDetailSource( Map<TargetStepAttribute, SourceStepField> targetMap, String targetStep,
-      String key ) {
+  private SourceStepField findDetailSource( Map<TargetStepAttribute, SourceStepField> targetMap,
+    String targetStep, String key ) {
     return targetMap.get( new TargetStepAttribute( targetStep, key, true ) );
   }
 
@@ -333,8 +365,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     return null;
   }
 
-  private void setEntryValue( StepInjectionMetaEntry entry, RowMetaAndData row, SourceStepField source )
-    throws KettleValueException {
+  private void setEntryValue( StepInjectionMetaEntry entry, RowMetaAndData row, SourceStepField source ) throws KettleValueException {
     // A standard attribute, a single row of data...
     //
     Object value = null;
@@ -370,7 +401,8 @@ public class MetaInject extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
       try {
         data.transMeta =
-            MetaInjectMeta.loadTransformationMeta( meta, getTrans().getRepository(), getTrans().getMetaStore(), this );
+          MetaInjectMeta.loadTransformationMeta(
+            meta, getTrans().getRepository(), getTrans().getMetaStore(), this );
         data.transMeta.copyVariablesFrom( this );
 
         // Get a mapping between the step name and the injection...
@@ -378,10 +410,18 @@ public class MetaInject extends BaseStep implements StepInterface {
         data.stepInjectionMap = new HashMap<String, StepMetaInjectionInterface>();
         for ( StepMeta stepMeta : data.transMeta.getUsedSteps() ) {
           StepMetaInjectionInterface injectionInterface =
-              stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
+            stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
           if ( injectionInterface != null ) {
             data.stepInjectionMap.put( stepMeta.getName(), injectionInterface );
           }
+        }
+
+        // See if we need to stream data from a specific step into the template
+        //
+        if ( meta.getStreamSourceStep() != null && !Const.isEmpty( meta.getStreamTargetStepname() ) ) {
+          data.streaming = true;
+          data.streamingSourceStepname = meta.getStreamSourceStep().getName();
+          data.streamingTargetStepname = meta.getStreamTargetStepname();
         }
 
         return true;

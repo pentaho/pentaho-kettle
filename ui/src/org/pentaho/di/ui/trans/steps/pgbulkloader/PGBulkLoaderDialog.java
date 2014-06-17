@@ -81,11 +81,11 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 /**
  * Dialog class for the Greenplum bulk loader step. Created on 28mar2008, copied from Sven Boden's Oracle version
- * 
+ *
  * @author Luke Lonergan
  */
 public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = PGBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PGBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CCombo wConnection;
 
@@ -136,8 +136,8 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
   private PGBulkLoaderMeta input;
 
-  private static final String[] ALL_FILETYPES = new String[] { BaseMessages.getString( PKG,
-      "PGBulkLoaderDialog.Filetype.All" ) };
+  private static final String[] ALL_FILETYPES = new String[] { BaseMessages.getString(
+    PKG, "PGBulkLoaderDialog.Filetype.All" ) };
 
   private ColumnInfo[] ciReturn;
 
@@ -413,21 +413,25 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "PGBulkLoaderDialog.ColumnInfo.TableField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "PGBulkLoaderDialog.ColumnInfo.TableField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "PGBulkLoaderDialog.ColumnInfo.StreamField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "PGBulkLoaderDialog.ColumnInfo.StreamField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "PGBulkLoaderDialog.ColumnInfo.DateMask" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "",
-              BaseMessages.getString( PKG, "PGBulkLoaderDialog.PassThrough.Label" ),
-              BaseMessages.getString( PKG, "PGBulkLoaderDialog.DateMask.Label" ),
-              BaseMessages.getString( PKG, "PGBulkLoaderDialog.DateTimeMask.Label" ) }, true );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "PGBulkLoaderDialog.ColumnInfo.DateMask" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+          "", BaseMessages.getString( PKG, "PGBulkLoaderDialog.PassThrough.Label" ),
+          BaseMessages.getString( PKG, "PGBulkLoaderDialog.DateMask.Label" ),
+          BaseMessages.getString( PKG, "PGBulkLoaderDialog.DateTimeMask.Label" ) }, true );
     tableFieldColumns.add( ciReturn[0] );
     wReturn =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
+        UpInsRows, lsMod, props );
 
     wGetLU = new Button( shell, SWT.PUSH );
     wGetLU.setText( BaseMessages.getString( PKG, "PGBulkLoaderDialog.GetFields.Label" ) );
@@ -673,9 +677,9 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "PGBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
-          "PGBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "PGBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ),
+        BaseMessages.getString( PKG, "PGBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data
@@ -685,9 +689,9 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     try {
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "PGBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
-          "PGBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "PGBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ),
+        BaseMessages.getString( PKG, "PGBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -732,29 +736,30 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "PGBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields
-                .toString() )
-                + Const.CR;
+          BaseMessages.getString(
+            PKG, "PGBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() )
+            + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "PGBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields
-                .toString() )
-                + Const.CR;
+          BaseMessages.getString(
+            PKG, "PGBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() )
+            + Const.CR;
       }
       message += Const.CR;
-      message += BaseMessages.getString( PKG, "PGBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
+      message +=
+        BaseMessages.getString( PKG, "PGBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-              "PGBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+        MessageDialog.openConfirm( shell, BaseMessages.getString(
+          PKG, "PGBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
     }
     EnterMappingDialog d =
-        new EnterMappingDialog( PGBulkLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields
-            .getFieldNames(), mappings );
+      new EnterMappingDialog( PGBulkLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields
+        .getFieldNames(), mappings );
     mappings = d.open();
 
     // mappings == null if the user pressed cancel
@@ -789,6 +794,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     inf.setDbNameOverride( wDbNameOverride.getText() );
 
     logDebug( BaseMessages.getString( PKG, "PGBulkLoaderDialog.Log.FoundFields", "" + nrfields ) );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       inf.getFieldTable()[i] = item.getText( 1 );
@@ -797,7 +803,8 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
         inf.getDateMask()[i] = PGBulkLoaderMeta.DATE_MASK_PASS_THROUGH;
       } else if ( BaseMessages.getString( PKG, "PGBulkLoaderDialog.DateMask.Label" ).equals( item.getText( 3 ) ) ) {
         inf.getDateMask()[i] = PGBulkLoaderMeta.DATE_MASK_DATE;
-      } else if ( BaseMessages.getString( PKG, "PGBulkLoaderDialog.DateTimeMask.Label" ).equals( item.getText( 3 ) ) ) {
+      } else if ( BaseMessages
+        .getString( PKG, "PGBulkLoaderDialog.DateTimeMask.Label" ).equals( item.getText( 3 ) ) ) {
         inf.getDateMask()[i] = PGBulkLoaderMeta.DATE_MASK_DATETIME;
       } else {
         inf.getDateMask()[i] = "";
@@ -889,8 +896,9 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
         BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "PGBulkLoaderDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "PGBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "PGBulkLoaderDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "PGBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -902,14 +910,16 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       getInfo( info );
 
       String name = stepname; // new name might not yet be linked to other steps!
-      StepMeta stepMeta = new StepMeta( BaseMessages.getString( PKG, "PGBulkLoaderDialog.StepMeta.Title" ), name, info );
+      StepMeta stepMeta =
+        new StepMeta( BaseMessages.getString( PKG, "PGBulkLoaderDialog.StepMeta.Title" ), name, info );
       RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
 
       SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, repository, metaStore );
       if ( !sql.hasError() ) {
         if ( sql.hasSQL() ) {
           SQLEditor sqledit =
-              new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
+            new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql
+              .getSQL() );
           sqledit.open();
         } else {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -924,8 +934,9 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "PGBulkLoaderDialog.CouldNotBuildSQL.DialogTitle" ),
-          BaseMessages.getString( PKG, "PGBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "PGBulkLoaderDialog.CouldNotBuildSQL.DialogTitle" ), BaseMessages
+          .getString( PKG, "PGBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
     }
 
   }
@@ -935,7 +946,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
       public void run() {
         if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
           final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
-              wSchema.getText();
+            wSchema.getText();
 
           // clear
           for ( ColumnInfo colInfo : tableFieldColumns ) {
@@ -949,8 +960,8 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
                 db.connect();
 
                 String schemaTable =
-                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                        .environmentSubstitute( tableName ) );
+                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                    .environmentSubstitute( tableName ) );
                 RowMetaInterface r = db.getTableFields( schemaTable );
                 if ( null != r ) {
                   String[] fieldNames = r.getFieldNames();

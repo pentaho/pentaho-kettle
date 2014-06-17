@@ -58,8 +58,7 @@ public abstract class AbstractRepository implements Repository {
     return getJobEntryAttributeBoolean( id_jobentry, nr, code, false );
   }
 
-  public abstract boolean getJobEntryAttributeBoolean( ObjectId id_jobentry, int nr, String code, boolean def )
-    throws KettleException;
+  public abstract boolean getJobEntryAttributeBoolean( ObjectId id_jobentry, int nr, String code, boolean def ) throws KettleException;
 
   @Override
   public boolean getStepAttributeBoolean( ObjectId id_step, String code ) throws KettleException {
@@ -82,63 +81,54 @@ public abstract class AbstractRepository implements Repository {
   }
 
   @Override
-  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, boolean value )
-    throws KettleException {
+  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, boolean value ) throws KettleException {
     saveStepAttribute( id_transformation, id_step, 0, code, value );
   }
 
   @Override
-  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, double value )
-    throws KettleException {
+  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, double value ) throws KettleException {
     saveStepAttribute( id_transformation, id_step, 0, code, value );
   }
 
   @Override
-  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, long value )
-    throws KettleException {
+  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, long value ) throws KettleException {
     saveStepAttribute( id_transformation, id_step, 0, code, value );
   }
 
   @Override
-  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, String value )
-    throws KettleException {
+  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, String value ) throws KettleException {
     saveStepAttribute( id_transformation, id_step, 0, code, value );
   }
 
   @Override
-  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, String code, boolean value )
-    throws KettleException {
+  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, String code, boolean value ) throws KettleException {
     saveJobEntryAttribute( id_job, id_jobentry, 0, code, value );
   }
 
   @Override
-  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, String code, long value )
-    throws KettleException {
+  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, String code, long value ) throws KettleException {
     saveJobEntryAttribute( id_job, id_jobentry, 0, code, value );
   }
 
   @Override
-  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, String code, String value )
-    throws KettleException {
+  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, String code, String value ) throws KettleException {
     saveJobEntryAttribute( id_job, id_jobentry, 0, code, value );
   }
 
   @Override
   public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute( ObjectId id_jobentry, String nameCode, String idCode,
-      List<DatabaseMeta> databases ) throws KettleException {
+    List<DatabaseMeta> databases ) throws KettleException {
     return loadDatabaseMetaFromJobEntryAttribute( id_jobentry, nameCode, 0, idCode, databases );
   }
 
   @Override
-  public void
-    save( RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor )
-      throws KettleException {
-    save( repositoryElement, versionComment, monitor, false );
+  public void save( RepositoryElementInterface repoElement, String versionComment, ProgressMonitorListener monitor ) throws KettleException {
+    save( repoElement, versionComment, monitor, false );
   }
 
   @Override
-  public void saveDatabaseMetaJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, String nameCode, String idCode,
-      DatabaseMeta database ) throws KettleException {
+  public void saveDatabaseMetaJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, String nameCode,
+    String idCode, DatabaseMeta database ) throws KettleException {
     saveDatabaseMetaJobEntryAttribute( id_job, id_jobentry, 0, nameCode, idCode, database );
   }
 }

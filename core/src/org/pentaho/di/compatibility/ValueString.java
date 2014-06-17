@@ -33,21 +33,22 @@ import org.pentaho.di.core.Const;
 
 /**
  * This class contains a Value of type String and the length by which it is described.
- * 
+ *
  * @author Matt
  * @since 15-10-2004
- * 
+ *
  */
 public class ValueString implements ValueInterface, Cloneable {
   private String string;
   private int length;
 
-  private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
-    @Override
-    protected SimpleDateFormat initialValue() {
-      return new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
-    }
-  };
+  private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER =
+    new ThreadLocal<SimpleDateFormat>() {
+      @Override
+      protected SimpleDateFormat initialValue() {
+        return new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
+      }
+    };
 
   public ValueString() {
     string = null;
@@ -93,8 +94,8 @@ public class ValueString implements ValueInterface, Cloneable {
 
   @Override
   public boolean getBoolean() {
-    return "Y".equalsIgnoreCase( string ) || "TRUE".equalsIgnoreCase( string ) || "YES".equalsIgnoreCase( string )
-        || "1".equalsIgnoreCase( string );
+    return "Y".equalsIgnoreCase( string )
+      || "TRUE".equalsIgnoreCase( string ) || "YES".equalsIgnoreCase( string ) || "1".equalsIgnoreCase( string );
   }
 
   @Override

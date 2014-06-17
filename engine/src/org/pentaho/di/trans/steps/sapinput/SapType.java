@@ -23,7 +23,7 @@
 package org.pentaho.di.trans.steps.sapinput;
 
 public enum SapType {
-  Single( "SINGLE", "Single" ), Structure( "STRUCTURE", "Structure" ), Table( "TABLE", "Table" ), ;
+  Single( "SINGLE", "Single" ), Structure( "STRUCTURE", "Structure" ), Table( "TABLE", "Table" );
 
   private String code;
   private String description;

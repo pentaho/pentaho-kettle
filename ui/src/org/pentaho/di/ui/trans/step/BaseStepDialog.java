@@ -77,11 +77,11 @@ import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.metastore.api.IMetaStore;
 
 /**
@@ -90,11 +90,11 @@ import org.pentaho.metastore.api.IMetaStore;
 public class BaseStepDialog extends Dialog {
 
   /** The package name used for internationalization */
-  private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!
 
   /** The logging object interface for this dialog. */
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Step dialog",
-      LoggingObjectType.STEPDIALOG, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+    "Step dialog", LoggingObjectType.STEPDIALOG, null );
 
   /** The variable bindings for this dialog. */
   protected static VariableSpace variables = new Variables();
@@ -175,7 +175,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Instantiates a new base step dialog.
-   * 
+   *
    * @param parent
    *          the parent shell
    * @param baseStepMeta
@@ -199,7 +199,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Instantiates a new base step dialog.
-   * 
+   *
    * @param parent
    *          the parent shell
    * @param baseStepMeta
@@ -223,7 +223,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Instantiates a new base step dialog.
-   * 
+   *
    * @param parent
    *          the parent shell
    * @param nr
@@ -239,27 +239,14 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Sets the shell image.
-   * 
+   *
    * @param shell
    *          the shell
    * @param stepMetaInterface
-   *          the step meta interface
+   *          the step meta interface (because of the legacy code)
    */
   public void setShellImage( Shell shell, StepMetaInterface stepMetaInterface ) {
-    try {
-      final PluginInterface plugin =
-          PluginRegistry.getInstance().getPlugin( StepPluginType.class, stepMeta.getStepMetaInterface() );
-      if ( !Const.isEmpty( plugin.getDocumentationUrl() ) ) {
-        createHelpButton( shell, stepMeta, plugin );
-      }
-
-      String id = plugin.getIds()[0];
-      if ( id != null ) {
-        shell.setImage( GUIResource.getInstance().getImagesSteps().get( id ) );
-      }
-    } catch ( Throwable e ) {
-      // Ignore
-    }
+    setShellImage( shell );
   }
 
   /**
@@ -280,7 +267,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Sets the button positions.
-   * 
+   *
    * @param buttons
    *          the buttons
    * @param margin
@@ -299,7 +286,7 @@ public class BaseStepDialog extends Dialog {
    * The default alignment for buttons in the system will be used. This is set as an LAF property with the key
    * <code>Button_Position</code> and has the valid values of <code>left, center, right</code> with <code>center</code>
    * being the default.
-   * 
+   *
    * @param composite
    *          the composite
    * @param buttons
@@ -309,8 +296,8 @@ public class BaseStepDialog extends Dialog {
    * @param lastControl
    *          the last control
    */
-  public static final void
-    positionBottomButtons( Composite composite, Button[] buttons, int margin, Control lastControl ) {
+  public static final void positionBottomButtons( Composite composite, Button[] buttons, int margin,
+    Control lastControl ) {
     // Determine the largest button in the array
     Rectangle largest = null;
     for ( int i = 0; i < buttons.length; i++ ) {
@@ -369,7 +356,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Gets the table views.
-   * 
+   *
    * @param parentControl
    *          the parent control
    * @param tableViews
@@ -406,7 +393,7 @@ public class BaseStepDialog extends Dialog {
    * <LI><code>right</code>
    * </UL>
    * NOTE: if the alignment is not provided or contains an invalid value, <code>center</code> will be used as a default
-   * 
+   *
    * @return a constant which indicates the button alignment
    */
   protected static int getButtonAlignment() {
@@ -423,7 +410,7 @@ public class BaseStepDialog extends Dialog {
   /**
    * Creats a default FormData object with the top / bottom / and left set (this is done to cut down on repetative code
    * lines.
-   * 
+   *
    * @param button
    *          the button to which this form data will be applied
    * @param width
@@ -447,7 +434,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Aligns the buttons as left-aligned on the dialog.
-   * 
+   *
    * @param buttons
    *          the array of buttons to align
    * @param width
@@ -476,7 +463,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Aligns the buttons as right-aligned on the dialog.
-   * 
+   *
    * @param buttons
    *          the array of buttons to align
    * @param width
@@ -505,7 +492,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Aligns the buttons as centered on the dialog.
-   * 
+   *
    * @param buttons
    *          the array of buttons to align
    * @param width
@@ -551,7 +538,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Gets the modify listener tooltip text.
-   * 
+   *
    * @param textField
    *          the text field
    * @return the modify listener tooltip text
@@ -567,7 +554,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Adds the databases to the Combo Box component.
-   * 
+   *
    * @param wConnection
    *          the Combo Box component
    */
@@ -577,7 +564,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Adds the databases with the specified type to the Combo Box component.
-   * 
+   *
    * @param wConnection
    *          the Combo Box component
    * @param databaseType
@@ -594,7 +581,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Selects the database with the specified name in the Combo Box component.
-   * 
+   *
    * @param wConnection
    *          the Combo Box component
    * @param name
@@ -609,7 +596,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Adds the connection line.
-   * 
+   *
    * @param parent
    *          the parent UI component
    * @param previous
@@ -626,7 +613,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Adds the connection line.
-   * 
+   *
    * @param parent
    *          the parent UI component
    * @param previous
@@ -640,14 +627,14 @@ public class BaseStepDialog extends Dialog {
    * @return the Combo Box component for the given parameters
    */
   public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin,
-      Class<? extends DatabaseInterface> databaseType ) {
-    return addConnectionLine( parent, previous, middle, margin, new Label( parent, SWT.RIGHT ), new Button( parent,
-        SWT.PUSH ), new Button( parent, SWT.PUSH ), new Button( parent, SWT.PUSH ), databaseType );
+    Class<? extends DatabaseInterface> databaseType ) {
+    return addConnectionLine( parent, previous, middle, margin, new Label( parent, SWT.RIGHT ), new Button(
+      parent, SWT.PUSH ), new Button( parent, SWT.PUSH ), new Button( parent, SWT.PUSH ), databaseType );
   }
 
   /**
    * Adds the connection line.
-   * 
+   *
    * @param parent
    *          the parent UI component
    * @param previous
@@ -664,15 +651,15 @@ public class BaseStepDialog extends Dialog {
    *          the "edit connection" button
    * @return the Combo Box component for the given parameters
    */
-  public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin,
-      final Label wlConnection, final Button wbwConnection, final Button wbnConnection, final Button wbeConnection ) {
-    return addConnectionLine( parent, previous, middle, margin, wlConnection, wbwConnection, wbnConnection,
-        wbeConnection, null );
+  public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin, final Label wlConnection,
+    final Button wbwConnection, final Button wbnConnection, final Button wbeConnection ) {
+    return addConnectionLine(
+      parent, previous, middle, margin, wlConnection, wbwConnection, wbnConnection, wbeConnection, null );
   }
 
   /**
    * Adds the connection line.
-   * 
+   *
    * @param parent
    *          the parent UI component
    * @param previous
@@ -692,8 +679,8 @@ public class BaseStepDialog extends Dialog {
    * @return the Combo Box component for the given parameters
    */
   public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin,
-      final Label wlConnection, final Button wbwConnection, final Button wbnConnection, final Button wbeConnection,
-      final Class<? extends DatabaseInterface> databaseType ) {
+    final Label wlConnection, final Button wbwConnection, final Button wbnConnection,
+    final Button wbeConnection, final Class<? extends DatabaseInterface> databaseType ) {
     final CCombo wConnection;
     final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection, fdbwConnection;
 
@@ -815,7 +802,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Gets the database dialog.
-   * 
+   *
    * @param shell
    *          the shell
    * @return the database dialog
@@ -840,7 +827,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Gets the repository associated with this dialog.
-   * 
+   *
    * @return Returns the repository.
    */
   public Repository getRepository() {
@@ -849,7 +836,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Sets the repository associated with this dialog.
-   * 
+   *
    * @param repository
    *          The repository to set.
    */
@@ -859,7 +846,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Sets the minimal shell height.
-   * 
+   *
    * @param shell
    *          the shell
    * @param controls
@@ -882,7 +869,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Sets the size of this dialog with respect to the given shell.
-   * 
+   *
    * @param shell
    *          the new size
    */
@@ -892,7 +879,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Sets the size of this dialog with respect to the given parameters.
-   * 
+   *
    * @param shell
    *          the shell
    * @param minWidth
@@ -939,7 +926,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Sets the traverse order for the given controls.
-   * 
+   *
    * @param controls
    *          the new traverse order
    */
@@ -965,8 +952,8 @@ public class BaseStepDialog extends Dialog {
             controls[thisOne].setFocus();
           }
         } );
-      } else // Link last item to first.
-      {
+      } else { // Link last item to first.
+
         controls[i].addTraverseListener( new TraverseListener() {
           public void keyTraversed( TraverseEvent te ) {
             te.doit = false;
@@ -989,7 +976,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Gets unused fields from previous steps and inserts them as rows into a table view.
-   * 
+   *
    * @param transMeta
    *          the transformation metadata
    * @param stepMeta
@@ -1010,23 +997,24 @@ public class BaseStepDialog extends Dialog {
    *          a listener for tables insert events
    */
   public static final void getFieldsFromPrevious( TransMeta transMeta, StepMeta stepMeta, TableView tableView,
-      int keyColumn, int[] nameColumn, int[] dataTypeColumn, int lengthColumn, int precisionColumn,
-      TableItemInsertListener listener ) {
+    int keyColumn, int[] nameColumn, int[] dataTypeColumn, int lengthColumn, int precisionColumn,
+    TableItemInsertListener listener ) {
     try {
       RowMetaInterface row = transMeta.getPrevStepFields( stepMeta );
       if ( row != null ) {
-        getFieldsFromPrevious( row, tableView, keyColumn, nameColumn, dataTypeColumn, lengthColumn, precisionColumn,
-            listener );
+        getFieldsFromPrevious(
+          row, tableView, keyColumn, nameColumn, dataTypeColumn, lengthColumn, precisionColumn, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( tableView.getShell(), BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFields.Title" ),
-          BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFields.Message", stepMeta.getName() ), ke );
+      new ErrorDialog( tableView.getShell(),
+        BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFields.Title" ),
+        BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFields.Message", stepMeta.getName() ), ke );
     }
   }
 
   /**
    * Gets unused fields from previous steps and inserts them as rows into a table view.
-   * 
+   *
    * @param row
    *          the input fields
    * @param tableView
@@ -1046,7 +1034,8 @@ public class BaseStepDialog extends Dialog {
    *          the provided row
    */
   public static final void getFieldsFromPrevious( RowMetaInterface row, TableView tableView, int keyColumn,
-      int[] nameColumn, int[] dataTypeColumn, int lengthColumn, int precisionColumn, TableItemInsertListener listener ) {
+    int[] nameColumn, int[] dataTypeColumn, int lengthColumn, int precisionColumn,
+    TableItemInsertListener listener ) {
     if ( row == null || row.size() == 0 ) {
       return; // nothing to do
     }
@@ -1070,20 +1059,21 @@ public class BaseStepDialog extends Dialog {
       // Ask what we should do with the existing data in the step.
       //
       MessageDialog md =
-          new MessageDialog( tableView.getShell(),
-              BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
-              null, BaseMessages.getString( PKG,
-                  "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ), //$NON-NLS-3$
-              MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
-                BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
-                BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
-                BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
+        new MessageDialog( tableView.getShell(),
+          BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
+          null,
+          BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ),
+          MessageDialog.WARNING, new String[] {
+            BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
+            BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
+            BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
+            BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       int idx = md.open();
       choice = idx & 0xFF;
     }
 
-    if ( choice == 3 || choice == 255 /* 255 = escape pressed */) {
+    if ( choice == 3 || choice == 255 ) {
       return; // Cancel clicked
     }
 
@@ -1096,8 +1086,8 @@ public class BaseStepDialog extends Dialog {
 
       boolean add = true;
 
-      if ( choice == 0 ) // hang on, see if it's not yet in the table view
-      {
+      if ( choice == 0 ) { // hang on, see if it's not yet in the table view
+
         if ( keys.indexOf( v.getName() ) >= 0 ) {
           add = false;
         }
@@ -1139,7 +1129,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Gets fields from previous steps and populate a ComboVar.
-   * 
+   *
    * @param comboVar
    *          the Combo Box (with Variables) to populate
    * @param transMeta
@@ -1169,15 +1159,15 @@ public class BaseStepDialog extends Dialog {
         }
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( comboVar.getShell(), BaseMessages.getString( PKG,
-          "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle" ), BaseMessages.getString( PKG,
-          "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage" ), ke );
+      new ErrorDialog( comboVar.getShell(),
+        BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogTitle" ),
+        BaseMessages.getString( PKG, "BaseStepDialog.FailedToGetFieldsPrevious.DialogMessage" ), ke );
     }
   }
 
   /**
    * Create a new field mapping between source and target steps.
-   * 
+   *
    * @param shell
    *          the shell of the parent window
    * @param sourceFields
@@ -1186,13 +1176,13 @@ public class BaseStepDialog extends Dialog {
    *          the target fields
    * @param fieldMapping
    *          the list of source to target mappings to default to (can be empty but not null)
-   * 
+   *
    * @throws KettleException
    *           in case something goes wrong during the field mapping
-   * 
+   *
    */
   public static final void generateFieldMapping( Shell shell, RowMetaInterface sourceFields,
-      RowMetaInterface targetFields, List<SourceToTargetMapping> fieldMapping ) throws KettleException {
+    RowMetaInterface targetFields, List<SourceToTargetMapping> fieldMapping ) throws KettleException {
     // Build the mapping: let the user decide!!
     String[] source = sourceFields.getFieldNames();
     for ( int i = 0; i < source.length; i++ ) {
@@ -1211,7 +1201,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Checks if the log level is basic.
-   * 
+   *
    * @return true, if the log level is basic, false otherwise
    */
   public boolean isBasic() {
@@ -1220,7 +1210,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Checks if the log level is detailed.
-   * 
+   *
    * @return true, if the log level is detailed, false otherwise
    */
   public boolean isDetailed() {
@@ -1229,7 +1219,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Checks if the log level is debug.
-   * 
+   *
    * @return true, if the log level is debug, false otherwise
    */
   public boolean isDebug() {
@@ -1238,7 +1228,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Checks if the log level is row level.
-   * 
+   *
    * @return true, if the log level is row level, false otherwise
    */
   public boolean isRowLevel() {
@@ -1247,7 +1237,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Log the message at a minimal logging level.
-   * 
+   *
    * @param message
    *          the message to log
    */
@@ -1257,7 +1247,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Log the message with arguments at a minimal logging level.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -1269,7 +1259,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Log the message at a basic logging level.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -1279,7 +1269,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Log the message with arguments at a basic logging level.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -1291,7 +1281,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Log the message at a detailed logging level.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -1301,7 +1291,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Log the message with arguments at a detailed logging level.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -1313,7 +1303,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Log the message at a debug logging level.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -1323,7 +1313,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Log the message with arguments at a debug logging level.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -1335,7 +1325,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Log the message at a rowlevel logging level.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -1345,7 +1335,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Log the message with arguments at a rowlevel logging level.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -1357,7 +1347,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Log the message at a error logging level.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -1367,7 +1357,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Log the message with the associated Throwable object at a error logging level.
-   * 
+   *
    * @param message
    *          the message
    * @param e
@@ -1379,7 +1369,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Log the message with arguments at a error logging level.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -1390,65 +1380,18 @@ public class BaseStepDialog extends Dialog {
   }
 
   protected Button createHelpButton( final Shell shell, final StepMeta stepMeta, final PluginInterface plugin ) {
-    return createHelpButton( shell, "Step documentation for " + plugin.getName(), plugin );
+    return HelpUtils.createHelpButton( shell, HelpUtils.getHelpDialogTitle( plugin ), plugin );
   }
 
-  public static Button createHelpButton( final Composite parent, final String title, final PluginInterface plugin ) {
-    Button button = new Button( parent, SWT.PUSH );
-    button.setImage( GUIResource.getInstance().getImageHelpWeb() );
-    button.setText( BaseMessages.getString( PKG, "System.Button.Help" ) );
-    button.setToolTipText( BaseMessages.getString( PKG, "System.Tooltip.Help" ) );
-    FormData fdButton = new FormData();
-    fdButton.left = new FormAttachment( 0, 0 );
-    fdButton.bottom = new FormAttachment( 100, 0 );
-    button.setLayoutData( fdButton );
+  private void setShellImage( Shell shell ) {
+    PluginInterface plugin =
+  PluginRegistry.getInstance().getPlugin( StepPluginType.class, stepMeta.getStepMetaInterface() );
+    createHelpButton( shell, stepMeta, plugin );
 
-    button.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent arg0 ) {
-        StringBuilder html = new StringBuilder();
-        html.append( "<HTML><TITLE>" ).append( plugin.getName() ).append( "</TITLE>" );
-        html.append( "<HEAD>" );
-        html.append( "<STYLE type=\"text/css\">" );
-
-        html.append( "body {" );
-        html.append( "  background-color:#a7c4e2;" );
-        html.append( "  font-family:arial,helvetica,sans-serif;" );
-        html.append( "  font-size:16px;" );
-        html.append( "}" );
-
-        html.append( "</STYLE>" );
-
-        html.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"docs/English/welcome/kettle.css\" />" );
-        html.append( "</HEAD>" );
-        html.append( "<BODY>" );
-        html.append( "<b>Name</b>: " ).append( plugin.getName() ).append( "<br>" );
-        html.append( "<b>ID: " ).append( plugin.getIds()[0] ).append( "<br>" );
-        if ( !Const.isEmpty( plugin.getDescription() ) ) {
-          html.append( "<b>Description</b>: " ).append( plugin.getDescription() ).append( "<br>" );
-        }
-        if ( !Const.isEmpty( plugin.getImageFile() ) ) {
-          html.append( "<b>Icon</b>: " ).append( plugin.getImageFile() ).append( "<br>" );
-        }
-        if ( !Const.isEmpty( plugin.getDocumentationUrl() ) ) {
-          html.append( "<b>Documenation</b>: <a href=\"" ).append( plugin.getDocumentationUrl() ).append( "\">" )
-              .append( "Click here to view the documentation" ).append( "</a><br>" );
-        }
-        if ( !Const.isEmpty( plugin.getCasesUrl() ) ) {
-          html.append( "<b>Cases</b>: <a href=\"" ).append( plugin.getCasesUrl() ).append( "\">" ).append(
-              "Click here to view related PDI cases" ).append( "</a><br>" );
-        }
-        if ( !Const.isEmpty( plugin.getForumUrl() ) ) {
-          html.append( "<b>Forum</b>: <a href=\"" ).append( plugin.getForumUrl() ).append( "\">" ).append(
-              "Click here to go to the forum" ).append( "</a><br>" );
-        }
-        html.append( "</BODY></HTML>" );
-
-        ShowBrowserDialog browserDialog = new ShowBrowserDialog( parent.getShell(), title, html.toString() );
-        browserDialog.open();
-      }
-    } );
-    return button;
+    String id = plugin.getIds()[0];
+    if ( id != null ) {
+      shell.setImage( GUIResource.getInstance().getImagesSteps().get( id ) );
+    }
   }
 
   public IMetaStore getMetaStore() {

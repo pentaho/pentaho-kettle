@@ -109,11 +109,11 @@ public class UIObjectRegistry {
     }
   }
 
-  public UIJob constructUIJob( RepositoryElementMetaInterface rc, UIRepositoryDirectory parent, Repository rep )
-    throws UIObjectCreationException {
+  public UIJob constructUIJob( RepositoryElementMetaInterface rc, UIRepositoryDirectory parent, Repository rep ) throws UIObjectCreationException {
     try {
       Constructor<?> constructor =
-          jobClass.getConstructor( RepositoryElementMetaInterface.class, UIRepositoryDirectory.class, Repository.class );
+        jobClass.getConstructor(
+          RepositoryElementMetaInterface.class, UIRepositoryDirectory.class, Repository.class );
       if ( constructor != null ) {
         return (UIJob) constructor.newInstance( rc, parent, rep );
       } else {
@@ -124,12 +124,12 @@ public class UIObjectRegistry {
     }
   }
 
-  public UITransformation constructUITransformation( RepositoryElementMetaInterface rc, UIRepositoryDirectory parent,
-      Repository rep ) throws UIObjectCreationException {
+  public UITransformation constructUITransformation( RepositoryElementMetaInterface rc,
+    UIRepositoryDirectory parent, Repository rep ) throws UIObjectCreationException {
     try {
       Constructor<?> constructor =
-          transClass.getConstructor( RepositoryElementMetaInterface.class, UIRepositoryDirectory.class,
-              Repository.class );
+        transClass.getConstructor(
+          RepositoryElementMetaInterface.class, UIRepositoryDirectory.class, Repository.class );
       if ( constructor != null ) {
         return (UITransformation) constructor.newInstance( rc, parent, rep );
       } else {
@@ -141,10 +141,11 @@ public class UIObjectRegistry {
   }
 
   public UIRepositoryDirectory constructUIRepositoryDirectory( RepositoryDirectoryInterface rd,
-      UIRepositoryDirectory uiParent, Repository rep ) throws UIObjectCreationException {
+    UIRepositoryDirectory uiParent, Repository rep ) throws UIObjectCreationException {
     try {
       Constructor<?> constructor =
-          dirClass.getConstructor( RepositoryDirectoryInterface.class, UIRepositoryDirectory.class, Repository.class );
+        dirClass.getConstructor(
+          RepositoryDirectoryInterface.class, UIRepositoryDirectory.class, Repository.class );
       if ( constructor != null ) {
         return (UIRepositoryDirectory) constructor.newInstance( rd, uiParent, rep );
       } else {
@@ -155,8 +156,7 @@ public class UIObjectRegistry {
     }
   }
 
-  public UIDatabaseConnection constructUIDatabaseConnection( DatabaseMeta dbmeta, Repository rep )
-    throws UIObjectCreationException {
+  public UIDatabaseConnection constructUIDatabaseConnection( DatabaseMeta dbmeta, Repository rep ) throws UIObjectCreationException {
     try {
       Constructor<?> constructor = dbConnClass.getConstructor( DatabaseMeta.class, Repository.class );
       if ( constructor != null ) {

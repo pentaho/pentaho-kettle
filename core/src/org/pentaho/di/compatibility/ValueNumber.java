@@ -30,10 +30,10 @@ import org.pentaho.di.core.Const;
 
 /**
  * This class contains a Value of type Number and the length/precision by which it is described.
- * 
+ *
  * @author Matt
  * @since 15-10-2004
- * 
+ *
  */
 public class ValueNumber implements ValueInterface, Cloneable {
   private double number;

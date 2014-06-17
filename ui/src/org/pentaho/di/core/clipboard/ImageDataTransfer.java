@@ -35,10 +35,10 @@ import org.eclipse.swt.graphics.ImageLoader;
 
 /**
  * Singleton class that reads Images (CF_DIB) from the Windows Clipboard as ImageData objects.
- * 
+ *
  * If you found this class useful (or made some improvements) drop me a line.
- * 
- * 
+ *
+ *
  * @author Philip Schatz ( www.philschatz.com )
  */
 public class ImageDataTransfer extends ByteArrayTransfer {
@@ -71,8 +71,8 @@ public class ImageDataTransfer extends ByteArrayTransfer {
 
     try {
       final InputStream bis =
-          new PrependWinBMPHeaderFilterInputStream( new UncompressDibFilterInputStream(
-              new ByteArrayInputStream( bytes ) ) );
+        new PrependWinBMPHeaderFilterInputStream( new UncompressDibFilterInputStream( new ByteArrayInputStream(
+          bytes ) ) );
       final ImageData[] data = new ImageLoader().load( bis );
       if ( data.length < 1 ) {
         return null;

@@ -109,8 +109,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
         for ( IMetaStoreElementType elementType : elementTypes ) {
           dependencies.add( elementType.getId() );
         }
-        throw new MetaStoreDependenciesExistsException( dependencies, "The namespace to delete, '" + namespace
-            + "' is not empty" );
+        throw new MetaStoreDependenciesExistsException( dependencies, "The namespace to delete, '"
+          + namespace + "' is not empty" );
       }
 
       // Now delete the namespace
@@ -149,13 +149,14 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
       //
       IMetaStoreElementType existingType = getElementTypeByName( namespace, elementType.getName() );
       if ( existingType != null ) {
-        throw new MetaStoreElementTypeExistsException( Arrays.asList( existingType ),
-            "Can not create element type with id '" + elementType.getId() + "' because it already exists" );
+        throw new MetaStoreElementTypeExistsException(
+          Arrays.asList( existingType ), "Can not create element type with id '"
+            + elementType.getId() + "' because it already exists" );
       }
 
       KDBRMetaStoreElementType newElementType =
-          new KDBRMetaStoreElementType( delegate, namespace, namespaceId, elementType.getName(), elementType
-              .getDescription() );
+        new KDBRMetaStoreElementType( delegate, namespace, namespaceId, elementType.getName(), elementType
+          .getDescription() );
       newElementType.save();
       elementType.setId( newElementType.getId() );
       repository.commit();
@@ -212,18 +213,18 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
         return null;
       }
 
-      RowMetaAndData elementTypeRow = delegate.getElementType( new LongObjectId( new StringObjectId( elementTypeId ) ) );
+      RowMetaAndData elementTypeRow =
+        delegate.getElementType( new LongObjectId( new StringObjectId( elementTypeId ) ) );
 
       return delegate.parseElementType( namespace, namespaceId, elementTypeRow );
     } catch ( Exception e ) {
-      throw new MetaStoreException( "Unable to get element type with id '" + elementTypeId + "' in namespace '"
-          + namespace + "'", e );
+      throw new MetaStoreException( "Unable to get element type with id '"
+        + elementTypeId + "' in namespace '" + namespace + "'", e );
     }
   }
 
   @Override
-  public IMetaStoreElementType getElementTypeByName( String namespace, String elementTypeName )
-    throws MetaStoreException {
+  public IMetaStoreElementType getElementTypeByName( String namespace, String elementTypeName ) throws MetaStoreException {
     try {
       LongObjectId namespaceId = delegate.getNamespaceId( namespace );
       if ( namespaceId == null ) {
@@ -237,8 +238,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
 
       return delegate.parseElementType( namespace, namespaceId, elementTypeRow );
     } catch ( Exception e ) {
-      throw new MetaStoreException( "Unable to get element type with name '" + elementTypeName + "' in namespace '"
-          + namespace + "'", e );
+      throw new MetaStoreException( "Unable to get element type with name '"
+        + elementTypeName + "' in namespace '" + namespace + "'", e );
     }
   }
 
@@ -255,12 +256,12 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
       }
 
       if ( elementTypeId != null ) {
-        delegate.updateElementType( namespaceId, new LongObjectId( new StringObjectId( elementType.getId() ) ),
-            elementType );
+        delegate.updateElementType(
+          namespaceId, new LongObjectId( new StringObjectId( elementType.getId() ) ), elementType );
         repository.commit();
       } else {
         throw new MetaStoreException( "Unable to update element type: no id was provided and the name '"
-            + elementType.getName() + "' didn't match" );
+          + elementType.getName() + "' didn't match" );
       }
     } catch ( MetaStoreException e ) {
       throw e;
@@ -275,15 +276,16 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
     MetaStoreDependenciesExistsException {
     try {
       Collection<RowMetaAndData> elementTypeRows =
-          delegate.getElements( new LongObjectId( new StringObjectId( elementType.getId() ) ) );
+        delegate.getElements( new LongObjectId( new StringObjectId( elementType.getId() ) ) );
       if ( !elementTypeRows.isEmpty() ) {
         List<String> dependencies = new ArrayList<String>();
         for ( RowMetaAndData elementTypeRow : elementTypeRows ) {
-          Long elementTypeId = elementTypeRow.getInteger( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE );
+          Long elementTypeId =
+            elementTypeRow.getInteger( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE );
           dependencies.add( Long.toString( elementTypeId ) );
         }
-        throw new MetaStoreDependenciesExistsException( dependencies, "The namespace to delete, '" + namespace
-            + "' is not empty" );
+        throw new MetaStoreDependenciesExistsException( dependencies, "The namespace to delete, '"
+          + namespace + "' is not empty" );
       }
 
       delegate.deleteElementType( new LongObjectId( new StringObjectId( elementType.getId() ) ) );
@@ -297,15 +299,14 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public List<IMetaStoreElement> getElements( String namespace, IMetaStoreElementType elementType )
-    throws MetaStoreException {
+  public List<IMetaStoreElement> getElements( String namespace, IMetaStoreElementType elementType ) throws MetaStoreException {
     try {
       IMetaStoreElementType type = getElementTypeByName( namespace, elementType.getName() );
       if ( type == null ) {
         return new ArrayList<IMetaStoreElement>();
       }
       Collection<RowMetaAndData> elementRows =
-          delegate.getElements( new LongObjectId( new StringObjectId( type.getId() ) ) );
+        delegate.getElements( new LongObjectId( new StringObjectId( type.getId() ) ) );
       List<IMetaStoreElement> elements = new ArrayList<IMetaStoreElement>();
       for ( RowMetaAndData elementRow : elementRows ) {
         IMetaStoreElement element = delegate.parseElement( elementType, elementRow );
@@ -313,8 +314,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
       }
       return elements;
     } catch ( Exception e ) {
-      throw new MetaStoreException( "Unable to get list of elements from namespace '" + namespace
-          + "' and for element type '" + elementType.getName() + "'", e );
+      throw new MetaStoreException( "Unable to get list of elements from namespace '"
+        + namespace + "' and for element type '" + elementType.getName() + "'", e );
     }
   }
 
@@ -329,8 +330,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public IMetaStoreElement getElement( String namespace, IMetaStoreElementType elementType, String elementId )
-    throws MetaStoreException {
+  public IMetaStoreElement getElement( String namespace, IMetaStoreElementType elementType, String elementId ) throws MetaStoreException {
     try {
       RowMetaAndData elementRow = delegate.getElement( new LongObjectId( new StringObjectId( elementId ) ) );
       if ( elementRow == null ) {
@@ -343,8 +343,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public IMetaStoreElement getElementByName( String namespace, IMetaStoreElementType elementType, String name )
-    throws MetaStoreException {
+  public IMetaStoreElement getElementByName( String namespace, IMetaStoreElementType elementType, String name ) throws MetaStoreException {
     try {
       LongObjectId namespaceId = delegate.getNamespaceId( namespace );
       if ( namespaceId == null ) {
@@ -365,19 +364,18 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
 
       return delegate.parseElement( elementType, elementRow );
     } catch ( Exception e ) {
-      throw new MetaStoreException( "Unable to get element by name '" + name + "' from namespace '" + namespace + "'",
-          e );
+      throw new MetaStoreException( "Unable to get element by name '"
+        + name + "' from namespace '" + namespace + "'", e );
     }
   }
 
   @Override
-  public void createElement( String namespace, IMetaStoreElementType elementType, IMetaStoreElement element )
-    throws MetaStoreException, MetaStoreElementExistException {
+  public void createElement( String namespace, IMetaStoreElementType elementType, IMetaStoreElement element ) throws MetaStoreException, MetaStoreElementExistException {
     try {
       IMetaStoreElement found = getElementByName( namespace, elementType, element.getName() );
       if ( found != null ) {
-        throw new MetaStoreElementExistException( Arrays.asList( found ), "The element with name '" + element.getName()
-            + "' already exists" );
+        throw new MetaStoreElementExistException( Arrays.asList( found ), "The element with name '"
+          + element.getName() + "' already exists" );
       }
 
       delegate.insertElement( elementType, element );
@@ -386,14 +384,13 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
       throw e;
     } catch ( Exception e ) {
       repository.rollback();
-      throw new MetaStoreException( "Unable to create element with name '" + element.getName() + "' of type '"
-          + elementType.getName() + "'", e );
+      throw new MetaStoreException( "Unable to create element with name '"
+        + element.getName() + "' of type '" + elementType.getName() + "'", e );
     }
   }
 
   @Override
-  public void deleteElement( String namespace, IMetaStoreElementType elementType, String elementId )
-    throws MetaStoreException {
+  public void deleteElement( String namespace, IMetaStoreElementType elementType, String elementId ) throws MetaStoreException {
     try {
       IMetaStoreElementType type = getElementTypeByName( namespace, elementType.getName() );
       if ( type == null ) {
@@ -404,14 +401,14 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
       repository.commit();
     } catch ( Exception e ) {
       repository.rollback();
-      throw new MetaStoreException( "Unable to delete element with id '" + elementId + "' of type '"
-          + elementType.getName() + "'", e );
+      throw new MetaStoreException( "Unable to delete element with id '"
+        + elementId + "' of type '" + elementType.getName() + "'", e );
     }
   }
 
   @Override
   public void updateElement( String namespace, IMetaStoreElementType elementType, String elementId,
-      IMetaStoreElement element ) throws MetaStoreException {
+    IMetaStoreElement element ) throws MetaStoreException {
     try {
       // This is a delete/insert operation
       //
@@ -420,8 +417,8 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
       repository.commit();
     } catch ( Exception e ) {
       repository.rollback();
-      throw new MetaStoreException( "Unable to update element with id '" + elementId + "' called '" + element.getName()
-          + "' in type '" + elementType.getName() + "'", e );
+      throw new MetaStoreException( "Unable to update element with id '"
+        + elementId + "' called '" + element.getName() + "' in type '" + elementType.getName() + "'", e );
     }
   }
 
@@ -436,8 +433,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public IMetaStoreElement newElement( IMetaStoreElementType elementType, String id, Object value )
-    throws MetaStoreException {
+  public IMetaStoreElement newElement( IMetaStoreElementType elementType, String id, Object value ) throws MetaStoreException {
     return new KDBRMetaStoreElement( delegate, elementType, id, value );
   }
 
@@ -447,8 +443,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public IMetaStoreElementOwner newElementOwner( String name, MetaStoreElementOwnerType ownerType )
-    throws MetaStoreException {
+  public IMetaStoreElementOwner newElementOwner( String name, MetaStoreElementOwnerType ownerType ) throws MetaStoreException {
     return new MemoryMetaStoreElementOwner( name, ownerType );
   }
 

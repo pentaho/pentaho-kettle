@@ -64,7 +64,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class SetValueConstantDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = SetValueConstantMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SetValueConstantMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SetValueConstantMeta input;
 
@@ -168,22 +168,27 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
     final int FieldsRows = input.getFieldName().length;
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetValueConstantDialog.Fieldname.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "SetValueConstantDialog.Fieldname.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetValueConstantDialog.Value.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "SetValueConstantDialog.Value.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetValueConstantDialog.Value.ConversionMask" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats() );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "SetValueConstantDialog.Value.ConversionMask" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats() );
     colinf[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "SetValueConstantDialog.Value.SetEmptyString" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-              BaseMessages.getString( PKG, "System.Combo.No" ) } );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "SetValueConstantDialog.Value.SetEmptyString" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] {
+          BaseMessages.getString( PKG, "System.Combo.Yes" ), BaseMessages.getString( PKG, "System.Combo.No" ) } );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, oldlsMod,
-            props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, oldlsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -304,11 +309,12 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
           }
         };
 
-        BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, insertListener );
+        BaseStepDialog
+          .getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] {}, -1, -1, insertListener );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+        .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
   }
 
@@ -333,8 +339,8 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
       if ( input.getReplaceMask()[i] != null ) {
         ti.setText( 3, input.getReplaceMask()[i] );
       }
-      ti.setText( 4, input.isSetEmptyString()[i] ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages
-          .getString( PKG, "System.Combo.No" ) );
+      ti.setText( 4, input.isSetEmptyString()[i]
+        ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG, "System.Combo.No" ) );
 
     }
 
@@ -362,12 +368,13 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
     int count = wFields.nrNonEmpty();
     input.allocate( count );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < count; i++ ) {
       TableItem ti = wFields.getNonEmpty( i );
       input.getFieldName()[i] = ti.getText( 1 );
 
       input.isSetEmptyString()[i] =
-          BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
+        BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( ti.getText( 4 ) );
 
       input.getReplaceValue()[i] = input.isSetEmptyString()[i] ? "" : ti.getText( 2 );
       input.getReplaceMask()[i] = input.isSetEmptyString()[i] ? "" : ti.getText( 3 );

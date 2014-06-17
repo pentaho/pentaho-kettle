@@ -73,7 +73,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class RssOutputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = RssOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RssOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlRemarqChannel;
   private FormData fdlRemarqChannel;
@@ -264,7 +264,8 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
   private boolean gotEncodings = false;
   private boolean gotPreviousFields = false;
   private String[] fieldNames;
-  private String[] rss_versions = { "rss_2.0", "rss_1.0", "rss_0.94", "rss_0.93", "rss_0.92", "atom_1.0", "atom_0.3" };
+  private String[] rss_versions = {
+    "rss_2.0", "rss_1.0", "rss_0.94", "rss_0.93", "rss_0.92", "atom_1.0", "atom_0.3" };
 
   private RssOutputMeta input;
 
@@ -646,7 +647,8 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
     // Channel Image Description
     wlChannelImageDescription = new Label( wChannelGroup, SWT.RIGHT );
-    wlChannelImageDescription.setText( BaseMessages.getString( PKG, "RssOutputDialog.ChannelImageDescription.Label" ) );
+    wlChannelImageDescription.setText( BaseMessages.getString(
+      PKG, "RssOutputDialog.ChannelImageDescription.Label" ) );
     props.setLook( wlChannelImageDescription );
     fdlChannelImageDescription = new FormData();
     fdlChannelImageDescription.left = new FormAttachment( 0, 0 );
@@ -1018,16 +1020,16 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
     ColumnInfo[] ciChannel = new ColumnInfo[nrChannelCols];
     ciChannel[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "RssOutputDialog.ColumnInfo.Tag" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "RssOutputDialog.ColumnInfo.Tag" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciChannel[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "RssOutputDialog.ColumnInfo.Field" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "RssOutputDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO );
     ciChannel[0].setUsingVariables( true );
     ciChannel[1].setComboValues( fieldNames );
     wChannelCustom =
-        new TableView( transMeta, wCustomComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
-            | SWT.H_SCROLL, ciChannel, nrChannelRows, lsMod, props );
+      new TableView( transMeta, wCustomComp, SWT.BORDER
+        | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciChannel, nrChannelRows, lsMod, props );
 
     wGet = new Button( wCustomComp, SWT.PUSH );
     wGet.setText( BaseMessages.getString( PKG, "RssOutputDialog.GetFields.Button" ) );
@@ -1064,15 +1066,15 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
     ColumnInfo[] ciItem = new ColumnInfo[UpInsCols];
     ciItem[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "RssOutputDialog.ColumnInfo.Tag" ), ColumnInfo.COLUMN_TYPE_TEXT,
-            false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "RssOutputDialog.ColumnInfo.Tag" ), ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciItem[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "RssOutputDialog.ColumnInfo.Field" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "RssOutputDialog.ColumnInfo.Field" ), ColumnInfo.COLUMN_TYPE_CCOMBO );
     ciItem[1].setComboValues( fieldNames );
     wItemCustom =
-        new TableView( transMeta, wCustomComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
-            | SWT.H_SCROLL, ciItem, UpInsRows, lsMod, props );
+      new TableView( transMeta, wCustomComp, SWT.BORDER
+        | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciItem, UpInsRows, lsMod, props );
 
     wGetCustomItem = new Button( wCustomComp, SWT.PUSH );
     wGetCustomItem.setText( BaseMessages.getString( PKG, "RssOutputDialog.GetItemFields.Label" ) );
@@ -1129,16 +1131,18 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
     ColumnInfo[] ciNameSpace = new ColumnInfo[2];
     ciNameSpace[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "RssOutputDialog.ColumnInfo.NameSpace.Title" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "RssOutputDialog.ColumnInfo.NameSpace.Title" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     ciNameSpace[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "RssOutputDialog.ColumnInfo.NameSpace" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "RssOutputDialog.ColumnInfo.NameSpace" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     ciNameSpace[0].setUsingVariables( true );
     ciNameSpace[1].setUsingVariables( true );
     wNameSpaceCustom =
-        new TableView( transMeta, wCustomNameSpaceComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL
-            | SWT.H_SCROLL, ciNameSpace, nrRows, lsMod, props );
+      new TableView( transMeta, wCustomNameSpaceComp, SWT.BORDER
+        | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciNameSpace, nrRows, lsMod, props );
 
     fdNameSpaceCustom = new FormData();
     fdNameSpaceCustom.left = new FormAttachment( 0, 0 );
@@ -1227,7 +1231,8 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
     fdlCreateParentFolder.right = new FormAttachment( middle, -margin );
     wlCreateParentFolder.setLayoutData( fdlCreateParentFolder );
     wCreateParentFolder = new Button( wFileName, SWT.CHECK );
-    wCreateParentFolder.setToolTipText( BaseMessages.getString( PKG, "RssOutputDialog.CreateParentFolder.Tooltip" ) );
+    wCreateParentFolder
+      .setToolTipText( BaseMessages.getString( PKG, "RssOutputDialog.CreateParentFolder.Tooltip" ) );
     props.setLook( wCreateParentFolder );
     fdCreateParentFolder = new FormData();
     fdCreateParentFolder.left = new FormAttachment( middle, 0 );
@@ -1382,10 +1387,9 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         try {
           String[] files = tfoi.getFiles( transMeta );
           if ( files != null && files.length > 0 ) {
-            EnterSelectionDialog esd =
-                new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                    "RssOutputDialog.SelectOutputFiles.DialogTitle" ), BaseMessages.getString( PKG,
-                    "RssOutputDialog.SelectOutputFiles.DialogMessage" ) );
+            EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "RssOutputDialog.SelectOutputFiles.DialogTitle" ),
+              BaseMessages.getString( PKG, "RssOutputDialog.SelectOutputFiles.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -1397,8 +1401,8 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         } catch ( KettleStepException s ) {
 
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-          mb.setMessage( BaseMessages
-              .getString( PKG, "RssOutputDialog.ErrorGettingFiles.DialogMessage", s.getMessage() ) );
+          mb.setMessage( BaseMessages.getString( PKG, "RssOutputDialog.ErrorGettingFiles.DialogMessage", s
+            .getMessage() ) );
           mb.setText( BaseMessages.getString( PKG, "System.DialogTitle.Error" ) );
           mb.open();
         }
@@ -1526,19 +1530,23 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         if ( wFilename.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+        dialog.setFilterNames( new String[] {
+          BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
           BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
           BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           String extension = wExtension.getText();
-          if ( extension != null && dialog.getFileName() != null && dialog.getFileName().endsWith( "." + extension ) ) {
+          if ( extension != null
+            && dialog.getFileName() != null && dialog.getFileName().endsWith( "." + extension ) ) {
             // The extension is filled in and matches the end
             // of the selected file => Strip off the extension.
             String fileName = dialog.getFileName();
-            wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" )
-                + fileName.substring( 0, fileName.length() - ( extension.length() + 1 ) ) );
+            wFilename.setText( dialog.getFilterPath()
+              + System.getProperty( "file.separator" )
+              + fileName.substring( 0, fileName.length() - ( extension.length() + 1 ) ) );
           } else {
-            wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
+            wFilename.setText( dialog.getFilterPath()
+              + System.getProperty( "file.separator" ) + dialog.getFileName() );
           }
         }
       }
@@ -1710,8 +1718,9 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
           fieldNames = r.getFieldNames();
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "RssOutputDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "RssOutputDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "RssOutputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "RssOutputDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }
@@ -1729,8 +1738,9 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
         BaseStepDialog.getFieldsFromPrevious( r, wTable, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RssOutputDialog.UnableToGetFieldsError.DialogTitle" ),
-          BaseMessages.getString( PKG, "RssOutputDialog.UnableToGetFieldsError.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "RssOutputDialog.UnableToGetFieldsError.DialogTitle" ), BaseMessages
+          .getString( PKG, "RssOutputDialog.UnableToGetFieldsError.DialogMessage" ), ke );
     }
   }
 
@@ -1935,6 +1945,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
     int nrchannelfields = wChannelCustom.nrNonEmpty();
     info.allocate( nrchannelfields );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrchannelfields; i++ ) {
       TableItem item = wChannelCustom.getNonEmpty( i );
       info.getChannelCustomTags()[i] = item.getText( 1 );
@@ -1944,6 +1955,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
     // Custom item fields
     int nritemfields = wItemCustom.nrNonEmpty();
     info.allocateitem( nritemfields );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nritemfields; i++ ) {
       TableItem item = wItemCustom.getNonEmpty( i );
       info.getItemCustomTags()[i] = item.getText( 1 );
@@ -1953,6 +1965,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
     // Add Namespaces ?
     int nrnamespaces = wNameSpaceCustom.nrNonEmpty();
     info.allocatenamespace( nrnamespaces );
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrnamespaces; i++ ) {
       TableItem item = wNameSpaceCustom.getNonEmpty( i );
       info.getNameSpacesTitle()[i] = item.getText( 1 );

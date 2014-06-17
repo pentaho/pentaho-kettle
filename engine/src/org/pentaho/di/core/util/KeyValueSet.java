@@ -38,7 +38,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  */
 public class KeyValueSet implements Iterable<KeyValue<?>>, Serializable {
 
@@ -51,7 +51,7 @@ public class KeyValueSet implements Iterable<KeyValue<?>>, Serializable {
 
   /**
    * Add key value(s).
-   * 
+   *
    * @param keyValues
    *          key values to add.
    * @return this.
@@ -68,7 +68,7 @@ public class KeyValueSet implements Iterable<KeyValue<?>>, Serializable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Iterable#iterator()
    */
   public Iterator<KeyValue<?>> iterator() {
@@ -151,7 +151,7 @@ public class KeyValueSet implements Iterable<KeyValue<?>>, Serializable {
 
   /**
    * Walk entries.
-   * 
+   *
    * @param handler
    *          handler to call.
    * @param filter
@@ -171,7 +171,7 @@ public class KeyValueSet implements Iterable<KeyValue<?>>, Serializable {
 
   /**
    * Walk entries.
-   * 
+   *
    * @param handler
    *          handler to call.
    * @throws IllegalArgumentException
@@ -221,7 +221,7 @@ public class KeyValueSet implements Iterable<KeyValue<?>>, Serializable {
 
   /**
    * Clear entries.
-   * 
+   *
    * @return this.
    */
   public KeyValueSet clear() {
@@ -242,7 +242,7 @@ public class KeyValueSet implements Iterable<KeyValue<?>>, Serializable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override

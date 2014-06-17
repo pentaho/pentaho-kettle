@@ -49,7 +49,7 @@ import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class SampleRowsDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = SampleRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SampleRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private LabelTextVar wLinesRange;
   private FormData fdLinesRange, fdLineNumberField;
@@ -107,8 +107,9 @@ public class SampleRowsDialog extends BaseStepDialog implements StepDialogInterf
 
     // Lines ragne
     wLinesRange =
-        new LabelTextVar( transMeta, shell, BaseMessages.getString( PKG, "SampleRowsDialog.LinesRange.Label" ),
-            BaseMessages.getString( PKG, "SampleRowsDialog.LinesRange.Tooltip" ) );
+      new LabelTextVar(
+        transMeta, shell, BaseMessages.getString( PKG, "SampleRowsDialog.LinesRange.Label" ), BaseMessages
+          .getString( PKG, "SampleRowsDialog.LinesRange.Tooltip" ) );
     props.setLook( wLinesRange );
     wLinesRange.addModifyListener( lsMod );
     fdLinesRange = new FormData();
@@ -119,8 +120,9 @@ public class SampleRowsDialog extends BaseStepDialog implements StepDialogInterf
 
     // Add line number to output?
     wLineNumberField =
-        new LabelTextVar( transMeta, shell, BaseMessages.getString( PKG, "SampleRowsDialog.LineNumberField.Label" ),
-            BaseMessages.getString( PKG, "SampleRowsDialog.LineNumberField.Tooltip" ) );
+      new LabelTextVar(
+        transMeta, shell, BaseMessages.getString( PKG, "SampleRowsDialog.LineNumberField.Label" ),
+        BaseMessages.getString( PKG, "SampleRowsDialog.LineNumberField.Tooltip" ) );
     props.setLook( wLinesRange );
     wLineNumberField.addModifyListener( lsMod );
     fdLineNumberField = new FormData();

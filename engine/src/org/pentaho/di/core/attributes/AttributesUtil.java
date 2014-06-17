@@ -40,7 +40,7 @@ public class AttributesUtil {
 
   /**
    * Serialize an attributes group map to XML
-   * 
+   *
    * @param attributesMap
    *          The attribute groups to serialize
    * @return The XML serialized attribute groups
@@ -79,7 +79,7 @@ public class AttributesUtil {
 
   /**
    * Load the attribute groups from an XML DOM Node
-   * 
+   *
    * @param attributesNode
    *          The attributes node to read from ( <attributes> )
    * @return the map with the attribute groups.

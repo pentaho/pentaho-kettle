@@ -27,7 +27,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  */
 public class GenericStepData extends BaseStepData implements StepDataInterface {
 

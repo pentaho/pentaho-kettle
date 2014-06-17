@@ -42,20 +42,19 @@ import org.pentaho.di.trans.steps.symmetriccrypto.symmetricalgorithm.SymmetricCr
 /**
  * Symmetric algorithm Executes a SymmetricCryptoTrans on the values in the input stream. Selected calculated values can
  * then be put on the output stream.
- * 
+ *
  * @author Samatar
  * @since 5-apr-2003
- * 
+ *
  */
 public class SymmetricCryptoTrans extends BaseStep implements StepInterface {
   private static Class<?> PKG = SymmetricCryptoTransMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   private SymmetricCryptoTransMeta meta;
   private SymmetricCryptoTransData data;
 
-  public SymmetricCryptoTrans( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public SymmetricCryptoTrans( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -65,8 +64,8 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface {
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -79,15 +78,15 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface {
       // Let's check that Result Field is given
       if ( Const.isEmpty( meta.getResultfieldname() ) ) {
         // Result field is missing !
-        throw new KettleStepException( BaseMessages.getString( PKG,
-            "SymmetricCryptoTrans.Exception.ErrorResultFieldMissing" ) );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "SymmetricCryptoTrans.Exception.ErrorResultFieldMissing" ) );
       }
 
       // Check if The message field is given
       if ( Const.isEmpty( meta.getMessageFied() ) ) {
         // Message Field is missing !
-        throw new KettleStepException( BaseMessages.getString( PKG,
-            "SymmetricCryptoTrans.Exception.MissingMessageField" ) );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "SymmetricCryptoTrans.Exception.MissingMessageField" ) );
       }
       // Try to get Field index
       data.indexOfMessage = getInputRowMeta().indexOfValue( meta.getMessageFied() );
@@ -95,15 +94,16 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface {
       // Let's check the Field
       if ( data.indexOfMessage < 0 ) {
         // The field is unreachable !
-        throw new KettleStepException( BaseMessages.getString( PKG, "SymmetricCryptoTrans.Exception.CouldnotFindField",
-            meta.getMessageFied() ) );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "SymmetricCryptoTrans.Exception.CouldnotFindField", meta.getMessageFied() ) );
       }
 
       if ( !meta.isSecretKeyInField() ) {
-        String realSecretKey = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getSecretKey() ) );
+        String realSecretKey =
+          Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getSecretKey() ) );
         if ( Const.isEmpty( realSecretKey ) ) {
-          throw new KettleStepException( BaseMessages
-              .getString( PKG, "SymmetricCryptoTrans.Exception.SecretKeyMissing" ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "SymmetricCryptoTrans.Exception.SecretKeyMissing" ) );
         }
         // We have a static secret key
         // Set secrete key
@@ -112,8 +112,8 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface {
       } else {
         // dynamic secret key
         if ( Const.isEmpty( meta.getSecretKeyField() ) ) {
-          throw new KettleStepException( BaseMessages.getString( PKG,
-              "SymmetricCryptoTrans.Exception.SecretKeyFieldMissing" ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "SymmetricCryptoTrans.Exception.SecretKeyFieldMissing" ) );
         }
         // Try to get secret key field index
         data.indexOfSecretkeyField = getInputRowMeta().indexOfValue( meta.getSecretKeyField() );
@@ -121,8 +121,8 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface {
         // Let's check the Field
         if ( data.indexOfSecretkeyField < 0 ) {
           // The field is unreachable !
-          throw new KettleStepException( BaseMessages.getString( PKG,
-              "SymmetricCryptoTrans.Exception.CouldnotFindField", meta.getSecretKeyField() ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "SymmetricCryptoTrans.Exception.CouldnotFindField", meta.getSecretKeyField() ) );
         }
       }
 
@@ -136,16 +136,16 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface {
         if ( meta.isReadKeyAsBinary() ) {
           realSecretKey = getInputRowMeta().getBinary( r, data.indexOfSecretkeyField );
           if ( realSecretKey == null ) {
-            throw new KettleStepException( BaseMessages.getString( PKG,
-                "SymmetricCryptoTrans.Exception.SecretKeyMissing" ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "SymmetricCryptoTrans.Exception.SecretKeyMissing" ) );
           }
         } else {
           realSecretKey =
-              Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( getInputRowMeta().getString( r,
-                  data.indexOfSecretkeyField ) ) );
+            Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( getInputRowMeta().getString(
+              r, data.indexOfSecretkeyField ) ) );
           if ( Const.isEmpty( (String) realSecretKey ) ) {
-            throw new KettleStepException( BaseMessages.getString( PKG,
-                "SymmetricCryptoTrans.Exception.SecretKeyMissing" ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "SymmetricCryptoTrans.Exception.SecretKeyMissing" ) );
           }
         }
 

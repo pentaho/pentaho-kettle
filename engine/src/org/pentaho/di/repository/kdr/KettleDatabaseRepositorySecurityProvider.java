@@ -40,7 +40,7 @@ import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectio
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryUserDelegate;
 
 public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecurityProvider implements
-    RepositorySecurityProvider, RepositorySecurityManager {
+  RepositorySecurityProvider, RepositorySecurityManager {
 
   private RepositoryCapabilities capabilities;
 
@@ -54,8 +54,8 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
    * @param repository
    * @param userInfo
    */
-  public KettleDatabaseRepositorySecurityProvider( KettleDatabaseRepository repository, RepositoryMeta repositoryMeta,
-      IUser userInfo ) {
+  public KettleDatabaseRepositorySecurityProvider( KettleDatabaseRepository repository,
+    RepositoryMeta repositoryMeta, IUser userInfo ) {
     super( repositoryMeta, userInfo );
     this.repository = repository;
     this.capabilities = repositoryMeta.getRepositoryCapabilities();
@@ -99,8 +99,8 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
 
   public synchronized void delUser( ObjectId id_user ) throws KettleException {
     repository.connectionDelegate.performDelete( "DELETE FROM "
-        + repository.quoteTable( KettleDatabaseRepository.TABLE_R_USER ) + " WHERE "
-        + repository.quote( KettleDatabaseRepository.FIELD_USER_ID_USER ) + " = ? ", id_user );
+      + repository.quoteTable( KettleDatabaseRepository.TABLE_R_USER ) + " WHERE "
+      + repository.quote( KettleDatabaseRepository.FIELD_USER_ID_USER ) + " = ? ", id_user );
   }
 
   public synchronized ObjectId getUserID( String login ) throws KettleException {
@@ -108,14 +108,16 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
   }
 
   public ObjectId[] getUserIDs() throws KettleException {
-    return connectionDelegate.getIDs( "SELECT " + repository.quote( KettleDatabaseRepository.FIELD_USER_ID_USER )
-        + " FROM " + repository.quoteTable( KettleDatabaseRepository.TABLE_R_USER ) );
+    return connectionDelegate.getIDs( "SELECT "
+      + repository.quote( KettleDatabaseRepository.FIELD_USER_ID_USER ) + " FROM "
+      + repository.quoteTable( KettleDatabaseRepository.TABLE_R_USER ) );
   }
 
   public synchronized String[] getUserLogins() throws KettleException {
     String loginField = repository.quote( KettleDatabaseRepository.FIELD_USER_LOGIN );
-    return connectionDelegate.getStrings( "SELECT " + loginField + " FROM "
-        + repository.quoteTable( KettleDatabaseRepository.TABLE_R_USER ) + " ORDER BY " + loginField );
+    return connectionDelegate.getStrings( "SELECT "
+      + loginField + " FROM " + repository.quoteTable( KettleDatabaseRepository.TABLE_R_USER ) + " ORDER BY "
+      + loginField );
   }
 
   public synchronized void renameUser( ObjectId id_user, String newname ) throws KettleException {

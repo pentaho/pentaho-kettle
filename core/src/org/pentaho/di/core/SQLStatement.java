@@ -27,10 +27,10 @@ import org.pentaho.di.core.database.DatabaseMeta;
 /**
  * This class contains all that is needed to execute an SQL statement in a database. --> The Database connection --> The
  * SQL statement
- * 
+ *
  * @author Matt
  * @since 02-dec-2004
- * 
+ *
  */
 public class SQLStatement {
   private String stepname;
@@ -40,7 +40,7 @@ public class SQLStatement {
 
   /**
    * Creates a new SQLStatement
-   * 
+   *
    * @param dbinfo
    *          The database connection
    * @param sql
@@ -55,7 +55,7 @@ public class SQLStatement {
 
   /**
    * Set the name of the step for which the SQL is intended
-   * 
+   *
    * @param stepname
    *          the name of the step for which the SQL is intended
    */
@@ -65,7 +65,7 @@ public class SQLStatement {
 
   /**
    * Return the name of the step for which the SQL is intended
-   * 
+   *
    * @return The name of the step for which the SQL is intended
    */
   public String getStepname() {
@@ -74,7 +74,7 @@ public class SQLStatement {
 
   /**
    * Sets the database connection for this SQL Statement
-   * 
+   *
    * @param dbinfo
    *          The databaseconnection
    */
@@ -84,7 +84,7 @@ public class SQLStatement {
 
   /**
    * Sets the SQL to execute for this SQL Statement.
-   * 
+   *
    * @param sql
    *          The sql to execute, without trailing ";" or anything else.
    */
@@ -94,7 +94,7 @@ public class SQLStatement {
 
   /**
    * Get the database connection for this SQL Statement
-   * 
+   *
    * @return The database connection for this SQL Statement
    */
   public DatabaseMeta getDatabase() {
@@ -103,7 +103,7 @@ public class SQLStatement {
 
   /**
    * Get the SQL for this SQL Statement
-   * 
+   *
    * @return The SQL to execute for this SQL Statement
    */
   public String getSQL() {
@@ -112,7 +112,7 @@ public class SQLStatement {
 
   /**
    * Sets the error that occurred when obtaining the SQL.
-   * 
+   *
    * @param error
    *          The error that occurred when obtaining the SQL.
    */
@@ -122,7 +122,7 @@ public class SQLStatement {
 
   /**
    * Get the error that occurred when obtaining the SQL.
-   * 
+   *
    * @return the error that occurred when obtaining the SQL.
    */
   public String getError() {
@@ -131,7 +131,7 @@ public class SQLStatement {
 
   /**
    * Checks whether or not an error occurred obtaining the SQL.
-   * 
+   *
    * @return true if an error is set, false if no error is set.
    */
   public boolean hasError() {
@@ -140,7 +140,7 @@ public class SQLStatement {
 
   /**
    * Checks whether or not SQL statements are present
-   * 
+   *
    * @return true if changes are present, false if this is not the case.
    */
   public boolean hasSQL() {

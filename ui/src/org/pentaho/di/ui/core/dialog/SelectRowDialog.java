@@ -53,11 +53,11 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Displays an ArrayList of rows in a TableView and allows you to select one.
- * 
+ *
  * @author Matt
  */
 public class SelectRowDialog extends Dialog {
-  private static Class<?> PKG = SelectRowDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SelectRowDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFields;
   private TableView wFields;
@@ -77,7 +77,7 @@ public class SelectRowDialog extends Dialog {
   private VariableSpace variables;
 
   /**
-   * 
+   *
    * @param parent
    * @param style
    * @param buf
@@ -135,7 +135,8 @@ public class SelectRowDialog extends Dialog {
     }
 
     wFields =
-        new TableView( variables, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, null, props );
+      new TableView(
+        variables, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, null, props );
 
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );

@@ -48,12 +48,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to enter a number.
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class EnterNumberDialog extends Dialog {
-  private static Class<?> PKG = EnterNumberDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = EnterNumberDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlNumber;
   private Text wNumber;

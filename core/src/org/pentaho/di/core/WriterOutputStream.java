@@ -28,7 +28,7 @@ import java.io.Writer;
 
 /**
  * This class provides a simple wrapper to disguise a Writer as an OutputStream.
- * 
+ *
  * @author matt
  */
 public class WriterOutputStream extends OutputStream {

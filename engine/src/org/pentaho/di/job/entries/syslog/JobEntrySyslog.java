@@ -47,13 +47,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a Syslog job entry.
- * 
+ *
  * @author Samatar
  * @since 05-01-2010
- * 
+ *
  */
 public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntrySyslog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySyslog.class; // for i18n purposes, needed by Translator2!!
 
   private String serverName;
   private String port;
@@ -74,8 +74,6 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
     datePattern = SyslogDefs.DEFAULT_DATE_FORMAT;
     addTimestamp = true;
     addHostname = true;
-
-    setID( -1L );
   }
 
   public JobEntrySyslog() {
@@ -103,8 +101,8 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       port = XMLHandler.getTagValue( entrynode, "port" );
@@ -122,7 +120,7 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       port = rep.getJobEntryAttributeString( id_jobentry, "port" );
       serverName = rep.getJobEntryAttributeString( id_jobentry, "servername" );
@@ -135,7 +133,7 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
 
     } catch ( KettleException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'Syslog' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
   }
 
@@ -150,8 +148,8 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
       rep.saveJobEntryAttribute( id_job, getObjectId(), "addTimestamp", addTimestamp );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "addHostname", addHostname );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type 'Syslog' to the repository for id_job=" + id_job,
-          dbe );
+      throw new KettleException( "Unable to save job entry of type 'Syslog' to the repository for id_job="
+        + id_job, dbe );
     }
   }
 
@@ -308,8 +306,9 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
       syslog.getConfig().setFacility( getFacility() );
       syslog.getConfig().setSendLocalName( false );
       syslog.getConfig().setSendLocalTimestamp( false );
-      SyslogDefs.sendMessage( syslog, SyslogDefs.getPriority( getPriority() ), messageString, isAddTimestamp(),
-          pattern, isAddHostName() );
+      SyslogDefs.sendMessage(
+        syslog, SyslogDefs.getPriority( getPriority() ), messageString, isAddTimestamp(), pattern,
+        isAddHostName() );
 
       // message was sent
       result.setNrErrors( 0 );
@@ -330,8 +329,8 @@ public class JobEntrySyslog extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
   }
 

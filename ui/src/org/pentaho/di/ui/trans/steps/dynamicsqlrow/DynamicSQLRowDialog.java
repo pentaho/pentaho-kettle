@@ -64,7 +64,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
 public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = DynamicSQLRowMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DynamicSQLRowMeta.class; // for i18n purposes, needed by Translator2!!
 
   private boolean gotPreviousFields = false;
 
@@ -260,8 +260,8 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
     // queryOnlyOnChange ?
     wlqueryOnlyOnChange = new Label( shell, SWT.RIGHT );
     wlqueryOnlyOnChange.setText( BaseMessages.getString( PKG, "DynamicSQLRowDialog.queryOnlyOnChangejoin.Label" ) );
-    wlqueryOnlyOnChange.setToolTipText( BaseMessages.getString( PKG,
-        "DynamicSQLRowDialog.queryOnlyOnChangejoin.Tooltip" ) );
+    wlqueryOnlyOnChange.setToolTipText( BaseMessages.getString(
+      PKG, "DynamicSQLRowDialog.queryOnlyOnChangejoin.Tooltip" ) );
     props.setLook( wlqueryOnlyOnChange );
     fdlqueryOnlyOnChange = new FormData();
     fdlqueryOnlyOnChange.left = new FormAttachment( 0, 0 );
@@ -290,7 +290,8 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
     fdlSQL.top = new FormAttachment( wqueryOnlyOnChange, margin );
     wlSQL.setLayoutData( fdlSQL );
 
-    wSQL = new StyledTextComp( transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
+    wSQL =
+      new StyledTextComp( transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "" );
     props.setLook( wSQL, Props.WIDGET_STYLE_FIXED );
     fdSQL = new FormData();
     fdSQL.left = new FormAttachment( 0, 0 );
@@ -411,7 +412,8 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
       colnr++;
     }
 
-    wlPosition.setText( BaseMessages.getString( PKG, "DynamicSQLRowDialog.Position.Label", "" + linenr, "" + colnr ) );
+    wlPosition.setText( BaseMessages
+      .getString( PKG, "DynamicSQLRowDialog.Position.Label", "" + linenr, "" + colnr ) );
 
   }
 
@@ -487,8 +489,9 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
           wSQLFieldName.setText( sqlfield );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "DynamicSQLRowDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "DynamicSQLRowDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "DynamicSQLRowDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "DynamicSQLRowDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }

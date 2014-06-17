@@ -85,14 +85,15 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
+import org.pentaho.di.ui.util.HelpUtils;
 
 /**
  * Dialog class for the Oracle bulk loader step. Created on 21feb2007.
- * 
+ *
  * @author Sven Boden
  */
 public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = OraBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = OraBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CCombo wConnection;
 
@@ -227,8 +228,8 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
   private static String[] characterSetNames = { "", "US7ASCII", "WE8ISO8859P1", "UTF8", };
 
-  private static final String[] ALL_FILETYPES = new String[] { BaseMessages.getString( PKG,
-      "OraBulkLoaderDialog.Filetype.All" ) };
+  private static final String[] ALL_FILETYPES = new String[] { BaseMessages.getString(
+    PKG, "OraBulkLoaderDialog.Filetype.All" ) };
 
   public OraBulkLoaderDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
@@ -712,7 +713,8 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
     fdlCharacterSetName.right = new FormAttachment( middle, -margin );
     wlCharacterSetName.setLayoutData( fdlCharacterSetName );
     wCharacterSetName = new Combo( comp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wCharacterSetName.setToolTipText( BaseMessages.getString( PKG, "OraBulkLoaderDialog.CharacterSetName.Tooltip" ) );
+    wCharacterSetName
+      .setToolTipText( BaseMessages.getString( PKG, "OraBulkLoaderDialog.CharacterSetName.Tooltip" ) );
     wCharacterSetName.setItems( characterSetNames );
     props.setLook( wCharacterSetName );
     fdCharacterSetName = new FormData();
@@ -884,20 +886,24 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
     ciReturn = new ColumnInfo[UpInsCols];
     ciReturn[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "OraBulkLoaderDialog.ColumnInfo.TableField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "OraBulkLoaderDialog.ColumnInfo.TableField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "OraBulkLoaderDialog.ColumnInfo.StreamField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "OraBulkLoaderDialog.ColumnInfo.StreamField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
     ciReturn[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "OraBulkLoaderDialog.ColumnInfo.DateMask" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "",
-              BaseMessages.getString( PKG, "OraBulkLoaderDialog.DateMask.Label" ),
-              BaseMessages.getString( PKG, "OraBulkLoaderDialog.DateTimeMask.Label" ) }, true );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "OraBulkLoaderDialog.ColumnInfo.DateMask" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+          "", BaseMessages.getString( PKG, "OraBulkLoaderDialog.DateMask.Label" ),
+          BaseMessages.getString( PKG, "OraBulkLoaderDialog.DateTimeMask.Label" ) }, true );
     tableFieldColumns.add( ciReturn[0] );
     wReturn =
-        new TableView( transMeta, comp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props );
+      new TableView(
+        transMeta, comp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
+        UpInsRows, lsMod, props );
 
     wGetLU = new Button( comp, SWT.PUSH );
     wGetLU.setText( BaseMessages.getString( PKG, "OraBulkLoaderDialog.GetFields.Label" ) );
@@ -1157,7 +1163,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
       public void run() {
         if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
           final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
-              wSchema.getText();
+            wSchema.getText();
 
           // clear
           for ( ColumnInfo colInfo : tableFieldColumns ) {
@@ -1171,8 +1177,8 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
                 db.connect();
 
                 String schemaTable =
-                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                        .environmentSubstitute( tableName ) );
+                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                    .environmentSubstitute( tableName ) );
                 RowMetaInterface r = db.getTableFields( schemaTable );
                 if ( null != r ) {
                   String[] fieldNames = r.getFieldNames();
@@ -1340,13 +1346,15 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "OraBulkLoaderDialog.Log.FoundFields", "" + nrfields ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       inf.getFieldTable()[i] = item.getText( 1 );
       inf.getFieldStream()[i] = item.getText( 2 );
       if ( BaseMessages.getString( PKG, "OraBulkLoaderDialog.DateMask.Label" ).equals( item.getText( 3 ) ) ) {
         inf.getDateMask()[i] = OraBulkLoaderMeta.DATE_MASK_DATE;
-      } else if ( BaseMessages.getString( PKG, "OraBulkLoaderDialog.DateTimeMask.Label" ).equals( item.getText( 3 ) ) ) {
+      } else if ( BaseMessages
+        .getString( PKG, "OraBulkLoaderDialog.DateTimeMask.Label" ).equals( item.getText( 3 ) ) ) {
         inf.getDateMask()[i] = OraBulkLoaderMeta.DATE_MASK_DATETIME;
       } else {
         inf.getDateMask()[i] = "";
@@ -1439,9 +1447,9 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-                  "OraBulkLoaderDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString( PKG,
-                  "OraBulkLoaderDialog.AvailableSchemas.Message", wConnection.getText() ) );
+            new EnterSelectionDialog( shell, schemas, BaseMessages.getString(
+              PKG, "OraBulkLoaderDialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages
+              .getString( PKG, "OraBulkLoaderDialog.AvailableSchemas.Message", wConnection.getText() ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchema.setText( Const.NVL( d, "" ) );
@@ -1455,8 +1463,8 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
           mb.open();
         }
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-            PKG, "OraBulkLoaderDialog.ErrorGettingSchemas" ), e );
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+          .getString( PKG, "OraBulkLoaderDialog.ErrorGettingSchemas" ), e );
       } finally {
         database.disconnect();
       }
@@ -1509,8 +1517,9 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         BaseStepDialog.getFieldsFromPrevious( r, wReturn, 1, new int[] { 1, 2 }, new int[] {}, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "OraBulkLoaderDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "OraBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "OraBulkLoaderDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "OraBulkLoaderDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -1523,14 +1532,15 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
       String name = stepname; // new name might not yet be linked to other steps!
       StepMeta stepMeta =
-          new StepMeta( BaseMessages.getString( PKG, "OraBulkLoaderDialog.StepMeta.Title" ), name, info );
+        new StepMeta( BaseMessages.getString( PKG, "OraBulkLoaderDialog.StepMeta.Title" ), name, info );
       RowMetaInterface prev = transMeta.getPrevStepFields( stepname );
 
       SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, repository, metaStore );
       if ( !sql.hasError() ) {
         if ( sql.hasSQL() ) {
           SQLEditor sqledit =
-              new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL() );
+            new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql
+              .getSQL() );
           sqledit.open();
         } else {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -1545,8 +1555,9 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "OraBulkLoaderDialog.CouldNotBuildSQL.DialogTitle" ),
-          BaseMessages.getString( PKG, "OraBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "OraBulkLoaderDialog.CouldNotBuildSQL.DialogTitle" ), BaseMessages
+          .getString( PKG, "OraBulkLoaderDialog.CouldNotBuildSQL.DialogMessage" ), ke );
     }
 
   }
@@ -1565,9 +1576,9 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
     try {
       sourceFields = transMeta.getPrevStepFields( stepMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "OraBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ), BaseMessages.getString( PKG,
-          "OraBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "OraBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Title" ),
+        BaseMessages.getString( PKG, "OraBulkLoaderDialog.DoMapping.UnableToFindSourceFields.Message" ), e );
       return;
     }
     // refresh data
@@ -1577,9 +1588,9 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
     try {
       targetFields = stepMetaInterface.getRequiredFields( transMeta );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "OraBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString( PKG,
-          "OraBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
+      new ErrorDialog( shell, BaseMessages.getString(
+        PKG, "OraBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Title" ), BaseMessages.getString(
+        PKG, "OraBulkLoaderDialog.DoMapping.UnableToFindTargetFields.Message" ), e );
       return;
     }
 
@@ -1624,29 +1635,30 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
       String message = "";
       if ( missingSourceFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "OraBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields
-                .toString() )
-                + Const.CR;
+          BaseMessages.getString(
+            PKG, "OraBulkLoaderDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() )
+            + Const.CR;
       }
       if ( missingTargetFields.length() > 0 ) {
         message +=
-            BaseMessages.getString( PKG, "OraBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields
-                .toString() )
-                + Const.CR;
+          BaseMessages.getString(
+            PKG, "OraBulkLoaderDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() )
+            + Const.CR;
       }
       message += Const.CR;
-      message += BaseMessages.getString( PKG, "OraBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
+      message +=
+        BaseMessages.getString( PKG, "OraBulkLoaderDialog.DoMapping.SomeFieldsNotFoundContinue" ) + Const.CR;
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       boolean goOn =
-          MessageDialog.openConfirm( shell, BaseMessages.getString( PKG,
-              "OraBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
+        MessageDialog.openConfirm( shell, BaseMessages.getString(
+          PKG, "OraBulkLoaderDialog.DoMapping.SomeFieldsNotFoundTitle" ), message );
       if ( !goOn ) {
         return;
       }
     }
     EnterMappingDialog d =
-        new EnterMappingDialog( OraBulkLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields
-            .getFieldNames(), mappings );
+      new EnterMappingDialog( OraBulkLoaderDialog.this.shell, sourceFields.getFieldNames(), targetFields
+        .getFieldNames(), mappings );
     mappings = d.open();
 
     // mappings == null if the user pressed cancel
@@ -1669,6 +1681,6 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
   @Override
   protected Button createHelpButton( Shell shell, StepMeta stepMeta, PluginInterface plugin ) {
-    return createHelpButton( helpComp, "Step documentation for " + plugin.getName(), plugin );
+    return HelpUtils.createHelpButton( helpComp, HelpUtils.getHelpDialogTitle( plugin ), plugin );
   }
 }

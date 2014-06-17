@@ -52,12 +52,12 @@ import org.w3c.dom.Node;
 
 /**
  * Job entry mail validator.
- * 
+ *
  * @author Samatar
  * @since 23-06-2008
  */
 public class JobEntryMailValidator extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryMailValidator.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryMailValidator.class; // for i18n purposes, needed by Translator2!!
 
   private boolean smtpCheck;
   private String timeout;
@@ -157,8 +157,8 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       smtpCheck = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "smtpCheck" ) );
@@ -168,12 +168,13 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
       emailAddress = XMLHandler.getTagValue( entrynode, "emailAddress" );
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "JobEntryMailValidator.Meta.UnableToLoadFromXML" ), e );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "JobEntryMailValidator.Meta.UnableToLoadFromXML" ), e );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       smtpCheck = rep.getJobEntryAttributeBoolean( id_jobentry, "smtpCheck" );
       timeout = rep.getJobEntryAttributeString( id_jobentry, "timeout" );
@@ -182,7 +183,7 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
       emailAddress = rep.getJobEntryAttributeString( id_jobentry, "emailAddress" );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryMailValidator.Meta.UnableToLoadFromRep" )
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
   }
 
@@ -196,15 +197,15 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
       rep.saveJobEntryAttribute( id_job, getObjectId(), "emailSender", emailSender );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "emailAddress", emailAddress );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "JobEntryMailValidator.Meta.UnableToSaveToRep" ) + id_job, dbe );
+      throw new KettleException( BaseMessages.getString( PKG, "JobEntryMailValidator.Meta.UnableToSaveToRep" )
+        + id_job, dbe );
     }
   }
 
   /**
    * Execute this job entry and return the result. In this case it means, just set the result boolean in the Result
    * class.
-   * 
+   *
    * @param previousResult
    *          The result of the previous execution
    * @return The Result of the execution.
@@ -244,7 +245,7 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
 
       // Check if address is valid
       MailValidationResult resultValidator =
-          MailValidation.isAddressValid( log, email, realSender, realDefaultSMTP, timeOut, smtpCheck );
+        MailValidation.isAddressValid( log, email, realSender, realDefaultSMTP, timeOut, smtpCheck );
 
       mailIsValid = resultValidator.isValide();
       MailError = resultValidator.getErrorMessage();
@@ -279,8 +280,8 @@ public class JobEntryMailValidator extends JobEntryBase implements Cloneable, Jo
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     andValidator().validate( this, "emailAddress", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "emailSender", remarks, putValidators( notBlankValidator(), emailValidator() ) );

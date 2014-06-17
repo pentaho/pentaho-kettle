@@ -76,7 +76,7 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class JsonInputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -298,7 +298,8 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     wSourceStreamField = new Button( wOutputField, SWT.CHECK );
     props.setLook( wSourceStreamField );
-    wSourceStreamField.setToolTipText( BaseMessages.getString( PKG, "JsonInputDialog.wSourceStreamField.Tooltip" ) );
+    wSourceStreamField
+      .setToolTipText( BaseMessages.getString( PKG, "JsonInputDialog.wSourceStreamField.Tooltip" ) );
     fdSourceStreamField = new FormData();
     fdSourceStreamField.left = new FormAttachment( middle, -margin );
     fdSourceStreamField.top = new FormAttachment( 0, margin );
@@ -517,14 +518,17 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     ColumnInfo[] colinfo = new ColumnInfo[5];
     colinfo[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.Files.Filename.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "JsonInputDialog.Files.Filename.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinfo[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.Files.Wildcard.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "JsonInputDialog.Files.Wildcard.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinfo[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.Files.ExcludeWildcard.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "JsonInputDialog.Files.ExcludeWildcard.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     colinfo[0].setUsingVariables( true );
     colinfo[1].setUsingVariables( true );
@@ -532,16 +536,19 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     colinfo[2].setUsingVariables( true );
     colinfo[2].setToolTip( BaseMessages.getString( PKG, "JsonInputDialog.Files.ExcludeWildcard.Tooltip" ) );
     colinfo[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.Required.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, JsonInputMeta.RequiredFilesDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "JsonInputDialog.Required.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        JsonInputMeta.RequiredFilesDesc );
     colinfo[3].setToolTip( BaseMessages.getString( PKG, "JsonInputDialog.Required.Tooltip" ) );
     colinfo[4] =
-        new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.IncludeSubDirs.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, JsonInputMeta.RequiredFilesDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "JsonInputDialog.IncludeSubDirs.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        JsonInputMeta.RequiredFilesDesc );
     colinfo[4].setToolTip( BaseMessages.getString( PKG, "JsonInputDialog.IncludeSubDirs.Tooltip" ) );
 
     wFilenameList =
-        new TableView( transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2, lsMod, props );
+      new TableView(
+        transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2, lsMod, props );
     props.setLook( wFilenameList );
     fdFilenameList = new FormData();
     fdFilenameList.left = new FormAttachment( middle, 0 );
@@ -825,39 +832,52 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     final int FieldsRows = input.getInputFields().length;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Name.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Path.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Type.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Format.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Length.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Precision.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Currency.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Decimal.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Group.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.TrimType.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, JsonInputField.trimTypeDesc, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Repeat.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Name.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Path.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Type.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Format.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Length.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Precision.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Currency.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Decimal.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Group.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.TrimType.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, JsonInputField.trimTypeDesc, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Repeat.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+            BaseMessages.getString( PKG, "System.Combo.Yes" ),
+            BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
 
-        };
+      };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Name.Column.Tooltip" ) );
     colinf[1].setUsingVariables( true );
     colinf[1].setToolTip( BaseMessages.getString( PKG, "JsonInputDialog.FieldsTable.Path.Column.Tooltip" ) );
 
-    wFields = new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+    wFields =
+      new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -931,7 +951,8 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFilenameList.add( new String[] { wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
+        wFilenameList.add( new String[] {
+          wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
           JsonInputMeta.RequiredFilesCode[0], JsonInputMeta.RequiredFilesCode[0] } );
         wFilename.setText( "" );
         wFilemask.setText( "" );
@@ -979,10 +1000,9 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
           FileInputList fileInputList = tfii.getFiles( transMeta );
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
-            EnterSelectionDialog esd =
-                new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                    "JsonInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString( PKG,
-                    "JsonInputDialog.FilesReadSelection.DialogMessage" ) );
+            EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "JsonInputDialog.FilesReadSelection.DialogTitle" ),
+              BaseMessages.getString( PKG, "JsonInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -993,7 +1013,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
           }
         } catch ( KettleException ex ) {
           new ErrorDialog( shell, BaseMessages.getString( PKG, "JsonInputDialog.ErrorParsingData.DialogTitle" ),
-              BaseMessages.getString( PKG, "JsonInputDialog.ErrorParsingData.DialogMessage" ), ex );
+            BaseMessages.getString( PKG, "JsonInputDialog.ErrorParsingData.DialogMessage" ), ex );
         }
       }
     } );
@@ -1042,7 +1062,8 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
             dialog.setFileName( fname );
           }
 
-          dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.JsonFiles" ),
+          dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.JsonFiles" ),
             BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
           if ( dialog.open() != null ) {
@@ -1093,8 +1114,9 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
         wFieldValue.setText( value );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "JsonInputDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "JsonInputDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "JsonInputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "JsonInputDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
@@ -1151,7 +1173,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
   /**
    * Read the data from the TextFileInputMeta object and show it in this dialog.
-   * 
+   *
    * @param in
    *          The TextFileInputMeta object to obtain the data from.
    */
@@ -1160,10 +1182,10 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
       wFilenameList.removeAll();
 
       for ( int i = 0; i < in.getFileName().length; i++ ) {
-        wFilenameList
-            .add( new String[] { in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
-              in.getRequiredFilesDesc( in.getFileRequired()[i] ),
-              in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
+        wFilenameList.add( new String[] {
+          in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
+          in.getRequiredFilesDesc( in.getFileRequired()[i] ),
+          in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
       }
 
       wFilenameList.removeEmptyRows();
@@ -1211,8 +1233,8 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
         String decim = field.getDecimalSymbol();
         String trim = field.getTrimTypeDesc();
         String rep =
-            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG,
-                "System.Combo.No" );
+          field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+            PKG, "System.Combo.No" );
 
         if ( name != null ) {
           item.setText( 1, name );
@@ -1294,8 +1316,9 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "JsonInputDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "JsonInputDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "JsonInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
+          .getString( PKG, "JsonInputDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -1344,6 +1367,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
       field.setTrimType( JsonInputField.getTrimTypeByDesc( item.getText( 10 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 11 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
     in.setShortFileNameField( wShortFileFieldName.getText() );
@@ -1363,18 +1387,17 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
       getInfo( oneMeta );
 
       TransMeta previewMeta =
-          TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+        TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "JsonInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "JsonInputDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "JsonInputDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "JsonInputDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+            shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -1383,21 +1406,23 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
+                  .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+            new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "JsonInputDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "JsonInputDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "JsonInputDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+          .getString( PKG, "JsonInputDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 
@@ -1512,8 +1537,8 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     // LastModificationTimeName line
     wlLastModificationTimeName = new Label( wAdditionalFieldsComp, SWT.RIGHT );
-    wlLastModificationTimeName
-        .setText( BaseMessages.getString( PKG, "JsonInputDialog.LastModificationTimeName.Label" ) );
+    wlLastModificationTimeName.setText( BaseMessages.getString(
+      PKG, "JsonInputDialog.LastModificationTimeName.Label" ) );
     props.setLook( wlLastModificationTimeName );
     fdlLastModificationTimeName = new FormData();
     fdlLastModificationTimeName.left = new FormAttachment( 0, 0 );

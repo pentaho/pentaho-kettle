@@ -58,14 +58,14 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a PGP verify job entry.
- * 
+ *
  * @author Samatar
  * @since 25-02-2011
- * 
+ *
  */
 
 public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryPGPVerify.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryPGPVerify.class; // for i18n purposes, needed by Translator2!!
 
   private String gpglocation;
   private String filename;
@@ -78,7 +78,6 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
     filename = null;
     detachedfilename = null;
     useDetachedSignature = false;
-    setID( -1L );
   }
 
   public JobEntryPGPVerify() {
@@ -101,8 +100,8 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       gpglocation = XMLHandler.getTagValue( entrynode, "gpglocation" );
@@ -111,21 +110,21 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
       useDetachedSignature = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "useDetachedSignature" ) );
 
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "JobEntryPGPVerify.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "JobEntryPGPVerify.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node" ), xe );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       gpglocation = rep.getJobEntryAttributeString( id_jobentry, "gpglocation" );
       filename = rep.getJobEntryAttributeString( id_jobentry, "filename" );
       detachedfilename = rep.getJobEntryAttributeString( id_jobentry, "detachedfilename" );
       useDetachedSignature = rep.getJobEntryAttributeBoolean( id_jobentry, "useDetachedSignature" );
     } catch ( KettleException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryPGPVerify.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry ), dbe );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "JobEntryPGPVerify.ERROR_0002_Cannot_Load_Job_From_Repository", id_jobentry ), dbe );
     }
   }
 
@@ -136,8 +135,8 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
       rep.saveJobEntryAttribute( id_job, getObjectId(), "detachedfilename", detachedfilename );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "useDetachedSignature", useDetachedSignature );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryPGPVerify.ERROR_0003_Cannot_Save_Job_Entry",
-          id_job ), dbe );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "JobEntryPGPVerify.ERROR_0003_Cannot_Save_Job_Entry", id_job ), dbe );
     }
   }
 
@@ -241,8 +240,8 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "gpglocation", remarks, putValidators( notBlankValidator() ) );
   }
 
@@ -250,7 +249,7 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
    * Exports the object to a flat-file system, adding content with filename keys to a set of definitions. The supplied
    * resource naming interface allows the object to name appropriately without worrying about those parts of the
    * implementation specific details.
-   * 
+   *
    * @param space
    *          The variable space to resolve (environment) variables with.
    * @param definitions
@@ -261,13 +260,13 @@ public class JobEntryPGPVerify extends JobEntryBase implements Cloneable, JobEnt
    *          The repository to load resources from
    * @param metaStore
    *          the metaStore to load external metadata from
-   * 
+   *
    * @return The filename for this object. (also contained in the definitions map)
    * @throws KettleException
    *           in case something goes wrong during the export
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the gpglocation from relative to absolute by grabbing the file object...

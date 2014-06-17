@@ -74,7 +74,7 @@ public class SlaveServerStatus {
    * @param jobStatusList
    */
   public SlaveServerStatus( String statusDescription, List<SlaveServerTransStatus> transStatusList,
-      List<SlaveServerJobStatus> jobStatusList ) {
+    List<SlaveServerJobStatus> jobStatusList ) {
     this.statusDescription = statusDescription;
     this.transStatusList = transStatusList;
     this.jobStatusList = jobStatusList;
@@ -211,7 +211,7 @@ public class SlaveServerStatus {
     for ( int i = 0; i < transStatusList.size(); i++ ) {
       SlaveServerTransStatus transStatus = transStatusList.get( i );
       if ( transStatus.getTransName().equalsIgnoreCase( transName )
-          && ( Const.isEmpty( id ) || transStatus.getId().equals( id ) ) ) {
+        && ( Const.isEmpty( id ) || transStatus.getId().equals( id ) ) ) {
         return transStatus;
       }
     }
@@ -222,7 +222,7 @@ public class SlaveServerStatus {
     for ( int i = 0; i < jobStatusList.size(); i++ ) {
       SlaveServerJobStatus jobStatus = jobStatusList.get( i );
       if ( jobStatus.getJobName().equalsIgnoreCase( jobName )
-          && ( Const.isEmpty( id ) || jobStatus.getId().equals( id ) ) ) {
+        && ( Const.isEmpty( id ) || jobStatus.getId().equals( id ) ) ) {
         return jobStatus;
       }
     }

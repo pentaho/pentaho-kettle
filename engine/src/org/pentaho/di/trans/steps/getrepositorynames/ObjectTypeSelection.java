@@ -27,8 +27,8 @@ import org.pentaho.di.i18n.BaseMessages;
 public enum ObjectTypeSelection {
 
   Transformations( BaseMessages.getString( "System.ObjectTypeSelection.Description.Transformations" ) ), Jobs(
-      BaseMessages.getString( "System.ObjectTypeSelection.Description.Jobs" ) ), All( BaseMessages
-      .getString( "System.ObjectTypeSelection.Description.All" ) ), ;
+    BaseMessages.getString( "System.ObjectTypeSelection.Description.Jobs" ) ), All( BaseMessages
+    .getString( "System.ObjectTypeSelection.Description.All" ) );
 
   private String description;
 

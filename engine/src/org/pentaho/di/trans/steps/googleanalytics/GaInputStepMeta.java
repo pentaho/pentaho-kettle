@@ -315,7 +315,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) {
 
     // clear the output
     r.clear();
@@ -362,11 +362,11 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     StringBuffer retval = new StringBuffer( 800 );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "user", gaEmail ) );
-    retval.append( "    " )
-        .append( XMLHandler.addTagValue( "pass", "Encrypted " + Encr.encryptPassword( gaPassword ) ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "pass", "Encrypted " + Encr.encryptPassword( gaPassword ) ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "appName", gaAppName ) );
-    retval.append( "    " )
-        .append( XMLHandler.addTagValue( "apiKey", "Encrypted " + Encr.encryptPassword( gaApiKey ) ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "apiKey", "Encrypted " + Encr.encryptPassword( gaApiKey ) ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "profileName", gaProfileName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "profileTableId", gaProfileTableId ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "customTableId", gaCustomTableId ) );
@@ -389,7 +389,8 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
       retval.append( "        " ).append( XMLHandler.addTagValue( "feedFieldType", feedFieldType[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "feedField", feedField[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "outField", outputField[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( outputType[i] ) ) );
+      retval
+        .append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( outputType[i] ) ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "conversionMask", conversionMask[i] ) );
       retval.append( "      </feedField>" ).append( Const.CR );
     }
@@ -416,8 +417,8 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
       filters = XMLHandler.getTagValue( stepnode, "filters" );
       sort = XMLHandler.getTagValue( stepnode, "sort" );
       useSegment =
-          XMLHandler.getTagValue( stepnode, "useSegment" ) == null ? true : getBooleanAttributeFromNode( stepnode,
-              "useSegment" ); // assume true for non-present
+        XMLHandler.getTagValue( stepnode, "useSegment" ) == null ? true : getBooleanAttributeFromNode(
+          stepnode, "useSegment" ); // assume true for non-present
       useCustomSegment = getBooleanAttributeFromNode( stepnode, "useCustomSegment" );
       customSegment = XMLHandler.getTagValue( stepnode, "customSegment" );
       segmentId = XMLHandler.getTagValue( stepnode, "segmentId" );
@@ -450,8 +451,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
       gaEmail = rep.getStepAttributeString( id_step, "user" );
@@ -497,12 +497,13 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "user", gaEmail );
-      rep.saveStepAttribute( id_transformation, id_step, "pass", "Encrypted " + Encr.encryptPassword( gaPassword ) );
-      rep.saveStepAttribute( id_transformation, id_step, "apiKey", "Encrypted " + Encr.encryptPassword( gaApiKey ) );
+      rep
+        .saveStepAttribute( id_transformation, id_step, "pass", "Encrypted " + Encr.encryptPassword( gaPassword ) );
+      rep
+        .saveStepAttribute( id_transformation, id_step, "apiKey", "Encrypted " + Encr.encryptPassword( gaApiKey ) );
       rep.saveStepAttribute( id_transformation, id_step, "appName", gaAppName );
       rep.saveStepAttribute( id_transformation, id_step, "profileName", gaProfileName );
       rep.saveStepAttribute( id_transformation, id_step, "profileTableId", gaProfileTableId );
@@ -531,44 +532,45 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "GoogleAnalytics.Error.UnableToSaveToRep" ) + id_step, e );
+      throw new KettleException( BaseMessages.getString( PKG, "GoogleAnalytics.Error.UnableToSaveToRep" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "GoogleAnalytics.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "GoogleAnalytics.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GoogleAnalytics.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "GoogleAnalytics.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "GoogleAnalytics.CheckResult.StepRecevingData2" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "GoogleAnalytics.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "GoogleAnalytics.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "GoogleAnalytics.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans disp ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans disp ) {
     return new GaInputStep( stepMeta, stepDataInterface, cnr, transMeta, disp );
   }
 

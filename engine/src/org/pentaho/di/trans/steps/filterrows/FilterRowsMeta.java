@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.filterrows;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -62,11 +63,11 @@ import org.w3c.dom.Node;
  */
 
 public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = FilterRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FilterRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   /**
    * This is the main condition for the complete filter.
-   * 
+   *
    * @since version 2.1
    */
   private Condition condition;
@@ -141,8 +142,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
       // The new situation...
       if ( condnode != null ) {
         condition = new Condition( condnode );
-      } else // Old style condition: Line1 OR Line2 OR Line3: @deprecated!
-      {
+      } else {
+        // Old style condition: Line1 OR Line2 OR Line3: @deprecated!
         condition = new Condition();
 
         int nrkeys = XMLHandler.countNodes( compare, "key" );
@@ -184,8 +185,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
         }
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "FilterRowsMeta.Exception..UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "FilterRowsMeta.Exception..UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -193,8 +194,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
     allocate();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       allocate();
 
@@ -206,8 +206,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
       condition = rep.loadConditionFromStepAttribute( id_step, "id_condition" );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FilterRowsMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "FilterRowsMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
     }
   }
 
@@ -218,8 +218,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       if ( condition != null ) {
         List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
@@ -229,14 +228,14 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, "send_false_to", targetStreams.get( 1 ).getStepname() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FilterRowsMeta.Exception.UnableToSaveStepInfoToRepository" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "FilterRowsMeta.Exception.UnableToSaveStepInfoToRepository" )
+        + id_step, e );
     }
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Clear the sortedDescending flag on fields used within the condition - otherwise the comparisons will be
     // inverted!!
     String[] conditionField = condition.getUsedFields();
@@ -249,9 +248,9 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -261,9 +260,10 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
       int trueTargetIdx = Const.indexOfString( targetStreams.get( 0 ).getStepname(), output );
       if ( trueTargetIdx < 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "FilterRowsMeta.CheckResult.TargetStepInvalid", "true", targetStreams.get( 0 ).getStepname() ),
-                stepMeta );
+          new CheckResult(
+            CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "FilterRowsMeta.CheckResult.TargetStepInvalid", "true", targetStreams
+                .get( 0 ).getStepname() ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -272,60 +272,49 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
       int falseTargetIdx = Const.indexOfString( targetStreams.get( 1 ).getStepname(), output );
       if ( falseTargetIdx < 0 ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "FilterRowsMeta.CheckResult.TargetStepInvalid", "false", targetStreams.get( 1 ).getStepname() ),
-                stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages
+            .getString( PKG, "FilterRowsMeta.CheckResult.TargetStepInvalid", "false", targetStreams
+              .get( 1 ).getStepname() ), stepMeta );
         remarks.add( cr );
       }
     }
 
     if ( condition.isEmpty() ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FilterRowsMeta.CheckResult.NoConditionSpecified" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "FilterRowsMeta.CheckResult.NoConditionSpecified" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FilterRowsMeta.CheckResult.ConditionSpecified" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "FilterRowsMeta.CheckResult.ConditionSpecified" ), stepMeta );
     }
     remarks.add( cr );
 
     // Look up fields in the input stream <prev>
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FilterRowsMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "FilterRowsMeta.CheckResult.StepReceivingFields", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
-      boolean first = true;
-      error_message = "";
-      boolean error_found = false;
-
-      // What fields are used in the condition?
-      String[] key = condition.getUsedFields();
-      for ( int i = 0; i < key.length; i++ ) {
-        ValueMetaInterface v = prev.searchValueMeta( key[i] );
-        if ( v == null ) {
-          if ( first ) {
-            first = false;
-            error_message +=
-                BaseMessages.getString( PKG, "FilterRowsMeta.CheckResult.FieldsNotFoundFromPreviousStep" ) + Const.CR;
-          }
-          error_found = true;
-          error_message += "\t\t" + key[i] + Const.CR;
+      List<String> orphanFields = getOrphanFields( condition, prev );
+      if ( orphanFields.size() > 0 ) {
+        error_message = BaseMessages.getString( PKG, "FilterRowsMeta.CheckResult.FieldsNotFoundFromPreviousStep" )
+          + Const.CR;
+        for ( String field : orphanFields ) {
+          error_message += "\t\t" + field + Const.CR;
         }
-      }
-      if ( error_found ) {
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "FilterRowsMeta.CheckResult.AllFieldsFoundInInputStream" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+            "FilterRowsMeta.CheckResult.AllFieldsFoundInInputStream" ), stepMeta );
       }
       remarks.add( cr );
     } else {
       error_message =
-          BaseMessages.getString( PKG, "FilterRowsMeta.CheckResult.CouldNotReadFieldsFromPreviousStep" ) + Const.CR;
+        BaseMessages.getString( PKG, "FilterRowsMeta.CheckResult.CouldNotReadFieldsFromPreviousStep" )
+          + Const.CR;
       cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
       remarks.add( cr );
     }
@@ -333,19 +322,19 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FilterRowsMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "FilterRowsMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FilterRowsMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "FilterRowsMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new FilterRows( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -361,10 +350,10 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
 
-      ioMeta.addStream( new Stream( StreamType.TARGET, null, BaseMessages.getString( PKG,
-          "FilterRowsMeta.InfoStream.True.Description" ), StreamIcon.TRUE, null ) );
-      ioMeta.addStream( new Stream( StreamType.TARGET, null, BaseMessages.getString( PKG,
-          "FilterRowsMeta.InfoStream.False.Description" ), StreamIcon.FALSE, null ) );
+      ioMeta.addStream( new Stream( StreamType.TARGET, null, BaseMessages.getString(
+        PKG, "FilterRowsMeta.InfoStream.True.Description" ), StreamIcon.TRUE, null ) );
+      ioMeta.addStream( new Stream( StreamType.TARGET, null, BaseMessages.getString(
+        PKG, "FilterRowsMeta.InfoStream.False.Description" ), StreamIcon.FALSE, null ) );
     }
 
     return ioMeta;
@@ -376,7 +365,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * When an optional stream is selected, this method is called to handled the ETL metadata implications of that.
-   * 
+   *
    * @param stream
    *          The optional stream to handle.
    */
@@ -409,4 +398,29 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
   public boolean excludeFromCopyDistributeVerification() {
     return true;
   }
+
+  /**
+   * Get non-existing referenced input fields
+   * @param condition
+   * @param prev
+   * @return
+   */
+  public List<String> getOrphanFields( Condition condition, RowMetaInterface prev ) {
+    List<String> orphans = new ArrayList<String>(  );
+    if ( condition == null || prev == null ) {
+      return orphans;
+    }
+    String[] key = condition.getUsedFields();
+    for ( int i = 0; i < key.length; i++ ) {
+      if ( Const.isEmpty( key[i] ) ) {
+        continue;
+      }
+      ValueMetaInterface v = prev.searchValueMeta( key[i] );
+      if ( v == null ) {
+        orphans.add( key[i] );
+      }
+    }
+    return orphans;
+  }
+
 }

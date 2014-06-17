@@ -52,21 +52,22 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntrySpecial.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySpecial.class; // for i18n purposes, needed by Translator2!!
 
-  private final static String NOSCHEDULING = BaseMessages.getString( PKG, "JobSpecial.Type.NoScheduling" );
+  private static final String NOSCHEDULING = BaseMessages.getString( PKG, "JobSpecial.Type.NoScheduling" );
 
-  private final static String INTERVAL = BaseMessages.getString( PKG, "JobSpecial.Type.Interval" );
+  private static final String INTERVAL = BaseMessages.getString( PKG, "JobSpecial.Type.Interval" );
 
-  private final static String DAILY = BaseMessages.getString( PKG, "JobSpecial.Type.Daily" );
+  private static final String DAILY = BaseMessages.getString( PKG, "JobSpecial.Type.Daily" );
 
-  private final static String WEEKLY = BaseMessages.getString( PKG, "JobSpecial.Type.Weekly" );
+  private static final String WEEKLY = BaseMessages.getString( PKG, "JobSpecial.Type.Weekly" );
 
-  private final static String MONTHLY = BaseMessages.getString( PKG, "JobSpecial.Type.Monthly" );
+  private static final String MONTHLY = BaseMessages.getString( PKG, "JobSpecial.Type.Monthly" );
 
   private Button wOK, wCancel;
 
@@ -107,6 +108,7 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
 
     shell = new Shell( parent, props.getJobsDialogStyle() );
     props.setLook( shell );
+    JobDialog.setShellImage( shell, jobEntry );
     shell.setImage( GUIResource.getInstance().getImageStart() );
 
     ModifyListener lsMod = new ModifyListener() {
@@ -152,13 +154,15 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
     wIntervalSeconds = new Spinner( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wIntervalSeconds.setMinimum( 0 );
     wIntervalSeconds.setMaximum( Integer.MAX_VALUE );
-    placeControl( shell, BaseMessages.getString( PKG, "JobSpecial.IntervalSeconds.Label" ), wIntervalSeconds, wType );
+    placeControl(
+      shell, BaseMessages.getString( PKG, "JobSpecial.IntervalSeconds.Label" ), wIntervalSeconds, wType );
 
     wIntervalMinutes = new Spinner( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wIntervalMinutes.setMinimum( 0 );
     wIntervalMinutes.setMaximum( Integer.MAX_VALUE );
-    placeControl( shell, BaseMessages.getString( PKG, "JobSpecial.IntervalMinutes.Label" ), wIntervalMinutes,
-        wIntervalSeconds );
+    placeControl(
+      shell, BaseMessages.getString( PKG, "JobSpecial.IntervalMinutes.Label" ), wIntervalMinutes,
+      wIntervalSeconds );
 
     Composite time = new Composite( shell, SWT.NONE );
     time.setLayout( new FillLayout() );

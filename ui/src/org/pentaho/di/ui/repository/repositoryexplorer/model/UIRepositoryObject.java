@@ -40,6 +40,7 @@ public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryO
   protected RepositoryObjectInterface obj;
   protected Repository rep;
   private RepositoryObjectComparator roc;
+  private static final DateObjectComparator doc = new DateObjectComparator();
   private IRepositoryService repositoryService;
 
   public UIRepositoryObject() {
@@ -112,6 +113,28 @@ public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryO
     this.rep = rep;
   }
 
+  static class DateObjectComparator implements Comparator<UIRepositoryObject> {
+    @Override
+    public int compare( UIRepositoryObject o1, UIRepositoryObject o2 ) {
+      Date d1 = o1 != null ? o1.getModifiedDate() : null;
+      Date d2 = o2 != null ? o2.getModifiedDate() : null;
+
+      long t1 = d1 != null ? d1.getTime() : 0;
+      long t2 = d2 != null ? d2.getTime() : 0;
+
+      int res = 0;
+
+      if ( t1 > t2 ) {
+        res = 1;
+      } else if ( t1 < t2 ) {
+        res = -1;
+      }
+
+      return res;
+
+    }
+  }
+
   static class RepositoryObjectComparator implements Comparator<UIRepositoryObject> {
 
     public int compare( UIRepositoryObject o1, UIRepositoryObject o2 ) {
@@ -143,6 +166,10 @@ public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryO
 
   public void setComparator( RepositoryObjectComparator roc ) {
     this.roc = roc;
+  }
+
+  public DateObjectComparator getDateComparator() {
+    return UIRepositoryObject.doc;
   }
 
   public IRepositoryService getRepositoryService() {

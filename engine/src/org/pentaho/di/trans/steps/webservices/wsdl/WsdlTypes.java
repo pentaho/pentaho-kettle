@@ -44,7 +44,7 @@ import org.w3c.dom.Element;
  */
 public final class WsdlTypes implements Serializable {
 
-  private static Class<?> PKG = WsdlTypes.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = WsdlTypes.class; // for i18n purposes, needed by Translator2!!
 
   private static final long serialVersionUID = 1L;
   private final String _targetNamespace;
@@ -55,7 +55,7 @@ public final class WsdlTypes implements Serializable {
 
   /**
    * Create a new for WsdlTypes instance for the specified WSDL definition.
-   * 
+   *
    * @param wsdlDefinition
    *          The WSDL definition.
    */
@@ -71,7 +71,7 @@ public final class WsdlTypes implements Serializable {
 
   /**
    * Find a named &lt;element&gt; in the types section of the WSDL.
-   * 
+   *
    * @param elementName
    *          Name of element to find.
    * @return The element node.
@@ -83,7 +83,8 @@ public final class WsdlTypes implements Serializable {
     Element namedElement = null;
     Schema s = getSchema( elementName.getNamespaceURI() );
     if ( s == null ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "Wsdl.Error.MissingSchemaException", elementName ) );
+      throw new KettleStepException( BaseMessages
+        .getString( PKG, "Wsdl.Error.MissingSchemaException", elementName ) );
     }
 
     Element schemaRoot = s.getElement();
@@ -98,14 +99,15 @@ public final class WsdlTypes implements Serializable {
     }
 
     if ( namedElement == null ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "Wsdl.Error.ElementMissingException", elementName ) );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "Wsdl.Error.ElementMissingException", elementName ) );
     }
     return namedElement;
   }
 
   /**
    * Find a named &lt;complexType&gt; or &lt;simpleType&gt; in the types section of the WSDL.
-   * 
+   *
    * @param typeName
    *          Name of the type to find.
    * @return null if type not found.
@@ -137,7 +139,7 @@ public final class WsdlTypes implements Serializable {
 
   /**
    * Get the map of named complex types defined in the WSDL.
-   * 
+   *
    * @return Wsdl's named complex types.
    */
   protected WsdlComplexTypes getNamedComplexTypes() {
@@ -146,7 +148,7 @@ public final class WsdlTypes implements Serializable {
 
   /**
    * Get the target namespace of the wsdl.
-   * 
+   *
    * @return String contianing the target namespace.
    */
   protected String getTargetNamespace() {
@@ -156,7 +158,7 @@ public final class WsdlTypes implements Serializable {
   /**
    * Get the type qname for the type parameter. Resolve namespace references if present, if a namespace prefix is not
    * found the WSDL's target namespace will be used.
-   * 
+   *
    * @param type
    *          Name of type.
    * @return A QName for the type name.
@@ -174,7 +176,7 @@ public final class WsdlTypes implements Serializable {
 
   /**
    * Return a list of of all schemas defined by the WSDL definition.
-   * 
+   *
    * @return A list of javax.wsdl.extension.schema.Schema elements.
    */
   protected List<ExtensibilityElement> getSchemas() {
@@ -186,7 +188,7 @@ public final class WsdlTypes implements Serializable {
 
   /**
    * Determine if the namespace URI is element form qualifed.
-   * 
+   *
    * @param namespaceURI
    *          Namespace URI string.
    * @return true If element form is qualified.
@@ -197,7 +199,7 @@ public final class WsdlTypes implements Serializable {
 
   /**
    * Build a list of schema target name spaces which are element form qualified.
-   * 
+   *
    * @return All target name spaces for schemas defined in the WSDL which are element form qualified.
    */
   private List<String> getElementFormQualifiedNamespaces() {
@@ -220,7 +222,7 @@ public final class WsdlTypes implements Serializable {
 
   /**
    * Get the schema with the specified target namespace.
-   * 
+   *
    * @param targetNamespace
    *          target namespace of the schema to get.
    * @return null if not found.

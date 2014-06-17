@@ -48,9 +48,6 @@ public class ConstantData extends BaseStepData implements StepDataInterface {
 
   public boolean firstRow;
 
-  /**
-	 * 
-	 */
   public ConstantData() {
     super();
 

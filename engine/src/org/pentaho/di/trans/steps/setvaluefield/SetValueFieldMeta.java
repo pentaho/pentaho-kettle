@@ -48,7 +48,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = SetValueFieldMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SetValueFieldMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String[] fieldName;
   private String[] replaceByFieldValue;
@@ -125,8 +125,8 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
         replaceByFieldValue[i] = XMLHandler.getTagValue( fnode, "replaceby" );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "SetValueFieldMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "SetValueFieldMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -157,8 +157,7 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
@@ -169,72 +168,71 @@ public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface
         replaceByFieldValue[i] = rep.getStepAttributeString( id_step, i, "replace_by" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SetValueFieldMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "SetValueFieldMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       for ( int i = 0; i < fieldName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "replace_by", replaceByFieldValue[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "SetValueFieldMeta.Exception.UnableToSaveStepInfoToRepository" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "SetValueFieldMeta.Exception.UnableToSaveStepInfoToRepository" )
+        + id_step, e );
     }
 
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "SetValueFieldMeta.CheckResult.NoReceivingFieldsError" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "SetValueFieldMeta.CheckResult.NoReceivingFieldsError" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SetValueFieldMeta.CheckResult.StepReceivingFieldsOK", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SetValueFieldMeta.CheckResult.StepReceivingFieldsOK", prev.size() + "" ), stepMeta );
     }
     remarks.add( cr );
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SetValueFieldMeta.CheckResult.StepRecevingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SetValueFieldMeta.CheckResult.StepRecevingInfoFromOtherSteps" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SetValueFieldMeta.CheckResult.NoInputReceivedError" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SetValueFieldMeta.CheckResult.NoInputReceivedError" ), stepMeta );
     }
     remarks.add( cr );
 
     if ( fieldName == null && fieldName.length == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SetValueFieldMeta.CheckResult.FieldsSelectionEmpty" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SetValueFieldMeta.CheckResult.FieldsSelectionEmpty" ), stepMeta );
       remarks.add( cr );
     } else {
       for ( int i = 0; i < fieldName.length; i++ ) {
         if ( Const.isEmpty( replaceByFieldValue[i] ) ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "SetValueFieldMeta.CheckResult.ReplaceByValueMissing", fieldName[i], "" + i ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "SetValueFieldMeta.CheckResult.ReplaceByValueMissing", fieldName[i], "" + i ), stepMeta );
           remarks.add( cr );
         }
       }
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new SetValueField( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

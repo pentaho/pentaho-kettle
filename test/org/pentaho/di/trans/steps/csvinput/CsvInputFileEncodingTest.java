@@ -38,9 +38,9 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 /**
  * Regression test case for Jira PDI-10242: a csv input step does not recognize parameter in encoding
- * 
+ *
  * In the original problem this caused every other row to be skipped.
- * 
+ *
  * @author Kanstantsin Karneliuk
  */
 public class CsvInputFileEncodingTest extends CsvInputBase {
@@ -73,7 +73,7 @@ public class CsvInputFileEncodingTest extends CsvInputBase {
 
   /**
    * testing the fix
-   * 
+   *
    * @throws Exception
    */
 
@@ -86,20 +86,20 @@ public class CsvInputFileEncodingTest extends CsvInputBase {
 
   /**
    * testing the fix
-   * 
+   *
    * @throws Exception
    */
 
   @Test
   public void testCSVVariableEncodingSpecSybmbolsInit() throws Exception {
 
-    csvInpMeta.setEncoding( "${${P_ENCODING}}" );
+    csvInpMeta.setEncoding( "%%${P_ENCODING}%%" );
     assertTrue( csvInput.init( csvInpMeta, new CsvInputData() ) );
   }
 
   /**
    * testing the fix
-   * 
+   *
    * @throws Exception
    */
 
@@ -112,7 +112,7 @@ public class CsvInputFileEncodingTest extends CsvInputBase {
 
   /**
    * testing possible regressions
-   * 
+   *
    * @throws Exception
    */
   @Test
@@ -123,7 +123,7 @@ public class CsvInputFileEncodingTest extends CsvInputBase {
 
   /**
    * testing possible regressions
-   * 
+   *
    * @throws Exception
    */
   @Test

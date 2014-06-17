@@ -38,7 +38,6 @@ public class GetSlavesServlet extends BaseHttpServlet implements CartePluginInte
   private static Class<?> PKG = GetSlavesServlet.class; // for i18n purposes,
   // needed by
   // Translator2!!
-  // $NON-NLS-1$
 
   public static final String XML_TAG_SLAVESERVER_DETECTIONS = "SlaveServerDetections";
 
@@ -56,7 +55,8 @@ public class GetSlavesServlet extends BaseHttpServlet implements CartePluginInte
     super( slaveServers, isJetty );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }

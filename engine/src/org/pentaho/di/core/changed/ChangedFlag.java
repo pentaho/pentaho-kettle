@@ -56,9 +56,7 @@ public class ChangedFlag implements ChangedFlagInterface {
       clearChanged();
     }
     for ( int i = lobs.length - 1; i >= 0; i-- ) {
-      {
-        lobs[i].update( this, arg );
-      }
+      lobs[i].update( this, arg );
     }
   }
 
@@ -71,7 +69,7 @@ public class ChangedFlag implements ChangedFlagInterface {
 
   /**
    * Sets whether or not this has changed.
-   * 
+   *
    * @param ch
    *          true if you want to mark this as changed, false otherwise
    */
@@ -88,7 +86,7 @@ public class ChangedFlag implements ChangedFlagInterface {
 
   /**
    * Checks whether or not this has changed.
-   * 
+   *
    * @return true if the this has changed, false otherwise
    */
   public synchronized boolean hasChanged() {

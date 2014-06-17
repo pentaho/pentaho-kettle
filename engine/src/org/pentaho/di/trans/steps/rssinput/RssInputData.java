@@ -70,9 +70,6 @@ public class RssInputData extends BaseStepData implements StepDataInterface {
   public Feed feed;
   public Object[] readrow;
 
-  /**
-	 * 
-	 */
   public RssInputData() {
     super();
 

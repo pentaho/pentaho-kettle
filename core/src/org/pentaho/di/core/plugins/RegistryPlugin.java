@@ -40,4 +40,5 @@ public @interface RegistryPlugin {
 
   String description() default "Registry Plugin";
 
+  String classLoaderGroup() default "";
 }

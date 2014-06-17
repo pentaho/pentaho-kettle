@@ -31,10 +31,10 @@ import org.pentaho.di.core.plugins.PluginTypeInterface;
 
 /**
  * This Exception is throws when an error occurs loading plugins.
- * 
+ *
  * @author Matt
  * @since 9-12-2004
- * 
+ *
  */
 public class KettleMissingPluginsException extends KettleException {
   private static final long serialVersionUID = -3008319146447259788L;
@@ -54,7 +54,7 @@ public class KettleMissingPluginsException extends KettleException {
 
   /**
    * Constructs a new throwable with the specified detail message.
-   * 
+   *
    * @param message
    *          - the detail message. The detail message is saved for later retrieval by the getMessage() method.
    */
@@ -65,7 +65,7 @@ public class KettleMissingPluginsException extends KettleException {
 
   /**
    * Add a missing plugin id for a given plugin type.
-   * 
+   *
    * @param pluginTypeClass
    *          The class of the plugin type (ex. StepPluginType.class)
    * @param pluginId

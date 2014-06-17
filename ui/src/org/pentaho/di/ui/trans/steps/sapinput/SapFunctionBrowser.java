@@ -62,12 +62,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Displays results of a search operation in a list of SAP functions
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class SapFunctionBrowser extends Dialog {
-  private static Class<?> PKG = SapInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SapInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFunction;
   private Text wFunction;
@@ -88,7 +88,7 @@ public class SapFunctionBrowser extends Dialog {
   private List<SAPFunction> functionList;
 
   public SapFunctionBrowser( Shell parent, VariableSpace space, int style, DatabaseMeta sapConnection,
-      String searchString ) {
+    String searchString ) {
     super( parent, style );
     this.space = space;
     this.sapConnection = sapConnection;
@@ -171,15 +171,19 @@ public class SapFunctionBrowser extends Dialog {
     // The search results...
     //
     ColumnInfo[] columns =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Name.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Groupname.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Application.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Description.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Name.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Groupname.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Application.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "SapFunctionBrowser.ResultView.Description.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
     wResult = new TableView( space, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, columns, 0, null, props );
     wResult.setSortable( true );
@@ -242,9 +246,9 @@ public class SapFunctionBrowser extends Dialog {
       sc.open( sapConnection );
       functionList = new ArrayList<SAPFunction>( sc.getFunctions( searchString ) );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages
-          .getString( PKG, "SapFunctionBrowser.ExceptionDialog.ErrorDuringSearch.Title" ), BaseMessages.getString( PKG,
-          "SapFunctionBrowser.ExceptionDialog.ErrorDuringSearch.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "SapFunctionBrowser.ExceptionDialog.ErrorDuringSearch.Title" ),
+        BaseMessages.getString( PKG, "SapFunctionBrowser.ExceptionDialog.ErrorDuringSearch.Message" ), e );
     } finally {
       if ( sc != null ) {
         sc.close();

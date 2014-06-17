@@ -32,9 +32,9 @@ import org.pentaho.di.core.Const;
 
 /**
  * This class keeps the last N lines in a buffer
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class LoggingBuffer {
   private String name;
@@ -51,7 +51,7 @@ public class LoggingBuffer {
     this.bufferSize = bufferSize;
     buffer = Collections.synchronizedList( new LinkedList<BufferLine>() );
     layout = new KettleLogLayout( true );
-    eventListeners = new ArrayList<KettleLoggingEventListener>();
+    eventListeners = Collections.synchronizedList( new ArrayList<KettleLoggingEventListener>() );
   }
 
   /**
@@ -68,7 +68,7 @@ public class LoggingBuffer {
   }
 
   /**
-   * 
+   *
    * @param channelId
    *          channel IDs to grab
    * @param includeGeneral
@@ -77,7 +77,8 @@ public class LoggingBuffer {
    * @param to
    * @return
    */
-  public List<KettleLoggingEvent> getLogBufferFromTo( List<String> channelId, boolean includeGeneral, int from, int to ) {
+  public List<KettleLoggingEvent> getLogBufferFromTo( List<String> channelId, boolean includeGeneral, int from,
+    int to ) {
     List<KettleLoggingEvent> lines = new ArrayList<KettleLoggingEvent>();
 
     synchronized ( buffer ) {
@@ -97,10 +98,10 @@ public class LoggingBuffer {
             //
             if ( !include ) {
               LoggingObjectInterface loggingObject =
-                  LoggingRegistry.getInstance().getLoggingObject( message.getLogChannelId() );
+                LoggingRegistry.getInstance().getLoggingObject( message.getLogChannelId() );
 
-              if ( loggingObject != null && includeGeneral
-                  && LoggingObjectType.GENERAL.equals( loggingObject.getObjectType() ) ) {
+              if ( loggingObject != null
+                && includeGeneral && LoggingObjectType.GENERAL.equals( loggingObject.getObjectType() ) ) {
                 include = true;
               }
 
@@ -134,7 +135,7 @@ public class LoggingBuffer {
   }
 
   /**
-   * 
+   *
    * @param parentLogChannelId
    *          the parent log channel ID to grab
    * @param includeGeneral
@@ -144,7 +145,7 @@ public class LoggingBuffer {
    * @return
    */
   public List<KettleLoggingEvent> getLogBufferFromTo( String parentLogChannelId, boolean includeGeneral, int from,
-      int to ) {
+    int to ) {
 
     // Typically, the log channel id is the one from the transformation or job running currently.
     // However, we also want to see the details of the steps etc.
@@ -158,7 +159,8 @@ public class LoggingBuffer {
   public StringBuffer getBuffer( String parentLogChannelId, boolean includeGeneral, int startLineNr, int endLineNr ) {
     StringBuffer stringBuffer = new StringBuffer( 10000 );
 
-    List<KettleLoggingEvent> events = getLogBufferFromTo( parentLogChannelId, includeGeneral, startLineNr, endLineNr );
+    List<KettleLoggingEvent> events =
+      getLogBufferFromTo( parentLogChannelId, includeGeneral, startLineNr, endLineNr );
     for ( KettleLoggingEvent event : events ) {
       stringBuffer.append( layout.format( event ) ).append( Const.CR );
     }
@@ -238,7 +240,7 @@ public class LoggingBuffer {
 
   /**
    * Removes all rows for the channel with the specified id
-   * 
+   *
    * @param id
    *          the id of the logging channel to remove
    */
@@ -271,7 +273,7 @@ public class LoggingBuffer {
         if ( payload instanceof LogMessage ) {
           LogMessage message = (LogMessage) payload;
           LoggingObjectInterface loggingObject =
-              LoggingRegistry.getInstance().getLoggingObject( message.getLogChannelId() );
+            LoggingRegistry.getInstance().getLoggingObject( message.getLogChannelId() );
           if ( loggingObject != null && LoggingObjectType.GENERAL.equals( loggingObject.getObjectType() ) ) {
             iterator.remove();
           }
@@ -293,7 +295,9 @@ public class LoggingBuffer {
           LogMessage message = (LogMessage) payload;
           // LoggingObjectInterface loggingObject =
           // LoggingRegistry.getInstance().getLoggingObject(message.getLogChannelId());
-          buf.append( message.getLogChannelId() + "\t" + message.getSubject() + "\t" + message.getMessage() + "\n" );
+          buf
+            .append( message.getLogChannelId()
+              + "\t" + message.getSubject() + "\t" + message.getMessage() + "\n" );
         }
 
       }
@@ -322,8 +326,10 @@ public class LoggingBuffer {
 
   public void addLogggingEvent( KettleLoggingEvent loggingEvent ) {
     doAppend( loggingEvent );
-    for ( KettleLoggingEventListener listener : eventListeners ) {
-      listener.eventAdded( loggingEvent );
+    synchronized ( eventListeners ) {
+      for ( KettleLoggingEventListener listener : eventListeners ) {
+        listener.eventAdded( loggingEvent );
+      }
     }
   }
 

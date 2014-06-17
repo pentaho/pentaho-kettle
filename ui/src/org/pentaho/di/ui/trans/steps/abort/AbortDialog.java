@@ -50,7 +50,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = Abort.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Abort.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlRowThreshold;
   private TextVar wRowThreshold;

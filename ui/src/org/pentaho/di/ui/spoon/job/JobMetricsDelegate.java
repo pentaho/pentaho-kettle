@@ -52,6 +52,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingRegistry;
@@ -67,7 +68,7 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 
 public class JobMetricsDelegate extends SpoonDelegate {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   // private static final LogWriter log = LogWriter.getInstance();
 
@@ -304,6 +305,20 @@ public class JobMetricsDelegate extends SpoonDelegate {
   }
 
   private void refreshImage( GC canvasGc ) {
+    List<MetricsDuration> durations = MetricsUtil.getAllDurations( jobGraph.job.getLogChannelId() );
+    if ( Const.isEmpty( durations ) ) {
+      // In case of an empty durations or null there is nothing to draw
+      return;
+    }
+
+    // Sort the metrics.
+    Collections.sort( durations, new Comparator<MetricsDuration>() {
+      @Override
+      public int compare( MetricsDuration o1, MetricsDuration o2 ) {
+        return o1.getDate().compareTo( o2.getDate() );
+      }
+    } );
+
     Rectangle bounds = canvas.getBounds();
     if ( bounds.width <= 0 || bounds.height <= 0 ) {
       return;
@@ -326,16 +341,6 @@ public class JobMetricsDelegate extends SpoonDelegate {
       image = null;
     }
 
-    List<MetricsDuration> durations = MetricsUtil.getAllDurations( jobGraph.job.getLogChannelId() );
-
-    // Sort the metrics.
-    Collections.sort( durations, new Comparator<MetricsDuration>() {
-      @Override
-      public int compare( MetricsDuration o1, MetricsDuration o2 ) {
-        return o1.getDate().compareTo( o2.getDate() );
-      }
-    } );
-
     // Correct size of canvas.
     //
 
@@ -350,6 +355,7 @@ public class JobMetricsDelegate extends SpoonDelegate {
     SWTGC gc =
         new SWTGC( Display.getCurrent(), new Point( bounds.width, bounds.height ), PropsUI.getInstance().getIconSize() );
     MetricsPainter painter = new MetricsPainter( gc, barHeight );
+    // checking according to method's contract
     drawAreas = painter.paint( durations );
     image = (Image) gc.getImage();
 

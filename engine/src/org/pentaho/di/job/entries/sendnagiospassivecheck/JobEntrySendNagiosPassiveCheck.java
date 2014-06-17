@@ -60,15 +60,14 @@ import com.googlecode.jsendnsca.encryption.Encryption;
 
 /**
  * This defines an SendNagiosPassiveCheck job entry.
- * 
+ *
  * @author Samatar
  * @since 01-10-2011
- * 
+ *
  */
 
 public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntrySendNagiosPassiveCheck.class; // for i18n purposes, needed by Translator2!!
-                                                                      // $NON-NLS-1$
 
   private String serverName;
   private String port;
@@ -132,8 +131,6 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
     encryptionMode = ENCRYPTION_MODE_NONE;
     level = LEVEL_TYPE_UNKNOWN;
     password = null;
-
-    setID( -1L );
   }
 
   public JobEntrySendNagiosPassiveCheck() {
@@ -217,7 +214,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
     retval.append( "      " ).append( XMLHandler.addTagValue( "senderServiceName", senderServiceName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "message", message ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "encryptionMode", getEncryptionModeCode( encryptionMode ) ) );
+      XMLHandler.addTagValue( "encryptionMode", getEncryptionModeCode( encryptionMode ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "level", getLevelCode( level ) ) );
 
     return retval.toString();
@@ -249,8 +246,8 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
     return 0;
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       port = XMLHandler.getTagValue( entrynode, "port" );
@@ -272,7 +269,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       port = rep.getJobEntryAttributeString( id_jobentry, "port" );
       serverName = rep.getJobEntryAttributeString( id_jobentry, "servername" );
@@ -290,8 +287,8 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
 
     } catch ( KettleException dbe ) {
       throw new KettleException(
-          "Unable to load job entry of type 'SendNagiosPassiveCheck' from the repository for id_jobentry="
-              + id_jobentry, dbe );
+        "Unable to load job entry of type 'SendNagiosPassiveCheck' from the repository for id_jobentry="
+          + id_jobentry, dbe );
     }
   }
 
@@ -312,7 +309,7 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
 
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException(
-          "Unable to save job entry of type 'SendNagiosPassiveCheck' to the repository for id_job=" + id_job, dbe );
+        "Unable to save job entry of type 'SendNagiosPassiveCheck' to the repository for id_job=" + id_job, dbe );
     }
   }
 
@@ -464,7 +461,8 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
     String realPassword = environmentSubstitute( password );
     int realPort = Const.toInt( environmentSubstitute( port ), DEFAULT_PORT );
     int realResponseTimeOut = Const.toInt( environmentSubstitute( responseTimeOut ), DEFAULT_RESPONSE_TIME_OUT );
-    int realConnectionTimeOut = Const.toInt( environmentSubstitute( connectionTimeOut ), DEFAULT_CONNECTION_TIME_OUT );
+    int realConnectionTimeOut =
+      Const.toInt( environmentSubstitute( connectionTimeOut ), DEFAULT_CONNECTION_TIME_OUT );
 
     // Sender
     String realSenderServerName = environmentSubstitute( senderServerName );
@@ -472,7 +470,8 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
 
     try {
       if ( Const.isEmpty( realServername ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "JobSendNagiosPassiveCheck.Error.TargetServerMissing" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "JobSendNagiosPassiveCheck.Error.TargetServerMissing" ) );
       }
 
       String realMessageString = environmentSubstitute( message );
@@ -565,8 +564,8 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
   }
 

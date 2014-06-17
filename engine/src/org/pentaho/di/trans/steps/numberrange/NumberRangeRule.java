@@ -24,9 +24,9 @@ package org.pentaho.di.trans.steps.numberrange;
 
 /**
  * Contains one rule for a number range
- * 
+ *
  * @author ronny.roeller@fredhopper.com
- * 
+ *
  */
 public class NumberRangeRule {
 

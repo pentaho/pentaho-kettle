@@ -41,9 +41,6 @@ public class FilesToResultData extends BaseStepData implements StepDataInterface
 
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public FilesToResultData() {
     super();
 

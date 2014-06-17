@@ -24,14 +24,14 @@ package org.pentaho.di.trans.steps.symmetriccrypto.symmetricalgorithm;
 
 /**
  * Symmetric algorithm
- * 
+ *
  * @author Samatar
  * @since 01-4-2011
  */
 public interface SymmetricCryptoInterface extends Cloneable {
 
-  public static final Class<?>[] implementingClasses = { DESSymmetricCrypto.class, TripleDESSymmetricCrypto.class,
-    AESSymmetricCrypto.class, };
+  public static final Class<?>[] implementingClasses = {
+    DESSymmetricCrypto.class, TripleDESSymmetricCrypto.class, AESSymmetricCrypto.class, };
 
   public String getAlgorithm();
 

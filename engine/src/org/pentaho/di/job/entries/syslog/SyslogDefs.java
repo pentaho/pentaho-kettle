@@ -34,14 +34,14 @@ import org.productivity.java.syslog4j.SyslogIF;
 
 /**
  * This defines settings for Syslog.
- * 
+ *
  * @author Samatar
  * @since 05-01-2010
- * 
+ *
  */
 public class SyslogDefs {
 
-  private static Class<?> PKG = JobEntrySyslog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySyslog.class; // for i18n purposes, needed by Translator2!!
 
   public static final String DEFAULT_PROTOCOL_UDP = "udp";
 
@@ -51,10 +51,11 @@ public class SyslogDefs {
   private static Hashtable<String, Integer> facHash;
   private static Hashtable<String, Integer> priHash;
 
-  public static final String[] FACILITYS = new String[] { "KERNEL", "USER", "MAIL", "DAEMON", "AUTH", "SYSLOG", "LPR",
-    "NEWS", "UUCP", "CRON", "LOCAL0", "LOCAL1", "LOCAL2", "LOCAL3", "LOCAL4", "LOCAL5", "LOCAL6", "LOCAL7", };
-  public static final String[] PRIORITYS = new String[] { "EMERGENCY", "ALERT", "CRITICAL", "ERROR", "WARNING",
-    "NOTICE", "INFO", "DEBUG", };
+  public static final String[] FACILITYS = new String[] {
+    "KERNEL", "USER", "MAIL", "DAEMON", "AUTH", "SYSLOG", "LPR", "NEWS", "UUCP", "CRON", "LOCAL0", "LOCAL1",
+    "LOCAL2", "LOCAL3", "LOCAL4", "LOCAL5", "LOCAL6", "LOCAL7", };
+  public static final String[] PRIORITYS = new String[] {
+    "EMERGENCY", "ALERT", "CRITICAL", "ERROR", "WARNING", "NOTICE", "INFO", "DEBUG", };
 
   static {
     facHash = new Hashtable<String, Integer>( 18 );
@@ -111,8 +112,8 @@ public class SyslogDefs {
     return result.intValue();
   }
 
-  public static void sendMessage( SyslogIF syslog, int priority, String message, boolean addTimestamp, String pattern,
-      boolean addHostName ) {
+  public static void sendMessage( SyslogIF syslog, int priority, String message, boolean addTimestamp,
+    String pattern, boolean addHostName ) {
 
     String messageString = message;
 

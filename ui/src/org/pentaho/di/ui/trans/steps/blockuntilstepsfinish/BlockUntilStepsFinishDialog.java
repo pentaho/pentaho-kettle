@@ -57,7 +57,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class BlockUntilStepsFinishDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = BlockUntilStepsFinishMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                 // $NON-NLS-1$
 
   private String[] previousSteps;
   private BlockUntilStepsFinishMeta input;
@@ -141,14 +140,17 @@ public class BlockUntilStepsFinishDialog extends BaseStepDialog implements StepD
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "BlockUntilStepsFinishDialog.Fieldname.Step" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, previousSteps, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "BlockUntilStepsFinishDialog.Fieldname.Step" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, previousSteps, false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "BlockUntilStepsFinishDialog.Fieldname.CopyNr" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "BlockUntilStepsFinishDialog.Fieldname.CopyNr" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinf[1].setUsingVariables( true );
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -286,6 +288,7 @@ public class BlockUntilStepsFinishDialog extends BaseStepDialog implements StepD
       TableItem ti = wFields.getNonEmpty( i );
       StepMeta tm = transMeta.findStep( ti.getText( 1 ) );
       if ( tm != null ) {
+        //CHECKSTYLE:Indentation:OFF
         input.getStepName()[i] = tm.getName();
         input.getStepCopyNr()[i] = String.valueOf( Const.toInt( ti.getText( 2 ), 0 ) );
       }

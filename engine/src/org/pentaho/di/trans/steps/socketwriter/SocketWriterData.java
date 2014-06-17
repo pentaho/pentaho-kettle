@@ -32,7 +32,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 27-nov-2006
- * 
+ *
  */
 public class SocketWriterData extends BaseStepData implements StepDataInterface {
   public DataOutputStream outputStream;
@@ -40,9 +40,6 @@ public class SocketWriterData extends BaseStepData implements StepDataInterface 
   public int flushInterval;
   public ServerSocket serverSocket;
 
-  /**
-	 * 
-	 */
   public SocketWriterData() {
     super();
   }
@@ -59,6 +56,7 @@ public class SocketWriterData extends BaseStepData implements StepDataInterface 
         serverSocket.close();
       }
     } catch ( java.io.IOException e ) {
+      // Ignore errors
     } finally {
       super.finalize();
     }

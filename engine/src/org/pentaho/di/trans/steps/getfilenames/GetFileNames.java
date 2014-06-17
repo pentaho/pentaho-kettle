@@ -47,25 +47,25 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Matt
  * @since 4-apr-2003
  */
 public class GetFileNames extends BaseStep implements StepInterface {
-  private static Class<?> PKG = GetFileNamesMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetFileNamesMeta.class; // for i18n purposes, needed by Translator2!!
 
   private GetFileNamesMeta meta;
 
   private GetFileNamesData data;
 
   public GetFileNames( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
 
@@ -113,10 +113,10 @@ public class GetFileNames extends BaseStep implements StepInterface {
           data.indexOfFilenameField = data.inputRowMeta.indexOfValue( meta.getDynamicFilenameField() );
           if ( data.indexOfFilenameField < 0 ) {
             // The field is unreachable !
-            logError( BaseMessages
-                .getString( PKG, "GetFileNames.Log.ErrorFindingField", meta.getDynamicFilenameField() ) );
-            throw new KettleException( BaseMessages.getString( PKG, "GetFileNames.Exception.CouldnotFindField", meta
-                .getDynamicFilenameField() ) );
+            logError( BaseMessages.getString( PKG, "GetFileNames.Log.ErrorFindingField", meta
+              .getDynamicFilenameField() ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "GetFileNames.Exception.CouldnotFindField", meta.getDynamicFilenameField() ) );
           }
         }
 
@@ -126,28 +126,29 @@ public class GetFileNames extends BaseStep implements StepInterface {
             data.indexOfWildcardField = data.inputRowMeta.indexOfValue( meta.getDynamicWildcardField() );
             if ( data.indexOfWildcardField < 0 ) {
               // The field is unreachable !
-              logError( BaseMessages.getString( PKG, "GetFileNames.Log.ErrorFindingField" ) + "["
-                  + meta.getDynamicWildcardField() + "]" );
-              throw new KettleException( BaseMessages.getString( PKG, "GetFileNames.Exception.CouldnotFindField", meta
-                  .getDynamicWildcardField() ) );
+              logError( BaseMessages.getString( PKG, "GetFileNames.Log.ErrorFindingField" )
+                + "[" + meta.getDynamicWildcardField() + "]" );
+              throw new KettleException( BaseMessages.getString(
+                PKG, "GetFileNames.Exception.CouldnotFindField", meta.getDynamicWildcardField() ) );
             }
           }
         }
         // If ExcludeWildcard field is specified, Check if field exists
         if ( !Const.isEmpty( meta.getDynamicExcludeWildcardField() ) ) {
           if ( data.indexOfExcludeWildcardField < 0 ) {
-            data.indexOfExcludeWildcardField = data.inputRowMeta.indexOfValue( meta.getDynamicExcludeWildcardField() );
+            data.indexOfExcludeWildcardField =
+              data.inputRowMeta.indexOfValue( meta.getDynamicExcludeWildcardField() );
             if ( data.indexOfExcludeWildcardField < 0 ) {
               // The field is unreachable !
-              logError( BaseMessages.getString( PKG, "GetFileNames.Log.ErrorFindingField" ) + "["
-                  + meta.getDynamicExcludeWildcardField() + "]" );
-              throw new KettleException( BaseMessages.getString( PKG, "GetFileNames.Exception.CouldnotFindField", meta
-                  .getDynamicExcludeWildcardField() ) );
+              logError( BaseMessages.getString( PKG, "GetFileNames.Log.ErrorFindingField" )
+                + "[" + meta.getDynamicExcludeWildcardField() + "]" );
+              throw new KettleException( BaseMessages.getString(
+                PKG, "GetFileNames.Exception.CouldnotFindField", meta.getDynamicExcludeWildcardField() ) );
             }
           }
         }
       }
-    }// end if first
+    } // end if first
 
     try {
       Object[] outputRow = buildEmptyRow();
@@ -173,7 +174,8 @@ public class GetFileNames extends BaseStep implements StepInterface {
           boolean[] includesubfolders = { meta.isDynamicIncludeSubFolders() };
           // Get files list
           data.files =
-              meta.getDynamicFileList( this, filesname, filesmask, excludefilesmask, filesrequired, includesubfolders );
+            meta.getDynamicFileList(
+              this, filesname, filesmask, excludefilesmask, filesrequired, includesubfolders );
           data.filessize = data.files.nrOfFiles();
           data.filenr = 0;
         }
@@ -187,7 +189,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
         if ( meta.isAddResultFile() ) {
           // Add this to the result file names...
           ResultFile resultFile =
-              new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
+            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
           resultFile.setComment( BaseMessages.getString( PKG, "GetFileNames.Log.FileReadByStep" ) );
           addResultFile( resultFile );
         }
@@ -341,6 +343,7 @@ public class GetFileNames extends BaseStep implements StepInterface {
         data.file.close();
         data.file = null;
       } catch ( Exception e ) {
+        // Ignore close errors
       }
 
     }

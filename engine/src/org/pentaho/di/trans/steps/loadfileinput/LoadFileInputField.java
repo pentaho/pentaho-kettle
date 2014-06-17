@@ -31,13 +31,13 @@ import org.w3c.dom.Node;
 
 /**
  * Describes a field
- * 
+ *
  * @author Samatar
  * @since 20-06-2007
- * 
+ *
  */
 public class LoadFileInputField implements Cloneable {
-  private static Class<?> PKG = LoadFileInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LoadFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int TYPE_TRIM_NONE = 0;
   public static final int TYPE_TRIM_LEFT = 1;
@@ -46,7 +46,8 @@ public class LoadFileInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "LoadFileInputField.TrimType.None" ),
+  public static final String[] trimTypeDesc = {
+    BaseMessages.getString( PKG, "LoadFileInputField.TrimType.None" ),
     BaseMessages.getString( PKG, "LoadFileInputField.TrimType.Left" ),
     BaseMessages.getString( PKG, "LoadFileInputField.TrimType.Right" ),
     BaseMessages.getString( PKG, "LoadFileInputField.TrimType.Both" ) };

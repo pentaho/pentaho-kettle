@@ -25,36 +25,94 @@ package org.pentaho.di.trans.steps.excelinput.ods;
 import org.odftoolkit.odfdom.doc.table.OdfTable;
 import org.odftoolkit.odfdom.doc.table.OdfTableCell;
 import org.odftoolkit.odfdom.doc.table.OdfTableRow;
+import org.odftoolkit.odfdom.dom.element.table.TableTableCellElement;
+import org.odftoolkit.odfdom.dom.element.table.TableTableRowElement;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KSheet;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class OdfSheet implements KSheet {
   private OdfTable table;
   private int nrOfRows;
+  private int roughNrOfCols;
 
   public OdfSheet( OdfTable table ) {
     this.table = table;
-
-    int size = table.getOdfElement().getChildNodes().getLength();
-
-    int rowNr = 0;
-    int maxIndex = 0;
-    OdfTableRow row = table.getRowByIndex( rowNr );
-    row = row.getNextRow();
-    rowNr++;
-    while ( rowNr < size ) {
-      int cols = findNrColumns( row );
-      if ( cols > 0 ) {
-        maxIndex = rowNr;
-      }
-      row = row.getNextRow();
-      rowNr++;
-    }
-    nrOfRows = maxIndex + 1;
+    nrOfRows = findNrRows( );
+    roughNrOfCols = table.getColumnCount();
   }
 
-  private int findNrColumns( OdfTableRow row ) {
-    return row.getOdfElement().getChildNodes().getLength() - 1;
+  /**
+   * Calculate the number of rows in the table
+   *
+   * @return number of rows in the table
+   */
+  protected int findNrRows() {
+
+    int rowCount = table.getRowCount();
+
+    // remove last empty rows from counter
+    NodeList nodes = table.getOdfElement().getChildNodes();
+    int nodesLen = nodes.getLength();
+    for ( int i = nodesLen - 1; i >= 0; i-- ) {
+      Node node = nodes.item( i );
+      if ( node instanceof TableTableRowElement ) {
+        TableTableRowElement rowElement = (TableTableRowElement) node;
+        if ( isRowEmpty( rowElement ) ) {
+          // remove this row from counter
+          rowCount -= rowElement.getTableNumberRowsRepeatedAttribute();
+        } else {
+          // stop checking at first non-empty row
+          break;
+        }
+      }
+    }
+
+    return rowCount;
+  }
+
+  /**
+   * Check if row contains non-empty cells
+   *
+   * @param rowElem
+   * @return
+   */
+  protected boolean isRowEmpty( TableTableRowElement rowElem ) {
+    NodeList cells = rowElem.getChildNodes();
+    int cellsLen = cells.getLength();
+    for ( int j = 0; j < cellsLen; j++ ) { // iterate over cells
+      Node cell = cells.item( j );
+      if ( cell instanceof TableTableCellElement ) {
+        if ( cell.hasChildNodes() ) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  protected int findNrColumns( OdfTableRow row ) {
+    int result = roughNrOfCols;
+    if ( row != null ) {
+      NodeList cells = row.getOdfElement().getChildNodes();
+      if ( cells != null && cells.getLength() > 0 ) {
+        int cellLen = cells.getLength();
+        for ( int i = cellLen - 1; i >= 0; i-- ) {
+          Node cell = cells.item( i );
+          if ( cell instanceof TableTableCellElement ) {
+            if ( !cell.hasChildNodes() ) {
+              // last cell is empty - remove it from counter
+              result -= ( (TableTableCellElement) cell ).getTableNumberColumnsRepeatedAttribute();
+            } else {
+              // get first non-empty cell from the end, break
+              break;
+            }
+          }
+        }
+      }
+    }
+    return result;
   }
 
   public String getName() {
@@ -67,7 +125,7 @@ public class OdfSheet implements KSheet {
     }
     OdfTableRow row = table.getRowByIndex( rownr );
     int cols = findNrColumns( row );
-    OdfCell[] xlsCells = new OdfCell[cols];
+    OdfCell[] xlsCells = new OdfCell[ cols ];
     for ( int i = 0; i < cols; i++ ) {
       OdfTableCell cell = row.getCellByIndex( i );
       if ( cell != null ) {
@@ -88,4 +146,5 @@ public class OdfSheet implements KSheet {
     }
     return new OdfCell( cell );
   }
+
 }

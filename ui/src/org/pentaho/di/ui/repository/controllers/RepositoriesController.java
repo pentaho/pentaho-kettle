@@ -51,7 +51,6 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 public class RepositoriesController extends AbstractXulEventHandler {
 
   private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!
-                                                                 // $NON-NLS-1$
 
   private ResourceBundle messages;
 

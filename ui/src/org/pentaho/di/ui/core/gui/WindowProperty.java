@@ -32,10 +32,10 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * This class stores information about a screen, window, etc.
- * 
+ *
  * @author Matt
  * @since 08-04-2004
- * 
+ *
  */
 public class WindowProperty {
   private String name;
@@ -78,7 +78,7 @@ public class WindowProperty {
    * client area, it is shrunk to fit. If the positioning leaves part of the dialog outside the client area, it is
    * centered instead Note that currently, many of the defaults in org.pentaho.di.ui.core/default.properties have crazy
    * values. This causes the failsafe code in here to fire a lot more than is really necessary.
-   * 
+   *
    * @param shell
    *          The dialog to position and size
    * @param onlyPosition
@@ -164,7 +164,7 @@ public class WindowProperty {
    * rectangle. In this case, it is possible for Geometry.moveInside() to not detect that the window is partially or
    * completely clipped. We check to make sure at least the upper left portion of the rectangle is visible to give the
    * user the ability to reposition the dialog in this rare case.
-   * 
+   *
    * @param constrainee
    * @param display
    * @return

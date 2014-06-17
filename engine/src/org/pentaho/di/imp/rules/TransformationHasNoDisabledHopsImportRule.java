@@ -57,14 +57,14 @@ public class TransformationHasNoDisabledHopsImportRule extends BaseImportRule im
     for ( int i = 0; i < transMeta.nrTransHops(); i++ ) {
       TransHopMeta hop = transMeta.getTransHop( i );
       if ( !hop.isEnabled() ) {
-        feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.ERROR,
-            "There is a disabled hop in the transformation." ) );
+        feedback.add( new ImportValidationFeedback(
+          this, ImportValidationResultType.ERROR, "There is a disabled hop in the transformation." ) );
       }
     }
 
     if ( feedback.isEmpty() ) {
-      feedback.add( new ImportValidationFeedback( this, ImportValidationResultType.APPROVAL,
-          "All hops are enabled in this transformation." ) );
+      feedback.add( new ImportValidationFeedback(
+        this, ImportValidationResultType.APPROVAL, "All hops are enabled in this transformation." ) );
     }
 
     return feedback;

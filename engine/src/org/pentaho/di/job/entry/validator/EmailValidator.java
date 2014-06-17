@@ -40,15 +40,16 @@ public class EmailValidator implements JobEntryValidator {
     return VALIDATOR_NAME;
   }
 
-  public boolean validate( CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
-      ValidatorContext context ) {
+  public boolean validate( CheckResultSourceInterface source, String propertyName,
+    List<CheckResultInterface> remarks, ValidatorContext context ) {
     String value = null;
 
     value = getValueAsString( source, propertyName );
 
     if ( !GenericValidator.isBlankOrNull( value ) && !GenericValidator.isEmail( value ) ) {
-      JobEntryValidatorUtils.addFailureRemark( source, propertyName, VALIDATOR_NAME, remarks, JobEntryValidatorUtils
-          .getLevelOnFail( context, VALIDATOR_NAME ) );
+      JobEntryValidatorUtils.addFailureRemark(
+        source, propertyName, VALIDATOR_NAME, remarks, JobEntryValidatorUtils.getLevelOnFail(
+          context, VALIDATOR_NAME ) );
       return false;
     } else {
       return true;

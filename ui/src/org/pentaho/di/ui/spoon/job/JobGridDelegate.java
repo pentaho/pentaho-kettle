@@ -49,7 +49,7 @@ import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 
 public class JobGridDelegate extends SpoonDelegate {
 
-  private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobGraph.class; // for i18n purposes, needed by Translator2!!
 
   public static final long REFRESH_TIME = 100L;
   public static final long UPDATE_TIME_VIEW = 1000L;
@@ -75,7 +75,7 @@ public class JobGridDelegate extends SpoonDelegate {
 
   /**
    * Add a grid with the execution metrics per step in a table view
-   * 
+   *
    */
   public void addJobGrid() {
 
@@ -168,7 +168,7 @@ public class JobGridDelegate extends SpoonDelegate {
         }
       }
     };
-    tim.schedule( timtask, 10L, 10L ); // refresh every 2 seconds...
+    tim.schedule( timtask, 10L, 2000L ); // refresh every 2 seconds...
 
     jobGraph.jobLogDelegate.getJobLogTab().addDisposeListener( new DisposeListener() {
       public void widgetDisposed( DisposeEvent disposeEvent ) {
@@ -237,7 +237,8 @@ public class JobGridDelegate extends SpoonDelegate {
               treeItem.setText( 0, jobEntryName );
               treeItem.setText( 4, Const.NVL( result.getJobEntryFilename(), "" ) );
             } else {
-              treeItem.setText( 0, BaseMessages.getString( PKG, "JobLog.Tree.JobPrefix2" ) + jobTracker.getJobName() );
+              treeItem.setText( 0, BaseMessages.getString( PKG, "JobLog.Tree.JobPrefix2" )
+                + jobTracker.getJobName() );
             }
             String comment = result.getComment();
             if ( comment != null ) {
@@ -245,8 +246,9 @@ public class JobGridDelegate extends SpoonDelegate {
             }
             Result res = result.getResult();
             if ( res != null ) {
-              treeItem.setText( 2, res.getResult() ? BaseMessages.getString( PKG, "JobLog.Tree.Success" )
-                  : BaseMessages.getString( PKG, "JobLog.Tree.Failure" ) );
+              treeItem.setText( 2, res.getResult()
+                ? BaseMessages.getString( PKG, "JobLog.Tree.Success" ) : BaseMessages.getString(
+                  PKG, "JobLog.Tree.Failure" ) );
               treeItem.setText( 5, Long.toString( res.getEntryNr() ) );
               if ( res.getResult() ) {
                 treeItem.setForeground( GUIResource.getInstance().getColorSuccessGreen() );

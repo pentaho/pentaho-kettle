@@ -62,7 +62,7 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = GetTableNamesMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetTableNamesMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CCombo wConnection;
 
@@ -392,7 +392,8 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 
     wincludeProcedure = new Button( wSettings, SWT.CHECK );
     props.setLook( wincludeProcedure );
-    wincludeProcedure.setToolTipText( BaseMessages.getString( PKG, "GetTableNamesDialog.includeProcedure.Tooltip" ) );
+    wincludeProcedure
+      .setToolTipText( BaseMessages.getString( PKG, "GetTableNamesDialog.includeProcedure.Tooltip" ) );
     fdincludeProcedure = new FormData();
     fdincludeProcedure.left = new FormAttachment( middle, -margin );
     fdincludeProcedure.top = new FormAttachment( wincludeView, margin );
@@ -440,7 +441,8 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 
     waddSchemaInOutput = new Button( wSettings, SWT.CHECK );
     props.setLook( waddSchemaInOutput );
-    waddSchemaInOutput.setToolTipText( BaseMessages.getString( PKG, "GetTableNamesDialog.addSchemaInOutput.Tooltip" ) );
+    waddSchemaInOutput.setToolTipText( BaseMessages.getString(
+      PKG, "GetTableNamesDialog.addSchemaInOutput.Tooltip" ) );
     fdaddSchemaInOutput = new FormData();
     fdaddSchemaInOutput.left = new FormAttachment( middle, -margin );
     fdaddSchemaInOutput.top = new FormAttachment( wincludeSynonym, 2 * margin );
@@ -485,7 +487,8 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
     fdlTablenameField.top = new FormAttachment( wSettings, margin * 2 );
     wlTablenameField.setLayoutData( fdlTablenameField );
     wTablenameField = new Text( wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wTablenameField.setToolTipText( BaseMessages.getString( PKG, "GetTableNamesDialog.TablenameFieldName.Tooltip" ) );
+    wTablenameField
+      .setToolTipText( BaseMessages.getString( PKG, "GetTableNamesDialog.TablenameFieldName.Tooltip" ) );
     props.setLook( wTablenameField );
     wTablenameField.addModifyListener( lsMod );
     fdTablenameField = new FormData();
@@ -504,7 +507,8 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
     fdlObjectTypeField.top = new FormAttachment( wTablenameField, margin );
     wlObjectTypeField.setLayoutData( fdlObjectTypeField );
     wObjectTypeField = new Text( wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wObjectTypeField.setToolTipText( BaseMessages.getString( PKG, "GetTableNamesDialog.ObjectTypeFieldName.Tooltip" ) );
+    wObjectTypeField.setToolTipText( BaseMessages.getString(
+      PKG, "GetTableNamesDialog.ObjectTypeFieldName.Tooltip" ) );
     props.setLook( wObjectTypeField );
     wObjectTypeField.addModifyListener( lsMod );
     fdObjectTypeField = new FormData();
@@ -515,7 +519,8 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 
     // isSystemObjectField fieldname ...
     wlisSystemObjectField = new Label( wOutputFields, SWT.RIGHT );
-    wlisSystemObjectField.setText( BaseMessages.getString( PKG, "GetTableNamesDialog.isSystemObjectFieldName.Label" ) );
+    wlisSystemObjectField.setText( BaseMessages.getString(
+      PKG, "GetTableNamesDialog.isSystemObjectFieldName.Label" ) );
     props.setLook( wlisSystemObjectField );
     fdlisSystemObjectField = new FormData();
     fdlisSystemObjectField.left = new FormAttachment( 0, 0 );
@@ -523,8 +528,8 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
     fdlisSystemObjectField.top = new FormAttachment( wObjectTypeField, margin );
     wlisSystemObjectField.setLayoutData( fdlisSystemObjectField );
     wisSystemObjectField = new Text( wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wisSystemObjectField.setToolTipText( BaseMessages.getString( PKG,
-        "GetTableNamesDialog.isSystemObjectFieldName.Tooltip" ) );
+    wisSystemObjectField.setToolTipText( BaseMessages.getString(
+      PKG, "GetTableNamesDialog.isSystemObjectFieldName.Tooltip" ) );
     props.setLook( wisSystemObjectField );
     wisSystemObjectField.addModifyListener( lsMod );
     fdisSystemObjectField = new FormData();
@@ -543,7 +548,8 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
     fdlSQLCreationField.top = new FormAttachment( wisSystemObjectField, margin );
     wlSQLCreationField.setLayoutData( fdlSQLCreationField );
     wSQLCreationField = new Text( wOutputFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wSQLCreationField.setToolTipText( BaseMessages.getString( PKG, "GetTableNamesDialog.CreationSQLName.Tooltip" ) );
+    wSQLCreationField
+      .setToolTipText( BaseMessages.getString( PKG, "GetTableNamesDialog.CreationSQLName.Tooltip" ) );
     props.setLook( wSQLCreationField );
     wSQLCreationField.addModifyListener( lsMod );
     fdSQLCreationField = new FormData();
@@ -716,8 +722,9 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
           wSchemaField.setText( value );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "GetTableNamesDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "GetTableNamesDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "GetTableNamesDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "GetTableNamesDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotpreviousfields = true;
     }
@@ -788,17 +795,17 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
       return;
     }
 
-    TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+    TransMeta previewMeta =
+      TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-    EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-            "GetTableNamesDialog.PreviewSize.DialogTitle" ), BaseMessages.getString( PKG,
-            "GetTableNamesDialog.PreviewSize.DialogMessage" ) );
+    EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+      BaseMessages.getString( PKG, "GetTableNamesDialog.PreviewSize.DialogTitle" ),
+      BaseMessages.getString( PKG, "GetTableNamesDialog.PreviewSize.DialogMessage" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-              new int[] { previewSize } );
+        new TransPreviewProgressDialog(
+          shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
       progressDialog.open();
 
       if ( !progressDialog.isCancelled() ) {
@@ -807,16 +814,16 @@ public class GetTableNamesDialog extends BaseStepDialog implements StepDialogInt
 
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
-                  .getString( PKG, "GetTableNamesDialog.ErrorInPreview.DialogMessage" ), loggingText, true );
+            new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+              .getString( PKG, "GetTableNamesDialog.ErrorInPreview.DialogMessage" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
 
         PreviewRowsDialog prd =
-            new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                loggingText );
+          new PreviewRowsDialog(
+            shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+              .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
         prd.open();
       }
     }

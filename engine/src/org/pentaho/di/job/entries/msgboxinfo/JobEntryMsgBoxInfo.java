@@ -48,7 +48,7 @@ import org.w3c.dom.Node;
 
 /**
  * Job entry type to display a message box.
- * 
+ *
  * @author Samatar
  * @since 12-02-2007
  */
@@ -82,8 +82,8 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       bodymessage = XMLHandler.getTagValue( entrynode, "bodymessage" );
@@ -94,13 +94,14 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       bodymessage = rep.getJobEntryAttributeString( id_jobentry, "bodymessage" );
       titremessage = rep.getJobEntryAttributeString( id_jobentry, "titremessage" );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'Msgbox Info' from the repository with id_jobentry="
-          + id_jobentry, dbe );
+      throw new KettleException(
+        "Unable to load job entry of type 'Msgbox Info' from the repository with id_jobentry=" + id_jobentry,
+        dbe );
     }
   }
 
@@ -112,7 +113,7 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
       rep.saveJobEntryAttribute( id_job, getObjectId(), "titremessage", titremessage );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to save job entry of type 'Msgbox Info' to the repository for id_job="
-          + id_job, dbe );
+        + id_job, dbe );
     }
   }
 
@@ -128,7 +129,8 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
 
       ThreadDialogs dialogs = GUIFactory.getThreadDialogs();
       if ( dialogs != null ) {
-        response = dialogs.threadMessageBox( getRealBodyMessage() + Const.CR, getRealTitleMessage(), true, Const.INFO );
+        response =
+          dialogs.threadMessageBox( getRealBodyMessage() + Const.CR, getRealTitleMessage(), true, Const.INFO );
       }
 
       return response;
@@ -144,7 +146,7 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
   /**
    * Execute this job entry and return the result. In this case it means, just set the result boolean in the Result
    * class.
-   * 
+   *
    * @param prev_result
    *          The result of the previous execution
    * @return The Result of the execution.
@@ -204,8 +206,8 @@ public class JobEntryMsgBoxInfo extends JobEntryBase implements Cloneable, JobEn
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     addOkRemark( this, "bodyMessage", remarks );
     addOkRemark( this, "titleMessage", remarks );
   }

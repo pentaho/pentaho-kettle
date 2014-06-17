@@ -53,15 +53,14 @@ import org.w3c.dom.Node;
 
 /**
  * This check db connections
- * 
+ *
  * @author Samatar
  * @since 10-12-2007
- * 
+ *
  */
 
 public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryCheckDbConnections.class; // for i18n purposes, needed by Translator2!!
-                                                                  // $NON-NLS-1$
 
   public DatabaseMeta[] connections;
 
@@ -85,7 +84,6 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
     connections = null;
     waitfors = null;
     waittimes = null;
-    setID( -1L );
   }
 
   public JobEntryCheckDbConnections() {
@@ -147,9 +145,10 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
       for ( int i = 0; i < connections.length; i++ ) {
         retval.append( "        <connection>" ).append( Const.CR );
         retval.append( "          " ).append(
-            XMLHandler.addTagValue( "name", connections[i] == null ? null : connections[i].getName() ) );
+          XMLHandler.addTagValue( "name", connections[i] == null ? null : connections[i].getName() ) );
         retval.append( "          " ).append( XMLHandler.addTagValue( "waitfor", waitfors[i] ) );
-        retval.append( "          " ).append( XMLHandler.addTagValue( "waittime", getWaitTimeCode( waittimes[i] ) ) );
+        retval
+          .append( "          " ).append( XMLHandler.addTagValue( "waittime", getWaitTimeCode( waittimes[i] ) ) );
         retval.append( "        </connection>" ).append( Const.CR );
       }
     }
@@ -171,8 +170,8 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
     return 0;
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       Node fields = XMLHandler.getSubNode( entrynode, "connections" );
@@ -191,13 +190,13 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
         waittimes[i] = getWaitByCode( Const.NVL( XMLHandler.getTagValue( fnode, "waittime" ), "" ) );
       }
     } catch ( KettleXMLException xe ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "JobEntryCheckDbConnections.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node", xe.getMessage() ) );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "JobEntryCheckDbConnections.ERROR_0001_Cannot_Load_Job_Entry_From_Xml_Node", xe.getMessage() ) );
     }
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       // How many connections?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "id_database" );
@@ -207,13 +206,15 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
         connections[a] =
-            rep.loadDatabaseMetaFromJobEntryAttribute( id_jobentry, "connection", a, "id_database", databases );
+          rep.loadDatabaseMetaFromJobEntryAttribute( id_jobentry, "connection", a, "id_database", databases );
         waitfors[a] = rep.getJobEntryAttributeString( id_jobentry, a, "waitfor" );
-        waittimes[a] = getWaitByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry, a, "waittime" ), "" ) );
+        waittimes[a] =
+          getWaitByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry, a, "waittime" ), "" ) );
       }
     } catch ( KettleException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryCheckDbConnections.ERROR_0002_Cannot_Load_Job_From_Repository", "" + id_jobentry, dbe.getMessage() ) );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "JobEntryCheckDbConnections.ERROR_0002_Cannot_Load_Job_From_Repository", "" + id_jobentry, dbe
+          .getMessage() ) );
     }
   }
 
@@ -222,15 +223,16 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
       // save the arguments...
       if ( connections != null ) {
         for ( int i = 0; i < connections.length; i++ ) {
-          rep.saveDatabaseMetaJobEntryAttribute( id_job, getObjectId(), i, "connection", "id_database", connections[i] );
+          rep.saveDatabaseMetaJobEntryAttribute(
+            id_job, getObjectId(), i, "connection", "id_database", connections[i] );
 
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "waittime", getWaitTimeCode( waittimes[i] ) );
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "waitfor", waitfors[i] );
         }
       }
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "JobEntryCheckDbConnections.ERROR_0003_Cannot_Save_Job_Entry", "" + id_job, dbe.getMessage() ) );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "JobEntryCheckDbConnections.ERROR_0003_Cannot_Save_Job_Entry", "" + id_job, dbe.getMessage() ) );
     }
   }
 
@@ -249,7 +251,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobEntryCheckDbConnections.Connected", connections[i]
-                .getDatabaseName(), connections[i].getName() ) );
+              .getDatabaseName(), connections[i].getName() ) );
           }
 
           int iMaximumTimeout = Const.toInt( environmentSubstitute( waitfors[i] ), 0 );
@@ -276,8 +278,8 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
                 break;
             }
             if ( isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "JobEntryCheckDbConnections.Wait", "" + iMaximumTimeout,
-                  waitTimeMessage ) );
+              logDetailed( BaseMessages.getString(
+                PKG, "JobEntryCheckDbConnections.Wait", "" + iMaximumTimeout, waitTimeMessage ) );
             }
 
             // starttime (in seconds ,Minutes or Hours)
@@ -291,8 +293,9 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
               if ( ( now >= ( timeStart + iMaximumTimeout ) ) ) {
                 // We have reached the time limit
                 if ( isDetailed() ) {
-                  logDetailed( BaseMessages.getString( PKG, "JobEntryCheckDbConnections.WaitTimeIsElapsed.Label",
-                      connections[i].getDatabaseName(), connections[i].getName() ) );
+                  logDetailed( BaseMessages.getString(
+                    PKG, "JobEntryCheckDbConnections.WaitTimeIsElapsed.Label", connections[i].getDatabaseName(),
+                    connections[i].getName() ) );
                 }
 
                 continueLoop = false;
@@ -300,6 +303,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
                 try {
                   Thread.sleep( 100 );
                 } catch ( Exception e ) {
+                  // Ignore sleep errors
                 }
               }
             }
@@ -308,12 +312,12 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
           nrsuccess++;
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobEntryCheckDbConnections.ConnectionOK", connections[i]
-                .getDatabaseName(), connections[i].getName() ) );
+              .getDatabaseName(), connections[i].getName() ) );
           }
         } catch ( KettleDatabaseException e ) {
           nrerrors++;
           logError( BaseMessages.getString( PKG, "JobEntryCheckDbConnections.Exception", connections[i]
-              .getDatabaseName(), connections[i].getName(), e.toString() ) );
+            .getDatabaseName(), connections[i].getName(), e.toString() ) );
         } finally {
           if ( db != null ) {
             try {
@@ -333,10 +337,10 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 
     if ( isDetailed() ) {
       logDetailed( "=======================================" );
-      logDetailed( BaseMessages
-          .getString( PKG, "JobEntryCheckDbConnections.Log.Info.ConnectionsInError", "" + nrerrors ) );
+      logDetailed( BaseMessages.getString( PKG, "JobEntryCheckDbConnections.Log.Info.ConnectionsInError", ""
+        + nrerrors ) );
       logDetailed( BaseMessages.getString( PKG, "JobEntryCheckDbConnections.Log.Info.ConnectionsInSuccess", ""
-          + nrsuccess ) );
+        + nrsuccess ) );
       logDetailed( "=======================================" );
     }
 
@@ -366,8 +370,8 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "tablename", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "columnname", remarks, putValidators( notBlankValidator() ) );
   }

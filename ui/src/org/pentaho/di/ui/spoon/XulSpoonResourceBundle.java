@@ -34,9 +34,9 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Static class wrapping Spoon's BaseMessages class and Look and Feel bundle.
- * 
+ *
  * This wrapper is required for XUL portions of Spoon as the XUL system internationalizes via ResourceBundles.
- * 
+ *
  * @author nbaker
  */
 public class XulSpoonResourceBundle extends ResourceBundle {
@@ -58,6 +58,7 @@ public class XulSpoonResourceBundle extends ResourceBundle {
     try {
       url = new File( "." ).toURI().toURL();
     } catch ( MalformedURLException ex ) {
+      // Ignore errors
     }
     URLClassLoader classLoader = URLClassLoader.newInstance( new URL[] { url } );
 

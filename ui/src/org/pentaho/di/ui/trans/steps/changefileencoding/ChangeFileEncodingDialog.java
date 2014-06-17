@@ -59,7 +59,7 @@ import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ChangeFileEncoding.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ChangeFileEncoding.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFileName;
   private CCombo wFileName;
@@ -155,7 +155,8 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
 
     wSourceFileGroup = new Group( shell, SWT.SHADOW_NONE );
     props.setLook( wSourceFileGroup );
-    wSourceFileGroup.setText( BaseMessages.getString( PKG, "ChangeFileEncodingDialog.Group.SourceFileGroup.Label" ) );
+    wSourceFileGroup
+      .setText( BaseMessages.getString( PKG, "ChangeFileEncodingDialog.Group.SourceFileGroup.Label" ) );
 
     FormLayout SourceFilegroupLayout = new FormLayout();
     SourceFilegroupLayout.marginWidth = 10;
@@ -191,7 +192,8 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
     } );
 
     wlSourceEncoding = new Label( wSourceFileGroup, SWT.RIGHT );
-    wlSourceEncoding.setText( BaseMessages.getString( PKG, "ChangeFileSourceEncodingDialog.SourceEncoding.Label" ) );
+    wlSourceEncoding
+      .setText( BaseMessages.getString( PKG, "ChangeFileSourceEncodingDialog.SourceEncoding.Label" ) );
     props.setLook( wlSourceEncoding );
     fdlSourceEncoding = new FormData();
     fdlSourceEncoding.left = new FormAttachment( 0, 0 );
@@ -227,7 +229,8 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
     wlSourceAddResult.setLayoutData( fdlSourceAddResult );
     wSourceAddResult = new Button( wSourceFileGroup, SWT.CHECK );
     props.setLook( wSourceAddResult );
-    wSourceAddResult.setToolTipText( BaseMessages.getString( PKG, "ChangeFileEncodingDialog.AddSourceResult.Tooltip" ) );
+    wSourceAddResult.setToolTipText( BaseMessages.getString(
+      PKG, "ChangeFileEncodingDialog.AddSourceResult.Tooltip" ) );
     fdSourceAddResult = new FormData();
     fdSourceAddResult.left = new FormAttachment( middle, 0 );
     fdSourceAddResult.top = new FormAttachment( wSourceEncoding, margin );
@@ -249,7 +252,8 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
 
     wTargetFileGroup = new Group( shell, SWT.SHADOW_NONE );
     props.setLook( wTargetFileGroup );
-    wTargetFileGroup.setText( BaseMessages.getString( PKG, "ChangeFileEncodingDialog.Group.TargetFileGroup.Label" ) );
+    wTargetFileGroup
+      .setText( BaseMessages.getString( PKG, "ChangeFileEncodingDialog.Group.TargetFileGroup.Label" ) );
 
     FormLayout TargetFilegroupLayout = new FormLayout();
     TargetFilegroupLayout.marginWidth = 10;
@@ -286,7 +290,8 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
 
     // Create parent folder
     wlCreateParentFolder = new Label( wTargetFileGroup, SWT.RIGHT );
-    wlCreateParentFolder.setText( BaseMessages.getString( PKG, "ChangeFileEncodingDialog.CreateParentFolder.Label" ) );
+    wlCreateParentFolder.setText( BaseMessages
+      .getString( PKG, "ChangeFileEncodingDialog.CreateParentFolder.Label" ) );
     props.setLook( wlCreateParentFolder );
     fdlCreateParentFolder = new FormData();
     fdlCreateParentFolder.left = new FormAttachment( 0, 0 );
@@ -295,8 +300,8 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
     wlCreateParentFolder.setLayoutData( fdlCreateParentFolder );
     wCreateParentFolder = new Button( wTargetFileGroup, SWT.CHECK );
     props.setLook( wCreateParentFolder );
-    wCreateParentFolder.setToolTipText( BaseMessages.getString( PKG,
-        "ChangeFileEncodingDialog.CreateParentFolder.Tooltip" ) );
+    wCreateParentFolder.setToolTipText( BaseMessages.getString(
+      PKG, "ChangeFileEncodingDialog.CreateParentFolder.Tooltip" ) );
     fdCreateParentFolder = new FormData();
     fdCreateParentFolder.left = new FormAttachment( middle, 0 );
     fdCreateParentFolder.top = new FormAttachment( wTargetFileName, margin );
@@ -338,7 +343,8 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
     wlTargetAddResult.setLayoutData( fdlTargetAddResult );
     wTargetAddResult = new Button( wTargetFileGroup, SWT.CHECK );
     props.setLook( wTargetAddResult );
-    wTargetAddResult.setToolTipText( BaseMessages.getString( PKG, "ChangeFileEncodingDialog.AddTargetResult.Tooltip" ) );
+    wTargetAddResult.setToolTipText( BaseMessages.getString(
+      PKG, "ChangeFileEncodingDialog.AddTargetResult.Tooltip" ) );
     fdTargetAddResult = new FormData();
     fdTargetAddResult.left = new FormAttachment( middle, 0 );
     fdTargetAddResult.top = new FormAttachment( wTargetEncoding, margin );
@@ -481,8 +487,8 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
         }
       } catch ( KettleException ke ) {
         new ErrorDialog( shell,
-            BaseMessages.getString( PKG, "ChangeFileEncodingDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "ChangeFileEncodingDialog.FailedToGetFields.DialogMessage" ), ke );
+          BaseMessages.getString( PKG, "ChangeFileEncodingDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "ChangeFileEncodingDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }

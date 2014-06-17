@@ -24,8 +24,8 @@ package org.pentaho.di.ui.core.widget;
 
 public class UndoRedoStack {
 
-  public final static int DELETE = 0;
-  public final static int INSERT = 1;
+  public static final int DELETE = 0;
+  public static final int INSERT = 1;
 
   private String strNewText;
   private String strReplacedText;

@@ -59,13 +59,13 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit a JobEntryWriteToLog object.
- * 
+ *
  * @author Samatar
  * @since 08-08-2007
  */
 
 public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryWriteToLog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryWriteToLog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
 

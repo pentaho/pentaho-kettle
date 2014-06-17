@@ -39,13 +39,12 @@ import org.pentaho.di.ui.spoon.Spoon;
 /**
  * Takes care of displaying a dialog that will handle the wait while we're getting the number of rows for a certain
  * table in a database.
- * 
+ *
  * @author Matt
  * @since 12-may-2005
  */
 public class GetTableSizeProgressDialog {
   private static Class<?> PKG = GetTableSizeProgressDialog.class; // for i18n purposes, needed by Translator2!!
-                                                                  // $NON-NLS-1$
 
   private Shell shell;
   private DatabaseMeta dbMeta;
@@ -104,8 +103,8 @@ public class GetTableSizeProgressDialog {
             }
           }
 
-          if ( monitor.isCanceled() ) // Disconnect and see what happens!
-          {
+          if ( monitor.isCanceled() ) { // Disconnect and see what happens!
+
             try {
               db.cancelQuery();
             } catch ( Exception e ) {
@@ -131,11 +130,11 @@ public class GetTableSizeProgressDialog {
 
   /**
    * Showing an error dialog
-   * 
+   *
    * @param e
    */
   private void showErrorDialog( Exception e ) {
     new ErrorDialog( shell, BaseMessages.getString( PKG, "GetTableSizeProgressDialog.Error.Title" ), BaseMessages
-        .getString( PKG, "GetTableSizeProgressDialog.Error.Message" ), e );
+      .getString( PKG, "GetTableSizeProgressDialog.Error.Message" ), e );
   }
 }

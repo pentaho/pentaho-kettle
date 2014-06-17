@@ -31,12 +31,12 @@ import org.w3c.dom.Node;
 
 /**
  * Describes an SalesforceInput field
- * 
+ *
  * @author Samatar Hassan
  * @since 10-06-2007
  */
 public class SalesforceInputField implements Cloneable {
-  private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int TYPE_TRIM_NONE = 0;
   public static final int TYPE_TRIM_LEFT = 1;
@@ -45,7 +45,8 @@ public class SalesforceInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "SalesforceInputField.TrimType.None" ),
+  public static final String[] trimTypeDesc = {
+    BaseMessages.getString( PKG, "SalesforceInputField.TrimType.None" ),
     BaseMessages.getString( PKG, "SalesforceInputField.TrimType.Left" ),
     BaseMessages.getString( PKG, "SalesforceInputField.TrimType.Right" ),
     BaseMessages.getString( PKG, "SalesforceInputField.TrimType.Both" ) };

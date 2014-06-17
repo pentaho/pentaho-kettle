@@ -52,12 +52,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Shows a dialog that allows you to enter values for a number of strings.
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public class EnterStringsDialog extends Dialog {
-  private static Class<?> PKG = EnterStringsDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = EnterStringsDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFields;
   private TableView wFields;
@@ -77,7 +77,7 @@ public class EnterStringsDialog extends Dialog {
 
   /**
    * Constructs a new dialog
-   * 
+   *
    * @param parent
    *          The parent shell to link to
    * @param style
@@ -123,15 +123,18 @@ public class EnterStringsDialog extends Dialog {
     int FieldsRows = strings.getRowMeta().size();
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "EnterStringsDialog.StringName.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly ),
-          new ColumnInfo( BaseMessages.getString( PKG, "EnterStringsDialog.StringValue.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly ) };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "EnterStringsDialog.StringName.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false, readOnly ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "EnterStringsDialog.StringValue.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly ) };
 
     wFields =
-        new TableView( Variables.getADefaultVariableSpace(), shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
-            colinf, FieldsRows, null, props );
+      new TableView(
+        Variables.getADefaultVariableSpace(), shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
+        FieldsRows, null, props );
     wFields.setReadonly( readOnly );
 
     fdFields = new FormData();
@@ -237,12 +240,14 @@ public class EnterStringsDialog extends Dialog {
 
           if ( valueMeta.getName().equalsIgnoreCase( name ) ) {
             String stringValue = item.getText( 2 );
+            //CHECKSTYLE:Indentation:OFF
             strings.getData()[j] = stringValue;
           }
         }
       }
-    } else // Variable: re-construct the list of strings again...
-    {
+    } else {
+      // Variable: re-construct the list of strings again...
+
       strings.clear();
       int nrNonEmptyFields = wFields.nrNonEmpty();
       for ( int i = 0; i < nrNonEmptyFields; i++ ) {

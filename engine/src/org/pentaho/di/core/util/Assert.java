@@ -32,7 +32,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
  * @version $Revision
- * 
+ *
  */
 public final class Assert { // NOPMD
 
@@ -86,8 +86,7 @@ public final class Assert { // NOPMD
    * @throws IllegalArgumentException
    *           if bool is false.
    */
-  public static void assertTrue( final boolean bool, final String message, final Object... args )
-    throws IllegalArgumentException {
+  public static void assertTrue( final boolean bool, final String message, final Object... args ) throws IllegalArgumentException {
     if ( bool ) {
       return;
     }
@@ -117,8 +116,7 @@ public final class Assert { // NOPMD
    * @throws IllegalArgumentException
    *           if bool is true.
    */
-  public static void assertFalse( final boolean bool, final String message, final Object... args )
-    throws IllegalArgumentException {
+  public static void assertFalse( final boolean bool, final String message, final Object... args ) throws IllegalArgumentException {
     if ( !bool ) {
       return;
     }
@@ -169,8 +167,7 @@ public final class Assert { // NOPMD
    * @throws IllegalArgumentException
    *           if collection is null or empty.
    */
-  public static void assertNotNullOrEmpty( final Collection<?> collection, final String message )
-    throws IllegalArgumentException {
+  public static void assertNotNullOrEmpty( final Collection<?> collection, final String message ) throws IllegalArgumentException {
     if ( collection == null || collection.isEmpty() ) {
       throw new IllegalArgumentException( message );
     }

@@ -53,7 +53,7 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class TransHopDialog extends Dialog {
-  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFrom;
   private CCombo wFrom;
@@ -304,13 +304,15 @@ public class TransHopDialog extends Dialog {
     } else {
       if ( input.getFromStep() == null ) {
         MessageBox mb = new MessageBox( shell, SWT.YES | SWT.ICON_WARNING );
-        mb.setMessage( BaseMessages.getString( PKG, "TransHopDialog.StepDoesNotExist.DialogMessage", wFrom.getText() ) );
+        mb.setMessage( BaseMessages.getString( PKG, "TransHopDialog.StepDoesNotExist.DialogMessage", wFrom
+          .getText() ) );
         mb.setText( BaseMessages.getString( PKG, "TransHopDialog.StepDoesNotExist.DialogTitle" ) );
         mb.open();
       } else {
         if ( input.getToStep() == null ) {
           MessageBox mb = new MessageBox( shell, SWT.YES | SWT.ICON_WARNING );
-          mb.setMessage( BaseMessages.getString( PKG, "TransHopDialog.StepDoesNotExist.DialogMessage", wTo.getText() ) );
+          mb.setMessage( BaseMessages.getString( PKG, "TransHopDialog.StepDoesNotExist.DialogMessage", wTo
+            .getText() ) );
           mb.setText( BaseMessages.getString( PKG, "TransHopDialog.StepDoesNotExist.DialogTitle" ) );
           mb.open();
         } else {

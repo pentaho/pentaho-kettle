@@ -62,12 +62,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 /**
  * This dialog allows you to edit the Table Exists job entry settings. (select the connection and the table to be
  * checked) This entry type evaluates!
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryTableExists.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryTableExists.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
 
@@ -346,10 +346,9 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
 
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
-          EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-                  "System.Dialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString( PKG,
-                  "System.Dialog.AvailableSchemas.Message" ) );
+          EnterSelectionDialog dialog = new EnterSelectionDialog( shell, schemas,
+            BaseMessages.getString( PKG, "System.Dialog.AvailableSchemas.Title", wConnection.getText() ),
+            BaseMessages.getString( PKG, "System.Dialog.AvailableSchemas.Message" ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchemaname.setText( Const.NVL( d.toString(), "" ) );
@@ -362,8 +361,8 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
           mb.open();
         }
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-            PKG, "System.Dialog.AvailableSchemas.ConnectionError" ), e );
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ),
+          BaseMessages.getString( PKG, "System.Dialog.AvailableSchemas.ConnectionError" ), e );
       } finally {
         if ( database != null ) {
           database.disconnect();

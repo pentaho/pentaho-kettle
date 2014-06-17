@@ -58,8 +58,8 @@ public class GetFilesRowsCountData extends BaseStepData implements StepDataInter
   public boolean foundData;
 
   /**
-	 * 
-	 */
+   *
+   */
   public GetFilesRowsCountData() {
     super();
     previousRow = null;

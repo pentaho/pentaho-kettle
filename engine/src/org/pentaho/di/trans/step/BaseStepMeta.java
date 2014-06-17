@@ -38,7 +38,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -73,12 +72,12 @@ import org.w3c.dom.Node;
  * For example, the "Text File Output" step's TextFileOutputMeta class extends BaseStepMeta by adding fields for the
  * output file name, compression, file format, etc...
  * <p>
- * 
+ *
  * @created 19-June-2003
  */
 public class BaseStepMeta implements Cloneable, StepAttributesInterface {
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Step metadata",
-      LoggingObjectType.STEPMETA, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+    "Step metadata", LoggingObjectType.STEPMETA, null );
 
   public static final String STEP_ATTRIBUTES_FILE = "step-attributes.xml";
 
@@ -109,7 +108,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#clone()
    */
   public Object clone() {
@@ -123,7 +122,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Sets the changed.
-   * 
+   *
    * @param ch
    *          the new changed
    */
@@ -140,7 +139,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Checks for changed.
-   * 
+   *
    * @return true, if successful
    */
   public boolean hasChanged() {
@@ -149,7 +148,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Gets the table fields.
-   * 
+   *
    * @return the table fields
    */
   public RowMetaInterface getTableFields() {
@@ -158,9 +157,9 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Produces the XML string that describes this step's information.
-   * 
+   *
    * @return String containing the XML describing this step.
-   * @throws KettleValueException
+   * @throws KettleException
    *           in case there is an XML conversion or encoding error
    */
   public String getXML() throws KettleException {
@@ -171,7 +170,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Gets the fields.
-   * 
+   *
    * @param inputRowMeta
    *          the input row meta that is modified in this method to reflect the output row metadata of the step
    * @param name
@@ -188,13 +187,13 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    */
   @Deprecated
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space ) throws KettleStepException {
+    VariableSpace space ) throws KettleStepException {
     // Default: no values are added to the row in the step
   }
 
   /**
    * Gets the fields.
-   * 
+   *
    * @param inputRowMeta
    *          the input row meta that is modified in this method to reflect the output row metadata of the step
    * @param name
@@ -213,13 +212,13 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *           the kettle step exception
    */
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: no values are added to the row in the step
   }
 
   /**
    * Each step must be able to report on the impact it has on a database, table field, etc.
-   * 
+   *
    * @param impact
    *          The list of impacts @see org.pentaho.di.transMeta.DatabaseImpact
    * @param transMeta
@@ -238,13 +237,13 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    */
   @Deprecated
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info ) throws KettleStepException {
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info ) throws KettleStepException {
 
   }
 
   /**
    * Each step must be able to report on the impact it has on a database, table field, etc.
-   * 
+   *
    * @param impact
    *          The list of impacts @see org.pentaho.di.transMeta.DatabaseImpact
    * @param transMeta
@@ -265,15 +264,15 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *          the MetaStore to use to load additional external data or metadata impacting the output fields
    */
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-      IMetaStore metaStore ) throws KettleStepException {
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+    IMetaStore metaStore ) throws KettleStepException {
 
   }
 
   /**
    * Standard method to return one or more SQLStatement objects that the step needs in order to work correctly. This can
    * mean "create table", "create index" statements but also "alter table ... add/drop/modify" statements.
-   * 
+   *
    * @return The SQL Statements for this step or null if an error occurred. If nothing has to be done, the
    *         SQLStatement.getSQL() == null.
    * @param transMeta
@@ -285,8 +284,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * @deprecated
    */
   @Deprecated
-  public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev )
-    throws KettleStepException {
+  public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev ) throws KettleStepException {
     // default: this doesn't require any SQL statements to be executed!
     return new SQLStatement( stepMeta.getName(), null, null );
   }
@@ -295,7 +293,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * Standard method to return an SQLStatement object with SQL statements that the step needs in order to work
    * correctly. This can mean "create table", "create index" statements but also "alter table ... add/drop/modify"
    * statements.
-   * 
+   *
    * @return The SQL Statements for this step. If nothing has to be done, the SQLStatement.getSQL() == null. @see
    *         SQLStatement
    * @param transMeta
@@ -310,7 +308,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *          the MetaStore to use to load additional external data or metadata impacting the output fields
    */
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // default: this doesn't require any SQL statements to be executed!
     return new SQLStatement( stepMeta.getName(), null, null );
   }
@@ -334,7 +332,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   /**
    * Default a step doesn't use any arguments. Implement this to notify the GUI that a window has to be displayed BEFORE
    * launching a transformation.
-   * 
+   *
    * @return A row of argument values. (name and optionally a default value)
    */
   public Map<String, String> getUsedArguments() {
@@ -346,9 +344,9 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * difficult to do. To help out here, we supply information to the transformation meta-data model about which fields
    * are required for a step. This allows us to automate certain tasks like the mapping to pre-defined tables. The Table
    * Output step in this case will output the fields in the target table using this method.
-   * 
+   *
    * This default implementation returns an empty row meaning that no fields are required for this step to operate.
-   * 
+   *
    * @return the required fields for this steps meta data.
    * @throws KettleException
    *           in case the required fields can't be determined
@@ -364,9 +362,9 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * difficult to do. To help out here, we supply information to the transformation meta-data model about which fields
    * are required for a step. This allows us to automate certain tasks like the mapping to pre-defined tables. The Table
    * Output step in this case will output the fields in the target table using this method.
-   * 
+   *
    * This default implementation returns an empty row meaning that no fields are required for this step to operate.
-   * 
+   *
    * @param space
    *          the variable space to use to do variable substitution.
    * @return the required fields for this steps meta data.
@@ -379,7 +377,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * This method returns all the database connections that are used by the step.
-   * 
+   *
    * @return an array of database connections meta-data. Return an empty array if no connections are used.
    */
   public DatabaseMeta[] getUsedDatabaseConnections() {
@@ -402,7 +400,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * This method is added to exclude certain steps from layout checking.
-   * 
+   *
    * @since 2.5.0
    */
   public boolean excludeFromRowLayoutVerification() {
@@ -411,7 +409,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * This method is added to exclude certain steps from copy/distribute checking.
-   * 
+   *
    * @since 4.0.0
    */
   public boolean excludeFromCopyDistributeVerification() {
@@ -420,7 +418,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Get a list of all the resource dependencies that the step is depending on.
-   * 
+   *
    * @return a list of all the resource dependencies that the step is depending on
    */
   public List<ResourceReference> getResourceDependencies( TransMeta transMeta, StepMeta stepInfo ) {
@@ -433,7 +431,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Export resources.
-   * 
+   *
    * @param space
    *          the space
    * @param definitions
@@ -449,26 +447,25 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    */
   @Deprecated
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository ) throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository ) throws KettleException {
     return null;
   }
 
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     return null;
   }
 
   /**
    * This returns the expected name for the dialog that edits a job entry. The expected name is in the org.pentaho.di.ui
    * tree and has a class name that is the name of the job entry with 'Dialog' added to the end.
-   * 
+   *
    * e.g. if the job entry is org.pentaho.di.job.entries.zipfile.JobEntryZipFile the dialog would be
    * org.pentaho.di.ui.job.entries.zipfile.JobEntryZipFileDialog
-   * 
+   *
    * If the dialog class for a job entry does not match this pattern it should override this method and return the
    * appropriate class name
-   * 
+   *
    * @return full class name of the dialog
    */
   public String getDialogClassName() {
@@ -483,7 +480,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Gets the parent step meta.
-   * 
+   *
    * @return the parent step meta
    */
   public StepMeta getParentStepMeta() {
@@ -492,7 +489,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Sets the parent step meta.
-   * 
+   *
    * @param parentStepMeta
    *          the new parent step meta
    */
@@ -510,7 +507,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   // Late init to prevent us from logging blank step names, etc.
   /**
    * Gets the log.
-   * 
+   *
    * @return the log
    */
   public LogChannelInterface getLog() {
@@ -522,7 +519,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Checks if is basic.
-   * 
+   *
    * @return true, if is basic
    */
   public boolean isBasic() {
@@ -531,7 +528,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Checks if is detailed.
-   * 
+   *
    * @return true, if is detailed
    */
   public boolean isDetailed() {
@@ -540,7 +537,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Checks if is debug.
-   * 
+   *
    * @return true, if is debug
    */
   public boolean isDebug() {
@@ -549,7 +546,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Checks if is row level.
-   * 
+   *
    * @return true, if is row level
    */
   public boolean isRowLevel() {
@@ -558,7 +555,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Log minimal.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -568,7 +565,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Log minimal.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -580,7 +577,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Log basic.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -590,7 +587,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Log basic.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -602,7 +599,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Log detailed.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -612,7 +609,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Log detailed.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -624,7 +621,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Log debug.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -634,7 +631,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Log debug.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -646,7 +643,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Log rowlevel.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -656,7 +653,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Log rowlevel.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -668,7 +665,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Log error.
-   * 
+   *
    * @param message
    *          the message
    */
@@ -678,7 +675,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Log error.
-   * 
+   *
    * @param message
    *          the message
    * @param e
@@ -690,7 +687,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Log error.
-   * 
+   *
    * @param message
    *          the message
    * @param arguments
@@ -702,7 +699,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Gets the log channel id.
-   * 
+   *
    * @return the log channel id
    */
   public String getLogChannelId() {
@@ -711,7 +708,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Gets the name.
-   * 
+   *
    * @return the name
    */
   public String getName() {
@@ -720,7 +717,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Gets the object copy.
-   * 
+   *
    * @return the object copy
    */
   public String getObjectCopy() {
@@ -729,7 +726,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Gets the object id.
-   * 
+   *
    * @return the object id
    */
   public ObjectId getObjectId() {
@@ -738,7 +735,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Gets the object revision.
-   * 
+   *
    * @return the object revision
    */
   public ObjectRevision getObjectRevision() {
@@ -747,7 +744,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Gets the object type.
-   * 
+   *
    * @return the object type
    */
   public LoggingObjectType getObjectType() {
@@ -756,7 +753,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Gets the parent.
-   * 
+   *
    * @return the parent
    */
   public LoggingObjectInterface getParent() {
@@ -765,7 +762,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Gets the repository directory.
-   * 
+   *
    * @return the repository directory
    */
   public RepositoryDirectory getRepositoryDirectory() {
@@ -793,7 +790,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * When an optional stream is selected, this method is called to handled the ETL metadata implications of that.
-   * 
+   *
    * @param stream
    *          The optional stream to handle.
    */
@@ -809,7 +806,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Change step names into step objects to allow them to be name-changed etc.
-   * 
+   *
    * @param steps
    *          the steps to reference
    */
@@ -825,8 +822,17 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   }
 
   /**
+   * @return The step metadata itself, not the metadata description.  
+   * For lists it will have 0 entries in case there are no entries.
+   * @throws KettleException
+   */
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
+  }
+
+  /**
    * Find parent entry.
-   * 
+   *
    * @param entries
    *          the entries
    * @param key
@@ -848,7 +854,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Creates the entry.
-   * 
+   *
    * @param attr
    *          the attr
    * @param PKG
@@ -857,7 +863,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    */
   protected StepInjectionMetaEntry createEntry( KettleAttributeInterface attr, Class<?> PKG ) {
     return new StepInjectionMetaEntry( attr.getKey(), attr.getType(), BaseMessages.getString( PKG, attr
-        .getDescription() ) );
+      .getDescription() ) );
   }
 
   /**
@@ -874,8 +880,8 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
         StepInjectionMetaEntry parentEntry = findParentEntry( entries, attr.getParent().getKey() );
         if ( parentEntry == null ) {
           throw new RuntimeException(
-              "An error was detected in the step attributes' definition: the parent was not found for attribute "
-                  + attr );
+            "An error was detected in the step attributes' definition: the parent was not found for attribute "
+              + attr );
         }
         parentEntry.getDetails().add( entry );
       }
@@ -886,7 +892,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Load step attributes.
-   * 
+   *
    * @throws KettleException
    *           the kettle exception
    */
@@ -908,8 +914,8 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
           String parentId = XMLHandler.getTagValue( node, "parentid" );
 
           KettleAttribute attribute =
-              new KettleAttribute( key, xmlCode, repCode, description, tooltip, valueType, findParent( attributes,
-                  parentId ) );
+            new KettleAttribute( key, xmlCode, repCode, description, tooltip, valueType, findParent(
+              attributes, parentId ) );
           attributes.add( attribute );
         }
       }
@@ -920,7 +926,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepAttributesInterface#findParent(java.util.List, java.lang.String)
    */
   public KettleAttributeInterface findParent( List<KettleAttributeInterface> attributes, String parentId ) {
@@ -937,7 +943,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepAttributesInterface#findAttribute(java.lang.String)
    */
   public KettleAttributeInterface findAttribute( String key ) {
@@ -951,7 +957,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepAttributesInterface#getXmlCode(java.lang.String)
    */
   public String getXmlCode( String attributeKey ) {
@@ -960,7 +966,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepAttributesInterface#getRepCode(java.lang.String)
    */
   public String getRepCode( String attributeKey ) {
@@ -970,7 +976,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepAttributesInterface#getDescription(java.lang.String)
    */
   public String getDescription( String attributeKey ) {
@@ -979,7 +985,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepAttributesInterface#getTooltip(java.lang.String)
    */
   public String getTooltip( String attributeKey ) {
@@ -1002,7 +1008,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   /**
    * Look up the references after import
-   * 
+   *
    * @param repository
    *          the repository to reference.
    */
@@ -1021,8 +1027,16 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   }
 
   /**
+   * @return A description of the active referenced object in a transformation.  
+   * Null if nothing special needs to be done or if the active metadata isn't different from design.
+   */
+  public String getActiveReferencedObjectDescription() {
+    return null;
+  }
+
+  /**
    * Load the referenced object
-   * 
+   *
    * @param meta
    *          The metadata that references
    * @param index
@@ -1040,8 +1054,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     return null;
   }
 
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
-    throws KettleException {
+  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     // Provided for v4 API compatibility
     return null;
   }
@@ -1051,14 +1064,13 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     // provided for API (compile & runtime) compatibility with v4
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     // provided for API (compile & runtime) compatibility with v4
   }
 
   @Deprecated
-  public void readRep( Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters )
-    throws KettleException {
+  public void readRep( Repository rep, ObjectId id_step, List<DatabaseMeta> databases,
+    Map<String, Counter> counters ) throws KettleException {
     // provided for API (compile & runtime) compatibility with v4
   }
 
@@ -1068,8 +1080,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   }
 
   @Deprecated
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters ) throws KettleXMLException {
     // provided for API (compile & runtime) compatibility with v4
   }
 
@@ -1082,23 +1093,23 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     // provided for API (compile & runtime) compatibility with v4
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     // provided for API (compile & runtime) compatibility with v4
   }
 
   @Deprecated
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info ) {
   }
 
   @Deprecated
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, Repository repository, IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+    IMetaStore metaStore ) {
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
   }
 }

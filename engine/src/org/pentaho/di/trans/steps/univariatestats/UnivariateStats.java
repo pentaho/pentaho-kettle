@@ -45,7 +45,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * calculated using interpolation or a simple method. See <a
  * href="http://www.itl.nist.gov/div898/handbook/prc/section2/prc252.htm"> The Engineering Statistics Handbook</a> for
  * details.
- * 
+ *
  * @author Mark Hall (mhall{[at]}pentaho.org)
  * @version 1.0
  */
@@ -61,7 +61,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
 
   /**
    * Creates a new <code>UnivariateStats</code> instance.
-   * 
+   *
    * @param stepMeta
    *          holds the step's meta data
    * @param stepDataInterface
@@ -74,13 +74,13 @@ public class UnivariateStats extends BaseStep implements StepInterface {
    *          a <code>Trans</code> value
    */
   public UnivariateStats( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Process an incoming row of data.
-   * 
+   *
    * @param smi
    *          a <code>StepMetaInterface</code> value
    * @param sdi
@@ -135,6 +135,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
       // in the step meta
       for ( int i = 0; i < m_meta.getNumFieldsToProcess(); i++ ) {
         UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[i];
+        //CHECKSTYLE:Indentation:OFF
         m_data.getFieldIndexes()[i] = new UnivariateStatsData.FieldIndex();
 
         // check that this univariate stats computation has been
@@ -143,8 +144,8 @@ public class UnivariateStats extends BaseStep implements StepInterface {
           int fieldIndex = m_data.getInputRowMeta().indexOfValue( usmf.getSourceFieldName() );
 
           if ( fieldIndex < 0 ) {
-            throw new KettleStepException( "Unable to find the specified fieldname '" + usmf.getSourceFieldName()
-                + "' for stats calc #" + ( i + 1 ) );
+            throw new KettleStepException( "Unable to find the specified fieldname '"
+              + usmf.getSourceFieldName() + "' for stats calc #" + ( i + 1 ) );
           }
 
           UnivariateStatsData.FieldIndex tempData = m_data.getFieldIndexes()[i];
@@ -224,7 +225,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
 
   /**
    * Generates an output row
-   * 
+   *
    * @return an <code>Object[]</code> value
    */
   private Object[] generateOutputRow() {
@@ -258,7 +259,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
 
   /**
    * Initialize the step.
-   * 
+   *
    * @param smi
    *          a <code>StepMetaInterface</code> value
    * @param sdi
@@ -273,26 +274,5 @@ public class UnivariateStats extends BaseStep implements StepInterface {
       return true;
     }
     return false;
-  }
-
-  /**
-   * Run is where the action happens!
-   */
-  public void run() {
-    logBasic( "Starting to run..." );
-    try {
-      while ( processRow( m_meta, m_data ) && !isStopped() ) {
-        // Repeat
-      }
-    } catch ( Exception e ) {
-      logError( "Unexpected error : " + e.toString() );
-      logError( Const.getStackTracker( e ) );
-      setErrors( 1 );
-      stopAll();
-    } finally {
-      dispose( m_meta, m_data );
-      logBasic( "Finished, processing " + getLinesRead() + " rows" );
-      markStop();
-    }
   }
 }

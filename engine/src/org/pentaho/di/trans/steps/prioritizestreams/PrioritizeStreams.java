@@ -37,19 +37,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Prioritize INPUT Streams.
- * 
+ *
  * @author Samatar
  * @since 30-06-2008
  */
 
 public class PrioritizeStreams extends BaseStep implements StepInterface {
-  private static Class<?> PKG = PrioritizeStreamsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PrioritizeStreamsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private PrioritizeStreamsMeta meta;
   private PrioritizeStreamsData data;
 
-  public PrioritizeStreams( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public PrioritizeStreams( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -58,8 +58,7 @@ public class PrioritizeStreams extends BaseStep implements StepInterface {
     data = (PrioritizeStreamsData) sdi;
 
     if ( first ) {
-      first = false;
-      if ( meta.getStepName() == null || meta.getStepName().length > 0 ) {
+      if ( meta.getStepName() != null || meta.getStepName().length > 0 ) {
         data.stepnrs = meta.getStepName().length;
         data.rowSets = new RowSet[data.stepnrs];
 
@@ -75,9 +74,7 @@ public class PrioritizeStreams extends BaseStep implements StepInterface {
         throw new KettleException( BaseMessages.getString( PKG, "PrioritizeStreams.Error.NotInputSteps" ) );
       }
       data.currentRowSet = data.rowSets[0];
-      // Take the row Meta from the first stream
-      data.outputRowMeta = data.currentRowSet.getRowMeta();
-    } // end if first
+    } // end if first, part 1
 
     Object[] input = getOneRow();
 
@@ -89,6 +86,12 @@ public class PrioritizeStreams extends BaseStep implements StepInterface {
       // no more input to be expected...
       setOutputDone();
       return false;
+    }
+
+    if ( first ) {
+      // Take the row Meta from the first rowset read
+      data.outputRowMeta = data.currentRowSet.getRowMeta();
+      first = false;
     }
 
     putRow( data.outputRowMeta, input );
@@ -129,18 +132,17 @@ public class PrioritizeStreams extends BaseStep implements StepInterface {
 
   /**
    * Checks whether 2 template rows are compatible for the mergestep.
-   * 
+   *
    * @param referenceRow
    *          Reference row
    * @param compareRow
    *          Row to compare to
-   * 
+   *
    * @return true when templates are compatible.
    * @throws KettleRowException
    *           in case there is a compatibility error.
    */
-  protected void checkInputLayoutValid( RowMetaInterface referenceRowMeta, RowMetaInterface compareRowMeta )
-    throws KettleRowException {
+  protected void checkInputLayoutValid( RowMetaInterface referenceRowMeta, RowMetaInterface compareRowMeta ) throws KettleRowException {
     if ( referenceRowMeta != null && compareRowMeta != null ) {
       BaseStep.safeModeChecking( referenceRowMeta, compareRowMeta );
     }

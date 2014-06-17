@@ -72,7 +72,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class DBProcDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = DBProcMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DBProcMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CCombo wConnection;
 
@@ -188,9 +188,9 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
             String[] procs = db.getProcedures();
             if ( procs != null && procs.length > 0 ) {
               EnterSelectionDialog esd =
-                  new EnterSelectionDialog( shell, procs, BaseMessages.getString( PKG,
-                      "DBProcDialog.EnterSelection.DialogTitle" ), BaseMessages.getString( PKG,
-                      "DBProcDialog.EnterSelection.DialogMessage" ) );
+                new EnterSelectionDialog( shell, procs,
+                  BaseMessages.getString( PKG, "DBProcDialog.EnterSelection.DialogTitle" ),
+                  BaseMessages.getString( PKG, "DBProcDialog.EnterSelection.DialogMessage" ) );
               String proc = esd.open();
               if ( proc != null ) {
                 wProcName.setText( proc );
@@ -203,8 +203,8 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
             }
           } catch ( KettleDatabaseException dbe ) {
             new ErrorDialog( shell,
-                BaseMessages.getString( PKG, "DBProcDialog.ErrorGettingProceduresList.DialogTitle" ), BaseMessages
-                    .getString( PKG, "DBProcDialog.ErrorGettingProceduresList.DialogMessage" ), dbe );
+              BaseMessages.getString( PKG, "DBProcDialog.ErrorGettingProceduresList.DialogTitle" ),
+              BaseMessages.getString( PKG, "DBProcDialog.ErrorGettingProceduresList.DialogMessage" ), dbe );
           } finally {
             db.disconnect();
           }
@@ -304,17 +304,21 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "DBProcDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] { "" }, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "DBProcDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "" }, false );
     colinf[1] =
-        new ColumnInfo(
-            BaseMessages.getString( PKG, "DBProcDialog.ColumnInfo.Direction" ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "IN", "OUT", "INOUT" } ); //$NON-NLS-3$ //$NON-NLS-4$
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "DBProcDialog.ColumnInfo.Direction" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] { "IN", "OUT", "INOUT" } );
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "DBProcDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            ValueMeta.getTypes() );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "DBProcDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        ValueMeta.getTypes() );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -494,6 +498,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
     input.allocate( nrargs );
 
     logDebug( BaseMessages.getString( PKG, "DBProcDialog.Log.FoundArguments", String.valueOf( nrargs ) ) );
+    //CHECKSTYLE:Indentation:OFF
     for ( i = 0; i < nrargs; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getArgument()[i] = item.getText( 1 );
@@ -532,7 +537,8 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface 
         BaseStepDialog.getFieldsFromPrevious( r, wFields, 1, new int[] { 1 }, new int[] { 3 }, -1, -1, listener );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "DBProcDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "DBProcDialog.FailedToGetFields.DialogTitle" ), BaseMessages
           .getString( PKG, "DBProcDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 

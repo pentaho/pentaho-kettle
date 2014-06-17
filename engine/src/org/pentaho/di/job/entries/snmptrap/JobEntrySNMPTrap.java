@@ -64,14 +64,14 @@ import org.w3c.dom.Node;
 
 /**
  * This defines an SNMPTrap job entry.
- * 
+ *
  * @author Matt
  * @since 05-11-2003
- * 
+ *
  */
 
 public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntrySNMPTrap.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySNMPTrap.class; // for i18n purposes, needed by Translator2!!
 
   private String serverName;
   private String port;
@@ -118,8 +118,6 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
     user = null;
     passphrase = null;
     engineid = null;
-
-    setID( -1L );
   }
 
   public JobEntrySNMPTrap() {
@@ -171,8 +169,8 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       port = XMLHandler.getTagValue( entrynode, "port" );
@@ -193,7 +191,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       port = rep.getJobEntryAttributeString( id_jobentry, "port" );
       serverName = rep.getJobEntryAttributeString( id_jobentry, "servername" );
@@ -208,8 +206,8 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
       engineid = rep.getJobEntryAttributeString( id_jobentry, "engineid" );
 
     } catch ( KettleException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'SNMPTrap' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+      throw new KettleException(
+        "Unable to load job entry of type 'SNMPTrap' from the repository for id_jobentry=" + id_jobentry, dbe );
     }
   }
 
@@ -228,8 +226,8 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
       rep.saveJobEntryAttribute( id_job, getObjectId(), "engineid", engineid );
 
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to save job entry of type 'SNMPTrap' to the repository for id_job=" + id_job,
-          dbe );
+      throw new KettleException( "Unable to save job entry of type 'SNMPTrap' to the repository for id_job="
+        + id_job, dbe );
     }
   }
 
@@ -467,8 +465,9 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
         // this is handled by the UsmUser and USM class
 
         UsmUser uu =
-            new UsmUser( new OctetString( userName ), AuthMD5.ID, new OctetString( passPhrase ), PrivDES.ID,
-                new OctetString( passPhrase ) );
+          new UsmUser(
+            new OctetString( userName ), AuthMD5.ID, new OctetString( passPhrase ), PrivDES.ID,
+            new OctetString( passPhrase ) );
 
         USM usm = snmp.getUSM();
 
@@ -494,9 +493,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
         response = snmp.send( pdu, usertarget );
       }
 
-      if ( response == null ) {
-
-      } else {
+      if ( response != null ) {
         if ( log.isDebug() ) {
           logDebug( "Received response from: " + response.getPeerAddress() + response.toString() );
         }

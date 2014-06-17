@@ -56,14 +56,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a Table content evaluation job entry
- * 
+ *
  * @author Samatar
  * @since 22-07-2008
- * 
+ *
  */
 public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryEvalTableContent.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   public boolean isAddRowsResult;
 
@@ -92,8 +91,9 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
     BaseMessages.getString( PKG, "JobEntryEvalTableContent.SuccessWhenRowCountGreaterOrEqual.Label" )
 
   };
-  public static final String[] successConditionsCode = new String[] { "rows_count_equal", "rows_count_different",
-    "rows_count_smaller", "rows_count_smaller_equal", "rows_count_greater", "rows_count_greater_equal" };
+  public static final String[] successConditionsCode = new String[] {
+    "rows_count_equal", "rows_count_different", "rows_count_smaller", "rows_count_smaller_equal",
+    "rows_count_greater", "rows_count_greater_equal" };
 
   public static final int SUCCESS_CONDITION_ROWS_COUNT_EQUAL = 0;
   public static final int SUCCESS_CONDITION_ROWS_COUNT_DIFFERENT = 1;
@@ -117,7 +117,6 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
     schemaname = null;
     tablename = null;
     connection = null;
-    setID( -1L );
   }
 
   public JobEntryEvalTableContent() {
@@ -153,11 +152,11 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 
     retval.append( super.getXML() );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
+      XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "schemaname", schemaname ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "tablename", tablename ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "success_condition", getSuccessConditionCode( successCondition ) ) );
+      XMLHandler.addTagValue( "success_condition", getSuccessConditionCode( successCondition ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "limit", limit ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "is_custom_sql", iscustomSQL ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "is_usevars", isUseVars ) );
@@ -195,8 +194,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
     return successConditionsDesc[i];
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       String dbname = XMLHandler.getTagValue( entrynode, "connection" );
@@ -204,7 +203,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
       schemaname = XMLHandler.getTagValue( entrynode, "schemaname" );
       tablename = XMLHandler.getTagValue( entrynode, "tablename" );
       successCondition =
-          getSucessConditionByCode( Const.NVL( XMLHandler.getTagValue( entrynode, "success_condition" ), "" ) );
+        getSucessConditionByCode( Const.NVL( XMLHandler.getTagValue( entrynode, "success_condition" ), "" ) );
       limit = Const.NVL( XMLHandler.getTagValue( entrynode, "limit" ), "0" );
       iscustomSQL = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "is_custom_sql" ) );
       isUseVars = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "is_usevars" ) );
@@ -218,14 +217,15 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       connection = rep.loadDatabaseMetaFromJobEntryAttribute( id_jobentry, "connection", "id_database", databases );
 
       schemaname = rep.getJobEntryAttributeString( id_jobentry, "schemaname" );
       tablename = rep.getJobEntryAttributeString( id_jobentry, "tablename" );
       successCondition =
-          getSuccessConditionByCode( Const.NVL( rep.getJobEntryAttributeString( id_jobentry, "success_condition" ), "" ) );
+        getSuccessConditionByCode( Const.NVL(
+          rep.getJobEntryAttributeString( id_jobentry, "success_condition" ), "" ) );
       limit = rep.getJobEntryAttributeString( id_jobentry, "limit" );
       iscustomSQL = rep.getJobEntryAttributeBoolean( id_jobentry, "is_custom_sql" );
       isUseVars = rep.getJobEntryAttributeBoolean( id_jobentry, "is_usevars" );
@@ -235,7 +235,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
       customSQL = rep.getJobEntryAttributeString( id_jobentry, "custom_sql" );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryEvalTableContent.UnableLoadRep", ""
-          + id_jobentry ), dbe );
+        + id_jobentry ), dbe );
     }
   }
 
@@ -258,7 +258,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "schemaname", schemaname );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "tablename", tablename );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "success_condition", getSuccessConditionCode( successCondition ) );
+      rep.saveJobEntryAttribute(
+        id_job, getObjectId(), "success_condition", getSuccessConditionCode( successCondition ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "limit", limit );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "custom_sql", customSQL );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "is_custom_sql", iscustomSQL );
@@ -266,8 +267,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
       rep.saveJobEntryAttribute( id_job, getObjectId(), "add_rows_result", isAddRowsResult );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "clear_result_rows", isClearResultList );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobEntryEvalTableContent.UnableSaveRep", "" + id_job ),
-          dbe );
+      throw new KettleException( BaseMessages.getString( PKG, "JobEntryEvalTableContent.UnableSaveRep", ""
+        + id_job ), dbe );
     }
   }
 
@@ -293,7 +294,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 
     // see PDI-10270, PDI-10644 for details
     boolean oldBehavior =
-        "Y".equalsIgnoreCase( getVariable( Const.KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES, "N" ) );
+      "Y".equalsIgnoreCase( getVariable( Const.KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES, "N" ) );
 
     String countSQLStatement = null;
     long rowsCount = 0;
@@ -335,7 +336,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
           if ( !Const.isEmpty( realTablename ) ) {
             if ( !Const.isEmpty( realSchemaname ) ) {
               countSQLStatement =
-                  selectCount + db.getDatabaseMeta().getQuotedSchemaTableCombination( realSchemaname, realTablename );
+                selectCount
+                  + db.getDatabaseMeta().getQuotedSchemaTableCombination( realSchemaname, realTablename );
             } else {
               countSQLStatement = selectCount + db.getDatabaseMeta().quoteField( realTablename );
             }
@@ -347,8 +349,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 
         if ( countSQLStatement != null ) {
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages
-                .getString( PKG, "JobEntryEvalTableContent.Log.RunSQLStatement", countSQLStatement ) );
+            logDetailed( BaseMessages.getString(
+              PKG, "JobEntryEvalTableContent.Log.RunSQLStatement", countSQLStatement ) );
           }
 
           if ( iscustomSQL ) {
@@ -374,8 +376,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
               }
             } else {
               if ( log.isDebug() ) {
-                logDebug( BaseMessages.getString( PKG, "JobEntryEvalTableContent.Log.customSQLreturnedNothing",
-                    countSQLStatement ) );
+                logDebug( BaseMessages.getString(
+                  PKG, "JobEntryEvalTableContent.Log.customSQLreturnedNothing", countSQLStatement ) );
               }
             }
 
@@ -386,7 +388,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
             }
           }
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobEntryEvalTableContent.Log.NrRowsReturned", "" + rowsCount ) );
+            logDetailed( BaseMessages.getString( PKG, "JobEntryEvalTableContent.Log.NrRowsReturned", ""
+              + rowsCount ) );
           }
           switch ( successCondition ) {
             case JobEntryEvalTableContent.SUCCESS_CONDITION_ROWS_COUNT_EQUAL:
@@ -451,8 +454,8 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "WaitForSQL", remarks, putValidators( notBlankValidator() ) );
   }
 

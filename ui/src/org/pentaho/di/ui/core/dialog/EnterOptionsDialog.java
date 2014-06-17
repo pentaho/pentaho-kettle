@@ -74,12 +74,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Allows you to set the configurable options for the Kettle environment
- * 
+ *
  * @author Matt
  * @since 15-12-2003
  */
 public class EnterOptionsDialog extends Dialog {
-  private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Display display;
 
@@ -202,6 +202,8 @@ public class EnterOptionsDialog extends Dialog {
   private Button tooltipBtn;
 
   private Button helptipBtn;
+
+  private Button closeAllFilesBtn;
 
   private Button autoCollapseBtn;
 
@@ -358,7 +360,8 @@ public class EnterOptionsDialog extends Dialog {
     wdFFont.setLayoutData( fddFFont );
     wdFFont.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        fixedFontData = new FontData( ConstUI.FONT_FIXED_NAME, ConstUI.FONT_FIXED_SIZE, ConstUI.FONT_FIXED_TYPE );
+        fixedFontData = new FontData( PropsUI.getInstance().getFixedFont().getName(),
+          PropsUI.getInstance().getFixedFont().getHeight(), PropsUI.getInstance().getFixedFont().getStyle() );
         fixedFont.dispose();
         fixedFont = new Font( display, fixedFontData );
         wFFont.redraw();
@@ -570,7 +573,7 @@ public class EnterOptionsDialog extends Dialog {
         background.dispose();
 
         backgroundRGB =
-            new RGB( ConstUI.COLOR_BACKGROUND_RED, ConstUI.COLOR_BACKGROUND_GREEN, ConstUI.COLOR_BACKGROUND_BLUE );
+          new RGB( ConstUI.COLOR_BACKGROUND_RED, ConstUI.COLOR_BACKGROUND_GREEN, ConstUI.COLOR_BACKGROUND_BLUE );
         background = new Color( display, backgroundRGB );
         wBGColor.setBackground( background );
         wBGColor.redraw();
@@ -852,7 +855,8 @@ public class EnterOptionsDialog extends Dialog {
 
     // Enable anti-aliasing
     Label wlIndicateSlowSteps = new Label( wLookComp, SWT.RIGHT );
-    wlIndicateSlowSteps.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.CanvasIndicateSlowSteps.Label" ) );
+    wlIndicateSlowSteps
+      .setText( BaseMessages.getString( PKG, "EnterOptionsDialog.CanvasIndicateSlowSteps.Label" ) );
     props.setLook( wlIndicateSlowSteps );
     FormData fdlIndicateSlowSteps = new FormData();
     fdlIndicateSlowSteps.left = new FormAttachment( 0, 0 );
@@ -862,8 +866,8 @@ public class EnterOptionsDialog extends Dialog {
     wIndicateSlowSteps = new Button( wLookComp, SWT.CHECK );
     props.setLook( wIndicateSlowSteps );
     wIndicateSlowSteps.setSelection( props.isIndicateSlowTransStepsEnabled() );
-    wIndicateSlowSteps.setToolTipText( BaseMessages.getString( PKG,
-        "EnterOptionsDialog.CanvasIndicateSlowSteps.Tooltip" ) );
+    wIndicateSlowSteps.setToolTipText( BaseMessages.getString(
+      PKG, "EnterOptionsDialog.CanvasIndicateSlowSteps.Tooltip" ) );
     FormData fdIndicateSlowSteps = new FormData();
     fdIndicateSlowSteps.left = new FormAttachment( middle, 0 );
     fdIndicateSlowSteps.top = new FormAttachment( wAntiAlias, margin );
@@ -925,7 +929,8 @@ public class EnterOptionsDialog extends Dialog {
     wDefaultLocale.setLayoutData( fdDefaultLocale );
     // language selections...
     int idxDefault =
-        Const.indexOfString( LanguageChoice.getInstance().getDefaultLocale().toString(), GlobalMessages.localeCodes );
+      Const.indexOfString(
+        LanguageChoice.getInstance().getDefaultLocale().toString(), GlobalMessages.localeCodes );
     if ( idxDefault >= 0 ) {
       wDefaultLocale.select( idxDefault );
     }
@@ -948,7 +953,8 @@ public class EnterOptionsDialog extends Dialog {
     fdFailoverLocale.top = new FormAttachment( wDefaultLocale, margin );
     wFailoverLocale.setLayoutData( fdFailoverLocale );
     int idxFailover =
-        Const.indexOfString( LanguageChoice.getInstance().getFailoverLocale().toString(), GlobalMessages.localeCodes );
+      Const.indexOfString(
+        LanguageChoice.getInstance().getFailoverLocale().toString(), GlobalMessages.localeCodes );
     if ( idxFailover >= 0 ) {
       wFailoverLocale.select( idxFailover );
     }
@@ -1192,32 +1198,13 @@ public class EnterOptionsDialog extends Dialog {
     fdDBConnXML.right = new FormAttachment( 100, 0 );
     wDBConnXML.setLayoutData( fdDBConnXML );
 
-    // Ask about replacing existing connections?
-    Label wlAskReplaceDB = new Label( wGeneralComp, SWT.RIGHT );
-    wlAskReplaceDB.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.ReplaceDBAsk.Label" ) );
-    props.setLook( wlAskReplaceDB );
-    FormData fdlAskReplaceDB = new FormData();
-    fdlAskReplaceDB.left = new FormAttachment( 0, 0 );
-    fdlAskReplaceDB.top = new FormAttachment( wDBConnXML, margin );
-    fdlAskReplaceDB.right = new FormAttachment( middle, -margin );
-    wlAskReplaceDB.setLayoutData( fdlAskReplaceDB );
-    wAskReplaceDB = new Button( wGeneralComp, SWT.CHECK );
-    props.setLook( wAskReplaceDB );
-    wAskReplaceDB.setToolTipText( BaseMessages.getString( PKG, "EnterOptionsDialog.ReplaceDBAsk.Tooltip" ) );
-    wAskReplaceDB.setSelection( props.askAboutReplacingDatabaseConnections() );
-    FormData fdAskReplaceDB = new FormData();
-    fdAskReplaceDB.left = new FormAttachment( middle, 0 );
-    fdAskReplaceDB.top = new FormAttachment( wDBConnXML, margin );
-    fdAskReplaceDB.right = new FormAttachment( 100, 0 );
-    wAskReplaceDB.setLayoutData( fdAskReplaceDB );
-
     // Only save used connections to XML?
     Label wlReplaceDB = new Label( wGeneralComp, SWT.RIGHT );
     wlReplaceDB.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.ReplaceDB.Label" ) );
     props.setLook( wlReplaceDB );
     FormData fdlReplaceDB = new FormData();
     fdlReplaceDB.left = new FormAttachment( 0, 0 );
-    fdlReplaceDB.top = new FormAttachment( wAskReplaceDB, margin );
+    fdlReplaceDB.top = new FormAttachment( wDBConnXML, margin );
     fdlReplaceDB.right = new FormAttachment( middle, -margin );
     wlReplaceDB.setLayoutData( fdlReplaceDB );
     wReplaceDB = new Button( wGeneralComp, SWT.CHECK );
@@ -1226,9 +1213,42 @@ public class EnterOptionsDialog extends Dialog {
     wReplaceDB.setSelection( props.replaceExistingDatabaseConnections() );
     FormData fdReplaceDB = new FormData();
     fdReplaceDB.left = new FormAttachment( middle, 0 );
-    fdReplaceDB.top = new FormAttachment( wAskReplaceDB, margin );
+    fdReplaceDB.top = new FormAttachment( wDBConnXML, margin );
     fdReplaceDB.right = new FormAttachment( 100, 0 );
     wReplaceDB.setLayoutData( fdReplaceDB );
+
+    // Ask about replacing existing connections?
+    Label wlAskReplaceDB = new Label( wGeneralComp, SWT.RIGHT );
+    wlAskReplaceDB.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.ReplaceDBAsk.Label" ) );
+    props.setLook( wlAskReplaceDB );
+    FormData fdlAskReplaceDB = new FormData();
+    fdlAskReplaceDB.left = new FormAttachment( 0, 0 );
+    fdlAskReplaceDB.top = new FormAttachment( wReplaceDB, margin );
+    fdlAskReplaceDB.right = new FormAttachment( middle, -margin );
+    wlAskReplaceDB.setLayoutData( fdlAskReplaceDB );
+    wAskReplaceDB = new Button( wGeneralComp, SWT.CHECK );
+    props.setLook( wAskReplaceDB );
+    wAskReplaceDB.setToolTipText( BaseMessages.getString( PKG, "EnterOptionsDialog.ReplaceDBAsk.Tooltip" ) );
+    wAskReplaceDB.setSelection( props.askAboutReplacingDatabaseConnections() );
+    FormData fdAskReplaceDB = new FormData();
+    fdAskReplaceDB.left = new FormAttachment( middle, 0 );
+    fdAskReplaceDB.top = new FormAttachment( wReplaceDB, margin );
+    fdAskReplaceDB.right = new FormAttachment( 100, 0 );
+    wAskReplaceDB.setLayoutData( fdAskReplaceDB );
+
+    updateAskButton();
+    wReplaceDB.addSelectionListener( new SelectionListener() {
+
+      @Override
+      public void widgetSelected( SelectionEvent arg0 ) {
+        updateAskButton();
+      }
+
+      @Override
+      public void widgetDefaultSelected( SelectionEvent arg0 ) {
+        // Noop
+      }
+    } );
 
     // Show confirmation after save?
     Label wlSaveConf = new Label( wGeneralComp, SWT.RIGHT );
@@ -1236,7 +1256,7 @@ public class EnterOptionsDialog extends Dialog {
     props.setLook( wlSaveConf );
     FormData fdlSaveConf = new FormData();
     fdlSaveConf.left = new FormAttachment( 0, 0 );
-    fdlSaveConf.top = new FormAttachment( wReplaceDB, margin );
+    fdlSaveConf.top = new FormAttachment( wAskReplaceDB, margin );
     fdlSaveConf.right = new FormAttachment( middle, -margin );
     wlSaveConf.setLayoutData( fdlSaveConf );
     wSaveConf = new Button( wGeneralComp, SWT.CHECK );
@@ -1244,7 +1264,7 @@ public class EnterOptionsDialog extends Dialog {
     wSaveConf.setSelection( props.getSaveConfirmation() );
     FormData fdSaveConf = new FormData();
     fdSaveConf.left = new FormAttachment( middle, 0 );
-    fdSaveConf.top = new FormAttachment( wReplaceDB, margin );
+    fdSaveConf.top = new FormAttachment( wAskReplaceDB, margin );
     fdSaveConf.right = new FormAttachment( 100, 0 );
     wSaveConf.setLayoutData( fdSaveConf );
 
@@ -1278,7 +1298,8 @@ public class EnterOptionsDialog extends Dialog {
     wlCopyDistrib.setLayoutData( fdlCopyDistrib );
     wCopyDistrib = new Button( wGeneralComp, SWT.CHECK );
     props.setLook( wCopyDistrib );
-    wCopyDistrib.setToolTipText( BaseMessages.getString( PKG, "EnterOptionsDialog.CopyOrDistributeDialog.Tooltip" ) );
+    wCopyDistrib
+      .setToolTipText( BaseMessages.getString( PKG, "EnterOptionsDialog.CopyOrDistributeDialog.Tooltip" ) );
     wCopyDistrib.setSelection( props.showCopyOrDistributeWarning() );
     FormData fdCopyDistrib = new FormData();
     fdCopyDistrib.left = new FormAttachment( middle, 0 );
@@ -1338,7 +1359,8 @@ public class EnterOptionsDialog extends Dialog {
     fdClearCustom.left = new FormAttachment( middle, 0 );
     fdClearCustom.top = new FormAttachment( wExitWarning, margin );
     wClearCustom.setLayoutData( fdClearCustom );
-    wClearCustom.setToolTipText( BaseMessages.getString( PKG, "EnterOptionsDialog.ClearCustomParameters.Tooltip" ) );
+    wClearCustom
+      .setToolTipText( BaseMessages.getString( PKG, "EnterOptionsDialog.ClearCustomParameters.Tooltip" ) );
     wClearCustom.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
@@ -1357,8 +1379,8 @@ public class EnterOptionsDialog extends Dialog {
 
     // Auto-collapse core objects tree branches?
     Label autoCollapseLbl = new Label( wGeneralComp, SWT.RIGHT );
-    autoCollapseLbl
-        .setText( BaseMessages.getString( PKG, "EnterOptionsDialog.EnableAutoCollapseCoreObjectTree.Label" ) );
+    autoCollapseLbl.setText( BaseMessages.getString(
+      PKG, "EnterOptionsDialog.EnableAutoCollapseCoreObjectTree.Label" ) );
     props.setLook( autoCollapseLbl );
     FormData fdautoCollapse = new FormData();
     fdautoCollapse.left = new FormAttachment( 0, 0 );
@@ -1432,7 +1454,7 @@ public class EnterOptionsDialog extends Dialog {
     // editables
     Label refLabel = new Label( wGeneralComp, SWT.RIGHT );
     refLabel = tooltipLbl;
-    Button lastbtn = helptipBtn;
+    Button lastbtn = closeAllFilesBtn;
     for ( final GUIOption<Object> e : PropsUI.getInstance().getRegisteredEditableComponents() ) {
       if ( e.getLabelText() == null ) {
         continue;
@@ -1484,9 +1506,18 @@ public class EnterOptionsDialog extends Dialog {
 
   }
 
+  private void updateAskButton() {
+    if ( wReplaceDB.getSelection() ) {
+      wAskReplaceDB.setEnabled( true );
+    } else {
+      wAskReplaceDB.setSelection( false );
+      wAskReplaceDB.setEnabled( false );
+    }
+  }
+
   /**
    * Setting the layout of a <i>Reset</i> option button. Either a button image is set - if existing - or a text.
-   * 
+   *
    * @param button
    *          The button
    */
@@ -1508,7 +1539,7 @@ public class EnterOptionsDialog extends Dialog {
 
   /**
    * Setting the layout of an <i>Edit</i> option button. Either a button image is set - if existing - or a text.
-   * 
+   *
    * @param button
    *          The button
    */
@@ -1585,7 +1616,8 @@ public class EnterOptionsDialog extends Dialog {
     props.setDefaultPreviewSize( Const.toInt( wDefaultPreview.getText(), props.getDefaultPreviewSize() ) );
 
     props.setMaxNrLinesInLog( Const.toInt( wMaxNrLogLines.getText(), Const.MAX_NR_LOG_LINES ) );
-    props.setMaxLogLineTimeoutMinutes( Const.toInt( wMaxLogLineTimeout.getText(), Const.MAX_LOG_LINE_TIMEOUT_MINUTES ) );
+    props.setMaxLogLineTimeoutMinutes( Const.toInt(
+      wMaxLogLineTimeout.getText(), Const.MAX_LOG_LINE_TIMEOUT_MINUTES ) );
     props.setMaxNrLinesInHistory( Const.toInt( wMaxNrHistLines.getText(), Const.MAX_NR_HISTORY_LINES ) );
 
     props.setShowTips( wShowTips.getSelection() );

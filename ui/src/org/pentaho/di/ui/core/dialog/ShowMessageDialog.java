@@ -49,12 +49,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Dialog to enter a text. (descriptions etc.)
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class ShowMessageDialog extends Dialog {
-  private static Class<?> PKG = ShowMessageDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ShowMessageDialog.class; // for i18n purposes, needed by Translator2!!
 
   private String title, message;
 
@@ -77,7 +77,7 @@ public class ShowMessageDialog extends Dialog {
 
   /**
    * Dialog to allow someone to show a text with an icon in front
-   * 
+   *
    * @param parent
    *          The parent shell to use
    * @param flags
@@ -96,7 +96,7 @@ public class ShowMessageDialog extends Dialog {
 
   /**
    * Dialog to allow someone to show a text with an icon in front
-   * 
+   *
    * @param parent
    *          The parent shell to use
    * @param flags
@@ -139,9 +139,9 @@ public class ShowMessageDialog extends Dialog {
 
     int margin = Const.MARGIN;
     boolean hasIcon =
-        ( flags & SWT.ICON_WARNING ) != 0 || ( flags & SWT.ICON_INFORMATION ) != 0
-            || ( flags & SWT.ICON_QUESTION ) != 0 || ( flags & SWT.ICON_ERROR ) != 0
-            || ( flags & SWT.ICON_WORKING ) != 0;
+      ( flags & SWT.ICON_WARNING ) != 0
+        || ( flags & SWT.ICON_INFORMATION ) != 0 || ( flags & SWT.ICON_QUESTION ) != 0
+        || ( flags & SWT.ICON_ERROR ) != 0 || ( flags & SWT.ICON_WORKING ) != 0;
 
     Image image = null;
     if ( ( flags & SWT.ICON_WARNING ) != 0 ) {

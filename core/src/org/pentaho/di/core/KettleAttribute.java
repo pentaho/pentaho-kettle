@@ -40,8 +40,8 @@ public class KettleAttribute implements KettleAttributeInterface {
    * @param tooltip
    * @param type
    */
-  public KettleAttribute( String key, String xmlCode, String repCode, String description, String tooltip, int type,
-      KettleAttributeInterface parent ) {
+  public KettleAttribute( String key, String xmlCode, String repCode, String description, String tooltip,
+    int type, KettleAttributeInterface parent ) {
     this.key = key;
     this.xmlCode = xmlCode;
     this.repCode = repCode;

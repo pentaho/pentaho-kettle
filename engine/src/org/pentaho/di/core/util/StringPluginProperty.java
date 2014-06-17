@@ -34,7 +34,7 @@ import org.w3c.dom.Node;
 
 /**
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  */
 public class StringPluginProperty extends KeyValue<String> implements PluginProperty {
 
@@ -45,7 +45,7 @@ public class StringPluginProperty extends KeyValue<String> implements PluginProp
 
   /**
    * Constructor. Value is null.
-   * 
+   *
    * @param key
    *          key to set.
    * @throws IllegalArgumentException
@@ -57,7 +57,7 @@ public class StringPluginProperty extends KeyValue<String> implements PluginProp
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#evaluate()
    */
   public boolean evaluate() {
@@ -66,7 +66,7 @@ public class StringPluginProperty extends KeyValue<String> implements PluginProp
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#appendXml(java.lang.StringBuilder)
    */
   public void appendXml( final StringBuilder builder ) {
@@ -75,7 +75,7 @@ public class StringPluginProperty extends KeyValue<String> implements PluginProp
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#loadXml(org.w3c.dom.Node)
    */
   public void loadXml( final Node node ) {
@@ -85,19 +85,19 @@ public class StringPluginProperty extends KeyValue<String> implements PluginProp
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#readFromRepositoryStep(org.pentaho.di.repository.Repository,
    *      long)
    */
-  public void readFromRepositoryStep( final Repository repository, final IMetaStore metaStore, final ObjectId stepId )
-    throws KettleException {
+  public void readFromRepositoryStep( final Repository repository, final IMetaStore metaStore,
+    final ObjectId stepId ) throws KettleException {
     final String value = repository.getStepAttributeString( stepId, this.getKey() );
     this.setValue( value );
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#saveToPreferences(java.util.prefs.Preferences)
    */
   public void saveToPreferences( final Preferences node ) {
@@ -106,7 +106,7 @@ public class StringPluginProperty extends KeyValue<String> implements PluginProp
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#readFromPreferences(java.util.prefs.Preferences)
    */
   public void readFromPreferences( final Preferences node ) {
@@ -115,12 +115,12 @@ public class StringPluginProperty extends KeyValue<String> implements PluginProp
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see at.aschauer.commons.pentaho.plugin.PluginProperty#saveToRepositoryStep(org.pentaho.di.repository.Repository,
    *      long, long)
    */
   public void saveToRepositoryStep( final Repository repository, final IMetaStore metaStore,
-      final ObjectId transformationId, final ObjectId stepId ) throws KettleException {
+    final ObjectId transformationId, final ObjectId stepId ) throws KettleException {
     repository.saveStepAttribute( transformationId, stepId, this.getKey(), this.getValue() );
   }
 

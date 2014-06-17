@@ -451,6 +451,14 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
   }
 
   /**
+   * @return true if Kettle can create a repository on this type of database.
+   */
+  @Override
+  public boolean supportsRepository() {
+    return true;
+  }
+
+  /**
    * @param tableNames
    *          The names of the tables to lock
    * @return The SQL commands to lock database tables for write purposes.

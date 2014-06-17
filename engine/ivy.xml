@@ -42,7 +42,7 @@
     <dependency org="org.drools"                       name="drools-core"          rev="5.0.1"           transitive="false"/>
     <dependency org="org.drools"                       name="drools-compiler"      rev="5.0.1"           transitive="false"/>
     <dependency org="org.mvel"                         name="mvel2"                rev="2.0.10"          transitive="false"/>
-    <dependency org="org.eclipse.jdt"                  name="core"                 rev="3.4.2.v_883_R34x" transitive="false"/>    
+    <dependency org="org.eclipse.jdt"                  name="core"                 rev="3.4.2.v_883_R34x" transitive="false"/>
     <dependency org="elasticsearch"                    name="elasticsearch"        rev="0.16.3"          transitive="false"/>
     <dependency org="feed4j"                           name="feed4j"               rev="1.0"             transitive="false"/>
     <dependency org="ftp4che"                          name="ftp4che"              rev="0.7.1"           transitive="false"/>
@@ -50,7 +50,7 @@
     <dependency org="com.google.gdata"                 name="gdata-analytics"      rev="2.3.0"           transitive="false"/>
     <dependency org="com.google.gdata"                 name="gdata-analytics-meta" rev="2.1"             transitive="false"/>
     <dependency org="com.google.gdata"                 name="gdata-core"           rev="1.41.4"          transitive="false"/>
-    <dependency org="com.google.collections"           name="google-collections"   rev="1.0"             transitive="false"/>
+    <dependency org="com.google.guava"                 name="guava"                rev="17.0"            transitive="false"/>
     <dependency org="infobright"                       name="infobright-core"      rev="3.4"             transitive="false"/>
     <dependency org="org.ini4j"                        name="ini4j"                rev="0.5.1"           transitive="false"/>
     <dependency org="janino"                           name="janino"               rev="2.5.16"          transitive="false"/>
@@ -83,8 +83,8 @@
     <dependency org="trilead-ssh2"                     name="trilead-ssh2"         rev="build213"        transitive="false"/>
     <dependency org="javax.servlet"                    name="servlet-api"          rev="2.5"             transitive="false"/>
     <dependency org="javax.xml"                        name="jaxrpc-api"           rev="1.1"             transitive="false"/>
-    <dependency org="org.olap4j"                       name="olap4j"               rev="1.1.0"           transitive="false"/>
-    <dependency org="org.olap4j"                       name="olap4j-xmla"          rev="1.1.0"           transitive="false"/>
+    <dependency org="org.olap4j"                       name="olap4j"               rev="1.2.0"           transitive="false"/>
+    <dependency org="org.olap4j"                       name="olap4j-xmla"          rev="1.2.0"           transitive="false"/>
     <dependency org="org.apache.poi"                   name="poi-ooxml"            rev="3.8"             transitive="false"/>
     <dependency org="wsdl4j"                           name="wsdl4j"               rev="1.6.2"           transitive="false"/>
     <dependency org="wsdl4j"                           name="wsdl4j-qname"         rev="1.6.1"           transitive="false"/>
@@ -106,6 +106,9 @@
     <dependency org="rhino"                            name="js"                   rev="1.7R3"           transitive="false"/>
     <dependency org="javax.mail"                       name="mail"                 rev="1.4.7"           transitive="false" />
     <dependency org="org.mnode.mstor"                  name="mstor"                rev="0.9.13"          transitive="false"/>
+    <dependency org="org.xerial.snappy"                name="snappy-java"          rev="1.1.0"           transitive="true"/>
+    
+
     
     <!-- OLAP4J is bringing in an older version of beanutils-core than is needed -->
     <dependency org="commons-beanutils"   name="commons-beanutils-core" rev="1.8.0"         transitive="false"/>
@@ -113,11 +116,9 @@
     <!--  for testing -->
     <dependency org="com.h2database"      name="h2"            rev="1.2.131" conf="test->default" transitive="false"/>
     <dependency org="oro"                 name="oro"           rev="2.0.8"   conf="test->default" transitive="false"/>
-    <dependency org="jaxen"               name="jaxen"         rev="1.1.1"     conf="test->default" transitive="false"/>
+    <dependency org="jaxen"               name="jaxen"         rev="1.1.1"   conf="test->default" transitive="false"/>
     <dependency org="junit"               name="junit"         rev="4.7"     conf="test->default" transitive="false"/>
-    <dependency org="org.mockito"         name="mockito-all"         rev="1.8.4"            transitive="false" conf="test->default"/>
+    <dependency org="org.mockito"         name="mockito-all"   rev="1.9.5"   conf="test->default" transitive="false" />
     
-    <!-- excludes -->
-    <exclude org="pentaho-kettle" module="kettle-db"/>
   </dependencies>
 </ivy-module>

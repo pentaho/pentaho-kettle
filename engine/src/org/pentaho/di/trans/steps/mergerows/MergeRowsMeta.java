@@ -62,7 +62,7 @@ import org.w3c.dom.Node;
  */
 
 public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String flagField;
 
@@ -190,7 +190,8 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
       compareStream.setSubject( XMLHandler.getTagValue( stepnode, "compare" ) );
       referenceStream.setSubject( XMLHandler.getTagValue( stepnode, "reference" ) );
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "MergeRowsMeta.Exception.UnableToLoadStepInfo" ), e );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "MergeRowsMeta.Exception.UnableToLoadStepInfo" ), e );
     }
   }
 
@@ -199,8 +200,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
     allocate( 0, 0 );
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       int nrKeys = rep.countNrStepAttributes( id_step, "key_field" );
       int nrValues = rep.countNrStepAttributes( id_step, "value_field" );
@@ -223,8 +223,8 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
       referenceStream.setSubject( rep.getStepAttributeString( id_step, "reference" ) );
       compareStream.setSubject( rep.getStepAttributeString( id_step, "compare" ) );
     } catch ( Exception e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "MergeRowsMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "MergeRowsMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
@@ -235,8 +235,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       for ( int i = 0; i < keyFields.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "key_field", keyFields[i] );
@@ -256,7 +255,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "compare", compareStream.getStepname() );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "MergeRowsMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
@@ -269,7 +268,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // We don't have any input fields here in "r" as they are all info fields.
     // So we just merge in the info fields.
     //
@@ -292,9 +291,9 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
@@ -303,24 +302,24 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( referenceStream.getStepname() != null && compareStream.getStepname() != null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MergeRowsMeta.CheckResult.SourceStepsOK" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "MergeRowsMeta.CheckResult.SourceStepsOK" ), stepMeta );
       remarks.add( cr );
     } else if ( referenceStream.getStepname() == null && compareStream.getStepname() == null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MergeRowsMeta.CheckResult.SourceStepsMissing" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "MergeRowsMeta.CheckResult.SourceStepsMissing" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MergeRowsMeta.CheckResult.OneSourceStepMissing" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "MergeRowsMeta.CheckResult.OneSourceStepMissing" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new MergeRows( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -336,10 +335,10 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
 
-      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString( PKG,
-          "MergeRowsMeta.InfoStream.FirstStream.Description" ), StreamIcon.INFO, null ) );
-      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString( PKG,
-          "MergeRowsMeta.InfoStream.SecondStream.Description" ), StreamIcon.INFO, null ) );
+      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString(
+        PKG, "MergeRowsMeta.InfoStream.FirstStream.Description" ), StreamIcon.INFO, null ) );
+      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString(
+        PKG, "MergeRowsMeta.InfoStream.SecondStream.Description" ), StreamIcon.INFO, null ) );
     }
 
     return ioMeta;

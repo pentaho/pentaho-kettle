@@ -42,7 +42,7 @@ public class IifFunction {
   private boolean falseField;
 
   public IifFunction( String tableAlias, String conditionClause, String trueValueString, String falseValueString,
-      RowMetaInterface serviceFields ) throws KettleSQLException {
+    RowMetaInterface serviceFields ) throws KettleSQLException {
     this.tableAlias = tableAlias;
     this.conditionClause = conditionClause;
     this.trueValueString = trueValueString;

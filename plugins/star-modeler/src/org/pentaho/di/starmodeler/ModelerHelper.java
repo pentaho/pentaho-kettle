@@ -37,15 +37,15 @@ import org.pentaho.xul.swt.tab.TabItem;
 public class ModelerHelper  extends AbstractXulEventHandler implements ISpoonMenuController {
   protected static Class<?> PKG = ModelerHelper.class; // for i18n
 
-  public static final String MODELER_NAME = "Modeler"; 
-  
+  public static final String MODELER_NAME = "Modeler";
+
   private static ModelerHelper instance = null;
-  
+
   private String defaultLocale = LanguageChoice.getInstance().getDefaultLocale().toString();
-    
+
   private ModelerHelper() {
   }
-  
+
   public static ModelerHelper getInstance() {
     if( instance == null ) {
       instance = new ModelerHelper();
@@ -55,14 +55,14 @@ public class ModelerHelper  extends AbstractXulEventHandler implements ISpoonMen
     return instance;
   }
 
-  
+
   protected String getUniqueUntitledTabName(Spoon spoon, String title) {
     int num = 1;
-    String tabName = title + " " + num; 
+    String tabName = title + " " + num;
     // TODO: Add new plugin object type to spoon
     TabItem tabItem = spoon.delegates.tabs.findTabMapEntry(tabName, TabMapEntry.ObjectType.BROWSER).getTabItem();
     while (tabItem != null) {
-      tabName = title + " " + (++num); 
+      tabName = title + " " + (++num);
       // TODO: Add new plugin object type to spoon
       tabItem = spoon.delegates.tabs.findTabMapEntry(tabName, TabMapEntry.ObjectType.BROWSER).getTabItem();
     }
@@ -70,9 +70,9 @@ public class ModelerHelper  extends AbstractXulEventHandler implements ISpoonMen
   }
 
   public String getName(){
-    return "starModeler"; 
+    return "starModeler";
   }
-  
+
   public void createEmptyModel() {
     try {
       StarDomain starDomain = new StarDomain();

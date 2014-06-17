@@ -56,10 +56,11 @@ import org.w3c.dom.Node;
  */
 
 public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = XsltMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XsltMeta.class; // for i18n purposes, needed by Translator2!!
 
-  public static final String[] outputProperties = new String[] { "method", "version", "encoding", "standalone",
-    "indent", "omit-xml-declaration", "doctype-public", "doctype-system", "media-type" };
+  public static final String[] outputProperties = new String[] {
+    "method", "version", "encoding", "standalone", "indent", "omit-xml-declaration", "doctype-public",
+    "doctype-system", "media-type" };
 
   private String xslFilename;
   private String fieldName;
@@ -276,7 +277,8 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
       }
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "XsltMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "XsltMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -304,9 +306,10 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output field (String)
-    ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( getResultfieldname() ), ValueMeta.TYPE_STRING );
+    ValueMetaInterface v =
+      new ValueMeta( space.environmentSubstitute( getResultfieldname() ), ValueMeta.TYPE_STRING );
     v.setOrigin( name );
     inputRowMeta.addValueMeta( v );
   }
@@ -345,12 +348,11 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       xslFilename = rep.getStepAttributeString( id_step, "xslfilename" );
       fieldName = rep.getStepAttributeString( id_step, "fieldname" );
-      resultFieldname = rep.getStepAttributeString( id_step, "resultfieldname" ); //$NON-NLS-1
+      resultFieldname = rep.getStepAttributeString( id_step, "resultfieldname" );
       xslFileField = rep.getStepAttributeString( id_step, "xslfilefield" );
       xslFileFieldUse = rep.getStepAttributeBoolean( id_step, "xslfilefielduse" );
       String isAfile = rep.getStepAttributeString( id_step, "xslfieldisafile" );
@@ -374,13 +376,12 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
         outputPropertyValue[i] = rep.getStepAttributeString( id_step, i, "output_property_value" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "XsltMeta.Exception.UnexpectedErrorInReadingStepInfo" ),
-          e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "XsltMeta.Exception.UnexpectedErrorInReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "xslfilename", xslFilename );
       rep.saveStepAttribute( id_transformation, id_step, "fieldname", fieldName );
@@ -402,36 +403,37 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "output_property_value", outputPropertyValue[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "XsltMeta.Exception.UnableToSaveStepInfo" ) + id_step, e );
+      throw new KettleException( BaseMessages.getString( PKG, "XsltMeta.Exception.UnableToSaveStepInfo" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XsltMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "XsltMeta.CheckResult.ConnectedStepOK", String.valueOf( prev.size() ) ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XsltMeta.CheckResult.NoInputReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "XsltMeta.CheckResult.NoInputReceived" ), stepMeta );
       remarks.add( cr );
     }
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XsltMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "XsltMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XsltMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "XsltMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -439,8 +441,8 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
     if ( getResultfieldname() == null ) {
       // Result Field is missing !
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XsltMeta.CheckResult.ErrorResultFieldNameMissing" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "XsltMeta.CheckResult.ErrorResultFieldNameMissing" ), stepMeta );
       remarks.add( cr );
 
     }
@@ -450,22 +452,22 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
       if ( getXSLFileField() == null ) {
         // Result Field is missing !
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "XsltMeta.CheckResult.ErrorResultXSLFieldNameMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "XsltMeta.CheckResult.ErrorResultXSLFieldNameMissing" ), stepMeta );
         remarks.add( cr );
       } else {
         // Result Field is provided !
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "XsltMeta.CheckResult.ErrorResultXSLFieldNameOK" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "XsltMeta.CheckResult.ErrorResultXSLFieldNameOK" ), stepMeta );
         remarks.add( cr );
       }
     } else {
       if ( xslFilename == null ) {
         // Result Field is missing !
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "XsltMeta.CheckResult.ErrorXSLFileNameMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "XsltMeta.CheckResult.ErrorXSLFileNameMissing" ), stepMeta );
         remarks.add( cr );
 
       } else {
@@ -476,19 +478,19 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
         if ( f.exists() ) {
           if ( f.isFile() ) {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "XsltMeta.CheckResult.FileExists", RealFilename ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "XsltMeta.CheckResult.FileExists", RealFilename ), stepMeta );
             remarks.add( cr );
           } else {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                    "XsltMeta.CheckResult.ExistsButNoFile", RealFilename ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "XsltMeta.CheckResult.ExistsButNoFile", RealFilename ), stepMeta );
             remarks.add( cr );
           }
         } else {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "XsltMeta.CheckResult.FileNotExists", RealFilename ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "XsltMeta.CheckResult.FileNotExists", RealFilename ), stepMeta );
           remarks.add( cr );
         }
       }
@@ -496,8 +498,8 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new Xslt( stepMeta, stepDataInterface, cnr, transMeta, trans );
 
   }

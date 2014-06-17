@@ -38,10 +38,10 @@ import org.pentaho.di.ui.core.dialog.EnterPrintDialog;
 
 /**
  * This class handles printing for Kettle.
- * 
+ *
  * @author Matt
  * @since 28-03-2004
- * 
+ *
  */
 public class PrintSpool {
   private PrinterData printerdata;
@@ -123,8 +123,8 @@ public class PrintSpool {
       double margin_bottom = 0.40;
 
       EnterPrintDialog epd =
-          new EnterPrintDialog( sh, 1, 1, 100, factorx, factory, page, margin_left, margin_right, margin_top,
-              margin_bottom, img );
+        new EnterPrintDialog(
+          sh, 1, 1, 100, factorx, factory, page, margin_left, margin_right, margin_top, margin_bottom, img );
       if ( epd.open() == SWT.OK ) {
         double page_left = epd.leftMargin * dpi_printer.x;
         double page_right = epd.rightMargin * dpi_printer.x;
@@ -145,11 +145,13 @@ public class PrintSpool {
 
         for ( int c = 0; c < epd.nrcols; c++ ) {
           double left_to_printx = actual_sizex - page_sizex * c;
-          double printx = ( left_to_printx > page_sizex ) ? page_sizex : ( left_to_printx >= 0 ? left_to_printx : 0 );
+          double printx =
+            ( left_to_printx > page_sizex ) ? page_sizex : ( left_to_printx >= 0 ? left_to_printx : 0 );
 
           for ( int r = 0; r < epd.nrrows; r++ ) {
             double left_to_printy = actual_sizey - page_sizey * r;
-            double printy = ( left_to_printy > page_sizey ) ? page_sizey : ( left_to_printy >= 0 ? left_to_printy : 0 );
+            double printy =
+              ( left_to_printy > page_sizey ) ? page_sizey : ( left_to_printy >= 0 ? left_to_printy : 0 );
 
             int startx = (int) ( actual_sizex - left_to_printx );
             int starty = (int) ( actual_sizey - left_to_printy );
@@ -162,19 +164,20 @@ public class PrintSpool {
             printer.startPage();
             GC gc_printer = new GC( printer );
 
-            gc_printer.drawImage( img, fromx, fromy, imx, imy, (int) page_left, (int) page_top, (int) printx,
-                (int) printy );
+            gc_printer.drawImage(
+              img, fromx, fromy, imx, imy, (int) page_left, (int) page_top, (int) printx, (int) printy );
 
             // ShowImageDialog sid = new ShowImageDialog(sh, props, img);
             // sid.open();
 
             System.out.println( "img dept = " + img.getImageData().depth );
             System.out.println( "prn dept = " + printer.getDepth() );
-            System.out.println( "img size = (" + img.getBounds().x + "," + img.getBounds().y + ") : ("
-                + img.getBounds().width + "," + img.getBounds().height + ")" );
-            System.out.println( "fromx=" + fromx + ", fromy=" + fromy + ", imx=" + imx + ", imy=" + imy
-                + ", page_left=" + (int) page_left + ", page_top=" + (int) page_top + ", printx=" + (int) printx
-                + ", printy=" + (int) printy );
+            System.out.println( "img size = ("
+              + img.getBounds().x + "," + img.getBounds().y + ") : (" + img.getBounds().width + ","
+              + img.getBounds().height + ")" );
+            System.out.println( "fromx="
+              + fromx + ", fromy=" + fromy + ", imx=" + imx + ", imy=" + imy + ", page_left=" + (int) page_left
+              + ", page_top=" + (int) page_top + ", printx=" + (int) printx + ", printy=" + (int) printy );
 
             printer.endPage();
             gc_printer.dispose();

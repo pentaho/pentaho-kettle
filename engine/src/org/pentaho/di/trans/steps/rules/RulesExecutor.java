@@ -37,12 +37,12 @@ import org.pentaho.di.trans.steps.rules.Rules.Column;
 
 /**
  * This Transformation Step allows a user to execute a rule set against an individual rule or a collection of rules.
- * 
+ *
  * Additional columns can be added to the output from the rules and these (of course) can be used for routing if
  * desired.
- * 
+ *
  * @author cboyden
- * 
+ *
  */
 
 public class RulesExecutor extends BaseStep implements StepInterface {
@@ -53,7 +53,7 @@ public class RulesExecutor extends BaseStep implements StepInterface {
   private RulesExecutorData data;
 
   public RulesExecutor( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -93,8 +93,8 @@ public class RulesExecutor extends BaseStep implements StepInterface {
     data = (RulesExecutorData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       data.shutdown();
       setOutputDone();
       return false;

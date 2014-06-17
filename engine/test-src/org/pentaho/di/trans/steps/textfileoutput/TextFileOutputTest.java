@@ -23,14 +23,16 @@
 package org.pentaho.di.trans.steps.textfileoutput;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.never;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 
 import java.io.File;
@@ -39,15 +41,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import junit.framework.Assert;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.compress.CompressionPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -62,12 +70,31 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
  */
 public class TextFileOutputTest {
 
+  /**
+   * 
+   */
+  private static final String EMPTY_FILE_NAME = "Empty File";
+  /**
+   * 
+   */
+  private static final String EMPTY_STRING = "";
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
+    PluginRegistry.addPluginType( CompressionPluginType.getInstance() );
+    PluginRegistry.init( true );
+  }
+
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
+  }
+
   private class TextFileOutputTestHandler extends TextFileOutput {
     public List<Throwable> errors = new ArrayList<Throwable>();
     private Object[] row;
 
     public TextFileOutputTestHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-        TransMeta transMeta, Trans trans ) {
+      TransMeta transMeta, Trans trans ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     }
 
@@ -109,24 +136,26 @@ public class TextFileOutputTest {
   private static final String TEXT_FILE_OUTPUT_PREFIX = "textFileOutput";
   private static final String TEXT_FILE_OUTPUT_EXTENSION = ".txt";
   private static final String END_LINE = " endLine ";
-  private static final String RESULT_ROWS = "\"some data\" \"another data\"\n" + "\"some data2\" \"another data2\"\n";
+  private static final String RESULT_ROWS = "\"some data\" \"another data\"\n"
+    + "\"some data2\" \"another data2\"\n";
   private static final String TEST_PREVIOUS_DATA = "testPreviousData\n";
 
   private StepMockHelper<TextFileOutputMeta, TextFileOutputData> stepMockHelper;
-  private TextFileField textFileField = new TextFileField( "Name", 2, "", 10, 20, "", "", "", "" );
-  private TextFileField textFileField2 = new TextFileField( "Surname", 2, "", 10, 20, "", "", "", "" );
+  private TextFileField textFileField = new TextFileField( "Name", 2, EMPTY_STRING, 10, 20, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING );
+  private TextFileField textFileField2 = new TextFileField( "Surname", 2, EMPTY_STRING, 10, 20, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING );
   private TextFileField[] textFileFields = new TextFileField[] { textFileField, textFileField2 };
   private Object[] row = new Object[] { "some data", "another data" };
   private Object[] row2 = new Object[] { "some data2", "another data2" };
   private List<Object[]> emptyRows = new ArrayList<Object[]>();
   private List<Object[]> rows = new ArrayList<Object[]>();
   private List<String> contents = new ArrayList<String>();
+  private TextFileOutput textFileOutput;
   {
     rows.add( row );
     rows.add( row2 );
 
-    contents.add( "" );
-    contents.add( "" );
+    contents.add( EMPTY_STRING );
+    contents.add( EMPTY_STRING );
     contents.add( END_LINE );
     contents.add( END_LINE );
     contents.add( null );
@@ -141,14 +170,14 @@ public class TextFileOutputTest {
     contents.add( RESULT_ROWS );
     contents.add( RESULT_ROWS + END_LINE );
     contents.add( RESULT_ROWS + END_LINE );
-    contents.add( "" );
+    contents.add( EMPTY_STRING );
     contents.add( TEST_PREVIOUS_DATA );
     contents.add( END_LINE );
     contents.add( TEST_PREVIOUS_DATA + END_LINE );
     contents.add( TEST_PREVIOUS_DATA );
     contents.add( TEST_PREVIOUS_DATA );
-    contents.add( END_LINE  );
-    contents.add( TEST_PREVIOUS_DATA + END_LINE  );
+    contents.add( END_LINE );
+    contents.add( TEST_PREVIOUS_DATA + END_LINE );
     contents.add( RESULT_ROWS );
     contents.add( TEST_PREVIOUS_DATA + RESULT_ROWS );
     contents.add( RESULT_ROWS + END_LINE );
@@ -163,10 +192,10 @@ public class TextFileOutputTest {
   @Before
   public void setUp() throws Exception {
     stepMockHelper =
-        new StepMockHelper<TextFileOutputMeta, TextFileOutputData>( "TEXT FILE OUTPUT TEST", TextFileOutputMeta.class,
-            TextFileOutputData.class );
-    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        stepMockHelper.logChannelInterface );
+      new StepMockHelper<TextFileOutputMeta, TextFileOutputData>(
+        "TEXT FILE OUTPUT TEST", TextFileOutputMeta.class, TextFileOutputData.class );
+    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+      .thenReturn( stepMockHelper.logChannelInterface );
     verify( stepMockHelper.logChannelInterface, never() ).logError( anyString() );
     verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), anyObject() );
     verify( stepMockHelper.logChannelInterface, never() ).logError( anyString(), (Throwable) anyObject() );
@@ -221,14 +250,17 @@ public class TextFileOutputTest {
           for ( Boolean endLineExists : bool ) {
             for ( Boolean append : bool ) {
               try {
-                resultFile = helpTestInit( fileExists, dataReceived, isDoNotOpenNewFileInit, endLineExists, append );
+                resultFile =
+                  helpTestInit( fileExists, dataReceived, isDoNotOpenNewFileInit, endLineExists, append );
                 content = (String) contents.toArray()[i++];
                 contentFile = createTemplateFile( content );
                 assertTrue( FileUtils.contentEquals( resultFile, contentFile ) );
               } catch ( Exception e ) {
-                Assert.fail( e.getMessage() + "\n FileExists = " + fileExists + "\n DataReceived = " + dataReceived
-                    + "\n isDoNotOpenNewFileInit = " + isDoNotOpenNewFileInit + "\n EndLineExists = " + endLineExists
-                    + "\n Append = " + append + "\n Content = " + content + "\n resultFile = " + resultFile );
+                Assert.fail( e.getMessage()
+                  + "\n FileExists = " + fileExists + "\n DataReceived = " + dataReceived
+                  + "\n isDoNotOpenNewFileInit = " + isDoNotOpenNewFileInit + "\n EndLineExists = "
+                  + endLineExists + "\n Append = " + append + "\n Content = " + content + "\n resultFile = "
+                  + resultFile );
               }
 
             }
@@ -238,8 +270,42 @@ public class TextFileOutputTest {
     }
   }
 
+  /**
+   * Tests the RULE#1: If 'Do not create file at start' checkbox is cheked AND 'Add landing line of file' is NOT set AND
+   * transformation does not pass any rows to the file input step, then NO output file should be created.
+   * @throws KettleException
+   */
+  @Test
+  public void testNoOpenFileCall_IfRule_1() throws KettleException {
+
+    TextFileField tfFieldMock = mock( TextFileField.class );
+    TextFileField[] textFileFields = { tfFieldMock };
+
+    when( stepMockHelper.initStepMetaInterface.getEndedLine() ).thenReturn( EMPTY_STRING );
+    when( stepMockHelper.initStepMetaInterface.getOutputFields() ).thenReturn( textFileFields );
+    when( stepMockHelper.initStepMetaInterface.isDoNotOpenNewFileInit() ).thenReturn( true );
+
+    when( stepMockHelper.processRowsStepMetaInterface.getEndedLine() ).thenReturn( EMPTY_STRING );
+    when( stepMockHelper.processRowsStepMetaInterface.getFileName() ).thenReturn( EMPTY_FILE_NAME );
+    when( stepMockHelper.processRowsStepMetaInterface.isDoNotOpenNewFileInit() ).thenReturn( true );
+    when( stepMockHelper.processRowsStepMetaInterface.getOutputFields() ).thenReturn( textFileFields );
+
+    when( stepMockHelper.processRowsStepDataInterface.getPreviouslyOpenedFiles() ).thenReturn( new ArrayList<String>() );
+    textFileOutput =
+        new TextFileOutput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+            stepMockHelper.trans );
+    TextFileOutput textFileoutputSpy = spy( textFileOutput );
+    doNothing().when( textFileoutputSpy ).openNewFile( EMPTY_FILE_NAME );
+    textFileoutputSpy.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
+
+    textFileoutputSpy.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.initStepDataInterface );
+    verify( textFileoutputSpy, never() ).openNewFile( EMPTY_FILE_NAME );
+    verify( textFileoutputSpy, never() ).writeEndedLine();
+    verify( textFileoutputSpy ).setOutputDone();
+  }
+
   private File helpTestInit( Boolean fileExists, Boolean dataReceived, Boolean isDoNotOpenNewFileInit,
-      Boolean endLineExists, Boolean append ) throws Exception {
+    Boolean endLineExists, Boolean append ) throws Exception {
     File f;
     String endLine = null;
     List<Object[]> rows;
@@ -262,7 +328,7 @@ public class TextFileOutputTest {
     }
 
     List<Throwable> errors =
-        doOutput( textFileFields, rows, f.getPath(), endLine, false, isDoNotOpenNewFileInit, append );
+      doOutput( textFileFields, rows, f.getPath(), endLine, false, isDoNotOpenNewFileInit, append );
     if ( !errors.isEmpty() ) {
       StringBuilder str = new StringBuilder();
       for ( Throwable thr : errors ) {
@@ -276,23 +342,23 @@ public class TextFileOutputTest {
   }
 
   private List<Throwable> doOutput( TextFileField[] textFileField, List<Object[]> rows, String pathToFile,
-      String endedLine, Boolean isHeaderEnabled, Boolean isDoNotOpenNewFileInit, Boolean append )
-    throws KettleException {
+    String endedLine, Boolean isHeaderEnabled, Boolean isDoNotOpenNewFileInit, Boolean append ) throws KettleException {
     TextFileOutputData textFileOutputData = new TextFileOutputData();
     TextFileOutput textFileOutput =
-        new TextFileOutputTestHandler( stepMockHelper.stepMeta, textFileOutputData, 0, stepMockHelper.transMeta,
-            stepMockHelper.trans );
+      new TextFileOutputTestHandler(
+        stepMockHelper.stepMeta, textFileOutputData, 0, stepMockHelper.transMeta, stepMockHelper.trans );
 
     // init step meta and process step meta should be the same in this case
-    when( stepMockHelper.processRowsStepMetaInterface.isDoNotOpenNewFileInit() ).thenReturn( isDoNotOpenNewFileInit );
+    when( stepMockHelper.processRowsStepMetaInterface.isDoNotOpenNewFileInit() ).thenReturn(
+      isDoNotOpenNewFileInit );
     when( stepMockHelper.processRowsStepMetaInterface.isFileAppended() ).thenReturn( append );
 
     when( stepMockHelper.processRowsStepMetaInterface.isHeaderEnabled() ).thenReturn( isHeaderEnabled );
     when( stepMockHelper.processRowsStepMetaInterface.getFileName() ).thenReturn( pathToFile );
     when(
-        stepMockHelper.processRowsStepMetaInterface.buildFilename( anyString(), anyString(),
-            ( (VariableSpace) anyObject() ), anyInt(), anyString(), anyInt(), anyBoolean(),
-            (TextFileOutputMeta) anyObject() ) ).thenReturn( pathToFile );
+      stepMockHelper.processRowsStepMetaInterface.buildFilename(
+        anyString(), anyString(), ( (VariableSpace) anyObject() ), anyInt(), anyString(), anyInt(),
+        anyBoolean(), (TextFileOutputMeta) anyObject() ) ).thenReturn( pathToFile );
 
     when( stepMockHelper.processRowsStepMetaInterface.getOutputFields() ).thenReturn( textFileField );
 
@@ -305,7 +371,7 @@ public class TextFileOutputTest {
     textFileOutput.setInputRowMeta( inputRowMeta );
 
     when( rowSet.getRowWait( anyInt(), (TimeUnit) anyObject() ) ).thenReturn(
-        rows.isEmpty() ? null : rows.iterator().next() );
+      rows.isEmpty() ? null : rows.iterator().next() );
     when( rowSet.getRowMeta() ).thenReturn( inputRowMeta );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
 

@@ -34,10 +34,10 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Stores data for the MonetDBBulkLoader step.
- * 
+ *
  * @author James Dixon and Brandon Jackson, inspired by Sven Boden
  * @since 20-feb-2005 updated 01-Jan-2013
- * 
+ *
  */
 public class MonetDBBulkLoaderData extends BaseStepData implements StepDataInterface {
   public Database db;

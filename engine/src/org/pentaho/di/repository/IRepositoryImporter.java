@@ -29,15 +29,15 @@ import org.pentaho.di.imp.ImportRules;
 
 /**
  * Handles importing a repository.
- * 
+ *
  * @author jganoff
  */
 public interface IRepositoryImporter extends ProgressMonitorListener, RepositoryImportFeedbackInterface,
-    RepositoryElementReadListener {
+  RepositoryElementReadListener {
 
   /**
    * Import objects from an XML document to a repository.
-   * 
+   *
    * @param feedback
    *          Required to provide feedback to the user.
    * @param fileDirectory
@@ -54,11 +54,12 @@ public interface IRepositoryImporter extends ProgressMonitorListener, Repository
    *          Comment to use when saving imported objects.
    */
   public void importAll( RepositoryImportFeedbackInterface feedback, String fileDirectory, String[] filenames,
-      RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError, String versionComment );
+    RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError,
+    String versionComment );
 
   /**
    * Set the list of rules that need to be applied to every imported object.
-   * 
+   *
    * @param importRules
    *          The rules to use during import into the repository
    */
@@ -76,7 +77,7 @@ public interface IRepositoryImporter extends ProgressMonitorListener, Repository
 
   /**
    * Returns a list of exceptions that the implementation may maintain.
-   * 
+   *
    * @return
    */
   public List<Exception> getExceptions();

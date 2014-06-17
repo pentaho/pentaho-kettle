@@ -62,7 +62,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class JaninoDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = JaninoMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JaninoMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlStepname;
   private Text wStepname;
@@ -142,22 +142,25 @@ public class JaninoDialog extends BaseStepDialog implements StepDialogInterface 
     final int FieldsRows = currentMeta.getFormula() != null ? currentMeta.getFormula().length : 1;
 
     colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JaninoDialog.NewField.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JaninoDialog.Janino.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JaninoDialog.ValueType.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JaninoDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JaninoDialog.Precision.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JaninoDialog.Replace.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              new String[] {} ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JaninoDialog.NewField.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JaninoDialog.Janino.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JaninoDialog.ValueType.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          ValueMeta.getTypes() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JaninoDialog.Length.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JaninoDialog.Precision.Column" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JaninoDialog.Replace.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          new String[] {} ), };
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -341,8 +344,9 @@ public class JaninoDialog extends BaseStepDialog implements StepDialogInterface 
       int valuePrecision = Const.toInt( item.getText( 5 ), -1 );
       String replaceField = item.getText( 6 );
 
-      currentMeta.getFormula()[i] =
-          new JaninoMetaFunction( fieldName, formula, valueType, valueLength, valuePrecision, replaceField );
+      //CHECKSTYLE:Indentation:OFF
+      currentMeta.getFormula()[i] = new JaninoMetaFunction( fieldName, formula, valueType,
+        valueLength, valuePrecision, replaceField );
     }
 
     if ( !originalMeta.equals( currentMeta ) ) {

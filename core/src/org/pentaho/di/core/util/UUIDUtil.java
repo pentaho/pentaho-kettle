@@ -29,7 +29,7 @@ import org.safehaus.uuid.UUID;
 import org.safehaus.uuid.UUIDGenerator;
 
 public class UUIDUtil {
-  private static Class<?> PKG = UUIDUtil.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = UUIDUtil.class; // for i18n purposes, needed by Translator2!!
 
   private static Log log = LogFactory.getLog( UUIDUtil.class );
 

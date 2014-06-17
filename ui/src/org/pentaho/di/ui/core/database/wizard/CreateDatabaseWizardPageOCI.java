@@ -40,14 +40,14 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
 /**
- * 
+ *
  * On page one we specify the OCI TNS connection...
- * 
+ *
  * @author Matt
  * @since 04-apr-2005
  */
 public class CreateDatabaseWizardPageOCI extends WizardPage {
-  private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlTNS;
   private Text wTNS;
@@ -129,7 +129,7 @@ public class CreateDatabaseWizardPageOCI extends WizardPage {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.wizard.WizardPage#getNextPage()
    */
   public IWizardPage getNextPage() {

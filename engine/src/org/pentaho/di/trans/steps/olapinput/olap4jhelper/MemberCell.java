@@ -39,18 +39,18 @@ public class MemberCell extends AbstractBaseCell {
   private List<String> memberPath;
 
   /**
-   * 
+   *
    * Blank Constructor for Serializable niceness, don't use it.
-   * 
+   *
    */
   public MemberCell() {
     super();
   }
 
   /**
-   * 
+   *
    * Creates a member cell.
-   * 
+   *
    * @param b
    * @param c
    */
@@ -70,7 +70,7 @@ public class MemberCell extends AbstractBaseCell {
 
   /**
    * TODO JAVADOC
-   * 
+   *
    * @param parentMember
    */
   public void setParentMember( final String parentMember ) {
@@ -85,7 +85,7 @@ public class MemberCell extends AbstractBaseCell {
 
   /**
    * TODO JAVADOC
-   * 
+   *
    * @param memberCell
    */
   public void setRightOf( final MemberCell memberCell ) {
@@ -99,7 +99,7 @@ public class MemberCell extends AbstractBaseCell {
 
   /**
    * TODO JAVADOC
-   * 
+   *
    * @param name
    */
   public void setRightOfDimension( String name ) {

@@ -54,9 +54,6 @@ public class SalesforceInputData extends BaseStepData implements StepDataInterfa
   public GregorianCalendar endCal;
   public boolean finishedRecord;
 
-  /**
-	 * 
-	 */
   public SalesforceInputData() {
     super();
 

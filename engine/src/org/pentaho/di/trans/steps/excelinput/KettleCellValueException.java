@@ -23,23 +23,21 @@
 package org.pentaho.di.trans.steps.excelinput;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
- * Extended {@link KettleValueException} that allows passing extra context info up the chain (sheet, row, and column
- * IDs).
- * 
- * If we were really obssessive, we'd cache both the names and indexes of all the items, including the input file. But
+ * Extended {@link KettleException} to allow passing of extra context info up the chain (sheet, row, and column IDs).
+ *
+ * If we were really obsessive, we'd cache both the names and indexes of all the items, including the input file. But
  * this will do for a start.
- * 
+ *
  * @author timh
  * @since 14-FEB-2008
  */
 
 public class KettleCellValueException extends KettleException {
 
-  private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExcelInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final long serialVersionUID = 1L;
 
@@ -52,7 +50,7 @@ public class KettleCellValueException extends KettleException {
    * Standard constructor.
    * <p/>
    * <em>Note:</em> All indexes below have a 0-origin (internal index), but are reported with a 1-origin (human index).
-   * 
+   *
    * @param ex
    *          The Exception to wrap.
    * @param sheetnr
@@ -76,9 +74,9 @@ public class KettleCellValueException extends KettleException {
   @Override
   public String getMessage() {
     String msgText =
-        BaseMessages.getString( PKG, "KettleCellValueException.CannotConvertFieldFromCell",
-            Integer.toString( sheetnr ), Integer.toString( rownr ), Integer.toString( colnr ), fieldName, super
-                .getMessage() );
+      BaseMessages.getString( PKG, "KettleCellValueException.CannotConvertFieldFromCell", Integer
+        .toString( sheetnr ), Integer.toString( rownr ), Integer.toString( colnr ), fieldName, super
+        .getMessage() );
     return msgText;
   }
 

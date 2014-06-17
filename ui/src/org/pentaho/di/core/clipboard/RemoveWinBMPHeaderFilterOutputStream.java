@@ -27,9 +27,9 @@ import java.io.OutputStream;
 
 /**
  * Strips off the BITMAPFILEHEADER from a ImageLoader.save() call
- * 
+ *
  * Used when converting from ImageData to CF_DIB (pasting on clipboard)
- * 
+ *
  * @author Philip Schatz ( www.philschatz.com )
  */
 class RemoveWinBMPHeaderFilterOutputStream extends OutputStream {

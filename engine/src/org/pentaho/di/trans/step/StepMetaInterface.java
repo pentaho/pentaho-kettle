@@ -92,7 +92,8 @@ import org.w3c.dom.Node;
  * conveniently read the step settings from the XML node.
  * <p>
  * <i><a href=
- * "#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, org.pentaho.di.repository.ObjectId)"
+ * "#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, 
+ *   org.pentaho.di.repository.ObjectId)"
  * >public void saveRep(...)</a></i>
  * <p>
  * This method is called by PDI whenever a step needs to save its settings to a PDI repository. The repository object
@@ -126,9 +127,9 @@ import org.w3c.dom.Node;
  * step may be adding or removing fields, as well as modifying the metadata of a field. The method implementing this
  * aspect of a step plugin is getFields().
  * <p>
- * <i><a href=
- * "#getFields(org.pentaho.di.core.row.RowMetaInterface, java.lang.String, org.pentaho.di.core.row.RowMetaInterface[], org.pentaho.di.trans.step.StepMeta, org.pentaho.di.core.variables.VariableSpace)"
- * >public void getFields(...)</a></i>
+ * <i><a href= "#getFields(org.pentaho.di.core.row.RowMetaInterface, java.lang.String,
+ * org.pentaho.di.core.row.RowMetaInterface[], org.pentaho.di.trans.step.StepMeta,
+ * org.pentaho.di.core.variables.VariableSpace)" >public void getFields(...)</a></i>
  * <p>
  * Given a description of the input rows, the plugin needs to modify it to match the structure for its output fields.
  * The implementation modifies the passed in RowMetaInterface object to reflect any changes to the row stream. Typically
@@ -140,9 +141,9 @@ import org.w3c.dom.Node;
  * Spoon supports a &#8220;validate transformation&#8221; feature, which triggers a self-check of all steps. PDI invokes
  * the check() method of each step on the canvas allowing each step to validate its settings.
  * <p>
- * <i><a href=
- * "#check(java.util.List, org.pentaho.di.trans.TransMeta, org.pentaho.di.trans.step.StepMeta, org.pentaho.di.core.row.RowMetaInterface, java.lang.String[], java.lang.String[], org.pentaho.di.core.row.RowMetaInterface)"
- * >public void check()</a></i>
+ * <i><a href= "#check(java.util.List, org.pentaho.di.trans.TransMeta, org.pentaho.di.trans.step.StepMeta,
+ * org.pentaho.di.core.row.RowMetaInterface, java.lang.String[], java.lang.String[],
+ * org.pentaho.di.core.row.RowMetaInterface)" >public void check()</a></i>
  * <p>
  * Each step has the opportunity to validate its settings and verify that the configuration given by the user is
  * reasonable. In addition to that a step typically checks if it is connected to preceding or following steps, if the
@@ -156,7 +157,7 @@ import org.w3c.dom.Node;
  * implementation of ValueMetaInterface), and appending them to the RowMetaInterface object. The section Working with
  * Fields goes into deeper detail on ValueMetaInterface.
  * </ul>
- * 
+ *
  * @since 4-aug-2004
  * @author Matt
  */
@@ -169,7 +170,7 @@ public interface StepMetaInterface {
 
   /**
    * Gets the fields.
-   * 
+   *
    * @param inputRowMeta
    *          the input row meta that is modified in this method to reflect the output row metadata of the step
    * @param name
@@ -186,11 +187,11 @@ public interface StepMetaInterface {
    */
   @Deprecated
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space ) throws KettleStepException;
+    VariableSpace space ) throws KettleStepException;
 
   /**
    * Gets the fields.
-   * 
+   *
    * @param inputRowMeta
    *          the input row meta that is modified in this method to reflect the output row metadata of the step
    * @param name
@@ -209,11 +210,11 @@ public interface StepMetaInterface {
    *           the kettle step exception
    */
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException;
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException;
 
   /**
    * Get the XML that represents the values in this step
-   * 
+   *
    * @return the XML that represents the metadata in this step
    * @throws KettleException
    *           in case there is a conversion or XML encoding error
@@ -222,7 +223,7 @@ public interface StepMetaInterface {
 
   /**
    * Load the values for this step from an XML Node
-   * 
+   *
    * @param stepnode
    *          the Node to get the info from
    * @param databases
@@ -234,12 +235,11 @@ public interface StepMetaInterface {
    * @deprecated
    */
   @Deprecated
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters )
-    throws KettleXMLException;
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters ) throws KettleXMLException;
 
   /**
    * Load the values for this step from an XML Node
-   * 
+   *
    * @param stepnode
    *          the Node to get the info from
    * @param databases
@@ -253,7 +253,7 @@ public interface StepMetaInterface {
 
   /**
    * Save the steps data into a Kettle repository
-   * 
+   *
    * @param rep
    *          The Kettle repository to save to
    * @param id_transformation
@@ -269,7 +269,7 @@ public interface StepMetaInterface {
 
   /**
    * Save the steps data into a Kettle repository
-   * 
+   *
    * @param rep
    *          The Kettle repository to save to
    * @param metaStore
@@ -281,12 +281,11 @@ public interface StepMetaInterface {
    * @throws KettleException
    *           When an unexpected error occurred (database, network, etc)
    */
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException;
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException;
 
   /**
    * Read the steps information from a Kettle repository
-   * 
+   *
    * @param rep
    *          The repository to read from
    * @param id_step
@@ -300,12 +299,12 @@ public interface StepMetaInterface {
    * @deprecated
    */
   @Deprecated
-  public void readRep( Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters )
-    throws KettleException;
+  public void readRep( Repository rep, ObjectId id_step, List<DatabaseMeta> databases,
+    Map<String, Counter> counters ) throws KettleException;
 
   /**
    * Read the steps information from a Kettle repository
-   * 
+   *
    * @param rep
    *          The repository to read from
    * @param metaStore
@@ -317,12 +316,11 @@ public interface StepMetaInterface {
    * @throws KettleException
    *           When an unexpected error occurred (database, network, etc)
    */
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException;
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException;
 
   /**
    * Checks the settings of this step and puts the findings in a remarks List.
-   * 
+   *
    * @param remarks
    *          The list to put the remarks in @see org.pentaho.di.core.CheckResult
    * @param stepMeta
@@ -338,12 +336,12 @@ public interface StepMetaInterface {
    * @deprecated in favor of the check() method with repository and metaStore arguments.
    */
   @Deprecated
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info );
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info );
 
   /**
    * Checks the settings of this step and puts the findings in a remarks List.
-   * 
+   *
    * @param remarks
    *          The list to put the remarks in @see org.pentaho.di.core.CheckResult
    * @param stepMeta
@@ -363,13 +361,13 @@ public interface StepMetaInterface {
    * @param metaStore
    *          the MetaStore to use to load additional external data or metadata impacting the output fields
    */
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore );
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore );
 
   /**
    * Make an exact copy of this step, make sure to explicitly copy Collections etc.
-   * 
+   *
    * @return an exact copy of this step
    */
   public Object clone();
@@ -381,14 +379,14 @@ public interface StepMetaInterface {
 
   /**
    * This method is added to exclude certain steps from layout checking.
-   * 
+   *
    * @since 2.5.0
    */
   public boolean excludeFromRowLayoutVerification();
 
   /**
    * This method is added to exclude certain steps from copy/distribute checking.
-   * 
+   *
    * @since 4.0.0
    */
   public boolean excludeFromCopyDistributeVerification();
@@ -400,7 +398,7 @@ public interface StepMetaInterface {
 
   /**
    * Get the executing step, needed by Trans to launch a step.
-   * 
+   *
    * @param stepMeta
    *          The step info
    * @param stepDataInterface
@@ -414,19 +412,19 @@ public interface StepMetaInterface {
    *          The launching transformation
    */
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-      TransMeta transMeta, Trans trans );
+    TransMeta transMeta, Trans trans );
 
   /**
    * Get a new instance of the appropriate data class. This data class implements the StepDataInterface. It basically
    * contains the persisting data that needs to live on, even if a worker thread is terminated.
-   * 
+   *
    * @return The appropriate StepDataInterface class.
    */
   public StepDataInterface getStepData();
 
   /**
    * Each step must be able to report on the impact it has on a database, table field, etc.
-   * 
+   *
    * @param impact
    *          The list of impacts @see org.pentaho.di.transMeta.DatabaseImpact
    * @param transMeta
@@ -445,11 +443,11 @@ public interface StepMetaInterface {
    */
   @Deprecated
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info ) throws KettleStepException;
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info ) throws KettleStepException;
 
   /**
    * Each step must be able to report on the impact it has on a database, table field, etc.
-   * 
+   *
    * @param impact
    *          The list of impacts @see org.pentaho.di.transMeta.DatabaseImpact
    * @param transMeta
@@ -470,14 +468,14 @@ public interface StepMetaInterface {
    *          the MetaStore to use to load additional external data or metadata impacting the output fields
    */
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-      IMetaStore metaStore ) throws KettleStepException;
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+    IMetaStore metaStore ) throws KettleStepException;
 
   /**
    * Standard method to return an SQLStatement object with SQL statements that the step needs in order to work
    * correctly. This can mean "create table", "create index" statements but also "alter table ... add/drop/modify"
    * statements.
-   * 
+   *
    * @return The SQL Statements for this step. If nothing has to be done, the SQLStatement.getSQL() == null. @see
    *         SQLStatement
    * @param transMeta
@@ -489,14 +487,13 @@ public interface StepMetaInterface {
    * @deprecated in favor of the getSQLStatements method with repository and metaStore arguments.
    */
   @Deprecated
-  public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev )
-    throws KettleStepException;
+  public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev ) throws KettleStepException;
 
   /**
    * Standard method to return an SQLStatement object with SQL statements that the step needs in order to work
    * correctly. This can mean "create table", "create index" statements but also "alter table ... add/drop/modify"
    * statements.
-   * 
+   *
    * @return The SQL Statements for this step. If nothing has to be done, the SQLStatement.getSQL() == null. @see
    *         SQLStatement
    * @param transMeta
@@ -511,7 +508,7 @@ public interface StepMetaInterface {
    *          the MetaStore to use to load additional external data or metadata impacting the output fields
    */
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      Repository repository, IMetaStore metaStore ) throws KettleStepException;
+    Repository repository, IMetaStore metaStore ) throws KettleStepException;
 
   /**
    * Call this to cancel trailing database queries (too long running, etc)
@@ -521,7 +518,7 @@ public interface StepMetaInterface {
   /**
    * Default a step doesn't use any arguments. Implement this to notify the GUI that a window has to be displayed BEFORE
    * launching a transformation. You can also use this to specify certain Environment variable values.
-   * 
+   *
    * @return A Map of argument values. (name and optionally a default value) Put 10 values in the map for the possible
    *         10 arguments.
    */
@@ -532,7 +529,7 @@ public interface StepMetaInterface {
    * difficult to do. To help out here, we supply information to the transformation meta-data model about which fields
    * are required for a step. This allows us to automate certain tasks like the mapping to pre-defined tables. The Table
    * Output step in this case will output the fields in the target table using this method.
-   * 
+   *
    * @param space
    *          the variable space to reference
    * @return the required fields for this steps metadata.
@@ -543,7 +540,7 @@ public interface StepMetaInterface {
 
   /**
    * This method returns all the database connections that are used by the step.
-   * 
+   *
    * @return an array of database connections meta-data. Return an empty array if no connections are used.
    */
   public DatabaseMeta[] getUsedDatabaseConnections();
@@ -560,10 +557,10 @@ public interface StepMetaInterface {
 
   /**
    * Get a list of all the resource dependencies that the step is depending on.
-   * 
+   *
    * @param transMeta
    * @param stepMeta
-   * 
+   *
    * @return a list of all the resource dependencies that the step is depending on
    */
   public List<ResourceReference> getResourceDependencies( TransMeta transMeta, StepMeta stepMeta );
@@ -575,13 +572,13 @@ public interface StepMetaInterface {
    * @param resourceNamingInterface
    * @param repository
    *          The repository to optionally load other resources from (to be converted to XML)
-   * 
+   *
    * @return the filename of the exported resource
    * @deprecated in favor of the same method with a IMetaStore argument.
    */
   @Deprecated
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository ) throws KettleException;
+    ResourceNamingInterface resourceNamingInterface, Repository repository ) throws KettleException;
 
   /**
    * @param space
@@ -592,12 +589,11 @@ public interface StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException;
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException;
 
   /**
    * @return The StepMeta object to which this metadata class belongs. With this, we can see to which transformation
@@ -607,7 +603,7 @@ public interface StepMetaInterface {
 
   /**
    * Provide original lineage for this metadata object
-   * 
+   *
    * @param parentStepMeta
    *          the parent step metadata container object
    */
@@ -626,7 +622,7 @@ public interface StepMetaInterface {
 
   /**
    * When an optional stream is selected, this method is called to handled the ETL metadata implications of that.
-   * 
+   *
    * @param stream
    *          The optional stream to handle.
    */
@@ -640,7 +636,7 @@ public interface StepMetaInterface {
 
   /**
    * Change step names into step objects to allow them to be name-changed etc.
-   * 
+   *
    * @param steps
    *          the steps to reference
    */
@@ -651,6 +647,13 @@ public interface StepMetaInterface {
    *         method will return null if the interface is not available for this step.
    */
   public StepMetaInjectionInterface getStepMetaInjectionInterface();
+
+  /**
+   * @return The step metadata itself, not the metadata description.  
+   * For lists it will have 0 entries in case there are no entries.
+   * @throws KettleException
+   */
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException;
 
   /**
    * @return The supported transformation types that this step supports.
@@ -664,7 +667,7 @@ public interface StepMetaInterface {
 
   /**
    * Look up the references after import
-   * 
+   *
    * @param repository
    *          the repository to reference.
    */
@@ -685,8 +688,14 @@ public interface StepMetaInterface {
   public boolean[] isReferencedObjectEnabled();
 
   /**
+   * @return A description of the active referenced object in a transformation.  
+   * Null if nothing special needs to be done or if the active metadata isn't different from design.
+   */
+  public String getActiveReferencedObjectDescription();
+
+  /**
    * Load the referenced object
-   * 
+   *
    * @param index
    *          the referenced object index to load (in case there are multiple references)
    * @param rep
@@ -698,7 +707,6 @@ public interface StepMetaInterface {
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
-    throws KettleException;
+  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException;
 
 }

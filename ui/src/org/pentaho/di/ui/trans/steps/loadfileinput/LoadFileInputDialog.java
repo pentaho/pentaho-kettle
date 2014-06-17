@@ -78,10 +78,10 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = LoadFileInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LoadFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String[] YES_NO_COMBO = new String[] { BaseMessages.getString( PKG, "System.Combo.No" ),
-    BaseMessages.getString( PKG, "System.Combo.Yes" ) };
+  private static final String[] YES_NO_COMBO = new String[] {
+    BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG, "System.Combo.Yes" ) };
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -457,14 +457,17 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     ColumnInfo[] colinfo = new ColumnInfo[5];
     colinfo[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.Files.Filename.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LoadFileInputDialog.Files.Filename.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinfo[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.Files.Wildcard.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LoadFileInputDialog.Files.Wildcard.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinfo[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.Files.ExcludeWildcard.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LoadFileInputDialog.Files.ExcludeWildcard.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     colinfo[0].setUsingVariables( true );
     colinfo[1].setUsingVariables( true );
@@ -473,16 +476,18 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     colinfo[2].setToolTip( BaseMessages.getString( PKG, "LoadFileInputDialog.Files.ExcludeWildcard.Tooltip" ) );
 
     colinfo[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.Required.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LoadFileInputDialog.Required.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        YES_NO_COMBO );
     colinfo[3].setToolTip( BaseMessages.getString( PKG, "LoadFileInputDialog.Required.Tooltip" ) );
     colinfo[4] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.IncludeSubDirs.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LoadFileInputDialog.IncludeSubDirs.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO );
     colinfo[4].setToolTip( BaseMessages.getString( PKG, "LoadFileInputDialog.IncludeSubDirs.Tooltip" ) );
 
     wFilenameList =
-        new TableView( transMeta, wFileComp, SWT.FULL_SELECTION | SWT.MULTI | SWT.BORDER, colinfo, 2, lsMod, props );
+      new TableView( transMeta, wFileComp, SWT.FULL_SELECTION | SWT.MULTI | SWT.BORDER, colinfo, 2, lsMod, props );
     props.setLook( wFilenameList );
     fdFilenameList = new FormData();
     fdFilenameList.left = new FormAttachment( middle, 0 );
@@ -767,46 +772,61 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     final int FieldsRows = input.getInputFields().length;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Name.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Element.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO,
-              org.pentaho.di.trans.steps.loadfileinput.LoadFileInputField.ElementTypeDesc, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Type.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Format.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats() ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Length.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Precision.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Currency.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Decimal.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Group.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.TrimType.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, LoadFileInputField.trimTypeDesc, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Repeat.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Name.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Element.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO,
+          org.pentaho.di.trans.steps.loadfileinput.LoadFileInputField.ElementTypeDesc, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Type.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Format.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getConversionFormats() ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Length.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Precision.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Currency.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Decimal.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Group.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.TrimType.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, LoadFileInputField.trimTypeDesc, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Repeat.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+            BaseMessages.getString( PKG, "System.Combo.Yes" ),
+            BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
 
-        };
+      };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "LoadFileInputDialog.FieldsTable.Name.Column.Tooltip" ) );
     colinfo[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.Required.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LoadFileInputDialog.Required.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        YES_NO_COMBO );
     colinfo[2].setToolTip( BaseMessages.getString( PKG, "LoadFileInputDialog.Required.Tooltip" ) );
     colinfo[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LoadFileInputDialog.IncludeSubDirs.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LoadFileInputDialog.IncludeSubDirs.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, YES_NO_COMBO );
     colinfo[3].setToolTip( BaseMessages.getString( PKG, "LoadFileInputDialog.IncludeSubDirs.Tooltip" ) );
 
-    wFields = new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+    wFields =
+      new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -886,7 +906,8 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFilenameList.add( new String[] { wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
+        wFilenameList.add( new String[] {
+          wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
           LoadFileInputMeta.RequiredFilesCode[0], LoadFileInputMeta.RequiredFilesCode[0] } );
         wFilename.setText( "" );
         wFilemask.setText( "" );
@@ -934,10 +955,9 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
           FileInputList fileInputList = tfii.getFiles( transMeta );
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
-            EnterSelectionDialog esd =
-                new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                    "LoadFileInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString( PKG,
-                    "LoadFileInputDialog.FilesReadSelection.DialogMessage" ) );
+            EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "LoadFileInputDialog.FilesReadSelection.DialogTitle" ),
+              BaseMessages.getString( PKG, "LoadFileInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -947,8 +967,9 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
             mb.open();
           }
         } catch ( Exception ex ) {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "LoadFileInputDialog.ErrorParsingData.DialogTitle" ),
-              BaseMessages.getString( PKG, "LoadFileInputDialog.ErrorParsingData.DialogMessage" ), ex );
+          new ErrorDialog(
+            shell, BaseMessages.getString( PKG, "LoadFileInputDialog.ErrorParsingData.DialogTitle" ),
+            BaseMessages.getString( PKG, "LoadFileInputDialog.ErrorParsingData.DialogMessage" ), ex );
         }
       }
     } );
@@ -999,7 +1020,8 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
             dialog.setFileName( fname );
           }
 
-          dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+          dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
             BaseMessages.getString( PKG, "LoadFileInputDialog.FileType.TextAndCSVFiles" ),
             BaseMessages.getString( PKG, "LoadFileInput.FileType.TRTFiles" ),
             BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
@@ -1050,8 +1072,9 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
           wFilenameField.setText( field );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "LoadFileInputDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "LoadFileInputDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "LoadFileInputDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "LoadFileInputDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }
@@ -1147,10 +1170,11 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
       if ( !Const.isEmpty( encoding ) ) {
         wEncoding.setText( encoding );
-      }/*
-        * else { // Now select the default! String defEncoding = Const.getEnvironmentVariable("file.encoding", "UTF-8");
-        * int idx = Const.indexOfString(defEncoding, wEncoding.getItems() ); if (idx>=0) wEncoding.select( idx ); }
-        */
+      } /*
+         * else { // Now select the default! String defEncoding = Const.getEnvironmentVariable("file.encoding",
+         * "UTF-8"); int idx = Const.indexOfString(defEncoding, wEncoding.getItems() ); if (idx>=0) wEncoding.select(
+         * idx ); }
+         */
     }
   }
 
@@ -1166,7 +1190,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   /**
    * Read the data from the TextFileInputMeta object and show it in this dialog.
-   * 
+   *
    * @param in
    *          The TextFileInputMeta object to obtain the data from.
    */
@@ -1175,10 +1199,10 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
       wFilenameList.removeAll();
 
       for ( int i = 0; i < in.getFileName().length; i++ ) {
-        wFilenameList
-            .add( new String[] { in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
-              in.getRequiredFilesDesc( in.getFileRequired()[i] ),
-              in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
+        wFilenameList.add( new String[] {
+          in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
+          in.getRequiredFilesDesc( in.getFileRequired()[i] ),
+          in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
       }
 
       wFilenameList.removeEmptyRows();
@@ -1225,8 +1249,8 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
         String decim = field.getDecimalSymbol();
         String trim = field.getTrimTypeDesc();
         String rep =
-            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG,
-                "System.Combo.No" );
+          field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+            PKG, "System.Combo.No" );
 
         if ( name != null ) {
           item.setText( 1, name );
@@ -1306,8 +1330,9 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LoadFileInputDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "LoadFileInputDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "LoadFileInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
+          .getString( PKG, "LoadFileInputDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -1357,6 +1382,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
       field.setTrimType( LoadFileInputField.getTrimTypeByDesc( item.getText( 10 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 11 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
     in.setShortFileNameField( wShortFileFieldName.getText() );
@@ -1376,18 +1402,17 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
       getInfo( oneMeta );
 
       TransMeta previewMeta =
-          TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+        TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "LoadFileInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "LoadFileInputDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "LoadFileInputDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "LoadFileInputDialog.NumberRows.DialogMessage" ) );
 
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+            shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -1396,23 +1421,25 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
+                  .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+            new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LoadFileInputDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "LoadFileInputDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "LoadFileInputDialog.ErrorPreviewingData.DialogTitle" ),
+        BaseMessages.getString( PKG, "LoadFileInputDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 
@@ -1421,7 +1448,8 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     // START OF ADDITIONAL FIELDS TAB ///
     // ////////////////////////
     wAdditionalFieldsTab = new CTabItem( wTabFolder, SWT.NONE );
-    wAdditionalFieldsTab.setText( BaseMessages.getString( PKG, "LoadFileInputDialog.AdditionalFieldsTab.TabTitle" ) );
+    wAdditionalFieldsTab
+      .setText( BaseMessages.getString( PKG, "LoadFileInputDialog.AdditionalFieldsTab.TabTitle" ) );
 
     wAdditionalFieldsComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wAdditionalFieldsComp );
@@ -1508,8 +1536,8 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     // LastModificationTimeName line
     wlLastModificationTimeName = new Label( wAdditionalFieldsComp, SWT.RIGHT );
-    wlLastModificationTimeName.setText( BaseMessages.getString( PKG,
-        "LoadFileInputDialog.LastModificationTimeName.Label" ) );
+    wlLastModificationTimeName.setText( BaseMessages.getString(
+      PKG, "LoadFileInputDialog.LastModificationTimeName.Label" ) );
     props.setLook( wlLastModificationTimeName );
     fdlLastModificationTimeName = new FormData();
     fdlLastModificationTimeName.left = new FormAttachment( 0, 0 );

@@ -50,7 +50,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class BlockingStepDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = BlockingStepMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = BlockingStepMeta.class; // for i18n purposes, needed by Translator2!!
 
   private BlockingStepMeta input;
 

@@ -50,18 +50,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Execute a job for every input row
- * 
+ *
  * @author Matt
  * @since 22-nov-2005
  */
 public class JobExecutor extends BaseStep implements StepInterface {
-  private static Class<?> PKG = JobExecutorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobExecutorMeta.class; // for i18n purposes, needed by Translator2!!
 
   private JobExecutorMeta meta;
   private JobExecutorData data;
 
   public JobExecutor( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -99,17 +99,19 @@ public class JobExecutor extends BaseStep implements StepInterface {
 
         if ( meta.getExecutionResultTargetStepMeta() != null ) {
           meta.getFields( data.executionResultsOutputRowMeta, getStepname(), null, meta
-              .getExecutionResultTargetStepMeta(), this, repository, metaStore );
+            .getExecutionResultTargetStepMeta(), this, repository, metaStore );
           data.executionResultRowSet = findOutputRowSet( meta.getExecutionResultTargetStepMeta().getName() );
         }
         if ( meta.getResultRowsTargetStepMeta() != null ) {
-          meta.getFields( data.resultRowsOutputRowMeta, getStepname(), null, meta.getResultRowsTargetStepMeta(), this,
-              repository, metaStore );
+          meta.getFields(
+            data.resultRowsOutputRowMeta, getStepname(), null, meta.getResultRowsTargetStepMeta(), this,
+            repository, metaStore );
           data.resultRowsRowSet = findOutputRowSet( meta.getResultRowsTargetStepMeta().getName() );
         }
         if ( meta.getResultFilesTargetStepMeta() != null ) {
-          meta.getFields( data.resultFilesOutputRowMeta, getStepname(), null, meta.getResultFilesTargetStepMeta(),
-              this, repository, metaStore );
+          meta.getFields(
+            data.resultFilesOutputRowMeta, getStepname(), null, meta.getResultFilesTargetStepMeta(), this,
+            repository, metaStore );
           data.resultFilesRowSet = findOutputRowSet( meta.getResultFilesTargetStepMeta().getName() );
         }
 
@@ -119,8 +121,8 @@ public class JobExecutor extends BaseStep implements StepInterface {
         if ( !Const.isEmpty( data.groupField ) ) {
           data.groupFieldIndex = getInputRowMeta().indexOfValue( data.groupField );
           if ( data.groupFieldIndex < 0 ) {
-            throw new KettleException( BaseMessages.getString( PKG, "JobExecutor.Exception.GroupFieldNotFound",
-                data.groupField ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "JobExecutor.Exception.GroupFieldNotFound", data.groupField ) );
           }
           data.groupFieldMeta = getInputRowMeta().getValueMeta( data.groupFieldIndex );
         }
@@ -130,9 +132,8 @@ public class JobExecutor extends BaseStep implements StepInterface {
       if ( data.groupSize >= 0 ) {
         // Pass the input rows in blocks to the job result rows...
         //
-        if ( data.groupSize == 0 ) {
+        if ( data.groupSize != 0 ) {
           // Pass all input rows...
-        } else {
           if ( data.groupBuffer.size() >= data.groupSize ) {
             newGroup = true;
           }
@@ -313,8 +314,9 @@ public class JobExecutor extends BaseStep implements StepInterface {
         for ( int i = 0; i < meta.getResultRowsField().length; i++ ) {
           ValueMetaInterface valueMeta = row.getRowMeta().getValueMeta( i );
           if ( valueMeta.getType() != meta.getResultRowsType()[i] ) {
-            throw new KettleException( BaseMessages.getString( PKG, "JobExecutor.IncorrectDataTypePassed", valueMeta
-                .getTypeDesc(), ValueMeta.getTypeDesc( meta.getResultRowsType()[i] ) ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "JobExecutor.IncorrectDataTypePassed", valueMeta.getTypeDesc(), ValueMeta.getTypeDesc( meta
+                .getResultRowsType()[i] ) ) );
           }
 
           targetRow[i] = row.getData()[i];
@@ -355,7 +357,8 @@ public class JobExecutor extends BaseStep implements StepInterface {
       if ( !Const.isEmpty( fieldName ) ) {
         int idx = getInputRowMeta().indexOfValue( fieldName );
         if ( idx < 0 ) {
-          throw new KettleException( BaseMessages.getString( PKG, "JobExecutor.Exception.UnableToFindField", fieldName ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "JobExecutor.Exception.UnableToFindField", fieldName ) );
         }
 
         value = data.groupBuffer.get( 0 ).getString( idx, "" );
@@ -434,8 +437,7 @@ public class JobExecutor extends BaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
-  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
-    throws KettleException {
+  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException {
     if ( data.executorJob != null ) {
       data.executorJob.stopAll();
     }
@@ -452,22 +454,22 @@ public class JobExecutor extends BaseStep implements StepInterface {
   }
 
   /*
-   * 
+   *
    * @Override public long getLinesInput() { if (data!=null && data.executorJob != null &&
    * data.executorJob.getResult()!=null) return data.executorJob.getResult().getNrLinesInput(); else return 0; }
-   * 
+   *
    * @Override public long getLinesOutput() { if (data!=null && data.executorJob != null &&
    * data.executorJob.getResult()!=null) return data.executorJob.getResult().getNrLinesOutput(); else return 0; }
-   * 
+   *
    * @Override public long getLinesRead() { if (data!=null && data.executorJob != null &&
    * data.executorJob.getResult()!=null) return data.executorJob.getResult().getNrLinesRead(); else return 0; }
-   * 
+   *
    * @Override public long getLinesRejected() { if (data!=null && data.executorJob != null &&
    * data.executorJob.getResult()!=null) return data.executorJob.getResult().getNrLinesRejected(); else return 0; }
-   * 
+   *
    * @Override public long getLinesUpdated() { if (data!=null && data.executorJob != null &&
    * data.executorJob.getResult()!=null) return data.executorJob.getResult().getNrLinesUpdated(); else return 0; }
-   * 
+   *
    * @Override public long getLinesWritten() { if (data!=null && data.executorJob != null &&
    * data.executorJob.getResult()!=null) return data.executorJob.getResult().getNrLinesWritten(); else return 0; }
    */

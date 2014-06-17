@@ -45,18 +45,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Execute one or more SQL statements in a script, one time or parameterised (for every row)
- * 
+ *
  * @author Matt
  * @since 10-sep-2005
  */
 public class ExecSQL extends BaseStep implements StepInterface {
-  private static Class<?> PKG = ExecSQLMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExecSQLMeta.class; // for i18n purposes, needed by Translator2!!
 
   private ExecSQLMeta meta;
 
   private ExecSQLData data;
 
-  public ExecSQL( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public ExecSQL( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -96,22 +97,22 @@ public class ExecSQL extends BaseStep implements StepInterface {
 
     if ( !meta.isExecutedEachInputRow() ) {
       RowMetaAndData resultRow =
-          getResultRow( data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta
-              .getReadField() );
+        getResultRow( data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta
+          .getReadField() );
       putRow( resultRow.getRowMeta(), resultRow.getData() );
       setOutputDone(); // Stop processing, this is all we do!
       return false;
     }
 
     Object[] row = getRow();
-    if ( row == null ) // no more input to be expected...
-    {
+    if ( row == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
 
-    if ( first ) // we just got started
-    {
+    if ( first ) { // we just got started
+
       first = false;
 
       data.outputRowMeta = getInputRowMeta().clone();
@@ -124,7 +125,7 @@ public class ExecSQL extends BaseStep implements StepInterface {
         if ( data.argumentIndexes[i] < 0 ) {
           logError( BaseMessages.getString( PKG, "ExecSQL.Log.ErrorFindingField" ) + meta.getArguments()[i] + "]" );
           throw new KettleStepException( BaseMessages.getString( PKG, "ExecSQL.Exception.CouldNotFindField", meta
-              .getArguments()[i] ) );
+            .getArguments()[i] ) );
         }
         if ( meta.isParams() ) {
           if ( i == 0 ) {
@@ -210,8 +211,8 @@ public class ExecSQL extends BaseStep implements StepInterface {
       }
 
       RowMetaAndData add =
-          getResultRow( data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta
-              .getReadField() );
+        getResultRow( data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta
+          .getReadField() );
 
       row = RowDataUtil.addRowData( row, getInputRowMeta().size(), add.getData() );
 

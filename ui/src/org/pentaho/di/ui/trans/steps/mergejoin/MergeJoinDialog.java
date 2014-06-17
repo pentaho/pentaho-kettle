@@ -62,7 +62,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = MergeJoinMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MergeJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_SORT_WARNING_PARAMETER = "MergeJoinSortWarning";
 
@@ -221,12 +221,14 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
     int nrKeyRows1 = ( input.getKeyFields1() != null ? input.getKeyFields1().length : 1 );
 
     ColumnInfo[] ciKeys1 =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "MergeJoinDialog.ColumnInfo.KeyField1" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] { new ColumnInfo(
+        BaseMessages.getString( PKG, "MergeJoinDialog.ColumnInfo.KeyField1" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false ), };
 
     wKeys1 =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKeys1, nrKeyRows1, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKeys1,
+        nrKeyRows1, lsMod, props );
 
     fdKeys1 = new FormData();
     fdKeys1.top = new FormAttachment( wlKeys1, margin );
@@ -261,12 +263,14 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
     int nrKeyRows2 = ( input.getKeyFields2() != null ? input.getKeyFields2().length : 1 );
 
     ColumnInfo[] ciKeys2 =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "MergeJoinDialog.ColumnInfo.KeyField2" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] { new ColumnInfo(
+        BaseMessages.getString( PKG, "MergeJoinDialog.ColumnInfo.KeyField2" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false ), };
 
     wKeys2 =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKeys2, nrKeyRows2, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKeys2,
+        nrKeyRows2, lsMod, props );
 
     fdKeys2 = new FormData();
     fdKeys2.top = new FormAttachment( wlKeys2, margin );
@@ -392,11 +396,13 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 
     meta.allocate( nrKeys1, nrKeys2 );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrKeys1; i++ ) {
       TableItem item = wKeys1.getNonEmpty( i );
       meta.getKeyFields1()[i] = item.getText( 1 );
     }
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrKeys2; i++ ) {
       TableItem item = wKeys2.getNonEmpty( i );
       meta.getKeyFields2()[i] = item.getText( 1 );
@@ -414,13 +420,15 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
     //
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-          new MessageDialogWithToggle( shell,
-              BaseMessages.getString( PKG, "MergeJoinDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString(
-                  PKG, "MergeJoinDialog.InputNeedSort.DialogMessage", Const.CR )
-                  + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG,
-                  "MergeJoinDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString( PKG,
-                  "MergeJoinDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
-                  STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
+        new MessageDialogWithToggle( shell,
+          BaseMessages.getString( PKG, "MergeJoinDialog.InputNeedSort.DialogTitle" ),
+          null,
+          BaseMessages.getString( PKG, "MergeJoinDialog.InputNeedSort.DialogMessage", Const.CR ) + Const.CR,
+          MessageDialog.WARNING,
+          new String[] { BaseMessages.getString( PKG, "MergeJoinDialog.InputNeedSort.Option1" ) },
+          0,
+          BaseMessages.getString( PKG, "MergeJoinDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase(
+            props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_SORT_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );
@@ -447,8 +455,9 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogMessage" ), e );
     }
   }
 
@@ -467,8 +476,9 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "MergeJoinDialog.ErrorGettingFields.DialogMessage" ), e );
     }
   }
 

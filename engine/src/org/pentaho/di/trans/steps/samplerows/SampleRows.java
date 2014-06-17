@@ -36,19 +36,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Sample rows. Filter rows based on line number
- * 
+ *
  * @author Samatar
  * @since 2-jun-2003
  */
 
 public class SampleRows extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SampleRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SampleRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SampleRowsMeta meta;
   private SampleRowsData data;
 
   public SampleRows( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -57,8 +57,8 @@ public class SampleRows extends BaseStep implements StepInterface {
     data = (SampleRowsData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -94,8 +94,8 @@ public class SampleRows extends BaseStep implements StepInterface {
 
         } else if ( rangePart[i].matches( "\\d+\\.\\.\\d+" ) ) {
           String[] rangeMultiPart = rangePart[i].split( "\\.\\." );
-          for ( int j = Integer.valueOf( rangeMultiPart[0] ).intValue(); j < Integer.valueOf( rangeMultiPart[1] )
-              .intValue() + 1; j++ ) {
+          for ( int j = Integer.valueOf( rangeMultiPart[0] ).intValue(); j < Integer
+            .valueOf( rangeMultiPart[1] ).intValue() + 1; j++ ) {
             if ( log.isDebug() ) {
               logDebug( BaseMessages.getString( PKG, "SampleRows.Log.RangeValue", "" + j ) );
             }
@@ -107,7 +107,7 @@ public class SampleRows extends BaseStep implements StepInterface {
           }
         }
       }
-    }// end if first
+    } // end if first
 
     if ( data.considerRow ) {
 
@@ -130,8 +130,8 @@ public class SampleRows extends BaseStep implements StepInterface {
         putRow( data.outputRowMeta, data.outputRow );
 
         if ( log.isRowLevel() ) {
-          logRowlevel( BaseMessages.getString( PKG, "SampleRows.Log.LineNumber", getLinesRead() + " : "
-              + getInputRowMeta().getString( r ) ) );
+          logRowlevel( BaseMessages.getString( PKG, "SampleRows.Log.LineNumber", getLinesRead()
+            + " : " + getInputRowMeta().getString( r ) ) );
         }
       }
 

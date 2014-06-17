@@ -28,15 +28,15 @@ package org.pentaho.di.core.row;
  * occurrences.
  * <p>
  * For example, a step adding a field to the row should always call
- * 
+ *
  * <pre>
  * <a href="">public static Object[] resizeArray(Object[] objects, int newSize)</a></i>
  * </pre>
- * 
+ *
  * which will either physically resize the array or return the original row, in case it was over-allocated and has
  * enough slots. If a step needs to create new rows from scratch, it should use allocateRowData() which will return a
  * somewhat over-allocated object array to fit the desired number of fields.
- * 
+ *
  * @author Matt
  */
 public class RowDataUtil {
@@ -44,7 +44,7 @@ public class RowDataUtil {
 
   /**
    * Allocate a new Object array. However, over allocate by a constant factor to make adding values faster.
-   * 
+   *
    * @param size
    *          the minimum size to allocate.
    * @return the newly allocated object array
@@ -55,7 +55,7 @@ public class RowDataUtil {
 
   /**
    * Resize an object array making it bigger, over allocate, return the original array if there's enough room.
-   * 
+   *
    * @param objects
    * @param newSize
    * @return A new object array, resized.
@@ -76,7 +76,7 @@ public class RowDataUtil {
   /**
    * Resize an object array making it bigger, over allocate, always create a copy of the original array, even if there's
    * enough room in the old one.
-   * 
+   *
    * @param objects
    *          the original row
    * @param newSize
@@ -100,7 +100,7 @@ public class RowDataUtil {
 
   /**
    * This method concatenates data from an array of rows, each with their own specific length.
-   * 
+   *
    * @param objects
    * @param lengths
    * @return The concatenated array of objects.
@@ -128,7 +128,7 @@ public class RowDataUtil {
   /**
    * Remove an item from an Object array. This is a slow operation, later we want to just flag this object and discard
    * it at the next resize. The question is of-course if it makes that much of a difference in the end.
-   * 
+   *
    * @param objects
    * @param index
    * @return
@@ -142,7 +142,7 @@ public class RowDataUtil {
 
   /**
    * Add two arrays and make one new one.
-   * 
+   *
    * @param one
    *          The first array
    * @param the
@@ -161,7 +161,7 @@ public class RowDataUtil {
 
   /**
    * Add a single value to a row of data
-   * 
+   *
    * @param rowData
    *          The original row of data
    * @param the
@@ -179,7 +179,7 @@ public class RowDataUtil {
 
   /**
    * Remove a number of items in a row of data.
-   * 
+   *
    * @param rowData
    *          the row of data to remove from
    * @param index

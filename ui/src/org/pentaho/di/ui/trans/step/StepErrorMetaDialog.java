@@ -56,15 +56,15 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 
 /**
- * 
+ *
  * Dialog that allows you to edit the step error handling meta-data
- * 
+ *
  * @author Matt
  * @since 31-10-2006
- * 
+ *
  */
 public class StepErrorMetaDialog extends Dialog {
-  private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!
 
   private StepErrorMeta stepErrorMeta;
   private List<StepMeta> targetSteps;
@@ -93,7 +93,8 @@ public class StepErrorMetaDialog extends Dialog {
 
   private TransMeta transMeta;
 
-  public StepErrorMetaDialog( Shell par, StepErrorMeta stepErrorMeta, TransMeta transMeta, List<StepMeta> targetSteps ) {
+  public StepErrorMetaDialog( Shell par, StepErrorMeta stepErrorMeta, TransMeta transMeta,
+    List<StepMeta> targetSteps ) {
     super( par, SWT.NONE );
     this.stepErrorMeta = stepErrorMeta.clone();
     this.originalStepErrorMeta = stepErrorMeta;

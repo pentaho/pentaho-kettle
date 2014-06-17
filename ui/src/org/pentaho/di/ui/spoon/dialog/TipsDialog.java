@@ -50,7 +50,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 
 public class TipsDialog extends Dialog {
-  private static Class<?> PKG = TipsDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TipsDialog.class; // for i18n purposes, needed by Translator2!!
 
   private String title, message;
 
@@ -224,7 +224,7 @@ public class TipsDialog extends Dialog {
 
   /**
    * Create Close and Next button on the dialog.
-   * 
+   *
    * @param parent
    *          shell on which to put the buttons.
    */

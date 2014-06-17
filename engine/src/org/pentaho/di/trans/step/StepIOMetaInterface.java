@@ -46,14 +46,14 @@ public interface StepIOMetaInterface {
 
   /**
    * Replace the info steps with the supplied source steps.
-   * 
+   *
    * @param infoSteps
    */
   public void setInfoSteps( StepMeta[] infoSteps );
 
   /**
    * Add a stream to the steps I/O interface
-   * 
+   *
    * @param stream
    *          The stream to add
    */
@@ -61,7 +61,7 @@ public interface StepIOMetaInterface {
 
   /**
    * Set the general info stream description
-   * 
+   *
    * @param string
    *          the info streams description
    */
@@ -69,7 +69,7 @@ public interface StepIOMetaInterface {
 
   /**
    * Set the general target stream description
-   * 
+   *
    * @param string
    *          the target streams description
    */

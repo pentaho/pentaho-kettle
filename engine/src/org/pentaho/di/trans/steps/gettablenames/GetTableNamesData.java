@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 public class GetTableNamesData extends BaseStepData implements StepDataInterface {
   public Database db;
@@ -48,9 +48,6 @@ public class GetTableNamesData extends BaseStepData implements StepDataInterface
 
   public Object[] readrow;
 
-  /**
-	 * 
-	 */
   public GetTableNamesData() {
     super();
     db = null;

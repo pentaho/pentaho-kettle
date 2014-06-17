@@ -31,7 +31,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class NormaliserData extends BaseStepData implements StepDataInterface {
   public List<String> type_occ;
@@ -42,9 +42,6 @@ public class NormaliserData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface inputRowMeta;
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public NormaliserData() {
     super();
 

@@ -26,10 +26,10 @@ import org.apache.commons.vfs.FileObject;
 
 /**
  * Contains the occurrence of a key in a java source code file
- * 
+ *
  * @author matt
  * @since 2007-09-29
- * 
+ *
  */
 
 public class KeyOccurrence implements Comparable<KeyOccurrence> {
@@ -78,9 +78,6 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
    */
   private String sourceLine;
 
-  /**
-	 * 
-	 */
   public KeyOccurrence() {
     occurrences = 0;
   }
@@ -100,7 +97,7 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
    *          The arguments from the source code
    */
   public KeyOccurrence( FileObject fileObject, String sourceFolder, String messagesPackage, int row, int column,
-      String key, String arguments, String sourceLine ) {
+    String key, String arguments, String sourceLine ) {
     this();
     this.fileObject = fileObject;
     this.sourceFolder = sourceFolder;
@@ -124,8 +121,9 @@ public class KeyOccurrence implements Comparable<KeyOccurrence> {
     if ( this == occ ) {
       return true;
     }
-    return sourceFolder.equals( ( (KeyOccurrence) occ ).sourceFolder ) && key.equals( ( (KeyOccurrence) occ ).key )
-        && messagesPackage.equals( ( (KeyOccurrence) occ ).messagesPackage );
+    return sourceFolder.equals( ( (KeyOccurrence) occ ).sourceFolder )
+      && key.equals( ( (KeyOccurrence) occ ).key )
+      && messagesPackage.equals( ( (KeyOccurrence) occ ).messagesPackage );
   }
 
   public int compareTo( KeyOccurrence occ ) {

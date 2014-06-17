@@ -38,6 +38,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.i18n.BaseMessages;
@@ -52,19 +53,22 @@ import org.pentaho.di.trans.steps.memgroupby.MemoryGroupByData.HashEntry;
 
 /**
  * Groups informations based on aggregation rules. (sum, count, ...)
- * 
+ *
  * @author Matt
  * @since 2-jun-2003
  */
 public class MemoryGroupBy extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MemoryGroupByMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MemoryGroupByMeta.class; // for i18n purposes, needed by Translator2!!
 
   private MemoryGroupByMeta meta;
 
   private MemoryGroupByData data;
 
+  private boolean allNullsAreZero = false;
+  private boolean minNullIsValued = false;
+
   public MemoryGroupBy( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (MemoryGroupByMeta) getStepMeta().getStepMetaInterface();
@@ -77,6 +81,10 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
 
     Object[] r = getRow(); // get row!
     if ( first ) {
+      String val = getVariable( Const.KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO, "N" );
+      allNullsAreZero = ValueMetaBase.convertStringToBoolean( val );
+      val = getVariable( Const.KETTLE_AGGREGATION_MIN_NULL_IS_VALUED, "N" );
+      minNullIsValued = ValueMetaBase.convertStringToBoolean( val );
 
       // What is the output looking like?
       //
@@ -107,7 +115,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
         }
         if ( data.subjectnrs[i] < 0 ) {
           logError( BaseMessages.getString( PKG, "MemoryGroupBy.Log.AggregateSubjectFieldCouldNotFound", meta
-              .getSubjectField()[i] ) );
+            .getSubjectField()[i] ) );
           setErrors( 1 );
           stopAll();
           return false;
@@ -118,7 +126,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
       for ( int i = 0; i < meta.getGroupField().length; i++ ) {
         data.groupnrs[i] = data.inputRowMeta.indexOfValue( meta.getGroupField()[i] );
         if ( data.groupnrs[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "MemoryGroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[i] ) );
+          logError( BaseMessages.getString(
+            PKG, "MemoryGroupBy.Log.GroupFieldCouldNotFound", meta.getGroupField()[i] ) );
           setErrors( 1 );
           stopAll();
           return false;
@@ -203,8 +212,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
       }
       for ( int i = 0; i < data.aggMeta.size(); i++ ) {
         if ( meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL
-            || meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY
-            || meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT ) {
+          || meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY
+          || meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT ) {
           outputRowData[index++] = Long.valueOf( 0L );
         } else {
           outputRowData[index++] = null;
@@ -214,9 +223,13 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     }
   }
 
-  // Calculate the aggregates in the row...
+  /**
+   * Used for junits in MemoryGroupByAggregationNullsTest
+   * @param r
+   * @throws KettleException
+   */
   @SuppressWarnings( "unchecked" )
-  private void addToAggregate( Object[] r ) throws KettleException {
+  void addToAggregate( Object[] r ) throws KettleException {
     // First, look up the row in the map...
     //
     Object[] groupData = new Object[data.groupMeta.size()];
@@ -267,7 +280,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           aggregate.counts[i]++;
           double n = aggregate.counts[i];
           double x = subjMeta.getNumber( subj );
-          double sum = (Double) value;
+          // for standard deviation null is exact 0
+          double sum = value == null ? new Double( 0 ) : (Double) value;
           double mean = aggregate.mean[i];
 
           double delta = x - mean;
@@ -288,6 +302,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
             Object obj = subjMeta.convertToNormalStorageType( subj );
             if ( !aggregate.distinctObjs[i].contains( obj ) ) {
               aggregate.distinctObjs[i].add( obj );
+              // null is exact 0, or we will not be able to ++.
+              value = value == null ? new Long( 0 ) : value;
               aggregate.agg[i] = (Long) value + 1;
             }
           }
@@ -301,6 +317,10 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           aggregate.counts[i]++;
           break;
         case MemoryGroupByMeta.TYPE_GROUP_MIN:
+          if ( subj == null && !minNullIsValued ) {
+            // PDI-11530 do not compare null
+            break;
+          }
           if ( subjMeta.compare( subj, valueMeta, value ) < 0 ) {
             aggregate.agg[i] = subj;
           }
@@ -357,8 +377,13 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     }
   }
 
-  // Initialize a group..
-  private void newAggregate( Object[] r, Aggregate aggregate ) throws KettleException {
+  /**
+   * Used for junits in MemoryGroupByNewAggregateTest
+   * @param r
+   * @param aggregate
+   * @throws KettleException
+   */
+  void newAggregate( Object[] r, Aggregate aggregate ) throws KettleException {
     if ( aggregate == null ) {
       data.aggMeta = new RowMeta();
     } else {
@@ -387,13 +412,11 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
         case MemoryGroupByMeta.TYPE_GROUP_AVERAGE:
         case MemoryGroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
           vMeta = new ValueMeta( meta.getAggregateField()[i], ValueMetaInterface.TYPE_NUMBER );
-          v = new Double( 0.0 );
           break;
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY:
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL:
           vMeta = new ValueMeta( meta.getAggregateField()[i], ValueMetaInterface.TYPE_INTEGER );
-          v = new Long( 0L );
           break;
         case MemoryGroupByMeta.TYPE_GROUP_FIRST:
         case MemoryGroupByMeta.TYPE_GROUP_LAST:
@@ -418,16 +441,14 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
       }
 
       if ( meta.getAggregateType()[i] != MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL
-          && meta.getAggregateType()[i] != MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT
-          && meta.getAggregateType()[i] != MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY ) {
+        && meta.getAggregateType()[i] != MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT
+        && meta.getAggregateType()[i] != MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY ) {
         vMeta.setLength( subjMeta.getLength(), subjMeta.getPrecision() );
       }
       if ( aggregate == null ) {
         data.aggMeta.addValueMeta( vMeta );
       } else {
-        if ( v != null ) {
-          aggregate.agg[i] = v;
-        }
+        aggregate.agg[i] = v;
       }
     }
   }
@@ -447,7 +468,13 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     return;
   }
 
-  private Object[] getAggregateResult( Aggregate aggregate ) throws KettleValueException {
+  /**
+   * Used for junits in MemoryGroupByAggregationNullsTest
+   * @param aggregate
+   * @return
+   * @throws KettleValueException
+   */
+  Object[] getAggregateResult( Aggregate aggregate ) throws KettleValueException {
     Object[] result = new Object[data.subjectnrs.length];
 
     if ( data.subjectnrs != null ) {
@@ -458,8 +485,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
             break;
           case MemoryGroupByMeta.TYPE_GROUP_AVERAGE:
             ag =
-                ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta( "c",
-                    ValueMetaInterface.TYPE_INTEGER ), new Long( aggregate.counts[i] ) );
+              ValueDataUtil.divide( data.aggMeta.getValueMeta( i ), ag, new ValueMeta(
+                "c", ValueMetaInterface.TYPE_INTEGER ), new Long( aggregate.counts[i] ) );
             break;
           case MemoryGroupByMeta.TYPE_GROUP_MEDIAN:
           case MemoryGroupByMeta.TYPE_GROUP_PERCENTILE:
@@ -496,6 +523,11 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           default:
             break;
         }
+        if ( ag == null && allNullsAreZero ) {
+          // PDI-11530 seems all rows for min function was nulls...
+          ValueMetaInterface vm = data.aggMeta.getValueMeta( i );
+          ag = ValueDataUtil.getZeroForValueMetaType( vm );
+        }
         result[i] = ag;
       }
     }
@@ -516,6 +548,12 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     return false;
   }
 
+  @Override
+  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
+    super.dispose( smi, sdi );
+    ( (MemoryGroupByData) sdi ).clear();
+  }
+
   public void batchComplete() throws KettleException {
     // Empty the hash table
     //
@@ -526,5 +564,21 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
     data.map.clear();
 
     data.newBatch = true;
+  }
+
+  /**
+   * Used for junits in MemoryGroupByAggregationNullsTest
+   * @param allNullsAreZero the allNullsAreZero to set
+   */
+  void setAllNullsAreZero( boolean allNullsAreZero ) {
+    this.allNullsAreZero = allNullsAreZero;
+  }
+
+  /**
+   * Used for junits in MemoryGroupByAggregationNullsTest
+   * @param minNullIsValued the minNullIsValued to set
+   */
+  void setMinNullIsValued( boolean minNullIsValued ) {
+    this.minNullIsValued = minNullIsValued;
   }
 }

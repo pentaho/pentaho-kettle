@@ -75,7 +75,8 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable {
   public StepPartitioningMeta clone() {
     try {
       StepPartitioningMeta stepPartitioningMeta =
-          new StepPartitioningMeta( method, partitionSchema != null ? (PartitionSchema) partitionSchema.clone() : null );
+        new StepPartitioningMeta( method, partitionSchema != null
+          ? (PartitionSchema) partitionSchema.clone() : null );
       stepPartitioningMeta.partitionSchemaName = partitionSchemaName;
       stepPartitioningMeta.setMethodType( methodType );
       stepPartitioningMeta.setPartitioner( partitioner == null ? null : partitioner.clone() );
@@ -145,7 +146,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable {
     xml.append( "         <partitioning>" ).append( Const.CR );
     xml.append( "           " ).append( XMLHandler.addTagValue( "method", getMethodCode() ) );
     xml.append( "           " ).append(
-        XMLHandler.addTagValue( "schema_name", partitionSchema != null ? partitionSchema.getName() : "" ) );
+      XMLHandler.addTagValue( "schema_name", partitionSchema != null ? partitionSchema.getName() : "" ) );
     if ( partitioner != null ) {
       xml.append( partitioner.getXML() );
     }
@@ -230,7 +231,8 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable {
       }
     }
 
-    PluginInterface plugin = PluginRegistry.getInstance().findPluginWithId( PartitionerPluginType.class, description );
+    PluginInterface plugin =
+      PluginRegistry.getInstance().findPluginWithId( PartitionerPluginType.class, description );
     if ( plugin != null ) {
       return PARTITIONING_METHOD_SPECIAL;
     }
@@ -263,7 +265,7 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable {
 
   /**
    * Set the partitioning schema after loading from XML or repository
-   * 
+   *
    * @param partitionSchemas
    *          the list of partitioning schemas
    */

@@ -51,12 +51,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Shows a dialog that allows you to select the steps you want to preview by entering a number of rows.
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public class EnterPreviewRowsDialog extends Dialog {
-  private static Class<?> PKG = EnterPreviewRowsDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = EnterPreviewRowsDialog.class; // for i18n purposes, needed by Translator2!!
 
   private String stepname;
 
@@ -74,7 +74,7 @@ public class EnterPreviewRowsDialog extends Dialog {
   private PropsUI props;
 
   public EnterPreviewRowsDialog( Shell parent, int style, java.util.List<String> stepNames,
-      java.util.List<RowMetaInterface> rowMetas, java.util.List<java.util.List<Object[]>> rowBuffers ) {
+    java.util.List<RowMetaInterface> rowMetas, java.util.List<java.util.List<Object[]>> rowBuffers ) {
     super( parent, style );
     this.stepNames = stepNames;
     this.rowDatas = rowBuffers;
@@ -204,7 +204,7 @@ public class EnterPreviewRowsDialog extends Dialog {
 
     if ( rowMeta != null && buffer != null && buffer.size() > 0 ) {
       PreviewRowsDialog prd =
-          new PreviewRowsDialog( shell, Variables.getADefaultVariableSpace(), SWT.NONE, name, rowMeta, buffer );
+        new PreviewRowsDialog( shell, Variables.getADefaultVariableSpace(), SWT.NONE, name, rowMeta, buffer );
       prd.open();
     } else {
       MessageBox mb = new MessageBox( shell, SWT.ICON_INFORMATION | SWT.OK );

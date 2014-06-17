@@ -67,12 +67,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the XSLT job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 02-03-2007
  */
 public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryXSLT.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryXSLT.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILETYPES_XML = new String[] {
     BaseMessages.getString( PKG, "JobEntryXSLT.Filetype.Xml" ),
@@ -583,17 +583,20 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
     final int OutputPropertiesRows = jobEntry.getOutputPropertyName().length;
 
     colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.OutputProperties.Name" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.OutputProperties.Value" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.OutputProperties.Name" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.OutputProperties.Value" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
     colinf[0].setComboValues( XsltMeta.outputProperties );
     colinf[1].setUsingVariables( true );
 
     wOutputProperties =
-        new TableView( jobMeta, wAdvancedComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
-            OutputPropertiesRows, lsMod, props );
+      new TableView(
+        jobMeta, wAdvancedComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, OutputPropertiesRows,
+        lsMod, props );
     fdOutputProperties = new FormData();
     fdOutputProperties.left = new FormAttachment( 0, 0 );
     fdOutputProperties.top = new FormAttachment( wlOutputProperties, margin );
@@ -614,17 +617,18 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
     final int FieldsRows = jobEntry.getParameterField().length;
 
     colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT,
-              false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.Parameter" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "XsltDialog.ColumnInfo.Parameter" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ), };
     colinf[1].setUsingVariables( true );
     colinf[0].setUsingVariables( true );
 
     wFields =
-        new TableView( jobMeta, wAdvancedComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+      new TableView(
+        jobMeta, wAdvancedComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
     fdFields.top = new FormAttachment( wlFields, margin );
@@ -792,6 +796,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
     int nroutputprops = wOutputProperties.nrNonEmpty();
     jobEntry.allocate( nrparams, nroutputprops );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrparams; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       jobEntry.getParameterField()[i] = item.getText( 1 );

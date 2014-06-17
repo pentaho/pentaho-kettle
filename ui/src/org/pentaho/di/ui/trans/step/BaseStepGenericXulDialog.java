@@ -33,6 +33,9 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.repository.Repository;
@@ -60,10 +63,10 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
  * User: gmoran Date: Jan 28, 2013
  */
 public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler implements StepDialogInterface {
-  // private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  // private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!
 
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Step dialog",
-      LoggingObjectType.STEPDIALOG, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+    "Step dialog", LoggingObjectType.STEPDIALOG, null );
 
   protected static VariableSpace variables = new Variables();
 
@@ -99,8 +102,10 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
 
   protected BindingFactory bf;
 
+  private PluginInterface plugin;
+
   public BaseStepGenericXulDialog( String xulFile, Object parent, BaseStepMeta baseStepMeta, TransMeta transMeta,
-      String stepname ) {
+                                   String stepname ) {
 
     this.log = new LogChannel( baseStepMeta );
     this.transMeta = transMeta;
@@ -124,13 +129,12 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
   /**
    * The implementors of this method should call the sibling method initializeXul(XulLoder, BindingFactory, XulRunner,
    * parent) with the desired Xul implementation classes - SWT or Swing.
-   * 
+   *
    * @throws XulException
    */
   protected abstract void initializeXul() throws XulException;
 
-  protected void initializeXul( XulLoader loader, BindingFactory bindingFactory, XulRunner runner, Object parent )
-    throws XulException {
+  protected void initializeXul( XulLoader loader, BindingFactory bindingFactory, XulRunner runner, Object parent ) throws XulException {
     bf = bindingFactory;
     this.runner = runner;
     loader.registerClassLoader( getClass().getClassLoader() );
@@ -239,6 +243,8 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
   public abstract void onAccept();
 
   public abstract void onCancel();
+
+  public void onHelp() {  }
 
   protected abstract Class<?> getClassForMessages();
 
@@ -350,6 +356,13 @@ public abstract class BaseStepGenericXulDialog extends AbstractXulEventHandler i
 
   public void setMetaStore( IMetaStore metaStore ) {
     this.metaStore = metaStore;
+  }
+
+  protected PluginInterface getPlugin() {
+    if ( plugin == null ) {
+      plugin = PluginRegistry.getInstance().getPlugin( StepPluginType.class, stepMeta.getStepMetaInterface() );
+    }
+    return plugin;
   }
 
 }

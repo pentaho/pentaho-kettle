@@ -31,7 +31,7 @@ public interface RowSet {
   /**
    * Offer a row of data to this rowset providing for the description (metadata) of the row. If the buffer is full, wait
    * (block) for a small period of time.
-   * 
+   *
    * @param rowMeta
    *          The description of the row data
    * @param rowData
@@ -43,7 +43,7 @@ public interface RowSet {
   /**
    * Offer a row of data to this rowset providing for the description (metadata) of the row. If the buffer is full, wait
    * (block) for a period of time defined in this call.
-   * 
+   *
    * @param rowMeta
    *          The description of the row data
    * @param rowData
@@ -59,21 +59,21 @@ public interface RowSet {
   /**
    * Get a row from the input buffer, it blocks for a short period until a new row becomes available. Otherwise, it
    * returns null.
-   * 
+   *
    * @return a row of data or null if no row is available.
    */
   public abstract Object[] getRow();
 
   /**
    * Get the first row in the list immediately.
-   * 
+   *
    * @return a row of data or null if no row is available.
    */
   public abstract Object[] getRowImmediate();
 
   /**
    * get the first row in the list immediately if it is available or wait until timeout
-   * 
+   *
    * @return a row of data or null if no row is available.
    */
   public abstract Object[] getRowWait( long timeout, TimeUnit tu );
@@ -111,7 +111,7 @@ public interface RowSet {
   public abstract String getName();
 
   /**
-   * 
+   *
    * @return Return the size (or max capacity) of the RowSet
    */
   public abstract int size();
@@ -119,7 +119,7 @@ public interface RowSet {
   /**
    * This method is used only in Trans.java when created RowSet at line 333. Don't need any synchronization on this
    * method
-   * 
+   *
    */
   public abstract void setThreadNameFromToCopy( String from, int from_copy, String to, int to_copy );
 

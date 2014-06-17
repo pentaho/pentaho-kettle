@@ -30,7 +30,7 @@ import org.pentaho.di.core.gui.GUIOption;
 
 /**
  * Plugins of this type can extend to capabilities of the PluginRegiestry
- * 
+ *
  * User: nbaker Date: 3/14/11
  */
 @PluginMainClassType( PluginRegistryExtension.class )
@@ -112,6 +112,11 @@ public class PluginRegistryPluginType extends BasePluginType implements PluginTy
   @Override
   protected String extractForumUrl( Annotation annotation ) {
     return null;
+  }
+
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (RegistryPlugin) annotation ).classLoaderGroup();
   }
 
 }

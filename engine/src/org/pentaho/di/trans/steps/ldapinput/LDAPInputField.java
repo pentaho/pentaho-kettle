@@ -31,12 +31,12 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Describes an LDAP Input
- * 
+ *
  * @author Samatar Hassan
  * @since 21-09-2007
  */
 public class LDAPInputField implements Cloneable {
-  private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String ATTRIBUTE_OBJECT_SID = "objectSid";
 
@@ -56,7 +56,8 @@ public class LDAPInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "LDAPInputField.TrimType.None" ),
+  public static final String[] trimTypeDesc = {
+    BaseMessages.getString( PKG, "LDAPInputField.TrimType.None" ),
     BaseMessages.getString( PKG, "LDAPInputField.TrimType.Left" ),
     BaseMessages.getString( PKG, "LDAPInputField.TrimType.Right" ),
     BaseMessages.getString( PKG, "LDAPInputField.TrimType.Both" ) };

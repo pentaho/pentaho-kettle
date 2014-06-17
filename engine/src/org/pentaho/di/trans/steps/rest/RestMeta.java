@@ -54,14 +54,14 @@ import org.w3c.dom.Node;
 /**
  * @author Samatar
  * @since 16-jan-2011
- * 
+ *
  */
 
 public class RestMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!!
 
-  public static final String[] APPLICATION_TYPES = new String[] { "TEXT PLAIN", "XML", "JSON", "OCTET STREAM", "XHTML",
-    "FORM URLENCODED", "ATOM XML", "SVG XML", "TEXT XML" };
+  public static final String[] APPLICATION_TYPES = new String[] {
+    "TEXT PLAIN", "XML", "JSON", "OCTET STREAM", "XHTML", "FORM URLENCODED", "ATOM XML", "SVG XML", "TEXT XML" };
   public static final String APPLICATION_TYPE_TEXT_PLAIN = "TEXT PLAIN";
   public static final String APPLICATION_TYPE_XML = "XML";
   public static final String APPLICATION_TYPE_JSON = "JSON";
@@ -375,7 +375,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( !Const.isEmpty( fieldName ) ) {
       ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( fieldName ), ValueMeta.TYPE_STRING );
       v.setOrigin( name );
@@ -383,13 +383,14 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     if ( !Const.isEmpty( resultCodeFieldName ) ) {
-      ValueMetaInterface v = new ValueMeta( space.environmentSubstitute( resultCodeFieldName ), ValueMeta.TYPE_INTEGER );
+      ValueMetaInterface v =
+        new ValueMeta( space.environmentSubstitute( resultCodeFieldName ), ValueMeta.TYPE_INTEGER );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
     if ( !Const.isEmpty( responseTimeFieldName ) ) {
       ValueMetaInterface v =
-          new ValueMeta( space.environmentSubstitute( responseTimeFieldName ), ValueMeta.TYPE_INTEGER );
+        new ValueMeta( space.environmentSubstitute( responseTimeFieldName ), ValueMeta.TYPE_INTEGER );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
@@ -407,16 +408,18 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " + XMLHandler.addTagValue( "urlField", urlField ) );
     retval.append( "    " + XMLHandler.addTagValue( "bodyField", bodyField ) );
     retval.append( "    " + XMLHandler.addTagValue( "httpLogin", httpLogin ) );
-    retval.append( "    " + XMLHandler.addTagValue( "httpPassword", httpPassword ) );
     retval.append( "    "
-        + XMLHandler.addTagValue( "httpPassword", Encr.encryptPasswordIfNotUsingVariables( httpPassword ) ) );
+      + XMLHandler.addTagValue( "httpPassword", Encr.encryptPasswordIfNotUsingVariables( httpPassword ) ) );
 
     retval.append( "    " + XMLHandler.addTagValue( "proxyHost", proxyHost ) );
     retval.append( "    " + XMLHandler.addTagValue( "proxyPort", proxyPort ) );
     retval.append( "    " + XMLHandler.addTagValue( "preemptive", preemptive ) );
 
     retval.append( "    " + XMLHandler.addTagValue( "trustStoreFile", trustStoreFile ) );
-    retval.append( "    " + XMLHandler.addTagValue( "trustStorePassword", trustStorePassword ) );
+    retval
+        .append( "    "
+            + XMLHandler.addTagValue( "trustStorePassword", Encr
+                .encryptPasswordIfNotUsingVariables( trustStorePassword ) ) );
 
     retval.append( "    <headers>" + Const.CR );
     for ( int i = 0; i < headerName.length; i++ ) {
@@ -464,7 +467,8 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       preemptive = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "preemptive" ) );
 
       trustStoreFile = XMLHandler.getTagValue( stepnode, "trustStoreFile" );
-      trustStorePassword = XMLHandler.getTagValue( stepnode, "trustStorePassword" );
+      trustStorePassword =
+          Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "trustStorePassword" ) );
 
       Node headernode = XMLHandler.getSubNode( stepnode, "headers" );
       int nrheaders = XMLHandler.countNodes( headernode, "header" );
@@ -491,8 +495,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       applicationType = rep.getStepAttributeString( id_step, "applicationType" );
       method = rep.getStepAttributeString( id_step, "method" );
@@ -504,13 +507,15 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       urlField = rep.getStepAttributeString( id_step, "urlField" );
       bodyField = rep.getStepAttributeString( id_step, "bodyField" );
       httpLogin = rep.getStepAttributeString( id_step, "httpLogin" );
-      httpPassword = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "httpPassword" ) );
+      httpPassword =
+        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "httpPassword" ) );
 
       proxyHost = rep.getStepAttributeString( id_step, "proxyHost" );
       proxyPort = rep.getStepAttributeString( id_step, "proxyPort" );
 
       trustStoreFile = rep.getStepAttributeString( id_step, "trustStoreFile" );
-      trustStorePassword = rep.getStepAttributeString( id_step, "trustStorePassword" );
+      trustStorePassword =
+          Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "trustStorePassword" ) );
 
       preemptive = rep.getStepAttributeBoolean( id_step, "preemptive" );
       int nrheaders = rep.countNrStepAttributes( id_step, "header_field" );
@@ -530,12 +535,12 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       resultCodeFieldName = rep.getStepAttributeString( id_step, "result_code" );
       responseTimeFieldName = rep.getStepAttributeString( id_step, "response_time" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "RestMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "RestMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "applicationType", applicationType );
       rep.saveStepAttribute( id_transformation, id_step, "method", method );
@@ -548,13 +553,14 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "bodyField", bodyField );
       rep.saveStepAttribute( id_transformation, id_step, "httpLogin", httpLogin );
       rep.saveStepAttribute( id_transformation, id_step, "httpPassword", Encr
-          .encryptPasswordIfNotUsingVariables( httpPassword ) );
+        .encryptPasswordIfNotUsingVariables( httpPassword ) );
 
       rep.saveStepAttribute( id_transformation, id_step, "proxyHost", proxyHost );
       rep.saveStepAttribute( id_transformation, id_step, "proxyPort", proxyPort );
 
       rep.saveStepAttribute( id_transformation, id_step, "trustStoreFile", trustStoreFile );
-      rep.saveStepAttribute( id_transformation, id_step, "trustStorePassword", trustStorePassword );
+      rep.saveStepAttribute( id_transformation, id_step, "trustStorePassword", Encr
+          .encryptPasswordIfNotUsingVariables( trustStorePassword ) );
 
       rep.saveStepAttribute( id_transformation, id_step, "preemptive", preemptive );
       for ( int i = 0; i < headerName.length; i++ ) {
@@ -569,24 +575,25 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "result_code", resultCodeFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "response_time", responseTimeFieldName );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "RestMeta.Exception.UnableToSaveStepInfo" ) + id_step, e );
+      throw new KettleException( BaseMessages.getString( PKG, "RestMeta.Exception.UnableToSaveStepInfo" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "RestMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "RestMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "RestMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "RestMeta.CheckResult.NoInpuReceived" ), stepMeta );
     }
     remarks.add( cr );
 
@@ -594,23 +601,23 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     if ( urlInField ) {
       if ( Const.isEmpty( urlField ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RestMeta.CheckResult.UrlfieldMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "RestMeta.CheckResult.UrlfieldMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RestMeta.CheckResult.UrlfieldOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "RestMeta.CheckResult.UrlfieldOk" ), stepMeta );
       }
 
     } else {
       if ( Const.isEmpty( url ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RestMeta.CheckResult.UrlMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "RestMeta.CheckResult.UrlMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "RestMeta.CheckResult.UrlOk" ),
-                stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages
+            .getString( PKG, "RestMeta.CheckResult.UrlOk" ), stepMeta );
       }
     }
     remarks.add( cr );
@@ -619,31 +626,31 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     if ( dynamicMethod ) {
       if ( Const.isEmpty( methodFieldName ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RestMeta.CheckResult.MethodFieldMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "RestMeta.CheckResult.MethodFieldMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RestMeta.CheckResult.MethodFieldOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "RestMeta.CheckResult.MethodFieldOk" ), stepMeta );
       }
 
     } else {
       if ( Const.isEmpty( method ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RestMeta.CheckResult.MethodMissing" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "RestMeta.CheckResult.MethodMissing" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK,
-                BaseMessages.getString( PKG, "RestMeta.CheckResult.MethodOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "RestMeta.CheckResult.MethodOk" ), stepMeta );
       }
     }
     remarks.add( cr );
 
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new Rest( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -672,7 +679,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param proxyHost
    */
   public void setProxyHost( String proxyHost ) {
@@ -681,7 +688,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Getter
-   * 
+   *
    * @return
    */
   public String getProxyHost() {
@@ -690,7 +697,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param proxyPort
    */
   public void setProxyPort( String proxyPort ) {
@@ -699,7 +706,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Getter
-   * 
+   *
    * @return
    */
   public String getProxyPort() {
@@ -708,7 +715,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param httpLogin
    */
   public void setApplicationType( String applicationType ) {
@@ -717,7 +724,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Getter
-   * 
+   *
    * @return
    */
   public String getApplicationType() {
@@ -726,7 +733,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param httpLogin
    */
   public void setHttpLogin( String httpLogin ) {
@@ -735,7 +742,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Getter
-   * 
+   *
    * @return
    */
   public String getHttpLogin() {
@@ -744,7 +751,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param httpPassword
    */
   public void setHttpPassword( String httpPassword ) {
@@ -752,7 +759,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getHttpPassword() {
@@ -761,7 +768,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param trustStoreFile
    */
   public void setTrustStoreFile( String trustStoreFile ) {
@@ -769,7 +776,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * 
+   *
    * @return trustStoreFile
    */
   public String getTrustStoreFile() {
@@ -778,7 +785,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Setter
-   * 
+   *
    * @param trustStorePassword
    */
   public void setTrustStorePassword( String trustStorePassword ) {
@@ -786,7 +793,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * 
+   *
    * @return trustStorePassword
    */
   public String getTrustStorePassword() {
@@ -806,7 +813,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       return false;
     }
     return ( method.equals( HTTP_METHOD_POST ) || method.equals( HTTP_METHOD_PUT ) )
-        || method.equals( HTTP_METHOD_DELETE );
+      || method.equals( HTTP_METHOD_DELETE );
   }
 
   public static boolean isActiveParameters( String method ) {
@@ -814,6 +821,6 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       return false;
     }
     return ( method.equals( HTTP_METHOD_POST ) || method.equals( HTTP_METHOD_PUT ) || method
-        .equals( HTTP_METHOD_DELETE ) );
+      .equals( HTTP_METHOD_DELETE ) );
   }
 }

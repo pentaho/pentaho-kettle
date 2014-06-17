@@ -50,11 +50,11 @@ import org.w3c.dom.Node;
 
 /**
  * Maps String values of a certain field to new values
- * 
+ *
  * Created on 03-apr-2006
  */
 public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = ValueMapperMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ValueMapperMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String fieldToUse;
   private String targetField;
@@ -139,8 +139,8 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
         targetValue[i] = XMLHandler.getTagValue( fnode, "target_value" );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "ValueMapperMeta.RuntimeError.UnableToReadXML.VALUEMAPPER0004" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "ValueMapperMeta.RuntimeError.UnableToReadXML.VALUEMAPPER0004" ), e );
     }
   }
 
@@ -156,7 +156,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) {
     ValueMetaInterface extra = null;
     if ( !Const.isEmpty( getTargetField() ) ) {
       extra = new ValueMeta( getTargetField(), ValueMetaInterface.TYPE_STRING );
@@ -212,8 +212,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       fieldToUse = rep.getStepAttributeString( id_step, "field_to_use" );
       targetField = rep.getStepAttributeString( id_step, "target_field" );
@@ -228,13 +227,12 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
         targetValue[i] = rep.getStepAttributeString( id_step, i, "target_value" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "ValueMapperMeta.RuntimeError.UnableToReadRepository.VALUEMAPPER0005" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "ValueMapperMeta.RuntimeError.UnableToReadRepository.VALUEMAPPER0005" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "field_to_use", fieldToUse );
       rep.saveStepAttribute( id_transformation, id_step, "target_field", targetField );
@@ -245,44 +243,44 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "target_value", targetValue[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "ValueMapperMeta.RuntimeError.UnableToSaveRepository.VALUEMAPPER0006", "" + id_step ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "ValueMapperMeta.RuntimeError.UnableToSaveRepository.VALUEMAPPER0006", "" + id_step ), e );
     }
 
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "ValueMapperMeta.CheckResult.NotReceivingFieldsFromPreviousSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "ValueMapperMeta.CheckResult.NotReceivingFieldsFromPreviousSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ValueMapperMeta.CheckResult.ReceivingFieldsFromPreviousSteps", "" + prev.size() ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ValueMapperMeta.CheckResult.ReceivingFieldsFromPreviousSteps", "" + prev.size() ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ValueMapperMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ValueMapperMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ValueMapperMeta.CheckResult.NotReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "ValueMapperMeta.CheckResult.NotReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new ValueMapper( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

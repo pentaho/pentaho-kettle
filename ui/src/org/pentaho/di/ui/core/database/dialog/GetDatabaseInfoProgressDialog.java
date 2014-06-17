@@ -38,13 +38,12 @@ import org.pentaho.di.ui.spoon.Spoon;
 /**
  * Takes care of displaying a dialog that will handle the wait while we're finding out what tables, views etc we can
  * reach in the database.
- * 
+ *
  * @author Matt
  * @since 07-apr-2005
  */
 public class GetDatabaseInfoProgressDialog {
   private static Class<?> PKG = GetDatabaseInfoProgressDialog.class; // for i18n purposes, needed by Translator2!!
-                                                                     // $NON-NLS-1$
 
   private Shell shell;
   private DatabaseMeta dbInfo;
@@ -65,8 +64,8 @@ public class GetDatabaseInfoProgressDialog {
         try {
           dmi.getData( Spoon.loggingObject, new ProgressMonitorAdapter( monitor ) );
         } catch ( Exception e ) {
-          throw new InvocationTargetException( e, BaseMessages.getString( PKG,
-              "GetDatabaseInfoProgressDialog.Error.GettingInfoTable", e.toString() ) );
+          throw new InvocationTargetException( e, BaseMessages.getString(
+            PKG, "GetDatabaseInfoProgressDialog.Error.GettingInfoTable", e.toString() ) );
         }
       }
     };
@@ -88,11 +87,12 @@ public class GetDatabaseInfoProgressDialog {
 
   /**
    * Showing an error dialog
-   * 
+   *
    * @param e
    */
   private void showErrorDialog( Exception e ) {
-    new ErrorDialog( shell, BaseMessages.getString( PKG, "GetDatabaseInfoProgressDialog.Error.Title" ), BaseMessages
-        .getString( PKG, "GetDatabaseInfoProgressDialog.Error.Message" ), e );
+    new ErrorDialog(
+      shell, BaseMessages.getString( PKG, "GetDatabaseInfoProgressDialog.Error.Title" ), BaseMessages.getString(
+        PKG, "GetDatabaseInfoProgressDialog.Error.Message" ), e );
   }
 }

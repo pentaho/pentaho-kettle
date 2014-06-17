@@ -51,12 +51,12 @@ import org.w3c.dom.NodeList;
 
 /**
  * Based on a piece of XML, this factory will give back a list of objects. In other words, it does XML de-serialisation
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public class SharedObjects {
-  private static Class<?> PKG = SharedObjects.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SharedObjects.class; // for i18n purposes, needed by Translator2!!
 
   private static final String XML_TAG = "sharedobjects";
 
@@ -155,8 +155,8 @@ public class SharedObjects {
         }
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "SharedOjects.Readingfile.UnexpectedError",
-          sharedObjectsFile ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "SharedOjects.Readingfile.UnexpectedError", sharedObjectsFile ), e );
     }
   }
 
@@ -192,7 +192,7 @@ public class SharedObjects {
   /**
    * Store the sharedObject in the object map. It is possible to have 2 different types of shared object with the same
    * name. They will be stored separately.
-   * 
+   *
    * @param sharedObject
    */
   public void storeObject( SharedObjectInterface sharedObject ) {
@@ -202,7 +202,7 @@ public class SharedObjects {
 
   /**
    * Remove the sharedObject from the object map.
-   * 
+   *
    * @param sharedObject
    */
   public void removeObject( SharedObjectInterface sharedObject ) {
@@ -256,7 +256,7 @@ public class SharedObjects {
 
   /**
    * Return the shared object with the given class and name
-   * 
+   *
    * @param clazz
    *          The class of the shared object
    * @param objectName
@@ -269,7 +269,7 @@ public class SharedObjects {
 
   /**
    * Return the shared object with the given class name and object name
-   * 
+   *
    * @param clasName
    *          The class name of the shared object
    * @param objectName
@@ -283,7 +283,7 @@ public class SharedObjects {
 
   /**
    * Get the shared database with the specified name
-   * 
+   *
    * @param name
    *          The name of the shared database
    * @return The database or null if nothing was found.

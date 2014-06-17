@@ -38,7 +38,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Performs an insert/update/delete depending on the value of a field.
- * 
+ *
  * @author Samatar
  * @since 13-10-2008
  */
@@ -95,6 +95,7 @@ public class SynchronizeAfterMergeData extends BaseStepData implements StepDataI
   public boolean specialErrorHandling;
   public Savepoint savepoint;
   public boolean releaseSavepoint;
+  public boolean supportsSavepoints;
 
   public List<Object[]> batchBuffer;
 

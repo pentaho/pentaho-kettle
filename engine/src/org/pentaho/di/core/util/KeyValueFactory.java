@@ -29,9 +29,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * 
+ *
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  * @param <T>
  *          type of key value.
  */
@@ -96,7 +96,7 @@ public class KeyValueFactory<T> {
 
   /**
    * Constructor.
-   * 
+   *
    * @param defaultValue
    *          default value to set.
    */
@@ -139,7 +139,7 @@ public class KeyValueFactory<T> {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override

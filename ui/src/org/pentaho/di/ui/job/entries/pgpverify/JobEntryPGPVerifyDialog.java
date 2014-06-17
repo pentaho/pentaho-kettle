@@ -61,18 +61,19 @@ import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 /**
  * This defines a PGP verify job entry.
- * 
+ *
  * @author Samatar
  * @since 25-02-2011
- * 
+ *
  */
 
 public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryPGPVerify.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryPGPVerify.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String[] EXTENSIONS = new String[] { "*" }; //$NON-NLS-3$
+  private static final String[] EXTENSIONS = new String[] { "*" };
 
-  private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG, "JobPGPVerify.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] { BaseMessages.getString(
+    PKG, "JobPGPVerify.Filetype.All" ) };
 
   private Label wlName;
 
@@ -253,7 +254,8 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
     wluseDetachedSignature.setLayoutData( fdluseDetachedSignature );
     wuseDetachedSignature = new Button( wSettings, SWT.CHECK );
     props.setLook( wuseDetachedSignature );
-    wuseDetachedSignature.setToolTipText( BaseMessages.getString( PKG, "JobPGPVerify.useDetachedSignature.Tooltip" ) );
+    wuseDetachedSignature.setToolTipText( BaseMessages
+      .getString( PKG, "JobPGPVerify.useDetachedSignature.Tooltip" ) );
     fduseDetachedSignature = new FormData();
     fduseDetachedSignature.left = new FormAttachment( middle, 0 );
     fduseDetachedSignature.top = new FormAttachment( wFilename, margin );
@@ -311,23 +313,23 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 
             if ( curFile.trim().length() > 0 ) {
               DetachedFilename =
-                  KettleVFS.getInstance().getFileSystemManager().resolveFile(
-                      jobMeta.environmentSubstitute( wDetachedFilename.getText() ) );
+                KettleVFS.getInstance().getFileSystemManager().resolveFile(
+                  jobMeta.environmentSubstitute( wDetachedFilename.getText() ) );
             } else {
               DetachedFilename =
-                  KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
+                KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
             }
 
           } catch ( FileSystemException ex ) {
             DetachedFilename =
-                KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
+              KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
           }
 
           VfsFileChooserDialog vfsFileChooser =
-              Spoon.getInstance().getVfsFileChooserDialog( DetachedFilename.getParent(), DetachedFilename );
+            Spoon.getInstance().getVfsFileChooserDialog( DetachedFilename.getParent(), DetachedFilename );
 
           FileObject selected =
-              vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
+            vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
           wDetachedFilename.setText( selected != null ? selected.getURL().toString() : Const.EMPTY_STRING );
         } catch ( FileSystemException ex ) {
           ex.printStackTrace();
@@ -352,8 +354,8 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 
             if ( curFile.trim().length() > 0 ) {
               fileName =
-                  KettleVFS.getInstance().getFileSystemManager().resolveFile(
-                      jobMeta.environmentSubstitute( wFilename.getText() ) );
+                KettleVFS.getInstance().getFileSystemManager().resolveFile(
+                  jobMeta.environmentSubstitute( wFilename.getText() ) );
             } else {
               fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
             }
@@ -363,10 +365,10 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
           }
 
           VfsFileChooserDialog vfsFileChooser =
-              Spoon.getInstance().getVfsFileChooserDialog( fileName.getParent(), fileName );
+            Spoon.getInstance().getVfsFileChooserDialog( fileName.getParent(), fileName );
 
           FileObject selected =
-              vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
+            vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
           wFilename.setText( selected != null ? selected.getURL().toString() : Const.EMPTY_STRING );
         } catch ( FileSystemException ex ) {
           ex.printStackTrace();
@@ -390,8 +392,8 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 
             if ( curFile.trim().length() > 0 ) {
               fileName =
-                  KettleVFS.getInstance().getFileSystemManager().resolveFile(
-                      jobMeta.environmentSubstitute( wGPGLocation.getText() ) );
+                KettleVFS.getInstance().getFileSystemManager().resolveFile(
+                  jobMeta.environmentSubstitute( wGPGLocation.getText() ) );
             } else {
               fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile( Const.getUserHomeDirectory() );
             }
@@ -401,10 +403,10 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
           }
 
           VfsFileChooserDialog vfsFileChooser =
-              Spoon.getInstance().getVfsFileChooserDialog( fileName.getParent(), fileName );
+            Spoon.getInstance().getVfsFileChooserDialog( fileName.getParent(), fileName );
 
           FileObject selected =
-              vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
+            vfsFileChooser.open( shell, null, EXTENSIONS, FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
           wGPGLocation.setText( selected != null ? selected.getURL().toString() : Const.EMPTY_STRING );
         } catch ( FileSystemException ex ) {
           ex.printStackTrace();

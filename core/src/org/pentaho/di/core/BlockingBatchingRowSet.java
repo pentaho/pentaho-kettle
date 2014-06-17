@@ -32,12 +32,12 @@ import org.pentaho.di.core.row.RowMetaInterface;
  * Contains a buffer of rows. Instead of passing rows along the chain immediately we will batch them up to lower locking
  * overhead. The row set will start in accepting mode (accepting = true) It will remain there until the buffer is full.
  * Then it will switch to delivering mode (accepting = false) It will remain there until the buffer is empty.
- * 
+ *
  * When the row set is done and no more rows will be entering the row set we will switch to delivering mode.
- * 
+ *
  * @author Matt
  * @since 04-05-2011
- * 
+ *
  */
 public class BlockingBatchingRowSet extends BaseRowSet implements Comparable<RowSet>, RowSet {
   private BlockingQueue<Object[][]> putArray, getArray;
@@ -53,7 +53,7 @@ public class BlockingBatchingRowSet extends BaseRowSet implements Comparable<Row
 
   /**
    * Create new non-blocking-queue with maxSize capacity.
-   * 
+   *
    * @param maxSize
    */
   public BlockingBatchingRowSet( int maxSize ) {
@@ -118,7 +118,7 @@ public class BlockingBatchingRowSet extends BaseRowSet implements Comparable<Row
   //
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.RowSetInterface#getRow()
    */
   @Override
@@ -128,7 +128,7 @@ public class BlockingBatchingRowSet extends BaseRowSet implements Comparable<Row
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.RowSetInterface#getRowImmediate()
    */
   @Override

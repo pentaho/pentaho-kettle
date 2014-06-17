@@ -22,9 +22,6 @@
 
 package org.pentaho.di.ui.job.entries.ftpsget;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -50,7 +47,6 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.ftpsget.FTPSConnection;
@@ -58,6 +54,7 @@ import org.pentaho.di.job.entries.ftpsget.JobEntryFTPSGet;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
@@ -68,12 +65,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the FTPS job entry settings.
- * 
+ *
  * @author Samatar
  * @since 19-03-2010
  */
 public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryFTPSGet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryFTPSGet.class; // for i18n purposes, needed by Translator2!!
 
   private LabelText wName;
 
@@ -304,8 +301,8 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 
     // Job entry name line
     wName =
-        new LabelText( shell, BaseMessages.getString( PKG, "JobFTPS.Name.Label" ), BaseMessages.getString( PKG,
-            "JobFTPS.Name.Tooltip" ) );
+      new LabelText( shell, BaseMessages.getString( PKG, "JobFTPS.Name.Label" ), BaseMessages.getString(
+        PKG, "JobFTPS.Name.Tooltip" ) );
     wName.addModifyListener( lsMod );
     fdName = new FormData();
     fdName.top = new FormAttachment( 0, 0 );
@@ -346,8 +343,9 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 
     // ServerName line
     wServerName =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.Server.Label" ), BaseMessages
-            .getString( PKG, "JobFTPS.Server.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.Server.Label" ), BaseMessages
+          .getString( PKG, "JobFTPS.Server.Tooltip" ) );
     props.setLook( wServerName );
     wServerName.addModifyListener( lsMod );
     fdServerName = new FormData();
@@ -358,8 +356,9 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 
     // Server port line
     wPort =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.Port.Label" ), BaseMessages
-            .getString( PKG, "JobFTPS.Port.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.Port.Label" ), BaseMessages.getString(
+          PKG, "JobFTPS.Port.Tooltip" ) );
     props.setLook( wPort );
     wPort.addModifyListener( lsMod );
     fdPort = new FormData();
@@ -370,8 +369,9 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 
     // UserName line
     wUserName =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.User.Label" ), BaseMessages
-            .getString( PKG, "JobFTPS.User.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.User.Label" ), BaseMessages.getString(
+          PKG, "JobFTPS.User.Tooltip" ) );
     props.setLook( wUserName );
     wUserName.addModifyListener( lsMod );
     fdUserName = new FormData();
@@ -382,8 +382,8 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 
     // Password line
     wPassword =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.Password.Label" ),
-            "Mot de passe" );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.Password.Label" ), "Mot de passe" );
     props.setLook( wPassword );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
@@ -391,16 +391,18 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
+
     wPassword.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
       }
     } );
 
     // Proxy host line
     wProxyHost =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.ProxyHost.Label" ),
-            BaseMessages.getString( PKG, "JobFTPS.ProxyHost.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.ProxyHost.Label" ), BaseMessages
+          .getString( PKG, "JobFTPS.ProxyHost.Tooltip" ) );
     props.setLook( wProxyHost );
     wProxyHost.addModifyListener( lsMod );
     fdProxyHost = new FormData();
@@ -411,8 +413,9 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 
     // Proxy port line
     wProxyPort =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.ProxyPort.Label" ),
-            BaseMessages.getString( PKG, "JobFTPS.ProxyPort.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.ProxyPort.Label" ), BaseMessages
+          .getString( PKG, "JobFTPS.ProxyPort.Tooltip" ) );
     props.setLook( wProxyPort );
     wProxyPort.addModifyListener( lsMod );
     fdProxyPort = new FormData();
@@ -423,8 +426,9 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 
     // Proxy username line
     wProxyUsername =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.ProxyUsername.Label" ),
-            BaseMessages.getString( PKG, "JobFTPS.ProxyUsername.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.ProxyUsername.Label" ), BaseMessages
+          .getString( PKG, "JobFTPS.ProxyUsername.Tooltip" ) );
     props.setLook( wProxyUsername );
     wProxyUsername.addModifyListener( lsMod );
     fdProxyUsername = new FormData();
@@ -435,8 +439,9 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 
     // Proxy password line
     wProxyPassword =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.ProxyPassword.Label" ),
-            BaseMessages.getString( PKG, "JobFTPS.ProxyPassword.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.ProxyPassword.Label" ), BaseMessages
+          .getString( PKG, "JobFTPS.ProxyPassword.Tooltip" ) );
     props.setLook( wProxyPassword );
     wProxyPassword.addModifyListener( lsMod );
     fdProxyPasswd = new FormData();
@@ -444,6 +449,12 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     fdProxyPasswd.top = new FormAttachment( wProxyUsername, margin );
     fdProxyPasswd.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPasswd );
+
+    wProxyPassword.addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wProxyPassword.getTextWidget() );
+      }
+    } );
 
     wlConnectionType = new Label( wServerSettings, SWT.RIGHT );
     wlConnectionType.setText( BaseMessages.getString( PKG, "JobFTPS.ConnectionType.Label" ) );
@@ -518,8 +529,9 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 
     // Timeout line
     wTimeout =
-        new LabelTextVar( jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobFTPS.Timeout.Label" ),
-            BaseMessages.getString( PKG, "JobFTPS.Timeout.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobFTPS.Timeout.Label" ), BaseMessages
+          .getString( PKG, "JobFTPS.Timeout.Tooltip" ) );
     props.setLook( wTimeout );
     wTimeout.addModifyListener( lsMod );
     fdTimeout = new FormData();
@@ -629,8 +641,9 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 
     // Wildcard line
     wWildcard =
-        new LabelTextVar( jobMeta, wRemoteSettings, BaseMessages.getString( PKG, "JobFTPS.Wildcard.Label" ),
-            BaseMessages.getString( PKG, "JobFTPS.Wildcard.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wRemoteSettings, BaseMessages.getString( PKG, "JobFTPS.Wildcard.Label" ), BaseMessages
+          .getString( PKG, "JobFTPS.Wildcard.Tooltip" ) );
     props.setLook( wWildcard );
     wWildcard.addModifyListener( lsMod );
     fdWildcard = new FormData();
@@ -916,7 +929,8 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     wlAddDateBeforeExtension.setLayoutData( fdlAddDateBeforeExtension );
     wAddDateBeforeExtension = new Button( wLocalSettings, SWT.CHECK );
     props.setLook( wAddDateBeforeExtension );
-    wAddDateBeforeExtension.setToolTipText( BaseMessages.getString( PKG, "JobFTPS.AddDateBeforeExtension.Tooltip" ) );
+    wAddDateBeforeExtension
+      .setToolTipText( BaseMessages.getString( PKG, "JobFTPS.AddDateBeforeExtension.Tooltip" ) );
     fdAddDateBeforeExtension = new FormData();
     fdAddDateBeforeExtension.left = new FormAttachment( middle, margin );
     fdAddDateBeforeExtension.top = new FormAttachment( wDateTimeFormat, margin );
@@ -1252,7 +1266,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPS.Connected.NOK.ConnectionBad", wServerName.getText() )
-          + Const.CR );
+        + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPS.Connected.Title.Bad" ) );
       mb.open();
     }
@@ -1286,8 +1300,9 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
         String realPassword = jobMeta.environmentSubstitute( wPassword.getText() );
 
         connection =
-            new FTPSConnection( FTPSConnection.getConnectionTypeByDesc( wConnectionType.getText() ), realServername,
-                port, realUsername, realPassword );
+          new FTPSConnection(
+            FTPSConnection.getConnectionTypeByDesc( wConnectionType.getText() ), realServername, port,
+            realUsername, realPassword );
 
         if ( !Const.isEmpty( wProxyHost.getText() ) ) {
           // Set proxy
@@ -1354,10 +1369,10 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
   }
 
   private void setAddDateBeforeExtension() {
-    wlAddDateBeforeExtension.setEnabled( wAddDate.getSelection() || wAddTime.getSelection()
-        || wSpecifyFormat.getSelection() );
-    wAddDateBeforeExtension.setEnabled( wAddDate.getSelection() || wAddTime.getSelection()
-        || wSpecifyFormat.getSelection() );
+    wlAddDateBeforeExtension.setEnabled( wAddDate.getSelection()
+      || wAddTime.getSelection() || wSpecifyFormat.getSelection() );
+    wAddDateBeforeExtension.setEnabled( wAddDate.getSelection()
+      || wAddTime.getSelection() || wSpecifyFormat.getSelection() );
     if ( !wAddDate.getSelection() && !wAddTime.getSelection() && !wSpecifyFormat.getSelection() ) {
       wAddDateBeforeExtension.setSelection( false );
     }
@@ -1369,17 +1384,6 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     wCreateMoveFolder.setEnabled( wMove.getSelection() );
     wlCreateMoveFolder.setEnabled( wMove.getSelection() );
     wbTestFolderExists.setEnabled( wMove.getSelection() );
-  }
-
-  public void checkPasswordVisible() {
-    String password = wPassword.getText();
-    List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wPassword.setEchoChar( '*' );
-    } else {
-      wPassword.setEchoChar( '\0' ); // Show it all...
-    }
   }
 
   private void setDateTimeFormat() {
@@ -1538,6 +1542,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
       try {
         connection.disconnect();
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }

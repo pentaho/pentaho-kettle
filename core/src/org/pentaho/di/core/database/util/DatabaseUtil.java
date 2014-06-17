@@ -37,17 +37,17 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Provides default implementation for looking data sources up in JNDI.
- * 
+ *
  * @author mbatchel
- * 
+ *
  */
 
 public class DatabaseUtil implements DataSourceProviderInterface {
-  private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!
 
   /**
    * Implementation of DatasourceProviderInterface.
-   * 
+   *
    */
   @Override
   public DataSource getNamedDataSource( String datasourceName ) throws DataSourceNamingException {
@@ -63,7 +63,7 @@ public class DatabaseUtil implements DataSourceProviderInterface {
   /**
    * Since JNDI is supported different ways in different app servers, it's nearly impossible to have a ubiquitous way to
    * look up a datasource. This method is intended to hide all the lookups that may be required to find a jndi name.
-   * 
+   *
    * @param dsName
    *          The Datasource name
    * @return DataSource if there is one bound in JNDI

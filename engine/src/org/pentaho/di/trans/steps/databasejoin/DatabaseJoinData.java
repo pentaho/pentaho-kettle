@@ -44,9 +44,6 @@ public class DatabaseJoinData extends BaseStepData implements StepDataInterface 
   public Object[] notfound; // Values in case nothing is found...
   public boolean isCanceled;
 
-  /**
-	 * 
-	 */
   public DatabaseJoinData() {
     super();
 

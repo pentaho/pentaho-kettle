@@ -36,11 +36,11 @@ import org.w3c.dom.Node;
 
 /**
  * Helps to define the input or output specifications for the Mapping step.
- * 
+ *
  * @author matt
  * @version 3.0
  * @since 2007-07-26
- * 
+ *
  */
 public class MappingIODefinition implements Cloneable {
 
@@ -144,7 +144,7 @@ public class MappingIODefinition implements Cloneable {
   }
 
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step,
-      String prefix, int nr ) throws KettleException {
+    String prefix, int nr ) throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, nr, prefix + "input_step", inputStepname );
     rep.saveStepAttribute( id_transformation, id_step, nr, prefix + "output_step", outputStepname );
     rep.saveStepAttribute( id_transformation, id_step, nr, prefix + "main_path", mainDataPath );
@@ -153,10 +153,10 @@ public class MappingIODefinition implements Cloneable {
 
     rep.saveStepAttribute( id_transformation, id_step, nr, prefix + "nr_renames", valueRenames.size() );
     for ( int i = 0; i < valueRenames.size(); i++ ) {
-      rep.saveStepAttribute( id_transformation, id_step, nr, prefix + "rename_parent_" + i, valueRenames.get( i )
-          .getSourceValueName() );
-      rep.saveStepAttribute( id_transformation, id_step, nr, prefix + "rename_child_" + i, valueRenames.get( i )
-          .getTargetValueName() );
+      rep.saveStepAttribute( id_transformation, id_step, nr, prefix + "rename_parent_" + i, valueRenames
+        .get( i ).getSourceValueName() );
+      rep.saveStepAttribute( id_transformation, id_step, nr, prefix + "rename_child_" + i, valueRenames
+        .get( i ).getTargetValueName() );
     }
 
   }

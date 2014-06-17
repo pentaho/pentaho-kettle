@@ -29,9 +29,9 @@ import java.util.Map;
 /**
  * This interface describes the plugin itself, the IDs it listens too, what libraries (jar files) it uses, the names,
  * the i18n detailes, etc.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public interface PluginInterface {
 
@@ -141,5 +141,17 @@ public interface PluginInterface {
    *          the forum URL to set
    */
   public void setForumUrl( String forumUrl );
+
+  /**
+   * @return The group to which this class loader belongs.  
+   * Returns null if the plugin does not belong to a group (the default)
+   */
+  public String getClassLoaderGroup();
+
+  /**
+   * @param group The group to which this class loader belongs.  
+   * Set to null if the plugin does not belong to a group (the default)
+   */
+  public void setClassLoaderGroup( String group );
 
 }

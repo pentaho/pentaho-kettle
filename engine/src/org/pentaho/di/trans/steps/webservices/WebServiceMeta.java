@@ -119,15 +119,14 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
     loadXML( stepnode, databases, metaStore );
   }
 
-  public WebServiceMeta( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public WebServiceMeta( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     this();
     readRep( rep, metaStore, id_step, databases );
   }
 
   @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Input rows and output rows are different in the webservice step
     //
     if ( !isPassingInputData() ) {
@@ -172,17 +171,19 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
     passingInputData = true; // Pass input data by default.
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
-      cr = new CheckResult( CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepMeta );
+      cr =
+        new CheckResult(
+          CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving " + prev.size()
-              + " fields", stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "
+          + prev.size() + " fields", stepMeta );
       remarks.add( cr );
     }
 
@@ -314,8 +315,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     // Load the URL
     //
     setUrl( rep.getStepAttributeString( id_step, "wsUrl" ) );
@@ -366,8 +366,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     // Store the URL
     //
     rep.saveStepAttribute( id_transformation, id_step, "wsUrl", getUrl() );
@@ -418,8 +417,8 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
     this.operationName = operationName;
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans disp ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans disp ) {
     return new WebService( stepMeta, stepDataInterface, cnr, transMeta, disp );
   }
 
@@ -441,7 +440,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Returns the WebServicesField for the given wsName.
-   * 
+   *
    * @param wsName
    *          The name of the WebServiceField to return
    * @param ignoreWsNsPrefix

@@ -57,7 +57,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Spoon;
 
 public class LogBrowser {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   private StyledText text;
   private LogParentProvidedInterface logProvider;
@@ -105,8 +105,8 @@ public class LogBrowser {
               LoggingRegistry registry = LoggingRegistry.getInstance();
               Date registryModDate = registry.getLastModificationTime();
 
-              if ( childIds == null || lastLogRegistryChange == null
-                  || registryModDate.compareTo( lastLogRegistryChange ) > 0 ) {
+              if ( childIds == null
+                || lastLogRegistryChange == null || registryModDate.compareTo( lastLogRegistryChange ) > 0 ) {
                 lastLogRegistryChange = registry.getLastModificationTime();
                 childIds = LoggingRegistry.getInstance().getLogChannelChildren( parentLogChannelId );
               }
@@ -116,7 +116,7 @@ public class LogBrowser {
               int lastNr = KettleLogStore.getLastBufferLineNr();
               if ( lastNr > lastLogId.get() ) {
                 List<KettleLoggingEvent> logLines =
-                    KettleLogStore.getLogBufferFromTo( childIds, true, lastLogId.get(), lastNr );
+                  KettleLogStore.getLogBufferFromTo( childIds, true, lastLogId.get(), lastNr );
 
                 // The maximum size of the log buffer
                 //

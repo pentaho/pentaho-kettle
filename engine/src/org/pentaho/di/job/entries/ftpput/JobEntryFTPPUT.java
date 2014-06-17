@@ -70,14 +70,14 @@ import com.enterprisedt.net.ftp.FTPTransferType;
 
 /**
  * This defines an FTP put job entry.
- * 
+ *
  * @author Samatar
  * @since 15-09-2007
- * 
+ *
  */
 
 public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryFTPPUT.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryFTPPUT.class; // for i18n purposes, needed by Translator2!!
 
   private String serverName;
   private String serverPort;
@@ -122,7 +122,6 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     socksProxyPort = "1080";
     remoteDirectory = null;
     localDirectory = null;
-    setID( -1L );
     setControlEncoding( DEFAULT_CONTROL_ENCODING );
   }
 
@@ -144,7 +143,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     retval.append( "      " ).append( XMLHandler.addTagValue( "serverport", serverPort ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "username", userName ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( getPassword() ) ) );
+      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( getPassword() ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "remoteDirectory", remoteDirectory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "localDirectory", localDirectory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "wildcard", wildcard ) );
@@ -159,18 +158,19 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_port", proxyPort ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxy_username", proxyUsername ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "proxy_password", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
+      XMLHandler.addTagValue( "proxy_password", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "socksproxy_host", socksProxyHost ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "socksproxy_port", socksProxyPort ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "socksproxy_username", socksProxyUsername ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "socksproxy_password", Encr.encryptPasswordIfNotUsingVariables( socksProxyPassword ) ) );
+      XMLHandler.addTagValue( "socksproxy_password", Encr
+        .encryptPasswordIfNotUsingVariables( socksProxyPassword ) ) );
 
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       serverName = XMLHandler.getTagValue( entrynode, "servername" );
@@ -190,12 +190,13 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       proxyHost = XMLHandler.getTagValue( entrynode, "proxy_host" );
       proxyPort = XMLHandler.getTagValue( entrynode, "proxy_port" );
       proxyUsername = XMLHandler.getTagValue( entrynode, "proxy_username" );
-      proxyPassword = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "proxy_password" ) );
+      proxyPassword =
+        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "proxy_password" ) );
       socksProxyHost = XMLHandler.getTagValue( entrynode, "socksproxy_host" );
       socksProxyPort = XMLHandler.getTagValue( entrynode, "socksproxy_port" );
       socksProxyUsername = XMLHandler.getTagValue( entrynode, "socksproxy_username" );
       socksProxyPassword =
-          Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "socksproxy_password" ) );
+        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "socksproxy_password" ) );
 
       if ( controlEncoding == null ) {
         // if we couldn't retrieve an encoding, assume it's an old instance and
@@ -208,7 +209,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       serverName = rep.getJobEntryAttributeString( id_jobentry, "servername" );
       int intServerPort = (int) rep.getJobEntryAttributeInteger( id_jobentry, "serverport" );
@@ -218,7 +219,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       }
 
       userName = rep.getJobEntryAttributeString( id_jobentry, "username" );
-      password = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
+      password =
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );
       remoteDirectory = rep.getJobEntryAttributeString( id_jobentry, "remoteDirectory" );
       localDirectory = rep.getJobEntryAttributeString( id_jobentry, "localDirectory" );
       wildcard = rep.getJobEntryAttributeString( id_jobentry, "wildcard" );
@@ -238,16 +240,18 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       proxyPort = rep.getJobEntryAttributeString( id_jobentry, "proxy_port" );
       proxyUsername = rep.getJobEntryAttributeString( id_jobentry, "proxy_username" );
       proxyPassword =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "proxy_password" ) );
+        Encr
+          .decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "proxy_password" ) );
       socksProxyHost = rep.getJobEntryAttributeString( id_jobentry, "socksproxy_host" );
       socksProxyPort = rep.getJobEntryAttributeString( id_jobentry, "socksproxy_port" );
       socksProxyUsername = rep.getJobEntryAttributeString( id_jobentry, "socksproxy_username" );
       socksProxyPassword =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "socksproxy_password" ) );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(
+          id_jobentry, "socksproxy_password" ) );
 
     } catch ( KettleException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobFTPPUT.UnableToLoadFromRepo", String
-          .valueOf( id_jobentry ) ), dbe );
+        .valueOf( id_jobentry ) ), dbe );
     }
   }
 
@@ -256,7 +260,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       rep.saveJobEntryAttribute( id_job, getObjectId(), "servername", serverName );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "serverport", serverPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", userName );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "password", Encr
+        .encryptPasswordIfNotUsingVariables( password ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "remoteDirectory", remoteDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "localDirectory", localDirectory );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "wildcard", wildcard );
@@ -271,16 +276,16 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_port", proxyPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_username", proxyUsername );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "proxy_password", Encr
-          .encryptPasswordIfNotUsingVariables( proxyPassword ) );
+        .encryptPasswordIfNotUsingVariables( proxyPassword ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "socksproxy_host", socksProxyHost );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "socksproxy_port", socksProxyPort );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "socksproxy_username", socksProxyUsername );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "socksproxy_password", Encr
-          .encryptPasswordIfNotUsingVariables( socksProxyPassword ) );
+        .encryptPasswordIfNotUsingVariables( socksProxyPassword ) );
 
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "JobFTPPUT.UnableToSaveToRepo", String.valueOf( id_job ) ), dbe );
+      throw new KettleException( BaseMessages.getString( PKG, "JobFTPPUT.UnableToSaveToRepo", String
+        .valueOf( id_job ) ), dbe );
     }
   }
 
@@ -331,7 +336,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 
   /**
    * Get the control encoding to be used for ftp'ing
-   * 
+   *
    * @return the used encoding
    */
   public String getControlEncoding() {
@@ -341,7 +346,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
   /**
    * Set the encoding to be used for ftp'ing. This determines how names are translated in dir e.g. It does impact the
    * contents of the files being ftp'ed.
-   * 
+   *
    * @param encoding
    *          The encoding to be used.
    */
@@ -538,7 +543,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   /**
-   * 
+   *
    * @param socksProxyPort
    *          The socks proxy port to set
    */
@@ -547,7 +552,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   /**
-   * 
+   *
    * @param socksProxyUsername
    *          The socks proxy username to set
    */
@@ -556,7 +561,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   /**
-   * 
+   *
    * @param socksProxyPassword
    *          The socks proxy password to set
    */
@@ -680,15 +685,17 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
         if ( !Const.isEmpty( socksProxyPort ) ) {
           FTPClient.initSOCKS( environmentSubstitute( socksProxyPort ), environmentSubstitute( socksProxyHost ) );
         } else { // looks like we have a host and no port
-          throw new FTPException( BaseMessages.getString( PKG, "JobFTPPUT.SocksProxy.PortMissingException",
-              environmentSubstitute( socksProxyHost ) ) );
+          throw new FTPException( BaseMessages.getString(
+            PKG, "JobFTPPUT.SocksProxy.PortMissingException", environmentSubstitute( socksProxyHost ) ) );
         }
         // now if we have authentication information
-        if ( !Const.isEmpty( socksProxyUsername ) && Const.isEmpty( socksProxyPassword )
-            || Const.isEmpty( socksProxyUsername ) && !Const.isEmpty( socksProxyPassword ) ) {
+        if ( !Const.isEmpty( socksProxyUsername )
+          && Const.isEmpty( socksProxyPassword ) || Const.isEmpty( socksProxyUsername )
+          && !Const.isEmpty( socksProxyPassword ) ) {
           // we have a username without a password or vica versa
-          throw new FTPException( BaseMessages.getString( PKG, "JobFTPPUT.SocksProxy.IncompleteCredentials",
-              environmentSubstitute( socksProxyHost ), getName() ) );
+          throw new FTPException( BaseMessages.getString(
+            PKG, "JobFTPPUT.SocksProxy.IncompleteCredentials", environmentSubstitute( socksProxyHost ),
+            getName() ) );
         }
       }
 
@@ -746,8 +753,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       myFileList.toArray( filelist );
 
       if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.FoundFileLocalDirectory", "" + filelist.length,
-            realLocalDirectory ) );
+        logDetailed( BaseMessages.getString(
+          PKG, "JobFTPPUT.Log.FoundFileLocalDirectory", "" + filelist.length, realLocalDirectory ) );
       }
 
       Pattern pattern = null;
@@ -787,8 +794,8 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 
           if ( !fileExist || ( !onlyPuttingNewFiles && fileExist ) ) {
             if ( log.isDebug() ) {
-              logDebug( BaseMessages.getString( PKG, "JobFTPPUT.Log.PuttingFileToRemoteDirectory", filelist[i],
-                  realRemoteDirectory ) );
+              logDebug( BaseMessages.getString(
+                PKG, "JobFTPPUT.Log.PuttingFileToRemoteDirectory", filelist[i], realRemoteDirectory ) );
             }
 
             String localFilename = realLocalDirectory + Const.FILE_SEPARATOR + filelist[i];
@@ -846,11 +853,11 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "serverName", remarks, putValidators( notBlankValidator() ) );
-    andValidator().validate( this, "localDirectory", remarks,
-        putValidators( notBlankValidator(), fileExistsValidator() ) );
+    andValidator().validate(
+      this, "localDirectory", remarks, putValidators( notBlankValidator(), fileExistsValidator() ) );
     andValidator().validate( this, "userName", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "password", remarks, putValidators( notNullValidator() ) );
     andValidator().validate( this, "serverPort", remarks, putValidators( integerValidator() ) );
@@ -858,7 +865,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 
   /**
    * Hook in known parsers, and then those that have been specified in the variable ftp.file.parser.class.names
-   * 
+   *
    * @param ftpClient
    * @throws FTPException
    * @throws IOException

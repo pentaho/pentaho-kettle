@@ -32,7 +32,7 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
 /**
  * This takes care of the external metadata injection into the GroupByMeta class
- * 
+ *
  * @author Matt
  */
 public class GroupByMetaInjection implements StepMetaInjectionInterface {
@@ -40,21 +40,23 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
   private enum Entry {
 
     PASS_ALL_ROWS( ValueMetaInterface.TYPE_STRING, "Pass all rows? (Y/N)" ), TEMP_DIRECTORY(
-        ValueMetaInterface.TYPE_STRING, "The temporary directory" ), TEMP_FILE_PREFIX( ValueMetaInterface.TYPE_STRING,
-        "The temporary file prefix" ), GROUP_LINE_NUMBER_ENABLED( ValueMetaInterface.TYPE_STRING,
-        "Group line number enabled? (Y/N)" ), GROUP_LINE_NUMBER_FIELDNAME( ValueMetaInterface.TYPE_STRING,
-        "Group line number field name" ), ALLWAYS_PASS_A_ROW( ValueMetaInterface.TYPE_STRING,
-        "Always give back a row? (Y/N)" ),
+      ValueMetaInterface.TYPE_STRING, "The temporary directory" ), TEMP_FILE_PREFIX(
+      ValueMetaInterface.TYPE_STRING, "The temporary file prefix" ), GROUP_LINE_NUMBER_ENABLED(
+      ValueMetaInterface.TYPE_STRING, "Group line number enabled? (Y/N)" ), GROUP_LINE_NUMBER_FIELDNAME(
+      ValueMetaInterface.TYPE_STRING, "Group line number field name" ), ALLWAYS_PASS_A_ROW(
+      ValueMetaInterface.TYPE_STRING, "Always give back a row? (Y/N)" ),
 
-    GROUP_FIELDS( ValueMetaInterface.TYPE_NONE, "The group definition fields" ), GROUP_FIELD(
-        ValueMetaInterface.TYPE_NONE, "One group definition field" ), GROUP_FIELDNAME( ValueMetaInterface.TYPE_STRING,
-        "Group definition field name" ),
+      GROUP_FIELDS( ValueMetaInterface.TYPE_NONE, "The group definition fields" ), GROUP_FIELD(
+        ValueMetaInterface.TYPE_NONE, "One group definition field" ), GROUP_FIELDNAME(
+        ValueMetaInterface.TYPE_STRING, "Group definition field name" ),
 
-    AGG_FIELDS( ValueMetaInterface.TYPE_NONE, "The aggregation fields" ), AGG_FIELD( ValueMetaInterface.TYPE_NONE,
-        "One aggregation field" ), AGG_FIELDNAME( ValueMetaInterface.TYPE_STRING, "Result field name" ), AGG_SUBJECT(
-        ValueMetaInterface.TYPE_STRING, "Aggregation subject field name" ), AGG_TYPE( ValueMetaInterface.TYPE_STRING,
+      AGG_FIELDS( ValueMetaInterface.TYPE_NONE, "The aggregation fields" ), AGG_FIELD(
+        ValueMetaInterface.TYPE_NONE, "One aggregation field" ), AGG_FIELDNAME(
+        ValueMetaInterface.TYPE_STRING, "Result field name" ), AGG_SUBJECT(
+        ValueMetaInterface.TYPE_STRING, "Aggregation subject field name" ), AGG_TYPE(
+        ValueMetaInterface.TYPE_STRING,
         "Aggregation type (for allowed values see: http://wiki.pentaho.com/display/EAI/Group+By)" ), AGG_VALUE(
-        ValueMetaInterface.TYPE_STRING, "Value (field separator, ...)" ), ;
+        ValueMetaInterface.TYPE_STRING, "Value (field separator, ...)" );
 
     private int valueType;
     private String description;
@@ -94,8 +96,9 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
     List<StepInjectionMetaEntry> all = new ArrayList<StepInjectionMetaEntry>();
 
     Entry[] topEntries =
-        new Entry[] { Entry.PASS_ALL_ROWS, Entry.TEMP_DIRECTORY, Entry.TEMP_FILE_PREFIX,
-          Entry.GROUP_LINE_NUMBER_ENABLED, Entry.GROUP_LINE_NUMBER_FIELDNAME, Entry.ALLWAYS_PASS_A_ROW, };
+      new Entry[] {
+        Entry.PASS_ALL_ROWS, Entry.TEMP_DIRECTORY, Entry.TEMP_FILE_PREFIX, Entry.GROUP_LINE_NUMBER_ENABLED,
+        Entry.GROUP_LINE_NUMBER_FIELDNAME, Entry.ALLWAYS_PASS_A_ROW, };
     for ( Entry topEntry : topEntries ) {
       all.add( new StepInjectionMetaEntry( topEntry.name(), topEntry.getValueType(), topEntry.getDescription() ) );
     }
@@ -103,34 +106,36 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
     // The group
     //
     StepInjectionMetaEntry fieldsEntry =
-        new StepInjectionMetaEntry( Entry.GROUP_FIELDS.name(), ValueMetaInterface.TYPE_NONE,
-            Entry.GROUP_FIELDS.description );
+      new StepInjectionMetaEntry(
+        Entry.GROUP_FIELDS.name(), ValueMetaInterface.TYPE_NONE, Entry.GROUP_FIELDS.description );
     all.add( fieldsEntry );
     StepInjectionMetaEntry fieldEntry =
-        new StepInjectionMetaEntry( Entry.GROUP_FIELD.name(), ValueMetaInterface.TYPE_NONE,
-            Entry.GROUP_FIELD.description );
+      new StepInjectionMetaEntry(
+        Entry.GROUP_FIELD.name(), ValueMetaInterface.TYPE_NONE, Entry.GROUP_FIELD.description );
     fieldsEntry.getDetails().add( fieldEntry );
 
     Entry[] fieldsEntries = new Entry[] { Entry.GROUP_FIELDNAME, };
     for ( Entry entry : fieldsEntries ) {
       StepInjectionMetaEntry metaEntry =
-          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+        new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
       fieldEntry.getDetails().add( metaEntry );
     }
 
     // The aggregations
     //
     StepInjectionMetaEntry aggsEntry =
-        new StepInjectionMetaEntry( Entry.AGG_FIELDS.name(), ValueMetaInterface.TYPE_NONE, Entry.AGG_FIELDS.description );
+      new StepInjectionMetaEntry(
+        Entry.AGG_FIELDS.name(), ValueMetaInterface.TYPE_NONE, Entry.AGG_FIELDS.description );
     all.add( aggsEntry );
     StepInjectionMetaEntry aggEntry =
-        new StepInjectionMetaEntry( Entry.AGG_FIELD.name(), ValueMetaInterface.TYPE_NONE, Entry.AGG_FIELD.description );
+      new StepInjectionMetaEntry(
+        Entry.AGG_FIELD.name(), ValueMetaInterface.TYPE_NONE, Entry.AGG_FIELD.description );
     aggsEntry.getDetails().add( aggEntry );
 
     Entry[] aggEntries = new Entry[] { Entry.AGG_FIELDNAME, Entry.AGG_SUBJECT, Entry.AGG_TYPE, Entry.AGG_VALUE, };
     for ( Entry entry : aggEntries ) {
       StepInjectionMetaEntry metaEntry =
-          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+        new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
       aggEntry.getDetails().add( metaEntry );
     }
 
@@ -156,7 +161,7 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
 
       String lookValue = (String) lookFields.getValue();
       switch ( fieldsEntry ) {
-        case GROUP_FIELDS: {
+        case GROUP_FIELDS:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
             Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.GROUP_FIELD ) {
@@ -179,10 +184,9 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
               groupFields.add( groupFieldname );
             }
           }
-        }
           break;
 
-        case AGG_FIELDS: {
+        case AGG_FIELDS:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
             Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.AGG_FIELD ) {
@@ -221,7 +225,6 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
               aggValues.add( aggValue );
             }
           }
-        }
           break;
 
         case PASS_ALL_ROWS:
@@ -262,6 +265,10 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
       meta.setAggregateType( types );
       meta.setValueField( aggValues.toArray( new String[aggValues.size()] ) );
     }
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
   }
 
   public GroupByMeta getMeta() {

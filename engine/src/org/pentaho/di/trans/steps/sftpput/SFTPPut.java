@@ -46,17 +46,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Send file to SFTP host.
- * 
+ *
  * @author Samatar Hassan
  * @since 30-April-2012
  */
 public class SFTPPut extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SFTPPutMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SFTPPutMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SFTPPutMeta meta;
   private SFTPPutData data;
 
-  public SFTPPut( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public SFTPPut( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -68,8 +69,8 @@ public class SFTPPut extends BaseStep implements StepInterface {
     String errorMessage = null;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -83,7 +84,8 @@ public class SFTPPut extends BaseStep implements StepInterface {
         String realServerName = environmentSubstitute( meta.getServerName() );
         String realServerPort = environmentSubstitute( meta.getServerPort() );
         String realUsername = environmentSubstitute( meta.getUserName() );
-        String realPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getPassword() ) );
+        String realPassword =
+          Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getPassword() ) );
         String realKeyFilename = null;
         String realPassPhrase = null;
 
@@ -106,13 +108,14 @@ public class SFTPPut extends BaseStep implements StepInterface {
         // Let's try to establish SFTP connection....
         // Create sftp client to host ...
         data.sftpclient =
-            new SFTPClient( InetAddress.getByName( realServerName ), Const.toInt( realServerPort, 22 ), realUsername,
-                realKeyFilename, realPassPhrase );
+          new SFTPClient(
+            InetAddress.getByName( realServerName ), Const.toInt( realServerPort, 22 ), realUsername,
+            realKeyFilename, realPassPhrase );
 
         // connection successfully established
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "SFTPPUT.Log.OpenedConnection", realServerName, realServerPort,
-              realUsername ) );
+          logDetailed( BaseMessages.getString(
+            PKG, "SFTPPUT.Log.OpenedConnection", realServerName, realServerPort, realUsername ) );
         }
 
         // Set compression
@@ -122,9 +125,9 @@ public class SFTPPut extends BaseStep implements StepInterface {
         String realProxyHost = environmentSubstitute( meta.getProxyHost() );
         if ( !Const.isEmpty( realProxyHost ) ) {
           // Set proxy
-          data.sftpclient.setProxy( realProxyHost, environmentSubstitute( meta.getProxyPort() ),
-              environmentSubstitute( meta.getProxyUsername() ), environmentSubstitute( meta.getProxyPassword() ), meta
-                  .getProxyType() );
+          data.sftpclient.setProxy(
+            realProxyHost, environmentSubstitute( meta.getProxyPort() ), environmentSubstitute( meta
+              .getProxyUsername() ), environmentSubstitute( meta.getProxyPassword() ), meta.getProxyType() );
         }
 
         // login to ftp host ...
@@ -147,8 +150,8 @@ public class SFTPPut extends BaseStep implements StepInterface {
 
       if ( data.indexOfSourceFileFieldName < -1 ) {
         // source filename field is missing
-        throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Error.CanNotFindField",
-            sourceFilenameFieldName ) );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "SFTPPut.Error.CanNotFindField", sourceFilenameFieldName ) );
       }
 
       // Remote folder fieldname
@@ -163,8 +166,8 @@ public class SFTPPut extends BaseStep implements StepInterface {
 
       if ( data.indexOfRemoteDirectory < -1 ) {
         // remote foldername field is missing
-        throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Error.CanNotFindField",
-            remoteFoldernameFieldName ) );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "SFTPPut.Error.CanNotFindField", remoteFoldernameFieldName ) );
       }
 
       // Move to folder
@@ -172,15 +175,16 @@ public class SFTPPut extends BaseStep implements StepInterface {
         String realDestinationFoldernameFieldName = environmentSubstitute( meta.getDestinationFolderFieldName() );
 
         if ( Const.isEmpty( realDestinationFoldernameFieldName ) ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Log.DestinatFolderNameFieldNameMissing" ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "SFTPPut.Log.DestinatFolderNameFieldNameMissing" ) );
         }
 
         data.indexOfMoveToFolderFieldName = getInputRowMeta().indexOfValue( realDestinationFoldernameFieldName );
 
         if ( data.indexOfMoveToFolderFieldName < -1 ) {
           // move to folder field is missing
-          throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Error.CanNotFindField",
-              realDestinationFoldernameFieldName ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "SFTPPut.Error.CanNotFindField", realDestinationFoldernameFieldName ) );
         }
 
       }
@@ -221,15 +225,16 @@ public class SFTPPut extends BaseStep implements StepInterface {
 
           if ( Const.isEmpty( realDestationFolder ) ) {
             // Move to destination folder is empty
-            throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Error.MoveToDestinationFolderIsEmpty" ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "SFTPPut.Error.MoveToDestinationFolderIsEmpty" ) );
           }
 
           destinationFolder = KettleVFS.getFileObject( realDestationFolder );
 
           if ( !destinationFolder.exists() ) {
             // We can not find folder
-            throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Error.CanNotFindFolder",
-                realDestationFolder ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "SFTPPut.Error.CanNotFindFolder", realDestationFolder ) );
           }
         }
       }
@@ -292,8 +297,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
     return true;
   }
 
-  protected void finishTheJob( FileObject file, String sourceData, FileObject destinationFolder )
-    throws KettleException {
+  protected void finishTheJob( FileObject file, String sourceData, FileObject destinationFolder ) throws KettleException {
     try {
       switch ( meta.getAfterFTPS() ) {
         case JobEntrySFTPPUT.AFTER_FTPSPUT_DELETE:
@@ -310,8 +314,8 @@ public class SFTPPut extends BaseStep implements StepInterface {
           FileObject destination = null;
           try {
             destination =
-                KettleVFS.getFileObject( destinationFolder.getName().getBaseName() + Const.FILE_SEPARATOR
-                    + file.getName().getBaseName(), this );
+              KettleVFS.getFileObject( destinationFolder.getName().getBaseName()
+                + Const.FILE_SEPARATOR + file.getName().getBaseName(), this );
             file.moveTo( destination );
             if ( isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "SFTPPut.Log.FileMoved", file, destination ) );
@@ -326,7 +330,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
           if ( meta.isAddFilenameResut() ) {
             // Add this to the result file names...
             ResultFile resultFile =
-                new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
+              new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
             resultFile.setComment( BaseMessages.getString( PKG, "SFTPPut.Log.FilenameAddedToResultFilenames" ) );
             addResultFile( resultFile );
             if ( isDetailed() ) {
@@ -345,7 +349,8 @@ public class SFTPPut extends BaseStep implements StepInterface {
     boolean existfolder = data.sftpclient.folderExists( spoolDirectory );
     if ( !existfolder ) {
       if ( !meta.isCreateRemoteFolder() ) {
-        throw new KettleException( BaseMessages.getString( PKG, "SFTPPut.Error.CanNotFindRemoteFolder", spoolDirectory ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "SFTPPut.Error.CanNotFindRemoteFolder", spoolDirectory ) );
       }
       if ( isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "SFTPPut.Error.CanNotFindRemoteFolder", spoolDirectory ) );
@@ -362,25 +367,6 @@ public class SFTPPut extends BaseStep implements StepInterface {
     if ( isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "SFTPPut.Log.ChangedDirectory", spoolDirectory ) );
     }
-
-  }
-
-  public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
-    meta = (SFTPPutMeta) smi;
-    data = (SFTPPutData) sdi;
-
-    if ( super.init( smi, sdi ) ) {
-      try {
-
-      } catch ( Exception e ) {
-        logError( BaseMessages.getString( PKG, "SFTPPut.ErrorInit" ), e );
-        logError( Const.getStackTracker( e ) );
-        return false;
-      }
-
-      return true;
-    }
-    return false;
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -393,7 +379,8 @@ public class SFTPPut extends BaseStep implements StepInterface {
         data.sftpclient.disconnect();
       }
     } catch ( Exception e ) {
-    } // ignore this
+      // Ignore errors
+    }
     super.dispose( smi, sdi );
   }
 }

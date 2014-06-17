@@ -50,13 +50,13 @@ import org.w3c.dom.Node;
 
 /**
  * The flattener step meta-data
- * 
+ *
  * @since 17-jan-2006
  * @author Matt
  */
 
 public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = FlattenerMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FlattenerMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** The field to flatten */
   private String fieldName;
@@ -105,15 +105,15 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     // Remove the key value (there will be different entries for each output row)
     //
     if ( fieldName != null && fieldName.length() > 0 ) {
       int idx = row.indexOfValue( fieldName );
       if ( idx < 0 ) {
-        throw new KettleStepException( BaseMessages.getString( PKG,
-            "FlattenerMeta.Exception.UnableToLocateFieldInInputFields", fieldName ) );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "FlattenerMeta.Exception.UnableToLocateFieldInInputFields", fieldName ) );
       }
 
       ValueMetaInterface v = row.getValueMeta( idx );
@@ -145,8 +145,8 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface {
         targetField[i] = XMLHandler.getTagValue( fnode, "name" );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException(
-          BaseMessages.getString( PKG, "FlattenerMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "FlattenerMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -166,8 +166,7 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
 
     try {
       fieldName = rep.getStepAttributeString( id_step, "field_name" );
@@ -180,13 +179,12 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface {
         targetField[i] = rep.getStepAttributeString( id_step, i, "target_field" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FlattenerMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "FlattenerMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "field_name", fieldName );
 
@@ -194,33 +192,33 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "target_field", targetField[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "FlattenerMeta.Exception.UnableToSaveStepInfoToRepository" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "FlattenerMeta.Exception.UnableToSaveStepInfoToRepository" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FlattenerMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "FlattenerMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FlattenerMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "FlattenerMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new Flattener( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

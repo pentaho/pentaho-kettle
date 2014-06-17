@@ -100,6 +100,7 @@ public class PoiWorkbook implements KWorkbook {
         opcpkg.close();
       }
     } catch ( IOException ex ) {
+      // Ignore errors
     }
   }
 

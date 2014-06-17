@@ -31,9 +31,9 @@ import java.lang.annotation.Target;
 /**
  * The best way to define import rules as plugins. Classes annotated with "ImportRulePlugin" are automatically
  * recognized and registered as an import rule plugin.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
@@ -46,4 +46,6 @@ public @interface ImportRulePlugin {
   String description();
 
   String i18nPackageName();
+
+  String classLoaderGroup() default "";
 }

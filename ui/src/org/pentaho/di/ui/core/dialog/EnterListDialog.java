@@ -63,12 +63,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialogs allows you to select a number of items from a list of strings.
- * 
+ *
  * @author Matt
  * @since 21-10-2004
  */
 public class EnterListDialog extends Dialog {
-  private static Class<?> PKG = EnterListDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = EnterListDialog.class; // for i18n purposes, needed by Translator2!!
 
   private PropsUI props;
 
@@ -429,11 +429,11 @@ public class EnterListDialog extends Dialog {
     for ( int i = 0; i < input.length; i++ ) {
       Integer idx = Integer.valueOf( i );
       String str = selection.get( idx );
-      if ( str == null ) // Not selected: show in source!
-      {
+      if ( str == null ) {
+        // Not selected: show in source!
         wListSource.add( input[i] );
-      } else // Selected, show in destination!
-      {
+      } else {
+        // Selected, show in destination!
         wListDest.add( input[i] );
       }
     }

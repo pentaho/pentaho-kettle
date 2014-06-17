@@ -60,13 +60,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines an MYSQL Bulk file job entry.
- * 
+ *
  * @author Samatar
  * @since 05-03-2006
- * 
+ *
  */
 public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryMysqlBulkFile.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryMysqlBulkFile.class; // for i18n purposes, needed by Translator2!!
 
   private String tablename;
   private String schemaname;
@@ -99,7 +99,6 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
     iffileexists = 2;
     connection = null;
     addfiletoresult = false;
-    setID( -1L );
   }
 
   public JobEntryMysqlBulkFile() {
@@ -129,13 +128,13 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
     retval.append( "      " ).append( XMLHandler.addTagValue( "iffileexists", iffileexists ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "addfiletoresult", addfiletoresult ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
+      XMLHandler.addTagValue( "connection", connection == null ? null : connection.getName() ) );
 
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       schemaname = XMLHandler.getTagValue( entrynode, "schemaname" );
@@ -159,7 +158,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       schemaname = rep.getJobEntryAttributeString( id_jobentry, "schemaname" );
       tablename = rep.getJobEntryAttributeString( id_jobentry, "tablename" );
@@ -180,8 +179,9 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 
       connection = rep.loadDatabaseMetaFromJobEntryAttribute( id_jobentry, "connection", "id_database", databases );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'table exists' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+      throw new KettleException(
+        "Unable to load job entry of type 'table exists' from the repository for id_jobentry=" + id_jobentry,
+        dbe );
     }
   }
 
@@ -205,8 +205,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 
       rep.saveDatabaseMetaJobEntryAttribute( id_job, getObjectId(), "connection", "id_database", connection );
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'Mysql Bulk Load' to the repository for id_job="
-          + id_job, dbe );
+      throw new KettleException(
+        "Unable to load job entry of type 'Mysql Bulk Load' to the repository for id_job=" + id_job, dbe );
     }
   }
 
@@ -265,15 +265,15 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
         // the file exists and user want to Fail
         result.setResult( false );
         result.setNrErrors( 1 );
-        logError( BaseMessages.getString( PKG, "JobMysqlBulkFile.FileExists1.Label" ) + realFilename
-            + BaseMessages.getString( PKG, "JobMysqlBulkFile.FileExists2.Label" ) );
+        logError( BaseMessages.getString( PKG, "JobMysqlBulkFile.FileExists1.Label" )
+          + realFilename + BaseMessages.getString( PKG, "JobMysqlBulkFile.FileExists2.Label" ) );
 
       } else if ( file.exists() && iffileexists == 1 ) {
         // the file exists and user want to do nothing
         result.setResult( true );
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobMysqlBulkFile.FileExists1.Label" ) + realFilename
-              + BaseMessages.getString( PKG, "JobMysqlBulkFile.FileExists2.Label" ) );
+          logDetailed( BaseMessages.getString( PKG, "JobMysqlBulkFile.FileExists1.Label" )
+            + realFilename + BaseMessages.getString( PKG, "JobMysqlBulkFile.FileExists2.Label" ) );
         }
 
       } else {
@@ -288,22 +288,22 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
           if ( wildcard.substring( 0, 1 ).equals( "." ) ) {
             // Find wildcard
             realFilename =
-                realFilename.substring( 0, realFilename.length() - 4 ) + "_"
-                    + StringUtil.getFormattedDateTimeNow( true ) + wildcard;
+              realFilename.substring( 0, realFilename.length() - 4 )
+                + "_" + StringUtil.getFormattedDateTimeNow( true ) + wildcard;
           } else {
             // did not find wildcard
             realFilename = realFilename + "_" + StringUtil.getFormattedDateTimeNow( true );
           }
 
-          logDebug( BaseMessages.getString( PKG, "JobMysqlBulkFile.FileNameChange1.Label" ) + realFilename
-              + BaseMessages.getString( PKG, "JobMysqlBulkFile.FileNameChange1.Label" ) );
+          logDebug( BaseMessages.getString( PKG, "JobMysqlBulkFile.FileNameChange1.Label" )
+            + realFilename + BaseMessages.getString( PKG, "JobMysqlBulkFile.FileNameChange1.Label" ) );
 
         }
 
         // User has specified an existing file, We can continue ...
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobMysqlBulkFile.FileExists1.Label" ) + realFilename
-              + BaseMessages.getString( PKG, "JobMysqlBulkFile.FileExists2.Label" ) );
+          logDetailed( BaseMessages.getString( PKG, "JobMysqlBulkFile.FileExists1.Label" )
+            + realFilename + BaseMessages.getString( PKG, "JobMysqlBulkFile.FileExists2.Label" ) );
         }
 
         if ( connection != null ) {
@@ -320,8 +320,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
             if ( db.checkTableExists( realTablename ) ) {
               // The table existe, We can continue ...
               if ( log.isDetailed() ) {
-                logDetailed( BaseMessages.getString( PKG, "JobMysqlBulkFile.TableExists1.Label" ) + realTablename
-                    + BaseMessages.getString( PKG, "JobMysqlBulkFile.TableExists2.Label" ) );
+                logDetailed( BaseMessages.getString( PKG, "JobMysqlBulkFile.TableExists1.Label" )
+                  + realTablename + BaseMessages.getString( PKG, "JobMysqlBulkFile.TableExists2.Label" ) );
               }
 
               // Add schemaname (Most the time Schemaname.Tablename)
@@ -347,7 +347,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
 
               // Lines Terminated by
               if ( getRealLineterminated() != null && outdumpvalue == 0 ) {
-                LinesTerminated = "LINES TERMINATED BY '" + Const.replace( getRealLineterminated(), "'", "''" ) + "'";
+                LinesTerminated =
+                  "LINES TERMINATED BY '" + Const.replace( getRealLineterminated(), "'", "''" ) + "'";
 
               }
 
@@ -360,7 +361,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
                 if ( isOptionEnclosed() ) {
                   OptionEnclosed = "OPTIONALLY ";
                 }
-                OptionEnclosed = OptionEnclosed + "ENCLOSED BY '" + Const.replace( getRealEnclosed(), "'", "''" ) + "'";
+                OptionEnclosed =
+                  OptionEnclosed + "ENCLOSED BY '" + Const.replace( getRealEnclosed(), "'", "''" ) + "'";
 
               }
 
@@ -372,9 +374,10 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
               }
 
               String FILEBulkFile =
-                  "SELECT " + strHighPriority + " " + ListOfColumn + " " + OutDumpText + " '" + realFilename + "' "
-                      + FieldSeparator + " " + OptionEnclosed + " " + LinesTerminated + " FROM " + realTablename + " "
-                      + LimitNbrLignes + " LOCK IN SHARE MODE";
+                "SELECT "
+                  + strHighPriority + " " + ListOfColumn + " " + OutDumpText + " '" + realFilename + "' "
+                  + FieldSeparator + " " + OptionEnclosed + " " + LinesTerminated + " FROM " + realTablename
+                  + " " + LimitNbrLignes + " LOCK IN SHARE MODE";
 
               try {
                 if ( log.isDetailed() ) {
@@ -390,8 +393,9 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
                 if ( isAddFileToResult() ) {
                   // Add filename to output files
                   ResultFile resultFile =
-                      new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ),
-                          parentJob.getJobname(), toString() );
+                    new ResultFile(
+                      ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( realFilename, this ), parentJob
+                        .getJobname(), toString() );
                   result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
                 }
 
@@ -411,8 +415,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
               db.disconnect();
               result.setNrErrors( 1 );
               if ( log.isDetailed() ) {
-                logDetailed( BaseMessages.getString( PKG, "JobMysqlBulkFile.TableNotExists1.Label" ) + realTablename
-                    + BaseMessages.getString( PKG, "JobMysqlBulkFile.TableNotExists2.Label" ) );
+                logDetailed( BaseMessages.getString( PKG, "JobMysqlBulkFile.TableNotExists1.Label" )
+                  + realTablename + BaseMessages.getString( PKG, "JobMysqlBulkFile.TableNotExists2.Label" ) );
               }
             }
 
@@ -422,9 +426,7 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
             logError( BaseMessages.getString( PKG, "JobMysqlBulkFile.Error.Label" ) + " " + dbe.getMessage() );
           }
 
-        }
-
-        else {
+        } else {
           // No database connection is defined
           result.setNrErrors( 1 );
           logError( BaseMessages.getString( PKG, "JobMysqlBulkFile.Nodatabase.Label" ) );
@@ -575,8 +577,8 @@ public class JobEntryMysqlBulkFile extends JobEntryBase implements Cloneable, Jo
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "filename", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "tablename", remarks, putValidators( notBlankValidator() ) );
   }

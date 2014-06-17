@@ -32,7 +32,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 28-feb-2005
- * 
+ *
  */
 public class UpdateData extends BaseStepData implements StepDataInterface {
   public Database db;
@@ -56,9 +56,6 @@ public class UpdateData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface lookupReturnRowMeta;
   public RowMetaInterface updateParameterRowMeta;
 
-  /**
-	 * 
-	 */
   public UpdateData() {
     super();
 

@@ -28,13 +28,13 @@ import java.util.Map;
 /**
  * With this resource naming scheme we try to keep the original filename. However, if there are multiple files with the
  * same name, we add a sequence nr starting at 2.
- * 
+ *
  * For example :
- * 
+ *
  * Load orders.ktr Load orders 2.ktr Load orders 3.ktr etc.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class SequenceResourceNaming extends SimpleResourceNaming {
 

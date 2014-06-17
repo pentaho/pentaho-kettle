@@ -66,13 +66,13 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the XML valid job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 26-03-2008
  */
 
 public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryXMLWellFormed.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryXMLWellFormed.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILETYPES = new String[] {
     BaseMessages.getString( PKG, "JobXMLWellFormed.Filetype.Xml" ),
@@ -243,7 +243,8 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
     wlIncludeSubfolders.setLayoutData( fdlIncludeSubfolders );
     wIncludeSubfolders = new Button( wSettings, SWT.CHECK );
     props.setLook( wIncludeSubfolders );
-    wIncludeSubfolders.setToolTipText( BaseMessages.getString( PKG, "JobXMLWellFormed.IncludeSubfolders.Tooltip" ) );
+    wIncludeSubfolders
+      .setToolTipText( BaseMessages.getString( PKG, "JobXMLWellFormed.IncludeSubfolders.Tooltip" ) );
     fdIncludeSubfolders = new FormData();
     fdIncludeSubfolders.left = new FormAttachment( middle, 0 );
     fdIncludeSubfolders.top = new FormAttachment( wName, margin );
@@ -428,16 +429,18 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
     wlFields.setLayoutData( fdlFields );
 
     int rows =
-        jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0 ? 0
-            : jobEntry.source_filefolder.length );
+      jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0
+        ? 0 : jobEntry.source_filefolder.length );
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobXMLWellFormed.Fields.SourceFileFolder.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobXMLWellFormed.Fields.Wildcard.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobXMLWellFormed.Fields.SourceFileFolder.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobXMLWellFormed.Fields.Wildcard.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobXMLWellFormed.Fields.SourceFileFolder.Tooltip" ) );
@@ -445,8 +448,8 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
     colinf[1].setToolTip( BaseMessages.getString( PKG, "JobXMLWellFormed.Fields.Wildcard.Tooltip" ) );
 
     wFields =
-        new TableView( jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod,
-            props );
+      new TableView(
+        jobMeta, wGeneralComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -580,8 +583,8 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
     wlNrErrorsLessThan.setLayoutData( fdlNrErrorsLessThan );
 
     wNrErrorsLessThan =
-        new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobXMLWellFormed.NrBadFormedLessThan.Tooltip" ) );
+      new TextVar( jobMeta, wSuccessOn, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobXMLWellFormed.NrBadFormedLessThan.Tooltip" ) );
     props.setLook( wNrErrorsLessThan );
     wNrErrorsLessThan.addModifyListener( lsMod );
     fdNrErrorsLessThan = new FormData();

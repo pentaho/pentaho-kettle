@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Provides data for the XBaseInput step.
- * 
+ *
  * @author Matt
  * @since 09-OCT-2011
  * @version 4.3

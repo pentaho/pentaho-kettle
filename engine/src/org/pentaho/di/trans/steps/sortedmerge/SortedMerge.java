@@ -41,28 +41,28 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Do nothing. Pass all input data to the next steps.
- * 
+ *
  * @author Matt
  * @since 2-jun-2003
  */
 public class SortedMerge extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SortedMergeMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SortedMergeMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SortedMergeMeta meta;
   private SortedMergeData data;
 
   public SortedMerge( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * We read from all streams in the partition merge mode For that we need at least one row on all input rowsets... If
    * we don't have a row, we wait for one.
-   * 
+   *
    * TODO: keep the inputRowSets() list sorted and go from there. That should dramatically improve speed as you only
    * need half as many comparisons.
-   * 
+   *
    * @return the next row
    */
   private synchronized Object[] getRowSorted() throws KettleException {
@@ -111,8 +111,8 @@ public class SortedMerge extends BaseStep implements StepInterface {
             for ( int f = 0; f < data.fieldIndices.length; f++ ) {
               data.fieldIndices[f] = data.rowMeta.indexOfValue( meta.getFieldName()[f] );
               if ( data.fieldIndices[f] < 0 ) {
-                throw new KettleStepException( "Unable to find fieldname [" + meta.getFieldName()[f] + "] in row : "
-                    + data.rowMeta );
+                throw new KettleStepException( "Unable to find fieldname ["
+                  + meta.getFieldName()[f] + "] in row : " + data.rowMeta );
               }
 
               data.rowMeta.getValueMeta( data.fieldIndices[f] ).setSortedDescending( !meta.getAscending()[f] );
@@ -188,8 +188,8 @@ public class SortedMerge extends BaseStep implements StepInterface {
     data = (SortedMergeData) sdi;
 
     Object[] row = getRowSorted(); // get row, sorted
-    if ( row == null ) // no more input to be expected...
-    {
+    if ( row == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }

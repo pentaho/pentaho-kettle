@@ -39,7 +39,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class JsonReader {
-  private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final String JAVA_SCRIPT = "JavaScript";
   private static final String JSON_SCRIPT = "json.js";
@@ -118,32 +118,33 @@ public class JsonReader {
     InputStreamReader isr = null;
     try {
       isr = new InputStreamReader( KettleVFS.getInputStream( filename ) );
-      Object o = JSONValue.parse( isr );
+      Object o = JSONValue.parseWithException( isr );
       if ( o == null ) {
-        throw new KettleException( BaseMessages.getString( PKG, "JsonReader.Error.ParsingFile", filename ) );
+        throw new Exception( BaseMessages.getString( PKG, "JsonReader.Error.ReadFile.Null" ) );
       }
       eval( o );
     } catch ( Exception e ) {
-      throw new KettleException( e );
+      throw new KettleException( BaseMessages.getString( PKG, "JsonReader.Error.ParsingFile", e ) );
     } finally {
       try {
         if ( isr != null ) {
           isr.close();
         }
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }
 
   public void readString( String value ) throws KettleException {
     try {
-      Object o = JSONValue.parse( value );
+      Object o = JSONValue.parseWithException( value );
       if ( o == null ) {
-        throw new KettleException( BaseMessages.getString( PKG, "JsonReader.Error.ParsingString", value ) );
+        throw new Exception( BaseMessages.getString( PKG, "JsonReader.Error.ReadString.Null" ) );
       }
       eval( o );
     } catch ( Exception e ) {
-      throw new KettleException( e );
+      throw new KettleException( BaseMessages.getString( PKG, "JsonReader.Error.ParsingString", e ) );
     }
   }
 
@@ -154,17 +155,18 @@ public class JsonReader {
       is = new InputStreamReader( url.openConnection().getInputStream() );
       Object o = JSONValue.parse( is );
       if ( o == null ) {
-        throw new KettleException( BaseMessages.getString( PKG, "JsonReader.Error.ParsingUrl", value ) );
+        throw new Exception( BaseMessages.getString( PKG, "JsonReader.Error.ReadUrl.Null" ) );
       }
       eval( o );
     } catch ( Exception e ) {
-      throw new KettleException( e );
+      throw new KettleException( BaseMessages.getString( PKG, "JsonReader.Error.ParsingUrl", e ) );
     } finally {
       try {
         if ( is != null ) {
           is.close();
         }
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }

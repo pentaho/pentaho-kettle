@@ -154,48 +154,53 @@ public class HTTP extends BaseStep implements StepInterface {
         }
 
         if ( statusCode != -1 ) {
-          // if the response is not 401: HTTP Authentication required
-          if ( statusCode != 401 ) {
-            // guess encoding
-            //
-            String encoding = meta.getEncoding();
+          if ( statusCode == 204 ) {
+            body = "";
+          } else {
+            // if the response is not 401: HTTP Authentication required
+            if ( statusCode != 401 ) {
+              // guess encoding
+              //
+              String encoding = meta.getEncoding();
 
-            // Try to determine the encoding from the Content-Type value
-            //
-            if ( Const.isEmpty( encoding ) ) {
-              String contentType = method.getResponseHeader( "Content-Type" ).getValue();
-              if ( contentType != null && contentType.contains( "charset" ) ) {
-                encoding = contentType.replaceFirst( "^.*;\\s*charset\\s*=\\s*", "" ).replace( "\"", "" ).trim();
+              // Try to determine the encoding from the Content-Type value
+              //
+              if ( Const.isEmpty( encoding ) ) {
+                String contentType = method.getResponseHeader( "Content-Type" ).getValue();
+                if ( contentType != null && contentType.contains( "charset" ) ) {
+                  encoding = contentType.replaceFirst( "^.*;\\s*charset\\s*=\\s*", "" ).replace( "\"", "" ).trim();
+                }
               }
+
+              if ( isDebug() ) {
+                log.logDebug( toString(), BaseMessages.getString( PKG, "HTTP.Log.ResponseHeaderEncoding", encoding ) );
+              }
+
+              // the response
+              if ( !Const.isEmpty( encoding ) ) {
+                inputStreamReader = new InputStreamReader( method.getResponseBodyAsStream(), encoding );
+              } else {
+                inputStreamReader = new InputStreamReader( method.getResponseBodyAsStream() );
+              }
+              StringBuffer bodyBuffer = new StringBuffer();
+
+              int c;
+              while ( ( c = inputStreamReader.read() ) != -1 ) {
+                bodyBuffer.append( (char) c );
+              }
+
+              inputStreamReader.close();
+
+              body = bodyBuffer.toString();
+              if ( isDebug() ) {
+                logDebug( "Response body: " + body );
+              }
+
+            } else { // the status is a 401
+              throw new KettleStepException( BaseMessages
+                  .getString( PKG, "HTTP.Exception.Authentication", data.realUrl ) );
+
             }
-
-            if ( isDebug() ) {
-              log.logDebug( toString(), BaseMessages.getString( PKG, "HTTP.Log.ResponseHeaderEncoding", encoding ) );
-            }
-
-            // the response
-            if ( !Const.isEmpty( encoding ) ) {
-              inputStreamReader = new InputStreamReader( method.getResponseBodyAsStream(), encoding );
-            } else {
-              inputStreamReader = new InputStreamReader( method.getResponseBodyAsStream() );
-            }
-            StringBuffer bodyBuffer = new StringBuffer();
-
-            int c;
-            while ( ( c = inputStreamReader.read() ) != -1 ) {
-              bodyBuffer.append( (char) c );
-            }
-
-            inputStreamReader.close();
-
-            body = bodyBuffer.toString();
-            if ( isDebug() ) {
-              logDebug( "Response body: " + body );
-            }
-
-          } else { // the status is a 401
-            throw new KettleStepException( BaseMessages.getString( PKG, "HTTP.Exception.Authentication", data.realUrl ) );
-
           }
         }
 
@@ -267,8 +272,7 @@ public class HTTP extends BaseStep implements StepInterface {
     data = (HTTPData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -312,7 +316,8 @@ public class HTTP extends BaseStep implements StepInterface {
       for ( int i = 0; i < nrHeaders; i++ ) {
         int fieldIndex = data.inputRowMeta.indexOfValue( meta.getHeaderField()[i] );
         if ( fieldIndex < 0 ) {
-          logError( BaseMessages.getString( PKG, "HTTP.Exception.ErrorFindingField" ) + meta.getHeaderField()[i] + "]" );
+          logError( BaseMessages.getString( PKG,
+                  "HTTP.Exception.ErrorFindingField" ) + meta.getHeaderField()[i] + "]" );
           throw new KettleStepException( BaseMessages.getString( PKG, "HTTP.Exception.ErrorFindingField", meta
               .getHeaderField()[i] ) );
         }

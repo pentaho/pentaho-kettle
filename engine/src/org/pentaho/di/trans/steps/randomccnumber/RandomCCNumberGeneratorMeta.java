@@ -53,13 +53,12 @@ import org.w3c.dom.Node;
 
 /**
  * Generate random credit card number.
- * 
+ *
  * @author Samatar
  * @since 01-4-2010
  */
 public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = RandomCCNumberGeneratorMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                   // $NON-NLS-1$
 
   private String[] fieldCCType;
   private String[] fieldCCLength;
@@ -220,7 +219,7 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     ValueMetaInterface v = new ValueMeta( cardNumberFieldName, ValueMeta.TYPE_STRING );
     v.setOrigin( name );
@@ -261,8 +260,7 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       int nrfields = rep.countNrStepAttributes( id_step, "cctype" );
 
@@ -282,8 +280,7 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       for ( int i = 0; i < fieldCCType.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "cctype", fieldCCType[i] );
@@ -299,44 +296,44 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
 
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     // See if we have input streams leading to this step!
     int nrRemarks = remarks.size();
     for ( int i = 0; i < fieldCCType.length; i++ ) {
       int len = Const.toInt( transMeta.environmentSubstitute( getFieldCCLength()[i] ), -1 );
       if ( len < 0 ) {
         CheckResult cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RandomCCNumberGeneratorMeta.CheckResult.WrongLen", String.valueOf( i ) ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "RandomCCNumberGeneratorMeta.CheckResult.WrongLen", String.valueOf( i ) ), stepMeta );
         remarks.add( cr );
       }
       int size = Const.toInt( transMeta.environmentSubstitute( getFieldCCSize()[i] ), -1 );
       if ( size < 0 ) {
         CheckResult cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RandomCCNumberGeneratorMeta.CheckResult.WrongSize", String.valueOf( i ) ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "RandomCCNumberGeneratorMeta.CheckResult.WrongSize", String.valueOf( i ) ), stepMeta );
         remarks.add( cr );
       }
     }
     if ( remarks.size() == nrRemarks ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "RandomCCNumberGeneratorMeta.CheckResult.AllTypesSpecified" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "RandomCCNumberGeneratorMeta.CheckResult.AllTypesSpecified" ), stepMeta );
       remarks.add( cr );
     }
 
     if ( Const.isEmpty( getCardNumberFieldName() ) ) {
       CheckResult cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "RandomCCNumberGeneratorMeta.CheckResult.CardNumberFieldMissing" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "RandomCCNumberGeneratorMeta.CheckResult.CardNumberFieldMissing" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new RandomCCNumberGenerator( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

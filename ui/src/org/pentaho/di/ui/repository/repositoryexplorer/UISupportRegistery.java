@@ -36,7 +36,8 @@ public class UISupportRegistery {
   private static Map<Class<? extends IRepositoryService>, Class<? extends IRepositoryExplorerUISupport>> uiSupportMap;
 
   private UISupportRegistery() {
-    uiSupportMap = new HashMap<Class<? extends IRepositoryService>, Class<? extends IRepositoryExplorerUISupport>>();
+    uiSupportMap =
+      new HashMap<Class<? extends IRepositoryService>, Class<? extends IRepositoryExplorerUISupport>>();
   }
 
   public static UISupportRegistery getInstance() {
@@ -47,12 +48,11 @@ public class UISupportRegistery {
   }
 
   public void registerUISupport( Class<? extends IRepositoryService> service,
-      Class<? extends IRepositoryExplorerUISupport> supportClass ) {
+    Class<? extends IRepositoryExplorerUISupport> supportClass ) {
     uiSupportMap.put( service, supportClass );
   }
 
-  public IRepositoryExplorerUISupport createUISupport( Class<? extends IRepositoryService> service )
-    throws UIObjectCreationException {
+  public IRepositoryExplorerUISupport createUISupport( Class<? extends IRepositoryService> service ) throws UIObjectCreationException {
     Class<? extends IRepositoryExplorerUISupport> supportClass = uiSupportMap.get( service );
     if ( supportClass != null ) {
       return contruct( supportClass );
@@ -62,8 +62,7 @@ public class UISupportRegistery {
 
   }
 
-  private IRepositoryExplorerUISupport contruct( Class<? extends IRepositoryExplorerUISupport> supportClass )
-    throws UIObjectCreationException {
+  private IRepositoryExplorerUISupport contruct( Class<? extends IRepositoryExplorerUISupport> supportClass ) throws UIObjectCreationException {
     try {
       return supportClass.newInstance();
     } catch ( Throwable th ) {

@@ -41,19 +41,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Caculate a checksum for each row.
- * 
+ *
  * @author Samatar Hassan
  * @since 30-06-2008
  */
 public class CheckSum extends BaseStep implements StepInterface {
 
-  private static Class<?> PKG = CheckSumMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CheckSumMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CheckSumMeta meta;
 
   private CheckSumData data;
 
-  public CheckSum( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public CheckSum( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -62,8 +63,8 @@ public class CheckSum extends BaseStep implements StepInterface {
     data = (CheckSumData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) {
+      // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -82,8 +83,8 @@ public class CheckSum extends BaseStep implements StepInterface {
           data.fieldnrs[i] = getInputRowMeta().indexOfValue( meta.getFieldName()[i] );
           if ( data.fieldnrs[i] < 0 ) {
             logError( BaseMessages.getString( PKG, "CheckSum.Log.CanNotFindField", meta.getFieldName()[i] ) );
-            throw new KettleException( BaseMessages.getString( PKG, "CheckSum.Log.CanNotFindField",
-                meta.getFieldName()[i] ) );
+            throw new KettleException( BaseMessages.getString( PKG, "CheckSum.Log.CanNotFindField", meta
+              .getFieldName()[i] ) );
           }
         }
       } else {
@@ -96,7 +97,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 
       try {
         if ( meta.getCheckSumType().equals( CheckSumMeta.TYPE_MD5 )
-            || meta.getCheckSumType().equals( CheckSumMeta.TYPE_SHA1 ) ) {
+          || meta.getCheckSumType().equals( CheckSumMeta.TYPE_SHA1 ) ) {
           data.digest = MessageDigest.getInstance( meta.getCheckSumType() );
         }
       } catch ( Exception e ) {
@@ -109,7 +110,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 
     try {
       if ( meta.getCheckSumType().equals( CheckSumMeta.TYPE_ADLER32 )
-          || meta.getCheckSumType().equals( CheckSumMeta.TYPE_CRC32 ) ) {
+        || meta.getCheckSumType().equals( CheckSumMeta.TYPE_CRC32 ) ) {
         // get checksum
         Long checksum = calculCheckSum( r );
         outputRowData = RowDataUtil.addValueData( r, data.nrInfields, checksum );
@@ -123,7 +124,8 @@ public class CheckSum extends BaseStep implements StepInterface {
             outputRowData = RowDataUtil.addValueData( r, data.nrInfields, o );
             break;
           case CheckSumMeta.result_TYPE_HEXADECIMAL:
-            String hex = meta.isCompatibilityMode() ? byteToHexEncode_compatible( o ) : new String( Hex.encodeHex( o ) );
+            String hex =
+              meta.isCompatibilityMode() ? byteToHexEncode_compatible( o ) : new String( Hex.encodeHex( o ) );
             outputRowData = RowDataUtil.addValueData( r, data.nrInfields, hex );
             break;
           default:

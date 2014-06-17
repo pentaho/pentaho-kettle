@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -104,14 +105,14 @@ import org.pentaho.metastore.api.IMetaStore;
  * The definition of a PDI job is represented by a JobMeta object. It is typically loaded from a .kjb file, a PDI
  * repository, or it is generated dynamically. The declared parameters of the job definition are then queried using
  * listParameters() and assigned values using calls to setParameterValue(..).
- * 
+ *
  * @author Matt Casters
  * @since 07-apr-2003
- * 
+ *
  */
-public class Job extends Thread implements VariableSpace, NamedParams, HasLogChannelInterface, LoggingObjectInterface,
-    ExecutorInterface, ExtensionDataInterface {
-  private static Class<?> PKG = Job.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+public class Job extends Thread implements VariableSpace, NamedParams, HasLogChannelInterface,
+  LoggingObjectInterface, ExecutorInterface, ExtensionDataInterface {
+  private static Class<?> PKG = Job.class; // for i18n purposes, needed by Translator2!!
 
   public static final String CONFIGURATION_IN_EXPORT_FILENAME = "__job_execution_configuration__.xml";
 
@@ -221,7 +222,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Instantiates a new job.
-   * 
+   *
    * @param name
    *          the name
    * @param file
@@ -294,7 +295,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Instantiates a new job.
-   * 
+   *
    * @param repository
    *          the repository
    * @param jobMeta
@@ -306,7 +307,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Instantiates a new job.
-   * 
+   *
    * @param repository
    *          the repository
    * @param jobMeta
@@ -339,7 +340,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the name property of the JobMeta property.
-   * 
+   *
    * @return String name for the JobMeta
    */
   @Override
@@ -353,7 +354,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Creates the job with new class loader.
-   * 
+   *
    * @return the job
    * @throws KettleException
    *           the kettle exception
@@ -377,7 +378,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the jobname.
-   * 
+   *
    * @return the jobname
    */
   public String getJobname() {
@@ -390,7 +391,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the repository.
-   * 
+   *
    * @param rep
    *          the new repository
    */
@@ -430,6 +431,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       result.setNrErrors( 1L );
       result.setResult( false );
       addErrors( 1 ); // This can be before actual execution
+
+      emergencyWriteJobTracker( result );
+
       active.set( false );
       finished.set( true );
       stopped.set( false );
@@ -442,16 +446,28 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         result.setNrErrors( 1 );
         result.setResult( false );
         log.logError( BaseMessages.getString( PKG, "Job.Log.ErrorExecJob", e.getMessage() ), e );
+
+        emergencyWriteJobTracker( result );
       }
     }
+  }
+
+  private void emergencyWriteJobTracker( Result res ) {
+    JobEntryResult jerFinalResult = new JobEntryResult( res,
+        this.getLogChannelId(),
+        BaseMessages.getString( PKG, "Job.Comment.JobFinished" ),
+        null, null, 0, null );
+    JobTracker finalTrack = new JobTracker( this.getJobMeta(), jerFinalResult );
+    //jobTracker is up to date too.
+    this.jobTracker.addJobTracker( finalTrack );
   }
 
   /**
    * Execute a job without previous results. This is a job entry point (not recursive)<br>
    * <br>
-   * 
+   *
    * @return the result of the execution
-   * 
+   *
    * @throws KettleException
    */
   private Result execute() throws KettleException {
@@ -468,8 +484,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
       // Start the tracking...
       JobEntryResult jerStart =
-          new JobEntryResult( null, null, BaseMessages.getString( PKG, "Job.Comment.JobStarted" ), BaseMessages
-              .getString( PKG, "Job.Reason.Started" ), null, 0, null );
+        new JobEntryResult( null, null, BaseMessages.getString( PKG, "Job.Comment.JobStarted" ), BaseMessages
+          .getString( PKG, "Job.Reason.Started" ), null, 0, null );
       jobTracker.addJobTracker( new JobTracker( jobMeta, jerStart ) );
 
       active.set( true );
@@ -522,13 +538,16 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           //
         }
         jerEnd =
-            new JobEntryResult( res, jes.getLogChannelId(), BaseMessages.getString( PKG, "Job.Comment.JobFinished" ),
-                BaseMessages.getString( PKG, "Job.Reason.Finished" ), null, 0, null );
+          new JobEntryResult(
+            res, jes.getLogChannelId(), BaseMessages.getString( PKG, "Job.Comment.JobFinished" ), BaseMessages
+              .getString( PKG, "Job.Reason.Finished" ), null, 0, null );
       } else {
         res = execute( 0, res, startpoint, null, BaseMessages.getString( PKG, "Job.Reason.Started" ) );
         jerEnd =
-            new JobEntryResult( res, startpoint.getEntry().getLogChannel().getLogChannelId(), BaseMessages.getString(
-                PKG, "Job.Comment.JobFinished" ), BaseMessages.getString( PKG, "Job.Reason.Finished" ), null, 0, null );
+          new JobEntryResult(
+            res, startpoint.getEntry().getLogChannel().getLogChannelId(), BaseMessages.getString(
+              PKG, "Job.Comment.JobFinished" ), BaseMessages.getString( PKG, "Job.Reason.Finished" ), null,
+            0, null );
       }
       // Save this result...
       jobTracker.addJobTracker( new JobTracker( jobMeta, jerEnd ) );
@@ -547,7 +566,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * Execute a job with previous results passed in.<br>
    * <br>
    * Execute called by JobEntryJob: don't clear the jobEntryResults.
-   * 
+   *
    * @param nr
    *          The job entry number
    * @param result
@@ -574,7 +593,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       throw new KettleJobException( BaseMessages.getString( PKG, "Job.Log.CounldNotFindStartingPoint" ) );
     }
 
-    Result res = execute( nr, result, startpoint, null, BaseMessages.getString( PKG, "Job.Reason.StartOfJobentry" ) );
+    Result res =
+      execute( nr, result, startpoint, null, BaseMessages.getString( PKG, "Job.Reason.StartOfJobentry" ) );
 
     active.set( false );
 
@@ -583,7 +603,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the finished flag.<b> Then launch all the job listeners and call the jobFinished method for each.<br>
-   * 
+   *
    * @see JobListener#jobFinished(Job)
    */
   public void fireJobFinishListeners() throws KettleException {
@@ -596,7 +616,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Call all the jobStarted method for each listener.<br>
-   * 
+   *
    * @see JobListener#jobStarted(Job)
    */
   public void fireJobStartListeners() throws KettleException {
@@ -610,7 +630,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   /**
    * Execute a job entry recursively and move to the next job entry automatically.<br>
    * Uses a back-tracking algorithm.<br>
-   * 
+   *
    * @param nr
    * @param prev_result
    * @param jobEntryCopy
@@ -619,8 +639,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @return
    * @throws KettleException
    */
-  private Result execute( final int nr, Result prev_result, final JobEntryCopy jobEntryCopy, JobEntryCopy previous,
-      String reason ) throws KettleException {
+  private Result execute( final int nr, Result prev_result, final JobEntryCopy jobEntryCopy,
+    JobEntryCopy previous, String reason ) throws KettleException {
     Result res = null;
 
     if ( stopped.get() ) {
@@ -650,8 +670,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       newResult = prevResult;
     } else {
       if ( log.isDetailed() ) {
-        log.logDetailed( "exec(" + nr + ", " + ( prev_result != null ? prev_result.getNrErrors() : 0 ) + ", "
-            + ( jobEntryCopy != null ? jobEntryCopy.toString() : "null" ) + ")" );
+        log.logDetailed( "exec("
+          + nr + ", " + ( prev_result != null ? prev_result.getNrErrors() : 0 ) + ", "
+          + ( jobEntryCopy != null ? jobEntryCopy.toString() : "null" ) + ")" );
       }
 
       // Which entry is next?
@@ -660,8 +681,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
       // Track the fact that we are going to launch the next job entry...
       JobEntryResult jerBefore =
-          new JobEntryResult( null, null, BaseMessages.getString( PKG, "Job.Comment.JobStarted" ), reason, jobEntryCopy
-              .getName(), jobEntryCopy.getNr(), environmentSubstitute( jobEntryCopy.getEntry().getFilename() ) );
+        new JobEntryResult(
+          null, null, BaseMessages.getString( PKG, "Job.Comment.JobStarted" ), reason, jobEntryCopy.getName(),
+          jobEntryCopy.getNr(), environmentSubstitute( jobEntryCopy.getEntry().getFilename() ) );
       jobTracker.addJobTracker( new JobTracker( jobMeta, jerBefore ) );
 
       ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -724,9 +746,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       // Save this result as well...
       //
       JobEntryResult jerAfter =
-          new JobEntryResult( newResult, cloneJei.getLogChannel().getLogChannelId(), BaseMessages.getString( PKG,
-              "Job.Comment.JobFinished" ), null, jobEntryCopy.getName(), jobEntryCopy.getNr(),
-              environmentSubstitute( jobEntryCopy.getEntry().getFilename() ) );
+        new JobEntryResult(
+          newResult, cloneJei.getLogChannel().getLogChannelId(), BaseMessages.getString(
+            PKG, "Job.Comment.JobFinished" ), null, jobEntryCopy.getName(), jobEntryCopy.getNr(),
+          environmentSubstitute( jobEntryCopy.getEntry().getFilename() ) );
       jobTracker.addJobTracker( new JobTracker( jobMeta, jerAfter ) );
       synchronized ( jobEntryResults ) {
         jobEntryResults.add( jerAfter );
@@ -782,7 +805,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       // If the start point was an evaluation and the link color is correct:
       // green or red, execute the next job entry...
       //
-      if ( hi.isUnconditional() || ( jobEntryCopy.evaluates() && ( !( hi.getEvaluation() ^ newResult.getResult() ) ) ) ) {
+      if ( hi.isUnconditional()
+        || ( jobEntryCopy.evaluates() && ( !( hi.getEvaluation() ^ newResult.getResult() ) ) ) ) {
         // Start this next step!
         if ( log.isBasic() ) {
           log.logBasic( BaseMessages.getString( PKG, "Job.Log.StartingEntry", nextEntry.getName() ) );
@@ -809,8 +833,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
                 threadResults.add( threadResult );
               } catch ( Throwable e ) {
                 log.logError( Const.getStackTracker( e ) );
-                threadExceptions.add( new KettleException( BaseMessages.getString( PKG, "Job.Log.UnexpectedError",
-                    nextEntry.toString() ), e ) );
+                threadExceptions.add( new KettleException( BaseMessages.getString(
+                  PKG, "Job.Log.UnexpectedError", nextEntry.toString() ), e ) );
                 Result threadResult = new Result();
                 threadResult.setResult( false );
                 threadResult.setNrErrors( 1L );
@@ -822,7 +846,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           threads.add( thread );
           thread.start();
           if ( log.isBasic() ) {
-            log.logBasic( BaseMessages.getString( PKG, "Job.Log.LaunchedJobEntryInParallel", nextEntry.getName() ) );
+            log
+              .logBasic( BaseMessages.getString( PKG, "Job.Log.LaunchedJobEntryInParallel", nextEntry.getName() ) );
           }
         } else {
           try {
@@ -831,12 +856,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
             res = execute( nr + 1, newResult, nextEntry, jobEntryCopy, nextComment );
           } catch ( Throwable e ) {
             log.logError( Const.getStackTracker( e ) );
-            throw new KettleException( BaseMessages.getString( PKG, "Job.Log.UnexpectedError", nextEntry.toString() ),
-                e );
+            throw new KettleException( BaseMessages.getString( PKG, "Job.Log.UnexpectedError", nextEntry
+              .toString() ), e );
           }
           if ( log.isBasic() ) {
-            log.logBasic( BaseMessages.getString( PKG, "Job.Log.FinishedJobEntry", nextEntry.getName(), res.getResult()
-                + "" ) );
+            log.logBasic( BaseMessages.getString( PKG, "Job.Log.FinishedJobEntry", nextEntry.getName(), res
+              .getResult()
+              + "" ) );
           }
         }
       }
@@ -853,10 +879,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         try {
           thread.join();
         } catch ( InterruptedException e ) {
-          log.logError( jobMeta.toString(), BaseMessages.getString( PKG,
-              "Job.Log.UnexpectedErrorWhileWaitingForJobEntry", nextEntry.getName() ) );
-          threadExceptions.add( new KettleException( BaseMessages.getString( PKG,
-              "Job.Log.UnexpectedErrorWhileWaitingForJobEntry", nextEntry.getName() ), e ) );
+          log.logError( jobMeta.toString(), BaseMessages.getString(
+            PKG, "Job.Log.UnexpectedErrorWhileWaitingForJobEntry", nextEntry.getName() ) );
+          threadExceptions.add( new KettleException( BaseMessages.getString(
+            PKG, "Job.Log.UnexpectedErrorWhileWaitingForJobEntry", nextEntry.getName() ), e ) );
         }
       }
       // if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG,
@@ -910,7 +936,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Wait until this job has finished.
-   * 
+   *
    * @param maxMiliseconds
    *          the maximum number of ms to wait
    */
@@ -921,13 +947,14 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         Thread.sleep( 1 );
         time += 1;
       } catch ( InterruptedException e ) {
+        // Ignore sleep errors
       }
     }
   }
 
   /**
    * Get the number of errors that happened in the job.
-   * 
+   *
    * @return nr of error that have occurred during execution. During execution of a job the number can change.
    */
   public int getErrors() {
@@ -943,7 +970,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Add a number of errors to the total number of erros that occured during execution.
-   * 
+   *
    * @param nrToAdd
    *          nr of errors to add.
    */
@@ -955,9 +982,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Handle logging at start
-   * 
+   *
    * @return true if it went OK.
-   * 
+   *
    * @throws KettleException
    */
   public boolean beginProcessing() throws KettleException {
@@ -977,7 +1004,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       String schemaName = environmentSubstitute( jobMeta.getJobLogTable().getActualSchemaName() );
       String tableName = environmentSubstitute( jobMeta.getJobLogTable().getActualTableName() );
       String schemaAndTable =
-          jobMeta.getJobLogTable().getDatabaseMeta().getQuotedSchemaTableCombination( schemaName, tableName );
+        jobMeta.getJobLogTable().getDatabaseMeta().getQuotedSchemaTableCombination( schemaName, tableName );
       Database ldb = new Database( this, logcon );
       ldb.shareVariablesWith( this );
       ldb.connect();
@@ -994,13 +1021,14 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           }
         }
 
-        Object[] lastr = ldb.getLastLogDate( schemaAndTable, jobMeta.getName(), true, LogStatus.END ); // $NON-NLS-1$
+        Object[] lastr = ldb.getLastLogDate( schemaAndTable, jobMeta.getName(), true, LogStatus.END );
         if ( !Const.isEmpty( lastr ) ) {
           Date last;
           try {
             last = ldb.getReturnRowMeta().getDate( lastr, 0 );
           } catch ( KettleValueException e ) {
-            throw new KettleJobException( BaseMessages.getString( PKG, "Job.Log.ConversionError", "" + tableName ), e );
+            throw new KettleJobException(
+              BaseMessages.getString( PKG, "Job.Log.ConversionError", "" + tableName ), e );
           }
           if ( last != null ) {
             startDate = last;
@@ -1011,7 +1039,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
         ldb.writeLogRecord( jobMeta.getJobLogTable(), LogStatus.START, this, null );
         if ( !ldb.isAutoCommit() ) {
-          ldb.commit( true );
+          ldb.commitLog( true,  jobMeta.getJobLogTable() );
         }
         ldb.disconnect();
 
@@ -1047,12 +1075,15 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         // log record...
         //
         addJobListener( new JobAdapter() {
-          public void jobFinished( Job job ) {
+          public void jobFinished( Job job ) throws KettleException {
             try {
               endProcessing();
-            } catch ( Exception e ) {
+            } catch ( KettleJobException e ) {
               log.logError( BaseMessages.getString( PKG, "Job.Exception.UnableToWriteToLoggingTable", jobLogTable
-                  .toString() ), e );
+                .toString() ), e );
+              //do not skip exception here
+              //job is failed in case log database record is failed!
+              throw new KettleException( e );
             }
           }
         } );
@@ -1060,7 +1091,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       } catch ( KettleDatabaseException dbe ) {
         addErrors( 1 ); // This is even before actual execution
         throw new KettleJobException( BaseMessages.getString( PKG, "Job.Log.UnableToProcessLoggingStart", ""
-            + tableName ), dbe );
+          + tableName ), dbe );
       } finally {
         ldb.disconnect();
       }
@@ -1075,8 +1106,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           try {
             writeJobEntryLogInformation();
           } catch ( KettleException e ) {
-            throw new KettleException( BaseMessages.getString( PKG,
-                "Job.Exception.UnableToPerformJobEntryLoggingAtJobEnd" ), e );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "Job.Exception.UnableToPerformJobEntryLoggingAtJobEnd" ), e );
           }
         }
       } );
@@ -1093,8 +1124,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           try {
             writeLogChannelInformation();
           } catch ( KettleException e ) {
-            throw new KettleException( BaseMessages.getString( PKG, "Job.Exception.UnableToPerformLoggingAtTransEnd" ),
-                e );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "Job.Exception.UnableToPerformLoggingAtTransEnd" ), e );
           }
         }
       } );
@@ -1110,7 +1141,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   // Handle logging at end
   /**
    * End processing.
-   * 
+   *
    * @return true, if successful
    * @throws KettleJobException
    *           the kettle job exception
@@ -1151,10 +1182,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           ldb.writeLogRecord( jobMeta.getJobLogTable(), status, this, null );
         } catch ( KettleDatabaseException dbe ) {
           addErrors( 1 );
-          throw new KettleJobException( "Unable to end processing by writing log record to table " + tableName, dbe );
+          throw new KettleJobException(
+            "Unable to end processing by writing log record to table " + tableName, dbe );
         } finally {
           if ( !ldb.isAutoCommit() ) {
-            ldb.commit( true );
+            ldb.commitLog( true, jobMeta.getJobLogTable() );
           }
           ldb.disconnect();
         }
@@ -1168,7 +1200,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Write log channel information.
-   * 
+   *
    * @throws KettleException
    *           the kettle exception
    */
@@ -1202,8 +1234,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       db.cleanupLogRecords( channelLogTable );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "Trans.Exception.UnableToWriteLogChannelInformationToLogTable" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "Trans.Exception.UnableToWriteLogChannelInformationToLogTable" ), e );
     } finally {
       if ( !db.isAutoCommit() ) {
         db.commit( true );
@@ -1214,7 +1246,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Write job entry log information.
-   * 
+   *
    * @throws KettleException
    *           the kettle exception
    */
@@ -1232,11 +1264,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "Job.Exception.UnableToJobEntryInformationToLogTable" ),
-          e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "Job.Exception.UnableToJobEntryInformationToLogTable" ), e );
     } finally {
       if ( !db.isAutoCommit() ) {
-        db.commit( true );
+        db.commitLog( true,  jobEntryLogTable );
       }
       db.disconnect();
     }
@@ -1244,7 +1276,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Checks if is active.
-   * 
+   *
    * @return true, if is active
    */
   public boolean isActive() {
@@ -1260,7 +1292,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the stopped.
-   * 
+   *
    * @param stopped
    *          the new stopped
    */
@@ -1270,7 +1302,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the stopped status of this Job.
-   * 
+   *
    * @return Returns the stopped status of this Job
    */
   public boolean isStopped() {
@@ -1279,7 +1311,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the start date.
-   * 
+   *
    * @return Returns the startDate
    */
   public Date getStartDate() {
@@ -1288,7 +1320,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the end date.
-   * 
+   *
    * @return Returns the endDate
    */
   public Date getEndDate() {
@@ -1297,7 +1329,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the current date.
-   * 
+   *
    * @return Returns the currentDate
    */
   public Date getCurrentDate() {
@@ -1306,7 +1338,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the dep date.
-   * 
+   *
    * @return Returns the depDate
    */
   public Date getDepDate() {
@@ -1315,7 +1347,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the log date.
-   * 
+   *
    * @return Returns the logDate
    */
   public Date getLogDate() {
@@ -1324,7 +1356,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the job meta.
-   * 
+   *
    * @return Returns the JobMeta
    */
   public JobMeta getJobMeta() {
@@ -1333,7 +1365,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the rep (repository).
-   * 
+   *
    * @return Returns the rep
    */
   public Repository getRep() {
@@ -1342,7 +1374,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the thread.
-   * 
+   *
    * @return the thread
    */
   public Thread getThread() {
@@ -1351,7 +1383,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the job tracker.
-   * 
+   *
    * @return Returns the jobTracker
    */
   public JobTracker getJobTracker() {
@@ -1360,7 +1392,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the job tracker.
-   * 
+   *
    * @param jobTracker
    *          The jobTracker to set
    */
@@ -1370,7 +1402,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the source rows.
-   * 
+   *
    * @param sourceRows
    *          the new source rows
    */
@@ -1380,7 +1412,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the source rows.
-   * 
+   *
    * @return the source rows
    */
   public List<RowMetaAndData> getSourceRows() {
@@ -1389,7 +1421,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the parent job.
-   * 
+   *
    * @return Returns the parentJob
    */
   public Job getParentJob() {
@@ -1398,7 +1430,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the parent job.
-   * 
+   *
    * @param parentJob
    *          The parentJob to set.
    */
@@ -1411,7 +1443,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the result.
-   * 
+   *
    * @return the result
    */
   public Result getResult() {
@@ -1420,7 +1452,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the result.
-   * 
+   *
    * @param result
    *          the new result
    */
@@ -1430,7 +1462,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the boolean value of initialized.
-   * 
+   *
    * @return Returns the initialized
    */
   public boolean isInitialized() {
@@ -1439,7 +1471,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the batchId.
-   * 
+   *
    * @return Returns the batchId
    */
   public long getBatchId() {
@@ -1448,7 +1480,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the batchId.
-   * 
+   *
    * @param batchId
    *          The batchId to set
    */
@@ -1458,7 +1490,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the passedBatchId.
-   * 
+   *
    * @return the passedBatchId
    */
   public long getPassedBatchId() {
@@ -1467,7 +1499,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the passedBatchId.
-   * 
+   *
    * @param jobBatchId
    *          the jobBatchId to set
    */
@@ -1477,7 +1509,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the internal kettle variables.
-   * 
+   *
    * @param var
    *          the new internal kettle variables.
    */
@@ -1508,7 +1540,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     // The name of the directory in the repository
     var.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, jobMeta.getRepositoryDirectory() != null
-        ? jobMeta.getRepositoryDirectory().getPath() : "" );
+      ? jobMeta.getRepositoryDirectory().getPath() : "" );
 
     // Undefine the transformation specific variables
     var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null );
@@ -1521,7 +1553,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#copyVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
    */
   public void copyVariablesFrom( VariableSpace space ) {
@@ -1530,7 +1562,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String)
    */
   public String environmentSubstitute( String aString ) {
@@ -1539,21 +1571,20 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String[])
    */
   public String[] environmentSubstitute( String[] aString ) {
     return variables.environmentSubstitute( aString );
   }
 
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#getParentVariableSpace()
    */
   public VariableSpace getParentVariableSpace() {
@@ -1562,7 +1593,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.pentaho.di.core.variables.VariableSpace#setParentVariableSpace(org.pentaho.di.core.variables.VariableSpace)
    */
@@ -1572,7 +1603,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String, java.lang.String)
    */
   public String getVariable( String variableName, String defaultValue ) {
@@ -1581,7 +1612,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String)
    */
   public String getVariable( String variableName ) {
@@ -1590,7 +1621,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#getBooleanValueOfVariable(java.lang.String, boolean)
    */
   public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
@@ -1605,7 +1636,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.pentaho.di.core.variables.VariableSpace#initializeVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
    */
@@ -1615,7 +1646,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#listVariables()
    */
   public String[] listVariables() {
@@ -1624,7 +1655,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#setVariable(java.lang.String, java.lang.String)
    */
   public void setVariable( String variableName, String variableValue ) {
@@ -1633,7 +1664,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#shareVariablesWith(org.pentaho.di.core.variables.VariableSpace)
    */
   public void shareVariablesWith( VariableSpace space ) {
@@ -1642,7 +1673,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.variables.VariableSpace#injectVariables(java.util.Map)
    */
   public void injectVariables( Map<String, String> prop ) {
@@ -1651,7 +1682,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the status.
-   * 
+   *
    * @return the status
    */
   public String getStatus() {
@@ -1683,7 +1714,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Send to slave server.
-   * 
+   *
    * @param jobMeta
    *          the job meta
    * @param executionConfiguration
@@ -1697,7 +1728,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *           the kettle exception
    */
   public static String sendToSlaveServer( JobMeta jobMeta, JobExecutionConfiguration executionConfiguration,
-      Repository repository, IMetaStore metaStore ) throws KettleException {
+    Repository repository, IMetaStore metaStore ) throws KettleException {
     String carteObjectId;
     SlaveServer slaveServer = executionConfiguration.getRemoteServer();
 
@@ -1714,30 +1745,33 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     try {
       // Inject certain internal variables to make it more intuitive.
       //
-      for ( String var : Const.INTERNAL_TRANS_VARIABLES )
+      for ( String var : Const.INTERNAL_TRANS_VARIABLES ) {
         executionConfiguration.getVariables().put( var, jobMeta.getVariable( var ) );
-      for ( String var : Const.INTERNAL_JOB_VARIABLES )
+      }
+      for ( String var : Const.INTERNAL_JOB_VARIABLES ) {
         executionConfiguration.getVariables().put( var, jobMeta.getVariable( var ) );
+      }
 
       if ( executionConfiguration.isPassingExport() ) {
         // First export the job... slaveServer.getVariable("MASTER_HOST")
         //
         FileObject tempFile =
-            KettleVFS.createTempFile( "jobExport", ".zip", System.getProperty( "java.io.tmpdir" ), jobMeta );
+          KettleVFS.createTempFile( "jobExport", ".zip", System.getProperty( "java.io.tmpdir" ), jobMeta );
 
         TopLevelResource topLevelResource =
-            ResourceUtil.serializeResourceExportInterface( tempFile.getName().toString(), jobMeta, jobMeta, repository,
-                metaStore, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
+          ResourceUtil.serializeResourceExportInterface(
+            tempFile.getName().toString(), jobMeta, jobMeta, repository, metaStore, executionConfiguration
+              .getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
 
         // Send the zip file over to the slave server...
         //
         String result =
-            slaveServer.sendExport( topLevelResource.getArchiveName(), AddExportServlet.TYPE_JOB, topLevelResource
-                .getBaseResourceName() );
+          slaveServer.sendExport( topLevelResource.getArchiveName(), AddExportServlet.TYPE_JOB, topLevelResource
+            .getBaseResourceName() );
         WebResult webResult = WebResult.fromXMLString( result );
         if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-          throw new KettleException( "There was an error passing the exported job to the remote server: " + Const.CR
-              + webResult.getMessage() );
+          throw new KettleException( "There was an error passing the exported job to the remote server: "
+            + Const.CR + webResult.getMessage() );
         }
         carteObjectId = webResult.getId();
       } else {
@@ -1746,8 +1780,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         String reply = slaveServer.sendXML( xml, AddJobServlet.CONTEXT_PATH + "/?xml=Y" );
         WebResult webResult = WebResult.fromXMLString( reply );
         if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-          throw new KettleException( "There was an error posting the job on the remote server: " + Const.CR
-              + webResult.getMessage() );
+          throw new KettleException( "There was an error posting the job on the remote server: "
+            + Const.CR + webResult.getMessage() );
         }
         carteObjectId = webResult.getId();
       }
@@ -1755,14 +1789,16 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       // Start the job
       //
       String reply =
-          slaveServer.execService( StartJobServlet.CONTEXT_PATH + "/?name="
-              + URLEncoder.encode( jobMeta.getName(), "UTF-8" ) + "&xml=Y&id=" + carteObjectId );
+        slaveServer.execService( StartJobServlet.CONTEXT_PATH
+          + "/?name=" + URLEncoder.encode( jobMeta.getName(), "UTF-8" ) + "&xml=Y&id=" + carteObjectId );
       WebResult webResult = WebResult.fromXMLString( reply );
       if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-        throw new KettleException( "There was an error starting the job on the remote server: " + Const.CR
-            + webResult.getMessage() );
+        throw new KettleException( "There was an error starting the job on the remote server: "
+          + Const.CR + webResult.getMessage() );
       }
       return carteObjectId;
+    } catch ( KettleException ke ) {
+      throw ke;
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
@@ -1770,7 +1806,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Add a job listener to the job
-   * 
+   *
    * @param jobListener
    *          the job listener to add
    */
@@ -1782,7 +1818,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Adds the job entry listener.
-   * 
+   *
    * @param jobEntryListener
    *          the job entry listener
    */
@@ -1792,7 +1828,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Remove a job listener from the job
-   * 
+   *
    * @param jobListener
    *          the job listener to remove
    */
@@ -1804,7 +1840,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Remove a job entry listener from the job
-   * 
+   *
    * @param jobListener
    *          the job entry listener to remove
    */
@@ -1814,7 +1850,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the job entry listeners.
-   * 
+   *
    * @return the job entry listeners
    */
   public List<JobEntryListener> getJobEntryListeners() {
@@ -1823,7 +1859,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the job listeners.
-   * 
+   *
    * @return the job listeners
    */
   public List<JobListener> getJobListeners() {
@@ -1834,7 +1870,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the boolean value of finished.
-   * 
+   *
    * @return the finished
    */
   public boolean isFinished() {
@@ -1843,7 +1879,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the value of finished.
-   * 
+   *
    * @param finished
    *          the finished to set
    */
@@ -1853,7 +1889,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#addParameterDefinition(java.lang.String, java.lang.String,
    * java.lang.String)
    */
@@ -1863,7 +1899,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#getParameterDescription(java.lang.String)
    */
   public String getParameterDescription( String key ) throws UnknownParamException {
@@ -1872,7 +1908,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#getParameterDefault(java.lang.String)
    */
   public String getParameterDefault( String key ) throws UnknownParamException {
@@ -1881,7 +1917,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#getParameterValue(java.lang.String)
    */
   public String getParameterValue( String key ) throws UnknownParamException {
@@ -1890,7 +1926,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#listParameters()
    */
   public String[] listParameters() {
@@ -1899,7 +1935,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#setParameterValue(java.lang.String, java.lang.String)
    */
   public void setParameterValue( String key, String value ) throws UnknownParamException {
@@ -1908,7 +1944,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#eraseParameters()
    */
   public void eraseParameters() {
@@ -1917,7 +1953,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#clearParameters()
    */
   public void clearParameters() {
@@ -1926,7 +1962,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#activateParameters()
    */
   public void activateParameters() {
@@ -1956,7 +1992,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#copyParametersFrom(org.pentaho.di.core.parameters.NamedParams)
    */
   public void copyParametersFrom( NamedParams params ) {
@@ -1965,7 +2001,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the socket repository.
-   * 
+   *
    * @param socketRepository
    *          the new socket repository
    */
@@ -1975,7 +2011,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the socket repository.
-   * 
+   *
    * @return the socket repository
    */
   public SocketRepository getSocketRepository() {
@@ -1984,7 +2020,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the log channel interface.
-   * 
+   *
    * @return LogChannelInterface
    */
   public LogChannelInterface getLogChannel() {
@@ -1993,7 +2029,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the job name.
-   * 
+   *
    * @return jobName
    */
   public String getObjectName() {
@@ -2002,7 +2038,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Always returns null for Job.
-   * 
+   *
    * @return null
    */
   public String getObjectCopy() {
@@ -2011,7 +2047,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the file name.
-   * 
+   *
    * @return the filename
    */
   public String getFilename() {
@@ -2023,7 +2059,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the log channel id.
-   * 
+   *
    * @return the logChannelId
    */
   public String getLogChannelId() {
@@ -2032,7 +2068,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the jobMeta's object id.
-   * 
+   *
    * @return ObjectId
    */
   public ObjectId getObjectId() {
@@ -2044,7 +2080,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the job meta's object revision.
-   * 
+   *
    * @return ObjectRevision
    */
   public ObjectRevision getObjectRevision() {
@@ -2056,7 +2092,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets LoggingObjectType.JOB, which is always the value for Job.
-   * 
+   *
    * @return LoggingObjectType LoggingObjectType.JOB
    */
   public LoggingObjectType getObjectType() {
@@ -2065,7 +2101,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets parent logging object.
-   * 
+   *
    * @return parentLoggingObject
    */
   public LoggingObjectInterface getParent() {
@@ -2074,7 +2110,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the job meta's repository directory interface.
-   * 
+   *
    * @return RepositoryDirectoryInterface
    */
   public RepositoryDirectoryInterface getRepositoryDirectory() {
@@ -2086,7 +2122,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the logLevel.
-   * 
+   *
    * @return logLevel
    */
   public LogLevel getLogLevel() {
@@ -2095,7 +2131,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the log level.
-   * 
+   *
    * @param logLevel
    *          the new log level
    */
@@ -2106,7 +2142,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the logging hierarchy.
-   * 
+   *
    * @return the logging hierarchy
    */
   public List<LoggingHierarchy> getLoggingHierarchy() {
@@ -2124,7 +2160,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the boolean value of interactive.
-   * 
+   *
    * @return the interactive
    */
   public boolean isInteractive() {
@@ -2133,7 +2169,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the value of interactive.
-   * 
+   *
    * @param interactive
    *          the interactive to set
    */
@@ -2143,7 +2179,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the activeJobEntryTransformations.
-   * 
+   *
    * @return the activeJobEntryTransformations
    */
   public Map<JobEntryCopy, JobEntryTrans> getActiveJobEntryTransformations() {
@@ -2152,7 +2188,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the activeJobEntryJobs.
-   * 
+   *
    * @return the activeJobEntryJobs
    */
   public Map<JobEntryCopy, JobEntryJob> getActiveJobEntryJobs() {
@@ -2161,7 +2197,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets a flat list of results in THIS job, in the order of execution of job entries.
-   * 
+   *
    * @return A flat list of results in THIS job, in the order of execution of job entries
    */
   public List<JobEntryResult> getJobEntryResults() {
@@ -2172,7 +2208,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the carteObjectId.
-   * 
+   *
    * @return the carteObjectId
    */
   public String getContainerObjectId() {
@@ -2181,7 +2217,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the execution container object id (containerObjectId).
-   * 
+   *
    * @param containerObjectId
    *          the execution container object id to set
    */
@@ -2191,7 +2227,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the parent logging object.
-   * 
+   *
    * @return the parent logging object
    */
   public LoggingObjectInterface getParentLoggingObject() {
@@ -2200,7 +2236,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the registration date. For job, this always returns null
-   * 
+   *
    * @return null
    */
   public Date getRegistrationDate() {
@@ -2209,7 +2245,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the start job entry copy.
-   * 
+   *
    * @return the startJobEntryCopy
    */
   public JobEntryCopy getStartJobEntryCopy() {
@@ -2218,7 +2254,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the start job entry copy.
-   * 
+   *
    * @param startJobEntryCopy
    *          the startJobEntryCopy to set
    */
@@ -2228,7 +2264,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the executing server.
-   * 
+   *
    * @return the executingServer
    */
   public String getExecutingServer() {
@@ -2237,7 +2273,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the executing server.
-   * 
+   *
    * @param executingServer
    *          the executingServer to set
    */
@@ -2247,7 +2283,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the executing user.
-   * 
+   *
    * @return the executingUser
    */
   public String getExecutingUser() {
@@ -2256,7 +2292,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the executing user.
-   * 
+   *
    * @param executingUser
    *          the executingUser to set
    */
@@ -2290,7 +2326,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Gets the transaction id.
-   * 
+   *
    * @return the transactionId
    */
   public String getTransactionId() {
@@ -2299,7 +2335,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /**
    * Sets the transaction id.
-   * 
+   *
    * @param transactionId
    *          the transactionId to set
    */

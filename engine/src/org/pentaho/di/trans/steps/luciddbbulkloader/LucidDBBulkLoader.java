@@ -57,22 +57,22 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Performs a bulk load to a LucidDB table.
- * 
+ *
  * Based on Sven Boden's Oracle Bulk Loader step
- * 
+ *
  * @author matt
  * @since 14-nov-2008
  */
 public class LucidDBBulkLoader extends BaseStep implements StepInterface {
-  private static Class<?> PKG = LucidDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LucidDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private LucidDBBulkLoaderMeta meta;
   private LucidDBBulkLoaderData data;
 
   // private SqlRunner sqlRunner;
 
-  public LucidDBBulkLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public LucidDBBulkLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -312,8 +312,9 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface {
 
     try {
       Object[] r = getRow(); // Get row from input rowset & set row busy!
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) {
+        // no more input to be expected...
+
         setOutputDone();
 
         // Close the fifo file...
@@ -337,8 +338,9 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface {
         // retrieve the rejected row count
         if ( !sqlRunner.warnings.isEmpty() ) {
           ResultSet rs =
-              data.db
-                  .openQuery( "SELECT PARAM_VALUE FROM SYS_ROOT.USER_SESSION_PARAMETERS WHERE PARAM_NAME='lastRowsRejected'" );
+            data.db.openQuery( "SELECT PARAM_VALUE "
+              + "FROM SYS_ROOT.USER_SESSION_PARAMETERS "
+              + "WHERE PARAM_NAME='lastRowsRejected'" );
           try {
             rs.next();
             setLinesRejected( rs.getInt( 1 ) );
@@ -500,8 +502,8 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface {
 
       // Schema-table combination...
       data.schemaTable =
-          meta.getDatabaseMeta().getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ),
-              environmentSubstitute( meta.getTableName() ) );
+        meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+          environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
       return true;
     }

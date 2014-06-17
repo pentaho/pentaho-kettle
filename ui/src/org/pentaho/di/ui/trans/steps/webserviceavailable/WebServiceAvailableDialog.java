@@ -54,7 +54,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class WebServiceAvailableDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = WebServiceAvailableMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = WebServiceAvailableMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlURL;
   private CCombo wURL;
@@ -165,7 +165,8 @@ public class WebServiceAvailableDialog extends BaseStepDialog implements StepDia
     wlConnectTimeOut.setLayoutData( fdlConnectTimeOut );
 
     wConnectTimeOut = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wConnectTimeOut.setToolTipText( BaseMessages.getString( PKG, "WebServiceAvailableDialog.ConnectTimeOut.Tooltip" ) );
+    wConnectTimeOut.setToolTipText( BaseMessages.getString(
+      PKG, "WebServiceAvailableDialog.ConnectTimeOut.Tooltip" ) );
     props.setLook( wConnectTimeOut );
     wConnectTimeOut.addModifyListener( lsMod );
     fdConnectTimeOut = new FormData();
@@ -340,8 +341,8 @@ public class WebServiceAvailableDialog extends BaseStepDialog implements StepDia
         }
       } catch ( KettleException ke ) {
         new ErrorDialog( shell,
-            BaseMessages.getString( PKG, "WebServiceAvailableDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-                .getString( PKG, "WebServiceAvailableDialog.FailedToGetFields.DialogMessage" ), ke );
+          BaseMessages.getString( PKG, "WebServiceAvailableDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "WebServiceAvailableDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }

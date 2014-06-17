@@ -48,7 +48,7 @@ public class ImportRules implements Cloneable {
 
   /**
    * Perform a deep clone
-   * 
+   *
    * @return a deep copy of the all the import rules.
    */
   @Override
@@ -83,7 +83,8 @@ public class ImportRules implements Cloneable {
 
       PluginInterface plugin = registry.findPluginWithId( ImportRulePluginType.class, id );
       if ( plugin == null ) {
-        throw new KettleException( "The import rule of type '" + id + "' could not be found in the plugin registry." );
+        throw new KettleException( "The import rule of type '"
+          + id + "' could not be found in the plugin registry." );
       }
       ImportRuleInterface rule = (ImportRuleInterface) registry.loadClass( plugin );
 
@@ -102,7 +103,7 @@ public class ImportRules implements Cloneable {
 
       PluginInterface plugin = PluginRegistry.getInstance().getPlugin( ImportRulePluginType.class, rule.getId() );
       xml.append( "<!-- " ).append( plugin.getName() ).append( " : " ).append( plugin.getDescription() ).append(
-          Const.CR ).append( " -->" ).append( Const.CR );
+        Const.CR ).append( " -->" ).append( Const.CR );
 
       xml.append( rule.getXML() );
       xml.append( Const.CR ).append( Const.CR );

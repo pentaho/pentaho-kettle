@@ -37,26 +37,25 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Generate random credit card number.
- * 
+ *
  * @author Samatar
  * @since 01-4-2010
  */
 public class RandomCCNumberGenerator extends BaseStep implements StepInterface {
   private static Class<?> PKG = RandomCCNumberGeneratorMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                   // $NON-NLS-1$
 
   private RandomCCNumberGeneratorMeta meta;
 
   private RandomCCNumberGeneratorData data;
 
   public RandomCCNumberGenerator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-      TransMeta transMeta, Trans trans ) {
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
 
@@ -77,8 +76,8 @@ public class RandomCCNumberGenerator extends BaseStep implements StepInterface {
 
       // Return card numbers
       String[] cardNumber =
-          RandomCreditCardNumberGenerator.GenerateCreditCardNumbers( data.cardTypes[i], data.cardLen[i],
-              data.cardSize[i] );
+        RandomCreditCardNumberGenerator.GenerateCreditCardNumbers(
+          data.cardTypes[i], data.cardLen[i], data.cardSize[i] );
 
       for ( int j = 0; j < cardNumber.length && !isStopped(); j++ ) {
         // Create a new row
@@ -99,8 +98,8 @@ public class RandomCCNumberGenerator extends BaseStep implements StepInterface {
           row[index++] = new Long( data.cardLen[i] );
         }
         if ( isRowLevel() ) {
-          logRowlevel( BaseMessages.getString( PKG, "RandomCCNumberGenerator.Log.ValueReturned", data.outputRowMeta
-              .getString( row ) ) );
+          logRowlevel( BaseMessages.getString(
+            PKG, "RandomCCNumberGenerator.Log.ValueReturned", data.outputRowMeta.getString( row ) ) );
         }
 
         putRow( data.outputRowMeta, row );
@@ -141,13 +140,15 @@ public class RandomCCNumberGenerator extends BaseStep implements StepInterface {
         String len = environmentSubstitute( meta.getFieldCCLength()[i] );
         data.cardLen[i] = Const.toInt( len, -1 );
         if ( data.cardLen[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "RandomCCNumberGenerator.Log.WrongLength", len, String.valueOf( i ) ) );
+          logError( BaseMessages.getString( PKG, "RandomCCNumberGenerator.Log.WrongLength", len, String
+            .valueOf( i ) ) );
           return false;
         }
         String size = environmentSubstitute( meta.getFieldCCSize()[i] );
         data.cardSize[i] = Const.toInt( size, -1 );
         if ( data.cardSize[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "RandomCCNumberGenerator.Log.WrongSize", size, String.valueOf( i ) ) );
+          logError( BaseMessages
+            .getString( PKG, "RandomCCNumberGenerator.Log.WrongSize", size, String.valueOf( i ) ) );
           return false;
         }
       }

@@ -65,13 +65,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a 'delete files' job entry.
- * 
+ *
  * @author Samatar Hassan
  * @since 06-05-2007
  */
 public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobEntryInterface {
 
-  private static Class<?> PKG = JobEntryDeleteFiles.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryDeleteFiles.class; // for i18n purposes, needed by Translator2!!
 
   public boolean argFromPrevious;
 
@@ -87,7 +87,6 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     arguments = null;
 
     includeSubfolders = false;
-    setID( -1L );
   }
 
   public JobEntryDeleteFiles() {
@@ -120,8 +119,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "arg_from_previous" ) );
@@ -147,7 +146,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       argFromPrevious = rep.getJobEntryAttributeBoolean( id_jobentry, "arg_from_previous" );
       includeSubfolders = rep.getJobEntryAttributeBoolean( id_jobentry, "include_subfolders" );
@@ -164,7 +163,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       }
     } catch ( KettleException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryDeleteFiles.UnableToLoadFromRepo", String
-          .valueOf( id_jobentry ) ), dbe );
+        .valueOf( id_jobentry ) ), dbe );
     }
   }
 
@@ -182,7 +181,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       }
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryDeleteFiles.UnableToSaveToRepo", String
-          .valueOf( id_job ) ), dbe );
+        .valueOf( id_job ) ), dbe );
     }
   }
 
@@ -198,7 +197,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     if ( argFromPrevious ) {
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FoundPreviousRows", String
-            .valueOf( ( rows != null ? rows.size() : 0 ) ) ) );
+          .valueOf( ( rows != null ? rows.size() : 0 ) ) ) );
       }
     }
 
@@ -212,8 +211,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
         // ok we can process this file/folder
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages
-              .getString( PKG, "JobEntryDeleteFiles.ProcessingRow", args_previous, fmasks_previous ) );
+          logDetailed( BaseMessages.getString(
+            PKG, "JobEntryDeleteFiles.ProcessingRow", args_previous, fmasks_previous ) );
         }
 
         if ( !ProcessFile( args_previous, fmasks_previous, parentJob ) ) {
@@ -226,7 +225,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
         // ok we can process this file/folder
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.ProcessingArg", arguments[i], filemasks[i] ) );
+          logDetailed( BaseMessages.getString(
+            PKG, "JobEntryDeleteFiles.ProcessingArg", arguments[i], filemasks[i] ) );
         }
         if ( !ProcessFile( arguments[i], filemasks[i], parentJob ) ) {
           NrErrFiles++;
@@ -292,8 +292,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         rcode = true;
       }
     } catch ( Exception e ) {
-      logError(
-          BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotProcess", realFilefoldername, e.getMessage() ), e );
+      logError( BaseMessages.getString( PKG, "JobEntryDeleteFiles.CouldNotProcess", realFilefoldername, e
+        .getMessage() ), e );
     } finally {
       if ( filefolder != null ) {
         try {
@@ -309,17 +309,18 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   }
 
   private class TextFileSelector implements FileSelector {
-    String file_wildcard = null, source_folder = null;
+    String fileWildcard = null;
+    String sourceFolder = null;
     Job parentjob;
 
     public TextFileSelector( String sourcefolderin, String filewildcard, Job parentJob ) {
 
       if ( !Const.isEmpty( sourcefolderin ) ) {
-        source_folder = sourcefolderin;
+        sourceFolder = sourcefolderin;
       }
 
       if ( !Const.isEmpty( filewildcard ) ) {
-        file_wildcard = filewildcard;
+        fileWildcard = filewildcard;
       }
       parentjob = parentJob;
     }
@@ -329,7 +330,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       FileObject file_name = null;
       try {
 
-        if ( !info.getFile().toString().equals( source_folder ) && !parentjob.isStopped() ) {
+        if ( !info.getFile().toString().equals( sourceFolder ) && !parentjob.isStopped() ) {
           // Pass over the Base folder itself
 
           String short_filename = info.getFile().getName().getBaseName();
@@ -337,11 +338,11 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
           if ( !info.getFile().getParent().equals( info.getBaseFolder() ) ) {
 
             // Not in the Base Folder..Only if include sub folders
-            if ( includeSubfolders && ( info.getFile().getType() == FileType.FILE )
-                && GetFileWildcard( short_filename, file_wildcard ) ) {
+            if ( includeSubfolders
+              && ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, fileWildcard ) ) {
               if ( log.isDetailed() ) {
-                logDetailed( BaseMessages
-                    .getString( PKG, "JobEntryDeleteFiles.DeletingFile", info.getFile().toString() ) );
+                logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.DeletingFile", info
+                  .getFile().toString() ) );
               }
 
               returncode = true;
@@ -350,10 +351,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
           } else {
             // In the Base Folder...
 
-            if ( ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, file_wildcard ) ) {
+            if ( ( info.getFile().getType() == FileType.FILE ) && GetFileWildcard( short_filename, fileWildcard ) ) {
               if ( log.isDetailed() ) {
-                logDetailed( BaseMessages
-                    .getString( PKG, "JobEntryDeleteFiles.DeletingFile", info.getFile().toString() ) );
+                logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.DeletingFile", info
+                  .getFile().toString() ) );
               }
 
               returncode = true;
@@ -366,8 +367,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
       } catch ( Exception e ) {
 
-        log.logError( BaseMessages.getString( PKG, "JobDeleteFiles.Error.Exception.DeleteProcessError" ), BaseMessages
-            .getString( PKG, "JobDeleteFiles.Error.Exception.DeleteProcess", info.getFile().toString(), e.getMessage() ) );
+        log.logError(
+          BaseMessages.getString( PKG, "JobDeleteFiles.Error.Exception.DeleteProcessError" ), BaseMessages
+            .getString( PKG, "JobDeleteFiles.Error.Exception.DeleteProcess", info.getFile().toString(), e
+              .getMessage() ) );
 
         returncode = false;
       } finally {
@@ -390,7 +393,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   }
 
   /**********************************************************
-   * 
+   *
    * @param selectedfile
    * @param wildcard
    * @return True if the selectedfile matches the wildcard
@@ -423,8 +426,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     return true;
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
 
     if ( res == false ) {

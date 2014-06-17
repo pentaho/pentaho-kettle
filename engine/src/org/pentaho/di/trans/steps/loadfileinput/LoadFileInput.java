@@ -23,7 +23,6 @@
 package org.pentaho.di.trans.steps.loadfileinput;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
@@ -50,18 +49,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read files, parse them and convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Samatar
  * @since 20-06-2007
  */
 public class LoadFileInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = LoadFileInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LoadFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private LoadFileInputMeta meta;
   private LoadFileInputData data;
 
   public LoadFileInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -69,7 +68,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
     if ( meta.addResultFile() ) {
       // Add this to the result file names...
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
       resultFile.setComment( "File was read by a LoadFileInput step" );
       addResultFile( resultFile );
     }
@@ -80,8 +79,8 @@ public class LoadFileInput extends BaseStep implements StepInterface {
       if ( meta.getIsInFields() ) {
         data.readrow = getRow(); // Grab another row ...
 
-        if ( data.readrow == null ) // finished processing!
-        {
+        if ( data.readrow == null ) { // finished processing!
+
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "LoadFileInput.Log.FinishedProcessing" ) );
           }
@@ -111,24 +110,24 @@ public class LoadFileInput extends BaseStep implements StepInterface {
               data.indexOfFilenameField = data.inputRowMeta.indexOfValue( meta.getDynamicFilenameField() );
               if ( data.indexOfFilenameField < 0 ) {
                 // The field is unreachable !
-                logError( BaseMessages.getString( PKG, "LoadFileInput.Log.ErrorFindingField" ) + "["
-                    + meta.getDynamicFilenameField() + "]" );
-                throw new KettleException( BaseMessages.getString( PKG, "LoadFileInput.Exception.CouldnotFindField",
-                    meta.getDynamicFilenameField() ) );
+                logError( BaseMessages.getString( PKG, "LoadFileInput.Log.ErrorFindingField" )
+                  + "[" + meta.getDynamicFilenameField() + "]" );
+                throw new KettleException( BaseMessages.getString(
+                  PKG, "LoadFileInput.Exception.CouldnotFindField", meta.getDynamicFilenameField() ) );
               }
             }
             // Get the number of previous fields
             data.totalpreviousfields = data.inputRowMeta.size();
 
           }
-        }// end if first
+        } // end if first
 
         // get field value
         String Fieldvalue = data.inputRowMeta.getString( data.readrow, data.indexOfFilenameField );
 
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "LoadFileInput.Log.Stream", meta.getDynamicFilenameField(),
-              Fieldvalue ) );
+          logDetailed( BaseMessages.getString(
+            PKG, "LoadFileInput.Log.Stream", meta.getDynamicFilenameField(), Fieldvalue ) );
         }
 
         FileObject file = null;
@@ -143,11 +142,13 @@ public class LoadFileInput extends BaseStep implements StepInterface {
               file.close();
             }
           } catch ( Exception e ) {
+            // Ignore errors
           }
         }
       } else {
-        if ( data.filenr >= data.files.nrOfFiles() ) // finished processing!
-        {
+        if ( data.filenr >= data.files.nrOfFiles() ) {
+          // finished processing!
+
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "LoadFileInput.Log.FinishedProcessing" ) );
           }
@@ -207,7 +208,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
     } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "LoadFileInput.Log.UnableToOpenFile", "" + data.filenr, data.file
-          .toString(), e.toString() ) );
+        .toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       return false;
@@ -226,7 +227,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
       if ( isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "LoadFileInput.Log.ReadRow", data.outputRowMeta
-            .getString( outputRowData ) ) );
+          .getString( outputRowData ) ) );
       }
 
       putRow( data.outputRowMeta, outputRowData );
@@ -261,13 +262,13 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
   /**
    * Read a text file.
-   * 
+   *
    * @param vfsFilename
    *          the filename or URL to read from
    * @param charSetName
    *          the character set of the string (UTF-8, ISO8859-1, etc)
    * @return The content of the file as a String
-   * @throws IOException
+   * @throws KettleException
    */
   public static String getTextFileContent( String vfsFilename, String encoding ) throws KettleException {
     InputStream inputStream = null;
@@ -291,8 +292,8 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
       retval = stringBuffer.toString();
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "LoadFileInput.Error.GettingFileContent", vfsFilename, e
-          .toString() ) );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "LoadFileInput.Error.GettingFileContent", vfsFilename, e.toString() ) );
     } finally {
       if ( reader != null ) {
         try {
@@ -316,8 +317,8 @@ public class LoadFileInput extends BaseStep implements StepInterface {
 
     if ( nonExistantFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonExistantFiles );
-      logError( BaseMessages.getString( PKG, "LoadFileInput.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "LoadFileInput.Log.RequiredFiles", message ) );
+      logError( BaseMessages.getString( PKG, "LoadFileInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
+        PKG, "LoadFileInput.Log.RequiredFiles", message ) );
 
       throw new KettleException( BaseMessages.getString( PKG, "LoadFileInput.Log.RequiredFilesMissing", message ) );
     }
@@ -325,16 +326,16 @@ public class LoadFileInput extends BaseStep implements StepInterface {
     List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
     if ( nonAccessibleFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
-      logError( BaseMessages.getString( PKG, "LoadFileInput.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "LoadFileInput.Log.RequiredNotAccessibleFiles", message ) );
-      throw new KettleException( BaseMessages.getString( PKG, "LoadFileInput.Log.RequiredNotAccessibleFilesMissing",
-          message ) );
+      logError( BaseMessages.getString( PKG, "LoadFileInput.Log.RequiredFilesTitle" ), BaseMessages.getString(
+        PKG, "LoadFileInput.Log.RequiredNotAccessibleFiles", message ) );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "LoadFileInput.Log.RequiredNotAccessibleFilesMissing", message ) );
     }
   }
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
 
@@ -403,7 +404,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
             outputRowData[indexField] = data.previousRow[indexField];
           }
         }
-      }// End of loop over fields...
+      } // End of loop over fields...
       int rowIndex = data.totalpreviousfields + data.nrInputFields;
 
       // See if we need to add the filename to the row...
@@ -498,6 +499,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
       try {
         data.file.close();
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
     super.dispose( smi, sdi );

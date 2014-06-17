@@ -36,10 +36,10 @@ import org.pentaho.di.ui.core.PropsUI;
 
 /**
  * Adds a line of text with a label and a variable to a composite (like a dialog shell)
- * 
+ *
  * @author Matt
  * @since 17-may-2006
- * 
+ *
  */
 public class LabelText extends Composite {
   private static final PropsUI props = PropsUI.getInstance();
@@ -48,14 +48,16 @@ public class LabelText extends Composite {
   private Text wText;
 
   public LabelText( Composite composite, String labelText, String toolTipText ) {
-    this( composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER, labelText, toolTipText, props.getMiddlePct(), Const.MARGIN );
+    this(
+      composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER, labelText, toolTipText, props.getMiddlePct(), Const.MARGIN );
   }
 
   public LabelText( Composite composite, String labelText, String toolTipText, int middle, int margin ) {
     this( composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER, labelText, toolTipText, middle, margin );
   }
 
-  public LabelText( Composite composite, int textStyle, String labelText, String toolTipText, int middle, int margin ) {
+  public LabelText( Composite composite, int textStyle, String labelText, String toolTipText, int middle,
+    int margin ) {
     super( composite, SWT.NONE );
     props.setLook( this );
 

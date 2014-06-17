@@ -42,8 +42,10 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectRevision;
+import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.repository.RepositorySecurityUI;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonBrowser;
 import org.pentaho.di.ui.spoon.TabItemInterface;
@@ -57,7 +59,7 @@ import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
 
 public class SpoonTabsDelegate extends SpoonDelegate {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   /**
    * This contains a list of the tab map entries
@@ -74,13 +76,17 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     List<TabMapEntry> collection = new ArrayList<TabMapEntry>();
     collection.addAll( tabMap );
 
+    boolean createPerms = !RepositorySecurityUI
+        .verifyOperations( Spoon.getInstance().getShell(), Spoon.getInstance().getRepository(), false,
+            RepositoryOperation.MODIFY_TRANSFORMATION, RepositoryOperation.MODIFY_JOB );
+
     boolean close = true;
     for ( TabMapEntry entry : collection ) {
       if ( item.equals( entry.getTabItem() ) ) {
         TabItemInterface itemInterface = entry.getObject();
 
-        // Can we close this tab?
-        if ( !itemInterface.canBeClosed() ) {
+        // Can we close this tab? Only allow users with create content perms to save
+        if ( !itemInterface.canBeClosed() && createPerms ) {
           int reply = itemInterface.showChangedWarning();
           if ( reply == SWT.YES ) {
             close = itemInterface.applyChanges();
@@ -110,9 +116,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
           } else if ( entry.getObject() instanceof SpoonBrowser ) {
             spoon.closeSpoonBrowser();
             spoon.refreshTree();
-          }
-
-          else if ( entry.getObject() instanceof Composite ) {
+          } else if ( entry.getObject() instanceof Composite ) {
             Composite comp = (Composite) entry.getObject();
             if ( comp != null && !comp.isDisposed() ) {
               comp.dispose();
@@ -223,7 +227,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
         tabItem.setControl( browser.getComposite() );
 
         tabMapEntry =
-            new TabMapEntry( tabItem, isURL ? urlString : null, name, null, null, browser, ObjectType.BROWSER );
+          new TabMapEntry( tabItem, isURL ? urlString : null, name, null, null, browser, ObjectType.BROWSER );
         tabMap.add( tabMapEntry );
       }
       int idx = tabfolder.indexOf( tabMapEntry.getTabItem() );
@@ -283,7 +287,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
   /**
    * Finds the tab for the transformation that matches the metadata provided (either the file must be the same or the
    * repository id).
-   * 
+   *
    * @param trans
    *          Transformation metadata to look for
    * @return Tab with transformation open whose metadata matches {@code trans} or {@code null} if no tab exists.
@@ -350,7 +354,8 @@ public class SpoonTabsDelegate extends SpoonDelegate {
           JobMeta jobMeta = (JobMeta) managedObject;
           entry.getTabItem().setText( makeTabName( jobMeta, entry.isShowingLocation() ) );
           String toolTipText =
-              BaseMessages.getString( PKG, "Spoon.TabJob.Tooltip", makeTabName( jobMeta, entry.isShowingLocation() ) );
+            BaseMessages.getString(
+              PKG, "Spoon.TabJob.Tooltip", makeTabName( jobMeta, entry.isShowingLocation() ) );
           if ( Const.isWindows() && !Const.isEmpty( jobMeta.getFilename() ) ) {
             toolTipText += Const.CR + Const.CR + jobMeta.getFilename();
           }
@@ -360,10 +365,10 @@ public class SpoonTabsDelegate extends SpoonDelegate {
 
       /*
        * String after = entry.getTabItem().getText();
-       * 
+       *
        * if (!beforeText.equals(after)) // PDI-1683, could be improved to rename all the time {
        * entry.setObjectName(after);
-       * 
+       *
        * // Also change the transformation map if (entry.getObject() instanceof TransGraph) {
        * spoon.delegates.trans.removeTransformation(beforeText); spoon.delegates.trans.addTransformation(after,
        * (TransMeta) entry.getObject().getManagedObject()); } // Also change the job map if (entry.getObject()
@@ -384,7 +389,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     }
 
     if ( Const.isEmpty( transMeta.getName() )
-        || spoon.delegates.trans.isDefaultTransformationName( transMeta.getName() ) ) {
+      || spoon.delegates.trans.isDefaultTransformationName( transMeta.getName() ) ) {
       transMeta.nameFromFilename();
     }
 

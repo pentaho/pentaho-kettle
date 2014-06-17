@@ -30,7 +30,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains MySQL specific information through static final members
- * 
+ *
  * @author Matt
  * @since 11-mrt-2005
  */
@@ -43,7 +43,8 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -137,14 +138,14 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
     StringBuffer sql = new StringBuffer( 128 );
     for ( int i = 0; i < tableNames.length; i++ ) {
       sql.append( "SELECT top 0 * FROM " ).append( tableNames[i] ).append( " WITH (UPDLOCK, HOLDLOCK);" ).append(
-          Const.CR );
+        Const.CR );
     }
     return sql.toString();
   }
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -161,13 +162,13 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -184,13 +185,14 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
-    return "ALTER TABLE " + tablename + " ALTER COLUMN " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
+    String pk, boolean semicolon ) {
+    return "ALTER TABLE "
+      + tablename + " ALTER COLUMN " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   /**
    * Generates the SQL statement to drop a column from the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -207,13 +209,13 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
    */
   @Override
   public String getDropColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " DROP COLUMN " + v.getName() + Const.CR;
   }
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -240,7 +242,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
-            fieldname.equalsIgnoreCase( pk ) // Primary key
+          fieldname.equalsIgnoreCase( pk ) // Primary key
         ) {
           if ( use_autoinc ) {
             retval += "BIGINT PRIMARY KEY IDENTITY(0,1)";
@@ -270,7 +272,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
         }
         break;
       case ValueMetaInterface.TYPE_STRING:
-        if ( length < 8000 ) {
+        if ( length < getMaxVARCHARLength() ) {
           // Maybe use some default DB String length in case length<=0
           if ( length > 0 ) {
             retval += "VARCHAR(" + length + ")";
@@ -299,59 +301,64 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
    * @return The SQL on this database to get a list of stored procedures.
    */
   public String getSQLListOfProcedures( String schemaName ) {
-    return "select o.name from sysobjects o, sysusers u where  xtype in ( 'FN', 'P' ) and o.uid = u.uid order by o.name";
+    return "select o.name "
+      + "from sysobjects o, sysusers u "
+      + "where  xtype in ( 'FN', 'P' ) and o.uid = u.uid "
+      + "order by o.name";
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.core.database.DatabaseInterface#getReservedWords()
    */
   @Override
   public String[] getReservedWords() {
     return new String[] {
-    /*
-     * Transact-SQL Reference: Reserved Keywords Includes future keywords: could be reserved in future releases of SQL
-     * Server as new features are implemented. REMARK: When SET QUOTED_IDENTIFIER is ON (default), identifiers can be
-     * delimited by double quotation marks, and literals must be delimited by single quotation marks. When SET
-     * QUOTED_IDENTIFIER is OFF, identifiers cannot be quoted and must follow all Transact-SQL rules for identifiers.
-     */
-    "ABSOLUTE", "ACTION", "ADD", "ADMIN", "AFTER", "AGGREGATE", "ALIAS", "ALL", "ALLOCATE", "ALTER", "AND", "ANY",
-      "ARE", "ARRAY", "AS", "ASC", "ASSERTION", "AT", "AUTHORIZATION", "BACKUP", "BEFORE", "BEGIN", "BETWEEN",
-      "BINARY", "BIT", "BLOB", "BOOLEAN", "BOTH", "BREADTH", "BREAK", "BROWSE", "BULK", "BY", "CALL", "CASCADE",
-      "CASCADED", "CASE", "CAST", "CATALOG", "CHAR", "CHARACTER", "CHECK", "CHECKPOINT", "CLASS", "CLOB", "CLOSE",
-      "CLUSTERED", "COALESCE", "COLLATE", "COLLATION", "COLUMN", "COMMIT", "COMPLETION", "COMPUTE", "CONNECT",
-      "CONNECTION", "CONSTRAINT", "CONSTRAINTS", "CONSTRUCTOR", "CONTAINS", "CONTAINSTABLE", "CONTINUE", "CONVERT",
-      "CORRESPONDING", "CREATE", "CROSS", "CUBE", "CURRENT", "CURRENT_DATE", "CURRENT_PATH", "CURRENT_ROLE",
-      "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "CURSOR", "CYCLE", "DATA", "DATABASE", "DATE", "DAY",
-      "DBCC", "DEALLOCATE", "DEC", "DECIMAL", "DECLARE", "DEFAULT", "DEFERRABLE", "DEFERRED", "DELETE", "DENY",
-      "DEPTH", "DEREF", "DESC", "DESCRIBE", "DESCRIPTOR", "DESTROY", "DESTRUCTOR", "DETERMINISTIC", "DIAGNOSTICS",
-      "DICTIONARY", "DISCONNECT", "DISK", "DISTINCT", "DISTRIBUTED", "DOMAIN", "DOUBLE", "DROP", "DUMMY", "DUMP",
-      "DYNAMIC", "EACH", "ELSE", "END", "END-EXEC", "EQUALS", "ERRLVL", "ESCAPE", "EVERY", "EXCEPT", "EXCEPTION",
-      "EXEC", "EXECUTE", "EXISTS", "EXIT", "EXTERNAL", "FALSE", "FETCH", "FILE", "FILLFACTOR", "FIRST", "FLOAT", "FOR",
-      "FOREIGN", "FOUND", "FREE", "FREETEXT", "FREETEXTTABLE", "FROM", "FULL", "FUNCTION", "GENERAL", "GET", "GLOBAL",
-      "GO", "GOTO", "GRANT", "GROUP", "GROUPING", "HAVING", "HOLDLOCK", "HOST", "HOUR", "IDENTITY", "IDENTITY_INSERT",
-      "IDENTITYCOL", "IF", "IGNORE", "IMMEDIATE", "IN", "INDEX", "INDICATOR", "INITIALIZE", "INITIALLY", "INNER",
-      "INOUT", "INPUT", "INSERT", "INT", "INTEGER", "INTERSECT", "INTERVAL", "INTO", "IS", "ISOLATION", "ITERATE",
-      "JOIN", "KEY", "KILL", "LANGUAGE", "LARGE", "LAST", "LATERAL", "LEADING", "LEFT", "LESS", "LEVEL", "LIKE",
-      "LIMIT", "LINENO", "LOAD", "LOCAL", "LOCALTIME", "LOCALTIMESTAMP", "LOCATOR", "MAP", "MATCH", "MINUTE",
-      "MODIFIES", "MODIFY", "MODULE", "MONTH", "NAMES", "NATIONAL", "NATURAL", "NCHAR", "NCLOB", "NEW", "NEXT", "NO",
-      "NOCHECK", "NONCLUSTERED", "NONE", "NOT", "NULL", "NULLIF", "NUMERIC", "OBJECT", "OF", "OFF", "OFFSETS", "OLD",
-      "ON", "ONLY", "OPEN", "OPENDATASOURCE", "OPENQUERY", "OPENROWSET", "OPENXML", "OPERATION", "OPTION", "OR",
-      "ORDER", "ORDINALITY", "OUT", "OUTER", "OUTPUT", "OVER", "PAD", "PARAMETER", "PARAMETERS", "PARTIAL", "PATH",
-      "PERCENT", "PLAN", "POSTFIX", "PRECISION", "PREFIX", "PREORDER", "PREPARE", "PRESERVE", "PRIMARY", "PRINT",
-      "PRIOR", "PRIVILEGES", "PROC", "PROCEDURE", "PUBLIC", "RAISERROR", "READ", "READS", "READTEXT", "REAL",
-      "RECONFIGURE", "RECURSIVE", "REF", "REFERENCES", "REFERENCING", "RELATIVE", "REPLICATION", "RESTORE", "RESTRICT",
-      "RESULT", "RETURN", "RETURNS", "REVOKE", "RIGHT", "ROLE", "ROLLBACK", "ROLLUP", "ROUTINE", "ROW", "ROWCOUNT",
-      "ROWGUIDCOL", "ROWS", "RULE", "SAVE", "SAVEPOINT", "SCHEMA", "SCOPE", "SCROLL", "SEARCH", "SECOND", "SECTION",
-      "SELECT", "SEQUENCE", "SESSION", "SESSION_USER", "SET", "SETS", "SETUSER", "SHUTDOWN", "SIZE", "SMALLINT",
-      "SOME", "SPACE", "SPECIFIC", "SPECIFICTYPE", "SQL", "SQLEXCEPTION", "SQLSTATE", "SQLWARNING", "START", "STATE",
-      "STATEMENT", "STATIC", "STATISTICS", "STRUCTURE", "SYSTEM_USER", "TABLE", "TEMPORARY", "TERMINATE", "TEXTSIZE",
-      "THAN", "THEN", "TIME", "TIMESTAMP", "TIMEZONE_HOUR", "TIMEZONE_MINUTE", "TO", "TOP", "TRAILING", "TRAN",
-      "TRANSACTION", "TRANSLATION", "TREAT", "TRIGGER", "TRUE", "TRUNCATE", "TSEQUAL", "UNDER", "UNION", "UNIQUE",
-      "UNKNOWN", "UNNEST", "UPDATE", "UPDATETEXT", "USAGE", "USE", "USER", "USING", "VALUE", "VALUES", "VARCHAR",
-      "VARIABLE", "VARYING", "VIEW", "WAITFOR", "WHEN", "WHENEVER", "WHERE", "WHILE", "WITH", "WITHOUT", "WORK",
-      "WRITE", "WRITETEXT", "YEAR", "ZONE" };
+      /*
+       * Transact-SQL Reference: Reserved Keywords Includes future keywords: could be reserved in future releases of SQL
+       * Server as new features are implemented. REMARK: When SET QUOTED_IDENTIFIER is ON (default), identifiers can be
+       * delimited by double quotation marks, and literals must be delimited by single quotation marks. When SET
+       * QUOTED_IDENTIFIER is OFF, identifiers cannot be quoted and must follow all Transact-SQL rules for identifiers.
+       */
+      "ABSOLUTE", "ACTION", "ADD", "ADMIN", "AFTER", "AGGREGATE", "ALIAS", "ALL", "ALLOCATE", "ALTER", "AND",
+      "ANY", "ARE", "ARRAY", "AS", "ASC", "ASSERTION", "AT", "AUTHORIZATION", "BACKUP", "BEFORE", "BEGIN",
+      "BETWEEN", "BINARY", "BIT", "BLOB", "BOOLEAN", "BOTH", "BREADTH", "BREAK", "BROWSE", "BULK", "BY", "CALL",
+      "CASCADE", "CASCADED", "CASE", "CAST", "CATALOG", "CHAR", "CHARACTER", "CHECK", "CHECKPOINT", "CLASS",
+      "CLOB", "CLOSE", "CLUSTERED", "COALESCE", "COLLATE", "COLLATION", "COLUMN", "COMMIT", "COMPLETION",
+      "COMPUTE", "CONNECT", "CONNECTION", "CONSTRAINT", "CONSTRAINTS", "CONSTRUCTOR", "CONTAINS",
+      "CONTAINSTABLE", "CONTINUE", "CONVERT", "CORRESPONDING", "CREATE", "CROSS", "CUBE", "CURRENT",
+      "CURRENT_DATE", "CURRENT_PATH", "CURRENT_ROLE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER",
+      "CURSOR", "CYCLE", "DATA", "DATABASE", "DATE", "DAY", "DBCC", "DEALLOCATE", "DEC", "DECIMAL", "DECLARE",
+      "DEFAULT", "DEFERRABLE", "DEFERRED", "DELETE", "DENY", "DEPTH", "DEREF", "DESC", "DESCRIBE", "DESCRIPTOR",
+      "DESTROY", "DESTRUCTOR", "DETERMINISTIC", "DIAGNOSTICS", "DICTIONARY", "DISCONNECT", "DISK", "DISTINCT",
+      "DISTRIBUTED", "DOMAIN", "DOUBLE", "DROP", "DUMMY", "DUMP", "DYNAMIC", "EACH", "ELSE", "END", "END-EXEC",
+      "EQUALS", "ERRLVL", "ESCAPE", "EVERY", "EXCEPT", "EXCEPTION", "EXEC", "EXECUTE", "EXISTS", "EXIT",
+      "EXTERNAL", "FALSE", "FETCH", "FILE", "FILLFACTOR", "FIRST", "FLOAT", "FOR", "FOREIGN", "FOUND", "FREE",
+      "FREETEXT", "FREETEXTTABLE", "FROM", "FULL", "FUNCTION", "GENERAL", "GET", "GLOBAL", "GO", "GOTO",
+      "GRANT", "GROUP", "GROUPING", "HAVING", "HOLDLOCK", "HOST", "HOUR", "IDENTITY", "IDENTITY_INSERT",
+      "IDENTITYCOL", "IF", "IGNORE", "IMMEDIATE", "IN", "INDEX", "INDICATOR", "INITIALIZE", "INITIALLY",
+      "INNER", "INOUT", "INPUT", "INSERT", "INT", "INTEGER", "INTERSECT", "INTERVAL", "INTO", "IS", "ISOLATION",
+      "ITERATE", "JOIN", "KEY", "KILL", "LANGUAGE", "LARGE", "LAST", "LATERAL", "LEADING", "LEFT", "LESS",
+      "LEVEL", "LIKE", "LIMIT", "LINENO", "LOAD", "LOCAL", "LOCALTIME", "LOCALTIMESTAMP", "LOCATOR", "MAP",
+      "MATCH", "MINUTE", "MODIFIES", "MODIFY", "MODULE", "MONTH", "NAMES", "NATIONAL", "NATURAL", "NCHAR",
+      "NCLOB", "NEW", "NEXT", "NO", "NOCHECK", "NONCLUSTERED", "NONE", "NOT", "NULL", "NULLIF", "NUMERIC",
+      "OBJECT", "OF", "OFF", "OFFSETS", "OLD", "ON", "ONLY", "OPEN", "OPENDATASOURCE", "OPENQUERY",
+      "OPENROWSET", "OPENXML", "OPERATION", "OPTION", "OR", "ORDER", "ORDINALITY", "OUT", "OUTER", "OUTPUT",
+      "OVER", "PAD", "PARAMETER", "PARAMETERS", "PARTIAL", "PATH", "PERCENT", "PLAN", "POSTFIX", "PRECISION",
+      "PREFIX", "PREORDER", "PREPARE", "PRESERVE", "PRIMARY", "PRINT", "PRIOR", "PRIVILEGES", "PROC",
+      "PROCEDURE", "PUBLIC", "RAISERROR", "READ", "READS", "READTEXT", "REAL", "RECONFIGURE", "RECURSIVE",
+      "REF", "REFERENCES", "REFERENCING", "RELATIVE", "REPLICATION", "RESTORE", "RESTRICT", "RESULT", "RETURN",
+      "RETURNS", "REVOKE", "RIGHT", "ROLE", "ROLLBACK", "ROLLUP", "ROUTINE", "ROW", "ROWCOUNT", "ROWGUIDCOL",
+      "ROWS", "RULE", "SAVE", "SAVEPOINT", "SCHEMA", "SCOPE", "SCROLL", "SEARCH", "SECOND", "SECTION", "SELECT",
+      "SEQUENCE", "SESSION", "SESSION_USER", "SET", "SETS", "SETUSER", "SHUTDOWN", "SIZE", "SMALLINT", "SOME",
+      "SPACE", "SPECIFIC", "SPECIFICTYPE", "SQL", "SQLEXCEPTION", "SQLSTATE", "SQLWARNING", "START", "STATE",
+      "STATEMENT", "STATIC", "STATISTICS", "STRUCTURE", "SYSTEM_USER", "TABLE", "TEMPORARY", "TERMINATE",
+      "TEXTSIZE", "THAN", "THEN", "TIME", "TIMESTAMP", "TIMEZONE_HOUR", "TIMEZONE_MINUTE", "TO", "TOP",
+      "TRAILING", "TRAN", "TRANSACTION", "TRANSLATION", "TREAT", "TRIGGER", "TRUE", "TRUNCATE", "TSEQUAL",
+      "UNDER", "UNION", "UNIQUE", "UNKNOWN", "UNNEST", "UPDATE", "UPDATETEXT", "USAGE", "USE", "USER", "USING",
+      "VALUE", "VALUES", "VARCHAR", "VARIABLE", "VARYING", "VIEW", "WAITFOR", "WHEN", "WHENEVER", "WHERE",
+      "WHILE", "WITH", "WITHOUT", "WORK", "WRITE", "WRITETEXT", "YEAR", "ZONE" };
   }
 
   @Override
@@ -366,7 +373,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 
   /**
    * Verifies on the specified database connection if an index exists on the fields with the specified name.
-   * 
+   *
    * @param database
    *          a connected database
    * @param schemaName
@@ -376,8 +383,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
    * @throws KettleDatabaseException
    */
   @Override
-  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idx_fields )
-    throws KettleDatabaseException {
+  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idx_fields ) throws KettleDatabaseException {
 
     String tablename = database.getDatabaseMeta().getQuotedSchemaTableCombination( schemaName, tableName );
 
@@ -447,7 +453,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 
   /**
    * Get the SQL to insert a new empty unknown record in a dimension.
-   * 
+   *
    * @param schemaTable
    *          the schema-table name to insert into
    * @param keyField
@@ -475,7 +481,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 
   @Override
   public Long getNextBatchIdUsingLockTables( DatabaseMeta dbm, Database ldb, String schemaName, String tableName,
-      String fieldName ) throws KettleDatabaseException {
+    String fieldName ) throws KettleDatabaseException {
     Long rtn = null;
     // Make sure we lock that table to avoid concurrency issues
     ldb.lockTables( new String[] { dbm.getQuotedSchemaTableCombination( schemaName, tableName ), } );
@@ -496,4 +502,10 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
   public boolean supportsErrorHandlingOnBatchUpdates() {
     return true;
   }
+
+  @Override
+  public int getMaxVARCHARLength() {
+    return 8000;
+  }
+
 }

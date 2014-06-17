@@ -31,7 +31,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 
 /**
  * Contains Oracle specific information through static final members
- * 
+ *
  * @author Matt
  * @since 11-mrt-2005
  */
@@ -39,7 +39,8 @@ import org.pentaho.di.core.variables.VariableSpace;
 public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_OCI,
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_OCI,
       DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
@@ -69,7 +70,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   /**
    * Returns the minimal SQL to launch in order to determine the layout of the resultset for a given database table
-   * 
+   *
    * @param tableName
    *          The name of the table to determine the layout for
    * @return The SQL to launch.
@@ -177,7 +178,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   /**
    * Check if a sequence exists.
-   * 
+   *
    * @param sequenceName
    *          The sequence to check
    * @return The SQL to get the name of the sequence back from the databases data dictionary
@@ -193,15 +194,15 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
       String schemaName = sequenceName.substring( 0, dotPos );
       String seqName = sequenceName.substring( dotPos + 1 );
       sql =
-          "SELECT * FROM ALL_SEQUENCES WHERE SEQUENCE_NAME = '" + seqName.toUpperCase() + "' AND SEQUENCE_OWNER = '"
-              + schemaName.toUpperCase() + "'";
+        "SELECT * FROM ALL_SEQUENCES WHERE SEQUENCE_NAME = '"
+          + seqName.toUpperCase() + "' AND SEQUENCE_OWNER = '" + schemaName.toUpperCase() + "'";
     }
     return sql;
   }
 
   /**
    * Get the current value of a database sequence
-   * 
+   *
    * @param sequenceName
    *          The sequence to check
    * @return The current value of a database sequence
@@ -213,7 +214,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   /**
    * Get the SQL to get the next value of a sequence. (Oracle only)
-   * 
+   *
    * @param sequenceName
    *          The sequence name
    * @return the SQL to get the next value of a sequence. (Oracle only)
@@ -241,7 +242,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -258,13 +259,14 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
-    return "ALTER TABLE " + tablename + " ADD ( " + getFieldDefinition( v, tk, pk, use_autoinc, true, false ) + " ) ";
+    String pk, boolean semicolon ) {
+    return "ALTER TABLE "
+      + tablename + " ADD ( " + getFieldDefinition( v, tk, pk, use_autoinc, true, false ) + " ) ";
   }
 
   /**
    * Generates the SQL statement to drop a column from the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -281,13 +283,13 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    */
   @Override
   public String getDropColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " DROP ( " + v.getName() + " ) " + Const.CR;
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -304,7 +306,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     ValueMetaInterface tmpColumn = v.clone();
     String tmpName = v.getName();
     boolean isQuoted = tmpName.startsWith( "\"" ) && tmpName.endsWith( "\"" );
@@ -349,7 +351,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     StringBuffer retval = new StringBuffer( 128 );
 
     String fieldname = v.getName();
@@ -362,6 +364,13 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     int type = v.getType();
     switch ( type ) {
+      case ValueMetaInterface.TYPE_TIMESTAMP:
+        if ( supportsTimestampDataType() ) {
+          retval.append( "TIMESTAMP" );
+        } else {
+          retval.append( "DATE" );
+        }
+        break;
       case ValueMetaInterface.TYPE_DATE:
         retval.append( "DATE" );
         break;
@@ -388,7 +397,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         } else {
           if ( length == 1 ) {
             retval.append( "CHAR(1)" );
-          } else if ( length > 0 && length <= 2000 ) {
+          } else if ( length > 0 && length <= getMaxVARCHARLength() ) {
             retval.append( "VARCHAR2(" ).append( length ).append( ')' );
           } else {
             if ( length <= 0 ) {
@@ -416,21 +425,23 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.ibridge.kettle.core.database.DatabaseInterface#getReservedWords()
    */
   @Override
   public String[] getReservedWords() {
-    return new String[] { "ACCESS", "ADD", "ALL", "ALTER", "AND", "ANY", "ARRAYLEN", "AS", "ASC", "AUDIT", "BETWEEN",
-      "BY", "CHAR", "CHECK", "CLUSTER", "COLUMN", "COMMENT", "COMPRESS", "CONNECT", "CREATE", "CURRENT", "DATE",
-      "DECIMAL", "DEFAULT", "DELETE", "DESC", "DISTINCT", "DROP", "ELSE", "EXCLUSIVE", "EXISTS", "FILE", "FLOAT",
-      "FOR", "FROM", "GRANT", "GROUP", "HAVING", "IDENTIFIED", "IMMEDIATE", "IN", "INCREMENT", "INDEX", "INITIAL",
-      "INSERT", "INTEGER", "INTERSECT", "INTO", "IS", "LEVEL", "LIKE", "LOCK", "LONG", "MAXEXTENTS", "MINUS", "MODE",
-      "MODIFY", "NOAUDIT", "NOCOMPRESS", "NOT", "NOTFOUND", "NOWAIT", "NULL", "NUMBER", "OF", "OFFLINE", "ON",
-      "ONLINE", "OPTION", "OR", "ORDER", "PCTFREE", "PRIOR", "PRIVILEGES", "PUBLIC", "RAW", "RENAME", "RESOURCE",
-      "REVOKE", "ROW", "ROWID", "ROWLABEL", "ROWNUM", "ROWS", "SELECT", "SESSION", "SET", "SHARE", "SIZE", "SMALLINT",
-      "SQLBUF", "START", "SUCCESSFUL", "SYNONYM", "SYSDATE", "TABLE", "THEN", "TO", "TRIGGER", "UID", "UNION",
-      "UNIQUE", "UPDATE", "USER", "VALIDATE", "VALUES", "VARCHAR", "VARCHAR2", "VIEW", "WHENEVER", "WHERE", "WITH" };
+    return new String[] {
+      "ACCESS", "ADD", "ALL", "ALTER", "AND", "ANY", "ARRAYLEN", "AS", "ASC", "AUDIT", "BETWEEN", "BY", "CHAR",
+      "CHECK", "CLUSTER", "COLUMN", "COMMENT", "COMPRESS", "CONNECT", "CREATE", "CURRENT", "DATE", "DECIMAL",
+      "DEFAULT", "DELETE", "DESC", "DISTINCT", "DROP", "ELSE", "EXCLUSIVE", "EXISTS", "FILE", "FLOAT", "FOR",
+      "FROM", "GRANT", "GROUP", "HAVING", "IDENTIFIED", "IMMEDIATE", "IN", "INCREMENT", "INDEX", "INITIAL",
+      "INSERT", "INTEGER", "INTERSECT", "INTO", "IS", "LEVEL", "LIKE", "LOCK", "LONG", "MAXEXTENTS", "MINUS",
+      "MODE", "MODIFY", "NOAUDIT", "NOCOMPRESS", "NOT", "NOTFOUND", "NOWAIT", "NULL", "NUMBER", "OF", "OFFLINE",
+      "ON", "ONLINE", "OPTION", "OR", "ORDER", "PCTFREE", "PRIOR", "PRIVILEGES", "PUBLIC", "RAW", "RENAME",
+      "RESOURCE", "REVOKE", "ROW", "ROWID", "ROWLABEL", "ROWNUM", "ROWS", "SELECT", "SESSION", "SET", "SHARE",
+      "SIZE", "SMALLINT", "SQLBUF", "START", "SUCCESSFUL", "SYNONYM", "SYSDATE", "TABLE", "THEN", "TO",
+      "TRIGGER", "UID", "UNION", "UNIQUE", "UPDATE", "USER", "VALIDATE", "VALUES", "VARCHAR", "VARCHAR2",
+      "VIEW", "WHENEVER", "WHERE", "WITH" };
   }
 
   /**
@@ -438,7 +449,9 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    */
   @Override
   public String getSQLListOfProcedures() {
-    return "SELECT DISTINCT DECODE(package_name, NULL, '', package_name||'.')||object_name FROM user_arguments ORDER BY 1";
+    return "SELECT DISTINCT DECODE(package_name, NULL, '', package_name||'.') || object_name "
+      + "FROM user_arguments "
+      + "ORDER BY 1";
   }
 
   @Override
@@ -470,18 +483,17 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   /**
    * Verifies on the specified database connection if an index exists on the fields with the specified name.
-   * 
+   *
    * @param database
    *          a connected database
    * @param schemaName
    * @param tableName
-   * @param idxFields
+   * @param idx_fields
    * @return true if the index exists, false if it doesn't.
    * @throws KettleDatabaseException
    */
   @Override
-  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idx_fields )
-    throws KettleDatabaseException {
+  public boolean checkIndexExists( Database database, String schemaName, String tableName, String[] idx_fields ) throws KettleDatabaseException {
 
     String tablename = database.getDatabaseMeta().getQuotedSchemaTableCombination( schemaName, tableName );
 
@@ -540,7 +552,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   /**
    * Most databases allow you to retrieve result metadata by preparing a SELECT statement.
-   * 
+   *
    * @return true if the database supports retrieval of query metadata from a prepared statement. False if the query
    *         needs to be executed first.
    */
@@ -588,16 +600,16 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   /**
    * Returns an empty string as most databases do not support tablespaces. Subclasses can override this method to
    * generate the DDL.
-   * 
-   * @param VariableSpace
+   *
+   * @param variables
    *          variables needed for variable substitution.
-   * @param DatabaseMeta
+   * @param databaseMeta
    *          databaseMeta needed for it's quoteField method. Since we are doing variable substitution we need to meta
    *          so that we can act on the variable substitution first and then the creation of the entire string that will
    *          be retuned.
-   * @param String
+   * @param tablespace
    *          tablespaceName name of the tablespace.
-   * 
+   *
    * @return String the TABLESPACE tablespaceName section of an Oracle CREATE DDL statement.
    */
   @Override
@@ -613,4 +625,18 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   public boolean supportsErrorHandlingOnBatchUpdates() {
     return false;
   }
+
+  /**
+   * @return true if Kettle can create a repository on this type of database.
+   */
+  @Override
+  public boolean supportsRepository() {
+    return true;
+  }
+
+  @Override
+  public int getMaxVARCHARLength() {
+    return 2000;
+  }
+
 }

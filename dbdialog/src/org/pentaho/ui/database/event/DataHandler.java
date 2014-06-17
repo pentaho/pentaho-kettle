@@ -58,6 +58,7 @@ import org.pentaho.ui.xul.components.XulCheckbox;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulTextbox;
+import org.pentaho.ui.xul.components.XulTreeCell;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
@@ -70,17 +71,18 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
 /**
  * Handles all manipulation of the DatabaseMeta, data retrieval from XUL DOM and rudimentary validation.
- * 
+ *
  * TODO: 2. Needs to be abstracted away from the DatabaseMeta object, so other tools in the platform can use the dialog
  * and their preferred database object. 3. Needs exception handling, string resourcing and logging
- * 
+ *
  * @author gmoran
  * @created Mar 19, 2008
- * 
+ *
  */
 public class DataHandler extends AbstractXulEventHandler {
 
-  public static final SortedMap<String, DatabaseInterface> connectionMap = new TreeMap<String, DatabaseInterface>();
+  public static final SortedMap<String, DatabaseInterface> connectionMap =
+    new TreeMap<String, DatabaseInterface>();
   public static final Map<String, String> connectionNametoID = new HashMap<String, String>();
 
   // The connectionMap allows us to keep track of the connection
@@ -98,10 +100,10 @@ public class DataHandler extends AbstractXulEventHandler {
         connectionMap.put( plugin.getName(), databaseInterface );
         connectionNametoID.put( plugin.getName(), plugin.getIds()[0] );
       } catch ( KettlePluginException cnfe ) {
-        System.out.println( "Could not create connection entry for " + plugin.getName() + ".  "
-            + cnfe.getCause().getClass().getName() );
-        LogChannel.GENERAL.logError( "Could not create connection entry for " + plugin.getName() + ".  "
-            + cnfe.getCause().getClass().getName() );
+        System.out.println( "Could not create connection entry for "
+          + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
+        LogChannel.GENERAL.logError( "Could not create connection entry for "
+          + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
       } catch ( Exception e ) {
         throw new RuntimeException( "Error creating class for: " + plugin, e );
       }
@@ -563,6 +565,8 @@ public class DataHandler extends AbstractXulEventHandler {
 
     // Name:
     meta.setName( connectionNameBox.getValue() );
+    // Display Name: (PDI-12292)
+    meta.setDisplayName( connectionNameBox.getValue() );
 
     // Connection type:
     Object connection = connectionBox.getSelectedItem();
@@ -715,8 +719,8 @@ public class DataHandler extends AbstractXulEventHandler {
 
           String parameter = (String) values[i][1];
           String value = (String) values[i][2];
-          if ( ( parameter != null ) && ( parameter.trim().length() > 0 ) && ( value != null )
-              && ( value.trim().length() > 0 ) ) {
+          if ( ( parameter != null )
+            && ( parameter.trim().length() > 0 ) && ( value != null ) && ( value.trim().length() > 0 ) ) {
             properties.setProperty( parameter, value );
           }
 
@@ -736,7 +740,7 @@ public class DataHandler extends AbstractXulEventHandler {
     getControls();
 
     // Name:
-    connectionNameBox.setValue( meta.getName() );
+    connectionNameBox.setValue( meta.getDisplayName() );
 
     PluginRegistry registry = PluginRegistry.getInstance();
     PluginInterface dInterface = registry.getPlugin( DatabasePluginType.class, meta.getPluginId() );
@@ -746,7 +750,8 @@ public class DataHandler extends AbstractXulEventHandler {
     if ( index >= 0 ) {
       connectionBox.setSelectedIndex( index );
     } else {
-      LogChannel.GENERAL.logError( "Unable to find database type " + dInterface.getName() + " in our connection map" );
+      LogChannel.GENERAL.logError( "Unable to find database type "
+        + dInterface.getName() + " in our connection map" );
     }
 
     // Access type:
@@ -862,7 +867,7 @@ public class DataHandler extends AbstractXulEventHandler {
   }
 
   /**
-   * 
+   *
    * @return the list of parameters that were enabled, but had invalid return values (null or empty)
    */
   private boolean checkPoolingParameters() {
@@ -931,8 +936,8 @@ public class DataHandler extends AbstractXulEventHandler {
         XulTreeItem item = poolParameterTree.getRootChildren().getItem( i );
         String parameterName = item.getRow().getCell( 1 ).getLabel();
         String defaultValue =
-            DatabaseConnectionPoolParameter.findParameter( parameterName, BaseDatabaseMeta.poolingParameters )
-                .getDefaultValue();
+          DatabaseConnectionPoolParameter
+            .findParameter( parameterName, BaseDatabaseMeta.poolingParameters ).getDefaultValue();
         if ( ( defaultValue == null ) || ( defaultValue.trim().length() <= 0 ) ) {
           continue;
         }
@@ -1009,8 +1014,8 @@ public class DataHandler extends AbstractXulEventHandler {
 
         String parameter = keys.next();
         String value = extraOptions.get( parameter );
-        if ( ( value == null ) || ( value.trim().length() <= 0 )
-            || ( value.equals( DatabaseMeta.EMPTY_OPTIONS_STRING ) ) ) {
+        if ( ( value == null )
+          || ( value.trim().length() <= 0 ) || ( value.equals( DatabaseMeta.EMPTY_OPTIONS_STRING ) ) ) {
           value = "";
         }
 
@@ -1148,8 +1153,21 @@ public class DataHandler extends AbstractXulEventHandler {
     // Empty doesn't clear the option, we have mercy.
 
     if ( serverInstanceBox != null ) {
-      if ( serverInstanceBox.getValue().trim().length() > 0 ) {
-        meta.setSQLServerInstance( serverInstanceBox.getValue() );
+      meta.setSQLServerInstance( serverInstanceBox.getValue() );
+      if ( optionsParameterTree != null && optionsParameterTree.getRootChildren() != null ) {
+        for ( int i = 0; i < optionsParameterTree.getRootChildren().getItemCount(); i++ ) {
+          XulTreeItem potRow = optionsParameterTree.getRootChildren().getItem( i );
+          if ( potRow != null && potRow.getRow() != null ) {
+            XulTreeCell cell = potRow.getRow().getCell( 0 );
+            XulTreeCell cell2 = potRow.getRow().getCell( 1 );
+            if ( cell != null && cell.getLabel() != null && cell.getLabel().equals( "instance" ) ) {
+              cell2.setLabel( serverInstanceBox.getValue() );
+              if ( serverInstanceBox.getValue().trim().length() == 0 ) {
+                cell.setLabel( "" );
+              }
+            }
+          }
+        }
       }
     }
 
@@ -1174,7 +1192,9 @@ public class DataHandler extends AbstractXulEventHandler {
       meta.getAttributes().put( GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL, customUrlBox.getValue() );
     }
     if ( customDriverClassBox != null ) {
-      meta.getAttributes().put( GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, customDriverClassBox.getValue() );
+      meta
+        .getAttributes()
+        .put( GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, customDriverClassBox.getValue() );
     }
 
     // Server Name: (Informix)
@@ -1185,8 +1205,9 @@ public class DataHandler extends AbstractXulEventHandler {
     // Microsoft SQL Server Use Integrated Security
     if ( useIntegratedSecurityCheck != null ) {
       Boolean useIntegratedSecurity = useIntegratedSecurityCheck.isChecked();
-      meta.getAttributes().put( MSSQLServerNativeDatabaseMeta.ATTRIBUTE_USE_INTEGRATED_SECURITY,
-          useIntegratedSecurity != null ? useIntegratedSecurity.toString() : "false" );
+      meta.getAttributes().put(
+        MSSQLServerNativeDatabaseMeta.ATTRIBUTE_USE_INTEGRATED_SECURITY,
+        useIntegratedSecurity != null ? useIntegratedSecurity.toString() : "false" );
     }
   }
 
@@ -1258,7 +1279,7 @@ public class DataHandler extends AbstractXulEventHandler {
     }
     if ( customDriverClassBox != null ) {
       customDriverClassBox.setValue( meta.getAttributes().getProperty(
-          GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS ) );
+        GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS ) );
     }
 
     // Server Name: (Informix)

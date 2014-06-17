@@ -35,18 +35,17 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 
 public class VariableButtonListenerFactory {
   private static Class<?> PKG = VariableButtonListenerFactory.class; // for i18n purposes, needed by Translator2!!
-                                                                     // $NON-NLS-1$
 
   // Listen to the Variable... button
   public static final SelectionAdapter getSelectionAdapter( final Composite composite, final Text destination,
-      final VariableSpace space ) {
+    final VariableSpace space ) {
     return getSelectionAdapter( composite, destination, null, null, space );
   }
 
   // Listen to the Variable... button
   public static final SelectionAdapter getSelectionAdapter( final Composite composite, final Text destination,
-      final GetCaretPositionInterface getCaretPositionInterface, final InsertTextInterface insertTextInterface,
-      final VariableSpace space ) {
+    final GetCaretPositionInterface getCaretPositionInterface, final InsertTextInterface insertTextInterface,
+    final VariableSpace space ) {
     return new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         // Before focus is lost, we get the position of where the selected variable needs to be inserted.
@@ -85,10 +84,9 @@ public class VariableButtonListenerFactory {
       str[i] = key[i] + "  [" + val[i] + "]";
     }
 
-    EnterSelectionDialog esd =
-        new EnterSelectionDialog( shell, str,
-            BaseMessages.getString( PKG, "System.Dialog.SelectEnvironmentVar.Title" ), BaseMessages.getString( PKG,
-                "System.Dialog.SelectEnvironmentVar.Message" ) );
+    EnterSelectionDialog esd = new EnterSelectionDialog( shell, str,
+      BaseMessages.getString( PKG, "System.Dialog.SelectEnvironmentVar.Title" ),
+      BaseMessages.getString( PKG, "System.Dialog.SelectEnvironmentVar.Message" ) );
     esd.clearModal();
     if ( esd.open() != null ) {
       int nr = esd.getSelectionNr();

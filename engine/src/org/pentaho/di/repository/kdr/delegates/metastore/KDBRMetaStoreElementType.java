@@ -40,7 +40,7 @@ public class KDBRMetaStoreElementType implements IMetaStoreElementType {
   private KettleDatabaseRepositoryMetaStoreDelegate delegate;
 
   public KDBRMetaStoreElementType( KettleDatabaseRepositoryMetaStoreDelegate delegate, String namespace,
-      ObjectId namespaceId, String name, String description ) {
+    ObjectId namespaceId, String name, String description ) {
     this.delegate = delegate;
     this.namespace = namespace;
     this.namespaceId = namespaceId;

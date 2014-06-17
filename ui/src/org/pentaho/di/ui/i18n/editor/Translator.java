@@ -126,8 +126,8 @@ public class Translator {
           }
         } else {
           if ( entry.isFile() ) {
-            if ( entry.getName().endsWith( ".properties" ) ) // Load this one!
-            {
+            if ( entry.getName().endsWith( ".properties" ) ) { // Load this one!
+
               String filename = directory + "/" + entry.getName();
               log.logBasic( "Reading properties file: " + filename + "  (" + entry.getAbsolutePath() + ")" );
               Properties properties = new Properties();
@@ -179,7 +179,8 @@ public class Translator {
     try {
       readFiles( ROOT );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, "Error reading translations", "There was an unexpected error reading the translations", e );
+      new ErrorDialog(
+        shell, "Error reading translations", "There was an unexpected error reading the translations", e );
     }
 
     // Put something on the screen
@@ -317,21 +318,22 @@ public class Translator {
     wAvailable.setText( "&Check key against other locale" );
     wAvailable.setSelection( true ); // Check it!
 
-    BaseStepDialog.positionBottomButtons( composite, new Button[] { wReload, wLocale, wClose, wVerify, wUsed,
-      wAvailable }, Const.MARGIN, null );
+    BaseStepDialog.positionBottomButtons( composite, new Button[] {
+      wReload, wLocale, wClose, wVerify, wUsed, wAvailable }, Const.MARGIN, null );
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] { new ColumnInfo( "Locale", ColumnInfo.COLUMN_TYPE_TEXT, true ),
-          new ColumnInfo( "Package", ColumnInfo.COLUMN_TYPE_TEXT, true ),
-          new ColumnInfo( "Class", ColumnInfo.COLUMN_TYPE_TEXT, true ),
-          new ColumnInfo( "Key", ColumnInfo.COLUMN_TYPE_TEXT, true ),
-          new ColumnInfo( "Value", ColumnInfo.COLUMN_TYPE_TEXT, true ),
-          new ColumnInfo( "Used?", ColumnInfo.COLUMN_TYPE_TEXT, true ),
-          new ColumnInfo( "Not available in", ColumnInfo.COLUMN_TYPE_TEXT, true ), };
+      new ColumnInfo[] {
+        new ColumnInfo( "Locale", ColumnInfo.COLUMN_TYPE_TEXT, true ),
+        new ColumnInfo( "Package", ColumnInfo.COLUMN_TYPE_TEXT, true ),
+        new ColumnInfo( "Class", ColumnInfo.COLUMN_TYPE_TEXT, true ),
+        new ColumnInfo( "Key", ColumnInfo.COLUMN_TYPE_TEXT, true ),
+        new ColumnInfo( "Value", ColumnInfo.COLUMN_TYPE_TEXT, true ),
+        new ColumnInfo( "Used?", ColumnInfo.COLUMN_TYPE_TEXT, true ),
+        new ColumnInfo( "Not available in", ColumnInfo.COLUMN_TYPE_TEXT, true ), };
 
     wGrid =
-        new TableView( Variables.getADefaultVariableSpace(), composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
-            colinf, 0, null, PropsUI.getInstance() );
+      new TableView( Variables.getADefaultVariableSpace(), composite, SWT.BORDER
+        | SWT.FULL_SELECTION | SWT.MULTI, colinf, 0, null, PropsUI.getInstance() );
 
     FormData fdGrid = new FormData();
     fdGrid.left = new FormAttachment( 0, 0 );
@@ -376,8 +378,8 @@ public class Translator {
 
           // Loop over the files and see if it belongs to this directory
           for ( String filename : files.keySet() ) {
-            if ( getPath( filename ).equals( dir ) ) // yep, add this one
-            {
+            if ( getPath( filename ).equals( dir ) ) { // yep, add this one
+
               Properties properties = files.get( filename );
               ArrayList<Object> entryObjects = new ArrayList<Object>( properties.keySet() );
               ArrayList<String> entries = new ArrayList<String>();
@@ -391,7 +393,8 @@ public class Translator {
                 String value = properties.getProperty( entry, "" );
                 String locale = getLocale( filename );
                 String classname = getClassname( entry );
-                String key = entry.length() > classname.length() ? entry.substring( classname.length() + 1 ) : entry;
+                String key =
+                  entry.length() > classname.length() ? entry.substring( classname.length() + 1 ) : entry;
                 boolean systemKey = entry.startsWith( SYSTEM_KEY_PREFIX );
                 String fileContent = "";
 
@@ -458,8 +461,8 @@ public class Translator {
 
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell, "Error loading data",
-          "There was an unexpected error loading data for the translation grid", e );
+      new ErrorDialog(
+        shell, "Error loading data", "There was an unexpected error loading data for the translation grid", e );
     } finally {
       shell.setCursor( null );
     }
@@ -487,7 +490,8 @@ public class Translator {
     boolean first = true;
     for ( int x = 0; x < languages.length; x++ ) {
       // The properties file:
-      String propfile = ROOT + "/" + dir + "/" + MESSAGES_DIR + "/" + MESSAGES_PREFIX + "_" + languages[x] + EXTENSION;
+      String propfile =
+        ROOT + "/" + dir + "/" + MESSAGES_DIR + "/" + MESSAGES_PREFIX + "_" + languages[x] + EXTENSION;
       String add = null;
       Properties p = files.get( propfile );
       if ( p == null ) {
@@ -544,8 +548,8 @@ public class Translator {
 
       return content.toString();
     } catch ( Exception e ) {
-      throw new KettleFileException( propertiesFilename + ": Unable to load file [" + javaFile + "] for key [" + entry
-          + "]", e );
+      throw new KettleFileException( propertiesFilename
+        + ": Unable to load file [" + javaFile + "] for key [" + entry + "]", e );
     }
   }
 
@@ -565,7 +569,7 @@ public class Translator {
 
   /**
    * Get the path until the first occurrence of "/messages/"
-   * 
+   *
    * @param entry
    * @return
    */

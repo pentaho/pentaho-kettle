@@ -27,7 +27,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains Gupta SQLBase specific information through static final members
- * 
+ *
  * @author Matt
  * @since 11-mrt-2005
  */
@@ -35,7 +35,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -74,7 +75,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /**
    * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
-   * 
+   *
    * @return true is setFetchSize() is supported!
    */
   @Override
@@ -87,14 +88,6 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    */
   @Override
   public boolean supportsBitmapIndex() {
-    return false;
-  }
-
-  /**
-   * @return true if Kettle can create a repository on this type of database.
-   */
-  @Override
-  public boolean supportsRepository() {
     return false;
   }
 
@@ -116,7 +109,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -133,13 +126,13 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -156,7 +149,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     String retval = "";
     retval += "ALTER TABLE " + tablename + " DROP " + v.getName() + Const.CR + ";" + Const.CR;
     retval += "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
@@ -165,7 +158,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -188,7 +181,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
-            fieldname.equalsIgnoreCase( tk ) // Primary key
+          fieldname.equalsIgnoreCase( tk ) // Primary key
         ) {
           retval += "INTEGER NOT NULL";
         } else {

@@ -38,26 +38,26 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Return tables name list from Database connection *
- * 
+ *
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 
 public class GetTableNames extends BaseStep implements StepInterface {
-  private static Class<?> PKG = GetTableNamesMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetTableNamesMeta.class; // for i18n purposes, needed by Translator2!!
 
   private GetTableNamesMeta meta;
   private GetTableNamesData data;
 
   public GetTableNames( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
 
@@ -101,10 +101,10 @@ public class GetTableNames extends BaseStep implements StepInterface {
           data.indexOfSchemaField = data.inputRowMeta.indexOfValue( meta.getSchemaFieldName() );
           if ( data.indexOfSchemaField < 0 ) {
             // The field is unreachable !
-            logError( BaseMessages.getString( PKG, "GetTableNames.Log.ErrorFindingField" ) + "["
-                + meta.getSchemaFieldName() + "]" );
-            throw new KettleException( BaseMessages.getString( PKG, "GetTableNames.Exception.CouldnotFindField", meta
-                .getSchemaFieldName() ) );
+            logError( BaseMessages.getString( PKG, "GetTableNames.Log.ErrorFindingField" )
+              + "[" + meta.getSchemaFieldName() + "]" );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "GetTableNames.Exception.CouldnotFindField", meta.getSchemaFieldName() ) );
           }
         }
 
@@ -162,7 +162,7 @@ public class GetTableNames extends BaseStep implements StepInterface {
         }
         if ( log.isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "GetTableNames.Log.PutoutRow", data.outputRowMeta
-              .getString( outputRowCatalog ) ) );
+            .getString( outputRowCatalog ) ) );
         }
       }
     }
@@ -207,7 +207,7 @@ public class GetTableNames extends BaseStep implements StepInterface {
         }
         if ( log.isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "GetTableNames.Log.PutoutRow", data.outputRowMeta
-              .getString( outputRowSchema ) ) );
+            .getString( outputRowSchema ) ) );
         }
       }
     }
@@ -242,7 +242,8 @@ public class GetTableNames extends BaseStep implements StepInterface {
         // return sql creation
         // handle simple primary key (one field)
         String sql =
-            data.db.getCreateTableStatement( tableName, data.db.getTableFields( tableName ), null, false, pk, true );
+          data.db
+            .getCreateTableStatement( tableName, data.db.getTableFields( tableName ), null, false, pk, true );
 
         if ( pkc != null ) {
           // add composite primary key (several fields in primary key)
@@ -273,7 +274,7 @@ public class GetTableNames extends BaseStep implements StepInterface {
         }
         if ( log.isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "GetTableNames.Log.PutoutRow", data.outputRowMeta
-              .getString( outputRowTable ) ) );
+            .getString( outputRowTable ) ) );
         }
       }
     }
@@ -311,7 +312,7 @@ public class GetTableNames extends BaseStep implements StepInterface {
           }
           if ( log.isRowLevel() ) {
             logRowlevel( BaseMessages.getString( PKG, "GetTableNames.Log.PutoutRow", data.outputRowMeta
-                .getString( outputRowView ) ) );
+              .getString( outputRowView ) ) );
           }
         }
       } catch ( Exception e ) {
@@ -348,7 +349,7 @@ public class GetTableNames extends BaseStep implements StepInterface {
         }
         if ( log.isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "GetTableNames.Log.PutoutRow", data.outputRowMeta
-              .getString( outputRowProc ) ) );
+            .getString( outputRowProc ) ) );
         }
       }
     }
@@ -385,7 +386,7 @@ public class GetTableNames extends BaseStep implements StepInterface {
 
         if ( log.isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "GetTableNames.Log.PutoutRow", data.outputRowMeta
-              .getString( outputRowSyn ) ) );
+            .getString( outputRowSyn ) ) );
         }
       }
     }
@@ -415,8 +416,9 @@ public class GetTableNames extends BaseStep implements StepInterface {
       data.realObjectTypeFieldName = environmentSubstitute( meta.getObjectTypeFieldName() );
       data.realIsSystemObjectFieldName = environmentSubstitute( meta.isSystemObjectFieldName() );
       data.realSQLCreationFieldName = environmentSubstitute( meta.getSQLCreationFieldName() );
-      if ( !meta.isIncludeCatalog() && !meta.isIncludeSchema() && !meta.isIncludeTable() && !meta.isIncludeView()
-          && !meta.isIncludeProcedure() && !meta.isIncludeSynonym() ) {
+      if ( !meta.isIncludeCatalog()
+        && !meta.isIncludeSchema() && !meta.isIncludeTable() && !meta.isIncludeView()
+        && !meta.isIncludeProcedure() && !meta.isIncludeSynonym() ) {
         logError( BaseMessages.getString( PKG, "GetTableNames.Error.includeAtLeastOneType" ) );
         return false;
       }

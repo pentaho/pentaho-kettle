@@ -31,10 +31,10 @@ import org.pentaho.di.i18n.BaseMessages;
 /**
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 public class CreditCardVerifier {
-  private static Class<?> PKG = CreditCardValidatorMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CreditCardValidatorMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int INVALID = -1;
   public static final int VISA = 0;
@@ -53,9 +53,9 @@ public class CreditCardVerifier {
   public static final int LASER = 13;
   public static final int VOYAGER = 14;
 
-  private static final String[] cardNames = { "Visa", "Mastercard", "American Express", "En Route",
-    "Diner's CLub/Carte Blanche", "Discover", "JCB1", "JCB2", "BankCard", "Maestro", "Solo", "Switch", "Airplus",
-    "Laser", "Voyager" };
+  private static final String[] cardNames = {
+    "Visa", "Mastercard", "American Express", "En Route", "Diner's CLub/Carte Blanche", "Discover", "JCB1",
+    "JCB2", "BankCard", "Maestro", "Solo", "Switch", "Airplus", "Laser", "Voyager" };
   private static final String[] NotValidCardNames = {
     BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidVisa" ),
     BaseMessages.getString( PKG, "CreditCardValidator.Log.NotValidMastercard" ),
@@ -164,132 +164,141 @@ public class CreditCardVerifier {
     String digit4 = number.substring( 0, 4 );
 
     if ( isNumber( number ) ) {
-      /*
-       * ----* SWITCH card prefix = 4903,4905,4911,4936,564182,633110,6333,6759* -------- lenght = 16,18,19
-       */
-      if ( digit4.equals( "4903" ) || digit4.equals( "4905" ) || digit4.equals( "4911" ) || digit4.equals( "4936" )
-          || digit4.equals( "564182" ) || digit4.equals( "633110" ) || digit4.equals( "6333" )
-          || digit4.equals( "6759" ) ) {
+      if ( digit4.equals( "4903" )
+        || digit4.equals( "4905" ) || digit4.equals( "4911" ) || digit4.equals( "4936" )
+        || digit4.equals( "564182" ) || digit4.equals( "633110" ) || digit4.equals( "6333" )
+        || digit4.equals( "6759" ) ) {
         if ( number.length() == 16 || number.length() == 18 || number.length() == 19 ) {
+
+          /*
+           * ----* SWITCH card prefix = 4903,4905,4911,4936,564182,633110,6333,6759* -------- length = 16,18,19
+           */
+
           valid = SWITCH;
         }
-      }
-      /*
-       * ----* LASER card prefix = 6304, 6706, 6771, 6709* --------
-       */
-
-      else if ( digit4.equals( "6304" ) || digit4.equals( "6706" ) || digit4.equals( "6771" ) || digit4.equals( "6709" ) ) {
+      } else if ( digit4.equals( "6304" )
+        || digit4.equals( "6706" ) || digit4.equals( "6771" ) || digit4.equals( "6709" ) ) {
         if ( number.length() >= 16 && number.length() <= 19 ) {
+
+          /*
+           * ----* LASER card prefix = 6304, 6706, 6771, 6709* --------
+           */
+
           valid = LASER;
         }
-
-      }
-      /*
-       * ----* VISA prefix=4* ---- length=13 or 16 (can be 15 too!?! maybe)
-       */
-      else if ( digit1.equals( "4" ) ) {
+      } else if ( digit1.equals( "4" ) ) {
         if ( number.length() == 13 || number.length() == 16 ) {
+
+          /*
+           * ----* VISA prefix=4* ---- length=13 or 16 (can be 15 too!?! maybe)
+           */
+
           valid = VISA;
         }
-      }
-      /*
-       * ----------* MASTERCARD prefix= 51 ... 55* ---------- length= 16
-       */
-      else if ( digit2.compareTo( "51" ) >= 0 && digit2.compareTo( "55" ) <= 0 ) {
+      } else if ( digit2.compareTo( "51" ) >= 0 && digit2.compareTo( "55" ) <= 0 ) {
         if ( number.length() == 16 ) {
           valid = MASTERCARD;
         }
-      }
-
-      /*
-       * ----* AMEX prefix=34 or 37* ---- length=15
-       */
-      else if ( digit2.equals( "34" ) || digit2.equals( "37" ) ) {
+      } else if ( digit2.equals( "34" ) || digit2.equals( "37" ) ) {
         if ( number.length() == 15 ) {
+
+          /*
+           * ----* AMEX prefix=34 or 37* ---- length=15
+           */
+
           valid = AMERICAN_EXPRESS;
         }
-      }
-      /*
-       * -----* ENROUTE prefix=2014 or 2149* ----- length=15
-       */
-      else if ( digit4.equals( "2014" ) || digit4.equals( "2149" ) ) {
+      } else if ( digit4.equals( "2014" ) || digit4.equals( "2149" ) ) {
         if ( number.length() == 15 ) {
+
+          /*
+           * -----* ENROUTE prefix=2014 or 2149* ----- length=15
+           */
+
           valid = EN_ROUTE;
         }
-      }
-      /*
-       * -----* DCLUB prefix=300 ... 305 or 36 or 38* ----- length=14
-       */
-      else if ( digit2.equals( "36" ) || digit2.equals( "38" )
-          || ( digit3.compareTo( "300" ) >= 0 && digit3.compareTo( "305" ) <= 0 ) ) {
+      } else if ( digit2.equals( "36" )
+        || digit2.equals( "38" ) || ( digit3.compareTo( "300" ) >= 0 && digit3.compareTo( "305" ) <= 0 ) ) {
         if ( number.length() == 14 ) {
+
+          /*
+           * -----* DCLUB prefix=300 ... 305 or 36 or 38* ----- length=14
+           */
+
           valid = DINERS_CLUB;
         }
-      }
-
-      /*
-       * ----* DISCOVER card prefix = 6011* -------- lenght = 16
-       */
-      else if ( digit4.equals( "6011" ) ) {
+      } else if ( digit4.equals( "6011" ) ) {
         if ( number.length() == 16 ) {
+
+          /*
+           * ----* DISCOVER card prefix = 6011* -------- length = 16
+           */
+
           valid = DISCOVER;
         }
-      }
-      /*
-       * ----* JCB1 card prefix = 3* -------- lenght = 16
-       */
-      else if ( digit1.equals( "3" ) ) {
+      } else if ( digit1.equals( "3" ) ) {
         if ( number.length() == 16 ) {
+
+          /*
+           * ----* JCB1 card prefix = 3* -------- length = 16
+           */
+
           valid = JCB1;
         }
-      }
-      /*
-       * ----* JCB2 card prefix = 2131, 1800* -------- lenght = 15
-       */
-      else if ( digit4.equals( "2131" ) || digit4.equals( "1800" ) ) {
+      } else if ( digit4.equals( "2131" ) || digit4.equals( "1800" ) ) {
         if ( number.length() == 15 ) {
+
+          /*
+           * ----* JCB2 card prefix = 2131, 1800* -------- length = 15
+           */
+
           valid = JCB2;
         }
-      }
-      /*
-       * ----* BANKCARD card prefix = 56* -------- lenght = 16
-       */
-      else if ( digit4.equals( "5610" ) || digit4.equals( "560221" ) || digit4.equals( "560222" )
-          || digit4.equals( "560223" ) || digit4.equals( "560224" ) || digit4.equals( "560225" ) ) {
+      } else if ( digit4.equals( "5610" )
+        || digit4.equals( "560221" ) || digit4.equals( "560222" ) || digit4.equals( "560223" )
+        || digit4.equals( "560224" ) || digit4.equals( "560225" ) ) {
         if ( number.length() == 16 ) {
+
+          /*
+           * ----* BANKCARD card prefix = 56* -------- length = 16
+           */
+
           valid = BANKCARD;
         }
-      }
-      /*
-       * ----* MAESTRO card prefix = 5020,6* -------- lenght = 16
-       */
-      else if ( digit4.equals( "5018" ) || digit4.equals( "5020" ) || digit4.equals( "5038" ) || digit4.equals( "6304" )
-          || digit4.equals( "6759" ) || digit4.equals( "6761" ) || digit4.equals( "6763" ) ) {
+      } else if ( digit4.equals( "5018" )
+        || digit4.equals( "5020" ) || digit4.equals( "5038" ) || digit4.equals( "6304" )
+        || digit4.equals( "6759" ) || digit4.equals( "6761" ) || digit4.equals( "6763" ) ) {
         if ( number.length() == 12 || number.length() == 13 || number.length() >= 14 && number.length() <= 19 ) {
+
+          /*
+           * ----* MAESTRO card prefix = 5020,6* -------- length = 16
+           */
+
           valid = MAESTRO;
         }
-      }
-
-      /*
-       * ----* SOLO card prefix = 6334, 6767* -------- lenght = 16,18,19
-       */
-      else if ( digit4.equals( "6334" ) || digit4.equals( "6767" ) ) {
+      } else if ( digit4.equals( "6334" ) || digit4.equals( "6767" ) ) {
         if ( number.length() == 16 || number.length() == 18 || number.length() == 19 ) {
+
+          /*
+           * ----* SOLO card prefix = 6334, 6767* -------- length = 16,18,19
+           */
+
           valid = SOLO;
         }
-      }
+      } else if ( digit3.equals( "192" ) || digit3.equals( "122" ) ) {
 
-      /*
-       * ----* AIRLUS card prefix = 192, 122* --------
-       */
-      else if ( digit3.equals( "192" ) || digit3.equals( "122" ) ) {
+        /*
+         * ----* AIRLUS card prefix = 192, 122* --------
+         */
+
         valid = AIRPLUS;
-      }
-      /*
-       * ----* VOYAGER card prefix = 6011* -------- lenght = 15
-       */
-      else if ( digit4.equals( "8699" ) ) {
+      } else if ( digit4.equals( "8699" ) ) {
         if ( number.length() == 15 ) {
+
+          /*
+           * ----* VOYAGER card prefix = 6011* -------- length = 15
+           */
+
           valid = VOYAGER;
         }
       }

@@ -27,12 +27,12 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Contains the properties of the target field, conversion mask, type, aggregation method, etc.
- * 
+ *
  * @author Matt
  * @since 17-jan-2006
  */
 public class DenormaliserTargetField {
-  private static Class<?> PKG = DenormaliserMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DenormaliserMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String fieldName;
   private String keyValue;
@@ -56,13 +56,18 @@ public class DenormaliserTargetField {
   public static final int TYPE_AGGR_CONCAT_COMMA = 6;
 
   public static final String[] typeAggrDesc = /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */
-  { "-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA" //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+  { "-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA"
   };
 
   public static final String[] typeAggrLongDesc =
-      {
-        "-", BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Sum" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Average" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Min" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Max" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.CountAll" ), BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.ConcatComma" ) //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-      };
+  {
+    "-", BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Sum" ),
+    BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Average" ),
+    BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Min" ),
+    BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.Max" ),
+    BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.CountAll" ),
+    BaseMessages.getString( PKG, "DenormaliserTargetField.TypeAggrLongDesc.ConcatComma" )
+  };
 
   /**
    * @return Returns the fieldName.
@@ -244,7 +249,7 @@ public class DenormaliserTargetField {
 
   /**
    * Set the target type
-   * 
+   *
    * @param typeDesc
    *          the target value type description
    */

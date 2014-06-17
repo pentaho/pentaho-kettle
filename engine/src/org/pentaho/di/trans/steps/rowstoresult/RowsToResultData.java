@@ -38,9 +38,6 @@ public class RowsToResultData extends BaseStepData implements StepDataInterface 
   public List<RowMetaAndData> rows;
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public RowsToResultData() {
     super();
 

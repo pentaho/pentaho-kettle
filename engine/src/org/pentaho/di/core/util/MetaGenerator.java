@@ -64,7 +64,8 @@ public class MetaGenerator {
     // Generate the declarations...
     //
     for ( TypeFieldDefinition field : fields ) {
-      code.append( "  private " + field.getTypeDescription() + " " + field.getMemberName() + ";" ).append( Const.CR );
+      code.append( "  private " + field.getTypeDescription() + " " + field.getMemberName() + ";" ).append(
+        Const.CR );
     }
     code.append( Const.CR );
 
@@ -74,8 +75,8 @@ public class MetaGenerator {
     code.append( "    StringBuilder xml = new StringBuilder(100);" ).append( Const.CR );
     for ( TypeFieldDefinition field : fields ) {
       code.append(
-          "    xml.append(XMLHandler.addTagValue(\"" + field.getFieldName() + "\", " + field.getMemberName() + "));" )
-          .append( Const.CR );
+        "    xml.append(XMLHandler.addTagValue(\""
+          + field.getFieldName() + "\", " + field.getMemberName() + "));" ).append( Const.CR );
     }
     code.append( "    return xml.toString();" ).append( Const.CR );
     code.append( "  }" ).append( Const.CR );
@@ -83,25 +84,27 @@ public class MetaGenerator {
 
     // Generate loadXML()...
     //
-    code.append(
-        "  public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {" )
-        .append( Const.CR );
+    code.append( "  public void loadXML(Node stepnode, List<DatabaseMeta> databases, "
+      + "IMetaStore metaStore) throws KettleXMLException {" ).append( Const.CR );
     for ( TypeFieldDefinition field : fields ) {
       switch ( field.getType() ) {
         case ValueMeta.TYPE_STRING:
           code.append(
-              "    " + field.getMemberName() + " = XMLHandler.getTagValue(stepnode, \"" + field.getFieldName() + "\");" )
-              .append( Const.CR );
+            "    "
+              + field.getMemberName() + " = XMLHandler.getTagValue(stepnode, \"" + field.getFieldName()
+              + "\");" ).append( Const.CR );
           break;
         case ValueMeta.TYPE_BOOLEAN:
           code.append(
-              "    " + field.getMemberName() + " = \"Y\".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, \""
-                  + field.getFieldName() + "\"));" ).append( Const.CR );
+            "    "
+              + field.getMemberName() + " = \"Y\".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, \""
+              + field.getFieldName() + "\"));" ).append( Const.CR );
           break;
         case ValueMeta.TYPE_INTEGER:
           code.append(
-              "    " + field.getMemberName() + " = Const.toInt(XMLHandler.getTagValue(stepnode, \""
-                  + field.getFieldName() + "\"), -1);" ).append( Const.CR );
+            "    "
+              + field.getMemberName() + " = Const.toInt(XMLHandler.getTagValue(stepnode, \""
+              + field.getFieldName() + "\"), -1);" ).append( Const.CR );
           break;
         default:
           break;
@@ -112,38 +115,41 @@ public class MetaGenerator {
 
     // Save to repository
     //
-    code.append(
+    code
+      .append(
         "  public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {" )
-        .append( Const.CR );
+      .append( Const.CR );
     for ( TypeFieldDefinition field : fields ) {
       code.append(
-          "    rep.saveStepAttribute(id_transformation, id_step, \"" + field.getFieldName() + "\", "
-              + field.getMemberName() + ");" ).append( Const.CR );
+        "    rep.saveStepAttribute(id_transformation, id_step, \""
+          + field.getFieldName() + "\", " + field.getMemberName() + ");" ).append( Const.CR );
     }
     code.append( "  }" ).append( Const.CR );
     code.append( Const.CR );
 
     // Load from repository
     //
-    code.append(
-        "  public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {" )
-        .append( Const.CR );
+    code.append( "  public void readRep(Repository rep, ObjectId id_step, "
+      + "List<DatabaseMeta> databases) throws KettleException {" ).append( Const.CR );
     for ( TypeFieldDefinition field : fields ) {
       switch ( field.getType() ) {
         case ValueMeta.TYPE_STRING:
           code.append(
-              "    " + field.getMemberName() + " = rep.getStepAttributeString(id_step, \"" + field.getFieldName()
-                  + "\");" ).append( Const.CR );
+            "    "
+              + field.getMemberName() + " = rep.getStepAttributeString(id_step, \"" + field.getFieldName()
+              + "\");" ).append( Const.CR );
           break;
         case ValueMeta.TYPE_BOOLEAN:
           code.append(
-              "    " + field.getMemberName() + " = rep.getStepAttributeBoolean(id_step, \"" + field.getFieldName()
-                  + "\");" ).append( Const.CR );
+            "    "
+              + field.getMemberName() + " = rep.getStepAttributeBoolean(id_step, \"" + field.getFieldName()
+              + "\");" ).append( Const.CR );
           break;
         case ValueMeta.TYPE_INTEGER:
           code.append(
-              "    " + field.getMemberName() + " = (int) rep.getStepAttributeInteger(id_step, \""
-                  + field.getFieldName() + "\");" ).append( Const.CR );
+            "    "
+              + field.getMemberName() + " = (int) rep.getStepAttributeInteger(id_step, \""
+              + field.getFieldName() + "\");" ).append( Const.CR );
           break;
         default:
           break;
@@ -169,15 +175,17 @@ public class MetaGenerator {
           break;
       }
 
-      code.append( "  public " + field.getTypeDescription() + " " + getPrefix + field.getFieldName() + "() {" ).append(
-          Const.CR );
+      code
+        .append( "  public " + field.getTypeDescription() + " " + getPrefix + field.getFieldName() + "() {" )
+        .append( Const.CR );
       code.append( "    return " + field.getMemberName() + ";" ).append( Const.CR );
       code.append( "  }" ).append( Const.CR );
       code.append( Const.CR );
 
       code.append(
-          "  public void " + setPrefix + field.getFieldName() + "(" + field.getTypeDescription() + " "
-              + field.getMemberName() + ") {" ).append( Const.CR );
+        "  public void "
+          + setPrefix + field.getFieldName() + "(" + field.getTypeDescription() + " " + field.getMemberName()
+          + ") {" ).append( Const.CR );
       code.append( "    this." + field.getMemberName() + " = " + field.getMemberName() + ";" ).append( Const.CR );
       code.append( "  }" ).append( Const.CR );
       code.append( Const.CR );
@@ -190,18 +198,20 @@ public class MetaGenerator {
 
     for ( TypeFieldDefinition field : fields ) {
       code.append( "  " + field.getMemberName() + "Item = new TableItem(wInputFields.table, SWT.NONE);" ).append(
-          Const.CR );
+        Const.CR );
       code.append(
-          "  " + field.getMemberName() + "Item.setText(1, BaseMessages.getString(PKG, \"PIQAddressDialog."
-              + field.getFieldName() + ".Description\"));" ).append( Const.CR );
+        "  "
+          + field.getMemberName() + "Item.setText(1, BaseMessages.getString(PKG, \"PIQAddressDialog."
+          + field.getFieldName() + ".Description\"));" ).append( Const.CR );
       code.append(
-          "  " + field.getMemberName() + "Item.setText(2, Const.NVL(input.get" + field.getFieldName() + "(), \"\"));" )
-          .append( Const.CR );
+        "  "
+          + field.getMemberName() + "Item.setText(2, Const.NVL(input.get" + field.getFieldName()
+          + "(), \"\"));" ).append( Const.CR );
     }
 
     for ( TypeFieldDefinition field : fields ) {
       code.append( "PIQAddressDialog." + field.getFieldName() + ".Description = " + field.getFieldName() ).append(
-          " DESCRIPTION TODO" ).append( Const.CR );
+        " DESCRIPTION TODO" ).append( Const.CR );
     }
 
     return code.toString();

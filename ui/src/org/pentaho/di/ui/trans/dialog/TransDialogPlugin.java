@@ -31,9 +31,9 @@ import java.lang.annotation.Target;
 /**
  * The class painted with this annotation is providing an additional user-interface in the transformation setting dialog
  * in the form of a new tab.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
@@ -46,4 +46,6 @@ public @interface TransDialogPlugin {
   String description() default "";
 
   String i18nPackageName() default "";
+
+  String classLoaderGroup() default "";
 }

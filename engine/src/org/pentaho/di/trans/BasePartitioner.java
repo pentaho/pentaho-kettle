@@ -44,7 +44,7 @@ public abstract class BasePartitioner implements Partitioner {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#clone()
    */
   public Partitioner clone() {
@@ -57,7 +57,7 @@ public abstract class BasePartitioner implements Partitioner {
 
   /**
    * Gets the nr partitions.
-   * 
+   *
    * @return the nr partitions
    */
   public int getNrPartitions() {
@@ -66,7 +66,7 @@ public abstract class BasePartitioner implements Partitioner {
 
   /**
    * Sets the nr partitions.
-   * 
+   *
    * @param nrPartitions
    *          the new nr partitions
    */
@@ -76,7 +76,7 @@ public abstract class BasePartitioner implements Partitioner {
 
   /**
    * Inits the.
-   * 
+   *
    * @param rowMeta
    *          the row meta
    * @throws KettleException
@@ -92,7 +92,7 @@ public abstract class BasePartitioner implements Partitioner {
 
   /**
    * Gets the meta.
-   * 
+   *
    * @return the meta
    */
   public StepPartitioningMeta getMeta() {
@@ -101,7 +101,7 @@ public abstract class BasePartitioner implements Partitioner {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.Partitioner#setMeta(org.pentaho.di.trans.step.StepPartitioningMeta)
    */
   public void setMeta( StepPartitioningMeta meta ) {
@@ -110,14 +110,14 @@ public abstract class BasePartitioner implements Partitioner {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.Partitioner#getInstance()
    */
   public abstract Partitioner getInstance();
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.Partitioner#getDescription()
    */
   public String getDescription() {
@@ -126,7 +126,7 @@ public abstract class BasePartitioner implements Partitioner {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.Partitioner#setDescription(java.lang.String)
    */
   public void setDescription( String description ) {
@@ -135,7 +135,7 @@ public abstract class BasePartitioner implements Partitioner {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.Partitioner#getId()
    */
   public String getId() {
@@ -144,7 +144,7 @@ public abstract class BasePartitioner implements Partitioner {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.Partitioner#setId(java.lang.String)
    */
   public void setId( String id ) {

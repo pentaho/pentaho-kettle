@@ -45,7 +45,7 @@ public class TextFileFilter implements Cloneable {
    *          skip the line.
    * @param filterPositive
    *          True if we want to get only lines that match this string
-   * 
+   *
    */
   public TextFileFilter( int filterPosition, String filterString, boolean filterLastLine, boolean filterPositive ) {
     this.filterPosition = filterPosition;

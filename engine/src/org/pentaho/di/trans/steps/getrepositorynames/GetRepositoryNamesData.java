@@ -40,9 +40,6 @@ public class GetRepositoryNamesData extends BaseStepData implements StepDataInte
   public RowMetaInterface outputRowMeta;
   public List<RepositoryElementMetaInterface> list;
 
-  /**
-	 * 
-	 */
   public GetRepositoryNamesData() {
     super();
 

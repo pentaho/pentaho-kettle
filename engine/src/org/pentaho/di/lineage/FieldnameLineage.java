@@ -27,9 +27,9 @@ import java.util.List;
 /**
  * This describes how a field gets renamed in a certain step.<br>
  * It helps us to do the complete lineage from source to target and back.<br>
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class FieldnameLineage {
   private String inputFieldname;
@@ -37,7 +37,7 @@ public class FieldnameLineage {
 
   /**
    * Create a new field lineage object
-   * 
+   *
    * @param inputFieldname
    *          The input field name
    * @param outputFieldname
@@ -81,7 +81,7 @@ public class FieldnameLineage {
 
   /**
    * Search for a field name lineage object in a list.
-   * 
+   *
    * @param lineages
    *          The list
    * @param input

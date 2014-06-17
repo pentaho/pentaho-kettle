@@ -37,7 +37,7 @@ import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class SimpleMappingData extends BaseStepData implements StepDataInterface {
   public Trans mappingTrans;
@@ -73,7 +73,7 @@ public class SimpleMappingData extends BaseStepData implements StepDataInterface
   public RowDataInputMapper rowDataInputMapper;
 
   /**
-   * 
+   *
    */
   public SimpleMappingData() {
     super();
@@ -82,4 +82,11 @@ public class SimpleMappingData extends BaseStepData implements StepDataInterface
     inputRenameList = new ArrayList<MappingValueRename>();
   }
 
+  public Trans getMappingTrans() {
+    return mappingTrans;
+  }
+
+  public void setMappingTrans( Trans mappingTrans ) {
+    this.mappingTrans = mappingTrans;
+  }
 }

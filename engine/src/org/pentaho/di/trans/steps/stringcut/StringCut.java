@@ -38,18 +38,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Cut strings.
- * 
+ *
  * @author Samatar Hassan
  * @since 30 September 2008
  */
 public class StringCut extends BaseStep implements StepInterface {
-  private static Class<?> PKG = StringCutMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StringCutMeta.class; // for i18n purposes, needed by Translator2!!
 
   private StringCutMeta meta;
 
   private StringCutData data;
 
-  public StringCut( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public StringCut( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -118,8 +119,8 @@ public class StringCut extends BaseStep implements StepInterface {
     data = (StringCutData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -136,13 +137,13 @@ public class StringCut extends BaseStep implements StepInterface {
         data.inStreamNrs[i] = getInputRowMeta().indexOfValue( meta.getFieldInStream()[i] );
         if ( data.inStreamNrs[i] < 0 ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "StringCut.Exception.FieldRequired", meta
-              .getFieldInStream()[i] ) );
+            .getFieldInStream()[i] ) );
         }
 
         // check field type
         if ( getInputRowMeta().getValueMeta( data.inStreamNrs[i] ).getType() != ValueMeta.TYPE_STRING ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "StringCut.Exception.FieldTypeNotString", meta
-              .getFieldInStream()[i] ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "StringCut.Exception.FieldTypeNotString", meta.getFieldInStream()[i] ) );
         }
       }
 

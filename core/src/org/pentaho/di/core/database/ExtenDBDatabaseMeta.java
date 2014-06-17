@@ -27,23 +27,24 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains ExtenDB specific information through static final members
- * 
+ *
  * @author amart
  * @since 11-Apr-2006
  */
 
 public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
-  private static final String[] RESERVED_WORDS = { "AFTER", "BINARY", "BOOLEAN", "DATABASES", "DBA", "ESTIMATE",
-    "MODIFY", "NODE", "NODES", "OWNER", "PARENT", "PARTITION", "PARTITIONING", "PASSWORD", "PERCENT", "PUBLIC",
-    "RENAME", "REPLICATED", "RESOURCE", "SAMPLE", "SERIAL", "SHOW", "STANDARD", "STAT", "STATISTICS", "TABLES", "TEMP",
-    "TRAN", "UNSIGNED", "ZEROFILL" };
+  private static final String[] RESERVED_WORDS = {
+    "AFTER", "BINARY", "BOOLEAN", "DATABASES", "DBA", "ESTIMATE", "MODIFY", "NODE", "NODES", "OWNER", "PARENT",
+    "PARTITION", "PARTITIONING", "PASSWORD", "PERCENT", "PUBLIC", "RENAME", "REPLICATED", "RESOURCE", "SAMPLE",
+    "SERIAL", "SHOW", "STANDARD", "STAT", "STATISTICS", "TABLES", "TEMP", "TRAN", "UNSIGNED", "ZEROFILL" };
 
   /**
    * @see DatabaseInterface#getAccessTypeList()
    */
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -85,7 +86,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   /**
    * Checks whether or not the command setFetchSize() is supported by the JDBC driver...
-   * 
+   *
    * @return true is setFetchSize() is supported!
    */
   @Override
@@ -111,7 +112,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -128,13 +129,13 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   /**
    * Generates the SQL statement to drop a column from the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -151,13 +152,13 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getDropColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " DROP " + v.getName() + Const.CR;
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -174,7 +175,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     String retval = "";
     retval += "ALTER TABLE " + tablename + " DROP " + v.getName() + Const.CR + ";" + Const.CR;
     retval += "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
@@ -183,7 +184,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -210,7 +211,7 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
       case ValueMetaInterface.TYPE_INTEGER:
       case ValueMetaInterface.TYPE_BIGNUMBER:
         if ( fieldname.equalsIgnoreCase( tk ) || // Technical key
-            fieldname.equalsIgnoreCase( pk ) // Primary key
+          fieldname.equalsIgnoreCase( pk ) // Primary key
         ) {
           if ( length > 9 ) {
             retval += "BIGSERIAL";

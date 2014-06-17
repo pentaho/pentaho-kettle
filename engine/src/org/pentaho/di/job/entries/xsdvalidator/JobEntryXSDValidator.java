@@ -66,13 +66,13 @@ import org.xml.sax.SAXException;
 
 /**
  * This defines a 'xsdvalidator' job entry.
- * 
+ *
  * @author Samatar Hassan
  * @since 30-04-2007
- * 
+ *
  */
 public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryXSDValidator.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryXSDValidator.class; // for i18n purposes, needed by Translator2!!
 
   private String xmlfilename;
   private String xsdfilename;
@@ -81,8 +81,6 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
     super( n, "" );
     xmlfilename = null;
     xsdfilename = null;
-
-    setID( -1L );
   }
 
   public JobEntryXSDValidator() {
@@ -104,8 +102,8 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       xmlfilename = XMLHandler.getTagValue( entrynode, "xmlfilename" );
@@ -117,13 +115,14 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       xmlfilename = rep.getJobEntryAttributeString( id_jobentry, "xmlfilename" );
       xsdfilename = rep.getJobEntryAttributeString( id_jobentry, "xsdfilename" );
     } catch ( KettleException dbe ) {
-      throw new KettleException( "Unable to load job entry of type 'xsdvalidator' from the repository for id_jobentry="
-          + id_jobentry, dbe );
+      throw new KettleException(
+        "Unable to load job entry of type 'xsdvalidator' from the repository for id_jobentry=" + id_jobentry,
+        dbe );
     }
   }
 
@@ -134,7 +133,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
 
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to save job entry of type 'xsdvalidator' to the repository for id_job="
-          + id_job, dbe );
+        + id_job, dbe );
     }
   }
 
@@ -156,9 +155,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
     FileObject xmlfile = null;
     FileObject xsdfile = null;
 
-    try
-
-    {
+    try {
 
       if ( xmlfilename != null && xsdfilename != null ) {
         xmlfile = KettleVFS.getFileObject( realxmlfilename, this );
@@ -187,12 +184,12 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
         } else {
 
           if ( !xmlfile.exists() ) {
-            logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label" ) + realxmlfilename
-                + BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label" ) );
+            logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label" )
+              + realxmlfilename + BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label" ) );
           }
           if ( !xsdfile.exists() ) {
-            logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label" ) + realxsdfilename
-                + BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label" ) );
+            logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist1.Label" )
+              + realxsdfilename + BaseMessages.getString( PKG, "JobEntryXSDValidator.FileDoesNotExist2.Label" ) );
           }
           result.setResult( false );
           result.setNrErrors( 1 );
@@ -204,17 +201,15 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
         result.setNrErrors( 1 );
       }
 
-    }
-
-    catch ( SAXException ex ) {
+    } catch ( SAXException ex ) {
       logError( "Error :" + ex.getMessage() );
     } catch ( Exception e ) {
 
       logError( BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXSDValidator.Label" )
-          + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXML1.Label" ) + realxmlfilename
-          + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXML2.Label" )
-          + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXSD1.Label" ) + realxsdfilename
-          + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXSD2.Label" ) + e.getMessage() );
+        + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXML1.Label" ) + realxmlfilename
+        + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXML2.Label" )
+        + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXSD1.Label" ) + realxsdfilename
+        + BaseMessages.getString( PKG, "JobEntryXSDValidator.ErrorXSD2.Label" ) + e.getMessage() );
       result.setResult( false );
       result.setNrErrors( 1 );
     } finally {
@@ -228,6 +223,7 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
         }
 
       } catch ( IOException e ) {
+        // Ignore errors
       }
     }
 
@@ -268,8 +264,8 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace( ctx, getVariables() );
     putValidators( ctx, notBlankValidator(), fileExistsValidator() );

@@ -61,15 +61,15 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Delete Files job entry settings.
- * 
+ *
  * @author Samatar Hassan
  * @since 06-05-2007
  */
 public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryDeleteFiles.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryDeleteFiles.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String[] FILETYPES =
-      new String[] { BaseMessages.getString( PKG, "JobDeleteFiles.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] { BaseMessages.getString(
+    PKG, "JobDeleteFiles.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;
@@ -330,8 +330,8 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
     fdlFilemask.right = new FormAttachment( middle, -margin );
     wlFilemask.setLayoutData( fdlFilemask );
     wFilemask =
-        new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobDeleteFiles.Wildcard.Tooltip" ) );
+      new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobDeleteFiles.Wildcard.Tooltip" ) );
     props.setLook( wFilemask );
     wFilemask.addModifyListener( lsMod );
     fdFilemask = new FormData();
@@ -373,11 +373,13 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDeleteFiles.Fields.Argument.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "JobDeleteFiles.Fields.Wildcard.Label" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobDeleteFiles.Fields.Argument.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobDeleteFiles.Fields.Wildcard.Label" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "JobDeleteFiles.Fields.Column" ) );
@@ -385,7 +387,8 @@ public class JobEntryDeleteFilesDialog extends JobEntryDialog implements JobEntr
     colinf[1].setToolTip( BaseMessages.getString( PKG, "JobDeleteFiles.Wildcard.Column" ) );
 
     wFields =
-        new TableView( jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );

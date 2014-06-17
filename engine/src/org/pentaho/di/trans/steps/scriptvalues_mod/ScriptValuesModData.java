@@ -33,7 +33,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class ScriptValuesModData extends BaseStepData implements StepDataInterface {
   public Context cx;
@@ -46,9 +46,6 @@ public class ScriptValuesModData extends BaseStepData implements StepDataInterfa
   public RowMetaInterface outputRowMeta;
   public int[] replaceIndex;
 
-  /**
-	 * 
-	 */
   public ScriptValuesModData() {
     super();
     cx = null;

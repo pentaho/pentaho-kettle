@@ -35,7 +35,7 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a selected list of fields from the input files including
- * 
+ *
  * @author matt
  * @since 10-OCT-2011
  */
@@ -60,7 +60,7 @@ public class SasInputField implements XMLInterface, Cloneable {
    * @param trimType
    */
   public SasInputField( String name, String rename, int type, String conversionMask, String decimalSymbol,
-      String groupingSymbol, int trimType ) {
+    String groupingSymbol, int trimType ) {
     this.name = name;
     this.rename = rename;
     this.type = type;
@@ -99,8 +99,8 @@ public class SasInputField implements XMLInterface, Cloneable {
     return retval.toString();
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId transformationId, ObjectId stepId, int fieldNr )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId transformationId, ObjectId stepId,
+    int fieldNr ) throws KettleException {
     rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_name", name );
     rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_rename", rename );
     rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_type", ValueMeta.getTypeDesc( type ) );
@@ -109,7 +109,8 @@ public class SasInputField implements XMLInterface, Cloneable {
     rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_conversion_mask", conversionMask );
     rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_decimal", decimalSymbol );
     rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_grouping", groupingSymbol );
-    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_trim_type", ValueMeta.getTrimTypeCode( trimType ) );
+    rep.saveStepAttribute( transformationId, stepId, fieldNr, "field_trim_type", ValueMeta
+      .getTrimTypeCode( trimType ) );
   }
 
   public SasInputField( Repository rep, ObjectId stepId, int fieldNr ) throws KettleException {

@@ -138,8 +138,9 @@ public class ThinConnection implements Connection {
 
       // Try to get a status from the carte server to see if the connection works...
       //
-      HttpUtil.execService( new Variables(), hostname, port, webAppName, service + "/status/", username, password,
-          proxyHostname, proxyPort, nonProxyHosts );
+      HttpUtil.execService(
+        new Variables(), hostname, port, webAppName, service + "/status/", username, password, proxyHostname,
+        proxyPort, nonProxyHosts );
 
     } catch ( Exception e ) {
       throw new SQLException( "Unable to de-compose slave server address for URL: " + slaveBaseAddress, e );
@@ -207,8 +208,7 @@ public class ThinConnection implements Connection {
   }
 
   @Override
-  public Statement createStatement( int resultSetType, int resultSetConcurrency, int resultSetHoldability )
-    throws SQLException {
+  public Statement createStatement( int resultSetType, int resultSetConcurrency, int resultSetHoldability ) throws SQLException {
     return new ThinStatement( this, resultSetType, resultSetConcurrency, resultSetHoldability );
   }
 
@@ -322,14 +322,13 @@ public class ThinConnection implements Connection {
   }
 
   @Override
-  public PreparedStatement prepareStatement( String sql, int resultSetType, int resultSetConcurrency )
-    throws SQLException {
+  public PreparedStatement prepareStatement( String sql, int resultSetType, int resultSetConcurrency ) throws SQLException {
     return new ThinPreparedStatement( this, sql );
   }
 
   @Override
   public PreparedStatement prepareStatement( String sql, int resultSetType, int resultSetConcurrency,
-      int resultSetHoldability ) throws SQLException {
+    int resultSetHoldability ) throws SQLException {
     return new ThinPreparedStatement( this, sql );
   }
 

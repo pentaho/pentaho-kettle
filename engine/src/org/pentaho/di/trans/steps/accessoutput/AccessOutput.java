@@ -45,12 +45,12 @@ import com.healthmarketscience.jackcess.Database;
 
 /**
  * Writes rows to a database table.
- * 
+ *
  * @author Matt
  * @since 6-apr-2003
  */
 public class AccessOutput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = AccessOutput.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AccessOutput.class; // for i18n purposes, needed by Translator2!!
 
   public static final int COMMIT_SIZE = 500;
 
@@ -58,7 +58,7 @@ public class AccessOutput extends BaseStep implements StepInterface {
   private AccessOutputData data;
 
   public AccessOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -67,8 +67,8 @@ public class AccessOutput extends BaseStep implements StepInterface {
     data = (AccessOutputData) sdi;
 
     Object[] r = getRow(); // this also waits for a previous step to be finished.
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) {
+      // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -106,8 +106,8 @@ public class AccessOutput extends BaseStep implements StepInterface {
   }
 
   private boolean writeToTable( Object[] rowData ) throws KettleValueException {
-    if ( rowData == null ) // Stop: last line or error encountered
-    {
+    if ( rowData == null ) {
+      // Stop: last line or error encountered
       if ( log.isDetailed() ) {
         logDetailed( "Last line inserted: stop" );
       }
@@ -142,7 +142,8 @@ public class AccessOutput extends BaseStep implements StepInterface {
         // So truncate is out for the moment as well.
 
       } catch ( Exception e ) {
-        logError( BaseMessages.getString( PKG, "AccessOutput.Exception.UnexpectedErrorCreatingTable", e.toString() ) );
+        logError( BaseMessages
+          .getString( PKG, "AccessOutput.Exception.UnexpectedErrorCreatingTable", e.toString() ) );
         logError( Const.getStackTracker( e ) );
         setErrors( 1 );
         stopAll();
@@ -163,8 +164,8 @@ public class AccessOutput extends BaseStep implements StepInterface {
         data.table.addRow( columnValues );
       }
     } catch ( IOException e ) {
-      logError( BaseMessages.getString( PKG, "AccessOutput.Exception.UnexpectedErrorWritingRow", data.outputRowMeta
-          .getString( rowData ) ) );
+      logError( BaseMessages.getString(
+        PKG, "AccessOutput.Exception.UnexpectedErrorWritingRow", data.outputRowMeta.getString( rowData ) ) );
       logError( Const.getStackTracker( e ) );
       setErrors( 1 );
       stopAll();
@@ -220,7 +221,7 @@ public class AccessOutput extends BaseStep implements StepInterface {
     //
     if ( meta.isAddToResultFiles() ) {
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString() );
       resultFile.setComment( "This file was created with an access output step" );
       addResultFile( resultFile );
     }

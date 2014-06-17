@@ -50,9 +50,9 @@ import com.enterprisedt.net.ftp.FTPFile;
 /**
  * This class should largely be able to be removed if the edtftp project accepts my change to replace dirDetails(".")
  * with dirDetails(null).
- * 
+ *
  * @author mbatchelor
- * 
+ *
  */
 
 public class PDIFTPClient extends FTPClient {
@@ -67,7 +67,7 @@ public class PDIFTPClient extends FTPClient {
    */
   private boolean sizeSupported = true;
 
-  private static Class<?> PKG = PDIFTPClient.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PDIFTPClient.class; // for i18n purposes, needed by Translator2!!
   private LogChannelInterface log;
 
   public PDIFTPClient( LogChannelInterface log ) {
@@ -78,7 +78,7 @@ public class PDIFTPClient extends FTPClient {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.enterprisedt.net.ftp.FTPClientInterface#exists(java.lang.String)
    */
   public boolean exists( String remoteFile ) throws IOException, FTPException {

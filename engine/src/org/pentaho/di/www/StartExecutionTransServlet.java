@@ -40,7 +40,6 @@ import org.pentaho.di.trans.Trans;
 
 public class StartExecutionTransServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = StartExecutionTransServlet.class; // for i18n purposes, needed by Translator2!!
-                                                                  // $NON-NLS-1$
 
   private static final long serialVersionUID = 3634806745372015720L;
   public static final String CONTEXT_PATH = "/kettle/startExec";
@@ -52,7 +51,8 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
     super( transformationMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -76,10 +76,11 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
       response.setContentType( "text/html;charset=UTF-8" );
       out.println( "<HTML>" );
       out.println( "<HEAD>" );
-      out.println( "<TITLE>" + BaseMessages.getString( PKG, "PrepareExecutionTransServlet.TransPrepareExecution" )
-          + "</TITLE>" );
-      out.println( "<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath( GetStatusServlet.CONTEXT_PATH )
-          + "?name=" + URLEncoder.encode( transName, "UTF-8" ) + "\">" );
+      out.println( "<TITLE>"
+        + BaseMessages.getString( PKG, "PrepareExecutionTransServlet.TransPrepareExecution" ) + "</TITLE>" );
+      out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
+        + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "?name="
+        + URLEncoder.encode( transName, "UTF-8" ) + "\">" );
       out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
       out.println( "</HEAD>" );
       out.println( "<BODY>" );
@@ -114,39 +115,45 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
           if ( useXML ) {
             out.println( WebResult.OK.getXML() );
           } else {
-            out.println( "<H1>Transformation '" + encoder.encodeForHTML( transName ) + "' has been executed.</H1>" );
-            out.println( "<a href=\"" + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-                + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
-                + "\">Back to the transformation status page</a><p>" );
+            out
+              .println( "<H1>Transformation '"
+                + encoder.encodeForHTML( transName ) + "' has been executed.</H1>" );
+            out.println( "<a href=\""
+              + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
+              + "\">Back to the transformation status page</a><p>" );
           }
         } else {
           String message =
-              "The specified transformation [" + transName
-                  + "] is not ready to be started. (Was not prepared for execution)";
+            "The specified transformation ["
+              + transName + "] is not ready to be started. (Was not prepared for execution)";
           if ( useXML ) {
             out.println( new WebResult( WebResult.STRING_ERROR, message ) );
           } else {
             out.println( "<H1>" + encoder.encodeForHTML( message ) + "</H1>" );
-            out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-                + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+            out.println( "<a href=\""
+              + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+              + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
           }
         }
       } else {
         if ( useXML ) {
-          out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-              "TransStatusServlet.Log.CoundNotFindSpecTrans", transName ) ) );
+          out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+            PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName ) ) );
         } else {
           out.println( "<H1>"
-              + encoder.encodeForHTML( BaseMessages.getString( PKG, "TransStatusServlet.Log.CoundNotFindTrans",
-                  transName ) ) + "</H1>" );
-          out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-              + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+            + encoder.encodeForHTML( BaseMessages.getString(
+              PKG, "TransStatusServlet.Log.CoundNotFindTrans", transName ) ) + "</H1>" );
+          out.println( "<a href=\""
+            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
         }
       }
     } catch ( Exception ex ) {
       if ( useXML ) {
-        out.println( new WebResult( WebResult.STRING_ERROR,
-            "Unexpected error during transformation execution preparation:" + Const.CR + Const.getStackTracker( ex ) ) );
+        out.println( new WebResult(
+          WebResult.STRING_ERROR, "Unexpected error during transformation execution preparation:"
+            + Const.CR + Const.getStackTracker( ex ) ) );
       } else {
         out.println( "<p>" );
         out.println( "<pre>" );

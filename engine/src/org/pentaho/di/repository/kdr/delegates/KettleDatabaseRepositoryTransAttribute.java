@@ -32,7 +32,7 @@ public class KettleDatabaseRepositoryTransAttribute implements RepositoryAttribu
   private ObjectId transObjectId;
 
   public KettleDatabaseRepositoryTransAttribute( KettleDatabaseRepositoryConnectionDelegate connectionDelegate,
-      ObjectId transObjectId ) {
+    ObjectId transObjectId ) {
     this.connectionDelegate = connectionDelegate;
     this.transObjectId = transObjectId;
   }

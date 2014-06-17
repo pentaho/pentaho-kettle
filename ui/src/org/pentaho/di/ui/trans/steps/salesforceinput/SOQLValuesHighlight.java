@@ -111,7 +111,7 @@ public class SOQLValuesHighlight implements LineStyleListener {
       GUIResource.getInstance().getColor( 0, 0, 255 ), // blue
       GUIResource.getInstance().getColor( 255, 0, 255 ) // SQL Functions / Rose
 
-        };
+    };
     tokenColors = new int[MAXIMUM_TOKEN];
     tokenColors[WORD] = 0;
     tokenColors[WHITE] = 0;
@@ -145,34 +145,34 @@ public class SOQLValuesHighlight implements LineStyleListener {
     }
     token = scanner.nextToken();
     while ( token != EOF ) {
-      if ( token == OTHER ) {
-        // do nothing
-      } else if ( ( token == WHITE ) && ( !styles.isEmpty() ) ) {
-        int start = scanner.getStartOffset() + event.lineOffset;
-        lastStyle = styles.lastElement();
-        if ( lastStyle.fontStyle != SWT.NORMAL ) {
-          if ( lastStyle.start + lastStyle.length == start ) {
-            // have the white space take on the style before it to minimize font style
-            // changes
-            lastStyle.length += scanner.getLength();
+      if ( token != OTHER ) {
+        if ( ( token == WHITE ) && ( !styles.isEmpty() ) ) {
+          int start = scanner.getStartOffset() + event.lineOffset;
+          lastStyle = styles.lastElement();
+          if ( lastStyle.fontStyle != SWT.NORMAL ) {
+            if ( lastStyle.start + lastStyle.length == start ) {
+              // have the white space take on the style before it to minimize font style
+              // changes
+              lastStyle.length += scanner.getLength();
+            }
           }
-        }
-      } else {
-        Color color = getColor( token );
-        if ( color != colors[0] ) { // hardcoded default foreground color, black
-          StyleRange style =
+        } else {
+          Color color = getColor( token );
+          if ( color != colors[0] ) { // hardcoded default foreground color, black
+            StyleRange style =
               new StyleRange( scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null );
-          if ( token == KEY ) {
+            // if ( token == KEY ) {
             // style.fontStyle = SWT.BOLD;
-          }
-          if ( styles.isEmpty() ) {
-            styles.addElement( style );
-          } else {
-            lastStyle = styles.lastElement();
-            if ( lastStyle.similarTo( style ) && ( lastStyle.start + lastStyle.length == style.start ) ) {
-              lastStyle.length += style.length;
-            } else {
+            // }
+            if ( styles.isEmpty() ) {
               styles.addElement( style );
+            } else {
+              lastStyle = styles.lastElement();
+              if ( lastStyle.similarTo( style ) && ( lastStyle.start + lastStyle.length == style.start ) ) {
+                lastStyle.length += style.length;
+              } else {
+                styles.addElement( style );
+              }
             }
           }
         }
@@ -260,8 +260,9 @@ public class SOQLValuesHighlight implements LineStyleListener {
 
     };
 
-    private String[] fgKeywords = { "select", "from", "where", "and", "or", "with", "group", "having", "order", "by",
-      "asc", "desc", "nulls", "first", "last", "limit", "rollup", "cube", "true", "false" };
+    private String[] fgKeywords = {
+      "select", "from", "where", "and", "or", "with", "group", "having", "order", "by", "asc", "desc", "nulls",
+      "first", "last", "limit", "rollup", "cube", "true", "false" };
 
     public JavaScanner() {
       initialize();

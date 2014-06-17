@@ -22,19 +22,17 @@
 
 package org.pentaho.di.www;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
-import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.binary.Base64;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
+import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
@@ -47,7 +45,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepStatus;
 
 public class GetTransStatusServlet extends BaseHttpServlet implements CartePluginInterface {
-  private static Class<?> PKG = GetTransStatusServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetTransStatusServlet.class; // for i18n purposes, needed by Translator2!!
 
   private static final long serialVersionUID = 3634806745372015720L;
   public static final String CONTEXT_PATH = "/kettle/transStatus";
@@ -59,7 +57,8 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
     super( transformationMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -113,8 +112,8 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
       String status = trans.getStatus();
       int lastLineNr = KettleLogStore.getLastBufferLineNr();
       String logText =
-          KettleLogStore.getAppender().getBuffer( trans.getLogChannel().getLogChannelId(), false, startLineNr,
-              lastLineNr ).toString();
+        KettleLogStore.getAppender().getBuffer(
+          trans.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr ).toString();
 
       if ( useXML ) {
         response.setContentType( "text/xml" );
@@ -135,13 +134,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
 
         // The log can be quite large at times, we are going to put a base64 encoding around a compressed stream
         // of bytes to handle this one.
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        GZIPOutputStream gzos = new GZIPOutputStream( baos );
-        gzos.write( logText.getBytes() );
-        gzos.close();
-
-        String loggingString = new String( Base64.encodeBase64( baos.toByteArray() ) );
+        String loggingString = HttpUtil.encodeBase64ZippedString( logText );
         transStatus.setLoggingString( loggingString );
 
         // Also set the result object...
@@ -164,21 +157,25 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
 
         out.println( "<HTML>" );
         out.println( "<HEAD>" );
-        out.println( "<TITLE>" + BaseMessages.getString( PKG, "TransStatusServlet.KettleTransStatus" ) + "</TITLE>" );
-        out.println( "<META http-equiv=\"Refresh\" content=\"10;url=" + convertContextPath( CONTEXT_PATH ) + "?name="
-            + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">" );
+        out.println( "<TITLE>"
+          + BaseMessages.getString( PKG, "TransStatusServlet.KettleTransStatus" ) + "</TITLE>" );
+        out.println( "<META http-equiv=\"Refresh\" content=\"10;url="
+          + convertContextPath( CONTEXT_PATH ) + "?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
+          + URLEncoder.encode( id, "UTF-8" ) + "\">" );
         out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
         out.println( "</HEAD>" );
         out.println( "<BODY>" );
         out.println( "<H1>"
-            + encoder.encodeForHTML( BaseMessages.getString( PKG, "TransStatusServlet.TopTransStatus", transName ) )
-            + "</H1>" );
+          + encoder
+            .encodeForHTML( BaseMessages.getString( PKG, "TransStatusServlet.TopTransStatus", transName ) )
+          + "</H1>" );
 
         try {
           out.println( "<table border=\"1\">" );
-          out.print( "<tr> <th>" + BaseMessages.getString( PKG, "TransStatusServlet.TransName" ) + "</th> <th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.CarteObjectId" ) + "</th> <th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.TransStatus" ) + "</th> </tr>" );
+          out.print( "<tr> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.TransName" ) + "</th> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.CarteObjectId" ) + "</th> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.TransStatus" ) + "</th> </tr>" );
 
           out.print( "<tr>" );
           out.print( "<td>" + encoder.encodeForHTML( transName ) + "</td>" );
@@ -197,48 +194,56 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
           Point max = trans.getTransMeta().getMaximum();
           max.x += 20;
           max.y += 20;
-          out.print( "<iframe height=\"" + max.y + "\" width=\"" + max.x + "\" seamless src=\""
-              + convertContextPath( GetTransImageServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\"></iframe>" );
+          out.print( "<iframe height=\""
+            + max.y + "\" width=\"" + max.x + "\" seamless src=\""
+            + convertContextPath( GetTransImageServlet.CONTEXT_PATH ) + "?name="
+            + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
+            + "\"></iframe>" );
           out.print( "<p>" );
 
           if ( ( trans.isFinished() && trans.isRunning() )
-              || ( !trans.isRunning() && !trans.isPreparing() && !trans.isInitializing() ) ) {
-            out.print( "<a href=\"" + convertContextPath( StartTransServlet.CONTEXT_PATH ) + "?name="
-                + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-                + BaseMessages.getString( PKG, "TransStatusServlet.StartTrans" ) + "</a>" );
+            || ( !trans.isRunning() && !trans.isPreparing() && !trans.isInitializing() ) ) {
+            out.print( "<a href=\""
+              + convertContextPath( StartTransServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
+              + BaseMessages.getString( PKG, "TransStatusServlet.StartTrans" ) + "</a>" );
             out.print( "<p>" );
-            out.print( "<a href=\"" + convertContextPath( PrepareExecutionTransServlet.CONTEXT_PATH ) + "?name="
-                + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-                + BaseMessages.getString( PKG, "TransStatusServlet.PrepareTrans" ) + "</a><br>" );
+            out.print( "<a href=\""
+              + convertContextPath( PrepareExecutionTransServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
+              + BaseMessages.getString( PKG, "TransStatusServlet.PrepareTrans" ) + "</a><br>" );
           } else if ( trans.isRunning() ) {
-            out.print( "<a href=\"" + convertContextPath( PauseTransServlet.CONTEXT_PATH ) + "?name="
-                + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-                + BaseMessages.getString( PKG, "PauseStatusServlet.PauseResumeTrans" ) + "</a><br>" );
-            out.print( "<a href=\"" + convertContextPath( StopTransServlet.CONTEXT_PATH ) + "?name="
-                + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-                + BaseMessages.getString( PKG, "TransStatusServlet.StopTrans" ) + "</a>" );
+            out.print( "<a href=\""
+              + convertContextPath( PauseTransServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
+              + BaseMessages.getString( PKG, "PauseStatusServlet.PauseResumeTrans" ) + "</a><br>" );
+            out.print( "<a href=\""
+              + convertContextPath( StopTransServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
+              + BaseMessages.getString( PKG, "TransStatusServlet.StopTrans" ) + "</a>" );
             out.print( "<p>" );
           }
-          out.print( "<a href=\"" + convertContextPath( CleanupTransServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-              + BaseMessages.getString( PKG, "TransStatusServlet.CleanupTrans" ) + "</a>" );
+          out.print( "<a href=\""
+            + convertContextPath( CleanupTransServlet.CONTEXT_PATH ) + "?name="
+            + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.CleanupTrans" ) + "</a>" );
           out.print( "<p>" );
 
           out.println( "<table border=\"1\">" );
-          out.print( "<tr> <th>" + BaseMessages.getString( PKG, "TransStatusServlet.Stepname" ) + "</th> <th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.CopyNr" ) + "</th> <th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.Read" ) + "</th> <th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.Written" ) + "</th> <th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.Input" ) + "</th> <th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.Output" ) + "</th> " + "<th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.Updated" ) + "</th> <th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.Rejected" ) + "</th> <th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.Errors" ) + "</th> <th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.Active" ) + "</th> <th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.Time" ) + "</th> " + "<th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.Speed" ) + "</th> <th>"
-              + BaseMessages.getString( PKG, "TransStatusServlet.prinout" ) + "</th> </tr>" );
+          out.print( "<tr> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.Stepname" ) + "</th> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.CopyNr" ) + "</th> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.Read" ) + "</th> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.Written" ) + "</th> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.Input" ) + "</th> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.Output" ) + "</th> " + "<th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.Updated" ) + "</th> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.Rejected" ) + "</th> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.Errors" ) + "</th> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.Active" ) + "</th> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.Time" ) + "</th> " + "<th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.Speed" ) + "</th> <th>"
+            + BaseMessages.getString( PKG, "TransStatusServlet.prinout" ) + "</th> </tr>" );
 
           for ( int i = 0; i < trans.nrSteps(); i++ ) {
             StepInterface step = trans.getRunThread( i );
@@ -248,11 +253,12 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
               if ( step.isRunning() && !step.isStopped() && !step.isPaused() ) {
                 snif = true;
                 String sniffLink =
-                    " <a href=\"" + convertContextPath( SniffStepServlet.CONTEXT_PATH ) + "?trans="
-                        + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
-                        + "&lines=50" + "&copynr=" + step.getCopy() + "&type=" + SniffStepServlet.TYPE_OUTPUT
-                        + "&step=" + URLEncoder.encode( step.getStepname(), "UTF-8" ) + "\">"
-                        + encoder.encodeForHTML( stepStatus.getStepname() ) + "</a>";
+                  " <a href=\""
+                    + convertContextPath( SniffStepServlet.CONTEXT_PATH ) + "?trans="
+                    + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
+                    + "&lines=50" + "&copynr=" + step.getCopy() + "&type=" + SniffStepServlet.TYPE_OUTPUT
+                    + "&step=" + URLEncoder.encode( step.getStepname(), "UTF-8" ) + "\">"
+                    + encoder.encodeForHTML( stepStatus.getStepname() ) + "</a>";
                 stepStatus.setStepname( sniffLink );
               }
 
@@ -262,19 +268,24 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
           out.println( "</table>" );
           out.println( "<p>" );
 
-          out.print( "<a href=\"" + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "&xml=y\">"
-              + BaseMessages.getString( PKG, "TransStatusServlet.ShowAsXml" ) + "</a><br>" );
-          out.print( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-              + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><br>" );
-          out.print( "<p><a href=\"" + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-              + BaseMessages.getString( PKG, "TransStatusServlet.Refresh" ) + "</a>" );
+          out.print( "<a href=\""
+            + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+            + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "&xml=y\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.ShowAsXml" ) + "</a><br>" );
+          out.print( "<a href=\""
+            + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><br>" );
+          out.print( "<p><a href=\""
+            + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+            + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.Refresh" ) + "</a>" );
 
           // Put the logging below that.
 
           out.println( "<p>" );
-          out.println( "<textarea id=\"translog\" cols=\"120\" rows=\"20\" wrap=\"off\" name=\"Transformation log\" readonly=\"readonly\">"
+          out
+            .println( "<textarea id=\"translog\" cols=\"120\" rows=\"20\" "
+              + "wrap=\"off\" name=\"Transformation log\" readonly=\"readonly\">"
               + encoder.encodeForHTML( logText ) + "</textarea>" );
 
           out.println( "<script type=\"text/javascript\"> " );
@@ -294,14 +305,15 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
       }
     } else {
       if ( useXML ) {
-        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString( PKG,
-            "TransStatusServlet.Log.CoundNotFindSpecTrans", transName ) ) );
+        out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
+          PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName ) ) );
       } else {
         out.println( "<H1>"
-            + encoder.encodeForHTML( BaseMessages
-                .getString( PKG, "TransStatusServlet.Log.CoundNotFindTrans", transName ) ) + "</H1>" );
-        out.println( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-            + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+          + encoder.encodeForHTML( BaseMessages.getString(
+            PKG, "TransStatusServlet.Log.CoundNotFindTrans", transName ) ) + "</H1>" );
+        out.println( "<a href=\""
+          + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
+          + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
       }
     }
   }

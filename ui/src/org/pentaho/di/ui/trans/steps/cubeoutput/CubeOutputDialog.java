@@ -50,7 +50,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = CubeOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CubeOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFilename;
   private Button wbFilename;
@@ -157,8 +157,8 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
     fdlDoNotOpenNewFileInit.right = new FormAttachment( middle, -margin );
     wlDoNotOpenNewFileInit.setLayoutData( fdlDoNotOpenNewFileInit );
     wDoNotOpenNewFileInit = new Button( shell, SWT.CHECK );
-    wDoNotOpenNewFileInit
-        .setToolTipText( BaseMessages.getString( PKG, "CubeOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
+    wDoNotOpenNewFileInit.setToolTipText( BaseMessages.getString(
+      PKG, "CubeOutputDialog.DoNotOpenNewFileInit.Tooltip" ) );
     props.setLook( wDoNotOpenNewFileInit );
     fdDoNotOpenNewFileInit = new FormData();
     fdDoNotOpenNewFileInit.left = new FormAttachment( middle, 0 );
@@ -237,7 +237,8 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
           BaseMessages.getString( PKG, "CubeOutputDialog.FilterNames.Options.CubeFiles" ),
           BaseMessages.getString( PKG, "CubeOutputDialog.FilterNames.Options.AllFiles" ) } );
         if ( dialog.open() != null ) {
-          wFilename.setText( dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName() );
+          wFilename.setText( dialog.getFilterPath()
+            + System.getProperty( "file.separator" ) + dialog.getFileName() );
         }
       }
     } );

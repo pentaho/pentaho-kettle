@@ -28,7 +28,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Send file to SFTP host.
- * 
+ *
  * @author Samatar Hassan
  * @since 30-April-2012
  */
@@ -45,9 +45,6 @@ public class SFTPPutData extends BaseStepData implements StepDataInterface {
   // index of remote filename
   public int indexOfRemoteFilename;
 
-  /**
-	 * 
-	 */
   public SFTPPutData() {
     super();
     this.indexOfSourceFileFieldName = -1;

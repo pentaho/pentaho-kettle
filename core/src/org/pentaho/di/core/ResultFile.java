@@ -35,12 +35,12 @@ import org.w3c.dom.Node;
 
 /**
  * This is a result file: a file as a result of the execution of a job entry, a transformation step, etc.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class ResultFile implements Cloneable {
-  private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!
 
   public static final int FILE_TYPE_GENERAL = 0;
   public static final int FILE_TYPE_LOG = 1;
@@ -50,7 +50,8 @@ public class ResultFile implements Cloneable {
 
   public static final String[] fileTypeCode = { "GENERAL", "LOG", "ERRORLINE", "ERROR", "WARNING" };
 
-  public static final String[] fileTypeDesc = { BaseMessages.getString( PKG, "ResultFile.FileType.General" ),
+  public static final String[] fileTypeDesc = {
+    BaseMessages.getString( PKG, "ResultFile.FileType.General" ),
     BaseMessages.getString( PKG, "ResultFile.FileType.Log" ),
     BaseMessages.getString( PKG, "ResultFile.FileType.ErrorLine" ),
     BaseMessages.getString( PKG, "ResultFile.FileType.Error" ),
@@ -66,7 +67,7 @@ public class ResultFile implements Cloneable {
 
   /**
    * Construct a new result file
-   * 
+   *
    * @param type
    *          The type of file : FILE_TYPE_GENERAL, ...
    * @param file
@@ -86,8 +87,9 @@ public class ResultFile implements Cloneable {
 
   @Override
   public String toString() {
-    return file.toString() + " - " + getTypeDesc() + " - " + XMLHandler.date2string( timestamp )
-        + ( origin == null ? "" : " - " + origin ) + ( originParent == null ? "" : " - " + originParent );
+    return file.toString()
+      + " - " + getTypeDesc() + " - " + XMLHandler.date2string( timestamp )
+      + ( origin == null ? "" : " - " + origin ) + ( originParent == null ? "" : " - " + originParent );
 
   }
 
@@ -184,7 +186,7 @@ public class ResultFile implements Cloneable {
 
   /**
    * Search for the result file type, looking in both the descriptions (i18n depending) and the codes
-   * 
+   *
    * @param typeString
    *          the type string to search for
    * @return the result file type

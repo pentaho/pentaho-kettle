@@ -35,14 +35,14 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 
 /**
  * This wizard helps you extract information from tables in one database and pump it into another.
- * 
+ *
  * @since 17-apr-04
  * @author Matt
- * 
+ *
  */
 public class RipDatabaseWizard implements IWizard {
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Rid database wizard",
-      LoggingObjectType.SPOON, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+    "Rid database wizard", LoggingObjectType.SPOON, null );
 
   public RipDatabaseWizard() {
     super();

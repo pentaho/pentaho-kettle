@@ -61,17 +61,18 @@ import com.sun.syndication.io.SyndFeedOutput;
 
 /**
  * Output rows to RSS feed and create a file.
- * 
+ *
  * @author Samatar
  * @since 6-nov-2007
  */
 public class RssOutput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = RssOutput.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RssOutput.class; // for i18n purposes, needed by Translator2!!
 
   private RssOutputMeta meta;
   private RssOutputData data;
 
-  public RssOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public RssOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -81,15 +82,16 @@ public class RssOutput extends BaseStep implements StepInterface {
 
     Object[] r = getRow(); // this also waits for a previous step to be finished.
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       if ( !first ) {
         if ( !meta.isCustomRss() ) {
           // No more input..so write and close the file.
-          WriteToFile( data.channeltitlevalue, data.channellinkvalue, data.channeldescriptionvalue,
-              data.channelpubdatevalue, data.channelcopyrightvalue, data.channelimagelinkvalue,
-              data.channelimagedescriptionvalue, data.channelimagelinkvalue, data.channelimageurlvalue,
-              data.channellanguagevalue, data.channelauthorvalue );
+          WriteToFile(
+            data.channeltitlevalue, data.channellinkvalue, data.channeldescriptionvalue,
+            data.channelpubdatevalue, data.channelcopyrightvalue, data.channelimagelinkvalue,
+            data.channelimagedescriptionvalue, data.channelimagelinkvalue, data.channelimageurlvalue,
+            data.channellanguagevalue, data.channelauthorvalue );
         } else {
 
           // Write to document
@@ -106,6 +108,7 @@ public class RssOutput extends BaseStep implements StepInterface {
             writer.write( data.document );
             writer.close();
           } catch ( Exception e ) {
+            // Ignore errors
           } finally {
             data.document = null;
           }
@@ -137,7 +140,7 @@ public class RssOutput extends BaseStep implements StepInterface {
           // The field is unreachable !
           logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getFileNameField() ) );
           throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-              .getFileNameField() ) );
+            .getFileNameField() ) );
         }
 
       } else {
@@ -159,21 +162,21 @@ public class RssOutput extends BaseStep implements StepInterface {
           parentfolder = KettleVFS.getFileObject( data.filename, getTransMeta() ).getParent();
           if ( !parentfolder.exists() ) {
             if ( log.isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "RssOutput.Log.ParentFolderExists", parentfolder.getName()
-                  .toString() ) );
+              logDetailed( BaseMessages.getString( PKG, "RssOutput.Log.ParentFolderExists", parentfolder
+                .getName().toString() ) );
             }
             parentfolder.createFolder();
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "RssOutput.Log.CanNotCreateParentFolder", parentfolder
-                  .getName().toString() ) );
+                .getName().toString() ) );
             }
           }
         } catch ( Exception e ) {
           // The field is unreachable !
-          logError( BaseMessages.getString( PKG, "RssOutput.Log.CanNotCreateParentFolder", parentfolder.getName()
-              .toString() ) );
-          throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.CanNotCreateParentFolder",
-              parentfolder.getName().toString() ) );
+          logError( BaseMessages.getString( PKG, "RssOutput.Log.CanNotCreateParentFolder", parentfolder
+            .getName().toString() ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "RssOutput.Log.CanNotCreateParentFolder", parentfolder.getName().toString() ) );
 
         } finally {
           if ( parentfolder != null ) {
@@ -212,7 +215,7 @@ public class RssOutput extends BaseStep implements StepInterface {
           // The field is unreachable !
           logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getChannelTitle() ) );
           throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-              .getChannelTitle() ) );
+            .getChannelTitle() ) );
         }
         data.channeltitlevalue = data.inputRowMeta.getString( r, data.indexOfFieldchanneltitle );
 
@@ -222,7 +225,7 @@ public class RssOutput extends BaseStep implements StepInterface {
           // The field is unreachable !
           logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getChannelDescription() ) );
           throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-              .getChannelDescription() ) );
+            .getChannelDescription() ) );
         }
 
         data.channeldescriptionvalue = data.inputRowMeta.getString( r, data.indexOfFieldchanneldescription );
@@ -233,7 +236,7 @@ public class RssOutput extends BaseStep implements StepInterface {
           // The field is unreachable !
           logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getChannelLink() ) );
           throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-              .getChannelLink() ) );
+            .getChannelLink() ) );
         }
 
         data.channellinkvalue = data.inputRowMeta.getString( r, data.indexOfFieldchannellink );
@@ -245,7 +248,7 @@ public class RssOutput extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getItemTitle() ) );
             throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                .getItemTitle() ) );
+              .getItemTitle() ) );
           }
         }
 
@@ -256,7 +259,7 @@ public class RssOutput extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getItemDescription() ) );
             throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                .getItemDescription() ) );
+              .getItemDescription() ) );
           }
         }
         if ( meta.AddGeoRSS() ) {
@@ -273,7 +276,7 @@ public class RssOutput extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getGeoPointLat() ) );
             throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                .getGeoPointLat() ) );
+              .getGeoPointLat() ) );
           }
           // Let's take the index of item geopointY field ...
           data.indexOfFielditempointy = data.inputRowMeta.indexOfValue( meta.getGeoPointLong() );
@@ -281,7 +284,7 @@ public class RssOutput extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getGeoPointLong() ) );
             throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                .getGeoPointLong() ) );
+              .getGeoPointLong() ) );
           }
         }
 
@@ -293,7 +296,7 @@ public class RssOutput extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getChannelPubDate() ) );
             throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                .getChannelPubDate() ) );
+              .getChannelPubDate() ) );
           }
 
           data.channelpubdatevalue = data.inputRowMeta.getDate( r, data.indexOfFieldchannelpubdate );
@@ -305,7 +308,7 @@ public class RssOutput extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getChannelLanguage() ) );
             throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                .getChannelLanguage() ) );
+              .getChannelLanguage() ) );
           }
 
           data.channellanguagevalue = data.inputRowMeta.getString( r, data.indexOfFieldchannellanguage );
@@ -318,7 +321,7 @@ public class RssOutput extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getChannelCopyright() ) );
             throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                .getChannelCopyright() ) );
+              .getChannelCopyright() ) );
           }
 
           data.channelcopyrightvalue = data.inputRowMeta.getString( r, data.indexOfFieldchannelcopyright );
@@ -331,7 +334,7 @@ public class RssOutput extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getChannelAuthor() ) );
             throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                .getChannelAuthor() ) );
+              .getChannelAuthor() ) );
           }
 
           data.channelauthorvalue = data.inputRowMeta.getString( r, data.indexOfFieldchannelauthor );
@@ -344,9 +347,10 @@ public class RssOutput extends BaseStep implements StepInterface {
             data.indexOfFieldchannelimagetitle = data.inputRowMeta.indexOfValue( meta.getChannelImageTitle() );
             if ( data.indexOfFieldchannelimagetitle < 0 ) {
               // The field is unreachable !
-              logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getChannelImageTitle() ) );
+              logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
+                .getChannelImageTitle() ) );
               throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                  .getChannelImageTitle() ) );
+                .getChannelImageTitle() ) );
             }
 
             data.channelimagetitlevalue = data.inputRowMeta.getString( r, data.indexOfFieldchannelimagetitle );
@@ -357,9 +361,10 @@ public class RssOutput extends BaseStep implements StepInterface {
             data.indexOfFieldchannelimagelink = data.inputRowMeta.indexOfValue( meta.getChannelImageLink() );
             if ( data.indexOfFieldchannelimagelink < 0 ) {
               // The field is unreachable !
-              logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getChannelImageLink() ) );
+              logError( BaseMessages
+                .getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getChannelImageLink() ) );
               throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                  .getChannelImageLink() ) );
+                .getChannelImageLink() ) );
             }
 
             data.channelimagelinkvalue = data.inputRowMeta.getString( r, data.indexOfFieldchannelimagelink );
@@ -372,7 +377,7 @@ public class RssOutput extends BaseStep implements StepInterface {
               // The field is unreachable !
               logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getChannelImageUrl() ) );
               throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                  .getChannelImageUrl() ) );
+                .getChannelImageUrl() ) );
             }
 
             data.channelimageurlvalue = data.inputRowMeta.getString( r, data.indexOfFieldchannelimageurl );
@@ -381,17 +386,17 @@ public class RssOutput extends BaseStep implements StepInterface {
           // Channel description title
           if ( !Const.isEmpty( meta.getChannelImageDescription() ) ) {
             data.indexOfFieldchannelimagedescription =
-                data.inputRowMeta.indexOfValue( meta.getChannelImageDescription() );
+              data.inputRowMeta.indexOfValue( meta.getChannelImageDescription() );
             if ( data.indexOfFieldchannelimagedescription < 0 ) {
               // The field is unreachable !
               logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                  .getChannelImageDescription() ) );
+                .getChannelImageDescription() ) );
               throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                  .getChannelImageDescription() ) );
+                .getChannelImageDescription() ) );
             }
 
             data.channelimagedescriptionvalue =
-                data.inputRowMeta.getString( r, data.indexOfFieldchannelimagedescription );
+              data.inputRowMeta.getString( r, data.indexOfFieldchannelimagedescription );
           }
 
         }
@@ -403,7 +408,7 @@ public class RssOutput extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getItemLink() ) );
             throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                .getItemLink() ) );
+              .getItemLink() ) );
           }
 
         }
@@ -415,7 +420,7 @@ public class RssOutput extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getItemPubDate() ) );
             throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                .getItemPubDate() ) );
+              .getItemPubDate() ) );
           }
         }
 
@@ -426,7 +431,7 @@ public class RssOutput extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta.getItemAuthor() ) );
             throw new KettleException( BaseMessages.getString( PKG, "RssOutput.Log.ErrorFindingField", meta
-                .getItemAuthor() ) );
+              .getItemAuthor() ) );
           }
         }
       } else {
@@ -435,20 +440,20 @@ public class RssOutput extends BaseStep implements StepInterface {
         data.customchannels = new int[meta.getChannelCustomFields().length];
         for ( int i = 0; i < meta.getChannelCustomFields().length; i++ ) {
           data.customchannels[i] = data.inputRowMeta.indexOfValue( meta.getChannelCustomFields()[i] );
-          if ( data.customchannels[i] < 0 ) // couldn't find field!
-          {
+          if ( data.customchannels[i] < 0 ) { // couldn't find field!
+
             throw new KettleStepException( BaseMessages.getString( PKG, "RssOutput.Exception.FieldRequired", meta
-                .getChannelCustomFields()[i] ) );
+              .getChannelCustomFields()[i] ) );
           }
         }
         // Check Custom channel fields
         data.customitems = new int[meta.getItemCustomFields().length];
         for ( int i = 0; i < meta.getItemCustomFields().length; i++ ) {
           data.customitems[i] = data.inputRowMeta.indexOfValue( meta.getItemCustomFields()[i] );
-          if ( data.customitems[i] < 0 ) // couldn't find field!
-          {
+          if ( data.customitems[i] < 0 ) { // couldn't find field!
+
             throw new KettleStepException( BaseMessages.getString( PKG, "RssOutput.Exception.FieldRequired", meta
-                .getItemCustomFields()[i] ) );
+              .getItemCustomFields()[i] ) );
           }
         }
         // Prepare Output RSS Custom document
@@ -457,8 +462,9 @@ public class RssOutput extends BaseStep implements StepInterface {
         data.rssElement.addAttribute( "version", "2.0" );
         // add namespaces here ...
         for ( int i = 0; i < meta.getNameSpaces().length; i++ ) {
-          data.rssElement.addNamespace( environmentSubstitute( meta.getNameSpacesTitle()[i] ),
-              environmentSubstitute( meta.getNameSpaces()[i] ) );
+          data.rssElement.addNamespace(
+            environmentSubstitute( meta.getNameSpacesTitle()[i] ),
+            environmentSubstitute( meta.getNameSpaces()[i] ) );
         }
 
         // Add channel
@@ -470,7 +476,8 @@ public class RssOutput extends BaseStep implements StepInterface {
           String channelvalue = data.inputRowMeta.getString( r, data.customchannels[i] );
 
           if ( log.isDetailed() ) {
-            logDetailed( "outputting channel value <" + channelname + ">" + channelvalue + "<" + channelname + "/>" );
+            logDetailed( "outputting channel value <"
+              + channelname + ">" + channelvalue + "<" + channelname + "/>" );
           }
 
           // add Channel
@@ -514,8 +521,9 @@ public class RssOutput extends BaseStep implements StepInterface {
       }
 
       // Now add entry ..
-      if ( !createEntry( itemauthorvalue, itemtitlevalue, itemlinkvalue, itemdatevalue, itemdescvalue, itemgeopointx,
-          itemgeopointy ) ) {
+      if ( !createEntry(
+        itemauthorvalue, itemtitlevalue, itemlinkvalue, itemdatevalue, itemdescvalue, itemgeopointx,
+        itemgeopointy ) ) {
         throw new KettleException( "Error adding item to feed" );
       }
     } else {
@@ -583,8 +591,8 @@ public class RssOutput extends BaseStep implements StepInterface {
    *          : The event's description
    */
   @SuppressWarnings( "unchecked" )
-  public boolean createEntry( String author, String title, String link, Date date, String desc, String geopointLat,
-      String geopointLong ) {
+  public boolean createEntry( String author, String title, String link, Date date, String desc,
+    String geopointLat, String geopointLong ) {
     boolean retval = false;
     try {
       // Add entry to the feed
@@ -616,8 +624,8 @@ public class RssOutput extends BaseStep implements StepInterface {
         if ( meta.useGeoRSSGML() ) {
           geoRSSModule = new W3CGeoModuleImpl();
         }
-        geoRSSModule.setPosition( new Position( Const.toDouble( geopointLat.replace( ',', '.' ), 0 ), Const.toDouble(
-            geopointLong.replace( ',', '.' ), 0 ) ) );
+        geoRSSModule.setPosition( new Position( Const.toDouble( geopointLat.replace( ',', '.' ), 0 ), Const
+          .toDouble( geopointLong.replace( ',', '.' ), 0 ) ) );
         entry.getModules().add( geoRSSModule );
       }
 
@@ -633,7 +641,7 @@ public class RssOutput extends BaseStep implements StepInterface {
   }
 
   private boolean WriteToFile( String title, String link, String description, Date Pubdate, String copyright,
-      String imageTitle, String imageDescription, String imageLink, String imageUrl, String language, String author ) {
+    String imageTitle, String imageDescription, String imageLink, String imageUrl, String language, String author ) {
     boolean retval = false;
     try {
       // Specify Filename
@@ -664,7 +672,7 @@ public class RssOutput extends BaseStep implements StepInterface {
         data.feed.setDescription( description );
       }
       if ( Pubdate != null ) {
-        data.feed.setPublishedDate( Pubdate );// data.dateParser.parse(Pubdate.toString()));
+        data.feed.setPublishedDate( Pubdate ); // data.dateParser.parse(Pubdate.toString()));
       }
       // Set image ..
       if ( meta.AddImage() ) {
@@ -704,8 +712,9 @@ public class RssOutput extends BaseStep implements StepInterface {
       if ( meta.AddToResult() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileName, getTransMeta() ),
-                getTransMeta().getName(), getStepname() );
+          new ResultFile(
+            ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( fileName, getTransMeta() ), getTransMeta()
+              .getName(), getStepname() );
         resultFile.setComment( "This file was created with a RSS Output step" );
         addResultFile( resultFile );
       }

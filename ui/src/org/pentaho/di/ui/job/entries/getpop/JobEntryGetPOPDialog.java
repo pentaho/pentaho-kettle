@@ -1,3 +1,4 @@
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -23,11 +24,11 @@
 package org.pentaho.di.ui.job.entries.getpop;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import javax.mail.Folder;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -59,7 +60,6 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.getpop.JobEntryGetPOP;
@@ -68,6 +68,7 @@ import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -77,12 +78,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Get POP job entry settings.
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
 
@@ -579,10 +580,9 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wPassword.getTextWidget().addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        checkPasswordVisible();
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
       }
     } );
 
@@ -830,8 +830,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
     // different folder for attachment?
     wlDifferentFolderForAttachment = new Label( wTargetFolder, SWT.RIGHT );
-    wlDifferentFolderForAttachment.setText( BaseMessages.getString( PKG,
-        "JobGetPOP.DifferentFolderForAttachmentMails.Label" ) );
+    wlDifferentFolderForAttachment.setText( BaseMessages.getString(
+      PKG, "JobGetPOP.DifferentFolderForAttachmentMails.Label" ) );
     props.setLook( wlDifferentFolderForAttachment );
     fdlDifferentFolderForAttachment = new FormData();
     fdlDifferentFolderForAttachment.left = new FormAttachment( 0, 0 );
@@ -841,8 +841,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wDifferentFolderForAttachment = new Button( wTargetFolder, SWT.CHECK );
     props.setLook( wDifferentFolderForAttachment );
     fdDifferentFolderForAttachment = new FormData();
-    wDifferentFolderForAttachment.setToolTipText( BaseMessages.getString( PKG,
-        "JobGetPOP.DifferentFolderForAttachmentMails.Tooltip" ) );
+    wDifferentFolderForAttachment.setToolTipText( BaseMessages.getString(
+      PKG, "JobGetPOP.DifferentFolderForAttachmentMails.Tooltip" ) );
     fdDifferentFolderForAttachment.left = new FormAttachment( middle, 0 );
     fdDifferentFolderForAttachment.top = new FormAttachment( wGetAttachment, margin );
     fdDifferentFolderForAttachment.right = new FormAttachment( 100, 0 );
@@ -1024,7 +1024,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wlListmails.setLayoutData( fdlListmails );
     wListmails = new CCombo( wPOP3Settings, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
     wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveAllMails.Label" ) );
-    wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveUnreadMails.Label" ) );
+    // PDI-7241 POP3 does not support retrive unread
+    // wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveUnreadMails.Label" ) );
     wListmails.add( BaseMessages.getString( PKG, "JobGetPOP.RetrieveFirstMails.Label" ) );
     wListmails.select( 0 ); // +1: starts at -1
 
@@ -1247,8 +1248,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wSelectMoveToFolder.setText( BaseMessages.getString( PKG, "JobGetPOP.SelectMoveToFolderConnection.Label" ) );
     props.setLook( wSelectMoveToFolder );
     fdSelectMoveToFolder = new FormData();
-    wSelectMoveToFolder
-        .setToolTipText( BaseMessages.getString( PKG, "JobGetPOP.SelectMoveToFolderConnection.Tooltip" ) );
+    wSelectMoveToFolder.setToolTipText( BaseMessages.getString(
+      PKG, "JobGetPOP.SelectMoveToFolderConnection.Tooltip" ) );
     fdSelectMoveToFolder.top = new FormAttachment( wAfterGetIMAP, margin );
     fdSelectMoveToFolder.right = new FormAttachment( 100, 0 );
     wSelectMoveToFolder.setLayoutData( fdSelectMoveToFolder );
@@ -1258,7 +1259,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wTestMoveToFolder.setText( BaseMessages.getString( PKG, "JobGetPOP.TestMoveToFolderConnection.Label" ) );
     props.setLook( wTestMoveToFolder );
     fdTestMoveToFolder = new FormData();
-    wTestMoveToFolder.setToolTipText( BaseMessages.getString( PKG, "JobGetPOP.TestMoveToFolderConnection.Tooltip" ) );
+    wTestMoveToFolder
+      .setToolTipText( BaseMessages.getString( PKG, "JobGetPOP.TestMoveToFolderConnection.Tooltip" ) );
     fdTestMoveToFolder.top = new FormAttachment( wAfterGetIMAP, margin );
     fdTestMoveToFolder.right = new FormAttachment( wSelectMoveToFolder, -margin );
     wTestMoveToFolder.setLayoutData( fdTestMoveToFolder );
@@ -1285,7 +1287,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wcreateMoveToFolder = new Button( wIMAPSettings, SWT.CHECK );
     props.setLook( wcreateMoveToFolder );
     fdcreateMoveToFolder = new FormData();
-    wcreateMoveToFolder.setToolTipText( BaseMessages.getString( PKG, "JobGetPOP.createMoveToFolderMails.Tooltip" ) );
+    wcreateMoveToFolder
+      .setToolTipText( BaseMessages.getString( PKG, "JobGetPOP.createMoveToFolderMails.Tooltip" ) );
     fdcreateMoveToFolder.left = new FormAttachment( middle, 0 );
     fdcreateMoveToFolder.top = new FormAttachment( wMoveToFolder, margin );
     fdcreateMoveToFolder.right = new FormAttachment( 100, 0 );
@@ -1785,9 +1788,10 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
       String realproxyuser = jobMeta.environmentSubstitute( wProxyUsername.getText() );
       try {
         mailConn =
-            new MailConnection( LogChannel.UI, MailConnectionMeta.getProtocolFromString( wProtocol.getText(),
-                MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realuser, realpass, wUseSSL.getSelection(),
-                wUseProxy.getSelection(), realproxyuser );
+          new MailConnection(
+            LogChannel.UI, MailConnectionMeta.getProtocolFromString(
+              wProtocol.getText(), MailConnectionMeta.PROTOCOL_IMAP ), realserver, realport, realuser,
+            realpass, wUseSSL.getSelection(), wUseProxy.getSelection(), realproxyuser );
         mailConn.connect();
 
         retval = true;
@@ -1799,7 +1803,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     if ( !retval ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobGetPOP.Connected.NOK.ConnectionBad", wServerName.getText() )
-          + Const.CR + Const.NVL( errordescription, "" ) );
+        + Const.CR + Const.NVL( errordescription, "" ) );
       mb.setText( BaseMessages.getString( PKG, "JobGetPOP.Connected.Title.Bad" ) );
       mb.open();
     }
@@ -1827,7 +1831,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
           input.setText( foldername );
         }
       } catch ( Exception e ) {
-
+        // Ignore errors
       }
     }
   }
@@ -1844,7 +1848,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
         } else {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
           mb.setMessage( BaseMessages.getString( PKG, "JobGetPOP.Connected.NOK.IMAPFolderExists", foldername )
-              + Const.CR );
+            + Const.CR );
           mb.setText( BaseMessages.getString( PKG, "JobGetPOP.IMAPFolderExists.Title.Bad" ) );
           mb.open();
         }
@@ -1865,9 +1869,11 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
   private void conditionReceivedDate() {
     boolean activeReceivedDate =
-        !( MailConnectionMeta.getConditionDateByDesc( wConditionOnReceivedDate.getText() ) == MailConnectionMeta.CONDITION_DATE_IGNORE );
+      !( MailConnectionMeta.getConditionDateByDesc( wConditionOnReceivedDate.getText() )
+      == MailConnectionMeta.CONDITION_DATE_IGNORE );
     boolean useBetween =
-        ( MailConnectionMeta.getConditionDateByDesc( wConditionOnReceivedDate.getText() ) == MailConnectionMeta.CONDITION_DATE_BETWEEN );
+      ( MailConnectionMeta.getConditionDateByDesc( wConditionOnReceivedDate.getText() )
+      == MailConnectionMeta.CONDITION_DATE_BETWEEN );
     wlReadFrom.setVisible( activeReceivedDate );
     wReadFrom.setVisible( activeReceivedDate );
     open.setVisible( activeReceivedDate );
@@ -1883,10 +1889,11 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
   private void activeAttachmentFolder() {
     boolean getmessages =
-        MailConnectionMeta.getActionTypeByDesc( wActionType.getText() ) == MailConnectionMeta.ACTION_TYPE_GET;
+      MailConnectionMeta.getActionTypeByDesc( wActionType.getText() ) == MailConnectionMeta.ACTION_TYPE_GET;
     wlDifferentFolderForAttachment.setEnabled( getmessages && wGetAttachment.getSelection() );
     wDifferentFolderForAttachment.setEnabled( getmessages && wGetAttachment.getSelection() );
-    boolean activeattachmentfolder = ( wGetAttachment.getSelection() && wDifferentFolderForAttachment.getSelection() );
+    boolean activeattachmentfolder =
+      ( wGetAttachment.getSelection() && wDifferentFolderForAttachment.getSelection() );
     wlAttachmentFolder.setEnabled( getmessages && activeattachmentfolder );
     wAttachmentFolder.setEnabled( getmessages && activeattachmentfolder );
     wbAttachmentFolder.setEnabled( getmessages && activeattachmentfolder );
@@ -1900,7 +1907,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
       if ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) ) {
         if ( wUseSSL.getSelection() ) {
           if ( Const.isEmpty( wPort.getText() )
-              || wPort.getText().equals( "" + MailConnectionMeta.DEFAULT_SSL_IMAP_PORT ) ) {
+            || wPort.getText().equals( "" + MailConnectionMeta.DEFAULT_SSL_IMAP_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_SSL_POP3_PORT );
           }
         } else {
@@ -1911,7 +1918,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
       } else {
         if ( wUseSSL.getSelection() ) {
           if ( Const.isEmpty( wPort.getText() )
-              || wPort.getText().equals( "" + MailConnectionMeta.DEFAULT_SSL_POP3_PORT ) ) {
+            || wPort.getText().equals( "" + MailConnectionMeta.DEFAULT_SSL_POP3_PORT ) ) {
             wPort.setText( "" + MailConnectionMeta.DEFAULT_SSL_IMAP_PORT );
           }
         } else {
@@ -1964,11 +1971,11 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
   private void checkUnavailableMode() {
     if ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 )
-        && MailConnectionMeta.getActionTypeByDesc( wActionType.getText() ) == MailConnectionMeta.ACTION_TYPE_MOVE ) {
+      && MailConnectionMeta.getActionTypeByDesc( wActionType.getText() ) == MailConnectionMeta.ACTION_TYPE_MOVE ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( "This action is not available for POP3!" + Const.CR
-          + "Only one Folder (INBOX) is available in POP3." + Const.CR
-          + "If you want to move messages to another folder," + Const.CR + "please use IMAP protocol." );
+      mb.setMessage( "This action is not available for POP3!"
+        + Const.CR + "Only one Folder (INBOX) is available in POP3." + Const.CR
+        + "If you want to move messages to another folder," + Const.CR + "please use IMAP protocol." );
       mb.setText( "ERROR" );
       mb.open();
       wActionType.setText( MailConnectionMeta.getActionTypeDesc( MailConnectionMeta.ACTION_TYPE_GET ) );
@@ -1982,7 +1989,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     }
 
     boolean getmessages =
-        MailConnectionMeta.getActionTypeByDesc( wActionType.getText() ) == MailConnectionMeta.ACTION_TYPE_GET;
+      MailConnectionMeta.getActionTypeByDesc( wActionType.getText() ) == MailConnectionMeta.ACTION_TYPE_GET;
 
     wlOutputDirectory.setEnabled( getmessages );
     wOutputDirectory.setEnabled( getmessages );
@@ -2000,17 +2007,19 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wlGetMessage.setEnabled( getmessages );
     wGetMessage.setEnabled( getmessages );
 
-    wlAfterGetIMAP.setEnabled( getmessages && wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_IMAP ) );
-    wAfterGetIMAP.setEnabled( getmessages && wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_IMAP ) );
+    wlAfterGetIMAP
+      .setEnabled( getmessages && wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_IMAP ) );
+    wAfterGetIMAP
+      .setEnabled( getmessages && wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_IMAP ) );
 
     setAfterIMAPRetrived();
   }
 
   private void setAfterIMAPRetrived() {
     boolean activeMoveToFolfer =
-        ( ( ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_IMAP ) ) && ( MailConnectionMeta
-            .getActionTypeByDesc( wActionType.getText() ) == MailConnectionMeta.ACTION_TYPE_MOVE ) ) || ( MailConnectionMeta
-            .getAfterGetIMAPByDesc( wAfterGetIMAP.getText() ) == MailConnectionMeta.AFTER_GET_IMAP_MOVE ) );
+      ( ( ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_IMAP ) ) && ( MailConnectionMeta
+        .getActionTypeByDesc( wActionType.getText() ) == MailConnectionMeta.ACTION_TYPE_MOVE ) ) || ( MailConnectionMeta
+        .getAfterGetIMAPByDesc( wAfterGetIMAP.getText() ) == MailConnectionMeta.AFTER_GET_IMAP_MOVE ) );
     wlMoveToFolder.setEnabled( activeMoveToFolfer );
     wMoveToFolder.setEnabled( activeMoveToFolfer );
     wTestMoveToFolder.setEnabled( activeMoveToFolfer );
@@ -2019,20 +2028,9 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     wcreateMoveToFolder.setEnabled( activeMoveToFolfer );
   }
 
-  public void checkPasswordVisible() {
-    String password = wPassword.getText();
-    java.util.List<String> list = new ArrayList<String>();
-    StringUtil.getUsedVariables( password, list, true );
-    if ( list.size() == 0 ) {
-      wPassword.setEchoChar( '*' );
-    } else {
-      wPassword.setEchoChar( '\0' ); // Show it all...
-    }
-  }
-
   public void chooseListMails() {
     boolean ok =
-        ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListmails.getSelectionIndex() == 2 );
+      ( wProtocol.getText().equals( MailConnectionMeta.PROTOCOL_STRING_POP3 ) && wListmails.getSelectionIndex() == 1 );
     wlFirstmails.setEnabled( ok );
     wFirstmails.setEnabled( ok );
   }
@@ -2082,8 +2080,18 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     if ( jobEntry.getAttachmentWildcard() != null ) {
       wAttachmentWildcard.setText( jobEntry.getAttachmentWildcard() );
     }
-    if ( jobEntry.getRetrievemails() >= 0 ) {
-      wListmails.select( jobEntry.getRetrievemails() );
+
+    String protocol = jobEntry.getProtocol();
+    boolean isPop3 = StringUtils.equals( protocol, MailConnectionMeta.PROTOCOL_STRING_POP3 );
+    wProtocol.setText( protocol );
+    int i = jobEntry.getRetrievemails();
+
+    if ( i > 0 ) {
+      if ( isPop3 ) {
+        wListmails.select( i - 1 );
+      } else {
+        wListmails.select( i );
+      }
     } else {
       wListmails.select( 0 ); // Retrieve All Mails
     }
@@ -2093,7 +2101,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     }
 
     wDelete.setSelection( jobEntry.getDelete() );
-    wProtocol.setText( jobEntry.getProtocol() );
     wIMAPListmails.setText( MailConnectionMeta.getValueImapListDesc( jobEntry.getValueImapList() ) );
     if ( jobEntry.getIMAPFolder() != null ) {
       wIMAPFolder.setText( jobEntry.getIMAPFolder() );
@@ -2115,7 +2122,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
       wBody.setText( jobEntry.getBodySearch() );
     }
     wNegateBody.setSelection( jobEntry.isNotTermBodySearch() );
-    wConditionOnReceivedDate.setText( MailConnectionMeta.getConditionDateDesc( jobEntry.getConditionOnReceivedDate() ) );
+    wConditionOnReceivedDate.setText( MailConnectionMeta.getConditionDateDesc( jobEntry
+      .getConditionOnReceivedDate() ) );
     wNegateReceivedDate.setSelection( jobEntry.isNotTermReceivedDateSearch() );
     if ( jobEntry.getReceivedDate1() != null ) {
       wReadFrom.setText( jobEntry.getReceivedDate1() );
@@ -2169,7 +2177,12 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     jobEntry.setPort( wPort.getText() );
     jobEntry.setOutputDirectory( wOutputDirectory.getText() );
     jobEntry.setFilenamePattern( wFilenamePattern.getText() );
-    jobEntry.setRetrievemails( wListmails.getSelectionIndex() );
+
+    // [PDI-7241] Option 'retrieve unread' is removed and there is only 2 options.
+    // for backward compatibility: 0 is 'retrieve all', 1 is 'retrieve first...'
+    int actualIndex = wListmails.getSelectionIndex();
+    jobEntry.setRetrievemails( actualIndex > 0 ? 2 : 0 );
+
     jobEntry.setFirstMails( wFirstmails.getText() );
     jobEntry.setDelete( wDelete.getSelection() );
     jobEntry.setProtocol( wProtocol.getText() );
@@ -2187,8 +2200,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     jobEntry.setNotTermSubjectSearch( wNegateSubject.getSelection() );
     jobEntry.setBodySearch( wBody.getText() );
     jobEntry.setNotTermBodySearch( wNegateBody.getSelection() );
-    jobEntry
-        .setConditionOnReceivedDate( MailConnectionMeta.getConditionDateByDesc( wConditionOnReceivedDate.getText() ) );
+    jobEntry.setConditionOnReceivedDate( MailConnectionMeta.getConditionDateByDesc( wConditionOnReceivedDate
+      .getText() ) );
     jobEntry.setNotTermReceivedDateSearch( wNegateReceivedDate.getSelection() );
     jobEntry.setReceivedDate1( wReadFrom.getText() );
     jobEntry.setReceivedDate2( wReadTo.getText() );

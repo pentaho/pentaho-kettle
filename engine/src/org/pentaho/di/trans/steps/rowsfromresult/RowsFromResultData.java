@@ -33,9 +33,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 public class RowsFromResultData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 * 
-	 */
   public RowsFromResultData() {
     super();
   }

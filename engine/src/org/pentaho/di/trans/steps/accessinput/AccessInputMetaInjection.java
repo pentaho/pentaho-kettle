@@ -34,7 +34,7 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 
 /**
  * To keep it simple, this metadata injection interface only supports the fields in the spreadsheet for the time being.
- * 
+ *
  * @author Matt
  */
 public class AccessInputMetaInjection implements StepMetaInjectionInterface {
@@ -58,36 +58,35 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
     // The file name lines
     //
     StepInjectionMetaEntry filesEntry =
-        new StepInjectionMetaEntry( Entry.FILENAME_LINES.name(), ValueMetaInterface.TYPE_NONE,
-            Entry.FILENAME_LINES.description );
+      new StepInjectionMetaEntry(
+        Entry.FILENAME_LINES.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINES.description );
     all.add( filesEntry );
     StepInjectionMetaEntry fileEntry =
-        new StepInjectionMetaEntry( Entry.FILENAME_LINE.name(), ValueMetaInterface.TYPE_NONE,
-            Entry.FILENAME_LINE.description );
+      new StepInjectionMetaEntry(
+        Entry.FILENAME_LINE.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINE.description );
     filesEntry.getDetails().add( fileEntry );
     for ( Entry entry : Entry.values() ) {
       if ( entry.getParent() == Entry.FILENAME_LINE ) {
         StepInjectionMetaEntry metaEntry =
-            new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
         fileEntry.getDetails().add( metaEntry );
       }
     }
 
     // Add the fields...
     //
-    {
-      StepInjectionMetaEntry fieldsEntry =
-          new StepInjectionMetaEntry( Entry.FIELDS.name(), Entry.FIELDS.getValueType(), Entry.FIELDS.getDescription() );
-      all.add( fieldsEntry );
-      StepInjectionMetaEntry fieldEntry =
-          new StepInjectionMetaEntry( Entry.FIELD.name(), Entry.FIELD.getValueType(), Entry.FIELD.getDescription() );
-      fieldsEntry.getDetails().add( fieldEntry );
-      for ( Entry entry : Entry.values() ) {
-        if ( entry.getParent() == Entry.FIELD ) {
-          StepInjectionMetaEntry metaEntry =
-              new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
-          fieldEntry.getDetails().add( metaEntry );
-        }
+    StepInjectionMetaEntry fieldsEntry =
+      new StepInjectionMetaEntry( Entry.FIELDS.name(), Entry.FIELDS.getValueType(), Entry.FIELDS
+        .getDescription() );
+    all.add( fieldsEntry );
+    StepInjectionMetaEntry fieldEntry =
+      new StepInjectionMetaEntry( Entry.FIELD.name(), Entry.FIELD.getValueType(), Entry.FIELD.getDescription() );
+    fieldsEntry.getDetails().add( fieldEntry );
+    for ( Entry entry : Entry.values() ) {
+      if ( entry.getParent() == Entry.FIELD ) {
+        StepInjectionMetaEntry metaEntry =
+          new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
+        fieldEntry.getDetails().add( metaEntry );
       }
     }
 
@@ -118,7 +117,7 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
 
       String lookValue = (String) lookFields.getValue();
       switch ( fieldsEntry ) {
-        case FILENAME_LINES: {
+        case FILENAME_LINES:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
             Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.FILENAME_LINE ) {
@@ -153,10 +152,10 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
               fileLines.add( fileLine );
             }
           }
-        }
+
           break;
 
-        case FIELDS: {
+        case FIELDS:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
             Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.FIELD ) {
@@ -210,7 +209,7 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
               fields.add( field );
             }
           }
-        }
+
           break;
 
         case INCLUDE_FILENAME:
@@ -285,14 +284,18 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
       meta.allocateFiles( fileLines.size() );
       for ( int i = 0; i < fileLines.size(); i++ ) {
         FileLine fileLine = fileLines.get( i );
-        meta.getFileName()[i] = fileLine.filename;
-        meta.getFileMask()[i] = fileLine.includeMask;
-        meta.getExludeFileMask()[i] = fileLine.excludeMask;
-        meta.getExludeFileMask()[i] = fileLine.excludeMask;
-        meta.getFileRequired()[i] = fileLine.required;
-        meta.getIncludeSubFolders()[i] = fileLine.includeSubfolders;
+        ( meta.getFileName() )[i] = fileLine.filename;
+        ( meta.getFileMask() )[i] = fileLine.includeMask;
+        ( meta.getExludeFileMask() )[i] = fileLine.excludeMask;
+        ( meta.getExludeFileMask() )[i] = fileLine.excludeMask;
+        ( meta.getFileRequired() )[i] = fileLine.required;
+        ( meta.getIncludeSubFolders() )[i] = fileLine.includeSubfolders;
       }
     }
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return null;
   }
 
   public AccessInputMeta getMeta() {
@@ -302,50 +305,54 @@ public class AccessInputMetaInjection implements StepMetaInjectionInterface {
   private enum Entry {
 
     FILENAME_LINES( ValueMetaInterface.TYPE_NONE, "The list of file definitions" ), FILENAME_LINE(
-        ValueMetaInterface.TYPE_NONE, "One file definition line" ), FILENAME( FILENAME_LINE,
-        ValueMetaInterface.TYPE_STRING, "The filename or directory" ), FILEMASK( FILENAME_LINE,
-        ValueMetaInterface.TYPE_STRING, "The file mask (regex)" ), EXCLUDE_FILEMASK( FILENAME_LINE,
-        ValueMetaInterface.TYPE_STRING, "The mask for the files to exclude (regex)" ), FILE_REQUIRED( FILENAME_LINE,
-        ValueMetaInterface.TYPE_STRING, "Is this a required file (Y/N)" ), INCLUDE_SUBFOLDERS( FILENAME_LINE,
-        ValueMetaInterface.TYPE_STRING, "Include sub-folders when searching files? (Y/N)" ),
+      ValueMetaInterface.TYPE_NONE, "One file definition line" ), FILENAME(
+      FILENAME_LINE, ValueMetaInterface.TYPE_STRING, "The filename or directory" ), FILEMASK(
+      FILENAME_LINE, ValueMetaInterface.TYPE_STRING, "The file mask (regex)" ), EXCLUDE_FILEMASK(
+      FILENAME_LINE, ValueMetaInterface.TYPE_STRING, "The mask for the files to exclude (regex)" ),
+      FILE_REQUIRED( FILENAME_LINE, ValueMetaInterface.TYPE_STRING, "Is this a required file (Y/N)" ),
+      INCLUDE_SUBFOLDERS(
+        FILENAME_LINE, ValueMetaInterface.TYPE_STRING, "Include sub-folders when searching files? (Y/N)" ),
 
-    INCLUDE_FILENAME( ValueMetaInterface.TYPE_STRING, "Include filename in the output? (Y/N)" ), FILENAME_FIELD(
+      INCLUDE_FILENAME( ValueMetaInterface.TYPE_STRING, "Include filename in the output? (Y/N)" ), FILENAME_FIELD(
         ValueMetaInterface.TYPE_STRING, "The name of the filename field in the output" ),
 
-    INCLUDE_TABLENAME( ValueMetaInterface.TYPE_STRING, "Include the table name in the output? (Y/N)" ), TABLENAME_FIELD(
-        ValueMetaInterface.TYPE_STRING, "The name of the table name field in the output" ),
+      INCLUDE_TABLENAME( ValueMetaInterface.TYPE_STRING, "Include the table name in the output? (Y/N)" ),
+      TABLENAME_FIELD( ValueMetaInterface.TYPE_STRING, "The name of the table name field in the output" ),
 
-    INCLUDE_ROW_NUMBER( ValueMetaInterface.TYPE_STRING, "Include a row number in the output? (Y/N)" ), ROW_NUMBER_BY_FILE(
-        ValueMetaInterface.TYPE_STRING, "Reset the row number for each file? (Y/N)" ), ROW_NUMBER_FIELD(
-        ValueMetaInterface.TYPE_STRING, "The name of the row number field in the output" ),
+      INCLUDE_ROW_NUMBER( ValueMetaInterface.TYPE_STRING, "Include a row number in the output? (Y/N)" ),
+      ROW_NUMBER_BY_FILE( ValueMetaInterface.TYPE_STRING, "Reset the row number for each file? (Y/N)" ),
+      ROW_NUMBER_FIELD( ValueMetaInterface.TYPE_STRING, "The name of the row number field in the output" ),
 
-    TABLENAME( ValueMetaInterface.TYPE_STRING, "The name of the table to retrieve data from" ),
+      TABLENAME( ValueMetaInterface.TYPE_STRING, "The name of the table to retrieve data from" ),
 
-    ROW_LIMIT( ValueMetaInterface.TYPE_STRING, "The maximum number of lines to read." ),
+      ROW_LIMIT( ValueMetaInterface.TYPE_STRING, "The maximum number of lines to read." ),
 
-    FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields on the spreadsheets" ), FIELD( ValueMetaInterface.TYPE_NONE,
-        "One field" ), FIELD_NAME( FIELD, ValueMetaInterface.TYPE_STRING, "Field name" ), FIELD_COLUMN( FIELD,
-        ValueMetaInterface.TYPE_STRING, "Field source column name" ), FIELD_TYPE( FIELD,
-        ValueMetaInterface.TYPE_STRING, "Field data type" ), FIELD_LENGTH( FIELD, ValueMetaInterface.TYPE_STRING,
-        "Field length" ), FIELD_PRECISION( FIELD, ValueMetaInterface.TYPE_STRING, "Field precision" ), FIELD_TRIM_TYPE(
-        FIELD, ValueMetaInterface.TYPE_STRING, "Field trim type (none, left, right, both)" ), FIELD_FORMAT( FIELD,
-        ValueMetaInterface.TYPE_STRING, "Field conversion format" ), FIELD_CURRENCY( FIELD,
-        ValueMetaInterface.TYPE_STRING, "Field currency symbol" ), FIELD_DECIMAL( FIELD,
-        ValueMetaInterface.TYPE_STRING, "Field decimal symbol" ), FIELD_GROUP( FIELD, ValueMetaInterface.TYPE_STRING,
-        "Field group symbol" ), FIELD_REPEAT( FIELD, ValueMetaInterface.TYPE_STRING, "Field repeat (Y/N)" ),
+      FIELDS( ValueMetaInterface.TYPE_NONE, "All the fields on the spreadsheets" ), FIELD(
+        ValueMetaInterface.TYPE_NONE, "One field" ), FIELD_NAME(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field name" ), FIELD_COLUMN(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field source column name" ), FIELD_TYPE(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field data type" ), FIELD_LENGTH(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field length" ), FIELD_PRECISION(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field precision" ), FIELD_TRIM_TYPE(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field trim type (none, left, right, both)" ), FIELD_FORMAT(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field conversion format" ), FIELD_CURRENCY(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field currency symbol" ), FIELD_DECIMAL(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field decimal symbol" ), FIELD_GROUP(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field group symbol" ), FIELD_REPEAT(
+        FIELD, ValueMetaInterface.TYPE_STRING, "Field repeat (Y/N)" ),
 
-    ACCEPT_FILE_NAMES( ValueMetaInterface.TYPE_STRING, "Accept file names? (Y/N)" ), ACCEPT_FILE_FIELD(
+      ACCEPT_FILE_NAMES( ValueMetaInterface.TYPE_STRING, "Accept file names? (Y/N)" ), ACCEPT_FILE_FIELD(
         ValueMetaInterface.TYPE_STRING, "The input field for the file names" ),
 
-    ADD_FILES_TO_RESULT( ValueMetaInterface.TYPE_STRING, "Add file names to the result files? (Y/N)" ),
+      ADD_FILES_TO_RESULT( ValueMetaInterface.TYPE_STRING, "Add file names to the result files? (Y/N)" ),
 
-    FILE_SHORT_FILE_FIELDNAME( ValueMetaInterface.TYPE_STRING, "The short file output fieldname" ), FILE_PATH_FIELDNAME(
-        ValueMetaInterface.TYPE_STRING, "The path output fieldname" ), FILE_HIDDEN_FIELDNAME(
+      FILE_SHORT_FILE_FIELDNAME( ValueMetaInterface.TYPE_STRING, "The short file output fieldname" ),
+      FILE_PATH_FIELDNAME( ValueMetaInterface.TYPE_STRING, "The path output fieldname" ), FILE_HIDDEN_FIELDNAME(
         ValueMetaInterface.TYPE_STRING, "The hidden output fieldname" ), FILE_LAST_MODIFICATION_FIELDNAME(
         ValueMetaInterface.TYPE_STRING, "The last modification time output fieldname" ), FILE_URI_FIELDNAME(
         ValueMetaInterface.TYPE_STRING, "The URI output fieldname" ), FILE_EXTENSION_FIELDNAME(
         ValueMetaInterface.TYPE_STRING, "The extension output fieldname" ), FILE_SIZE_FIELDNAME(
-        ValueMetaInterface.TYPE_STRING, "The file size output fieldname" ), ;
+        ValueMetaInterface.TYPE_STRING, "The file size output fieldname" );
 
     private int valueType;
     private String description;

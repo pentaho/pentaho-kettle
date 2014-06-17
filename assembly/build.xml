@@ -25,6 +25,9 @@
   
 
   <import file="build-res/subfloor-pkg.xml" />
+	
+	
+  <property name="pdf.docs.dir" value="${approot.stage.dir}/docs/English" />
 
   <target name="dist" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,package" description="Builds and packages the application"/>
   	
@@ -33,37 +36,59 @@
   <target name="assemble-no-plugins" depends="init,resolve-all,assemble" description="Builds the application" />
 
   <target name="resolve-all" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins"/>
+
+  <!-- - - - - - - - - - - - - - - - - - 
+    target: resolve-pdf-docs
+  - - - - - - - - - - - - - - - - - -->
+  <target name="resolve-pdf-docs" depends="install-ivy">
+    <ivy:resolve file="${ivyfile}" conf="pdf-docs" />
+    <ivy:retrieve conf="pdf-docs" pattern="${pdf.docs.dir}/[module].[ext]" />
+  </target>
 	
-  <target name="assemble" depends="subfloor-pkg.assemble" description="copy jar files to distribution directory" >
-  	<echo>Construct the distribution package...</echo>
+  <!-- - - - - - - - - - - - - - - - - - 
+	target: resolve-oss-licenses
+  - - - - - - - - - - - - - - - - - -->
+  <target name="resolve-oss-licenses" depends="install-ivy">
+	 <ivy:resolve file="${ivyfile}" conf="oss-licenses" />
+     <ivy:retrieve conf="oss-licenses" pattern="${bin.dir}/[module].[ext]" />
+  </target>
+	
+  <target name="assemble" depends="resolve-swtlibs,resolve-pdf-docs,resolve-oss-licenses,create-sampledb-from-sql,subfloor-pkg.assemble"
+          description="copy jar files to distribution directory">
+    <echo>Construct the distribution package...</echo>
     <!-- make JavaApplicationStub executable for OSX -->
     <chmod file="${approot.stage.dir}/Data Integration.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
-  	
+  	<!-- insert version info into the canned info.plist -->
+  	<replace file = "${approot.stage.dir}/Data Integration.app/Contents/Info.plist" token="@KETTLE_VERSION_STRING@" value="${dependency.kettle.revision}" />
   	<!-- Remove the SWT JAR used for compilation -->
   	<delete quiet="true">
-  		<fileset dir="${stage.dir}/${package.root.dir}/lib" includes="swt*.jar" />
+  		<fileset dir="${approot.stage.dir}/lib" includes="swt*.jar" />
   	</delete>
   	
-    <!-- Unzip the libswt package into the libswt folder of the distribution -->
-    <unzip dest="${stage.dir}/${package.root.dir}" overwrite="true">
-      <fileset dir="${swtlib.dir}">
-        <include name="**/*.zip"/>
-      </fileset>
-    </unzip>
+    <antcall target="unzip-swtlibs"/>
     
     <!-- Insert launcher revision number into batch files -->
-    <replace dir="${stage.dir}/${package.root.dir}">
+    <replace dir="${approot.stage.dir}">
       <include name="**/*.bat"/>
     	<include name="**/*.sh"/>
     	<include name="**/*.plist"/>
       <replacefilter token="launcher.jar" value="pentaho-application-launcher-${dependency.launcher.revision}.jar"/>     
     </replace>
   	
-    <replace dir="${stage.dir}/${package.root.dir}">
+    <replace dir="${approot.stage.dir}">
       <include name="*.bat"/>
       <include name="*.sh"/>
       <replacefilter token="@KETTLE_VERSION_STRING@" value="${dependency.kettle.revision}"/>     
     </replace>
+  	
+    <unzip src="${bin.dir}/oss-licenses.zip" dest="${approot.stage.dir}">
+      <patternset>
+        <include name="PentahoDataIntegrationClientEE_OSS_Licenses.html"/>
+      	<include name="PentahoDataIntegrationServerEE_OSS_Licenses.html"/>
+      </patternset>
+    </unzip>
+  	
+  	<chmod perm="a+x" dir="${approot.stage.dir}" includes="**/*.sh" />
   </target>
 	
   <!--=======================================================================
@@ -71,23 +96,19 @@
           
       Unzips the non-core plugin packages into the distribution area. 
     ====================================================================-->	
-  <target name="assemble-plugins" depends="resolve-plugins" description="Unzip plugins to distribution directory">
+  <target name="assemble-plugins" depends="install-antcontrib,resolve-plugins" description="Unzip plugins to distribution directory">
     
-    <!-- Unzip the big-data package into the big-data folder of the distribution -->
-    <antcall target="unzip-big-data-plugin">
-        <param name="big.data.plugin.location" value="${plugins.dir}"/>
-    </antcall>  
-        
-    <!-- Unzip the mongodb package into the mongodb folder of the distribution -->
-    <antcall target="unzip-mongodb-plugin">
-        <param name="mongodb.plugin.location" value="${plugins.dir}"/>
-    </antcall>
-        
-    <!-- Unzip the mongodb package into the mongodb folder of the distribution -->
-    <antcall target="unzip-cassandra-plugin">
-        <param name="cassandra.plugin.location" value="${plugins.dir}"/>
-    </antcall>
-        
+  	<for param="plugin">
+  	<path id="plugin-list">
+  	  <fileset dir="${plugins.dir}">
+  		<include name="*.zip"/>
+  	  </fileset>
+  	</path>
+  	 <sequential>
+  	 	<unzip src="@{plugin}" dest="${stage.dir}/${package.root.dir}/plugins" overwrite="true"/>
+  	 </sequential>
+  	</for>
+    
     <delete dir="${plugins.dir}"/>
   </target>
 	
@@ -146,55 +167,67 @@
     
   </target>
     
-    <!-- Unzip the big data package into the plugins folder of the distribution, then delete the package -->
-    <target name="unzip-big-data-plugin" depends="init">
-      <unzip dest="${stage.dir}/${package.root.dir}/plugins" overwrite="true">
-        <fileset dir="${big.data.plugin.location}">
-          <include name="pentaho-big-data-plugin*.zip"/>
-        </fileset>
-      </unzip>
-    </target>
           
-    <!-- Unzip the MongoDB into the plugins folder of the distribution, then delete the package -->
-    <target name="unzip-mongodb-plugin" depends="init">
-      <unzip dest="${stage.dir}/${package.root.dir}/plugins" overwrite="true">
-        <fileset dir="${mongodb.plugin.location}">
-          <include name="pentaho-mongodb-plugin*.zip"/>
-        </fileset>
-      </unzip>
-    </target>
-  
-	<!-- Unzip the Cassandra plugin into the plugins folder of the distribution, then delete the package -->
-    <target name="unzip-cassandra-plugin" depends="init">
-      <unzip dest="${stage.dir}/${package.root.dir}/plugins" overwrite="true">
-        <fileset dir="${cassandra.plugin.location}">
-          <include name="pentaho-cassandra-plugin*.zip"/>
-        </fileset>
-      </unzip>
-    </target>
-	
 	<!--=======================================================================
-	        resolve-swtlibs
-	        
-	        Resolved the swtlibs configuration from ivy.xml
-	    =====================================================================-->
-	  <target name="resolve-swtlibs" depends="install-ivy">
-	    <delete dir="${swtlib.dir}" />
-	    <ivy:resolve file="${ivyfile}" conf="test" />
-	    <ivy:retrieve conf="swtlibs" pattern="${swtlib.dir}/[module]-[revision](-[classifier]).[ext]" />
-	  </target>
-	
-	    <target name="package.lib" depends="resolve">
-	      <jar jarfile="dist/${lib.zip.filename}" basedir="lib" />
-	    </target>	
-	
-	 <target name="resolve-launcher" depends="install-ivy">
-      <ivy:resolve file="${ivyfile}" conf="launcher" />
-      <ivy:retrieve conf="launcher" pattern="${stage.dir}/${package.root.dir}/launcher/[module]-[revision](-[classifier]).[ext]" />
-    </target>
-	
-	<target name="resolve-plugins" depends="install-ivy">
-      <ivy:resolve file="${ivyfile}" conf="plugins" />
-      <ivy:retrieve conf="plugins" pattern="${plugins.dir}/[module]-[revision](-[classifier]).[ext]" />
-    </target>
+        resolve-swtlibs
+        
+        Resolved the swtlibs configuration from ivy.xml
+    =====================================================================-->
+  <target name="resolve-swtlibs" depends="install-ivy">
+    <delete dir="${swtlib.dir}" />
+    <ivy:resolve file="${ivyfile}" conf="test" />
+    <ivy:retrieve conf="swtlibs" pattern="${swtlib.dir}/[module]-[revision](-[classifier]).[ext]" />
+  </target>
+
+  <target name="package.lib" depends="resolve">
+    <jar jarfile="dist/${lib.zip.filename}" basedir="lib" />
+  </target>	
+
+  <target name="resolve-launcher" depends="install-ivy">
+    <ivy:resolve file="${ivyfile}" conf="launcher" />
+    <ivy:retrieve conf="launcher" pattern="${stage.dir}/${package.root.dir}/launcher/[module]-[revision](-[classifier]).[ext]" />
+  </target>
+
+  <target name="resolve-plugins" depends="install-ivy">
+    <ivy:resolve file="${ivyfile}" conf="plugins" />
+    <ivy:retrieve conf="plugins" pattern="${plugins.dir}/[module]-[revision](-[classifier]).[ext]" />
+  </target>
+
+  <target name="unzip-swtlibs">
+	<!-- Unzip the libswt package into the libswt folder of the distribution -->
+    <unzip dest="${approot.stage.dir}" overwrite="true">
+      <fileset dir="${swtlib.dir}">
+        <include name="**/*.zip"/>
+      </fileset>
+    </unzip>
+  </target>
+
+  <target name="create-sampledb-from-sql">
+    <property name="samples.db.dir" value="${package.resdir}/samples/db"/>
+    <echo message="${samples.db.dir}"/>
+    <property file="${samples.db.dir}/sampledb.init.properties"/>
+    <property name="db.postfix" value="db"/>
+    <delete quiet="true" includeemptydirs="true">
+      <dirset dir="${samples.db.dir}" includes="**/${sample.db.name}*${db.postfix}"/>
+      <fileset dir="${samples.db.dir}" includes="**/${sample.db.name}*${db.postfix}"/>
+    </delete>
+    <echo message="${sample.db.url}${samples.db.dir}/${sample.db.name}" />
+    <sql
+        driver="${sample.db.driver}"
+        url="${sample.db.url}${samples.db.dir}/${sample.db.name}"
+        userid="${sample.db.driver}"
+        password="${sample.db.password}"
+        >
+      <path>
+        <fileset dir="${samples.db.dir}">
+          <include name="**/*.sql"/>
+        </fileset>
+      </path>
+      <classpath>
+        <fileset dir="${lib.dir}">
+          <include name="**/h2*.jar"/>
+        </fileset>
+      </classpath>
+    </sql>
+  </target>
 </project>

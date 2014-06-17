@@ -33,11 +33,11 @@ import org.pentaho.di.job.JobConfiguration;
 
 /**
  * This is a map between the job name and the (running/waiting/finished) job.
- * 
+ *
  * @author Matt
  * @since 26-SEP-2007
  * @since 3.0.0
- * 
+ *
  */
 public class JobMap {
   private Map<CarteObjectEntry, Job> jobMap;
@@ -70,7 +70,7 @@ public class JobMap {
 
   /**
    * Find the first job in the list that comes to mind!
-   * 
+   *
    * @param jobName
    * @return the first transformation with the specified name
    */
@@ -160,7 +160,7 @@ public class JobMap {
 
   /**
    * Find a job using the container/carte object ID.
-   * 
+   *
    * @param id
    *          the container/carte object ID
    * @return The job if it's found, null if the ID couldn't be found in the job map.

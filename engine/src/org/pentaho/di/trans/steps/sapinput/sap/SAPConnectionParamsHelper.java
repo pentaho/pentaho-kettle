@@ -29,7 +29,8 @@ public class SAPConnectionParamsHelper {
   public static SAPConnectionParams getFromDatabaseMeta( DatabaseMeta sapConnection ) {
     String name = sapConnection.getName();
     String host = sapConnection.environmentSubstitute( sapConnection.getHostname() );
-    String sysnr = sapConnection.environmentSubstitute( sapConnection.getAttributes().getProperty( "SAPSystemNumber" ) );
+    String sysnr =
+      sapConnection.environmentSubstitute( sapConnection.getAttributes().getProperty( "SAPSystemNumber" ) );
     String client = sapConnection.environmentSubstitute( sapConnection.getAttributes().getProperty( "SAPClient" ) );
     String user = sapConnection.environmentSubstitute( sapConnection.getUsername() );
     String password = sapConnection.environmentSubstitute( sapConnection.getPassword() );

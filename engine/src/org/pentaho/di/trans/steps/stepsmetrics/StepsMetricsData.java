@@ -32,13 +32,10 @@ import org.pentaho.di.trans.step.StepInterface;
 /**
  * @author Samatar
  * @since 16-06-2008
- * 
+ *
  */
 public class StepsMetricsData extends BaseStepData implements StepDataInterface {
 
-  /**
-	 * 
-	 */
   boolean continueLoop;
   public ConcurrentHashMap<Integer, StepInterface> stepInterfaces;
   /** The metadata we send out */

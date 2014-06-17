@@ -44,6 +44,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
+import org.pentaho.di.core.gui.HasOverwritePrompter;
+import org.pentaho.di.core.gui.OverwritePrompter;
+import org.pentaho.di.core.util.ExecutorUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.ImportRules;
@@ -54,19 +57,21 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryImportFeedbackInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.dialog.DisplayInvocationHandler;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.PopupOverwritePrompter;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while we are importing a backup file from XML...
- * 
+ *
  * @author Matt
  * @since 03-jun-2005
  */
 public class RepositoryImportProgressDialog extends Dialog implements ProgressMonitorListener,
-    RepositoryImportFeedbackInterface {
+    RepositoryImportFeedbackInterface, HasOverwritePrompter {
   private static Class<?> PKG = RepositoryImportProgressDialog.class;
 
   private Shell shell, parent;
@@ -88,12 +93,13 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
   private ImportRules importRules;
 
   public RepositoryImportProgressDialog( Shell parent, int style, Repository rep, String fileDirectory,
-      String[] filenames, RepositoryDirectoryInterface baseDirectory, String versionComment ) {
+    String[] filenames, RepositoryDirectoryInterface baseDirectory, String versionComment ) {
     this( parent, style, rep, fileDirectory, filenames, baseDirectory, versionComment, new ImportRules() );
   }
 
   public RepositoryImportProgressDialog( Shell parent, int style, Repository rep, String fileDirectory,
-      String[] filenames, RepositoryDirectoryInterface baseDirectory, String versionComment, ImportRules importRules ) {
+    String[] filenames, RepositoryDirectoryInterface baseDirectory, String versionComment,
+    ImportRules importRules ) {
     super( parent, style );
 
     this.props = PropsUI.getInstance();
@@ -144,6 +150,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
     BaseStepDialog.positionBottomButtons( shell, new Button[] { wClose }, Const.MARGIN, (Control) null );
 
+    wClose.setEnabled( false );
     wClose.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         dispose();
@@ -179,12 +186,23 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
     shell.open();
 
-    display.asyncExec( new Runnable() {
+    ExecutorUtil.getExecutor().submit( new Runnable() {
+      @Override
       public void run() {
         IRepositoryImporter importer = rep.getImporter();
         importer.setImportRules( importRules );
-        importer.importAll( RepositoryImportProgressDialog.this, fileDirectory, filenames, baseDirectory, false, false,
-            versionComment );
+        importer.importAll( DisplayInvocationHandler.forObject( RepositoryImportFeedbackInterface.class,
+            RepositoryImportProgressDialog.this, display, rep.getLog(), true ), fileDirectory, filenames,
+            baseDirectory, false, false, versionComment );
+        if ( !shell.isDisposed() ) {
+          display.asyncExec( new Runnable() {
+
+            @Override
+            public void run() {
+              wClose.setEnabled( true );
+            }
+          } );
+        }
       }
     } );
 
@@ -213,13 +231,15 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
   }
 
   public boolean transOverwritePrompt( TransMeta transMeta ) {
-    MessageDialogWithToggle md =
-        new MessageDialogWithToggle( shell,
-            BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteTrans.Title" ), null, BaseMessages.getString(
-                PKG, "RepositoryImportDialog.OverwriteTrans.Message", transMeta.getName() ), MessageDialog.QUESTION,
-            new String[] { BaseMessages.getString( PKG, "System.Button.Yes" ),
-              BaseMessages.getString( PKG, "System.Button.No" ) }, 1, BaseMessages.getString( PKG,
-                "RepositoryImportDialog.DontAskAgain.Label" ), !askOverwrite );
+    MessageDialogWithToggle md = new MessageDialogWithToggle( shell,
+      BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteTrans.Title" ),
+      null,
+      BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteTrans.Message", transMeta.getName() ),
+      MessageDialog.QUESTION, new String[] {
+        BaseMessages.getString( PKG, "System.Button.Yes" ),
+        BaseMessages.getString( PKG, "System.Button.No" ) },
+      1,
+      BaseMessages.getString( PKG, "RepositoryImportDialog.DontAskAgain.Label" ), !askOverwrite );
     MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
     int answer = md.open();
 
@@ -230,11 +250,15 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
   public boolean jobOverwritePrompt( JobMeta jobMeta ) {
     MessageDialogWithToggle md =
-        new MessageDialogWithToggle( shell, BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteJob.Title" ),
-            null, BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteJob.Message", jobMeta.getName() ),
-            MessageDialog.QUESTION, new String[] { BaseMessages.getString( PKG, "System.Button.Yes" ),
-              BaseMessages.getString( PKG, "System.Button.No" ) }, 1, BaseMessages.getString( PKG,
-                "RepositoryImportDialog.DontAskAgain.Label" ), !askOverwrite );
+      new MessageDialogWithToggle(
+        shell, BaseMessages.getString( PKG, "RepositoryImportDialog.OverwriteJob.Title" ), null, BaseMessages
+          .getString( PKG, "RepositoryImportDialog.OverwriteJob.Message", jobMeta.getName() ),
+        MessageDialog.QUESTION, new String[] {
+          BaseMessages.getString( PKG, "System.Button.Yes" ),
+          BaseMessages.getString( PKG, "System.Button.No" ) },
+        1,
+        BaseMessages.getString( PKG, "RepositoryImportDialog.DontAskAgain.Label" ),
+        !askOverwrite );
     MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
     int answer = md.open();
     askOverwrite = !md.getToggleState();
@@ -243,11 +267,11 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
   }
 
   public void addLog( String line ) {
-    StringBuffer rest = new StringBuffer( wLogging.getText() );
-    rest.append( XMLHandler.date2string( new Date() ) ).append( " : " );
+    StringBuffer rest = new StringBuffer( XMLHandler.date2string( new Date() ) );
+    rest.append( " : " );
     rest.append( line ).append( Const.CR );
-    wLogging.setText( rest.toString() );
-    wLogging.setSelection( rest.length() ); // make it scroll
+    wLogging.append( rest.toString() );
+    wLogging.setSelection( wLogging.getText().length() ); // make it scroll
   }
 
   public boolean askContinueOnErrorQuestion( String title, String message ) {
@@ -283,5 +307,11 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
   @Override
   public boolean isAskingOverwriteConfirmation() {
     return askOverwrite;
+  }
+
+  @Override
+  public OverwritePrompter getOverwritePrompter() {
+    return DisplayInvocationHandler.forObject( OverwritePrompter.class, new PopupOverwritePrompter( shell, props ),
+        display, rep.getLog(), true );
   }
 }

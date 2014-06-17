@@ -27,9 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <!--===========================================================================
     == SUBFLOOR ==
     
-    $Rev: 113 $
-    $Date: 2010-09-03 15:02:57 -0400 (Fri, 03 Sep 2010) $
-    Project Home: http://code.google.com/p/subfloor/
+    $Date: Wed Nov  6 16:13:57 UTC 2013 $
+    Project Home: https://github.com/pentaho/subfloor/
     
     This file contains the default implementation of the ant tasks to 
     perform a build. This file should be included by the build.xml file 
@@ -178,8 +177,13 @@ TYPICAL TARGET SEQUENCE
             value="true"
             description="Prefer SVNKit binding over the command line client for native svn support (defaults to true)" />
   <property name="ivy.url"
-            value="http://repo2.maven.org/maven2/org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar"
+            value="http://repo.pentaho.org/artifactory/repo/org/apache/ivy/ivy/2.3.0/ivy-2.3.0.jar"
             description="The URL to the current release of Apache IVY" />
+	
+  <!-- Enunciate properties -->
+  <property name="enunciate.home" value="${basedir}/enunciate" />
+  <property name="enunciate.bin.dir" value="${bin.dir}/enunciate" />
+
 
   <!-- Test properties -->
   <property name="junit.base.dir" value="${basedir}" description="Directory in which the junit test VM will be invoked" />
@@ -308,6 +312,29 @@ TYPICAL TARGET SEQUENCE
             description="The location of the MANIFEST.MF file for this application." />
   <property file="${manifest.file}"
             description="Loads the manifest information from the manifest file as a properties file." />
+
+  <!-- Checkstyle Properties -->
+  <property name="checkstyle.version"
+            value="5.7"
+            description="The version of CheckStyle to use for coding standards" />
+  <property name="checkstyle.dir"
+            value="${basedir}/checkstyle" />
+  <property name="checkstyle.lib.dir"
+            value="${checkstyle.dir}/lib" />
+  <property name="checkstyle.reports.dir"
+            value="${checkstyle.dir}/reports" />
+  <property name="checkstyle.config.url"
+            value="http://ci.pentaho.com/job/pentaho-coding-standards/lastSuccessfulBuild/artifact/pentaho_checkStyle.xml" />
+  <property name="checkstyle.suppressions.url"
+            value="http://ci.pentaho.com/job/pentaho-coding-standards/lastSuccessfulBuild/artifact/suppressions.xml" />
+  <property name="checkstyle.stylesheet.url"
+            value="http://ci.pentaho.com/job/pentaho-coding-standards/lastSuccessfulBuild/artifact/checkstyle-noframes-sorted.xsl" />
+  <property name="checkstyle.config.file"
+            value="${checkstyle.dir}/pentaho_checkStyle.xml" />
+  <property name="checkstyle.suppressions.file"
+            value="${checkstyle.dir}/suppressions.xml" />
+  <property name="checkstyle.stylesheet.file"
+            value="${checkstyle.dir}/checkstyle-noframes-sorted.xsl" />
 
   <!-- Set the project revision number to the value in the manifest file (if it has not
        been specified in the properties file -->
@@ -653,6 +680,25 @@ TYPICAL TARGET SEQUENCE
   </target>
 
 
+<!--=======================================================================
+      install-checkstyle
+
+      Fetches and installs CheckStyle resources for use by checkstyle targets
+      ====================================================================-->
+  <target name="install-checkstyle" depends="install-ivy">
+    <ivy:resolve inline="true"
+                 keep="true"
+                 organisation="com.puppycrawl.tools"
+                 module="checkstyle"
+                 revision="${checkstyle.version}"
+                 conf="default"
+                 transitive="true" />
+
+    <ivy:retrieve conf="default" pattern="${checkstyle.lib.dir}/[module]-[revision](-[classifier]).[ext]" />
+    <ivy:cachepath pathid="checkstyle.classpath" />
+  </target>
+
+
   <!--=======================================================================
       resolve
       
@@ -698,6 +744,11 @@ TYPICAL TARGET SEQUENCE
   <target name="resolve-test" depends="resolve-init">
     <ivy:resolve file="${ivyfile}" conf="test" />
     <ivy:retrieve conf="test" pattern="${testlib.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
+  </target>
+
+  <target name="resolve-enunciate" depends="resolve-init">
+    <ivy:resolve file="${ivyfile}" conf="enunciate" />
+    <ivy:retrieve conf="enunciate" pattern="${basedir}/enunciate/lib/[module]-[revision](-[classifier]).[ext]" />
   </target>
 
   <target name="resolve-codegen" depends="resolve-init">
@@ -1079,6 +1130,15 @@ TYPICAL TARGET SEQUENCE
   <target name="clean-dist">
     <delete dir="${dist.dir}" />
   </target>
+  
+  <!--=======================================================================
+      clean-checkstyle
+      
+      Removes all checkstyle artifacts
+      ====================================================================-->
+  <target name="clean-checkstyle">
+    <delete dir="${checkstyle.dir}" />
+  </target>  
 
 
   <!--=======================================================================
@@ -1088,7 +1148,7 @@ TYPICAL TARGET SEQUENCE
       in the workspace's lib dirs as well as all the files 
       generated from the build process.
       ====================================================================-->
-  <target name="clean-all" depends="clean,clean-jars" description="Cleans all the generated and dependency files" />
+  <target name="clean-all" depends="clean,clean-jars,clean-checkstyle" description="Cleans all the generated and dependency files" />
 
 
   <!--=======================================================================
@@ -1157,7 +1217,8 @@ TYPICAL TARGET SEQUENCE
            fork="true"
            memorymaximumsize="${javac.maxmemory}"
            source="${javac.source}"
-           target="${javac.target}">
+           target="${javac.target}"
+           encoding="UTF-8">
       <classpath>
         <path refid="classpath" />
       </classpath>
@@ -1358,7 +1419,8 @@ TYPICAL TARGET SEQUENCE
            optimize="false"
            source="${javac.source}"
            target="${javac.target}"
-           fork="true">
+           fork="true"
+            encoding="UTF-8">
       <src path="${testsrc.dir}" />
       <classpath refid="test.classpath" />
     </javac>
@@ -1489,6 +1551,46 @@ TYPICAL TARGET SEQUENCE
     </javadoc>
   </target>
 
+  	
+  <!--=======================================================================
+	enunciate
+        
+	Generates enunciate documentation for the resoruce 
+	classes comprising the BIServer REST api
+  ====================================================================-->
+  <target name="enunciate" depends="resolve-enunciate">
+    <path id="enunciate.classpath">
+      <fileset dir="${lib.dir}">
+        <include name="*.jar" />
+      	<exclude name="saxon*.jar" />
+      </fileset>
+      <dirset dir="${classes.dir}" />
+      <fileset dir="${dist.dir}">
+        <include name="*.jar" />
+      </fileset>
+      <fileset dir="${enunciate.home}/lib">
+        <include name="*.jar" />
+      </fileset>
+    </path>
+
+    <taskdef name="enunciate" classname="org.codehaus.enunciate.main.EnunciateTask">
+      <classpath refid="enunciate.classpath" />
+    </taskdef>
+
+    <enunciate dir="${basedir}/src" 
+               configFile="${basedir}/enunciate.xml" 
+               generateDir="${enunciate.bin.dir}/generate" 
+               compileDir="${enunciate.bin.dir}/compile" 
+               buildDir="${enunciate.bin.dir}/build" 
+               packageDir="${enunciate.bin.dir}/package" 
+               verbose="true">
+      <include name="**/*.java" />
+      <!-- have to exclude class that contains jersey multipart endpoint until http://jira.codehaus.org/browse/ENUNCIATE-537 is fixed -->
+      
+      <classpath refid="enunciate.classpath" />
+      <export artifactId="docs" destination="${dist.dir}/${enunciate.packagename}.zip" />
+    </enunciate>
+  </target>
 
   <!--=======================================================================
       dist-javadoc
@@ -1974,4 +2076,48 @@ TYPICAL TARGET SEQUENCE
     <sonar:sonar key="${ivy.artifact.group}:${ivy.artifact.id}" version="${project.revision}" xmlns:sonar="antlib:org.sonar.ant"/>
   </target>
   
+  <!--
+    =============================================================================
+       checkstyle.xml-report : Produces machine-readable xml Checkstyle report
+    =============================================================================
+  -->
+  <target name="checkstyle.xml-report" depends="install-checkstyle">
+    <delete dir="${checkstyle.reports.dir}/xml"/>
+    <mkdir dir="${checkstyle.dir}/lib"/>
+
+    <taskdef resource="checkstyletask.properties">
+      <classpath refid="checkstyle.classpath" />
+    </taskdef>
+
+    <get usetimestamp="true" src="${checkstyle.config.url}" dest="${checkstyle.config.file}"/>
+    <get usetimestamp="true" src="${checkstyle.suppressions.url}" dest="${checkstyle.suppressions.file}"/>
+
+    <mkdir dir="${checkstyle.reports.dir}/xml"/>
+      <checkstyle config="${checkstyle.config.file}" failonviolation="false">
+        <property key="samedir" value="${checkstyle.dir}"/>
+        <fileset dir="${src.dir}" includes="**/*.java"/>
+        <fileset dir="${testsrc.dir}" includes="**/*.java" erroronmissingdir="false"/>
+        <formatter type="xml" tofile="${checkstyle.reports.dir}/xml/checkstyle-result.xml"/>
+      </checkstyle>
+  </target>
+
+  <!--
+    ==============================================================================
+       checkstyle.html-report :  Produces human-readable html Checkstyle report
+    ==============================================================================
+  -->
+  <target name="checkstyle.html-report" depends="checkstyle.xml-report">
+    <delete dir="${checkstyle.reports.dir}/html"/>
+    <mkdir dir="${checkstyle.reports.dir}/html"/>
+    <get usetimestamp="true" src="${checkstyle.stylesheet.url}" dest="${checkstyle.stylesheet.file}"/>
+    <xslt style="${checkstyle.stylesheet.file}" basedir="${checkstyle.reports.dir}/xml"
+          includes="*checkstyle-result.xml" destdir="${checkstyle.reports.dir}/html"/>
+  </target>
+
+  <!--
+    ==============================================================================
+       checkstyle: Runs CheckStyle on the source and test code
+    ==============================================================================
+  -->
+  <target name="checkstyle" depends="checkstyle.xml-report,checkstyle.html-report"/>
 </project>

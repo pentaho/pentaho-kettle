@@ -52,9 +52,9 @@ public class MetadataGenerator {
     this.logicalDomain = logicalDomain;
     this.databases = databases;
   }
-  
+
   public Domain generatePhysicalMetadataModel() throws KettleException {
-    
+
     // First do some checking and lookups...
     //
     String targetDatabaseName = ConceptUtil.getString(logicalDomain, DefaultIDs.DOMAIN_TARGET_DATABASE);
@@ -69,13 +69,13 @@ public class MetadataGenerator {
     // Now start creation of a new domain with physical underpinning.
     //
     Domain domain = new Domain();
-    
+
     // Copy the domain information...
     //
     domain.setId( createId("DOMAIN", null, domain) );
     domain.setName(logicalDomain.getName());
     domain.setDescription(logicalDomain.getDescription());
-    
+
     // Now copy all the models...
     //
     for (LogicalModel logicalModel : logicalDomain.getLogicalModels()) {
@@ -85,24 +85,24 @@ public class MetadataGenerator {
       model.setId( createId("MODEL", domain, model));
       model.setName(logicalModel.getName());
       model.setDescription(logicalModel.getDescription());
-      
+
       // Create a physical model...
       //
       SqlPhysicalModel sqlModel = new SqlPhysicalModel();
       sqlModel.setDatasource(createSqlDataSource(targetDatabaseMeta));
       model.setPhysicalModel(sqlModel);
-      
+
       for (LogicalTable logicalTable : logicalModel.getLogicalTables()) {
         LogicalTable table = new LogicalTable();
         table.setId( createId("LOGICAL_TABLE", logicalModel, logicalTable) );
         table.setName(logicalTable.getName());
         table.setDescription(logicalTable.getDescription());
-        
+
         String targetTable = ConceptUtil.getString(logicalTable, DefaultIDs.LOGICAL_TABLE_PHYSICAL_TABLE_NAME);
-        
+
         SqlPhysicalTable sqlTable = new SqlPhysicalTable(sqlModel);
         table.setPhysicalTable(sqlTable);
-        
+
         // Copy name & description from physical level...
         //
         sqlTable.setId( createId("PHYSICAL_TABLE", logicalModel, logicalTable));
@@ -111,14 +111,14 @@ public class MetadataGenerator {
         sqlTable.setTableType(ConceptUtil.getTableType(logicalTable));
         sqlTable.setTargetSchema(targetDatabaseMeta.getPreferredSchemaName());
         sqlTable.setTargetTable(targetTable);
-        
-        
+
+
       }
     }
-    
+
     return domain;
   }
-  
+
   private SqlDataSource createSqlDataSource(DatabaseMeta databaseMeta) {
     SqlDataSource dataSource = new SqlDataSource();
     dataSource.setDatabaseName(databaseMeta.getDatabaseName());
@@ -136,20 +136,20 @@ public class MetadataGenerator {
     default: dataSourceType = DataSourceType.CUSTOM; break;
     }
     dataSource.setType(dataSourceType);
-    
+
     return dataSource;
   }
 
   private String createId(String prefix, Concept parent, Concept item) {
     StringBuilder id = new StringBuilder(prefix);
-    
+
     if (parent!=null) {
       id.append("_");
       id.append( extractId(parent));
     }
     id.append("_");
     id.append( extractId(item));
-    
+
     return id.toString();
   }
 
@@ -160,11 +160,11 @@ public class MetadataGenerator {
     // Just grab the first locale we come across
     // This should normally only one for the star modeler
     //
-    String locale = locales.iterator().next(); 
-    
+    String locale = locales.iterator().next();
+
     String id = localizedName.getLocalizedString(locale);
     id = id.toUpperCase().replace(" ", "_");
-    
+
     return id;
   }
 

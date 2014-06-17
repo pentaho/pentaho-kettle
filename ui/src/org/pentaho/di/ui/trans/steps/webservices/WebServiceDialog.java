@@ -93,7 +93,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class WebServiceDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = WebServiceMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = WebServiceMeta.class; // for i18n purposes, needed by Translator2!!
 
   private WebServiceMeta meta;
 
@@ -212,13 +212,15 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     } catch ( AuthenticationException ae ) {
       wsdl = null;
       ShowMessageDialog smd =
-          new ShowMessageDialog( shell, SWT.OK, BaseMessages.getString( PKG, "WebServiceDialog.ErrorDialog.Title" ),
-              BaseMessages.getString( PKG, "Webservices.Error.Authentication", anURI ) );
+        new ShowMessageDialog(
+          shell, SWT.OK, BaseMessages.getString( PKG, "WebServiceDialog.ErrorDialog.Title" ), BaseMessages
+            .getString( PKG, "Webservices.Error.Authentication", anURI ) );
       smd.open();
       return;
     } catch ( Exception e ) {
       wsdl = null;
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "WebServiceDialog.ERROR0009.UnreachableURI" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "WebServiceDialog.ERROR0009.UnreachableURI" ), BaseMessages
           .getString( PKG, "WebServiceDialog.ErrorDialog.Title" )
           + anURI, e );
 
@@ -251,7 +253,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     outWsdlParamContainer = null;
     if ( wsdl != null ) {
       for ( Iterator<WsdlOperation> vItOperation = wsdl.getOperations().iterator(); vItOperation.hasNext()
-          && wsdlOperation == null; ) {
+        && wsdlOperation == null; ) {
         WsdlOperation vCurrentOperation = vItOperation.next();
         if ( vCurrentOperation.getOperationQName().getLocalPart().equals( anOperationName ) ) {
           wsdlOperation = vCurrentOperation;
@@ -264,8 +266,9 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
       //
       String request = "";
       WsdlOpParameterList parameters = wsdlOperation.getParameters();
-      if ( parameters != null && parameters.getOperation() != null && parameters.getOperation().getInput() != null
-          && parameters.getOperation().getInput().getName() != null ) {
+      if ( parameters != null
+        && parameters.getOperation() != null && parameters.getOperation().getInput() != null
+        && parameters.getOperation().getInput().getName() != null ) {
         request = wsdlOperation.getParameters().getOperation().getInput().getName().toString();
       }
       wOperationRequest.setText( request );
@@ -281,49 +284,51 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 String attributeName = itrType.next();
                 QName attributeType = type.getElementType( attributeName );
                 if ( !WebServiceMeta.XSD_NS_URI.equals( attributeType.getNamespaceURI() ) ) {
-                  throw new KettleStepException( BaseMessages.getString( PKG,
-                      "WebServiceDialog.ERROR0007.UnsupporteOperation.ComplexType" ) );
+                  throw new KettleStepException( BaseMessages.getString(
+                    PKG, "WebServiceDialog.ERROR0007.UnsupporteOperation.ComplexType" ) );
                 }
               }
             }
-            if ( ParameterMode.IN.equals( param.getMode() ) || ParameterMode.INOUT.equals( param.getMode() )
-                || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
+            if ( ParameterMode.IN.equals( param.getMode() )
+              || ParameterMode.INOUT.equals( param.getMode() )
+              || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
               if ( inWsdlParamContainer != null ) {
-                throw new KettleStepException( BaseMessages.getString( PKG,
-                    "WebServiceDialog.ERROR0006.UnsupportedOperation.MultipleArrays" ) );
+                throw new KettleStepException( BaseMessages.getString(
+                  PKG, "WebServiceDialog.ERROR0006.UnsupportedOperation.MultipleArrays" ) );
               } else {
                 inWsdlParamContainer = new WsdlOpParameterContainer( param );
               }
-            } else if ( ParameterMode.OUT.equals( param.getMode() ) || ParameterMode.INOUT.equals( param.getMode() )
-                || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
+            } else if ( ParameterMode.OUT.equals( param.getMode() )
+              || ParameterMode.INOUT.equals( param.getMode() )
+              || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
               if ( outWsdlParamContainer != null ) {
-                throw new KettleStepException( BaseMessages.getString( PKG,
-                    "WebServiceDialog.ERROR0006.UnsupportedOperation.MultipleArrays" ) );
+                throw new KettleStepException( BaseMessages.getString(
+                  PKG, "WebServiceDialog.ERROR0006.UnsupportedOperation.MultipleArrays" ) );
               } else {
                 outWsdlParamContainer = new WsdlOpParameterContainer( param );
               }
             }
           }
         } else {
-          if ( ParameterMode.IN.equals( param.getMode() ) || ParameterMode.INOUT.equals( param.getMode() )
-              || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
+          if ( ParameterMode.IN.equals( param.getMode() )
+            || ParameterMode.INOUT.equals( param.getMode() ) || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
             if ( inWsdlParamContainer != null && !( inWsdlParamContainer instanceof WsdlOperationContainer ) ) {
-              throw new KettleStepException( BaseMessages.getString( PKG,
-                  "WebServiceDialog.ERROR0008.UnsupportedOperation.IncorrectParams" ) );
+              throw new KettleStepException( BaseMessages.getString(
+                PKG, "WebServiceDialog.ERROR0008.UnsupportedOperation.IncorrectParams" ) );
             } else {
               inWsdlParamContainer = new WsdlOperationContainer( wsdlOperation, param.getMode() );
             }
-          } else if ( ParameterMode.OUT.equals( param.getMode() ) || ParameterMode.INOUT.equals( param.getMode() )
-              || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
+          } else if ( ParameterMode.OUT.equals( param.getMode() )
+            || ParameterMode.INOUT.equals( param.getMode() ) || ParameterMode.UNDEFINED.equals( param.getMode() ) ) {
             if ( outWsdlParamContainer != null && !( outWsdlParamContainer instanceof WsdlOperationContainer ) ) {
-              throw new KettleStepException( BaseMessages.getString( PKG,
-                  "WebServiceDialog.ERROR0008.UnsupportedOperation.IncorrectParams" ) );
+              throw new KettleStepException( BaseMessages.getString(
+                PKG, "WebServiceDialog.ERROR0008.UnsupportedOperation.IncorrectParams" ) );
             } else {
               outWsdlParamContainer = new WsdlOperationContainer( wsdlOperation, param.getMode() );
             }
           } else {
-            System.out.println( "Parameter : " + param.getName().getLocalPart() + ", mode="
-                + param.getMode().toString() + ", is not considered" );
+            System.out.println( "Parameter : "
+              + param.getName().getLocalPart() + ", mode=" + param.getMode().toString() + ", is not considered" );
           }
         }
       }
@@ -337,8 +342,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
                 String attributeName = itrType.next();
                 QName attributeType = type.getElementType( attributeName );
                 if ( !WebServiceMeta.XSD_NS_URI.equals( attributeType.getNamespaceURI() ) ) {
-                  throw new KettleStepException( BaseMessages.getString( PKG,
-                      "WebServiceDialog.ERROR0007.UnsupportedOperation.ComplexType" ) );
+                  throw new KettleStepException( BaseMessages.getString(
+                    PKG, "WebServiceDialog.ERROR0007.UnsupportedOperation.ComplexType" ) );
                 }
               }
             }
@@ -350,9 +355,9 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
   /**
    * Initialization of the tree: - construction using the URL of the WS - add selection listeners to the tree
-   * 
+   *
    * @throws KettleStepException
-   * 
+   *
    */
   private void initTreeTabWebService( String anURI ) throws KettleException {
     String text = wOperation.getText();
@@ -382,22 +387,25 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
       tabItemFieldIn = new CTabItem( wTabFolder, SWT.NONE );
     }
     final ColumnInfo fieldColumn =
-        new ColumnInfo( BaseMessages.getString( PKG, "WebServiceDialog.NameColumn.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "WebServiceDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        new String[] {}, false );
     fieldColumns.add( fieldColumn );
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          fieldColumn,
-          new ColumnInfo( BaseMessages.getString( PKG, "WebServiceDialog.WsNameColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "WebServiceDialog.TypeColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+      new ColumnInfo[] {
+        fieldColumn,
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "WebServiceDialog.WsNameColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "WebServiceDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ), };
     fieldInTableView =
-        new TableView( transMeta, vCompositeTabField, SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, lsMod, props );
+      new TableView( transMeta, vCompositeTabField, SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, lsMod, props );
     fieldInTableView.setReadonly( false );
     fieldInTableView.clearAll();
     String containerName =
-        inWsdlParamContainer == null ? meta.getInFieldContainerName() : inWsdlParamContainer.getContainerName();
+      inWsdlParamContainer == null ? meta.getInFieldContainerName() : inWsdlParamContainer.getContainerName();
     tabItemFieldIn.setText( containerName == null ? "in" : containerName );
 
     Button vButton = new Button( vCompositeTabField, SWT.NONE );
@@ -416,7 +424,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         }
         RowMetaInterface r = getInWebServiceFields();
         if ( r != null ) {
-          BaseStepDialog.getFieldsFromPrevious( r, fieldInTableView, 2, new int[] { 2 }, new int[] {}, -1, -1, null );
+          BaseStepDialog.getFieldsFromPrevious(
+            r, fieldInTableView, 2, new int[] { 2 }, new int[] {}, -1, -1, null );
         }
         // Define type for new entries
         if ( inWsdlParamContainer != null ) {
@@ -511,17 +520,20 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
       tabItemFieldOut = new CTabItem( wTabFolder, SWT.NONE );
     }
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "WebServiceDialog.NameColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "WebServiceDialog.WsNameColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "WebServiceDialog.TypeColumn.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ) };
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "WebServiceDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "WebServiceDialog.WsNameColumn.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "WebServiceDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          false ) };
     fieldOutTableView =
-        new TableView( transMeta, vCompositeTabFieldOut, SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, lsMod, props );
+      new TableView( transMeta, vCompositeTabFieldOut, SWT.FULL_SELECTION | SWT.MULTI, colinf, 1, lsMod, props );
     String outContainerName =
-        outWsdlParamContainer == null ? meta.getOutFieldContainerName() : outWsdlParamContainer.getContainerName();
+      outWsdlParamContainer == null ? meta.getOutFieldContainerName() : outWsdlParamContainer.getContainerName();
     tabItemFieldOut.setText( outContainerName == null ? "out" : outContainerName );
     fieldOutTableView.setReadonly( false );
 
@@ -540,8 +552,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         }
         RowMetaInterface r = getOutWebServiceFields();
         if ( r != null ) {
-          BaseStepDialog
-              .getFieldsFromPrevious( r, fieldOutTableView, 2, new int[] { 1, 2 }, new int[] {}, -1, -1, null );
+          BaseStepDialog.getFieldsFromPrevious(
+            r, fieldOutTableView, 2, new int[] { 1, 2 }, new int[] {}, -1, -1, null );
         }
         // Define type for new entries
         if ( outWsdlParamContainer != null ) {
@@ -607,7 +619,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
       // If we have already saved fields mapping, we only show these mappings
       for ( int cpt = 0; cpt < params.length; cpt++ ) {
         ValueMetaInterface value =
-            new ValueMeta( params[cpt], XsdType.xsdTypeToKettleType( inWsdlParamContainer.getParamType( params[cpt] ) ) );
+          new ValueMeta( params[cpt], XsdType.xsdTypeToKettleType( inWsdlParamContainer
+            .getParamType( params[cpt] ) ) );
         r.addValueMeta( value );
       }
     }
@@ -622,8 +635,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
       // If we have already saved fields mapping, we only show these mappings
       for ( int cpt = 0; cpt < outParams.length; cpt++ ) {
         ValueMetaInterface value =
-            new ValueMeta( outParams[cpt], XsdType.xsdTypeToKettleType( outWsdlParamContainer
-                .getParamType( outParams[cpt] ) ) );
+          new ValueMeta( outParams[cpt], XsdType.xsdTypeToKettleType( outWsdlParamContainer
+            .getParamType( outParams[cpt] ) ) );
         r.addValueMeta( value );
       }
     }
@@ -659,8 +672,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
       wOperation.setText( meta.getOperationName() == null ? "" : meta.getOperationName() );
     }
     wOperationRequest.setText( Const.NVL( meta.getOperationRequestName(), "" ) );
-    if ( meta.getInFieldContainerName() != null || meta.getInFieldArgumentName() != null
-        || !meta.getFieldsIn().isEmpty() ) {
+    if ( meta.getInFieldContainerName() != null
+      || meta.getInFieldArgumentName() != null || !meta.getFieldsIn().isEmpty() ) {
       addTabFieldIn();
 
       for ( Iterator<WebServiceField> itr = meta.getFieldsIn().iterator(); itr.hasNext(); ) {
@@ -697,7 +710,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
   /**
    * Save the data and close the dialog
-   * 
+   *
    */
   private void getInfo( WebServiceMeta webServiceMeta ) {
     webServiceMeta.setUrl( wURL.getText() );
@@ -856,10 +869,10 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
           try {
             initTreeTabWebService( wURL.getText() );
           } catch ( Throwable throwable ) {
-            new ErrorDialog( shell, BaseMessages.getString( PKG,
-                "WebServiceDialog.Exception.UnableToLoadWebService.Title" ), // $NON-NLS-1$
-                BaseMessages.getString( PKG, "WebServiceDialog.Exception.UnableToLoadWebService.Message" ), // $NON-NLS-1$
-                throwable );
+            new ErrorDialog( shell, BaseMessages.getString(
+              PKG, "WebServiceDialog.Exception.UnableToLoadWebService.Title" ),
+              BaseMessages.getString( PKG, "WebServiceDialog.Exception.UnableToLoadWebService.Message" ),
+              throwable );
           }
         }
       }
@@ -880,7 +893,8 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         //
         FileDialog dialog = new FileDialog( shell, SWT.OPEN );
         dialog.setFilterExtensions( new String[] { "*.wsdl;*.WSDL", "*.*" } );
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "WebServiceDialog.FileType.WsdlFiles" ),
+        dialog.setFilterNames( new String[] {
+          BaseMessages.getString( PKG, "WebServiceDialog.FileType.WsdlFiles" ),
           BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
           BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
           BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
@@ -890,10 +904,10 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
           try {
             initTreeTabWebService( new File( filename ).toURI().toASCIIString() );
           } catch ( Throwable throwable ) {
-            new ErrorDialog( shell, BaseMessages.getString( PKG,
-                "WebServiceDialog.Exception.UnableToLoadWebService.Title" ), // $NON-NLS-1$
-                BaseMessages.getString( PKG, "WebServiceDialog.Exception.UnableToLoadWebService.Message" ), // $NON-NLS-1$
-                throwable );
+            new ErrorDialog( shell, BaseMessages.getString(
+              PKG, "WebServiceDialog.Exception.UnableToLoadWebService.Title" ),
+              BaseMessages.getString( PKG, "WebServiceDialog.Exception.UnableToLoadWebService.Message" ),
+              throwable );
           }
         }
       }
@@ -1186,7 +1200,6 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     compositeTabWebService.layout();
     tabItemWebService.setControl( compositeTabWebService );
 
-    // OK, if the password contains a variable, we don't want to have the password hidden...
     wHttpPassword.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         DatabaseDialog.checkPasswordVisible( wHttpPassword.getTextWidget() );
@@ -1317,7 +1330,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
   /*
    * Previous fields are read asynchonous because this might take some time and the user is able to do other things,
    * where he will not need the previous fields
-   * 
+   *
    * private boolean bPreviousFieldsLoaded = false;
    */
 

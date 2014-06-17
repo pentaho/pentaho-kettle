@@ -56,12 +56,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Create Folder job entry settings.
- * 
+ *
  * @author Sven/Samatar
  * @since 17-10-2007
  */
 public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryCreateFolder.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryCreateFolder.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
   private Text wName;

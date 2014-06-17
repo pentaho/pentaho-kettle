@@ -45,7 +45,7 @@ public class Launch {
       } else if ( osName.startsWith( "Windows" ) ) {
         Runtime.getRuntime().exec( "rundll32 url.dll,FileProtocolHandler " + url );
       } else { // assume Unix or Linux
-        String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" }; //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
         String browser = null;
         for ( int count = 0; count < browsers.length && browser == null; count++ ) {
           if ( Runtime.getRuntime().exec( new String[] { "which", browsers[count] } ).waitFor() == 0 ) {

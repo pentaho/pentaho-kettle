@@ -69,7 +69,7 @@ public class OverlayProperties extends Properties implements PropertyHandler {
 
   /**
    * cleanse and reload the property file
-   * 
+   *
    * @param filename
    * @return
    * @throws IOException

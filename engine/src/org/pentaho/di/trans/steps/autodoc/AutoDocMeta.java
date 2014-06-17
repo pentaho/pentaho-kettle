@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -55,11 +54,8 @@ import org.w3c.dom.Node;
  * @author matt
  * @version 4
  */
-@Step( id = "AutoDoc", name = "AutoDoc.Step.Name", description = "AutoDoc.Step.Description",
-    i18nPackageName = "org.pentaho.di.autodoc", image = "org/pentaho/di/autodoc/autodoc.png",
-    categoryDescription = "Autodoc.Category.PDI-EE" )
 public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, AutoDocOptionsInterface {
-  private static Class<?> PKG = AutoDocMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AutoDocMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String filenameField;
   private String fileTypeField;
@@ -121,15 +117,16 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
       includingName = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_name" ) );
       includingDescription = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_description" ) );
       includingExtendedDescription =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_extended_description" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_extended_description" ) );
       includingCreated = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_creation" ) );
       includingModified = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_modification" ) );
       includingImage = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_image" ) );
       includingLoggingConfiguration =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_logging_config" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_logging_config" ) );
       includingLastExecutionResult =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_last_exec_result" ) );
-      includingImageAreaList = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_image_area_list" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_last_exec_result" ) );
+      includingImageAreaList =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include_image_area_list" ) );
 
       try {
         outputType = KettleReportBuilder.OutputType.valueOf( XMLHandler.getTagValue( stepnode, "output_type" ) );
@@ -154,19 +151,20 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
     retval.append( "    " ).append( XMLHandler.addTagValue( "include_name", includingName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "include_description", includingDescription ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "include_extended_description", includingExtendedDescription ) );
+      XMLHandler.addTagValue( "include_extended_description", includingExtendedDescription ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "include_creation", includingCreated ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "include_modification", includingModified ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "include_image", includingImage ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "include_logging_config", includingLoggingConfiguration ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "include_last_exec_result", includingLastExecutionResult ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "include_logging_config", includingLoggingConfiguration ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "include_last_exec_result", includingLastExecutionResult ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "include_image_area_list", includingImageAreaList ) );
 
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       filenameField = rep.getStepAttributeString( id_step, "filename_field" );
       fileTypeField = rep.getStepAttributeString( id_step, "file_type_field" );
@@ -190,8 +188,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "filename_field", filenameField );
       rep.saveStepAttribute( id_transformation, id_step, "file_type_field", fileTypeField );
@@ -199,7 +196,8 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
       rep.saveStepAttribute( id_transformation, id_step, "output_type", outputType.name() );
       rep.saveStepAttribute( id_transformation, id_step, "include_name", includingName );
       rep.saveStepAttribute( id_transformation, id_step, "include_description", includingDescription );
-      rep.saveStepAttribute( id_transformation, id_step, "include_extended_description", includingExtendedDescription );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "include_extended_description", includingExtendedDescription );
       rep.saveStepAttribute( id_transformation, id_step, "include_creation", includingCreated );
       rep.saveStepAttribute( id_transformation, id_step, "include_modification", includingModified );
       rep.saveStepAttribute( id_transformation, id_step, "include_image", includingImage );
@@ -212,7 +210,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( outputType == OutputType.METADATA ) {
 
       // Add a bunch of metadata to the output for each input row
@@ -278,38 +276,38 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AutoDocMeta.CheckResult.NotReceivingFields" ), stepinfo );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "AutoDocMeta.CheckResult.NotReceivingFields" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "AutoDocMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepinfo );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "AutoDocMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepinfo );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "AutoDocMeta.CheckResult.StepRecevingData2" ), stepinfo );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "AutoDocMeta.CheckResult.StepRecevingData2" ), stepinfo );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AutoDocMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepinfo );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "AutoDocMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepinfo );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new AutoDoc( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

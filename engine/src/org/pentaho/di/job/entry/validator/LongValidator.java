@@ -43,8 +43,8 @@ public class LongValidator implements JobEntryValidator {
     return VALIDATOR_NAME;
   }
 
-  public boolean validate( CheckResultSourceInterface source, String propertyName, List<CheckResultInterface> remarks,
-      ValidatorContext context ) {
+  public boolean validate( CheckResultSourceInterface source, String propertyName,
+    List<CheckResultInterface> remarks, ValidatorContext context ) {
     Object result = null;
     String value = null;
 

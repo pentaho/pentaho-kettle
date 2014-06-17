@@ -44,7 +44,7 @@ import com.google.gdata.util.common.base.Join;
  * Class encapsulating Ldap protocol configuration
  */
 public class LdapProtocol {
-  private static Class<?> PKG = LdapProtocol.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LdapProtocol.class; // for i18n purposes, needed by Translator2!!
 
   private final String hostname;
 
@@ -65,7 +65,7 @@ public class LdapProtocol {
   }
 
   public LdapProtocol( LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
-      Collection<String> binaryAttributes ) {
+    Collection<String> binaryAttributes ) {
     this.log = log;
     hostname = variableSpace.environmentSubstitute( meta.getHost() );
     port = Const.toInt( variableSpace.environmentSubstitute( meta.getPort() ), LDAPConnection.DEFAULT_PORT );
@@ -85,7 +85,7 @@ public class LdapProtocol {
 
   /**
    * Method signature used by factory to get display name, method should exist in every ldap protocol
-   * 
+   *
    * @return the display name
    */
   public static String getName() {
@@ -138,16 +138,16 @@ public class LdapProtocol {
       doConnect( username, password );
 
       if ( log.isBasic() ) {
-        log.logBasic( BaseMessages.getString( PKG, "LDAPInput.Log.ConnectedToServer", hostname, Const
-            .NVL( username, "" ) ) );
+        log.logBasic( BaseMessages.getString( PKG, "LDAPInput.Log.ConnectedToServer", hostname, Const.NVL(
+          username, "" ) ) );
       }
       if ( log.isDetailed() ) {
         log.logDetailed( BaseMessages.getString( PKG, "LDAPInput.ClassUsed.Message", ctx.getClass().getName() ) );
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "LDAPinput.Exception.ErrorConnecting", e.getMessage() ),
-          e );
+      throw new KettleException( BaseMessages.getString( PKG, "LDAPinput.Exception.ErrorConnecting", e
+        .getMessage() ), e );
     }
   }
 

@@ -169,6 +169,7 @@
               command="spoon.ripDBWizard()" />
           </menupopup>
         </menu>
+        <menuitem id="authentication" label="${Spoon.Menu.Authentication}" command="spoon.showAuthenticationOptions()" />
         <menuseparator />
         <menuitem id="edit-options" label="${Spoon.Menu.Edit.Options}" command="spoon.editOptions()" />
       </menupopup>
@@ -255,12 +256,18 @@
     <menuitem id="step-inst-duplicate" label="${Spoon.Menu.Popup.STEPS.Duplicate}" command="spoon.dupeStep()" />
     <menuitem id="step-inst-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.delStep()" />
     <menuitem id="step-inst-share" label="${Spoon.Menu.Popup.STEPS.Share}" command="spoon.shareObject('step-inst-share')" />
+    <menuseparator id="step-inst-separator-1"/>
+    <menuitem id="step-inst-help" label="${Spoon.Menu.Popup.STEPS.Help}" command="spoon.helpStep()" />
+    
   </menupopup>
 
   <menupopup id="job-entry-copy-inst">
     <menuitem id="job-entry-copy-edit" label="${Spoon.Menu.Popup.STEPS.Edit}" command="spoon.editJobEntry()" />
     <menuitem id="job-entry-copy-duplicate" label="${Spoon.Menu.Popup.STEPS.Duplicate}" command="spoon.dupeJobEntry()" />
     <menuitem id="job-entry-copy-delete" label="${Spoon.Menu.Popup.STEPS.Delete}" command="spoon.deleteJobEntryCopies()" />
+    <menuseparator id="job-entry-copy-inst-separator-1"/>
+    <menuitem id="job-entry-copy-help" label="${Spoon.Menu.Popup.STEPS.Help}" command="spoon.helpJobEntry()" />
+    
   </menupopup>
 
   <menupopup id="trans-hop-inst">

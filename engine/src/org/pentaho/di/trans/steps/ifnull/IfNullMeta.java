@@ -48,7 +48,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = IfNullMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = IfNullMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** which fields to display? */
   private String[] fieldName;
@@ -210,7 +210,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param fieldName
+   * @param replaceValue
    *          The replaceValue to set.
    */
   public void setReplaceValue( String[] replaceValue ) {
@@ -300,7 +300,8 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
       selectValuesType = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "selectValuesType" ) );
       replaceAllByValue = XMLHandler.getTagValue( stepnode, "replaceAllByValue" );
       replaceAllMask = XMLHandler.getTagValue( stepnode, "replaceAllMask" );
-      setEmptyStringAll = !"N".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "setEmptyStringAll" ) );
+      String setEmptyStringAllString = XMLHandler.getTagValue( stepnode, "setEmptyStringAll" );
+      setEmptyStringAll = !Const.isEmpty( setEmptyStringAllString ) && "Y".equalsIgnoreCase( setEmptyStringAllString );
 
       Node types = XMLHandler.getSubNode( stepnode, "valuetypes" );
       int nrtypes = XMLHandler.countNodes( types, "valuetype" );
@@ -315,7 +316,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
         typereplaceValue[i] = XMLHandler.getTagValue( tnode, "value" );
         typereplaceMask[i] = XMLHandler.getTagValue( tnode, "mask" );
         String typeemptyString = XMLHandler.getTagValue( tnode, "set_type_empty_string" );
-        setTypeEmptyString[i] = Const.isEmpty( typeemptyString ) || "Y".equalsIgnoreCase( typeemptyString );
+        setTypeEmptyString[ i ] = !Const.isEmpty( typeemptyString ) && "Y".equalsIgnoreCase( typeemptyString );
       }
       for ( int i = 0; i < nrfields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
@@ -388,8 +389,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       replaceAllByValue = rep.getStepAttributeString( id_step, "replaceAllByValue" );
       replaceAllMask = rep.getStepAttributeString( id_step, "replaceAllMask" );
@@ -419,8 +419,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "replaceAllByValue", replaceAllByValue );
       rep.saveStepAttribute( id_transformation, id_step, "replaceAllMask", replaceAllMask );
@@ -446,19 +445,19 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "IfNullMeta.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "IfNullMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "IfNullMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "IfNullMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -480,13 +479,13 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
       } else {
         if ( fieldName.length > 0 ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "IfNullMeta.CheckResult.AllFieldsFound" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "IfNullMeta.CheckResult.AllFieldsFound" ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                  "IfNullMeta.CheckResult.NoFieldsEntered" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "IfNullMeta.CheckResult.NoFieldsEntered" ), stepMeta );
           remarks.add( cr );
         }
       }
@@ -496,19 +495,19 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "IfNullMeta.CheckResult.StepRecevingData2" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "IfNullMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "IfNullMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "IfNullMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new IfNull( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

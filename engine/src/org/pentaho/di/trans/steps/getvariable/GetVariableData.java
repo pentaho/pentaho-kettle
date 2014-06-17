@@ -37,9 +37,6 @@ public class GetVariableData extends BaseStepData implements StepDataInterface {
   public Object[] extraData;
   public RowMetaInterface conversionMeta;
 
-  /**
-	 * 
-	 */
   public GetVariableData() {
     super();
   }

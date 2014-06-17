@@ -55,12 +55,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Telnet job entry settings.
- * 
+ *
  * @author Samatar
  * @since 19-06-2006
  */
 public class JobEntryTelnetDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryTelnet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryTelnet.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
 

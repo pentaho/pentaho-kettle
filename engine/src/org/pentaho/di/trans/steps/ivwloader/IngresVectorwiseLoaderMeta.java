@@ -51,7 +51,7 @@ import org.w3c.dom.Node;
  * Metadata for the VectorWise bulk loader.
  */
 public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMetaInterface,
-    ProvidesDatabaseConnectionInformation {
+  ProvidesDatabaseConnectionInformation {
 
   /** For i18n purposes, needed by Translator2!! */
   private static Class<?> PKG = IngresVectorwiseLoaderMeta.class;
@@ -129,19 +129,19 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#getStep(org.pentaho.di.trans.step.StepMeta,
    *      org.pentaho.di.trans.step.StepDataInterface, int, org.pentaho.di.trans.TransMeta, org.pentaho.di.trans.Trans)
    */
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     IngresVectorwiseLoader loader = new IngresVectorwiseLoader( stepMeta, stepDataInterface, cnr, tr, trans );
     return loader;
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepMetaInterface#getStepData()
    */
   public StepDataInterface getStepData() {
@@ -150,7 +150,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.pentaho.di.trans.step.BaseStepMeta#clone()
    */
   public Object clone() {
@@ -197,7 +197,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     StringBuilder retval = new StringBuilder();
 
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
+      XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "table", tablename ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "fifo_file_name", fifoFileName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "sql_path", sqlPath ) );
@@ -209,7 +209,8 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     retval.append( "    " ).append( XMLHandler.addTagValue( "use_authentication", useAuthentication ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "use_dynamic_vnode", useDynamicVNode ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "use_SSV_delimiter", useSSV ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "escape_special_characters", escapingSpecialCharacters ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "escape_special_characters", escapingSpecialCharacters ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "use_vwload", usingVwload ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "truncate_table", truncatingTable ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "max_errors", maxNrErrors ) );
@@ -267,8 +268,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       tablename = rep.getStepAttributeString( id_step, "table" );
@@ -303,8 +303,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
       rep.saveStepAttribute( id_transformation, id_step, "table", tablename );
@@ -417,7 +416,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
   }
 
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      Repository repository, IMetaStore metaStore ) {
+    Repository repository, IMetaStore metaStore ) {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default:
                                                                                       // nothing
                                                                                       // to
@@ -457,7 +456,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
             retval.setSQL( cr_table );
           } catch ( KettleDatabaseException dbe ) {
             retval.setError( BaseMessages.getString( PKG, "IngresVectorWiseLoaderMeta.Error.ErrorConnecting", dbe
-                .getMessage() ) );
+              .getMessage() ) );
           } finally {
             db.disconnect();
           }

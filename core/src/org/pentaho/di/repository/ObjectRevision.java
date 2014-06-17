@@ -26,9 +26,9 @@ import java.util.Date;
 
 /**
  * A revision is simply a name, a commit comment and a date
- * 
+ *
  * @author matt
- * 
+ *
  */
 public interface ObjectRevision {
 

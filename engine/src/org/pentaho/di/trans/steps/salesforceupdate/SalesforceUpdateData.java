@@ -50,9 +50,6 @@ public class SalesforceUpdateData extends BaseStepData implements StepDataInterf
   public Object[][] outputBuffer;
   public int iBufferPos;
 
-  /**
-	 * 
-	 */
   public SalesforceUpdateData() {
     super();
 

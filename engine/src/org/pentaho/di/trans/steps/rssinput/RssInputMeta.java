@@ -51,7 +51,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = RssInput.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RssInput.class; // for i18n purposes, needed by Translator2!!
 
   /** Flag indicating that a row number field should be included in the output */
   private boolean includeRowNumber;
@@ -344,7 +344,7 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     int i;
     for ( i = 0; i < inputFields.length; i++ ) {
       RssInputField field = inputFields[i];
@@ -354,7 +354,8 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
         type = ValueMeta.TYPE_STRING;
       }
       try {
-        ValueMetaInterface v = ValueMetaFactory.createValueMeta( space.environmentSubstitute( field.getName() ), type );
+        ValueMetaInterface v =
+          ValueMetaFactory.createValueMeta( space.environmentSubstitute( field.getName() ), type );
         v.setLength( field.getLength(), field.getPrecision() );
         v.setOrigin( name );
         r.addValueMeta( v );
@@ -379,8 +380,7 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
       urlInField = rep.getStepAttributeBoolean( id_step, "url_in_field" );
@@ -405,7 +405,8 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
         RssInputField field = new RssInputField();
 
         field.setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
-        field.setColumn( RssInputField.getColumnByCode( rep.getStepAttributeString( id_step, i, "field_column" ) ) );
+        field
+          .setColumn( RssInputField.getColumnByCode( rep.getStepAttributeString( id_step, i, "field_column" ) ) );
         field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
         field.setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
         field.setCurrencySymbol( rep.getStepAttributeString( id_step, i, "field_currency" ) );
@@ -413,8 +414,8 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
         field.setGroupSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
         field.setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         field.setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
-        field.setTrimType( RssInputField
-            .getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
+        field.setTrimType( RssInputField.getTrimTypeByCode( rep.getStepAttributeString(
+          id_step, i, "field_trim_type" ) ) );
         field.setRepeated( rep.getStepAttributeBoolean( id_step, i, "field_repeat" ) );
 
         inputFields[i] = field;
@@ -424,8 +425,7 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "url_in_field", urlInField );
       rep.saveStepAttribute( id_transformation, id_step, "url_field_name", urlFieldname );
@@ -458,7 +458,7 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "RssInputMeta.Exception.ErrorSavingToRepository", ""
-          + id_step ), e );
+        + id_step ), e );
     }
   }
 
@@ -470,33 +470,33 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
     return true;
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( urlInField ) {
       if ( Const.isEmpty( getUrlFieldname() ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RssInputMeta.CheckResult.NoField" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "RssInputMeta.CheckResult.NoField" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "RssInputMeta.CheckResult.FieldOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "RssInputMeta.CheckResult.FieldOk" ), stepMeta );
         remarks.add( cr );
       }
     } else {
       if ( getUrl() == null || getUrl().length == 0 ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "RssInputMeta.CheckResult.NoUrl" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "RssInputMeta.CheckResult.NoUrl" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "RssInputMeta.CheckResult.UrlOk",
-                "" + getUrl().length ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "RssInputMeta.CheckResult.UrlOk", "" + getUrl().length ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -504,7 +504,7 @@ public class RssInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new RssInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

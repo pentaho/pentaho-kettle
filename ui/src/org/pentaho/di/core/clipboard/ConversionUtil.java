@@ -24,9 +24,9 @@ package org.pentaho.di.core.clipboard;
 
 /**
  * Converts between byte[] and simple types (and BITMAPINFOHEADER)
- * 
+ *
  * If you found this class useful (or made some improvements) drop me a line.
- * 
+ *
  * @author Philip Schatz ( www.philschatz.com )
  */
 class ConversionUtil {

@@ -88,7 +88,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterface {
 
-  private static Class<?> PKG = LDIFInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = LDIFInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CTabFolder wTabFolder;
 
@@ -493,20 +493,25 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     ColumnInfo[] colinfo = new ColumnInfo[5];
     colinfo[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.Files.Filename.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LDIFInputDialog.Files.Filename.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinfo[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.Files.Wildcard.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LDIFInputDialog.Files.Wildcard.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinfo[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.Files.ExcludeWildcard.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LDIFInputDialog.Files.ExcludeWildcard.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinfo[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.Required.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, LDIFInputMeta.RequiredFilesDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LDIFInputDialog.Required.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        LDIFInputMeta.RequiredFilesDesc );
     colinfo[4] =
-        new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.IncludeSubDirs.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, LDIFInputMeta.RequiredFilesDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "LDIFInputDialog.IncludeSubDirs.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+        LDIFInputMeta.RequiredFilesDesc );
 
     colinfo[0].setUsingVariables( true );
     colinfo[1].setUsingVariables( true );
@@ -517,7 +522,8 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
     colinfo[4].setToolTip( BaseMessages.getString( PKG, "LDIFInputDialog.IncludeSubDirs.Tooltip" ) );
 
     wFilenameList =
-        new TableView( transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2, lsMod, props );
+      new TableView(
+        transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2, lsMod, props );
     props.setLook( wFilenameList );
     fdFilenameList = new FormData();
     fdFilenameList.left = new FormAttachment( middle, 0 );
@@ -715,8 +721,8 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
     wlMultiValuedSeparator.setLayoutData( fdlMultiValuedSeparator );
     wMultiValuedSeparator = new TextVar( transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wMultiValuedSeparator );
-    wMultiValuedSeparator
-        .setToolTipText( BaseMessages.getString( PKG, "LDIFInputDialog.MultiValuedSeparator.Tooltip" ) );
+    wMultiValuedSeparator.setToolTipText( BaseMessages.getString(
+      PKG, "LDIFInputDialog.MultiValuedSeparator.Tooltip" ) );
     wMultiValuedSeparator.addModifyListener( lsMod );
     fdMultiValuedSeparator = new FormData();
     fdMultiValuedSeparator.left = new FormAttachment( middle, 0 );
@@ -800,39 +806,52 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
     final int FieldsRows = input.getInputFields().length;
 
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Name.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Attribut.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Type.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Format.Column" ),
-              ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Length.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Precision.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Currency.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Decimal.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Group.Column" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.TrimType.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, LDIFInputField.trimTypeDesc, true ),
-          new ColumnInfo( BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Repeat.Column" ),
-              ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString( PKG, "System.Combo.Yes" ),
-                BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
+      new ColumnInfo[] {
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Name.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Attribut.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Type.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes(), true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Format.Column" ),
+          ColumnInfo.COLUMN_TYPE_FORMAT, 3 ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Length.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Precision.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Currency.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Decimal.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Group.Column" ),
+          ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.TrimType.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, LDIFInputField.trimTypeDesc, true ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Repeat.Column" ),
+          ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {
+            BaseMessages.getString( PKG, "System.Combo.Yes" ),
+            BaseMessages.getString( PKG, "System.Combo.No" ) }, true ),
 
-        };
+      };
 
     colinf[0].setUsingVariables( true );
     colinf[0].setToolTip( BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Name.Column.Tooltip" ) );
     colinf[1].setUsingVariables( true );
     colinf[1].setToolTip( BaseMessages.getString( PKG, "LDIFInputDialog.FieldsTable.Attribut.Column.Tooltip" ) );
 
-    wFields = new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+    wFields =
+      new TableView( transMeta, wFieldsComp, SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -912,7 +931,8 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFilenameList.add( new String[] { wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
+        wFilenameList.add( new String[] {
+          wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
           LDIFInputMeta.RequiredFilesCode[0], LDIFInputMeta.RequiredFilesCode[0] } );
         wFilename.setText( "" );
         wFilemask.setText( "" );
@@ -961,9 +981,9 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
           String[] files = fileInputList.getFileStrings();
           if ( files != null && files.length > 0 ) {
             EnterSelectionDialog esd =
-                new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                    "LDIFInputDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString( PKG,
-                    "LDIFInputDialog.FilesReadSelection.DialogMessage" ) );
+              new EnterSelectionDialog( shell, files,
+                BaseMessages.getString( PKG, "LDIFInputDialog.FilesReadSelection.DialogTitle" ),
+                BaseMessages.getString( PKG, "LDIFInputDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
           } else {
@@ -974,7 +994,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
           }
         } catch ( KettleException ex ) {
           new ErrorDialog( shell, BaseMessages.getString( PKG, "LDIFInputDialog.ErrorParsingData.DialogTitle" ),
-              BaseMessages.getString( PKG, "LDIFInputDialog.ErrorParsingData.DialogMessage" ), ex );
+            BaseMessages.getString( PKG, "LDIFInputDialog.ErrorParsingData.DialogMessage" ), ex );
         }
       }
     } );
@@ -1040,7 +1060,8 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
             dialog.setFileName( fname );
           }
 
-          dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "LDIFInputDialog.FileType" ),
+          dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "LDIFInputDialog.FileType" ),
             BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
           if ( dialog.open() != null ) {
@@ -1126,8 +1147,9 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
           wFilenameField.setText( value );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "LDIFInputDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "LDIFInputDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "LDIFInputDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "LDIFInputDialog.FailedToGetFields.DialogMessage" ), ke );
       }
     }
   }
@@ -1149,6 +1171,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 
         HashSet<String> attributeSet = new HashSet<String>();
 
+        //CHECKSTYLE:LineLength:OFF
         for ( LDIFRecord recordLDIF = InputLDIF.nextRecord(); recordLDIF != null; recordLDIF = InputLDIF.nextRecord() ) {
           // Get LDIF Content
           LDIFContent contentLDIF = recordLDIF.getContent();
@@ -1193,11 +1216,13 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
       wFields.setRowNums();
       wFields.optWidth( true );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LDIFInputMeta.ErrorRetrieveData.DialogTitle" ),
-          BaseMessages.getString( PKG, "LDIFInputMeta.ErrorRetrieveData.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "LDIFInputMeta.ErrorRetrieveData.DialogTitle" ), BaseMessages
+          .getString( PKG, "LDIFInputMeta.ErrorRetrieveData.DialogMessage" ), e );
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LDIFInputMeta.ErrorRetrieveData.DialogTitle" ),
-          BaseMessages.getString( PKG, "LDIFInputMeta.ErrorRetrieveData.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "LDIFInputMeta.ErrorRetrieveData.DialogTitle" ), BaseMessages
+          .getString( PKG, "LDIFInputMeta.ErrorRetrieveData.DialogMessage" ), e );
 
     }
   }
@@ -1259,7 +1284,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 
   /**
    * Read the data from the TextFileInputMeta object and show it in this dialog.
-   * 
+   *
    * @param in
    *          The TextFileInputMeta object to obtain the data from.
    */
@@ -1273,10 +1298,10 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
     if ( in.getFileName() != null ) {
       wFilenameList.removeAll();
       for ( int i = 0; i < in.getFileName().length; i++ ) {
-        wFilenameList
-            .add( new String[] { in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
-              in.getRequiredFilesDesc( in.getFileRequired()[i] ),
-              in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
+        wFilenameList.add( new String[] {
+          in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
+          in.getRequiredFilesDesc( in.getFileRequired()[i] ),
+          in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
       }
       wFilenameList.removeEmptyRows();
       wFilenameList.setRowNums();
@@ -1323,8 +1348,8 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
         String decim = field.getDecimalSymbol();
         String trim = field.getTrimTypeDesc();
         String rep =
-            field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString( PKG,
-                "System.Combo.No" );
+          field.isRepeated() ? BaseMessages.getString( PKG, "System.Combo.Yes" ) : BaseMessages.getString(
+            PKG, "System.Combo.No" );
 
         if ( name != null ) {
           item.setText( 1, name );
@@ -1407,8 +1432,9 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LDIFInputDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "LDIFInputDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "LDIFInputDialog.ErrorParsingData.DialogTitle" ), BaseMessages
+          .getString( PKG, "LDIFInputDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -1472,6 +1498,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
       field.setTrimType( LDIFInputField.getTrimTypeByDesc( item.getText( 10 ) ) );
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 11 ) ) );
 
+      //CHECKSTYLE:Indentation:OFF
       in.getInputFields()[i] = field;
     }
     in.setShortFileNameField( wShortFileFieldName.getText() );
@@ -1492,17 +1519,16 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
       getInfo( oneMeta );
 
       TransMeta previewMeta =
-          TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+        TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
-      EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "LDIFInputDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "LDIFInputDialog.NumberRows.DialogMessage" ) );
+      EnterNumberDialog numberDialog = new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+        BaseMessages.getString( PKG, "LDIFInputDialog.NumberRows.DialogTitle" ),
+        BaseMessages.getString( PKG, "LDIFInputDialog.NumberRows.DialogMessage" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+            shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -1511,23 +1537,25 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
+                  .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+            new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "LDIFInputDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "LDIFInputDialog.ErrorPreviewingData.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "LDIFInputDialog.ErrorPreviewingData.DialogTitle" ), BaseMessages
+          .getString( PKG, "LDIFInputDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 
@@ -1643,8 +1671,8 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
 
     // LastModificationTimeName line
     wlLastModificationTimeName = new Label( wAdditionalFieldsComp, SWT.RIGHT );
-    wlLastModificationTimeName
-        .setText( BaseMessages.getString( PKG, "LDIFInputDialog.LastModificationTimeName.Label" ) );
+    wlLastModificationTimeName.setText( BaseMessages.getString(
+      PKG, "LDIFInputDialog.LastModificationTimeName.Label" ) );
     props.setLook( wlLastModificationTimeName );
     fdlLastModificationTimeName = new FormData();
     fdlLastModificationTimeName.left = new FormAttachment( 0, 0 );

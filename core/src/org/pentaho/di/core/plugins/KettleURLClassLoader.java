@@ -38,7 +38,7 @@ import java.util.jar.JarFile;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class KettleURLClassLoader extends URLClassLoader {
-  private static Class<?> PKG = KettleURLClassLoader.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = KettleURLClassLoader.class; // for i18n purposes, needed by Translator2!!
 
   private String name;
 
@@ -64,8 +64,7 @@ public class KettleURLClassLoader extends URLClassLoader {
     return name;
   }
 
-  @Override
-  protected synchronized Class<?> loadClass( String arg0, boolean arg1 ) throws ClassNotFoundException {
+  protected Class<?> loadClassFromThisLoader( String arg0, boolean arg1 ) throws ClassNotFoundException {
     Class<?> clz = null;
     if ( ( clz = findLoadedClass( arg0 ) ) != null ) {
       if ( arg1 ) {
@@ -73,21 +72,18 @@ public class KettleURLClassLoader extends URLClassLoader {
       }
       return clz;
     }
-    try {
-      if ( ( clz = findClass( arg0 ) ) != null ) {
-        if ( arg1 ) {
-          resolveClass( clz );
-        }
-        return clz;
+
+    if ( ( clz = findClass( arg0 ) ) != null ) {
+      if ( arg1 ) {
+        resolveClass( clz );
       }
-    } catch ( ClassNotFoundException e ) {
-      // ignore
-
-    } catch ( NoClassDefFoundError e ) {
-      // ignore
-
+      return clz;
     }
+    return clz;
+  }
 
+  protected Class<?> loadClassFromParent( String arg0, boolean arg1 ) throws ClassNotFoundException {
+    Class<?> clz;
     if ( ( clz = getParent().loadClass( arg0 ) ) != null ) {
       if ( arg1 ) {
         resolveClass( clz );
@@ -95,6 +91,19 @@ public class KettleURLClassLoader extends URLClassLoader {
       return clz;
     }
     throw new ClassNotFoundException( "Could not find :" + arg0 );
+  }
+
+  @Override
+  protected synchronized Class<?> loadClass( String arg0, boolean arg1 ) throws ClassNotFoundException {
+    try {
+      return loadClassFromThisLoader( arg0, arg1 );
+    } catch ( ClassNotFoundException e ) {
+      // ignore
+    } catch ( NoClassDefFoundError e ) {
+      // ignore
+    }
+
+    return loadClassFromParent( arg0, arg1 );
   }
 
   /*

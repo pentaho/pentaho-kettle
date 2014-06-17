@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
  */
 
 public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = UniqueRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = UniqueRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** Indicate that we want to count the number of doubles */
   private boolean countRows;
@@ -166,6 +166,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrfields; i++ ) {
       retval.getCompareFields()[i] = compareFields[i];
       retval.getCaseInsensitive()[i] = caseInsensitive[i];
@@ -194,8 +195,8 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
       }
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages
-          .getString( PKG, "UniqueRowsMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "UniqueRowsMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -216,7 +217,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // change the case insensitive flag too
     for ( int i = 0; i < compareFields.length; i++ ) {
       int idx = row.indexOfValue( compareFields[i] );
@@ -252,8 +253,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       countRows = rep.getStepAttributeBoolean( id_step, "count_rows" );
       countField = rep.getStepAttributeString( id_step, "count_fields" );
@@ -269,13 +269,12 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
         caseInsensitive[i] = rep.getStepAttributeBoolean( id_step, i, "case_insensitive", true );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages
-          .getString( PKG, "UniqueRowsMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "UniqueRowsMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "count_rows", countRows );
       rep.saveStepAttribute( id_transformation, id_step, "count_fields", countField );
@@ -291,26 +290,26 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "UniqueRowsMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "UniqueRowsMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "UniqueRowsMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "UniqueRowsMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new UniqueRows( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

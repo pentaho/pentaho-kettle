@@ -52,9 +52,6 @@ public class DatabaseLookupData extends BaseStepData implements StepDataInterfac
   public int[] conditions;
   public boolean hasDBCondition;
 
-  /**
-	 * 
-	 */
   public DatabaseLookupData() {
     super();
 

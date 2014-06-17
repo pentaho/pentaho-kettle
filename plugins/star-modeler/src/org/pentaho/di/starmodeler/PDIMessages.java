@@ -30,16 +30,16 @@ import org.pentaho.di.i18n.BaseMessages;
 public class PDIMessages extends ResourceBundle{
 
   // private static ResourceBundle lafBundle;
-  
+
   private Class<?> clz = this.getClass();
-  
+
   public PDIMessages(){
   }
-  
+
   public PDIMessages(Class<?> pkg){
     this.clz = pkg;
   }
-  
+
   @Override
   public Enumeration<String> getKeys() {
     return null;
@@ -50,5 +50,5 @@ public class PDIMessages extends ResourceBundle{
     String result = BaseMessages.getString(clz, key);
     return result;
   }
-  
+
 }

@@ -31,7 +31,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author ngoodman
  * @since 27-jan-2009
- * 
+ *
  */
 public class AnalyticQueryData extends BaseStepData implements StepDataInterface {
   // Grouped Field Indexes (faster than looking up by strings)

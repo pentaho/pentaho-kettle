@@ -38,7 +38,7 @@ import org.pentaho.di.trans.steps.olapinput.olap4jhelper.OlapUtil;
 
 /**
  * <code>Olap4j Helper class</code> ...
- * 
+ *
  * @author Paul Stoellberger
  * @since Mar 12, 2010
  */
@@ -58,7 +58,7 @@ public class OlapHelper {
   private OlapConnection olapConnection;
 
   public OlapHelper( String olap4jDriver, String olap4jUrl, String username, String password, String catalogName,
-      String mdx/* , VariableSpace space */) {
+    String mdx ) {
     this.olap4jDriver = olap4jDriver;
     this.olap4jUrl = "jdbc:xmla:Server=" + olap4jUrl;
     this.catalogName = catalogName;
@@ -115,7 +115,7 @@ public class OlapHelper {
 
   /**
    * Outputs one row per tuple on the rows axis.
-   * 
+   *
    * @throws KettleDatabaseException
    *           in case some or other error occurs
    */

@@ -386,8 +386,8 @@ public class ThinUtil {
     }
 
     if ( index + 1 > sql.length() ) {
-      throw new KettleSQLException( "No closing " + nextChar + " found, starting at location " + quoteIndex + " in : ["
-          + sql + "]" );
+      throw new KettleSQLException( "No closing "
+        + nextChar + " found, starting at location " + quoteIndex + " in : [" + sql + "]" );
     }
     index++;
     return index;
@@ -397,8 +397,7 @@ public class ThinUtil {
     return findNextBracket( sql, skipChar, nextChar, index, false );
   }
 
-  public static int findNextBracket( String sql, char skipChar, char nextChar, int index, boolean escape )
-    throws KettleSQLException {
+  public static int findNextBracket( String sql, char skipChar, char nextChar, int index, boolean escape ) throws KettleSQLException {
 
     int counter = 0;
     for ( int i = index; i < sql.length(); i++ ) {
@@ -418,16 +417,16 @@ public class ThinUtil {
       }
     }
 
-    throw new KettleSQLException( "No closing " + nextChar + " bracket found for " + skipChar + " at location " + index
-        + " in : [" + sql + "]" );
+    throw new KettleSQLException( "No closing "
+      + nextChar + " bracket found for " + skipChar + " at location " + index + " in : [" + sql + "]" );
   }
 
   public static String stripQuotes( String string, char... quoteChars ) {
     StringBuilder builder = new StringBuilder( string );
     for ( char quoteChar : quoteChars ) {
       if ( countQuotes( builder.toString(), quoteChar ) == 2 ) {
-        if ( builder.length() > 0 && builder.charAt( 0 ) == quoteChar
-            && builder.charAt( builder.length() - 1 ) == quoteChar ) {
+        if ( builder.length() > 0
+          && builder.charAt( 0 ) == quoteChar && builder.charAt( builder.length() - 1 ) == quoteChar ) {
           // If there are quotes in between, don't do it...
           //
           builder.deleteCharAt( builder.length() - 1 );
@@ -448,8 +447,7 @@ public class ThinUtil {
     return count;
   }
 
-  public static List<String> splitClause( String fieldClause, char splitChar, char... skipChars )
-    throws KettleSQLException {
+  public static List<String> splitClause( String fieldClause, char splitChar, char... skipChars ) throws KettleSQLException {
     List<String> strings = new ArrayList<String>();
     int startIndex = 0;
     for ( int index = 0; index < fieldClause.length(); index++ ) {
@@ -494,8 +492,7 @@ public class ThinUtil {
     return fieldClause.length();
   }
 
-  public static String findClause( String sqlString, String startClause, String... endClauses )
-    throws KettleSQLException {
+  public static String findClause( String sqlString, String startClause, String... endClauses ) throws KettleSQLException {
     if ( Const.isEmpty( sqlString ) ) {
       return null;
     }

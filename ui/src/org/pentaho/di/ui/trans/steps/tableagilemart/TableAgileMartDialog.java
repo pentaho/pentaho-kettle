@@ -48,7 +48,7 @@ import org.pentaho.di.trans.steps.tableagilemart.TableAgileMartMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class TableAgileMartDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = TableAgileMartMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TableAgileMartMeta.class; // for i18n purposes, needed by Translator2!!
 
   private TableAgileMartMeta input;
 

@@ -38,20 +38,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Split a single String fields into multiple parts based on certain conditions.
- * 
+ *
  * @author Matt
  * @since 31-Okt-2003
  * @author Daniel Einspanjer
  * @since 15-01-2008
  */
 public class FieldSplitter extends BaseStep implements StepInterface {
-  private static Class<?> PKG = FieldSplitterMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FieldSplitterMeta.class; // for i18n purposes, needed by Translator2!!
 
   private FieldSplitterMeta meta;
   private FieldSplitterData data;
 
   public FieldSplitter( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -64,14 +64,14 @@ public class FieldSplitter extends BaseStep implements StepInterface {
       // search field
       data.fieldnr = data.previousMeta.indexOfValue( meta.getSplitField() );
       if ( data.fieldnr < 0 ) {
-        throw new KettleValueException( BaseMessages.getString( PKG, "FieldSplitter.Log.CouldNotFindFieldToSplit", meta
-            .getSplitField() ) );
+        throw new KettleValueException( BaseMessages.getString(
+          PKG, "FieldSplitter.Log.CouldNotFindFieldToSplit", meta.getSplitField() ) );
       }
 
       // only String type allowed
       if ( !data.previousMeta.getValueMeta( data.fieldnr ).isString() ) {
-        throw new KettleValueException( ( BaseMessages.getString( PKG, "FieldSplitter.Log.SplitFieldNotValid", meta
-            .getSplitField() ) ) );
+        throw new KettleValueException( ( BaseMessages.getString(
+          PKG, "FieldSplitter.Log.SplitFieldNotValid", meta.getSplitField() ) ) );
       }
 
       // prepare the outputMeta
@@ -87,71 +87,73 @@ public class FieldSplitter extends BaseStep implements StepInterface {
       data.enclosure = environmentSubstitute( meta.getEnclosure() );
     }
 
-    String v = data.previousMeta.getString( r, data.fieldnr );
-
     // reserve room
     Object[] outputRow = RowDataUtil.allocateRowData( data.outputMeta.size() );
 
     int nrExtraFields = meta.getFieldID().length - 1;
 
-    for ( int i = 0; i < data.fieldnr; i++ ) {
-      outputRow[i] = r[i];
-    }
-    for ( int i = data.fieldnr + 1; i < data.previousMeta.size(); i++ ) {
-      outputRow[i + nrExtraFields] = r[i];
-    }
+    System.arraycopy( r, 0, outputRow, 0, data.fieldnr );
+    System.arraycopy( r, data.fieldnr + 1, outputRow, data.fieldnr + 1 + nrExtraFields,
+      data.previousMeta.size() - ( data.fieldnr + 1 ) );
 
     // OK, now we have room in the middle to place the fields...
     //
 
     // Named values info.id[0] not filled in!
-    final boolean use_ids =
-        meta.getFieldID().length > 0 && meta.getFieldID()[0] != null && meta.getFieldID()[0].length() > 0;
+    final boolean selectFieldById =
+      meta.getFieldID().length > 0 && meta.getFieldID()[0] != null && meta.getFieldID()[0].length() > 0;
 
     if ( log.isDebug() ) {
-      if ( use_ids ) {
+      if ( selectFieldById ) {
         logDebug( BaseMessages.getString( PKG, "FieldSplitter.Log.UsingIds" ) );
       } else {
         logDebug( BaseMessages.getString( PKG, "FieldSplitter.Log.UsingPositionOfValue" ) );
       }
     }
 
-    Object value = null;
-    String[] splits = Const.splitString( v, data.delimiter, data.enclosure );
+    String valueToSplit = data.previousMeta.getString( r, data.fieldnr );
+    String[] valueParts = Const.splitString( valueToSplit, data.delimiter, data.enclosure );
     int prev = 0;
     for ( int i = 0; i < meta.getFieldName().length; i++ ) {
-      String split = ( splits == null || i >= splits.length ) ? null : splits[i];
-      if ( use_ids ) {
-        // Optionally remove the indicator
-        if ( split != null && meta.getFieldRemoveID()[i] ) {
-          final StringBuilder sb = new StringBuilder( split );
-          final int idx = sb.indexOf( meta.getFieldID()[i] );
-          sb.delete( idx, idx + meta.getFieldID()[i].length() );
-          split = sb.toString();
+      String rawValue = null;
+      if ( selectFieldById ) {
+        for ( String part : valueParts ) {
+          if ( part.startsWith( meta.getFieldID()[i] ) ) {
+            // Optionally remove the id
+            if ( meta.getFieldRemoveID()[i] ) {
+              rawValue = part.substring( meta.getFieldID()[i].length() );
+            } else {
+              rawValue = part;
+            }
+
+            break;
+          }
         }
 
-        if ( split == null ) {
-          split = "";
-        }
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "FieldSplitter.Log.SplitInfo" ) + split );
+          logDebug( BaseMessages.getString( PKG, "FieldSplitter.Log.SplitInfo" ) + rawValue );
         }
       } else {
+        rawValue = ( valueParts == null || i >= valueParts.length ) ? null : valueParts[i];
+        prev += ( rawValue == null ? 0 : rawValue.length() ) + data.delimiter.length();
+
         if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "FieldSplitter.Log.SplitFieldsInfo", split, String.valueOf( prev ) ) );
+          logDebug( BaseMessages
+            .getString( PKG, "FieldSplitter.Log.SplitFieldsInfo", rawValue, String.valueOf( prev ) ) );
         }
-        prev += ( split == null ? 0 : split.length() ) + data.delimiter.length();
       }
+
+      Object value;
 
       try {
         ValueMetaInterface valueMeta = data.outputMeta.getValueMeta( data.fieldnr + i );
         ValueMetaInterface conversionValueMeta = data.conversionMeta.getValueMeta( data.fieldnr + i );
         value =
-            valueMeta.convertDataFromString( split, conversionValueMeta, meta.getFieldNullIf()[i], meta
-                .getFieldIfNull()[i], meta.getFieldTrimType()[i] );
+          valueMeta.convertDataFromString( rawValue, conversionValueMeta, meta.getFieldNullIf()[i], meta
+            .getFieldIfNull()[i], meta.getFieldTrimType()[i] );
       } catch ( Exception e ) {
-        throw new KettleValueException( BaseMessages.getString( PKG,
-            "FieldSplitter.Log.ErrorConvertingSplitValue", split, meta.getSplitField() + "]!" ), e ); //$NON-NLS-3$
+        throw new KettleValueException( BaseMessages.getString(
+          PKG, "FieldSplitter.Log.ErrorConvertingSplitValue", rawValue, meta.getSplitField() + "]!" ), e );
       }
       outputRow[data.fieldnr + i] = value;
     }
@@ -164,9 +166,10 @@ public class FieldSplitter extends BaseStep implements StepInterface {
     data = (FieldSplitterData) sdi;
 
     Object[] r = getRow(); // get row from rowset, wait for our turn, indicate busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) {
+      // no more input to be expected...
       setOutputDone();
+
       return false;
     }
 
@@ -186,11 +189,6 @@ public class FieldSplitter extends BaseStep implements StepInterface {
     meta = (FieldSplitterMeta) smi;
     data = (FieldSplitterData) sdi;
 
-    if ( super.init( smi, sdi ) ) {
-      // Add init code here.
-      return true;
-    }
-    return false;
+    return super.init( smi, sdi );
   }
-
 }

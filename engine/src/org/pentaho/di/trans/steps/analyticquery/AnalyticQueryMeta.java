@@ -56,7 +56,7 @@ import org.w3c.dom.Node;
  */
 
 public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = AnalyticQuery.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AnalyticQuery.class; // for i18n purposes, needed by Translator2!!
 
   public static final int TYPE_FUNCT_LEAD = 0;
   public static final int TYPE_FUNCT_LAG = 1;
@@ -65,9 +65,8 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
   { "LEAD", "LAG", };
 
   public static final String[] typeGroupLongDesc = {
-
-  BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LEAD" ),
-    BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LAG" ), };
+    BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LEAD" ),
+    BaseMessages.getString( PKG, "AnalyticQueryMeta.TypeGroupLongDesc.LAG" ) };
 
   /** Fields to partition by ie, CUSTOMER, PRODUCT */
   private String[] groupField;
@@ -209,8 +208,8 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
       }
 
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "AnalyticQueryMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "AnalyticQueryMeta.Exception.UnableToLoadStepInfoFromXML" ), e );
     }
   }
 
@@ -251,7 +250,7 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // re-assemble a new row of metadata
     //
     RowMetaInterface fields = new RowMeta();
@@ -278,8 +277,9 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
         for ( int j = 0; j < fieldNames.length; j++ ) {
           sbfieldNames.append( "[" + fieldNames[j] + "]" + ( j < fieldNames.length - 1 ? ", " : "" ) );
         }
-        throw new KettleStepException( BaseMessages.getString( PKG, "AnalyticQueryMeta.Exception.SubjectFieldNotFound",
-            getParentStepMeta().getName(), subjectField[i], sbfieldNames.toString() ) );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "AnalyticQueryMeta.Exception.SubjectFieldNotFound", getParentStepMeta().getName(),
+          subjectField[i], sbfieldNames.toString() ) );
       }
     }
 
@@ -313,8 +313,7 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
       int groupsize = rep.countNrStepAttributes( id_step, "group_name" );
@@ -334,13 +333,12 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "AnalyticQueryMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "AnalyticQueryMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
 
       for ( int i = 0; i < groupField.length; i++ ) {
@@ -354,32 +352,32 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute( id_transformation, id_step, i, "aggregate_value_field", valueField[i] );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "AnalyticQueryMeta.Exception.UnableToSaveStepInfoToRepository" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "AnalyticQueryMeta.Exception.UnableToSaveStepInfoToRepository" )
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AnalyticQueryMeta.CheckResult.ReceivingInfoOK" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "AnalyticQueryMeta.CheckResult.ReceivingInfoOK" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "AnalyticQueryMeta.CheckResult.NoInputError" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "AnalyticQueryMeta.CheckResult.NoInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new AnalyticQuery( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

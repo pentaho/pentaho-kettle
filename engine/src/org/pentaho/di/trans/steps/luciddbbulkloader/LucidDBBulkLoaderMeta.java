@@ -67,40 +67,40 @@ import org.w3c.dom.Node;
  * - In the FIFO directory, create a FIFO file called {tableName}.csv (using mkfifo, LINUX ONLY FOLKS!)<br>
  * - Create a target table using standard Kettle SQL generation<br>
  * - Create a fifo server (with a certain name) on LucidDB<br>
- * 
+ *
  * <pre>
- * 		create or replace server fifo_server
- * 		foreign data wrapper sys_file_wrapper
- * 		options (
- * 		    directory '/path/to/luciddb-0.7.5/fifo/',
- * 		    file_extension 'csv',
- * 		    with_header 'yes', 
- * 		    num_rows_scan '0',
- * 		    lenient 'no');
+ *    create or replace server fifo_server
+ *    foreign data wrapper sys_file_wrapper
+ * options (
+ *     directory '/path/to/luciddb-0.7.5/fifo/',
+ *     file_extension 'csv',
+ *     with_header 'yes',
+ *     num_rows_scan '0',
+ *     lenient 'no');
  * </pre>
- * 
+ *
  * <br>
  * - Create a bulk loader file, SQL Server style: .bcp extension<br>
  * - Execute the following SQL Command to bulk load in a separate SQL thread in the background:<br>
- * 
+ *
  * <pre>
- * 		insert into {schemaName}.{tableName}
- * 		select * from {fifoServerName}."DEFAULT"."{tableName}";
+ * insert into {schemaName}.{tableName}
+ * select * from {fifoServerName}."DEFAULT"."{tableName}";
  * </pre>
- * 
+ *
  * <br>
  * - Write to the FIFO file called {tableName}.csv in the FIFO directory<br>
  * - At the end, close the output stream to the FIFO file<br>
  * * At the end, remove the FIFO file <br>
- * 
- * 
+ *
+ *
  * Created on 24-oct-2007<br>
- * 
+ *
  * @author Matt Casters<br>
  */
 public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
-    ProvidesDatabaseConnectionInformation {
-  private static Class<?> PKG = LucidDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  ProvidesDatabaseConnectionInformation {
+  private static Class<?> PKG = LucidDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** what's the schema for the target? */
   private String schemaName;
@@ -257,8 +257,8 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
         fieldFormatOk[i] = "Y".equalsIgnoreCase( XMLHandler.getTagValue( vnode, "field_format_ok" ) );
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "LucidDBBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "LucidDBBulkLoaderMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -279,7 +279,8 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
     StringBuffer retval = new StringBuffer( 300 );
 
     retval
-        .append( "    " ).append( XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) ); //$NON-NLS-3$
+      .append( "    " ).append(
+        XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "errors", maxErrors ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "buffer_size", bufferSize ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
@@ -300,8 +301,7 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       maxErrors = (int) rep.getStepAttributeInteger( id_step, "errors" );
@@ -325,13 +325,12 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
         fieldFormatOk[i] = rep.getStepAttributeBoolean( id_step, i, "field_format_ok" );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "LucidDBBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "LucidDBBulkLoaderMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
       rep.saveStepAttribute( id_transformation, id_step, "errors", maxErrors );
@@ -355,20 +354,20 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
         rep.insertStepDatabase( id_transformation, id_step, databaseMeta.getObjectId() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "LucidDBBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "LucidDBBulkLoaderMeta.Exception.UnableToSaveStepInfoToRepository" )
+        + id_step, e );
     }
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -380,8 +379,8 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 
         if ( !Const.isEmpty( tableName ) ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "LucidDBBulkLoaderMeta.CheckResult.TableNameOK" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "LucidDBBulkLoaderMeta.CheckResult.TableNameOK" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -390,13 +389,13 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 
           // Check fields in table
           String schemaTable =
-              databaseMeta.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                  .environmentSubstitute( tableName ) );
+            databaseMeta.getQuotedSchemaTableCombination(
+              transMeta.environmentSubstitute( schemaName ), transMeta.environmentSubstitute( tableName ) );
           RowMetaInterface r = db.getTableFields( schemaTable );
           if ( r != null ) {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "LucidDBBulkLoaderMeta.CheckResult.TableExists" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "LucidDBBulkLoaderMeta.CheckResult.TableExists" ), stepMeta );
             remarks.add( cr );
 
             // How about the fields to insert/dateMask in the table?
@@ -412,9 +411,9 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
                 if ( first ) {
                   first = false;
                   error_message +=
-                      BaseMessages
-                          .getString( PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable" )
-                          + Const.CR;
+                    BaseMessages.getString(
+                      PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsToLoadInTargetTable" )
+                      + Const.CR;
                 }
                 error_found = true;
                 error_message += "\t\t" + field + Const.CR;
@@ -424,12 +423,13 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
               cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
               cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                      "LucidDBBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable" ), stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "LucidDBBulkLoaderMeta.CheckResult.AllFieldsFoundInTargetTable" ), stepMeta );
             }
             remarks.add( cr );
           } else {
-            error_message = BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.CheckResult.CouldNotReadTableInfo" );
+            error_message =
+              BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.CheckResult.CouldNotReadTableInfo" );
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             remarks.add( cr );
           }
@@ -438,8 +438,8 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
         // Look up fields in the input stream <prev>
         if ( prev != null && prev.size() > 0 ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "LucidDBBulkLoaderMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "LucidDBBulkLoaderMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -452,7 +452,8 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
               if ( first ) {
                 first = false;
                 error_message +=
-                    BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsInInput" ) + Const.CR;
+                  BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsInInput" )
+                    + Const.CR;
               }
               error_found = true;
               error_message += "\t\t" + fieldStream[i] + Const.CR;
@@ -462,19 +463,20 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "LucidDBBulkLoaderMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "LucidDBBulkLoaderMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
           }
           remarks.add( cr );
         } else {
           error_message =
-              BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsInInput3" ) + Const.CR;
+            BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.CheckResult.MissingFieldsInInput3" ) + Const.CR;
           cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           remarks.add( cr );
         }
       } catch ( KettleException e ) {
         error_message =
-            BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.CheckResult.DatabaseErrorOccurred" ) + e.getMessage();
+          BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.CheckResult.DatabaseErrorOccurred" )
+            + e.getMessage();
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
@@ -489,19 +491,19 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "LucidDBBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "LucidDBBulkLoaderMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "LucidDBBulkLoaderMeta.CheckResult.NoInputError" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "LucidDBBulkLoaderMeta.CheckResult.NoInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    Repository repository, IMetaStore metaStore ) throws KettleStepException {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
 
     if ( databaseMeta != null ) {
@@ -528,8 +530,8 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
             db.connect();
 
             String schemaTable =
-                databaseMeta.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                    .environmentSubstitute( tableName ) );
+              databaseMeta.getQuotedSchemaTableCombination(
+                transMeta.environmentSubstitute( schemaName ), transMeta.environmentSubstitute( tableName ) );
             String sql = db.getDDL( schemaTable, tableFields, null, false, null, true );
 
             if ( Const.isEmpty( sql ) ) {
@@ -539,10 +541,11 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
             }
           } catch ( KettleException e ) {
             retval.setError( BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.GetSQL.ErrorOccurred" )
-                + e.getMessage() );
+              + e.getMessage() );
           }
         } else {
-          retval.setError( BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection" ) );
+          retval
+            .setError( BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.GetSQL.NoTableDefinedOnConnection" ) );
         }
       } else {
         retval.setError( BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.GetSQL.NotReceivingAnyFields" ) );
@@ -555,8 +558,8 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-      IMetaStore metaStore ) throws KettleStepException {
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+    IMetaStore metaStore ) throws KettleStepException {
     if ( prev != null ) {
       /* DEBUG CHECK THIS */
       // Insert dateMask fields : read/write
@@ -564,16 +567,17 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
         ValueMetaInterface v = prev.searchValueMeta( fieldStream[i] );
 
         DatabaseImpact ii =
-            new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(),
-                databaseMeta.getDatabaseName(), transMeta.environmentSubstitute( tableName ), fieldTable[i],
-                fieldStream[i], v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() ); //$NON-NLS-3$
+          new DatabaseImpact(
+            DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
+              .getDatabaseName(), transMeta.environmentSubstitute( tableName ), fieldTable[i],
+            fieldStream[i], v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() );
         impact.add( ii );
       }
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new LucidDBBulkLoader( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -605,19 +609,22 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
           if ( db.checkTableExists( schemaTable ) ) {
             return db.getTableFields( schemaTable );
           } else {
-            throw new KettleException( BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.Exception.TableNotFound" ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "LucidDBBulkLoaderMeta.Exception.TableNotFound" ) );
           }
         } else {
-          throw new KettleException( BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.Exception.TableNotSpecified" ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "LucidDBBulkLoaderMeta.Exception.TableNotSpecified" ) );
         }
       } catch ( Exception e ) {
-        throw new KettleException( BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.Exception.ErrorGettingFields" ),
-            e );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "LucidDBBulkLoaderMeta.Exception.ErrorGettingFields" ), e );
       } finally {
         db.disconnect();
       }
     } else {
-      throw new KettleException( BaseMessages.getString( PKG, "LucidDBBulkLoaderMeta.Exception.ConnectionNotDefined" ) );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "LucidDBBulkLoaderMeta.Exception.ConnectionNotDefined" ) );
     }
 
   }

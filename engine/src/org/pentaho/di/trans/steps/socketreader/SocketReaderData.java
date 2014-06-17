@@ -33,7 +33,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 27-nov-2006
- * 
+ *
  */
 public class SocketReaderData extends BaseStepData implements StepDataInterface {
 
@@ -42,9 +42,6 @@ public class SocketReaderData extends BaseStepData implements StepDataInterface 
   public DataInputStream inputStream;
   public RowMetaInterface rowMeta;
 
-  /**
-	 * 
-	 */
   public SocketReaderData() {
     super();
   }
@@ -58,6 +55,7 @@ public class SocketReaderData extends BaseStepData implements StepDataInterface 
         socket.close();
       }
     } catch ( java.io.IOException e ) {
+      // Ignore errors
     } finally {
       super.finalize();
     }

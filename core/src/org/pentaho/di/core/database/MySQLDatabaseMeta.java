@@ -74,7 +74,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   }
 
   public String getSQLQueryColumnFields( String columnname, String tableName ) {
-    return "SELECT " + columnname + " FROM " + tableName + " LIMIT 0"; //$NON-NLS-3$
+    return "SELECT " + columnname + " FROM " + tableName + " LIMIT 0";
   }
 
   /**
@@ -470,4 +470,11 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     return false;
   }
 
+  /**
+   * @return true if Kettle can create a repository on this type of database.
+   */
+  @Override
+  public boolean supportsRepository() {
+    return true;
+  }
 }

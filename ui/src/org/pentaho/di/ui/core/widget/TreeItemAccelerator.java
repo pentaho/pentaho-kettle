@@ -32,9 +32,9 @@ import org.pentaho.di.ui.core.ConstUI;
 
 /**
  * This class can be used to define accelerators (actions) to a tree item that just got created.
- * 
+ *
  * @author Matt
- * 
+ *
  */
 public class TreeItemAccelerator {
   public static final void addDoubleClick( final TreeItem treeItem, final DoubleClickInterface doubleClick ) {

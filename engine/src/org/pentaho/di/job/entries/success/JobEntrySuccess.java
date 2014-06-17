@@ -42,12 +42,12 @@ import org.w3c.dom.Node;
 
 /**
  * Job entry type to success a job.
- * 
+ *
  * @author Samatar
  * @since 12-02-2007
  */
 public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntrySuccess.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntrySuccess.class; // for i18n purposes, needed by Translator2!!
 
   public JobEntrySuccess( String n, String scr ) {
     super( n, "" );
@@ -70,8 +70,8 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
     } catch ( Exception e ) {
@@ -80,7 +80,7 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
   }
 
   // Save the attributes of this job entry
@@ -91,7 +91,7 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
   /**
    * Execute this job entry and return the result. In this case it means, just set the result boolean in the Result
    * class.
-   * 
+   *
    * @param previousResult
    *          The result of the previous execution
    * @return The Result of the execution.
@@ -113,8 +113,8 @@ public class JobEntrySuccess extends JobEntryBase implements Cloneable, JobEntry
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
   }
 

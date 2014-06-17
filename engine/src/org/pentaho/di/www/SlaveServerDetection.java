@@ -31,9 +31,10 @@ import org.w3c.dom.Node;
 
 /**
  * This class is what describes the information that we keep when we detect a slave server in the cloud / cluster.<br>
- * It contains the slave server information as well as the time it was last seen alive, whether it is still alive, etc.<br>
+ * It contains the slave server information as well as the time it was last seen alive, 
+ * whether it is still alive, etc.<br>
  * <br>
- * 
+ *
  * @author matt
  * @since 2008-OCT-08
  */
@@ -44,7 +45,7 @@ public class SlaveServerDetection {
   public enum SlaveRelationShip {
 
     SLAVE_SEVER( "SLAVE_SERVER", "Slave server" ), // Regular slave server
-    FAILOVER_MASTER( "FAILOVER_MASTER", "Fail-over master server" ); // Fail-over master server
+      FAILOVER_MASTER( "FAILOVER_MASTER", "Fail-over master server" ); // Fail-over master server
 
     private String code, description;
 

@@ -38,22 +38,22 @@ import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
-  private static Class<?> PKG = UserInfo.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = UserInfo.class; // for i18n purposes, needed by Translator2!!
 
   public KettleDatabaseRepositoryUserDelegate( KettleDatabaseRepository repository ) {
     super( repository );
   }
 
   public RowMetaAndData getUser( ObjectId id_user ) throws KettleException {
-    return repository.connectionDelegate.getOneRow( quoteTable( KettleDatabaseRepository.TABLE_R_USER ),
-        quote( KettleDatabaseRepository.FIELD_USER_ID_USER ), id_user );
+    return repository.connectionDelegate.getOneRow(
+      quoteTable( KettleDatabaseRepository.TABLE_R_USER ), quote( KettleDatabaseRepository.FIELD_USER_ID_USER ),
+      id_user );
   }
 
   public synchronized ObjectId getUserID( String login ) throws KettleException {
-    return repository.connectionDelegate
-        .getIDWithValue( quoteTable( KettleDatabaseRepository.TABLE_R_USER ),
-            quote( KettleDatabaseRepository.FIELD_USER_ID_USER ), quote( KettleDatabaseRepository.FIELD_USER_LOGIN ),
-            login );
+    return repository.connectionDelegate.getIDWithValue(
+      quoteTable( KettleDatabaseRepository.TABLE_R_USER ), quote( KettleDatabaseRepository.FIELD_USER_ID_USER ),
+      quote( KettleDatabaseRepository.FIELD_USER_LOGIN ), login );
   }
 
   // Load user with login from repository, don't verify password...
@@ -82,7 +82,7 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 
   /**
    * Load user with login from repository and verify the password...
-   * 
+   *
    * @param rep
    * @param login
    * @param passwd
@@ -128,7 +128,8 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
       // Put a commit behind it!
       repository.commit();
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( BaseMessages.getString( PKG, "UserInfo.Error.SavingUser", userInfo.getLogin() ), dbe );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "UserInfo.Error.SavingUser", userInfo.getLogin() ), dbe );
     }
 
   }
@@ -138,10 +139,11 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
     r.addValue( new ValueMeta( "ID_USER", ValueMetaInterface.TYPE_INTEGER ), userInfo.getObjectId() );
     r.addValue( new ValueMeta( "LOGIN", ValueMetaInterface.TYPE_STRING ), userInfo.getLogin() );
     r.addValue( new ValueMeta( "PASSWORD", ValueMetaInterface.TYPE_STRING ), Encr.encryptPassword( userInfo
-        .getPassword() ) );
+      .getPassword() ) );
     r.addValue( new ValueMeta( "NAME", ValueMetaInterface.TYPE_STRING ), userInfo.getUsername() );
     r.addValue( new ValueMeta( "DESCRIPTION", ValueMetaInterface.TYPE_STRING ), userInfo.getDescription() );
-    r.addValue( new ValueMeta( "ENABLED", ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( userInfo.isEnabled() ) );
+    r.addValue( new ValueMeta( "ENABLED", ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+      .valueOf( userInfo.isEnabled() ) );
     return r;
   }
 
@@ -163,14 +165,16 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 
   public synchronized void renameUser( ObjectId id_user, String newname ) throws KettleException {
     String sql =
-        "UPDATE " + quoteTable( KettleDatabaseRepository.TABLE_R_USER ) + " SET "
-            + quote( KettleDatabaseRepository.FIELD_USER_NAME ) + " = ? WHERE "
-            + quote( KettleDatabaseRepository.FIELD_USER_ID_USER ) + " = ?";
+      "UPDATE "
+        + quoteTable( KettleDatabaseRepository.TABLE_R_USER ) + " SET "
+        + quote( KettleDatabaseRepository.FIELD_USER_NAME ) + " = ? WHERE "
+        + quote( KettleDatabaseRepository.FIELD_USER_ID_USER ) + " = ?";
 
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING ), newname );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER ),
-        id_user );
+    table.addValue(
+      new ValueMeta( KettleDatabaseRepository.FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING ), newname );
+    table.addValue(
+      new ValueMeta( KettleDatabaseRepository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER ), id_user );
 
     repository.connectionDelegate.getDatabase().execStatement( sql, table.getRowMeta(), table.getData() );
   }

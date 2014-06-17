@@ -65,12 +65,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the SQL job entry settings. (select the connection and the sql script to be executed)
- * 
+ *
  * @author Matt
  * @since 19-06-2003
  */
 public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryHTTP.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryHTTP.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILETYPES = new String[] { BaseMessages.getString( PKG, "JobHTTP.Filetype.All" ) };
 
@@ -274,8 +274,8 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
     fdlURL.right = new FormAttachment( middle, -margin );
     wlURL.setLayoutData( fdlURL );
     wURL =
-        new TextVar( jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobHTTP.URL.Tooltip" ) );
+      new TextVar( jobMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobHTTP.URL.Tooltip" ) );
     props.setLook( wURL );
     wURL.addModifyListener( lsMod );
     fdURL = new FormData();
@@ -682,21 +682,24 @@ public class JobEntryHTTPDialog extends JobEntryDialog implements JobEntryDialog
     wHeadersComp.setLayout( HeadersLayout );
 
     int rows =
-        jobEntry.getHeaderName() == null ? 1 : ( jobEntry.getHeaderName().length == 0 ? 0
-            : jobEntry.getHeaderName().length );
+      jobEntry.getHeaderName() == null ? 1 : ( jobEntry.getHeaderName().length == 0 ? 0 : jobEntry
+        .getHeaderName().length );
 
     colinf =
-        new ColumnInfo[] {
+      new ColumnInfo[] {
 
-          new ColumnInfo( BaseMessages.getString( PKG, "JobHTTP.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              HTTPProtocol.getRequestHeaders(), false ),
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobHTTP.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          HTTPProtocol.getRequestHeaders(), false ),
 
-          new ColumnInfo( BaseMessages.getString( PKG, "JobHTTP.ColumnInfo.Value" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
+        new ColumnInfo(
+          BaseMessages.getString( PKG, "JobHTTP.ColumnInfo.Value" ), ColumnInfo.COLUMN_TYPE_TEXT, false ), };
     colinf[0].setUsingVariables( true );
     colinf[1].setUsingVariables( true );
 
     wHeaders =
-        new TableView( jobMeta, wHeadersComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, rows, lsMod, props );
+      new TableView(
+        jobMeta, wHeadersComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, rows, lsMod, props );
 
     fdHeaders = new FormData();
     fdHeaders.left = new FormAttachment( 0, margin );

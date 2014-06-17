@@ -24,9 +24,12 @@ package org.pentaho.di.trans.steps.ivwloader;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Scanner;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -48,6 +51,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+
 /**
  * Performs a streaming bulk load to a VectorWise table.
  * 
@@ -63,9 +67,11 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
   private IngresVectorwiseLoaderMeta meta;
   private IngresVectorwiseLoaderData data;
+  public VWloadMonitor vwLoadMonitor;
+  public Thread vwLoadMonitorThread;
 
   public IngresVectorwiseLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-      TransMeta transMeta, Trans trans ) {
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -118,7 +124,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         // masquerading the password for log
         if ( meta.isUseDynamicVNode() ) {
           logDetailed( "Executing command: " + cmd.substring( 0, cmd.indexOf( "[" ) ) + "[username,password]"
-              + cmd.substring( cmd.indexOf( "]" ) + 1 ) );
+            + cmd.substring( cmd.indexOf( "]" ) + 1 ) );
         } else {
           logDetailed( "Executing command: " + cmd );
         }
@@ -126,7 +132,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
         // any error message?
         //
-        data.errorLogger = new StreamLogger( log, data.sqlProcess.getErrorStream(), "ERR_SQL" );
+        data.errorLogger = new StreamLogger( log, data.sqlProcess.getErrorStream(), "ERR_SQL", true );
 
         // any output?
         data.outputLogger = new StreamLogger( log, data.sqlProcess.getInputStream(), "OUT_SQL" );
@@ -137,7 +143,12 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
         // kick them off
         new Thread( data.errorLogger ).start();
-        new Thread( data.outputLogger ).start();
+        Thread outputLoggerThread = new Thread( data.outputLogger );
+        outputLoggerThread.start();
+
+        vwLoadMonitor = new VWloadMonitor( data.sqlProcess, data.outputLogger, outputLoggerThread );
+        vwLoadMonitorThread = new Thread( vwLoadMonitor );
+        vwLoadMonitorThread.start();
 
       } catch ( Exception ex ) {
         throw new KettleException( "Error while executing psql : " + cmd, ex );
@@ -176,7 +187,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
   private String createLoadCommand() {
     String loadCommand = "";
     loadCommand +=
-        "COPY TABLE " + meta.getDatabaseMeta().getQuotedSchemaTableCombination( null, meta.getTableName() ) + " ";
+      "COPY TABLE " + meta.getDatabaseMeta().getQuotedSchemaTableCombination( null, meta.getTableName() ) + " ";
 
     // Build list of column names to set
     //
@@ -271,11 +282,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         throw e;
       }
 
-      try {
-        data.fifoOpener.checkExcn();
-      } catch ( Exception e ) {
-        throw e;
-      }
+      data.fifoOpener.checkExcn();
     }
 
     logDetailed( "Opened fifo file " + data.fifoFilename + " for writing." );
@@ -293,7 +300,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
    *           Upon any exception
    */
   public String createCommandLine( IngresVectorwiseLoaderMeta meta ) throws KettleException {
-    StringBuffer sb = new StringBuffer( 300 );
+    StringBuilder sb = new StringBuilder( 300 );
 
     if ( !Const.isEmpty( meta.getSqlPath() ) ) {
       try {
@@ -322,17 +329,17 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
     if ( dm != null ) {
       String databaseName = environmentSubstitute( Const.NVL( dm.getDatabaseName(), "" ) );
       String password =
-          Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( Const.NVL( dm.getDatabaseInterface()
-              .getPassword(), "" ) ) );
+        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( Const.NVL( dm.getDatabaseInterface()
+          .getPassword(), "" ) ) );
       String port = environmentSubstitute( Const.NVL( dm.getDatabasePortNumberString(), "" ) ).replace( "7", "" );
       String username = environmentSubstitute( Const.NVL( dm.getDatabaseInterface().getUsername(), "" ) );
       String hostname = environmentSubstitute( Const.NVL( dm.getDatabaseInterface().getHostname(), "" ) );
       String schemaTable = dm.getQuotedSchemaTableCombination( null, environmentSubstitute( meta.getTableName() ) );
       String encoding = environmentSubstitute( Const.NVL( meta.getEncoding(), "" ) );
       String fifoFile =
-          Const.optionallyQuoteStringByOS( environmentSubstitute( Const.NVL( meta.getFifoFileName(), "" ) ) );
+        Const.optionallyQuoteStringByOS( environmentSubstitute( Const.NVL( meta.getFifoFileName(), "" ) ) );
       String errorFile =
-          Const.optionallyQuoteStringByOS( environmentSubstitute( Const.NVL( meta.getErrorFileName(), "" ) ) );
+        Const.optionallyQuoteStringByOS( environmentSubstitute( Const.NVL( meta.getErrorFileName(), "" ) ) );
       int maxNrErrors = Const.toInt( environmentSubstitute( Const.NVL( meta.getMaxNrErrors(), "0" ) ), 0 );
 
       if ( meta.isUsingVwload() ) {
@@ -348,7 +355,9 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
           sb.append( " -l " ).append( errorFile );
         }
         if ( maxNrErrors > 0 ) {
-          sb.append( " -x " ).append( maxNrErrors );
+          // need multiplication for two because every wrong rows
+          // provide 2 errors that is not evident
+          sb.append( " -x " ).append( maxNrErrors * 2 );
         }
         sb.append( " " ).append( databaseName );
         sb.append( " " ).append( fifoFile );
@@ -357,7 +366,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         // logical portname in JDBC use a 7
 
         sb.append( " @" ).append( hostname ).append( "," ).append( port ).append( "[" ).append( username ).append( "," )
-            .append( password ).append( "]::" ).append( databaseName );
+          .append( password ).append( "]::" ).append( databaseName );
       } else {
         // Database Name
         //
@@ -379,15 +388,18 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
     try {
       Object[] r = getRow(); // Get row from input rowset & set row busy!
-      if ( r == null ) // no more input to be expected...
-      {
-        setOutputDone();
+      // no more input to be expected...
+      if ( r == null ) {
         // only close output after the first row was processed
         // to prevent error (NPE) on empty rows set
         if ( !first ) {
           closeOutput();
         }
 
+        if ( vwLoadMonitorThread != null ) {
+          vwLoadMonitorThread.join();
+        }
+        setOutputDone();
         return false;
       }
 
@@ -503,10 +515,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         ValueMetaInterface valueMeta = rowMeta.getValueMeta( index );
         Object valueData = r[index];
 
-        if ( valueData == null ) {
-          // Don't output anything for null
-          //
-        } else {
+        if ( valueData != null ) {
           if ( valueMeta.isStorageBinaryString() ) {
             byte[] value = valueMeta.getBinaryString( valueData );
             write( value );
@@ -606,7 +615,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
       // Schema-table combination...
       data.schemaTable =
-          meta.getDatabaseMeta().getQuotedSchemaTableCombination( null, environmentSubstitute( meta.getTableName() ) );
+        meta.getDatabaseMeta().getQuotedSchemaTableCombination( null, environmentSubstitute( meta.getTableName() ) );
 
       data.encoding = environmentSubstitute( meta.getEncoding() );
       data.isEncoding = !Const.isEmpty( environmentSubstitute( meta.getEncoding() ) );
@@ -645,13 +654,12 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
   public boolean checkSqlProcessRunning( Process sqlProcess ) {
     try {
-      int exitValue = data.sqlProcess.exitValue();
+      int exitValue = sqlProcess.exitValue();
       logError( "SQL process exit code: " + exitValue );
       return false;
-    }
-    // ignore this exception since it is thrown when exitValue() is called on a
-    // running process
-    catch ( IllegalThreadStateException e ) {
+    } catch ( IllegalThreadStateException e ) {
+      // ignore this exception since it is thrown when exitValue() is called on a
+      // running process
       // Do nothing SQL Process still running
       return true;
     }
@@ -742,6 +750,78 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
     }
   }
 
+  public class VWloadMonitor implements Runnable {
+    private Process vwloadProcess;
+    private StreamLogger outputLogger;
+    private Thread outputLoggerThread;
+
+    VWloadMonitor( Process loadProcess, StreamLogger outputLogger, Thread outputLoggerThread ) {
+      this.vwloadProcess = loadProcess;
+      this.outputLogger = outputLogger;
+      this.outputLoggerThread = outputLoggerThread;
+    }
+
+    public void run() {
+      try {
+        int resultCode = vwloadProcess.waitFor();
+        Long[] results = tryToParseVWloadResultMessage();
+        if ( results != null ) {
+          setLinesOutput( results[1] );
+          setLinesRejected( results[2] );
+        }
+        boolean errorResult =
+          ( resultCode != 0 ) || ( results != null && ( !meta.isContinueOnError() && !meta.isUsingVwload() ) );
+        if ( errorResult ) {
+          setLinesOutput( 0L );
+          logError( "Bulk loader finish unsuccessfully" );
+          setErrors( 1L );
+        } else {
+          setErrors( 0L );
+        }
+      } catch ( Exception ex ) {
+        setErrors( 1L );
+        logError( "Unexpected error encountered while monitoring bulk load process", ex );
+      }
+    }
+
+    @SuppressWarnings( "resource" )
+    private Long[] tryToParseVWloadResultMessage() throws InterruptedException, IOException {
+      outputLoggerThread.join();
+      Long[] result = new Long[3];
+      if ( meta.isUsingVwload() ) {
+        String lastLine = outputLogger.getLastLine();
+        Scanner sc = null;
+        try {
+          sc = new Scanner( lastLine );
+          sc = sc.useDelimiter( "\\D+" );
+          int i = 0;
+          while ( sc.hasNext() ) {
+            result[i++] = sc.nextBigInteger().longValue();
+          }
+        } finally {
+          if ( sc != null ) {
+            sc.close();
+          }
+        }
+      } else {
+        if ( meta.getErrorFileName() == null ) {
+          return null;
+        }
+        File errorFile = new File( meta.getErrorFileName() );
+        if ( !errorFile.exists() ) {
+          return null;
+        } else {
+          LineNumberReader lnr = new LineNumberReader( new FileReader( errorFile ) );
+          lnr.skip( Long.MAX_VALUE );
+          Integer errors = lnr.getLineNumber();
+          result[1] = ( getLinesOutput() - errors );
+          result[2] = Long.valueOf( errors );
+        }
+      }
+      return result;
+    }
+  }
+
   public boolean closeClientConnections( IngresVectorwiseLoaderData data ) {
     // Close the output streams if still needed.
     //
@@ -761,7 +841,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       //
       try {
         if ( data.fifoFilename != null ) {
-          new File( data.fifoFilename ).delete();
+          new File( data.fifoFilename ).deleteOnExit();
         }
       } catch ( Exception e ) {
         logError( "Unable to delete FIFO file : " + data.fifoFilename, e );

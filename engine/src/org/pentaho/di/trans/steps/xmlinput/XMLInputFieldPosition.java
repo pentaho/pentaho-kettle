@@ -29,7 +29,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class XMLInputFieldPosition implements Cloneable {
-  private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int XML_ELEMENT = 1;
   public static final int XML_ATTRIBUTE = 2;
@@ -43,7 +43,7 @@ public class XMLInputFieldPosition implements Cloneable {
 
   /**
    * Create a new XML Input Field position.
-   * 
+   *
    * @param name
    *          the name of the element or attribute
    * @param type
@@ -57,7 +57,7 @@ public class XMLInputFieldPosition implements Cloneable {
 
   /**
    * Create a new XML Input Field position.
-   * 
+   *
    * @param name
    *          the name of the element or attribute
    * @param type
@@ -97,14 +97,14 @@ public class XMLInputFieldPosition implements Cloneable {
 
   /**
    * Construnct a new XMLFieldPosition based on an a code: E=Elementame, A=Attributename
-   * 
+   *
    * @param encoded
    */
   public XMLInputFieldPosition( String encoded ) throws KettleValueException {
     int equalIndex = encoded.indexOf( '=' );
     if ( equalIndex < 0 ) {
-      throw new KettleValueException( BaseMessages.getString( PKG,
-          "XMLInputFieldPosition.Exception.InvalidXMLFieldPosition", encoded ) );
+      throw new KettleValueException( BaseMessages.getString(
+        PKG, "XMLInputFieldPosition.Exception.InvalidXMLFieldPosition", encoded ) );
     }
 
     String positionType = Const.trim( encoded.substring( 0, equalIndex ) );
@@ -121,21 +121,21 @@ public class XMLInputFieldPosition implements Cloneable {
       this.elementNr = 1;
     }
 
-    if ( positionType.equalsIgnoreCase( "E" ) ) // Element
-    {
+    if ( positionType.equalsIgnoreCase( "E" ) ) { // Element
+
       this.type = XML_ELEMENT;
       this.name = positionName;
-    } else if ( positionType.equalsIgnoreCase( "A" ) ) // Attribute
-    {
+    } else if ( positionType.equalsIgnoreCase( "A" ) ) { // Attribute
+
       this.type = XML_ATTRIBUTE;
       this.name = positionName;
-    } else if ( positionType.equalsIgnoreCase( "R" ) ) // Root of the repeating element. There is only one
-    {
+    } else if ( positionType.equalsIgnoreCase( "R" ) ) { // Root of the repeating element. There is only one
+
       this.type = XML_ROOT;
       this.name = positionName;
     } else {
-      throw new KettleValueException( BaseMessages.getString( PKG, "XMLInputFieldPosition.Exception.WrongPositionType",
-          positionType ) );
+      throw new KettleValueException( BaseMessages.getString(
+        PKG, "XMLInputFieldPosition.Exception.WrongPositionType", positionType ) );
     }
 
     // Get the element nr
@@ -198,7 +198,7 @@ public class XMLInputFieldPosition implements Cloneable {
 
   /**
    * Encode the path to an XML element or attribute
-   * 
+   *
    * @param path
    *          An ArrayList of XMLInputFieldPosition
    * @return the path encoded

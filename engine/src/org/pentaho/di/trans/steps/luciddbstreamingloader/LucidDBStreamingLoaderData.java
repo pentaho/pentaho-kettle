@@ -32,7 +32,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
  * Stores data for the LucidDB Streaming Loader step.
- * 
+ *
  * @author Ray Zhang
  * @since Jan-05-2010
  */

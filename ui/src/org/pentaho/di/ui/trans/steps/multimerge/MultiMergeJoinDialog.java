@@ -68,7 +68,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = MultiMergeJoinMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MultiMergeJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_SORT_WARNING_PARAMETER = "MergeJoinSortWarning";
 
@@ -95,7 +95,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.trans.step.StepDialogInterface#open()
    */
   public String open() {
@@ -171,7 +171,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
     /*
      * lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-     * 
+     *
      * wStepname.addSelectionListener( lsDef );
      */
 
@@ -200,7 +200,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
   /**
    * Create widgets for join type selection
-   * 
+   *
    * @param lsMod
    */
   private void createJoinTypeWidget( final ModifyListener lsMod ) {
@@ -235,7 +235,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
   /**
    * create widgets for input stream and join keys
-   * 
+   *
    * @param lsMod
    */
   private void createInputStreamWidgets( final ModifyListener lsMod ) {
@@ -309,7 +309,8 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
       Button button = new Button( shell, SWT.PUSH );
       button.setText( BaseMessages.getString( PKG, "MultiMergeJoinMeta.SelectKeys" ) );
       // add listener
-      button.addListener( SWT.Selection, new ConfigureKeyButtonListener( this, keyValTextBox[index], index, lsMod ) );
+      button
+        .addListener( SWT.Selection, new ConfigureKeyButtonListener( this, keyValTextBox[index], index, lsMod ) );
       FormData buttonData = new FormData();
       buttonData.left = new FormAttachment( 65, margin );
       buttonData.right = new FormAttachment( 80, -margin );
@@ -324,7 +325,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
   /**
    * "Configure join key" shell
-   * 
+   *
    * @param keyValTextBox
    * @param lsMod
    */
@@ -351,12 +352,13 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
     int nrKeyRows = ( keys != null ? keys.length : 1 );
 
     ciKeys =
-        new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "MultiMergeJoinDialog.ColumnInfo.KeyField" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ), };
+      new ColumnInfo[] { new ColumnInfo(
+        BaseMessages.getString( PKG, "MultiMergeJoinDialog.ColumnInfo.KeyField" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false ), };
 
     final TableView wKeys =
-        new TableView( transMeta, subShell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKeys, nrKeyRows, lsMod, props );
+      new TableView( transMeta, subShell, SWT.BORDER
+        | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKeys, nrKeyRows, lsMod, props );
 
     FormData fdKeys = new FormData();
     fdKeys.top = new FormAttachment( wlKeys, margin );
@@ -428,7 +430,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
     /*
      * SelectionAdapter lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-     * 
+     *
      * wStepname.addSelectionListener( lsDef );
      */
 
@@ -500,7 +502,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
   /**
    * Get the meta data
-   * 
+   *
    * @param meta
    */
   private void getMeta( MultiMergeJoinMeta meta ) {
@@ -510,8 +512,8 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
       if ( inputSteps != null && inputSteps.length != 0 ) {
         for ( int i = 0; i < inputSteps.length; i++ ) {
           meta.getStepIOMeta().addStream(
-              new Stream( StreamType.INFO, null,
-                  BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ), StreamIcon.INFO, null ) );
+            new Stream( StreamType.INFO, null, BaseMessages.getString(
+              PKG, "MultiMergeJoin.InfoStream.Description" ), StreamIcon.INFO, null ) );
         }
         infoStreams = meta.getStepIOMeta().getInfoStreams();
       }
@@ -520,8 +522,8 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
       for ( int i = 0; i < requiredStreams; i++ ) {
         meta.getStepIOMeta().addStream(
-            new Stream( StreamType.INFO, null, BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ),
-                StreamIcon.INFO, null ) );
+          new Stream( StreamType.INFO, null, BaseMessages.getString(
+            PKG, "MultiMergeJoin.InfoStream.Description" ), StreamIcon.INFO, null ) );
       }
       infoStreams = meta.getStepIOMeta().getInfoStreams();
     }
@@ -529,6 +531,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
     meta.allocateInputSteps( streamCount );
     meta.allocateKeys( streamCount );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < streamCount; i++ ) {
       meta.getInputSteps()[i] = wInputStepArray[i].getText();
       infoStreams.get( i ).setStepMeta( transMeta.findStep( wInputStepArray[i].getText() ) );
@@ -545,13 +548,15 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
     // Show a warning (optional)
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-          new MessageDialogWithToggle( shell, BaseMessages.getString( PKG,
-              "MultiMergeJoinDialog.InputNeedSort.DialogTitle" ), null, BaseMessages.getString( PKG,
-              "MultiMergeJoinDialog.InputNeedSort.DialogMessage", Const.CR )
-              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG,
-              "MultiMergeJoinDialog.InputNeedSort.Option1" ) }, 0, BaseMessages.getString( PKG,
-              "MultiMergeJoinDialog.InputNeedSort.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
-              STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
+        new MessageDialogWithToggle( shell,
+          BaseMessages.getString( PKG, "MultiMergeJoinDialog.InputNeedSort.DialogTitle" ),
+          null,
+          BaseMessages.getString( PKG, "MultiMergeJoinDialog.InputNeedSort.DialogMessage", Const.CR ) + Const.CR,
+          MessageDialog.WARNING,
+          new String[] { BaseMessages.getString( PKG, "MultiMergeJoinDialog.InputNeedSort.Option1" ) },
+          0,
+          BaseMessages.getString( PKG, "MultiMergeJoinDialog.InputNeedSort.Option2" ),
+          "N".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_SORT_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );
@@ -563,9 +568,9 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
   /**
    * Listener for Configure Keys button
-   * 
+   *
    * @author A71481
-   * 
+   *
    */
   private static class ConfigureKeyButtonListener implements Listener {
     MultiMergeJoinDialog dialog;
@@ -573,7 +578,8 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
     int inputStreamIndex;
     ModifyListener listener;
 
-    public ConfigureKeyButtonListener( MultiMergeJoinDialog dialog, Text textBox, int streamIndex, ModifyListener lsMod ) {
+    public ConfigureKeyButtonListener( MultiMergeJoinDialog dialog, Text textBox, int streamIndex,
+      ModifyListener lsMod ) {
       this.dialog = dialog;
       this.textBox = textBox;
       this.listener = lsMod;

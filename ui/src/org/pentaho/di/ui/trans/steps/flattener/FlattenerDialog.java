@@ -57,7 +57,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class FlattenerDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = FlattenerMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FlattenerMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFields;
   private TableView wFields;
@@ -163,12 +163,14 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 
     ColumnInfo[] ciKey = new ColumnInfo[nrKeyCols];
     ciKey[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "FlattenerDialog.ColumnInfo.TargetField" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "FlattenerDialog.ColumnInfo.TargetField" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciKey, nrKeyRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
+        nrKeyRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -242,8 +244,9 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
           wField.setText( field );
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "FlattenerDialog.FailedToGetFields.DialogTitle" ),
-            BaseMessages.getString( PKG, "FlattenerDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "FlattenerDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+            .getString( PKG, "FlattenerDialog.FailedToGetFields.DialogMessage" ), ke );
       }
       gotPreviousFields = true;
     }
@@ -295,6 +298,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 
     for ( int i = 0; i < nrTargets; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
+      //CHECKSTYLE:Indentation:OFF
       input.getTargetField()[i] = item.getText( 1 );
     }
     stepname = wStepname.getText();

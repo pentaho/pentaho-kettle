@@ -43,12 +43,12 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 /**
  * Merge rows from 2 sorted streams to detect changes. Use this as feed for a dimension in case you have no time stamps
  * in your source system.
- * 
+ *
  * @author Matt
  * @since 19-dec-2005
  */
 public class MergeRows extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final String VALUE_IDENTICAL = "identical";
   private static final String VALUE_CHANGED = "changed";
@@ -58,7 +58,8 @@ public class MergeRows extends BaseStep implements StepInterface {
   private MergeRowsMeta meta;
   private MergeRowsData data;
 
-  public MergeRows( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public MergeRows( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -92,8 +93,8 @@ public class MergeRows extends BaseStep implements StepInterface {
           data.keyNrs[i] = data.oneRowSet.getRowMeta().indexOfValue( meta.getKeyFields()[i] );
           if ( data.keyNrs[i] < 0 ) {
             String message =
-                BaseMessages.getString( PKG, "MergeRows.Exception.UnableToFindFieldInReferenceStream", meta
-                    .getKeyFields()[i] );
+              BaseMessages.getString( PKG, "MergeRows.Exception.UnableToFindFieldInReferenceStream", meta
+                .getKeyFields()[i] );
             logError( message );
             throw new KettleStepException( message );
           }
@@ -106,8 +107,8 @@ public class MergeRows extends BaseStep implements StepInterface {
           data.valueNrs[i] = data.twoRowSet.getRowMeta().indexOfValue( meta.getValueFields()[i] );
           if ( data.valueNrs[i] < 0 ) {
             String message =
-                BaseMessages.getString( PKG, "MergeRows.Exception.UnableToFindFieldInReferenceStream", meta
-                    .getValueFields()[i] );
+              BaseMessages.getString( PKG, "MergeRows.Exception.UnableToFindFieldInReferenceStream", meta
+                .getValueFields()[i] );
             logError( message );
             throw new KettleStepException( message );
           }
@@ -127,11 +128,13 @@ public class MergeRows extends BaseStep implements StepInterface {
     if ( data.outputRowMeta == null ) {
       data.outputRowMeta = new RowMeta();
       if ( data.one != null ) {
-        meta.getFields( data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.oneRowSet.getRowMeta() },
-            null, this, repository, metaStore );
+        meta.getFields(
+          data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.oneRowSet.getRowMeta() }, null, this,
+          repository, metaStore );
       } else {
-        meta.getFields( data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.twoRowSet.getRowMeta() },
-            null, this, repository, metaStore );
+        meta.getFields(
+          data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.twoRowSet.getRowMeta() }, null, this,
+          repository, metaStore );
       }
     }
 
@@ -139,8 +142,8 @@ public class MergeRows extends BaseStep implements StepInterface {
     int outputIndex;
     String flagField = null;
 
-    if ( data.one == null && data.two != null ) // Record 2 is flagged as new!
-    {
+    if ( data.one == null && data.two != null ) { // Record 2 is flagged as new!
+
       outputRow = data.two;
       outputIndex = data.twoRowSet.getRowMeta().size();
       flagField = VALUE_NEW;
@@ -155,11 +158,11 @@ public class MergeRows extends BaseStep implements StepInterface {
 
       // Also get a next row from reference rowset...
       data.one = getRowFrom( data.oneRowSet );
-    } else // OK, Here is the real start of the compare code!
-    {
+    } else { // OK, Here is the real start of the compare code!
+
       int compare = data.oneRowSet.getRowMeta().compare( data.one, data.two, data.keyNrs );
-      if ( compare == 0 ) // The Key matches, we CAN compare the two rows...
-      {
+      if ( compare == 0 ) { // The Key matches, we CAN compare the two rows...
+
         int compareValues = data.oneRowSet.getRowMeta().compare( data.one, data.two, data.valueNrs );
         if ( compareValues == 0 ) {
           outputRow = data.one;
@@ -177,8 +180,8 @@ public class MergeRows extends BaseStep implements StepInterface {
         data.one = getRowFrom( data.oneRowSet );
         data.two = getRowFrom( data.twoRowSet );
       } else {
-        if ( compare < 0 ) // one < two
-        {
+        if ( compare < 0 ) { // one < two
+
           outputRow = data.one;
           outputIndex = data.oneRowSet.getRowMeta().size();
           flagField = VALUE_DELETED;
@@ -227,18 +230,17 @@ public class MergeRows extends BaseStep implements StepInterface {
 
   /**
    * Checks whether 2 template rows are compatible for the mergestep.
-   * 
+   *
    * @param referenceRow
    *          Reference row
    * @param compareRow
    *          Row to compare to
-   * 
+   *
    * @return true when templates are compatible.
    * @throws KettleRowException
    *           in case there is a compatibility error.
    */
-  protected void checkInputLayoutValid( RowMetaInterface referenceRowMeta, RowMetaInterface compareRowMeta )
-    throws KettleRowException {
+  protected void checkInputLayoutValid( RowMetaInterface referenceRowMeta, RowMetaInterface compareRowMeta ) throws KettleRowException {
     if ( referenceRowMeta != null && compareRowMeta != null ) {
       BaseStep.safeModeChecking( referenceRowMeta, compareRowMeta );
     }

@@ -33,10 +33,10 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 
 /**
  * Responsible for tracking the execution of a job as a hierarchy.
- * 
+ *
  * @author Matt
  * @since 30-mar-2006
- * 
+ *
  */
 public class JobTracker {
   /** The trackers for each individual job entry */
@@ -86,7 +86,7 @@ public class JobTracker {
 
   /**
    * Creates a jobtracker with a single result (maxChildren children are kept)
-   * 
+   *
    * @param jobMeta
    *          the job metadata to keep track of
    * @param result
@@ -99,7 +99,7 @@ public class JobTracker {
 
   /**
    * Creates a jobtracker with a single result
-   * 
+   *
    * @param jobMeta
    *          the job metadata to keep track of
    * @param maxChildren
@@ -115,8 +115,9 @@ public class JobTracker {
   public void addJobTracker( JobTracker jobTracker ) {
     synchronized ( this ) {
       jobTrackers.add( jobTracker );
-      if ( jobTrackers.size() > maxChildren + 50 ) {
-        jobTrackers = jobTrackers.subList( 50, jobTrackers.size() );
+      while ( jobTrackers.size() > maxChildren ) {
+        // Use remove instead of subList
+        ( (LinkedList<JobTracker>) jobTrackers ).removeFirst();
       }
     }
   }
@@ -166,7 +167,7 @@ public class JobTracker {
 
   /**
    * Finds the JobTracker for the job entry specified. Use this to
-   * 
+   *
    * @param jobEntryCopy
    *          The entry to search the job tracker for
    * @return The JobTracker of null if none could be found...
@@ -176,8 +177,9 @@ public class JobTracker {
       JobTracker tracker = getJobTracker( i );
       JobEntryResult result = tracker.getJobEntryResult();
       if ( result != null ) {
-        if ( jobEntryCopy.getName() != null && jobEntryCopy.getName().equals( result.getJobEntryName() )
-            && jobEntryCopy.getNr() == result.getJobEntryNr() ) {
+        if ( jobEntryCopy.getName() != null
+          && jobEntryCopy.getName().equals( result.getJobEntryName() )
+          && jobEntryCopy.getNr() == result.getJobEntryNr() ) {
           return tracker;
         }
       }

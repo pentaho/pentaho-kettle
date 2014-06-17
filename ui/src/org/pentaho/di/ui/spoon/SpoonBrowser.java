@@ -50,10 +50,10 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
 
 /**
  * This class handles the display of help information like the welcome page and JDBC info in an embedded browser.
- * 
+ *
  * @author Matt
  * @since November 2006
- * 
+ *
  */
 
 public class SpoonBrowser implements TabItemInterface, XulEventHandler {
@@ -85,12 +85,12 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
   }
 
   public SpoonBrowser( Composite parent, final Spoon spoon, final String stringUrl, boolean isURL,
-      LocationListener listener ) throws SWTError {
+    LocationListener listener ) throws SWTError {
     this( parent, spoon, stringUrl, isURL, true, listener );
   }
 
   public SpoonBrowser( Composite parent, final Spoon spoon, final String stringUrl, boolean isURL,
-      boolean showControls, LocationListener listener ) throws SWTError {
+    boolean showControls, LocationListener listener ) throws SWTError {
     composite = new Composite( parent, SWT.NONE );
 
     this.shell = parent.getShell();
@@ -187,7 +187,8 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
       toolbarControl.setParent( composite );
     } catch ( Exception e ) {
       e.printStackTrace();
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages
           .getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_BROWSER_TOOLBAR ), e );
     }
   }
@@ -283,7 +284,7 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getData()
    */
   public Object getData() {
@@ -293,7 +294,7 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
    */
   public String getName() {
@@ -302,7 +303,7 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#getXulDomContainer()
    */
   public XulDomContainer getXulDomContainer() {
@@ -312,7 +313,7 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setData(java.lang.Object)
    */
   public void setData( Object data ) {
@@ -322,7 +323,7 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
    */
   public void setName( String name ) {
@@ -332,7 +333,7 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
   public void setXulDomContainer( XulDomContainer xulDomContainer ) {

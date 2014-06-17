@@ -71,12 +71,12 @@ import org.w3c.dom.Node;
 
 /**
  * Shell type of Job Entry. You can define shell scripts to be executed in a Job.
- * 
+ *
  * @author Matt
  * @since 01-10-2003, rewritten on 18-06-2004
  */
 public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryShell.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryShell.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
 
@@ -135,7 +135,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     retval.append( "      " ).append( XMLHandler.addTagValue( "script", script ) );
 
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "loglevel", ( logFileLevel == null ) ? null : logFileLevel.getCode() ) );
+      XMLHandler.addTagValue( "loglevel", ( logFileLevel == null ) ? null : logFileLevel.getCode() ) );
 
     if ( arguments != null ) {
       for ( int i = 0; i < arguments.length; i++ ) {
@@ -148,8 +148,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       setFileName( XMLHandler.getTagValue( entrynode, "filename" ) );
@@ -187,7 +187,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
   // Load the jobentry from repository
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       setFileName( rep.getJobEntryAttributeString( id_jobentry, "file_name" ) );
       setWorkDirectory( rep.getJobEntryAttributeString( id_jobentry, "work_directory" ) );
@@ -214,7 +214,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       }
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'shell' from the repository with id_jobentry="
-          + id_jobentry, dbe );
+        + id_jobentry, dbe );
     }
   }
 
@@ -232,8 +232,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       rep.saveJobEntryAttribute( id_job, getObjectId(), "add_time", addTime );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logfile", logfile );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logext", logext );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "loglevel", logFileLevel == null ? LogLevel.NOTHING.getCode()
-          : logFileLevel.getCode() );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "loglevel", logFileLevel == null ? LogLevel.NOTHING
+        .getCode() : logFileLevel.getCode() );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "insertScript", insertScript );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "script", script );
 
@@ -333,7 +333,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         KettleLogStore.getAppender().addLoggingEventListener( loggingEventListener );
       } catch ( KettleException e ) {
         logError( BaseMessages.getString( PKG, "JobEntryShell.Error.UnableopenAppenderFile", getLogFilename(), e
-            .toString() ) );
+          .toString() ) );
         logError( Const.getStackTracker( e ) );
         result.setNrErrors( 1 );
         result.setResult( false );
@@ -363,11 +363,11 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
     if ( log.isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "JobEntryShell.Log.FoundPreviousRows", ""
-          + ( rows != null ? rows.size() : 0 ) ) );
+        + ( rows != null ? rows.size() : 0 ) ) );
     }
 
     while ( ( first && !execPerRow )
-        || ( execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0 ) ) {
+      || ( execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0 ) ) {
       first = false;
       if ( rows != null && execPerRow ) {
         resultRow = rows.get( iteration );
@@ -377,11 +377,12 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 
       List<RowMetaAndData> cmdRows = null;
 
-      if ( execPerRow ) // Execute for each input row
-      {
-        if ( argFromPrevious ) // Copy the input row to the (command
-        // line) arguments
-        {
+      if ( execPerRow ) {
+        // Execute for each input row
+
+        if ( argFromPrevious ) {
+          // Copy the input row to the (command line) arguments
+
           if ( resultRow != null ) {
             args = new String[resultRow.size()];
             for ( int i = 0; i < resultRow.size(); i++ ) {
@@ -423,7 +424,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         loggingEventListener.close();
 
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_LOG, loggingEventListener.getFile(), parentJob.getJobname(), getName() );
+          new ResultFile(
+            ResultFile.FILE_TYPE_LOG, loggingEventListener.getFile(), parentJob.getJobname(), getName() );
         result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
       }
     }
@@ -455,13 +457,15 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       if ( Const.getOS().equals( "Windows 95" ) ) {
         base = new String[] { "command.com", "/C" };
         if ( insertScript ) {
-          tempFile = KettleVFS.createTempFile( "kettle", "shell.bat", environmentSubstitute( workDirectory ), this );
+          tempFile =
+            KettleVFS.createTempFile( "kettle", "shell.bat", environmentSubstitute( workDirectory ), this );
           fileObject = createTemporaryShellFile( tempFile, realScript );
         }
       } else if ( Const.getOS().startsWith( "Windows" ) ) {
         base = new String[] { "cmd.exe", "/C" };
         if ( insertScript ) {
-          tempFile = KettleVFS.createTempFile( "kettle", "shell.bat", environmentSubstitute( workDirectory ), this );
+          tempFile =
+            KettleVFS.createTempFile( "kettle", "shell.bat", environmentSubstitute( workDirectory ), this );
           fileObject = createTemporaryShellFile( tempFile, realScript );
         }
       } else {
@@ -489,15 +493,9 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           cmdline.append( '"' );
           cmdline.append( Const.optionallyQuoteStringByOS( KettleVFS.getFilename( fileObject ) ) );
           // Add the arguments from previous results...
-          for ( int i = 0; i < cmdRows.size(); i++ ) // Normally just
-          // one row, but
-          // once in a
-          // while to
-          // remain
-          // compatible we
-          // have
-          // multiple.
-          {
+          for ( int i = 0; i < cmdRows.size(); i++ ) {
+            // Normally just one row, but once in a while to remain compatible we have multiple.
+
             RowMetaAndData r = cmdRows.get( i );
             for ( int j = 0; j < r.size(); j++ ) {
               cmdline.append( ' ' );
@@ -508,15 +506,9 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
           cmds.add( cmdline.toString() );
         } else {
           // Add the arguments from previous results...
-          for ( int i = 0; i < cmdRows.size(); i++ ) // Normally just
-          // one row, but
-          // once in a
-          // while to
-          // remain
-          // compatible we
-          // have
-          // multiple.
-          {
+          for ( int i = 0; i < cmdRows.size(); i++ ) {
+            // Normally just one row, but once in a while to remain compatible we have multiple.
+
             RowMetaAndData r = cmdRows.get( i );
             for ( int j = 0; j < r.size(); j++ ) {
               cmds.add( Const.optionallyQuoteStringByOS( r.getString( j, null ) ) );
@@ -584,14 +576,16 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       Process proc = procBuilder.start();
 
       // any error message?
-      StreamLogger errorLogger = new StreamLogger( log, proc.getErrorStream(), "(stderr)" );
+      StreamLogger errorLogger = new StreamLogger( log, proc.getErrorStream(), "(stderr)", true );
 
       // any output?
       StreamLogger outputLogger = new StreamLogger( log, proc.getInputStream(), "(stdout)" );
 
       // kick them off
-      new Thread( errorLogger ).start();
-      new Thread( outputLogger ).start();
+      Thread errorLoggerThread = new Thread( errorLogger );
+      errorLoggerThread.start();
+      Thread outputLoggerThread = new Thread( outputLogger );
+      outputLoggerThread.start();
 
       proc.waitFor();
       if ( log.isDetailed() ) {
@@ -602,12 +596,16 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       result.setExitStatus( proc.exitValue() );
       if ( result.getExitStatus() != 0 ) {
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobShell.ExitStatus", environmentSubstitute( getFilename() ), ""
-              + result.getExitStatus() ) );
+          logDetailed( BaseMessages.getString(
+            PKG, "JobShell.ExitStatus", environmentSubstitute( getFilename() ), "" + result.getExitStatus() ) );
         }
 
         result.setNrErrors( 1 );
       }
+
+      // wait until loggers read all data from stdout and stderr
+      errorLoggerThread.join();
+      outputLoggerThread.join();
 
       // close the streams
       // otherwise you get "Too many open files, java.io.IOException" after a lot of iterations
@@ -615,16 +613,16 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
       proc.getOutputStream().close();
 
     } catch ( IOException ioe ) {
-      logError( BaseMessages.getString( PKG, "JobShell.ErrorRunningShell", environmentSubstitute( getFilename() ), ioe
-          .toString() ), ioe );
+      logError( BaseMessages.getString(
+        PKG, "JobShell.ErrorRunningShell", environmentSubstitute( getFilename() ), ioe.toString() ), ioe );
       result.setNrErrors( 1 );
     } catch ( InterruptedException ie ) {
-      logError( BaseMessages.getString( PKG, "JobShell.Shellinterupted", environmentSubstitute( getFilename() ), ie
-          .toString() ), ie );
+      logError( BaseMessages.getString(
+        PKG, "JobShell.Shellinterupted", environmentSubstitute( getFilename() ), ie.toString() ), ie );
       result.setNrErrors( 1 );
     } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "JobShell.UnexpectedError", environmentSubstitute( getFilename() ), e
-          .toString() ), e );
+        .toString() ), e );
       result.setNrErrors( 1 );
     } finally {
       // If we created a temporary file, remove it...
@@ -697,8 +695,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx = new ValidatorContext();
     putVariableSpace( ctx, getVariables() );
     putValidators( ctx, notBlankValidator(), fileExistsValidator() );

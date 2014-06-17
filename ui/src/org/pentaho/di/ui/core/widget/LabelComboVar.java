@@ -38,10 +38,10 @@ import org.pentaho.di.ui.core.PropsUI;
 
 /**
  * Adds a line of text with a label and a variable to a composite (like a dialog shell)
- * 
+ *
  * @author Matt
  * @since 17-may-2006
- * 
+ *
  */
 public class LabelComboVar extends Composite {
   private static final PropsUI props = PropsUI.getInstance();

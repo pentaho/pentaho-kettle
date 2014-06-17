@@ -42,8 +42,8 @@ public class TransPainterExtension {
   public int iconsize;
 
   public TransPainterExtension( GCInterface gc, boolean shadow, List<AreaOwner> areaOwners, TransMeta transMeta,
-      StepMeta stepMeta, TransHopMeta transHop, int x1, int y1, int x2, int y2, int mx, int my, Point offset,
-      int iconsize ) {
+    StepMeta stepMeta, TransHopMeta transHop, int x1, int y1, int x2, int y2, int mx, int my, Point offset,
+    int iconsize ) {
     super();
     this.gc = gc;
     this.shadow = shadow;

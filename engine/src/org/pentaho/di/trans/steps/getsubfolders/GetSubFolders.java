@@ -45,25 +45,25 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read all subfolder inside a specified folder and convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Samatar
  * @since 18-July-2008
  */
 public class GetSubFolders extends BaseStep implements StepInterface {
-  private static Class<?> PKG = GetSubFoldersMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetSubFoldersMeta.class; // for i18n purposes, needed by Translator2!!
 
   private GetSubFoldersMeta meta;
 
   private GetSubFoldersData data;
 
   public GetSubFolders( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
 
@@ -103,10 +103,10 @@ public class GetSubFolders extends BaseStep implements StepInterface {
           data.indexOfFoldernameField = data.inputRowMeta.indexOfValue( realDynamicFoldername );
           if ( data.indexOfFoldernameField < 0 ) {
             // The field is unreachable !
-            logError( BaseMessages.getString( PKG, "GetSubFolders.Log.ErrorFindingField" ) + "["
-                + realDynamicFoldername + "]" );
-            throw new KettleException( BaseMessages.getString( PKG, "GetSubFolders.Exception.CouldnotFindField",
-                realDynamicFoldername ) );
+            logError( BaseMessages.getString( PKG, "GetSubFolders.Log.ErrorFindingField" )
+              + "[" + realDynamicFoldername + "]" );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "GetSubFolders.Exception.CouldnotFindField", realDynamicFoldername ) );
           }
         }
       } else {
@@ -124,7 +124,7 @@ public class GetSubFolders extends BaseStep implements StepInterface {
       }
       data.nrStepFields = data.outputRowMeta.size();
 
-    }// end if first
+    } // end if first
     if ( meta.isFoldernameDynamic() ) {
       if ( data.readrow == null ) {
         setOutputDone();
@@ -241,7 +241,8 @@ public class GetSubFolders extends BaseStep implements StepInterface {
     if ( nonAccessibleFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
       logError( BaseMessages.getString( PKG, "GetSubFolders.Error.NoAccessibleFiles", message ) );
-      throw new KettleException( BaseMessages.getString( PKG, "GetSubFolders.Exception.NoAccessibleFiles", message ) );
+      throw new KettleException( BaseMessages
+        .getString( PKG, "GetSubFolders.Exception.NoAccessibleFiles", message ) );
     }
   }
 
@@ -275,6 +276,7 @@ public class GetSubFolders extends BaseStep implements StepInterface {
         data.file.close();
         data.file = null;
       } catch ( Exception e ) {
+        // Ignore close errors
       }
 
     }

@@ -32,15 +32,15 @@ import org.pentaho.di.core.exception.KettlePluginException;
  * It expresses the ID and the name of the plugin type.<br>
  * Then it also explains what the plugin meta class is called and classes the plugin interface itself.<br>
  * It also explains us where to load plugins of this type.<br>
- * 
+ *
  * @author matt
- * 
+ *
  */
 public interface PluginTypeInterface {
 
   /**
    * Register an additional class type to be managed by the plugin system.
-   * 
+   *
    * @param clz
    *          category class, usually an interface
    * @param xmlNodeName
@@ -64,14 +64,14 @@ public interface PluginTypeInterface {
   public List<PluginFolderInterface> getPluginFolders();
 
   /**
-   * 
+   *
    * @throws KettlePluginException
    */
   public void searchPlugins() throws KettlePluginException;
 
   /**
    * Handle an annotated plugin
-   * 
+   *
    * @param clazz
    *          The class to use
    * @param annotation
@@ -85,5 +85,5 @@ public interface PluginTypeInterface {
    * @throws KettlePluginException
    */
   public void handlePluginAnnotation( Class<?> clazz, java.lang.annotation.Annotation annotation,
-      List<String> libraries, boolean nativePluginType, URL pluginFolder ) throws KettlePluginException;
+    List<String> libraries, boolean nativePluginType, URL pluginFolder ) throws KettlePluginException;
 }

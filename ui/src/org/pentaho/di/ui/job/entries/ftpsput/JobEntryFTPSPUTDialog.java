@@ -55,6 +55,7 @@ import org.pentaho.di.job.entries.ftpsput.JobEntryFTPSPUT;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -64,13 +65,13 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the FTPS Put job entry settings
- * 
+ *
  * @author Samatar
  * @since 10-03-2010
  */
 
 public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryFTPSPUT.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryFTPSPUT.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
 
@@ -379,10 +380,17 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
 
+    wPassword.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
+      }
+    } );
+
     // Proxy host line
     wProxyHost =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPSPUT.ProxyHost.Label" ),
-            BaseMessages.getString( PKG, "JobFTPSPUT.ProxyHost.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPSPUT.ProxyHost.Label" ), BaseMessages
+          .getString( PKG, "JobFTPSPUT.ProxyHost.Tooltip" ) );
     props.setLook( wProxyHost );
     wProxyHost.addModifyListener( lsMod );
     fdProxyHost = new FormData();
@@ -393,8 +401,9 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
 
     // Proxy port line
     wProxyPort =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPSPUT.ProxyPort.Label" ),
-            BaseMessages.getString( PKG, "JobFTPSPUT.ProxyPort.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPSPUT.ProxyPort.Label" ), BaseMessages
+          .getString( PKG, "JobFTPSPUT.ProxyPort.Tooltip" ) );
     props.setLook( wProxyPort );
     wProxyPort.addModifyListener( lsMod );
     fdProxyPort = new FormData();
@@ -405,8 +414,9 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
 
     // Proxy username line
     wProxyUsername =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPSPUT.ProxyUsername.Label" ),
-            BaseMessages.getString( PKG, "JobFTPSPUT.ProxyUsername.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPSPUT.ProxyUsername.Label" ),
+        BaseMessages.getString( PKG, "JobFTPSPUT.ProxyUsername.Tooltip" ) );
     props.setLook( wProxyUsername );
     wProxyUsername.addModifyListener( lsMod );
     fdProxyUsername = new FormData();
@@ -417,8 +427,9 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
 
     // Proxy password line
     wProxyPassword =
-        new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPSPUT.ProxyPassword.Label" ),
-            BaseMessages.getString( PKG, "JobFTPSPUT.ProxyPassword.Tooltip" ) );
+      new LabelTextVar(
+        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPSPUT.ProxyPassword.Label" ),
+        BaseMessages.getString( PKG, "JobFTPSPUT.ProxyPassword.Tooltip" ) );
     props.setLook( wProxyPassword );
     wProxyPassword.addModifyListener( lsMod );
     fdProxyPasswd = new FormData();
@@ -426,6 +437,12 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     fdProxyPasswd.top = new FormAttachment( wProxyUsername, margin );
     fdProxyPasswd.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPasswd );
+
+    wProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wProxyPassword.getTextWidget() );
+      }
+    } );
 
     wlConnectionType = new Label( wServerSettings, SWT.RIGHT );
     wlConnectionType.setText( BaseMessages.getString( PKG, "JobFTPSPUT.ConnectionType.Label" ) );
@@ -507,8 +524,8 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     fdlTimeout.right = new FormAttachment( middle, 0 );
     wlTimeout.setLayoutData( fdlTimeout );
     wTimeout =
-        new TextVar( jobMeta, wAdvancedSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobFTPSPUT.Timeout.Tooltip" ) );
+      new TextVar( jobMeta, wAdvancedSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobFTPSPUT.Timeout.Tooltip" ) );
     props.setLook( wTimeout );
     wTimeout.setToolTipText( BaseMessages.getString( PKG, "JobFTPSPUT.Timeout.Tooltip" ) );
     fdTimeout = new FormData();
@@ -604,8 +621,8 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     wbLocalDirectory.setLayoutData( fdbLocalDirectory );
 
     wLocalDirectory =
-        new TextVar( jobMeta, wSourceSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobFTPSPUT.LocalDir.Tooltip" ) );
+      new TextVar( jobMeta, wSourceSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobFTPSPUT.LocalDir.Tooltip" ) );
     props.setLook( wLocalDirectory );
     wLocalDirectory.addModifyListener( lsMod );
     fdLocalDirectory = new FormData();
@@ -624,8 +641,8 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     fdlWildcard.right = new FormAttachment( middle, -margin );
     wlWildcard.setLayoutData( fdlWildcard );
     wWildcard =
-        new TextVar( jobMeta, wSourceSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobFTPSPUT.Wildcard.Tooltip" ) );
+      new TextVar( jobMeta, wSourceSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobFTPSPUT.Wildcard.Tooltip" ) );
     props.setLook( wWildcard );
     wWildcard.addModifyListener( lsMod );
     fdWildcard = new FormData();
@@ -710,8 +727,8 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     wbTestRemoteDirectoryExists.setLayoutData( fdbTestRemoteDirectoryExists );
 
     wRemoteDirectory =
-        new TextVar( jobMeta, wTargetSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString( PKG,
-            "JobFTPSPUT.RemoteDir.Tooltip" ) );
+      new TextVar( jobMeta, wTargetSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER, BaseMessages.getString(
+        PKG, "JobFTPSPUT.RemoteDir.Tooltip" ) );
     props.setLook( wRemoteDirectory );
     wRemoteDirectory.addModifyListener( lsMod );
     fdRemoteDirectory = new FormData();
@@ -845,6 +862,7 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
       try {
         connection.disconnect();
       } catch ( Exception e ) {
+        // Ignore errors
       }
     }
   }
@@ -858,7 +876,7 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.Connected.NOK.ConnectionBad", wServerName.getText() )
-          + Const.CR );
+        + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPSPUT.Connected.Title.Bad" ) );
       mb.open();
     }
@@ -891,8 +909,9 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
 
       if ( connection == null ) { // Create ftp client to host:port ...
         connection =
-            new FTPSConnection( FTPSConnection.getConnectionTypeByDesc( wConnectionType.getText() ), realServername,
-                realPort, realUsername, realPassword );
+          new FTPSConnection(
+            FTPSConnection.getConnectionTypeByDesc( wConnectionType.getText() ), realServername, realPort,
+            realUsername, realPassword );
 
         if ( !Const.isEmpty( wProxyHost.getText() ) ) {
           // Set proxy

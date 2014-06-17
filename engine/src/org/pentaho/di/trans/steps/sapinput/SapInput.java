@@ -44,24 +44,25 @@ import org.pentaho.di.trans.steps.sapinput.sap.impl.SAPRowIterator;
 
 /**
  * Reads information from a database table by using freehand SQL
- * 
+ *
  * @author Matt
  * @since 8-apr-2003
  */
 public class SapInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SapInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SapInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SapInputMeta meta;
   private SapInputData data;
 
-  public SapInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public SapInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     Object[] r = getRow();
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -90,8 +91,8 @@ public class SapInput extends BaseStep implements StepInterface {
       data.output = new ArrayList<SAPField>();
       for ( SapOutputField outputField : meta.getOutputFields() ) {
         SAPField field =
-            new SAPField( outputField.getSapFieldName(), outputField.getTableName(), "output_"
-                + outputField.getSapType().getDescription() );
+          new SAPField( outputField.getSapFieldName(), outputField.getTableName(), "output_"
+            + outputField.getSapType().getDescription() );
         data.output.add( field );
       }
     }
@@ -108,8 +109,8 @@ public class SapInput extends BaseStep implements StepInterface {
       // If so, value needs to be converted to the appropriate data type here.
 
       SAPField field =
-          new SAPField( parameter.getParameterName(), parameter.getTableName(), "input_"
-              + parameter.getSapType().getDescription(), value );
+        new SAPField( parameter.getParameterName(), parameter.getTableName(), "input_"
+          + parameter.getSapType().getDescription(), value );
       input.add( field );
     }
 

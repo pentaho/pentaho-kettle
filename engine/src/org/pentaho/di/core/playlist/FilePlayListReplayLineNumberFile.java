@@ -36,7 +36,7 @@ class FilePlayListReplayLineNumberFile extends FilePlayListReplayFile {
   Set<Long> lineNumbers = new HashSet<Long>();
 
   public FilePlayListReplayLineNumberFile( FileObject lineNumberFile, String encoding, FileObject processingFile,
-      String filePart ) throws KettleException {
+    String filePart ) throws KettleException {
     super( processingFile, filePart );
     initialize( lineNumberFile, encoding );
   }
@@ -47,7 +47,8 @@ class FilePlayListReplayLineNumberFile extends FilePlayListReplayFile {
       if ( encoding == null ) {
         reader = new BufferedReader( new InputStreamReader( KettleVFS.getInputStream( lineNumberFile ) ) );
       } else {
-        reader = new BufferedReader( new InputStreamReader( KettleVFS.getInputStream( lineNumberFile ), encoding ) );
+        reader =
+          new BufferedReader( new InputStreamReader( KettleVFS.getInputStream( lineNumberFile ), encoding ) );
       }
       String line = null;
       while ( ( line = reader.readLine() ) != null ) {

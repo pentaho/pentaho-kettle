@@ -61,7 +61,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = XMLInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** Array of filenames */
   private String[] fileName;
@@ -393,7 +393,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     for ( int i = 0; i < inputFields.length; i++ ) {
       XMLInputField field = inputFields[i];
 
@@ -430,8 +430,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       includeFilename = rep.getStepAttributeBoolean( id_step, "include" );
       filenameField = rep.getStepAttributeString( id_step, "include_field" );
@@ -466,8 +465,8 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
         field.setGroupSymbol( rep.getStepAttributeString( id_step, i, "field_group" ) );
         field.setLength( (int) rep.getStepAttributeInteger( id_step, i, "field_length" ) );
         field.setPrecision( (int) rep.getStepAttributeInteger( id_step, i, "field_precision" ) );
-        field.setTrimType( XMLInputField
-            .getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
+        field.setTrimType( XMLInputField.getTrimTypeByCode( rep.getStepAttributeString(
+          id_step, i, "field_trim_type" ) ) );
         field.setRepeated( rep.getStepAttributeBoolean( id_step, i, "field_repeat" ) );
 
         String fieldPositionCode = rep.getStepAttributeString( id_step, i, "field_position_code" );
@@ -487,8 +486,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "include", includeFilename );
       rep.saveStepAttribute( id_transformation, id_step, "include_field", filenameField );
@@ -518,7 +516,9 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", field.getPrecision() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_trim_type", field.getTrimTypeCode() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_repeat", field.isRepeated() );
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_position_code", field.getFieldPositionsCode() );
+        rep
+          .saveStepAttribute( id_transformation, id_step, i, "field_position_code", field
+            .getFieldPositionsCode() );
       }
 
       for ( int i = 0; i < inputPosition.length; i++ ) {
@@ -526,7 +526,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "XMLInputMeta.Exception.ErrorSavingToRepository", ""
-          + id_step ), e );
+        + id_step ), e );
     }
   }
 
@@ -541,48 +541,48 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
     /*
      * // Replace possible environment variables... final String realfile[] =
      * StringUtil.environmentSubstitute(fileName); final String realmask[] = StringUtil.environmentSubstitute(fileMask);
-     * 
+     *
      * ArrayList filelist = new ArrayList();
-     * 
+     *
      * for (int i=0;i<realfile.length;i++) { final String onefile = realfile[i]; final String onemask = realmask[i];
-     * 
+     *
      * if (onefile==null) { System.out.println("empty file???"); }
-     * 
+     *
      * if (!Const.isEmpty(onemask)) // A directory & a wildcard { File file = new File(onefile); try { files =
      * file.list(new FilenameFilter() { public boolean accept(File dir, String name) { return Pattern.matches(onemask,
      * name); } } );
-     * 
+     *
      * for (int j = 0; j < files.length; j++) { if (!onefile.endsWith(Const.FILE_SEPARATOR)) { files[j] =
      * onefile+Const.FILE_SEPARATOR+files[j]; } else { files[j] = onefile+files[j]; } } } catch(Exception e) {
      * files=null; } } else // A normal file... { // Check if it exists... File file = new File(onefile); if
      * (file.exists() && file.isFile() && file.canRead() ) { files = new String[] { onefile }; } else // File is not
      * accessible to us. { files = null; } }
-     * 
+     *
      * // Add to our list... if (files!=null) for (int x=0;x<files.length;x++) { filelist.add(files[x]); } }
-     * 
+     *
      * // Sort the list: quicksort Collections.sort(filelist);
-     * 
+     *
      * // OK, return the list in filelist... files = (String[])filelist.toArray(new String[filelist.size()]);
-     * 
+     *
      * return files;
      */
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // See if we get input...
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XMLInputMeta.CheckResult.NoInputExpected" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "XMLInputMeta.CheckResult.NoInputExpected" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XMLInputMeta.CheckResult.NoInput" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "XMLInputMeta.CheckResult.NoInput" ), stepMeta );
       remarks.add( cr );
     }
 
@@ -590,19 +590,19 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
     // String files[] = getFiles();
     if ( fileInputList == null || fileInputList.getFiles().size() == 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "XMLInputMeta.CheckResult.NoFiles" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "XMLInputMeta.CheckResult.NoFiles" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "XMLInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "XMLInputMeta.CheckResult.FilesOk", "" + fileInputList.getFiles().size() ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new XMLInput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -632,7 +632,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
       required[i] = "N";
     }
     String[] textFiles =
-        FileInputList.createFilePathList( transMeta, fileName, fileMask, new String[] { null }, required, subdirs );
+      FileInputList.createFilePathList( transMeta, fileName, fileMask, new String[] { null }, required, subdirs );
 
     if ( textFiles != null ) {
       for ( int i = 0; i < textFiles.length; i++ ) {
@@ -700,7 +700,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
    * what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -709,12 +709,11 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

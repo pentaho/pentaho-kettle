@@ -54,11 +54,11 @@ import org.w3c.dom.Node;
 
 /**
  * Meta data for the Add Sequence step.
- * 
+ *
  * Created on 13-may-2003
  */
 public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = AddSequenceMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AddSequenceMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String valuename;
 
@@ -246,7 +246,8 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
       // incrementBy = Const.toLong(XMLHandler.getTagValue(stepnode, "increment_by"), 1);
       // maxValue = Const.toLong(XMLHandler.getTagValue(stepnode, "max_value"), 999999999L);
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "AddSequenceMeta.Exception.ErrorLoadingStepInfo" ), e );
+      throw new KettleXMLException(
+        BaseMessages.getString( PKG, "AddSequenceMeta.Exception.ErrorLoadingStepInfo" ), e );
     }
   }
 
@@ -266,7 +267,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     ValueMetaInterface v = new ValueMeta( valuename, ValueMetaInterface.TYPE_INTEGER );
     // v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0); Removed for 2.5.x compatibility reasons.
     v.setOrigin( name );
@@ -279,7 +280,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "valuename", valuename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_database", useDatabase ) );
     retval
-        .append( "      " ).append( XMLHandler.addTagValue( "connection", database == null ? "" : database.getName() ) ); //$NON-NLS-3$
+      .append( "      " ).append( XMLHandler.addTagValue( "connection", database == null ? "" : database.getName() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "seqname", sequenceName ) );
 
@@ -292,8 +293,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       valuename = rep.getStepAttributeString( id_step, "valuename" );
 
@@ -329,12 +329,11 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "AddSequenceMeta.Exception.UnableToReadStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "valuename", valuename );
 
@@ -357,13 +356,13 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "AddSequenceMeta.Exception.UnableToSaveStepInfo" )
-          + id_step, e );
+        + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( useDatabase ) {
       Database db = new Database( loggingObject, database );
@@ -371,20 +370,20 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
       try {
         db.connect();
         if ( db.checkSequenceExists( transMeta.environmentSubstitute( schemaName ), transMeta
-            .environmentSubstitute( sequenceName ) ) ) {
+          .environmentSubstitute( sequenceName ) ) ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "AddSequenceMeta.CheckResult.SequenceExists.Title" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "AddSequenceMeta.CheckResult.SequenceExists.Title" ), stepMeta );
         } else {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "AddSequenceMeta.CheckResult.SequenceCouldNotBeFound.Title", sequenceName ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "AddSequenceMeta.CheckResult.SequenceCouldNotBeFound.Title", sequenceName ), stepMeta );
         }
       } catch ( KettleException e ) {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "AddSequenceMeta.CheckResult.UnableToConnectDB.Title" )
-                + Const.CR + e.getMessage(), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "AddSequenceMeta.CheckResult.UnableToConnectDB.Title" )
+            + Const.CR + e.getMessage(), stepMeta );
       } finally {
         db.disconnect();
       }
@@ -393,23 +392,23 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AddSequenceMeta.CheckResult.StepIsReceving.Title" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "AddSequenceMeta.CheckResult.StepIsReceving.Title" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "AddSequenceMeta.CheckResult.NoInputReceived.Title" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "AddSequenceMeta.CheckResult.NoInputReceived.Title" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      Repository repository, IMetaStore metaStore ) {
+    Repository repository, IMetaStore metaStore ) {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), database, null ); // default: nothing to do!
 
-    if ( useDatabase ) // Otherwise, don't bother!
-    {
+    if ( useDatabase ) {
+      // Otherwise, don't bother!
       if ( database != null ) {
         Database db = new Database( loggingObject, database );
         db.shareVariablesWith( transMeta );
@@ -422,8 +421,8 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
             retval.setSQL( null ); // Empty string means: nothing to do: set it to null...
           }
         } catch ( KettleException e ) {
-          retval.setError( BaseMessages.getString( PKG, "AddSequenceMeta.ErrorMessage.UnableToConnectDB" ) + Const.CR
-              + e.getMessage() );
+          retval.setError( BaseMessages.getString( PKG, "AddSequenceMeta.ErrorMessage.UnableToConnectDB" )
+            + Const.CR + e.getMessage() );
         } finally {
           db.disconnect();
         }
@@ -435,8 +434,8 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new AddSequence( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

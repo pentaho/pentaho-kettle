@@ -40,20 +40,20 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read all files, count rows number
- * 
+ *
  * @author Samatar
  * @since 24-05-2007
  */
 public class GetFilesRowsCount extends BaseStep implements StepInterface {
-  private static Class<?> PKG = GetFilesRowsCountMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetFilesRowsCountMeta.class; // for i18n purposes, needed by Translator2!!
 
   private GetFilesRowsCountMeta meta;
   private GetFilesRowsCountData data;
 
   // private static final int BUFFER_SIZE_INPUT_STREAM = 500;
 
-  public GetFilesRowsCount( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public GetFilesRowsCount( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+    TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -106,7 +106,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
       if ( ( !meta.isFileField() && data.last_file ) || meta.isFileField() ) {
         putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.TotalRowsFiles" ), data.rownr, data.filenr );
+          logDetailed(
+            BaseMessages.getString( PKG, "GetFilesRowsCount.Log.TotalRowsFiles" ), data.rownr, data.filenr );
         }
       }
 
@@ -170,7 +171,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
       }
       if ( isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.RowsInFile", data.file.toString(), ""
-            + data.rownr ) );
+          + data.rownr ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( e );
@@ -191,8 +192,9 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
 
     try {
       if ( !meta.isFileField() ) {
-        if ( data.filenr >= data.files.nrOfFiles() ) // finished processing!
-        {
+        if ( data.filenr >= data.files.nrOfFiles() ) {
+          // finished processing!
+
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.FinishedProcessing" ) );
           }
@@ -234,9 +236,9 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
             if ( data.indexOfFilenameField < 0 ) {
               // The field is unreachable !
               logError( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.ErrorFindingField", meta
-                  .setOutputFilenameField() ) );
-              throw new KettleException( BaseMessages.getString( PKG, "GetFilesRowsCount.Exception.CouldnotFindField",
-                  meta.setOutputFilenameField() ) );
+                .setOutputFilenameField() ) );
+              throw new KettleException( BaseMessages.getString(
+                PKG, "GetFilesRowsCount.Exception.CouldnotFindField", meta.setOutputFilenameField() ) );
             }
           }
 
@@ -245,7 +247,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
         String filename = getInputRowMeta().getString( data.readrow, data.indexOfFilenameField );
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.FilenameInStream", meta
-              .setOutputFilenameField(), filename ) );
+            .setOutputFilenameField(), filename ) );
         }
 
         data.file = KettleVFS.getFileObject( filename, getTransMeta() );
@@ -262,7 +264,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
       if ( meta.isAddResultFile() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
+          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname() );
         resultFile.setComment( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.FileAddedResult" ) );
         addResultFile( resultFile );
       }
@@ -277,7 +279,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
 
     } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.UnableToOpenFile", "" + data.filenr, data.file
-          .toString(), e.toString() ) );
+        .toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       return false;
@@ -291,8 +293,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
 
     if ( super.init( smi, sdi ) ) {
       if ( ( meta.getRowSeparatorFormat().equals( "CUSTOM" ) ) && ( Const.isEmpty( meta.getRowSeparator() ) ) ) {
-        logError( BaseMessages.getString( PKG, "GetFilesRowsCount.Error.NoSeparator.Title" ), BaseMessages.getString(
-            PKG, "GetFilesRowsCount.Error.NoSeparator.Msg" ) );
+        logError( BaseMessages.getString( PKG, "GetFilesRowsCount.Error.NoSeparator.Title" ), BaseMessages
+          .getString( PKG, "GetFilesRowsCount.Error.NoSeparator.Msg" ) );
         setErrors( 1 );
         stopAll();
       } else {
@@ -301,30 +303,30 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
           data.separator = '\r';
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.Separator.Title" ), BaseMessages
-                .getString( PKG, "GetFilesRowsCount.Log.Separatoris.Infos" )
-                + " \\n" );
+              .getString( PKG, "GetFilesRowsCount.Log.Separatoris.Infos" )
+              + " \\n" );
           }
-        }
-        // Checking for 'CR' for backwards compatibility.
-        else if ( meta.getRowSeparatorFormat().equals( "LINEFEED" ) || meta.getRowSeparatorFormat().equals( "CR" ) ) {
+        } else if ( meta.getRowSeparatorFormat().equals( "LINEFEED" )
+          || meta.getRowSeparatorFormat().equals( "CR" ) ) {
+          // Checking for 'CR' for backwards compatibility.
           data.separator = '\n';
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.Separator.Title" ), BaseMessages
-                .getString( PKG, "GetFilesRowsCount.Log.Separatoris.Infos" )
-                + " \\r" );
+              .getString( PKG, "GetFilesRowsCount.Log.Separatoris.Infos" )
+              + " \\r" );
           }
         } else if ( meta.getRowSeparatorFormat().equals( "TAB" ) ) {
           data.separator = '\t';
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.Separator.Title" ), BaseMessages
-                .getString( PKG, "GetFilesRowsCount.Log.Separatoris.Infos" )
-                + " \\t" );
+              .getString( PKG, "GetFilesRowsCount.Log.Separatoris.Infos" )
+              + " \\t" );
           }
         } else if ( meta.getRowSeparatorFormat().equals( "CRLF" ) ) {
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.Separator.Title" ), BaseMessages
-                .getString( PKG, "GetFilesRowsCount.Log.Separatoris.Infos" )
-                + " \\r\\n" );
+              .getString( PKG, "GetFilesRowsCount.Log.Separatoris.Infos" )
+              + " \\r\\n" );
           }
         } else {
 
@@ -332,8 +334,8 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
 
           if ( isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "GetFilesRowsCount.Log.Separator.Title" ), BaseMessages
-                .getString( PKG, "GetFilesRowsCount.Log.Separatoris.Infos" )
-                + " " + data.separator );
+              .getString( PKG, "GetFilesRowsCount.Log.Separatoris.Infos" )
+              + " " + data.separator );
           }
         }
       }
@@ -374,6 +376,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
         data.file.close();
         data.file = null;
       } catch ( Exception e ) {
+        log.logError( "Error closing file", e );
       }
     }
     if ( data.fr != null ) {

@@ -57,7 +57,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = AggregateRowsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AggregateRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFields;
   private TableView wFields;
@@ -137,17 +137,21 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 
     ColumnInfo[] colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "AggregateRowsDialog.ColumnInfo.Name" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "AggregateRowsDialog.ColumnInfo.Name" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinf[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "AggregateRowsDialog.ColumnInfo.NewName" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "AggregateRowsDialog.ColumnInfo.NewName" ), ColumnInfo.COLUMN_TYPE_TEXT,
+        false );
     colinf[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "AggregateRowsDialog.ColumnInfo.AgrregateType" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, AggregateRowsMeta.aggregateTypeDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "AggregateRowsDialog.ColumnInfo.AgrregateType" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, AggregateRowsMeta.aggregateTypeDesc );
 
     wFields =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
     fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, 0 );
@@ -261,6 +265,7 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 
     input.allocate( nrfields );
 
+    //CHECKSTYLE:Indentation:OFF
     for ( i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getFieldName()[i] = item.getText( 1 );
@@ -282,14 +287,15 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
       } else {
         MessageBox mb;
         mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-        mb.setMessage( BaseMessages.getString( PKG, "AggregateRowsDialog.CouldNotRetrieveFields.DialogMessage",
-            Const.CR ) );
+        mb.setMessage( BaseMessages.getString(
+          PKG, "AggregateRowsDialog.CouldNotRetrieveFields.DialogMessage", Const.CR ) );
         mb.setText( BaseMessages.getString( PKG, "AggregateRowsDialog.CouldNotRetrieveFields.DialogTitle" ) );
         mb.open();
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "AggregateRowsDialog.GetFieldsFailed.DialogTitle" ),
-          BaseMessages.getString( PKG, "AggregateRowsDialog.GetFieldsFailed.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "AggregateRowsDialog.GetFieldsFailed.DialogTitle" ), BaseMessages
+          .getString( PKG, "AggregateRowsDialog.GetFieldsFailed.DialogMessage" ), ke );
     }
   }
 }

@@ -33,9 +33,6 @@ public class SetValueFieldData extends BaseStepData implements StepDataInterface
   public int[] indexOfField;
   public int[] indexOfReplaceByValue;
 
-  /**
-	 * 
-	 */
   public SetValueFieldData() {
     super();
   }

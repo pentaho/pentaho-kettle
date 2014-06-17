@@ -33,7 +33,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -50,6 +49,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.utils.RowMetaUtils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -58,7 +58,7 @@ import org.w3c.dom.Node;
  *
  */
 public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = InsertUpdateMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = InsertUpdateMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** what's the lookup schema? */
   private String schemaName;
@@ -91,7 +91,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
   private Boolean[] update;
 
   /** Commit size for inserts/updates */
-  private int commitSize;
+  private String commitSize;
 
   /** Bypass any updates */
   private boolean updateBypassed;
@@ -102,16 +102,47 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
 
   /**
    * @return Returns the commitSize.
+   * @deprecated use public String getCommitSizeVar() instead
    */
+  @Deprecated
   public int getCommitSize() {
+    return Integer.parseInt( commitSize );
+  }
+
+  /**
+   * @return Returns the commitSize.
+   */
+  public String getCommitSizeVar() {
     return commitSize;
+  }
+
+  /**
+   * @param vs -
+   *           variable space to be used for searching variable value
+   *           usually "this" for a calling step
+   * @return Returns the commitSize.
+   */
+  public int getCommitSize( VariableSpace vs ) {
+    //this happens when the step is created via API and no setDefaults was called
+    commitSize = ( commitSize == null ) ? "0" : commitSize;
+    return Integer.parseInt( vs.environmentSubstitute( commitSize ) );
+  }
+
+  /**
+   * @param commitSize
+   *          The commitSize to set.
+   *          @deprecated use public void setCommitSize( String commitSize ) instead
+   */
+  @Deprecated
+  public void setCommitSize( int commitSize ) {
+    this.commitSize = Integer.toString( commitSize );
   }
 
   /**
    * @param commitSize
    *          The commitSize to set.
    */
-  public void setCommitSize( int commitSize ) {
+  public void setCommitSize( String commitSize ) {
     this.commitSize = commitSize;
   }
 
@@ -287,7 +318,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
       String con = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
       csize = XMLHandler.getTagValue( stepnode, "commit" );
-      commitSize = Const.toInt( csize, 0 );
+      commitSize = ( csize != null ) ? csize : "0";
       schemaName = XMLHandler.getTagValue( stepnode, "lookup", "schema" );
       tableName = XMLHandler.getTagValue( stepnode, "lookup", "table" );
       updateBypassed = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "update_bypassed" ) );
@@ -331,8 +362,8 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
         }
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "InsertUpdateMeta.Exception.UnableToReadStepInfoFromXML" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "InsertUpdateMeta.Exception.UnableToReadStepInfoFromXML" ), e );
     }
   }
 
@@ -340,7 +371,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
     keyStream = null;
     updateLookup = null;
     databaseMeta = null;
-    commitSize = 100;
+    commitSize = "100";
     schemaName = "";
     tableName = BaseMessages.getString( PKG, "InsertUpdateMeta.DefaultTableName" );
 
@@ -367,7 +398,8 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
     StringBuilder retval = new StringBuilder( 400 );
 
     retval
-        .append( "    " ).append( XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) ); //$NON-NLS-3$
+      .append( "    " ).append(
+        XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "commit", commitSize ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "update_bypassed", updateBypassed ) );
     retval.append( "    <lookup>" ).append( Const.CR );
@@ -396,12 +428,22 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
 
-      commitSize = (int) rep.getStepAttributeInteger( id_step, "commit" );
+      commitSize = rep.getStepAttributeString( id_step, "commit" );
+      if ( commitSize == null ) {
+        long comSz = -1;
+        try {
+          comSz = rep.getStepAttributeInteger( id_step, "commit" );
+        } catch ( Exception ex ) {
+          commitSize = "100";
+        }
+        if ( comSz >= 0 ) {
+          commitSize = Long.toString( comSz );
+        }
+      }
       schemaName = rep.getStepAttributeString( id_step, "schema" );
       tableName = rep.getStepAttributeString( id_step, "table" );
       updateBypassed = rep.getStepAttributeBoolean( id_step, "update_bypassed" );
@@ -424,13 +466,12 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
         update[i] = Boolean.valueOf( rep.getStepAttributeBoolean( id_step, i, "value_update", true ) );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "InsertUpdateMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "InsertUpdateMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
       rep.saveStepAttribute( id_transformation, id_step, "commit", commitSize );
@@ -456,20 +497,20 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
         rep.insertStepDatabase( id_transformation, id_step, databaseMeta.getObjectId() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG,
-          "InsertUpdateMeta.Exception.UnableToSaveStepInfoToRepository" )
-          + id_step, e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "InsertUpdateMeta.Exception.UnableToSaveStepInfoToRepository" )
+        + id_step, e );
     }
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -481,8 +522,8 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
 
         if ( !Const.isEmpty( tableName ) ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "InsertUpdateMeta.CheckResult.TableNameOK" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "InsertUpdateMeta.CheckResult.TableNameOK" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -494,8 +535,8 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
           RowMetaInterface r = db.getTableFields( schemaTable );
           if ( r != null ) {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "InsertUpdateMeta.CheckResult.TableExists" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "InsertUpdateMeta.CheckResult.TableExists" ), stepMeta );
             remarks.add( cr );
 
             for ( int i = 0; i < keyLookup.length; i++ ) {
@@ -506,8 +547,9 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
                 if ( first ) {
                   first = false;
                   error_message +=
-                      BaseMessages.getString( PKG, "InsertUpdateMeta.CheckResult.MissingCompareFieldsInTargetTable" )
-                          + Const.CR;
+                    BaseMessages.getString(
+                      PKG, "InsertUpdateMeta.CheckResult.MissingCompareFieldsInTargetTable" )
+                      + Const.CR;
                 }
                 error_found = true;
                 error_message += "\t\t" + lufield + Const.CR;
@@ -517,8 +559,8 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
               cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
               cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                      "InsertUpdateMeta.CheckResult.AllLookupFieldsFound" ), stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "InsertUpdateMeta.CheckResult.AllLookupFieldsFound" ), stepMeta );
             }
             remarks.add( cr );
 
@@ -535,8 +577,9 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
                 if ( first ) {
                   first = false;
                   error_message +=
-                      BaseMessages.getString( PKG, "InsertUpdateMeta.CheckResult.MissingFieldsToUpdateInTargetTable" )
-                          + Const.CR;
+                    BaseMessages.getString(
+                      PKG, "InsertUpdateMeta.CheckResult.MissingFieldsToUpdateInTargetTable" )
+                      + Const.CR;
                 }
                 error_found = true;
                 error_message += "\t\t" + lufield + Const.CR;
@@ -546,8 +589,8 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
               cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
             } else {
               cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                      "InsertUpdateMeta.CheckResult.AllFieldsToUpdateFoundInTargetTable" ), stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                  PKG, "InsertUpdateMeta.CheckResult.AllFieldsToUpdateFoundInTargetTable" ), stepMeta );
             }
             remarks.add( cr );
           } else {
@@ -560,8 +603,8 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
         // Look up fields in the input stream <prev>
         if ( prev != null && prev.size() > 0 ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "InsertUpdateMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "InsertUpdateMeta.CheckResult.StepReceivingDatas", prev.size() + "" ), stepMeta );
           remarks.add( cr );
 
           boolean first = true;
@@ -574,7 +617,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
               if ( first ) {
                 first = false;
                 error_message +=
-                    BaseMessages.getString( PKG, "InsertUpdateMeta.CheckResult.MissingFieldsInInput" ) + Const.CR;
+                  BaseMessages.getString( PKG, "InsertUpdateMeta.CheckResult.MissingFieldsInInput" ) + Const.CR;
               }
               error_found = true;
               error_message += "\t\t" + keyStream[i] + Const.CR;
@@ -587,7 +630,8 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
                 if ( first ) {
                   first = false;
                   error_message +=
-                      BaseMessages.getString( PKG, "InsertUpdateMeta.CheckResult.MissingFieldsInInput" ) + Const.CR;
+                    BaseMessages.getString( PKG, "InsertUpdateMeta.CheckResult.MissingFieldsInInput" )
+                      + Const.CR;
                 }
                 error_found = true;
                 error_message += "\t\t" + keyStream[i] + Const.CR;
@@ -598,8 +642,8 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "InsertUpdateMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "InsertUpdateMeta.CheckResult.AllFieldsFoundInInput" ), stepMeta );
           }
           remarks.add( cr );
 
@@ -616,7 +660,8 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
               if ( first ) {
                 first = false;
                 error_message +=
-                    BaseMessages.getString( PKG, "InsertUpdateMeta.CheckResult.MissingInputStreamFields" ) + Const.CR;
+                  BaseMessages.getString( PKG, "InsertUpdateMeta.CheckResult.MissingInputStreamFields" )
+                    + Const.CR;
               }
               error_found = true;
               error_message += "\t\t" + lufield + Const.CR;
@@ -626,19 +671,19 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
             cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           } else {
             cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "InsertUpdateMeta.CheckResult.AllFieldsFoundInInput2" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "InsertUpdateMeta.CheckResult.AllFieldsFoundInInput2" ), stepMeta );
           }
           remarks.add( cr );
         } else {
           error_message =
-              BaseMessages.getString( PKG, "InsertUpdateMeta.CheckResult.MissingFieldsInInput3" ) + Const.CR;
+            BaseMessages.getString( PKG, "InsertUpdateMeta.CheckResult.MissingFieldsInInput3" ) + Const.CR;
           cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
           remarks.add( cr );
         }
       } catch ( KettleException e ) {
         error_message =
-            BaseMessages.getString( PKG, "InsertUpdateMeta.CheckResult.DatabaseErrorOccurred" ) + e.getMessage();
+          BaseMessages.getString( PKG, "InsertUpdateMeta.CheckResult.DatabaseErrorOccurred" ) + e.getMessage();
         cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } finally {
@@ -653,54 +698,26 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "InsertUpdateMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "InsertUpdateMeta.CheckResult.StepReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "InsertUpdateMeta.CheckResult.NoInputError" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "InsertUpdateMeta.CheckResult.NoInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    Repository repository, IMetaStore metaStore ) throws KettleStepException {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
 
     if ( databaseMeta != null ) {
       if ( prev != null && prev.size() > 0 ) {
         // Copy the row
-        RowMetaInterface tableFields = new RowMeta();
-
-        // Now change the field names
-        // the key fields
-        if ( keyLookup != null ) {
-          for ( int i = 0; i < keyLookup.length; i++ ) {
-            ValueMetaInterface v = prev.searchValueMeta( keyStream[i] );
-            if ( v != null ) {
-              ValueMetaInterface tableField = v.clone();
-              tableField.setName( keyLookup[i] );
-              tableFields.addValueMeta( tableField );
-            } else {
-              throw new KettleStepException( "Unable to find field [" + keyStream[i] + "] in the input rows" );
-            }
-          }
-        }
-        // the lookup fields
-        for ( int i = 0; i < updateLookup.length; i++ ) {
-          ValueMetaInterface v = prev.searchValueMeta( updateStream[i] );
-          if ( v != null ) {
-            ValueMetaInterface vk = tableFields.searchValueMeta( updateStream[i] );
-            if ( vk == null ) { // do not add again when already added as key fields
-              ValueMetaInterface tableField = v.clone();
-              tableField.setName( updateLookup[i] );
-              tableFields.addValueMeta( tableField );
-            }
-          } else {
-            throw new KettleStepException( "Unable to find field [" + updateStream[i] + "] in the input rows" );
-          }
-        }
+        RowMetaInterface tableFields = RowMetaUtils.getRowMetaForUpdate( prev, keyLookup,
+            keyStream, updateLookup, updateStream );
 
         if ( !Const.isEmpty( tableName ) ) {
           Database db = new Database( loggingObject, databaseMeta );
@@ -724,10 +741,11 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
             }
 
             // Key lookup dimensions...
-            if ( idx_fields != null && idx_fields.length > 0
-                && !db.checkIndexExists( schemaName, tableName, idx_fields ) ) {
+            if ( idx_fields != null
+              && idx_fields.length > 0 && !db.checkIndexExists( schemaName, tableName, idx_fields ) ) {
               String indexname = "idx_" + tableName + "_lookup";
-              cr_index = db.getCreateIndexStatement( schemaTable, indexname, idx_fields, false, false, false, true );
+              cr_index =
+                db.getCreateIndexStatement( schemaTable, indexname, idx_fields, false, false, false, true );
             }
 
             String sql = cr_table + cr_index;
@@ -738,10 +756,11 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
             }
           } catch ( KettleException e ) {
             retval.setError( BaseMessages.getString( PKG, "InsertUpdateMeta.ReturnValue.ErrorOccurred" )
-                + e.getMessage() );
+              + e.getMessage() );
           }
         } else {
-          retval.setError( BaseMessages.getString( PKG, "InsertUpdateMeta.ReturnValue.NoTableDefinedOnConnection" ) );
+          retval
+            .setError( BaseMessages.getString( PKG, "InsertUpdateMeta.ReturnValue.NoTableDefinedOnConnection" ) );
         }
       } else {
         retval.setError( BaseMessages.getString( PKG, "InsertUpdateMeta.ReturnValue.NotReceivingAnyFields" ) );
@@ -754,17 +773,18 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-      IMetaStore metaStore ) throws KettleStepException {
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+    IMetaStore metaStore ) throws KettleStepException {
     if ( prev != null ) {
       // Lookup: we do a lookup on the natural keys
       for ( int i = 0; i < keyLookup.length; i++ ) {
         ValueMetaInterface v = prev.searchValueMeta( keyStream[i] );
 
         DatabaseImpact ii =
-            new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
-                .getDatabaseName(), tableName, keyLookup[i], keyStream[i],
-                v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() ); //$NON-NLS-3$
+          new DatabaseImpact(
+            DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
+              .getDatabaseName(), tableName, keyLookup[i], keyStream[i],
+            v != null ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() );
         impact.add( ii );
       }
 
@@ -773,16 +793,17 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
         ValueMetaInterface v = prev.searchValueMeta( updateStream[i] );
 
         DatabaseImpact ii =
-            new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(),
-                databaseMeta.getDatabaseName(), tableName, updateLookup[i], updateStream[i], v != null ? v.getOrigin()
-                    : "?", "", "Type = " + v.toStringMeta() ); //$NON-NLS-3$
+          new DatabaseImpact(
+            DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
+              .getDatabaseName(), tableName, updateLookup[i], updateStream[i], v != null
+              ? v.getOrigin() : "?", "", "Type = " + v.toStringMeta() );
         impact.add( ii );
       }
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new InsertUpdate( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -835,7 +856,8 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
           throw new KettleException( BaseMessages.getString( PKG, "InsertUpdateMeta.Exception.TableNotSpecified" ) );
         }
       } catch ( Exception e ) {
-        throw new KettleException( BaseMessages.getString( PKG, "InsertUpdateMeta.Exception.ErrorGettingFields" ), e );
+        throw new KettleException(
+          BaseMessages.getString( PKG, "InsertUpdateMeta.Exception.ErrorGettingFields" ), e );
       } finally {
         db.disconnect();
       }

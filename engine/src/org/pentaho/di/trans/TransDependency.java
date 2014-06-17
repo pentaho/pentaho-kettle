@@ -39,7 +39,7 @@ import org.w3c.dom.Node;
  */
 
 public class TransDependency implements XMLInterface, Cloneable {
-  private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!
 
   public static final String XML_TAG = "dependency";
 
@@ -63,7 +63,7 @@ public class TransDependency implements XMLInterface, Cloneable {
     StringBuilder xml = new StringBuilder( 200 );
 
     xml.append( "      " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
-    xml.append( "        " ).append( XMLHandler.addTagValue( "connection", db == null ? "" : db.getName() ) ); //$NON-NLS-3$
+    xml.append( "        " ).append( XMLHandler.addTagValue( "connection", db == null ? "" : db.getName() ) );
     xml.append( "        " ).append( XMLHandler.addTagValue( "table", tablename ) );
     xml.append( "        " ).append( XMLHandler.addTagValue( "field", fieldname ) );
     xml.append( "      " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
@@ -78,8 +78,8 @@ public class TransDependency implements XMLInterface, Cloneable {
       tablename = XMLHandler.getTagValue( depnode, "table" );
       fieldname = XMLHandler.getTagValue( depnode, "field" );
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages
-          .getString( PKG, "TransDependency.Exception.UnableToLoadTransformation" ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "TransDependency.Exception.UnableToLoadTransformation" ), e );
     }
   }
 

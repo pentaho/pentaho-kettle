@@ -44,7 +44,7 @@ public final class WsdlOpFaultList extends ArrayList<WsdlOpFault> {
 
   /**
    * Constructor.
-   * 
+   *
    * @param wsdlTypes
    *          Type information from the WSDL.
    */
@@ -54,7 +54,7 @@ public final class WsdlOpFaultList extends ArrayList<WsdlOpFault> {
 
   /**
    * Add a fault to this list.
-   * 
+   *
    * @param fault
    *          Fault to add.
    * @return true if this collection was modified as a result of this call.
@@ -65,7 +65,7 @@ public final class WsdlOpFaultList extends ArrayList<WsdlOpFault> {
 
   /**
    * Create a WsdlOpFault from the Fault.
-   * 
+   *
    * @param fault
    *          Fault to process.
    * @return WsdlOpFault Result of processing.

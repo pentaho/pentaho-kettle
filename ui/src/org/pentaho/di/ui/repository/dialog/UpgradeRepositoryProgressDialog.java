@@ -42,13 +42,12 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while creating or upgrading a transformation...
- * 
+ *
  * @author Matt
  * @since 13-mrt-2005
  */
 public class UpgradeRepositoryProgressDialog {
   private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!
-                                                                 // $NON-NLS-1$
 
   private Shell shell;
   private KettleDatabaseRepository rep;
@@ -97,13 +96,15 @@ public class UpgradeRepositoryProgressDialog {
             dryRun = true;
             rep.createRepositorySchema( new ProgressMonitorAdapter( monitor ), upgrade, generatedStatements, true );
           } else {
-            rep.createRepositorySchema( new ProgressMonitorAdapter( monitor ), upgrade, generatedStatements, false );
+            rep
+              .createRepositorySchema(
+                new ProgressMonitorAdapter( monitor ), upgrade, generatedStatements, false );
           }
 
         } catch ( KettleException e ) {
           log.logError( toString(), Const.getStackTracker( e ) );
-          throw new InvocationTargetException( e, BaseMessages.getString( PKG,
-              "UpgradeRepositoryDialog.Error.CreateUpdate", e.getMessage() ) );
+          throw new InvocationTargetException( e, BaseMessages.getString(
+            PKG, "UpgradeRepositoryDialog.Error.CreateUpdate", e.getMessage() ) );
         }
       }
     };
@@ -113,14 +114,14 @@ public class UpgradeRepositoryProgressDialog {
       pmd.run( false, false, op );
     } catch ( InvocationTargetException e ) {
       log.logError( UpgradeRepositoryProgressDialog.class.toString(), "Error creating/updating repository: "
-          + e.toString() );
+        + e.toString() );
       log.logError( toString(), Const.getStackTracker( e ) );
       showErrorDialog( e );
 
       retval = false;
     } catch ( InterruptedException e ) {
       log.logError( UpgradeRepositoryProgressDialog.class.toString(), "Error creating/updating repository: "
-          + e.toString() );
+        + e.toString() );
       log.logError( toString(), Const.getStackTracker( e ) );
       showErrorDialog( e );
 

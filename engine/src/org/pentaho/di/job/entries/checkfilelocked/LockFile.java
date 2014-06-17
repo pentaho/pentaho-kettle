@@ -35,7 +35,7 @@ public class LockFile {
 
   /**
    * Checks if a file is locked In order to check is a file is locked we will use a dummy renaming exercise
-   * 
+   *
    * @param filename
    * @throws KettleException
    */
@@ -79,7 +79,7 @@ public class LockFile {
 
   /**
    * Returns filename
-   * 
+   *
    * @return filename
    */
   public String getFilename() {
@@ -88,7 +88,7 @@ public class LockFile {
 
   /**
    * Set filename
-   * 
+   *
    * @param filename
    */
   private void setFilename( String filename ) {
@@ -97,7 +97,7 @@ public class LockFile {
 
   /**
    * Returns lock indicator
-   * 
+   *
    * @return TRUE is file is locked
    */
   public boolean isLocked() {
@@ -106,7 +106,7 @@ public class LockFile {
 
   /**
    * Set lock indicator
-   * 
+   *
    * @param lock
    */
   private void setLocked( boolean lock ) {

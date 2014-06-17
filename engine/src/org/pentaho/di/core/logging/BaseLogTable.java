@@ -62,7 +62,7 @@ public abstract class BaseLogTable {
   protected List<LogTableField> fields;
 
   public BaseLogTable( VariableSpace space, HasDatabasesInterface databasesInterface, String connectionName,
-      String schemaName, String tableName ) {
+    String schemaName, String tableName ) {
     this.space = space;
     this.databasesInterface = databasesInterface;
     this.connectionName = connectionName;
@@ -103,7 +103,7 @@ public abstract class BaseLogTable {
 
   /**
    * Save this core information of the log table to the repository using the specified attribute interface.
-   * 
+   *
    * @param attributeInterface
    *          The attribute interface to use to set attributes
    * @throws KettleException
@@ -123,25 +123,26 @@ public abstract class BaseLogTable {
       attributeInterface.setAttribute( getLogTableCode() + PROP_LOG_TABLE_FIELD_ENABLED + i, field.isEnabled() );
 
       if ( field.isSubjectAllowed() ) {
-        attributeInterface.setAttribute( getLogTableCode() + PROP_LOG_TABLE_FIELD_SUBJECT + i,
-            field.getSubject() == null ? null : field.getSubject().toString() );
+        attributeInterface.setAttribute(
+          getLogTableCode() + PROP_LOG_TABLE_FIELD_SUBJECT + i, field.getSubject() == null ? null : field
+            .getSubject().toString() );
       }
     }
   }
 
   public void loadFromRepository( RepositoryAttributeInterface attributeInterface ) throws KettleException {
     String connectionNameFromRepository =
-        attributeInterface.getAttributeString( getLogTableCode() + PROP_LOG_TABLE_CONNECTION_NAME );
+      attributeInterface.getAttributeString( getLogTableCode() + PROP_LOG_TABLE_CONNECTION_NAME );
     if ( connectionNameFromRepository != null ) {
       connectionName = connectionNameFromRepository;
     }
     String schemaNameFromRepository =
-        attributeInterface.getAttributeString( getLogTableCode() + PROP_LOG_TABLE_SCHEMA_NAME );
+      attributeInterface.getAttributeString( getLogTableCode() + PROP_LOG_TABLE_SCHEMA_NAME );
     if ( schemaNameFromRepository != null ) {
       schemaName = schemaNameFromRepository;
     }
     String tableNameFromRepository =
-        attributeInterface.getAttributeString( getLogTableCode() + PROP_LOG_TABLE_TABLE_NAME );
+      attributeInterface.getAttributeString( getLogTableCode() + PROP_LOG_TABLE_TABLE_NAME );
     if ( tableNameFromRepository != null ) {
       tableName = tableNameFromRepository;
     }
@@ -154,13 +155,13 @@ public abstract class BaseLogTable {
       if ( id != null ) {
         LogTableField field = findField( id );
         if ( field != null ) {
-          field
-              .setFieldName( attributeInterface.getAttributeString( getLogTableCode() + PROP_LOG_TABLE_FIELD_NAME + i ) );
-          field.setEnabled( attributeInterface.getAttributeBoolean( getLogTableCode() + PROP_LOG_TABLE_FIELD_ENABLED
-              + i ) );
+          field.setFieldName( attributeInterface.getAttributeString( getLogTableCode()
+            + PROP_LOG_TABLE_FIELD_NAME + i ) );
+          field.setEnabled( attributeInterface.getAttributeBoolean( getLogTableCode()
+            + PROP_LOG_TABLE_FIELD_ENABLED + i ) );
           if ( field.isSubjectAllowed() ) {
-            field.setSubject( attributeInterface.getAttributeString( getLogTableCode() + PROP_LOG_TABLE_FIELD_SUBJECT
-                + i ) );
+            field.setSubject( attributeInterface.getAttributeString( getLogTableCode()
+              + PROP_LOG_TABLE_FIELD_SUBJECT + i ) );
           }
         }
       }
@@ -283,7 +284,7 @@ public abstract class BaseLogTable {
 
   /**
    * Find a log table field in this log table definition. Use the id of the field to do the lookup.
-   * 
+   *
    * @param id
    *          the id of the field to search for
    * @return the log table field or null if nothing was found.
@@ -299,7 +300,7 @@ public abstract class BaseLogTable {
 
   /**
    * Get the subject of a field with the specified ID
-   * 
+   *
    * @param id
    * @return the subject or null if no field could be find with the specified id
    */
@@ -313,7 +314,7 @@ public abstract class BaseLogTable {
 
   /**
    * Return the subject in the form of a string for the specified ID.
-   * 
+   *
    * @param id
    *          the id of the field to look for.
    * @return the string of the subject (name of step) or null if nothing was found.
@@ -420,8 +421,8 @@ public abstract class BaseLogTable {
       retval.append( XMLHandler.addTagValue( "enabled", field.isEnabled(), false ) );
       retval.append( XMLHandler.addTagValue( "name", field.getFieldName(), false ) );
       if ( field.isSubjectAllowed() ) {
-        retval.append( XMLHandler.addTagValue( "subject", field.getSubject() == null ? null : field.getSubject()
-            .toString(), false ) );
+        retval.append( XMLHandler.addTagValue( "subject", field.getSubject() == null ? null : field
+          .getSubject().toString(), false ) );
       }
 
       retval.append( XMLHandler.closeTag( XML_TAG ) );
@@ -521,9 +522,10 @@ public abstract class BaseLogTable {
     String sName = this.getActualSchemaName();
     String tName = this.getActualTableName();
 
-    return ( ( cName == null ? blt.getActualConnectionName() == null : cName.equals( blt.getActualConnectionName() ) )
-        && ( sName == null ? blt.getActualSchemaName() == null : sName.equals( blt.getActualSchemaName() ) ) && ( tName == null
-          ? blt.getActualTableName() == null : tName.equals( blt.getActualTableName() ) ) );
+    return ( ( cName == null ? blt.getActualConnectionName() == null : cName
+      .equals( blt.getActualConnectionName() ) )
+      && ( sName == null ? blt.getActualSchemaName() == null : sName.equals( blt.getActualSchemaName() ) )
+      && ( tName == null ? blt.getActualTableName() == null : tName.equals( blt.getActualTableName() ) ) );
   }
 
 }

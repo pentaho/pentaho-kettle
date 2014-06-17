@@ -38,13 +38,12 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 /**
  * Takes care of displaying a dialog that will handle the wait while where determining the impact of a transformation on
  * the used databases.
- * 
+ *
  * @author Matt
  * @since 04-apr-2005
  */
 public class AnalyseImpactProgressDialog {
   private static Class<?> PKG = AnalyseImpactProgressDialog.class; // for i18n purposes, needed by Translator2!!
-                                                                   // $NON-NLS-1$
 
   private Shell shell;
   private TransMeta transMeta;
@@ -71,12 +70,9 @@ public class AnalyseImpactProgressDialog {
         } catch ( Exception e ) {
           impact.clear();
           impactHasRun = false;
-          throw new InvocationTargetException( e, BaseMessages.getString( PKG,
-              "AnalyseImpactProgressDialog.RuntimeError.UnableToAnalyzeImpact.Exception", e.toString() ) ); // Problem
-                                                                                                            // encountered
-                                                                                                            // generating
-                                                                                                            // impact
-                                                                                                            // list: {0}
+          // Problem encountered generating impact list: {0}
+          throw new InvocationTargetException( e, BaseMessages.getString(
+            PKG, "AnalyseImpactProgressDialog.RuntimeError.UnableToAnalyzeImpact.Exception", e.toString() ) );
         }
       }
     };
@@ -85,17 +81,13 @@ public class AnalyseImpactProgressDialog {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
       pmd.run( true, true, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title" ), BaseMessages.getString( PKG,
-          "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages" ), e ); // "Error checking transformation","An
-                                                                                      // error occured checking this
-                                                                                      // transformation\!"
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title" ),
+        BaseMessages.getString( PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages" ), e );
     } catch ( InterruptedException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title" ), BaseMessages.getString( PKG,
-          "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages" ), e ); // "Error checking transformation","An
-                                                                                      // error occured checking this
-                                                                                      // transformation\!"
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title" ),
+        BaseMessages.getString( PKG, "AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages" ), e );
     }
 
     return impactHasRun;

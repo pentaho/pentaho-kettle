@@ -50,13 +50,13 @@ import org.w3c.dom.Node;
 
 /**
  * Send mail step. based on Mail job entry
- * 
+ *
  * @author Samatar
  * @since 28-07-2008
  */
 
 public class MailMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = MailMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = MailMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String server;
 
@@ -197,8 +197,8 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     setUsingAuthentication( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_auth" ) ) );
     setUsingSecureAuthentication( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_secure_auth" ) ) );
     setAuthenticationUser( XMLHandler.getTagValue( stepnode, "auth_user" ) );
-    setAuthenticationPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode,
-        "auth_password" ) ) );
+    setAuthenticationPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(
+      stepnode, "auth_password" ) ) );
     setOnlySendComment( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "only_comment" ) ) );
     setUseHTML( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_HTML" ) ) );
     setUsePriority( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "use_Priority" ) ) );
@@ -255,10 +255,11 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "include_subfolders", this.includeSubFolders ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "zipFilenameDynamic", this.zipFilenameDynamic ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "isFilenameDynamic", this.isFilenameDynamic ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "attachContentFromField", this.attachContentFromField ) );
+    retval.append( "      " ).append(
+      XMLHandler.addTagValue( "attachContentFromField", this.attachContentFromField ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "attachContentField", this.attachContentField ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "attachContentFileNameField", this.attachContentFileNameField ) );
+      XMLHandler.addTagValue( "attachContentFileNameField", this.attachContentFileNameField ) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "dynamicFieldname", this.dynamicFieldname ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "dynamicWildcard", this.dynamicWildcard ) );
@@ -276,8 +277,8 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_secure_auth", this.usingSecureAuthentication ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "auth_user", this.authenticationUser ) );
     retval.append( "      " ).append(
-        XMLHandler
-            .addTagValue( "auth_password", Encr.encryptPasswordIfNotUsingVariables( this.authenticationPassword ) ) );
+      XMLHandler.addTagValue( "auth_password", Encr
+        .encryptPasswordIfNotUsingVariables( this.authenticationPassword ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "only_comment", this.onlySendComment ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_HTML", this.useHTML ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "use_Priority", this.usePriority ) );
@@ -742,8 +743,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     this.priority = priorityin;
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
       // First load the common parts like name & description, then the attributes...
@@ -789,7 +789,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
       this.usingSecureAuthentication = rep.getStepAttributeBoolean( id_step, "use_secure_auth" );
       this.authenticationUser = rep.getStepAttributeString( id_step, "auth_user" );
       this.authenticationPassword =
-          Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "auth_password" ) );
+        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "auth_password" ) );
 
       this.onlySendComment = rep.getStepAttributeBoolean( id_step, "only_comment" );
       this.useHTML = rep.getStepAttributeBoolean( id_step, "use_HTML" );
@@ -812,13 +812,13 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
       }
 
     } catch ( KettleDatabaseException dbe ) {
-      throw new KettleException( "Unable to load step type 'mail' from the repository with id_step=" + id_step, dbe );
+      throw new KettleException(
+        "Unable to load step type 'mail' from the repository with id_step=" + id_step, dbe );
     }
 
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "server", this.server );
       rep.saveStepAttribute( id_transformation, id_step, "port", this.port );
@@ -836,7 +836,8 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
       rep.saveStepAttribute( id_transformation, id_step, "attachContentFromField", attachContentFromField );
       rep.saveStepAttribute( id_transformation, id_step, "attachContentField", this.attachContentField );
-      rep.saveStepAttribute( id_transformation, id_step, "attachContentFileNameField", this.attachContentFileNameField );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "attachContentFileNameField", this.attachContentFileNameField );
 
       rep.saveStepAttribute( id_transformation, id_step, "isFilenameDynamic", isFilenameDynamic );
       rep.saveStepAttribute( id_transformation, id_step, "dynamicFieldname", dynamicFieldname );
@@ -859,7 +860,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "use_secure_auth", usingSecureAuthentication );
       rep.saveStepAttribute( id_transformation, id_step, "auth_user", authenticationUser );
       rep.saveStepAttribute( id_transformation, id_step, "auth_password", Encr
-          .encryptPasswordIfNotUsingVariables( authenticationPassword ) );
+        .encryptPasswordIfNotUsingVariables( authenticationPassword ) );
 
       rep.saveStepAttribute( id_transformation, id_step, "only_comment", onlySendComment );
       rep.saveStepAttribute( id_transformation, id_step, "use_HTML", useHTML );
@@ -883,49 +884,49 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.NotReceivingFields" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
     }
     remarks.add( cr );
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.StepRecevingData2" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.StepRecevingData2" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
     }
     remarks.add( cr );
 
     // Servername
     if ( Const.isEmpty( server ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.ServerEmpty" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.ServerEmpty" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "MailMeta.CheckResult.ServerOk" ),
-              stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.ServerOk" ), stepMeta );
       remarks.add( cr );
       // is the field exists?
       if ( prev.indexOfValue( transMeta.environmentSubstitute( server ) ) < 0 ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                "MailMeta.CheckResult.ServerFieldNotFound", server ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+            PKG, "MailMeta.CheckResult.ServerFieldNotFound", server ), stepMeta );
       }
       remarks.add( cr );
     }
@@ -933,60 +934,60 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
     // port number
     if ( Const.isEmpty( port ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.PortEmpty" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.PortEmpty" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "MailMeta.CheckResult.PortOk" ),
-              stepMeta );
+        new CheckResult(
+          CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "MailMeta.CheckResult.PortOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // reply address
     if ( Const.isEmpty( replyAddress ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.ReplayAddressEmpty" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.ReplayAddressEmpty" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.ReplayAddressOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.ReplayAddressOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // Destination
     if ( Const.isEmpty( destination ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.DestinationEmpty" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.DestinationEmpty" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.DestinationOk" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.DestinationOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // Subject
     if ( Const.isEmpty( subject ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.SubjectEmpty" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.SubjectEmpty" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG, "MailMeta.CheckResult.SubjectOk" ),
-              stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.SubjectOk" ), stepMeta );
     }
     remarks.add( cr );
 
     // Comment
     if ( Const.isEmpty( comment ) ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "MailMeta.CheckResult.CommentEmpty" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.CommentEmpty" ), stepMeta );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages
-              .getString( PKG, "MailMeta.CheckResult.CommentEmpty" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "MailMeta.CheckResult.CommentEmpty" ), stepMeta );
     }
     remarks.add( cr );
 
@@ -994,12 +995,12 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
       // Dynamic Filename field
       if ( Const.isEmpty( dynamicFieldname ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "MailMeta.CheckResult.DynamicFilenameFieldEmpty" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "MailMeta.CheckResult.DynamicFilenameFieldEmpty" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "MailMeta.CheckResult.DynamicFilenameFieldOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "MailMeta.CheckResult.DynamicFilenameFieldOk" ), stepMeta );
       }
       remarks.add( cr );
 
@@ -1007,12 +1008,12 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
       // static filename
       if ( Const.isEmpty( sourcefilefoldername ) ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "MailMeta.CheckResult.SourceFilenameEmpty" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "MailMeta.CheckResult.SourceFilenameEmpty" ), stepMeta );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "MailMeta.CheckResult.SourceFilenameOk" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "MailMeta.CheckResult.SourceFilenameOk" ), stepMeta );
       }
       remarks.add( cr );
     }
@@ -1022,12 +1023,12 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
         // dynamic zipfilename
         if ( Const.isEmpty( getDynamicZipFilenameField() ) ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "MailMeta.CheckResult.DynamicZipfilenameEmpty" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.DynamicZipfilenameEmpty" ), stepMeta );
         } else {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "MailMeta.CheckResult.DynamicZipfilenameOK" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.DynamicZipfilenameOK" ), stepMeta );
         }
         remarks.add( cr );
 
@@ -1035,12 +1036,12 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
         // static zipfilename
         if ( Const.isEmpty( zipFilename ) ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "MailMeta.CheckResult.ZipfilenameEmpty" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.ZipfilenameEmpty" ), stepMeta );
         } else {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "MailMeta.CheckResult.ZipfilenameOk" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "MailMeta.CheckResult.ZipfilenameOk" ), stepMeta );
         }
         remarks.add( cr );
       }
@@ -1048,7 +1049,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new Mail( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

@@ -32,9 +32,9 @@ import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.ui.core.widget.TextVar;
 
 /**
- * 
+ *
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
- * 
+ *
  */
 public class SimpleFileSelection extends SelectionAdapter {
 
@@ -58,7 +58,7 @@ public class SimpleFileSelection extends SelectionAdapter {
 
   /**
    * Constructor.
-   * 
+   *
    * @param shell
    *          shell to set.
    * @param textVar
@@ -71,7 +71,7 @@ public class SimpleFileSelection extends SelectionAdapter {
    *           if shell or text variable is null.
    */
   public SimpleFileSelection( final Shell shell, final TextVar textVar, final String[] filterExtensions,
-      final String[] filterNames ) throws IllegalArgumentException {
+    final String[] filterNames ) throws IllegalArgumentException {
     super();
     Assert.assertNotNull( shell, "Shell cannot be null" );
     Assert.assertNotNull( textVar, "Text var cannot be null" );
@@ -87,7 +87,7 @@ public class SimpleFileSelection extends SelectionAdapter {
 
   /**
    * Constructor.
-   * 
+   *
    * @param shell
    *          the shell to set.
    * @param textVar
@@ -101,7 +101,7 @@ public class SimpleFileSelection extends SelectionAdapter {
 
   /**
    * Constructor.
-   * 
+   *
    * @param shell
    *          the shell to set.
    * @param textVar
@@ -111,14 +111,13 @@ public class SimpleFileSelection extends SelectionAdapter {
    * @throws IllegalArgumentException
    *           if shell or text variable is null.
    */
-  public SimpleFileSelection( final Shell shell, final TextVar textVar, final String... filterNames )
-    throws IllegalArgumentException {
+  public SimpleFileSelection( final Shell shell, final TextVar textVar, final String... filterNames ) throws IllegalArgumentException {
     this( shell, textVar, new String[] { DEFAULT_FILTER_EXTENSION }, filterNames );
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
    */
   @Override

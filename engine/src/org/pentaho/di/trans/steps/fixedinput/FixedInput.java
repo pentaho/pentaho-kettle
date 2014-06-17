@@ -23,7 +23,9 @@
 package org.pentaho.di.trans.steps.fixedinput;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 
 import org.apache.commons.io.FileUtils;
@@ -47,18 +49,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read a simple fixed width file Just output fields found in the file...
- * 
+ *
  * @author Matt
  * @since 2007-07-06
  */
 public class FixedInput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FixedInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private FixedInputMeta meta;
   private FixedInputData data;
 
   public FixedInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -86,8 +88,7 @@ public class FixedInput extends BaseStep implements StepInterface {
     }
 
     Object[] outputRowData = readOneRow( true );
-    if ( outputRowData == null ) // no more input to be expected...
-    {
+    if ( outputRowData == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -103,7 +104,7 @@ public class FixedInput extends BaseStep implements StepInterface {
 
   /**
    * Read a single row of data from the file...
-   * 
+   *
    * @param doConversions
    *          if you want to do conversions, set to false for the header row.
    * @return a row of data...
@@ -235,6 +236,10 @@ public class FixedInput extends BaseStep implements StepInterface {
 
   }
 
+  private FileInputStream getFileInputStream( URL url ) throws FileNotFoundException {
+    return new FileInputStream( FileUtils.toFile( url ) );
+  }
+
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (FixedInputMeta) smi;
     data = (FixedInputData) sdi;
@@ -251,24 +256,19 @@ public class FixedInput extends BaseStep implements StepInterface {
         }
 
         FileObject fileObject = KettleVFS.getFileObject( data.filename, getTransMeta() );
-        FileInputStream fileInputStream = null;
         try {
-          fileInputStream = new FileInputStream( FileUtils.toFile( fileObject.getURL() ) );
-          data.fc = fileInputStream.getChannel();
+          data.fis = getFileInputStream( fileObject.getURL() );
+          data.fc = data.fis.getChannel();
           data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
         } catch ( IOException e ) {
           logError( e.toString() );
           return false;
-        } finally {
-          if ( fileInputStream != null ) {
-            fileInputStream.close();
-          }
         }
 
         // Add filename to result filenames ?
         if ( meta.isAddResultFile() ) {
           ResultFile resultFile =
-              new ResultFile( ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString() );
+            new ResultFile( ResultFile.FILE_TYPE_GENERAL, fileObject, getTransMeta().getName(), toString() );
           resultFile.setComment( "File was read by a Fixed input step" );
           addResultFile( resultFile );
         }
@@ -290,14 +290,14 @@ public class FixedInput extends BaseStep implements StepInterface {
           int totalLineWidth = data.lineWidth + meta.getLineSeparatorLength(); // including line separator bytes
           long nrRows = data.fileSize / totalLineWidth; // 100.000 / 100 = 1000 rows
           long rowsToSkip = Math.round( data.stepNumber * nrRows / (double) data.totalNumberOfSteps ); // 0, 333, 667
-          long nextRowsToSkip = Math.round( ( data.stepNumber + 1 ) * nrRows / (double) data.totalNumberOfSteps ); // 333,
-                                                                                                                   // 667,
-                                                                                                                   // 1000
+          // 333, 667, 1000
+          long nextRowsToSkip = Math.round( ( data.stepNumber + 1 ) * nrRows / (double) data.totalNumberOfSteps );
           data.rowsToRead = nextRowsToSkip - rowsToSkip;
           long bytesToSkip = rowsToSkip * totalLineWidth;
 
-          logBasic( "Step #" + data.stepNumber + " is skipping " + bytesToSkip
-              + " to position in file, then it's reading " + data.rowsToRead + " rows." );
+          logBasic( "Step #"
+            + data.stepNumber + " is skipping " + bytesToSkip + " to position in file, then it's reading "
+            + data.rowsToRead + " rows." );
 
           data.fc.position( bytesToSkip );
         }
@@ -316,6 +316,9 @@ public class FixedInput extends BaseStep implements StepInterface {
     try {
       if ( data.fc != null ) {
         data.fc.close();
+      }
+      if ( data.fis != null ) {
+        data.fis.close();
       }
     } catch ( IOException e ) {
       logError( "Unable to close file channel for file '" + meta.getFilename() + "' : " + e.toString() );

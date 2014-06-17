@@ -39,9 +39,9 @@ import org.pentaho.di.core.xml.XMLHandler;
  * This port number will be allocated in such a way that the port number is unique for a given hostname.<br>
  * This in turn will ensure that all the slaves will use valid port numbers, even if multiple slaves run on the same
  * host.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class AllocateServerSocketServlet extends BaseHttpServlet implements CartePluginInterface {
   private static final long serialVersionUID = 3634806745372015720L;
@@ -68,7 +68,8 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
     super( transformationMap );
   }
 
-  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+  public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -99,9 +100,9 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
     }
 
     SocketPortAllocation port =
-        getTransformationMap()
-            .allocateServerSocketPort( Const.toInt( rangeStart, 40000 ), hostname, clusteredRunId, transName,
-                sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy );
+      getTransformationMap().allocateServerSocketPort(
+        Const.toInt( rangeStart, 40000 ), hostname, clusteredRunId, transName, sourceSlaveName,
+        sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy );
 
     PrintStream out = new PrintStream( response.getOutputStream() );
     if ( useXML ) {
@@ -118,10 +119,10 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
       out.println( "Run ID : " + encoder.encodeForHTML( clusteredRunId ) + "<br>" );
       out.println( "Host name : " + encoder.encodeForHTML( hostname ) + "<br>" );
       out.println( "Transformation name : " + encoder.encodeForHTML( transName ) + "<br>" );
-      out.println( "Source step : " + encoder.encodeForHTML( sourceStepName ) + "."
-          + encoder.encodeForHTML( sourceStepCopy ) + "<br>" );
-      out.println( "Target step : " + encoder.encodeForHTML( targetStepName ) + "."
-          + encoder.encodeForHTML( targetStepCopy ) + "<br>" );
+      out.println( "Source step : "
+        + encoder.encodeForHTML( sourceStepName ) + "." + encoder.encodeForHTML( sourceStepCopy ) + "<br>" );
+      out.println( "Target step : "
+        + encoder.encodeForHTML( targetStepName ) + "." + encoder.encodeForHTML( targetStepCopy ) + "<br>" );
       out.println( "Step copy: " + encoder.encodeForHTML( sourceStepCopy ) + "<br>" );
       out.println( "<p>" );
       out.println( "--> port : " + encoder.encodeForHTML( port.toString() ) + "<br>" );

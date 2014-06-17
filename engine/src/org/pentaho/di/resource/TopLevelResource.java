@@ -24,9 +24,9 @@ package org.pentaho.di.resource;
 
 /**
  * This describes the top level resource after an export
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class TopLevelResource {
   private String baseResourceName;

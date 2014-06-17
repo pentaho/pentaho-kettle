@@ -38,7 +38,7 @@ public class SharedDimensionMetaStoreUtil extends MetaStoreUtil {
   public static final String METASTORE_SHARED_DIMENSION_TYPE_DESCRIPTION = "This contains a shared dimension for a particular star domain";
 
   private static String namespace = PentahoDefaults.NAMESPACE;
-  
+
   public enum Attribute {
     ID_SHARED_DIMENSION_DESCRIPTION("smsd_description"),
     ID_SHARED_DIMENSION_COLUMNS("smsd_columns"),
@@ -46,20 +46,20 @@ public class SharedDimensionMetaStoreUtil extends MetaStoreUtil {
     ID_SHARED_DIMENSION_COLUMN_NAME("smsd_column_name"),
     ID_SHARED_DIMENSION_COLUMN_DESCRIPTION("smsd_column_description"),
     ;
-    
+
     public String id;
     private Attribute(String id) {
       this.id = id;
     }
   }
-  
+
   public static void saveSharedDimension(IMetaStore metaStore, LogicalTable sharedDimension, String locale) throws MetaStoreException {
     IMetaStoreElementType elementType = getSharedDimensionElementType(metaStore);
     IMetaStoreElement element = null;
     if (sharedDimension.getId()!=null) {
       element = metaStore.getElement(namespace, elementType, sharedDimension.getId());
     }
-    
+
     if (element!=null) {
       // Update the shared dimension!
       //
@@ -72,8 +72,8 @@ public class SharedDimensionMetaStoreUtil extends MetaStoreUtil {
       populateElementWithSharedDimension(metaStore, sharedDimension, locale, elementType, element);
       metaStore.createElement(namespace, elementType, element);
     }
-    
-    sharedDimension.setId(element.getId());    
+
+    sharedDimension.setId(element.getId());
   }
 
   private static void populateElementWithSharedDimension(IMetaStore metaStore, LogicalTable sharedDimension, String locale, IMetaStoreElementType elementType, IMetaStoreElement element) throws MetaStoreException {
@@ -92,7 +92,7 @@ public class SharedDimensionMetaStoreUtil extends MetaStoreUtil {
 
   public static IMetaStoreElementType getSharedDimensionElementType(IMetaStore metaStore) throws MetaStoreException {
     verifyNamespaceCreated(metaStore, namespace);
-    
+
     IMetaStoreElementType elementType = metaStore.getElementTypeByName(namespace, METASTORE_SHARED_DIMENSION_TYPE_NAME);
     if (elementType==null) {
       // create the type

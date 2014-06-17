@@ -32,10 +32,10 @@ import org.pentaho.di.core.exception.KettleFileException;
 /**
  * This class represents a single entry in a database cache. A single entry in this case usually means: a single SQL
  * query.
- * 
+ *
  * @author Matt
  * @since 15-01-04
- * 
+ *
  */
 public class DBCacheEntry {
   private String dbname;
@@ -91,7 +91,7 @@ public class DBCacheEntry {
 
   /**
    * Read the data for this Cache entry from a data input stream
-   * 
+   *
    * @param dis
    *          The DataInputStream to read this entry from.
    * @throws KettleFileException
@@ -111,7 +111,7 @@ public class DBCacheEntry {
 
   /**
    * Write the data for this Cache entry to a data output stream
-   * 
+   *
    * @param dos
    *          The DataOutputStream to write this entry to.
    * @return True if all went well, false if an error occured!

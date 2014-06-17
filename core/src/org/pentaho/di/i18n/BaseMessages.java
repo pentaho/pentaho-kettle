@@ -29,9 +29,9 @@ import org.pentaho.di.laf.LAFFactory;
  * BaseMessage is called by all Message classes to enable the delegation of message delivery, by key to be delegated to
  * the appropriately authoritative supplier as registered in the LAFFactory enabling both i18n as well as pluggable look
  * and feel (LAF)
- * 
+ *
  * @author dhushon
- * 
+ *
  */
 public class BaseMessages implements LAFChangeListener<MessageHandler> {
   static BaseMessages instance = null;

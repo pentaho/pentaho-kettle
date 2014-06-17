@@ -29,9 +29,9 @@ import org.pentaho.di.i18n.MessageHandler;
 /**
  * the LAFFactory provides a mechanism whereby @see Handler s can be dynamically replaced to enable user driven
  * replacement of dynamic resolvers whether ImageHandlers, MessageHandlers, or other elements of Look and Feel.
- * 
+ *
  * @author dhushon
- * 
+ *
  */
 public class LAFFactory {
 
@@ -40,10 +40,11 @@ public class LAFFactory {
 
   // Registry of Delegates that know how to load the appropriate handlers
   private static HashMap<Class<? extends Handler>, LAFDelegate<? extends Handler>> delegateRegistry =
-      new HashMap<Class<? extends Handler>, LAFDelegate<? extends Handler>>();
+    new HashMap<Class<? extends Handler>, LAFDelegate<? extends Handler>>();
 
   // Map an abstract ClassName (by String) to an implementing Class
-  private static HashMap<String, Class<? extends Handler>> handlerRef = new HashMap<String, Class<? extends Handler>>();
+  private static HashMap<String, Class<? extends Handler>> handlerRef =
+    new HashMap<String, Class<? extends Handler>>();
   static {
     // handlers.put(MessageHandler.class.), (Handler)_defMessageHandler.newInstance());
     handlerRef.put( MessageHandler.class.getName(), _defMessageHandler );
@@ -65,7 +66,7 @@ public class LAFFactory {
   /**
    * Return an instance of the class that has been designated as the implementor of the requested Interface, will return
    * null if there is no implementor.
-   * 
+   *
    * @param <V>
    * @param handler
    * @return

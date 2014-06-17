@@ -26,9 +26,9 @@ package org.pentaho.di.trans.steps.pgbulkloader;
 // The "designer" notes of the PostgreSQL bulkloader:
 // ----------------------------------------------
 //
-// Let's see how fast we can push data down the tube with the use of COPY FROM STDIN 
+// Let's see how fast we can push data down the tube with the use of COPY FROM STDIN
 //
-// 
+//
 
 import java.math.BigDecimal;
 
@@ -52,41 +52,41 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Performs a bulk load to a postgres table.
- * 
+ *
  * Based on (copied from) Sven Boden's Oracle Bulk Loader step
- * 
+ *
  * @author matt
  * @since 28-mar-2008
  */
 public class PGBulkLoader extends BaseStep implements StepInterface {
-  private static Class<?> PKG = PGBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PGBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   private PGBulkLoaderMeta meta;
   private PGBulkLoaderData data;
 
   public PGBulkLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Get the contents of the control file as specified in the meta object
-   * 
+   *
    * @param meta
    *          the meta object to model the control file after
-   * 
+   *
    * @return a string containing the control file contents
    */
   public String getCopyCommand( RowMetaInterface rm, Object[] r ) throws KettleException {
     DatabaseMeta dm = meta.getDatabaseMeta();
 
-    String loadAction = meta.getLoadAction();
+    String loadAction = environmentSubstitute( meta.getLoadAction() );
 
     StringBuffer contents = new StringBuffer( 500 );
 
     String tableName =
-        dm.getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta
-            .getTableName() ) );
+      dm.getQuotedSchemaTableCombination(
+        environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
     // Set the date style...
     //
@@ -128,8 +128,9 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     contents.append( " FROM STDIN" ); // FIFO file
 
     // The "FORMAT" clause
-    contents.append( " WITH CSV DELIMITER AS '" ).append( meta.getDelimiter() ).append( "' QUOTE AS '" ).append(
-        meta.getEnclosure() ).append( "'" );
+    contents.append( " WITH CSV DELIMITER AS '" ).append( environmentSubstitute( meta.getDelimiter() ) )
+        .append( "' QUOTE AS '" ).append(
+      environmentSubstitute( meta.getEnclosure() ) ).append( "'" );
     contents.append( ";" ).append( Const.CR );
 
     return contents.toString();
@@ -137,14 +138,14 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
   /**
    * Create the command line for a psql process depending on the meta information supplied.
-   * 
+   *
    * @param meta
    *          The meta data to create the command line from
    * @param password
    *          Use the real password or not
-   * 
+   *
    * @return The string to execute.
-   * 
+   *
    * @throws KettleException
    *           Upon any exception
    */
@@ -153,7 +154,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
     if ( meta.getPsqlpath() != null ) {
       try {
-        FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( meta.getPsqlpath() ), getTransMeta() );
+        FileObject fileObject =
+          KettleVFS.getFileObject( environmentSubstitute( meta.getPsqlpath() ), getTransMeta() );
         String psqlexec = Const.optionallyQuoteStringByOS( KettleVFS.getFilename( fileObject ) );
         sb.append( psqlexec );
       } catch ( KettleFileException ex ) {
@@ -196,12 +198,12 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
       String dns = environmentSubstitute( Const.NVL( dm.getDatabaseName(), "" ) );
       sb.append( " " );
 
-      String overrideName = meta.getDbNameOverride();
+      String overrideName = environmentSubstitute( meta.getDbNameOverride() );
       if ( Const.isEmpty( Const.rtrim( overrideName ) ) ) {
         sb.append( environmentSubstitute( dns ) );
       } else {
         // if the database name override is filled in, do that one.
-        sb.append( environmentSubstitute( overrideName ) );
+        sb.append( overrideName );
       }
     } else {
       throw new KettleException( "No connection specified" );
@@ -249,8 +251,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     try {
       Object[] r = getRow(); // Get row from input rowset & set row busy!
 
-      if ( r == null ) // no more input to be expected...
-      {
+      if ( r == null ) { // no more input to be expected...
+
         setOutputDone();
 
         // Close the output stream...
@@ -264,7 +266,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
           int exitVal = data.psqlProcess.waitFor();
           logBasic( BaseMessages.getString( PKG, "GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal ) );
           if ( meta.isStopOnError() && exitVal != 0 ) { // If we're supposed to stop on exception, then this is where.
-            throw new KettleException( BaseMessages.getString( PKG, "PGBulkLoader.Exception.ExitValueNotZero", exitVal ) );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "PGBulkLoader.Exception.ExitValueNotZero", exitVal ) );
           }
         } else {
           logBasic( BaseMessages.getString( PKG, "PGBulkLoader.Log.NullInputAndOrPSQLProcess" ) );
@@ -355,7 +358,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
               switch ( data.dateFormatChoices[i] ) {
               // Pass the data along in the format chosen by the user OR in binary format...
               //
-                case PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH: {
+                case PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH:
                   if ( valueMeta.isStorageBinaryString() ) {
                     data.pgOutputStream.write( (byte[]) valueData );
                   } else {
@@ -364,26 +367,26 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
                       data.pgOutputStream.write( dateString.getBytes() );
                     }
                   }
-                }
                   break;
+
                 // Convert to a "YYYY/MM/DD" format
                 //
-                case PGBulkLoaderMeta.NR_DATE_MASK_DATE: {
+                case PGBulkLoaderMeta.NR_DATE_MASK_DATE:
                   String dateString = data.dateMeta.getString( valueMeta.getDate( valueData ) );
                   if ( dateString != null ) {
                     data.pgOutputStream.write( dateString.getBytes() );
                   }
-                }
                   break;
+
                 // Convert to a "YYYY/MM/DD HH:MM:SS" (ISO) format
                 //
-                case PGBulkLoaderMeta.NR_DATE_MASK_DATETIME: {
+                case PGBulkLoaderMeta.NR_DATE_MASK_DATETIME:
                   String dateTimeString = data.dateTimeMeta.getString( valueMeta.getDate( valueData ) );
                   if ( dateTimeString != null ) {
                     data.pgOutputStream.write( dateTimeString.getBytes() );
                   }
-                }
                   break;
+
                 default:
                   break;
               }
@@ -431,14 +434,17 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     meta = (PGBulkLoaderMeta) smi;
     data = (PGBulkLoaderData) sdi;
 
+    String enclosure = environmentSubstitute( meta.getEnclosure() );
+    String separator = environmentSubstitute( meta.getDelimiter() );
+
     if ( super.init( smi, sdi ) ) {
-      if ( meta.getEnclosure() != null ) {
-        data.quote = meta.getEnclosure().getBytes();
+      if ( enclosure != null ) {
+        data.quote = enclosure.getBytes();
       } else {
         data.quote = new byte[] {};
       }
-      if ( meta.getDelimiter() != null ) {
-        data.separator = meta.getDelimiter().getBytes();
+      if ( separator != null ) {
+        data.separator = separator.getBytes();
       } else {
         data.separator = new byte[] {};
       }

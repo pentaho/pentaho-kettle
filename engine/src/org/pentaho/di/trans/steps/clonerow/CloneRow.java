@@ -36,17 +36,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Clone input row.
- * 
+ *
  * @author Samatar
  * @since 27-06-2008
  */
 public class CloneRow extends BaseStep implements StepInterface {
-  private static Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CloneRowMeta meta;
   private CloneRowData data;
 
-  public CloneRow( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public CloneRow( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -56,8 +57,8 @@ public class CloneRow extends BaseStep implements StepInterface {
 
     Object[] r = getRow(); // get row, set busy!
 
-    if ( r == null ) // no more input to be expected...
-    {
+    // if no more input to be expected set done.
+    if ( r == null ) {
       setOutputDone();
       return false;
     }
@@ -95,9 +96,10 @@ public class CloneRow extends BaseStep implements StepInterface {
           data.indexOfNrCloneField = getInputRowMeta().indexOfValue( cloneinfieldname );
           if ( data.indexOfNrCloneField < 0 ) {
             // The field is unreachable !
-            logError( BaseMessages.getString( PKG, "CloneRow.Log.ErrorFindingField" ) + "[" + cloneinfieldname + "]" );
-            throw new KettleException( BaseMessages.getString( PKG, "CloneRow.Exception.CouldnotFindField",
-                cloneinfieldname ) );
+            logError( BaseMessages.getString( PKG, "CloneRow.Log.ErrorFindingField" )
+              + "[" + cloneinfieldname + "]" );
+            throw new KettleException( BaseMessages.getString(
+              PKG, "CloneRow.Exception.CouldnotFindField", cloneinfieldname ) );
           }
         }
       } else {

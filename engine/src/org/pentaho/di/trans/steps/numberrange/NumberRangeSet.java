@@ -28,9 +28,9 @@ import org.pentaho.di.core.exception.KettleException;
 
 /**
  * This class assigns numbers into ranges
- * 
+ *
  * @author ronny.roeller@fredhopper.com
- * 
+ *
  */
 public class NumberRangeSet {
 

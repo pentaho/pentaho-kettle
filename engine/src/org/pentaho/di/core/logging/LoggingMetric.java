@@ -26,9 +26,9 @@ import org.pentaho.di.core.metrics.MetricsSnapshotInterface;
 
 /**
  * Just a small wrapper class to allow us to pass a few extra details along with a metrics snapshot (like the batch id)
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class LoggingMetric {
   private long batchId;

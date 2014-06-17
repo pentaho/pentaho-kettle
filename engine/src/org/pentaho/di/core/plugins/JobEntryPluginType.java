@@ -43,21 +43,23 @@ import org.w3c.dom.Node;
 
 /**
  * This plugin type handles the job entries.
- * 
+ *
  * @author matt
- * 
+ *
  */
 
-@PluginTypeCategoriesOrder( getNaturalCategoriesOrder = { "JobCategory.Category.General", "JobCategory.Category.Mail",
-  "JobCategory.Category.FileManagement", "JobCategory.Category.Conditions", "JobCategory.Category.Scripting",
-  "JobCategory.Category.BulkLoading", "JobCategory.Category.BigData", "JobCategory.Category.DataQuality",
-  "JobCategory.Category.XML", "JobCategory.Category.Utility", "JobCategory.Category.Repository",
-  "JobCategory.Category.FileTransfer", "JobCategory.Category.FileEncryption", "JobCategory.Category.Palo",
-  "JobCategory.Category.Experimental", "JobCategory.Category.Deprecated" }, i18nPackageClass = JobMeta.class )
+@PluginTypeCategoriesOrder(
+  getNaturalCategoriesOrder = {
+    "JobCategory.Category.General", "JobCategory.Category.Mail", "JobCategory.Category.FileManagement",
+    "JobCategory.Category.Conditions", "JobCategory.Category.Scripting", "JobCategory.Category.BulkLoading",
+    "JobCategory.Category.BigData", "JobCategory.Category.DataQuality", "JobCategory.Category.XML",
+    "JobCategory.Category.Utility", "JobCategory.Category.Repository", "JobCategory.Category.FileTransfer",
+    "JobCategory.Category.FileEncryption", "JobCategory.Category.Palo", "JobCategory.Category.Experimental",
+    "JobCategory.Category.Deprecated" }, i18nPackageClass = JobMeta.class )
 @PluginMainClassType( JobEntryInterface.class )
 @PluginAnnotationType( JobEntry.class )
 public class JobEntryPluginType extends BasePluginType implements PluginTypeInterface {
-  private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String GENERAL_CATEGORY = BaseMessages.getString( PKG, "JobCategory.Category.General" );
 
@@ -66,6 +68,10 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
   private JobEntryPluginType() {
     super( JobEntry.class, "JOBENTRY", "Job entry" );
     populateFolders( "jobentries" );
+  }
+
+  protected JobEntryPluginType( Class<? extends Annotation> pluginType, String id, String name ) {
+    super( pluginType, id, name );
   }
 
   public static JobEntryPluginType getInstance() {
@@ -109,13 +115,13 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
         try {
           inputStream = new FileInputStream( kettleJobEntriesXmlFile );
         } catch ( Exception e ) {
-          throw new KettlePluginException( "Unable to load native job entries plugins '" + kettleJobEntriesXmlFile
-              + "'", e );
+          throw new KettlePluginException( "Unable to load native job entries plugins '"
+            + kettleJobEntriesXmlFile + "'", e );
         }
       }
       if ( inputStream == null ) {
         throw new KettlePluginException( "Unable to find native step definition file: "
-            + Const.XML_FILE_KETTLE_JOB_ENTRIES );
+          + Const.XML_FILE_KETTLE_JOB_ENTRIES );
       }
       Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
 
@@ -129,7 +135,7 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 
     } catch ( KettleXMLException e ) {
       throw new KettlePluginException( "Unable to read the kettle job entries XML config file: "
-          + kettleJobEntriesXmlFile, e );
+        + kettleJobEntriesXmlFile, e );
     }
   }
 
@@ -152,8 +158,9 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
             Document document = XMLHandler.loadXMLFile( file );
             Node pluginNode = XMLHandler.getSubNode( document, "plugin" );
 
-            registerPluginFromXmlResource( pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(),
-                false, file.getParent().getURL() );
+            registerPluginFromXmlResource(
+              pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(), false, file
+                .getParent().getURL() );
           } catch ( Exception e ) {
             // We want to report this plugin.xml error, perhaps an XML typo or something like that...
             //
@@ -218,4 +225,8 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
     return ( (JobEntry) annotation ).forumUrl();
   }
 
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (JobEntry) annotation ).classLoaderGroup();
+  }
 }

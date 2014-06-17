@@ -73,7 +73,7 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = GetFilesRowsCountMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetFilesRowsCountMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -395,21 +395,26 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
     ColumnInfo[] colinfo = new ColumnInfo[5];
     colinfo[0] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.Files.Filename.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "GetFilesRowsCountDialog.Files.Filename.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinfo[1] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.Files.Wildcard.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "GetFilesRowsCountDialog.Files.Wildcard.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
     colinfo[2] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GetFilesRowsDialog.Files.ExcludeWildcard.Column" ),
-            ColumnInfo.COLUMN_TYPE_TEXT, false );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "GetFilesRowsDialog.Files.ExcludeWildcard.Column" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     colinfo[3] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.Required.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, GetFilesRowsCountMeta.RequiredFilesDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "GetFilesRowsCountDialog.Required.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, GetFilesRowsCountMeta.RequiredFilesDesc );
     colinfo[4] =
-        new ColumnInfo( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.IncludeSubDirs.Column" ),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, GetFilesRowsCountMeta.RequiredFilesDesc );
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "GetFilesRowsCountDialog.IncludeSubDirs.Column" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, GetFilesRowsCountMeta.RequiredFilesDesc );
 
     colinfo[0].setUsingVariables( true );
     colinfo[1].setUsingVariables( true );
@@ -418,7 +423,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
     colinfo[2].setToolTip( BaseMessages.getString( PKG, "GetFilesRowsDialog.Files.ExcludeWildcard.Tooltip" ) );
 
     wFilenameList =
-        new TableView( transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2, lsMod, props );
+      new TableView(
+        transMeta, wFileComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 2, lsMod, props );
     props.setLook( wFilenameList );
 
     fdFilenameList = new FormData();
@@ -462,8 +468,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
     wFilesCountFieldGroup = new Group( wContentComp, SWT.SHADOW_NONE );
     props.setLook( wFilesCountFieldGroup );
-    wFilesCountFieldGroup.setText( BaseMessages.getString( PKG,
-        "GetFilesRowsCountDialog.Group.CountFilesFieldGroup.Label" ) );
+    wFilesCountFieldGroup.setText( BaseMessages.getString(
+      PKG, "GetFilesRowsCountDialog.Group.CountFilesFieldGroup.Label" ) );
 
     FormLayout countfilesfieldgroupLayout = new FormLayout();
     countfilesfieldgroupLayout.marginWidth = 10;
@@ -479,7 +485,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
     wlRowsCountField.setLayoutData( fdlRowsCountField );
     wRowsCountField = new TextVar( transMeta, wFilesCountFieldGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wRowsCountField );
-    wRowsCountField.setToolTipText( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.RowsCountField.Tooltip" ) );
+    wRowsCountField
+      .setToolTipText( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.RowsCountField.Tooltip" ) );
     wRowsCountField.addModifyListener( lsMod );
     fdRowsCountField = new FormData();
     fdRowsCountField.left = new FormAttachment( wlRowsCountField, margin );
@@ -511,7 +518,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
     wRowSeparatorGroup.setLayout( rowseparatorgroupLayout );
 
     wlRowSeparatorFormat = new Label( wRowSeparatorGroup, SWT.RIGHT );
-    wlRowSeparatorFormat.setText( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.Label" ) );
+    wlRowSeparatorFormat
+      .setText( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.Label" ) );
     props.setLook( wlRowSeparatorFormat );
     fdlRowSeparatorFormat = new FormData();
     fdlRowSeparatorFormat.left = new FormAttachment( 0, 0 );
@@ -522,9 +530,12 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
     props.setLook( wRowSeparatorFormat );
     wRowSeparatorFormat.add( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.CR.Label" ) );
     wRowSeparatorFormat.add( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.LF.Label" ) );
-    wRowSeparatorFormat.add( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.CRLF.Label" ) );
-    wRowSeparatorFormat.add( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.TAB.Label" ) );
-    wRowSeparatorFormat.add( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.CUSTOM.Label" ) );
+    wRowSeparatorFormat
+      .add( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.CRLF.Label" ) );
+    wRowSeparatorFormat
+      .add( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.TAB.Label" ) );
+    wRowSeparatorFormat.add( BaseMessages.getString(
+      PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.CUSTOM.Label" ) );
     wRowSeparatorFormat.select( 0 );
     wRowSeparatorFormat.addModifyListener( lsMod );
     fdRowSeparatorFormat = new FormData();
@@ -589,7 +600,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
     wAdditionalGroup = new Group( wContentComp, SWT.SHADOW_NONE );
     props.setLook( wAdditionalGroup );
-    wAdditionalGroup.setText( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.Group.AdditionalGroup.Label" ) );
+    wAdditionalGroup
+      .setText( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.Group.AdditionalGroup.Label" ) );
 
     FormLayout additionalgroupLayout = new FormLayout();
     additionalgroupLayout.marginWidth = 10;
@@ -606,14 +618,16 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
     wlInclFilesCount.setLayoutData( fdlInclFilesCount );
     wInclFilesCount = new Button( wAdditionalGroup, SWT.CHECK );
     props.setLook( wInclFilesCount );
-    wInclFilesCount.setToolTipText( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.InclCountFiles.Tooltip" ) );
+    wInclFilesCount
+      .setToolTipText( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.InclCountFiles.Tooltip" ) );
     fdFilesCount = new FormData();
     fdFilesCount.left = new FormAttachment( middle, 0 );
     fdFilesCount.top = new FormAttachment( wRowSeparatorGroup, margin );
     wInclFilesCount.setLayoutData( fdFilesCount );
 
     wlInclFilesCountField = new Label( wAdditionalGroup, SWT.RIGHT );
-    wlInclFilesCountField.setText( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.InclCountFilesField.Label" ) );
+    wlInclFilesCountField.setText( BaseMessages.getString(
+      PKG, "GetFilesRowsCountDialog.InclCountFilesField.Label" ) );
     props.setLook( wlInclFilesCountField );
     fdlInclFilesCountField = new FormData();
     fdlInclFilesCountField.left = new FormAttachment( wInclFilesCount, margin );
@@ -742,7 +756,8 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFilenameList.add( new String[] { wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
+        wFilenameList.add( new String[] {
+          wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
           GetFilesRowsCountMeta.RequiredFilesCode[0], GetFilesRowsCountMeta.RequiredFilesCode[0] } );
         wFilename.setText( "" );
         wFilemask.setText( "" );
@@ -791,24 +806,20 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
           String[] files = fileInputList.getFileStrings();
 
           if ( files.length > 0 ) {
-            EnterSelectionDialog esd =
-                new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,
-                    "GetFilesRowsCountDialog.FilesReadSelection.DialogTitle" ), BaseMessages.getString( PKG,
-                    "GetFilesRowsCountDialog.FilesReadSelection.DialogMessage" ) );
+            EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
+              BaseMessages.getString( PKG, "GetFilesRowsCountDialog.FilesReadSelection.DialogTitle" ),
+              BaseMessages.getString( PKG, "GetFilesRowsCountDialog.FilesReadSelection.DialogMessage" ) );
             esd.setViewOnly();
             esd.open();
-          }
-
-          else {
+          } else {
             MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
             mb.setMessage( BaseMessages.getString( PKG, "GetFilesRowsCountDialog.NoFileFound.DialogMessage" ) );
             mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
             mb.open();
           }
         } catch ( KettleException ex ) {
-          new ErrorDialog( shell,
-              BaseMessages.getString( PKG, "GetFilesRowsCountDialog.ErrorParsingData.DialogTitle" ), BaseMessages
-                  .getString( PKG, "GetFilesRowsCountDialog.ErrorParsingData.DialogMessage" ), ex );
+          new ErrorDialog( shell, BaseMessages.getString( PKG, "GetFilesRowsCountDialog.ErrorParsingData.DialogTitle" ),
+            BaseMessages.getString( PKG, "GetFilesRowsCountDialog.ErrorParsingData.DialogMessage" ), ex );
         }
       }
     } );
@@ -934,13 +945,13 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "GetFilesRowsCountDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "GetFilesRowsCountDialog.FailedToGetFields.DialogMessage" ), ke );
+        BaseMessages.getString( PKG, "GetFilesRowsCountDialog.FailedToGetFields.DialogMessage" ), ke );
     }
   }
 
   /**
    * Read the data from the GetFilesRowsCountMeta object and show it in this dialog.
-   * 
+   *
    * @param in
    *          The GetFilesRowsCountMeta object to obtain the data from.
    */
@@ -948,10 +959,10 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
     if ( in.getFileName() != null ) {
       wFilenameList.removeAll();
       for ( int i = 0; i < in.getFileName().length; i++ ) {
-        wFilenameList
-            .add( new String[] { in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
-              in.getRequiredFilesDesc( in.getFileRequired()[i] ),
-              in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
+        wFilenameList.add( new String[] {
+          in.getFileName()[i], in.getFileMask()[i], in.getExludeFileMask()[i],
+          in.getRequiredFilesDesc( in.getFileRequired()[i] ),
+          in.getRequiredFilesDesc( in.getIncludeSubFolders()[i] ) } );
       }
       wFilenameList.removeEmptyRows();
       wFilenameList.setRowNums();
@@ -975,17 +986,14 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
       // Checking for 'CR' for backwards compatibility
       if ( in.getRowSeparatorFormat().equals( "CARRIAGERETURN" ) || in.getRowSeparatorFormat().equals( "CR" ) ) {
         wRowSeparatorFormat.select( 0 );
-      }
-      // Checking for 'LF' for backwards compatibility
-      else if ( in.getRowSeparatorFormat().equals( "LINEFEED" ) || in.getRowSeparatorFormat().equals( "LF" ) ) {
+      } else if ( in.getRowSeparatorFormat().equals( "LINEFEED" ) || in.getRowSeparatorFormat().equals( "LF" ) ) {
+        // Checking for 'LF' for backwards compatibility
         wRowSeparatorFormat.select( 1 );
       } else if ( in.getRowSeparatorFormat().equals( "CRLF" ) ) {
         wRowSeparatorFormat.select( 2 );
       } else if ( in.getRowSeparatorFormat().equals( "TAB" ) ) {
         wRowSeparatorFormat.select( 3 );
-      }
-
-      else {
+      } else {
         wRowSeparatorFormat.select( 4 );
       }
     } else {
@@ -1024,8 +1032,9 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
     try {
       getInfo( input );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "GetFilesRowsCountDialog.ErrorParsingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "GetFilesRowsCountDialog.ErrorParsingData.DialogMessage" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "GetFilesRowsCountDialog.ErrorParsingData.DialogTitle" ),
+        BaseMessages.getString( PKG, "GetFilesRowsCountDialog.ErrorParsingData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -1083,17 +1092,17 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
       getInfo( oneMeta );
 
       TransMeta previewMeta =
-          TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
+        TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
       EnterNumberDialog numberDialog =
-          new EnterNumberDialog( shell, props.getDefaultPreviewSize(), BaseMessages.getString( PKG,
-              "GetFilesRowsCountDialog.NumberRows.DialogTitle" ), BaseMessages.getString( PKG,
-              "GetFilesRowsCountDialog.NumberRows.DialogMessage" ) );
+        new EnterNumberDialog( shell, props.getDefaultPreviewSize(),
+          BaseMessages.getString( PKG, "GetFilesRowsCountDialog.NumberRows.DialogTitle" ),
+          BaseMessages.getString( PKG, "GetFilesRowsCountDialog.NumberRows.DialogMessage" ) );
       int previewSize = numberDialog.open();
       if ( previewSize > 0 ) {
         TransPreviewProgressDialog progressDialog =
-            new TransPreviewProgressDialog( shell, previewMeta, new String[] { wStepname.getText() },
-                new int[] { previewSize } );
+          new TransPreviewProgressDialog(
+            shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
         progressDialog.open();
 
         if ( !progressDialog.isCancelled() ) {
@@ -1102,23 +1111,24 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 
           if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
             EnterTextDialog etd =
-                new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                    BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+              new EnterTextDialog(
+                shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ), BaseMessages
+                  .getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
             etd.setReadOnly();
             etd.open();
           }
 
           PreviewRowsDialog prd =
-              new PreviewRowsDialog( shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog
-                  .getPreviewRowsMeta( wStepname.getText() ), progressDialog.getPreviewRows( wStepname.getText() ),
-                  loggingText );
+            new PreviewRowsDialog(
+              shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta( wStepname
+                .getText() ), progressDialog.getPreviewRows( wStepname.getText() ), loggingText );
           prd.open();
 
         }
       }
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "GetFilesRowsCountDialog.ErrorPreviewingData.DialogTitle" ),
-          BaseMessages.getString( PKG, "GetFilesRowsCountDialog.ErrorPreviewingData.DialogMessage" ), e );
+        BaseMessages.getString( PKG, "GetFilesRowsCountDialog.ErrorPreviewingData.DialogMessage" ), e );
     }
   }
 

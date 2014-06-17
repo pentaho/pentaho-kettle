@@ -35,17 +35,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Pivots data based on key-value pairs
- * 
+ *
  * @author Matt
  * @since 17-jan-2006
  */
 public class Flattener extends BaseStep implements StepInterface {
-  private static Class<?> PKG = FlattenerMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FlattenerMeta.class; // for i18n purposes, needed by Translator2!!
 
   private FlattenerMeta meta;
   private FlattenerData data;
 
-  public Flattener( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public Flattener( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (FlattenerMeta) getStepMeta().getStepMetaInterface();
@@ -54,8 +55,8 @@ public class Flattener extends BaseStep implements StepInterface {
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     Object[] r = getRow(); // get row!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       // Don't forget the last set of rows...
       if ( data.processed > 0 ) {
         Object[] outputRowData = createOutputRow( data.previousRow );

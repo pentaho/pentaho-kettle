@@ -35,13 +35,13 @@ import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Symmetric algorithm
- * 
+ *
  * @author Samatar
  * @since 01-4-2011
  */
 public class SymmetricCrypto {
 
-  private static Class<?> PKG = SymmetricCrypto.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SymmetricCrypto.class; // for i18n purposes, needed by Translator2!!
 
   private SymmetricCryptoMeta meta;
 
@@ -54,7 +54,7 @@ public class SymmetricCrypto {
 
   /**
    * Construct a new Symetric SymmetricCrypto trans
-   * 
+   *
    * @param inf
    *          The Database Connection Info to construct the connection with.
    */
@@ -73,7 +73,7 @@ public class SymmetricCrypto {
 
   /**
    * Construct a new Symetric SymmetricCrypto trans
-   * 
+   *
    * @param inf
    *          The Database Connection Info to construct the connection with.
    */

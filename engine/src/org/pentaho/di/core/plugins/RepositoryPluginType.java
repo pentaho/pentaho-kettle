@@ -41,9 +41,9 @@ import org.w3c.dom.Node;
 
 /**
  * This class represents the repository plugin type.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @PluginMainClassType( Repository.class )
 @PluginExtraClassTypes( classTypes = { RepositoryMeta.class }, xmlNodeNames = { "meta-classname" } )
@@ -107,8 +107,9 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
             Document document = XMLHandler.loadXMLFile( file );
             Node pluginNode = XMLHandler.getSubNode( document, "plugin" );
 
-            registerPluginFromXmlResource( pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(),
-                false, file.getParent().getURL() );
+            registerPluginFromXmlResource(
+              pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(), false, file
+                .getParent().getURL() );
           } catch ( Exception e ) {
             // We want to report this plugin.xml error, perhaps an XML typo or something like that...
             //
@@ -156,7 +157,7 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
 
   /**
    * Extract extra classes information from a plugin annotation.
-   * 
+   *
    * @param classMap
    * @param annotation
    */
@@ -179,6 +180,11 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
   @Override
   protected String extractForumUrl( Annotation annotation ) {
     return null;
+  }
+
+  @Override
+  protected String extractClassLoaderGroup( Annotation annotation ) {
+    return ( (RepositoryPlugin) annotation ).classLoaderGroup();
   }
 
 }

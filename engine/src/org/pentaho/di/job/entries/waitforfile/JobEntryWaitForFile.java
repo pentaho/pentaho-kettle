@@ -57,13 +57,13 @@ import org.w3c.dom.Node;
 
 /**
  * This defines a 'wait for file' job entry. Its use is to wait for a file to appear.
- * 
+ *
  * @author Sven Boden
  * @since 10-02-2007
- * 
+ *
  */
 public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryWaitForFile.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryWaitForFile.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
   private String maximumTimeout; // maximum timeout in seconds
@@ -83,7 +83,6 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     successOnTimeout = false;
     fileSizeCheck = false;
     addFilenameToResult = false;
-    setID( -1L );
   }
 
   public JobEntryWaitForFile() {
@@ -108,8 +107,8 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       filename = XMLHandler.getTagValue( entrynode, "filename" );
@@ -124,7 +123,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       filename = rep.getJobEntryAttributeString( id_jobentry, "filename" );
       maximumTimeout = rep.getJobEntryAttributeString( id_jobentry, "maximum_timeout" );
@@ -134,7 +133,8 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
       addFilenameToResult = rep.getJobEntryAttributeBoolean( id_jobentry, "add_filename_result" );
     } catch ( KettleException dbe ) {
       throw new KettleException(
-          "Unable to load job entry of type 'wait for file' from the repository for id_jobentry=" + id_jobentry, dbe );
+        "Unable to load job entry of type 'wait for file' from the repository for id_jobentry=" + id_jobentry,
+        dbe );
     }
   }
 
@@ -148,7 +148,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
       rep.saveJobEntryAttribute( id_job, getObjectId(), "add_filename_result", addFilenameToResult );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to save job entry of type 'wait for file' to the repository for id_job="
-          + id_job, dbe );
+        + id_job, dbe );
     }
   }
 
@@ -223,7 +223,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
             // add filename to result filenames
             if ( addFilenameToResult && fileObject.getType() == FileType.FILE ) {
               ResultFile resultFile =
-                  new ResultFile( ResultFile.FILE_TYPE_GENERAL, fileObject, parentJob.getJobname(), toString() );
+                new ResultFile( ResultFile.FILE_TYPE_GENERAL, fileObject, parentJob.getJobname(), toString() );
               resultFile.setComment( BaseMessages.getString( PKG, "JobWaitForFile.FilenameAdded" ) );
               result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
             }
@@ -263,7 +263,8 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
             try {
               if ( sleepTime > 0 ) {
                 if ( log.isDetailed() ) {
-                  logDetailed( "Sleeping " + sleepTime + " seconds before next check for file [" + realFilename + "]" );
+                  logDetailed( "Sleeping "
+                    + sleepTime + " seconds before next check for file [" + realFilename + "]" );
                 }
                 Thread.sleep( sleepTime * 1000 );
               }
@@ -288,8 +289,8 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
           while ( oldSize != newSize && !parentJob.isStopped() ) {
             try {
               if ( log.isDetailed() ) {
-                logDetailed( "Sleeping " + iCycleTime + " seconds, waiting for file [" + realFilename
-                    + "] to stop growing" );
+                logDetailed( "Sleeping "
+                  + iCycleTime + " seconds, waiting for file [" + realFilename + "] to stop growing" );
               }
               Thread.sleep( iCycleTime * 1000 );
             } catch ( InterruptedException e ) {
@@ -318,6 +319,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
           try {
             fileObject.close();
           } catch ( Exception e ) {
+            // Ignore errors
           }
         }
       }
@@ -392,8 +394,8 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     andValidator().validate( this, "filename", remarks, putValidators( notBlankValidator() ) );
     andValidator().validate( this, "maximumTimeout", remarks, putValidators( integerValidator() ) );
     andValidator().validate( this, "checkCycleTime", remarks, putValidators( integerValidator() ) );

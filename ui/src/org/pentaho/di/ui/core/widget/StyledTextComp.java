@@ -63,7 +63,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class StyledTextComp extends Composite {
-  private static Class<?> PKG = StyledTextComp.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StyledTextComp.class; // for i18n purposes, needed by Translator2!!
 
   // Modification for Undo/Redo on Styled Text
   private static final int MAX_STACK_SIZE = 25;
@@ -110,8 +110,8 @@ public class StyledTextComp extends Composite {
           bFullSelection = true;
           styledText.selectAll();
         } else if ( e.keyCode == 'f' && ( e.stateMask & SWT.MOD1 ) != 0 ) {
-          new StyledTextCompFind( styledTextPopupmenu.getShell(), styledText, BaseMessages.getString( PKG,
-              "WidgetDialog.Styled.Find" ) ).open();
+          new StyledTextCompFind( styledTextPopupmenu.getShell(), styledText, BaseMessages.getString(
+            PKG, "WidgetDialog.Styled.Find" ) ).open();
         }
       }
     };
@@ -122,7 +122,8 @@ public class StyledTextComp extends Composite {
       ControlDecoration controlDecoration = new ControlDecoration( styledText, SWT.TOP | SWT.RIGHT );
       Image image = GUIResource.getInstance().getImageVariable();
       controlDecoration.setImage( image );
-      controlDecoration.setDescriptionText( BaseMessages.getString( PKG, "StyledTextComp.tooltip.InsertVariable" ) );
+      controlDecoration
+        .setDescriptionText( BaseMessages.getString( PKG, "StyledTextComp.tooltip.InsertVariable" ) );
       PropsUI.getInstance().setLook( controlDecoration.getControl() );
       styledText.addKeyListener( new ControlSpaceKeyAdapter( this.variables, styledText ) );
     }
@@ -260,7 +261,8 @@ public class StyledTextComp extends Composite {
     } );
 
     MenuItem pasteItem = new MenuItem( styledTextPopupmenu, SWT.PUSH );
-    pasteItem.setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "WidgetDialog.Styled.Paste" ) ) );
+    pasteItem
+      .setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "WidgetDialog.Styled.Paste" ) ) );
     pasteItem.addListener( SWT.Selection, new Listener() {
       public void handleEvent( Event e ) {
         styledText.paste();
@@ -268,8 +270,8 @@ public class StyledTextComp extends Composite {
     } );
 
     MenuItem selectAllItem = new MenuItem( styledTextPopupmenu, SWT.PUSH );
-    selectAllItem.setText( OsHelper.customizeMenuitemText( BaseMessages
-        .getString( PKG, "WidgetDialog.Styled.SelectAll" ) ) );
+    selectAllItem.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
+      PKG, "WidgetDialog.Styled.SelectAll" ) ) );
     selectAllItem.addListener( SWT.Selection, new Listener() {
       public void handleEvent( Event e ) {
         styledText.selectAll();
@@ -282,14 +284,14 @@ public class StyledTextComp extends Composite {
     findItem.addListener( SWT.Selection, new Listener() {
       public void handleEvent( Event e ) {
         StyledTextCompFind stFind =
-            new StyledTextCompFind( styledText.getShell(), styledText, BaseMessages.getString( PKG,
-                "WidgetDialog.Styled.FindString", strTabName ) );
+          new StyledTextCompFind( styledText.getShell(), styledText, BaseMessages.getString(
+            PKG, "WidgetDialog.Styled.FindString", strTabName ) );
         stFind.open();
       }
     } );
     MenuItem replaceItem = new MenuItem( styledTextPopupmenu, SWT.PUSH );
-    replaceItem
-        .setText( OsHelper.customizeMenuitemText( BaseMessages.getString( PKG, "WidgetDialog.Styled.Replace" ) ) );
+    replaceItem.setText( OsHelper.customizeMenuitemText( BaseMessages.getString(
+      PKG, "WidgetDialog.Styled.Replace" ) ) );
     replaceItem.setAccelerator( SWT.MOD1 | 'H' );
     // (helpMenu, SWT.PUSH, "&About\tCtrl+A",
     // null, SWT.CTRL + 'A', true, "doAbout");
@@ -355,6 +357,7 @@ public class StyledTextComp extends Composite {
           try {
             event.wait( 2 );
           } catch ( Exception e ) {
+            // Ignore errors
           }
         }
       }
@@ -377,7 +380,8 @@ public class StyledTextComp extends Composite {
         // if((event.length!=newText.length()) || newText.length()==1){
         if ( ( event.length != newText.length() ) || ( bFullSelection ) ) {
           if ( repText != null && repText.length() > 0 ) {
-            oldText = newText.substring( 0, event.start ) + repText + newText.substring( event.start + event.length );
+            oldText =
+              newText.substring( 0, event.start ) + repText + newText.substring( event.start + event.length );
             iEventType = UndoRedoStack.DELETE;
             iEventLength = repText.length();
           } else {
@@ -386,7 +390,8 @@ public class StyledTextComp extends Composite {
           }
 
           if ( ( oldText != null && oldText.length() > 0 ) || ( iEventStartPostition == event.length ) ) {
-            UndoRedoStack urs = new UndoRedoStack( iEventStartPostition, newText, oldText, iEventLength, iEventType );
+            UndoRedoStack urs =
+              new UndoRedoStack( iEventStartPostition, newText, oldText, iEventLength, iEventType );
             if ( undoStack.size() == MAX_STACK_SIZE ) {
               undoStack.remove( undoStack.size() - 1 );
             }
@@ -406,8 +411,8 @@ public class StyledTextComp extends Composite {
         redoStack.remove( redoStack.size() - 1 );
       }
       UndoRedoStack rro =
-          new UndoRedoStack( urs.getCursorPosition(), urs.getReplacedText(), styledText.getText(),
-              urs.getEventLength(), urs.getType() );
+        new UndoRedoStack( urs.getCursorPosition(), urs.getReplacedText(), styledText.getText(), urs
+          .getEventLength(), urs.getType() );
       bFullSelection = false;
       styledText.setText( urs.getReplacedText() );
       if ( urs.getType() == UndoRedoStack.INSERT ) {
@@ -431,8 +436,8 @@ public class StyledTextComp extends Composite {
         undoStack.remove( undoStack.size() - 1 );
       }
       UndoRedoStack rro =
-          new UndoRedoStack( urs.getCursorPosition(), urs.getReplacedText(), styledText.getText(),
-              urs.getEventLength(), urs.getType() );
+        new UndoRedoStack( urs.getCursorPosition(), urs.getReplacedText(), styledText.getText(), urs
+          .getEventLength(), urs.getType() );
       bFullSelection = false;
       styledText.setText( urs.getReplacedText() );
       if ( urs.getType() == UndoRedoStack.INSERT ) {

@@ -24,9 +24,9 @@ package org.pentaho.di.core.extension;
 
 /**
  * Convenience class you can use to pass more than one object in an extension point
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class ExtensionPointContext {
   private Object subject;

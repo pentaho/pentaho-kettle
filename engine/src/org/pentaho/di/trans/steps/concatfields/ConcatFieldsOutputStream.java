@@ -27,9 +27,9 @@ import java.io.OutputStream;
 
 /*
  * ConcatFieldsOutputStream
- * 
+ *
  * With this class you are able to use the existing OutputStream.write from TextFileOutput
- * 
+ *
  * @author jb
  * @since 2012-08-31
  *

@@ -26,6 +26,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -37,12 +38,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Apply certain operations too string.
- * 
+ *
  * @author Samatar Hassan
  * @since 02 April 2009
  */
 public class StringOperations extends BaseStep implements StepInterface {
-  private static Class<?> PKG = StringOperationsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StringOperationsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private StringOperationsMeta meta;
 
@@ -200,6 +201,8 @@ public class StringOperations extends BaseStep implements StepInterface {
         if ( Const.isEmpty( data.outStreamNrs[i] ) ) {
           // Update field
           RowData[data.inStreamNrs[i]] = value;
+          data.outputRowMeta.getValueMeta( data.inStreamNrs[i] )
+              .setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
         } else {
           // create a new Field
           RowData[data.inputFieldsNr + j] = value;
@@ -232,8 +235,8 @@ public class StringOperations extends BaseStep implements StepInterface {
       data.inStreamNrs = new int[data.nrFieldsInStream];
       for ( int i = 0; i < meta.getFieldInStream().length; i++ ) {
         data.inStreamNrs[i] = getInputRowMeta().indexOfValue( meta.getFieldInStream()[i] );
-        if ( data.inStreamNrs[i] < 0 ) // couldn't find field!
-        {
+        if ( data.inStreamNrs[i] < 0 ) { // couldn't find field!
+
           throw new KettleStepException( BaseMessages.getString( PKG, "StringOperations.Exception.FieldRequired", meta
               .getFieldInStream()[i] ) );
         }

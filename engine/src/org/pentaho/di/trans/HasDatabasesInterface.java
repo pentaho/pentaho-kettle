@@ -30,7 +30,7 @@ public interface HasDatabasesInterface {
 
   /**
    * Get an ArrayList of defined DatabaseInfo objects.
-   * 
+   *
    * @return an ArrayList of defined DatabaseInfo objects.
    */
   public List<DatabaseMeta> getDatabases();
@@ -43,7 +43,7 @@ public interface HasDatabasesInterface {
 
   /**
    * Add a database connection to the transformation.
-   * 
+   *
    * @param databaseMeta
    *          The database connection information.
    */
@@ -52,7 +52,7 @@ public interface HasDatabasesInterface {
   /**
    * Add a database connection to the transformation if that connection didn't exists yet. Otherwise, replace the
    * connection in the transformation
-   * 
+   *
    * @param databaseMeta
    *          The database connection information.
    */
@@ -60,7 +60,7 @@ public interface HasDatabasesInterface {
 
   /**
    * Add a database connection to the transformation on a certain location.
-   * 
+   *
    * @param p
    *          The location
    * @param ci
@@ -70,7 +70,7 @@ public interface HasDatabasesInterface {
 
   /**
    * Retrieves a database connection information a a certain location.
-   * 
+   *
    * @param i
    *          The database number.
    * @return The database connection information.
@@ -79,7 +79,7 @@ public interface HasDatabasesInterface {
 
   /**
    * Removes a database from the transformation on a certain location.
-   * 
+   *
    * @param i
    *          The location
    */
@@ -87,14 +87,14 @@ public interface HasDatabasesInterface {
 
   /**
    * Count the nr of databases in the transformation.
-   * 
+   *
    * @return The nr of databases
    */
   public int nrDatabases();
 
   /**
    * Searches the list of databases for a database with a certain name
-   * 
+   *
    * @param name
    *          The name of the database connection
    * @return The database connection information or null if nothing was found.
@@ -103,7 +103,7 @@ public interface HasDatabasesInterface {
 
   /**
    * Find the location of database
-   * 
+   *
    * @param ci
    *          The database queried
    * @return The location of the database, -1 if nothing was found.
@@ -112,7 +112,7 @@ public interface HasDatabasesInterface {
 
   /**
    * Checks whether or not the connections have changed.
-   * 
+   *
    * @return True if the connections have been changed.
    */
   public boolean haveConnectionsChanged();

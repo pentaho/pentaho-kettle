@@ -45,12 +45,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to enter a condition in a graphical way.
- * 
+ *
  * @author Matt
  * @since 29-07-2004
  */
 public class EnterConditionDialog extends Dialog {
-  private static Class<?> PKG = EnterConditionDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = EnterConditionDialog.class; // for i18n purposes, needed by Translator2!!
 
   private PropsUI props;
 

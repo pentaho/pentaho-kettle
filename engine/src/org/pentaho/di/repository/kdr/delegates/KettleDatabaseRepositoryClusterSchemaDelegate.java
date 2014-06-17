@@ -38,37 +38,38 @@ import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
-  // private static Class<?> PKG = ClusterSchema.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  // private static Class<?> PKG = ClusterSchema.class; // for i18n purposes, needed by Translator2!!
 
   public KettleDatabaseRepositoryClusterSchemaDelegate( KettleDatabaseRepository repository ) {
     super( repository );
   }
 
   public RowMetaAndData getClusterSchema( ObjectId id_cluster_schema ) throws KettleException {
-    return repository.connectionDelegate.getOneRow( quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER ),
-        quote( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER ), id_cluster_schema );
+    return repository.connectionDelegate.getOneRow(
+      quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER ),
+      quote( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER ), id_cluster_schema );
   }
 
   public synchronized ObjectId getClusterID( String name ) throws KettleException {
-    return repository.connectionDelegate.getIDWithValue( quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER ),
-        quote( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER ),
-        quote( KettleDatabaseRepository.FIELD_CLUSTER_NAME ), name );
+    return repository.connectionDelegate.getIDWithValue(
+      quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER ),
+      quote( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER ),
+      quote( KettleDatabaseRepository.FIELD_CLUSTER_NAME ), name );
   }
 
-  public ClusterSchema loadClusterSchema( ObjectId id_cluster_schema, List<SlaveServer> slaveServers )
-    throws KettleException {
+  public ClusterSchema loadClusterSchema( ObjectId id_cluster_schema, List<SlaveServer> slaveServers ) throws KettleException {
     ClusterSchema clusterSchema = new ClusterSchema();
     RowMetaAndData row = getClusterSchema( id_cluster_schema );
 
     clusterSchema.setObjectId( id_cluster_schema );
     clusterSchema.setName( row.getString( KettleDatabaseRepository.FIELD_CLUSTER_NAME, null ) );
     clusterSchema.setBasePort( row.getString( KettleDatabaseRepository.FIELD_CLUSTER_BASE_PORT, null ) );
-    clusterSchema.setSocketsBufferSize( row
-        .getString( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, null ) );
+    clusterSchema.setSocketsBufferSize( row.getString(
+      KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, null ) );
     clusterSchema.setSocketsFlushInterval( row.getString(
-        KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, null ) );
-    clusterSchema.setSocketsCompressed( row
-        .getBoolean( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_COMPRESSED, true ) );
+      KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, null ) );
+    clusterSchema.setSocketsCompressed( row.getBoolean(
+      KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_COMPRESSED, true ) );
     clusterSchema.setDynamic( row.getBoolean( KettleDatabaseRepository.FIELD_CLUSTER_DYNAMIC, true ) );
 
     ObjectId[] pids = repository.getClusterSlaveIDs( id_cluster_schema );
@@ -90,7 +91,7 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
   }
 
   public void saveClusterSchema( ClusterSchema clusterSchema, String versionComment, ObjectId id_transformation,
-      boolean isUsedByTransformation ) throws KettleException {
+    boolean isUsedByTransformation ) throws KettleException {
     try {
       saveClusterSchema( clusterSchema, versionComment, id_transformation, isUsedByTransformation, false );
     } catch ( KettleObjectExistsException e ) {
@@ -100,7 +101,7 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
   }
 
   public void saveClusterSchema( ClusterSchema clusterSchema, String versionComment, ObjectId id_transformation,
-      boolean isUsedByTransformation, boolean overwrite ) throws KettleException {
+    boolean isUsedByTransformation, boolean overwrite ) throws KettleException {
     ObjectId existingClusterSchemaId = getClusterID( clusterSchema.getName() );
     if ( existingClusterSchemaId != null ) {
       clusterSchema.setObjectId( existingClusterSchemaId );
@@ -120,7 +121,7 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
           updateCluster( clusterSchema );
         } else {
           throw new KettleObjectExistsException( "Failed to save object to repository. Object ["
-              + clusterSchema.getName() + "] already exists." );
+            + clusterSchema.getName() + "] already exists." );
         }
       } else {
         // There are no naming collisions (either it is the same object or the name is unique)
@@ -133,8 +134,9 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
     // Also save the used slave server references.
     for ( int i = 0; i < clusterSchema.getSlaveServers().size(); i++ ) {
       SlaveServer slaveServer = clusterSchema.getSlaveServers().get( i );
-      if ( slaveServer.getObjectId() == null ) // oops, not yet saved!
-      {
+      if ( slaveServer.getObjectId() == null ) {
+        // oops, not yet saved!
+
         repository.save( slaveServer, versionComment, null, id_transformation, isUsedByTransformation, overwrite );
       }
       repository.insertClusterSlave( clusterSchema, slaveServer );
@@ -151,30 +153,39 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
     if ( getClusterID( clusterSchema.getName() ) != null ) {
       // This cluster schema name is already in use. Throw an exception.
       throw new KettleObjectExistsException( "Failed to create object in repository. Object ["
-          + clusterSchema.getName() + "] already exists." );
+        + clusterSchema.getName() + "] already exists." );
     }
 
     ObjectId id = repository.connectionDelegate.getNextClusterID();
 
     RowMetaAndData table = new RowMetaAndData();
 
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), id );
     table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING ),
-        clusterSchema.getName() );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING ),
-        clusterSchema.getBasePort() );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE,
-        ValueMetaInterface.TYPE_STRING ), clusterSchema.getSocketsBufferSize() );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL,
-        ValueMetaInterface.TYPE_STRING ), clusterSchema.getSocketsFlushInterval() );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_COMPRESSED,
-        ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( clusterSchema.isSocketsCompressed() ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_DYNAMIC, ValueMetaInterface.TYPE_BOOLEAN ),
-        Boolean.valueOf( clusterSchema.isDynamic() ) );
+      new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING ),
+      clusterSchema.getName() );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING ), clusterSchema
+      .getBasePort() );
+    table
+      .addValue(
+        new ValueMeta(
+          KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, ValueMetaInterface.TYPE_STRING ),
+        clusterSchema.getSocketsBufferSize() );
+    table.addValue(
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING ),
+      clusterSchema.getSocketsFlushInterval() );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+      .valueOf( clusterSchema.isSocketsCompressed() ) );
+    table.addValue(
+      new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_DYNAMIC, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+        .valueOf( clusterSchema.isDynamic() ) );
 
-    repository.connectionDelegate.getDatabase().prepareInsert( table.getRowMeta(),
-        KettleDatabaseRepository.TABLE_R_CLUSTER );
+    repository.connectionDelegate.getDatabase().prepareInsert(
+      table.getRowMeta(), KettleDatabaseRepository.TABLE_R_CLUSTER );
     repository.connectionDelegate.getDatabase().setValuesInsert( table );
     repository.connectionDelegate.getDatabase().insertRow();
     repository.connectionDelegate.getDatabase().closeInsert();
@@ -185,24 +196,34 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
   public synchronized void updateCluster( ClusterSchema clusterSchema ) throws KettleException {
     RowMetaAndData table = new RowMetaAndData();
 
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), clusterSchema
+      .getObjectId() );
     table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER ),
-        clusterSchema.getObjectId() );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING ),
-        clusterSchema.getName() );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING ),
-        clusterSchema.getBasePort() );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE,
-        ValueMetaInterface.TYPE_STRING ), clusterSchema.getSocketsBufferSize() );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL,
-        ValueMetaInterface.TYPE_STRING ), clusterSchema.getSocketsFlushInterval() );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_COMPRESSED,
-        ValueMetaInterface.TYPE_BOOLEAN ), Boolean.valueOf( clusterSchema.isSocketsCompressed() ) );
-    table.addValue( new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_DYNAMIC, ValueMetaInterface.TYPE_BOOLEAN ),
-        Boolean.valueOf( clusterSchema.isDynamic() ) );
+      new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING ),
+      clusterSchema.getName() );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING ), clusterSchema
+      .getBasePort() );
+    table
+      .addValue(
+        new ValueMeta(
+          KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, ValueMetaInterface.TYPE_STRING ),
+        clusterSchema.getSocketsBufferSize() );
+    table.addValue(
+      new ValueMeta(
+        KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING ),
+      clusterSchema.getSocketsFlushInterval() );
+    table.addValue( new ValueMeta(
+      KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+      .valueOf( clusterSchema.isSocketsCompressed() ) );
+    table.addValue(
+      new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_DYNAMIC, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
+        .valueOf( clusterSchema.isDynamic() ) );
 
-    repository.connectionDelegate.updateTableRow( KettleDatabaseRepository.TABLE_R_CLUSTER,
-        KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER, table, clusterSchema.getObjectId() );
+    repository.connectionDelegate.updateTableRow(
+      KettleDatabaseRepository.TABLE_R_CLUSTER, KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER, table,
+      clusterSchema.getObjectId() );
   }
 
   public synchronized void delClusterSchema( ObjectId id_cluster ) throws KettleException {
@@ -214,8 +235,8 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
 
     if ( transList.length == 0 ) {
       repository.connectionDelegate.performDelete( "DELETE FROM "
-          + quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER ) + " WHERE "
-          + quote( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER ) + " = ? ", id_cluster );
+        + quoteTable( KettleDatabaseRepository.TABLE_R_CLUSTER ) + " WHERE "
+        + quote( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER ) + " = ? ", id_cluster );
     } else {
       StringBuffer message = new StringBuffer();
 
@@ -227,7 +248,7 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
 
       KettleDependencyException e = new KettleDependencyException( message.toString() );
       throw new KettleDependencyException( "This cluster schema is still in use by one or more transformations ("
-          + transList.length + ") :", e );
+        + transList.length + ") :", e );
     }
   }
 

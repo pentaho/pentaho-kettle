@@ -38,15 +38,15 @@ import org.pentaho.ui.xul.swt.SwtBindingFactory;
 import org.pentaho.ui.xul.util.DialogController;
 
 /**
- * 
+ *
  * This is the main XulEventHandler for the dialog. It sets up the main bindings for the user interface and responds to
  * some of the main UI events such as closing and accepting the dialog.
- * 
+ *
  */
 public class MainController extends AbstractXulEventHandler implements DialogController<Object> {
 
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
+
   private RepositoryExplorerCallback callback;
 
   public static final int CANCELLED = 0;

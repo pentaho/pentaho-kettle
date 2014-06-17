@@ -24,9 +24,9 @@ package org.pentaho.di.core.exception;
 
 /**
  * This exception is thrown in case there is an error in the Kettle plugin loader
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class KettlePluginException extends KettleException {
 

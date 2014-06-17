@@ -39,7 +39,7 @@ import com.jcraft.jsch.UserInfo;
  * An SFTP FileSystemConfigBuilder that uses Kettle variables to build SFTP VFS configuration options. Options can be
  * specified by host by appending the host name (as it will appear in the VFS URL) to the end of the parameter. (e.g.-
  * vfs.sftp.parameter.192.168.1.5)
- * 
+ *
  * Overriden parameters are currently:
  * <table style="text-align: left;" border="1">
  * <tr>
@@ -56,7 +56,7 @@ import com.jcraft.jsch.UserInfo;
  * <td>Local file path (Not VFS) to the private key for authentication.</td>
  * </tr>
  * </table>
- * 
+ *
  * @author cboyden
  */
 public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemConfigBuilder {
@@ -82,8 +82,8 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
    * Publicly expose a generic way to set parameters
    */
   @Override
-  public void setParameter( FileSystemOptions opts, String name, String value, String fullParameterName, String vfsUrl )
-    throws IOException {
+  public void setParameter( FileSystemOptions opts, String name, String value, String fullParameterName,
+    String vfsUrl ) throws IOException {
     if ( !fullParameterName.startsWith( "vfs.sftp" ) ) {
       // This is not an SFTP parameter. Delegate to the generic handler
       super.setParameter( opts, name, value, fullParameterName, vfsUrl );

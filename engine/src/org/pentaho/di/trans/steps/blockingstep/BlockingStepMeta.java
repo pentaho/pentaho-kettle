@@ -51,7 +51,7 @@ import org.w3c.dom.Node;
 
 public class BlockingStepMeta extends BaseStepMeta implements StepMetaInterface {
 
-  private static Class<?> PKG = BlockingStepMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = BlockingStepMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** Directory to store the temp files */
   private String directory;
@@ -78,9 +78,9 @@ public class BlockingStepMeta extends BaseStepMeta implements StepMetaInterface 
    */
   public static final int CACHE_SIZE = 5000;
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( prev != null && prev.size() > 0 ) {
@@ -91,49 +91,49 @@ public class BlockingStepMeta extends BaseStepMeta implements StepMetaInterface 
       if ( f.exists() ) {
         if ( f.isDirectory() ) {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "BlockingStepMeta.CheckResult.DirectoryExists", realDirectory ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "BlockingStepMeta.CheckResult.DirectoryExists", realDirectory ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "BlockingStepMeta.CheckResult.ExistsButNoDirectory", realDirectory ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "BlockingStepMeta.CheckResult.ExistsButNoDirectory", realDirectory ), stepMeta );
           remarks.add( cr );
         }
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                "BlockingStepMeta.CheckResult.DirectoryNotExists", realDirectory ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+            PKG, "BlockingStepMeta.CheckResult.DirectoryNotExists", realDirectory ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "BlockingStepMeta.CheckResult.NoFields" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "BlockingStepMeta.CheckResult.NoFields" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "BlockingStepMeta.CheckResult.StepExpectingRowsFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "BlockingStepMeta.CheckResult.StepExpectingRowsFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "BlockingStepMeta.CheckResult.NoInputReceivedError" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "BlockingStepMeta.CheckResult.NoInputReceivedError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: no values are added to the row in the step
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-      TransMeta transMeta, Trans trans ) {
+    TransMeta transMeta, Trans trans ) {
     return new BlockingStep( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -173,8 +173,7 @@ public class BlockingStepMeta extends BaseStepMeta implements StepMetaInterface 
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       passAllRows = rep.getStepAttributeBoolean( id_step, "pass_all_rows" );
       directory = rep.getStepAttributeString( id_step, "directory" );
@@ -189,8 +188,7 @@ public class BlockingStepMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "pass_all_rows", passAllRows );
       rep.saveStepAttribute( id_transformation, id_step, "directory", directory );

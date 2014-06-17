@@ -47,8 +47,8 @@ public class SocketPortAllocation {
    * @param sourceStepCopy
    */
   public SocketPortAllocation( int port, Date lastRequested, String clusterRunId, String transformationName,
-      String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName,
-      String targetStepName, String targetStepCopy ) {
+    String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName,
+    String targetStepName, String targetStepCopy ) {
     this.port = port;
     this.lastRequested = lastRequested;
     this.clusterRunId = clusterRunId;

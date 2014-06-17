@@ -41,11 +41,11 @@ import org.pentaho.di.trans.steps.terafast.TeraFastMeta;
 
 /**
  * @author <a href="mailto:michael.gugerell@aschauer-edv.at">Michael Gugerell(asc145)</a>
- * 
+ *
  */
 public class TeraFastAboutDialog {
 
-  private static Class<?> PKG = TeraFastMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TeraFastMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final int DEFAULT_INDENT = 20;
 
@@ -54,7 +54,7 @@ public class TeraFastAboutDialog {
   private Label iconLabel;
 
   /**
-   * 
+   *
    * @param shell
    *          the shell.
    */
@@ -76,7 +76,7 @@ public class TeraFastAboutDialog {
     Point dialogSize = this.dialog.getSize();
 
     this.dialog.setLocation( shellBounds.x + ( shellBounds.width - dialogSize.x ) / 2, shellBounds.y
-        + ( shellBounds.height - dialogSize.y ) / 2 );
+      + ( shellBounds.height - dialogSize.y ) / 2 );
   }
 
   /**

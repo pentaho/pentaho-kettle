@@ -61,8 +61,6 @@ public class LanguageChoice {
 
     choice = new LanguageChoice();
 
-    // System.out.println("Loaded language choices: default="+choice.defaultLocale.toString()+", failover="+choice.failoverLocale.toString());
-
     return choice;
   }
 

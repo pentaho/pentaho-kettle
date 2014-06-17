@@ -28,7 +28,7 @@ public interface AttributesInterface {
 
   /**
    * Pass a map of group attributes
-   * 
+   *
    * @param attributesMap
    *          The map of group attributes
    */
@@ -41,7 +41,7 @@ public interface AttributesInterface {
 
   /**
    * Add a map of attributes to an attribute group.
-   * 
+   *
    * @param groupName
    *          The group to add the attributes to
    * @param attributes
@@ -51,7 +51,7 @@ public interface AttributesInterface {
 
   /**
    * Add an attribute to an attribute group
-   * 
+   *
    * @param groupName
    *          The group to add the attribute to
    * @param key
@@ -63,7 +63,7 @@ public interface AttributesInterface {
 
   /**
    * Get an attributes map for a group
-   * 
+   *
    * @param groupName
    *          The name of the attributes group to retrieve
    * @return The map representing the attributes group
@@ -72,7 +72,7 @@ public interface AttributesInterface {
 
   /**
    * Get a value for an attribute in an attribute group
-   * 
+   *
    * @param groupName
    *          The group to get the attribute from
    * @param key

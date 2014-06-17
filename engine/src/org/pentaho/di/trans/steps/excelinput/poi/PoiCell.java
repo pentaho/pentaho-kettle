@@ -100,8 +100,8 @@ public class PoiCell implements KCell {
           return null;
       }
     } catch ( Exception e ) {
-      throw new RuntimeException( "Unable to get value of cell (" + cell.getColumnIndex() + ", " + cell.getRowIndex()
-          + ")", e );
+      throw new RuntimeException( "Unable to get value of cell ("
+        + cell.getColumnIndex() + ", " + cell.getRowIndex() + ")", e );
     }
   }
 
@@ -113,8 +113,8 @@ public class PoiCell implements KCell {
       }
       return value.toString();
     } catch ( Exception e ) {
-      throw new RuntimeException( "Unable to get string content of cell (" + cell.getColumnIndex() + ", "
-          + cell.getRowIndex() + ")", e );
+      throw new RuntimeException( "Unable to get string content of cell ("
+        + cell.getColumnIndex() + ", " + cell.getRowIndex() + ")", e );
     }
   }
 

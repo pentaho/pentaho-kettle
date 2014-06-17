@@ -26,7 +26,7 @@ import org.w3c.dom.Node;
 
 /**
  * This is an entry in an XMLHandlerCache
- * 
+ *
  * @author Matt
  * @since 22-Apr-2006
  */

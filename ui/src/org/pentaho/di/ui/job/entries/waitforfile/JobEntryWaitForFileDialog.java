@@ -56,15 +56,15 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to edit the Wait For File job entry settings.
- * 
+ *
  * @author Sven Boden
  * @since 28-01-2007
  */
 public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryWaitForFile.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryWaitForFile.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String[] FILETYPES =
-      new String[] { BaseMessages.getString( PKG, "JobWaitForFile.Filetype.All" ) };
+  private static final String[] FILETYPES = new String[] { BaseMessages.getString(
+    PKG, "JobWaitForFile.Filetype.All" ) };
 
   private Label wlName;
   private Text wName;

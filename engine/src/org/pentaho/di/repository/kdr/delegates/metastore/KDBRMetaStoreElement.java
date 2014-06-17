@@ -55,8 +55,8 @@ public class KDBRMetaStoreElement implements IMetaStoreElement {
     ownerPermissions = new ArrayList<MetaStoreOwnerPermissions>();
   }
 
-  public KDBRMetaStoreElement( KettleDatabaseRepositoryMetaStoreDelegate delegate, IMetaStoreElementType elementType,
-      String id, Object value ) {
+  public KDBRMetaStoreElement( KettleDatabaseRepositoryMetaStoreDelegate delegate,
+    IMetaStoreElementType elementType, String id, Object value ) {
     this();
     this.delegate = delegate;
     this.elementType = elementType;

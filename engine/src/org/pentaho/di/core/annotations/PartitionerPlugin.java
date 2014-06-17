@@ -31,12 +31,12 @@ import java.lang.annotation.Target;
 /**
  * An alternate way of defining partiioners. Classes annotated with "PartitionerPlugin" are automatically recognized and
  * registered as a partitioner plugin.
- * 
+ *
  * Important: The XML definitions alienate annoated steps and the two methods of definition are therefore mutually
  * exclusive.
- * 
+ *
  * @author Alex Silva
- * 
+ *
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
@@ -49,4 +49,6 @@ public @interface PartitionerPlugin {
   String description() default "";
 
   String i18nPackageName() default "";
+
+  String classLoaderGroup() default "";
 }

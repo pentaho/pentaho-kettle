@@ -27,9 +27,9 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 /**
  * Utility class to hold the result of a set of string evaluations: a valid conversion metadata object (with data type,
  * trim options, etc) and the minimum and maximum value encountered.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class StringEvaluationResult {
 
@@ -48,9 +48,10 @@ public class StringEvaluationResult {
   @Override
   public String toString() {
     return conversionMeta.toStringMeta()
-        + " "
-        + ( conversionMeta.isNumeric() ? conversionMeta.getConversionMask() + " : " + conversionMeta.getDecimalSymbol()
-            + conversionMeta.getGroupingSymbol() : conversionMeta.isDate() ? conversionMeta.getConversionMask() : "" );
+      + " "
+      + ( conversionMeta.isNumeric() ? conversionMeta.getConversionMask()
+        + " : " + conversionMeta.getDecimalSymbol() + conversionMeta.getGroupingSymbol() : conversionMeta
+        .isDate() ? conversionMeta.getConversionMask() : "" );
   }
 
   /**

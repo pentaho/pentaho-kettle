@@ -59,11 +59,11 @@ import com.trilead.ssh2.HTTPProxyData;
 
 /*
  * Created on 03-Juin-2008
- * 
+ *
  */
 
 public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = SSHMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SSHMeta.class; // for i18n purposes, needed by Translator2!!
   private static int DEFAULT_PORT = 22;
 
   private String command;
@@ -382,7 +382,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " + XMLHandler.addTagValue( "servername", serverName ) );
     retval.append( "    " + XMLHandler.addTagValue( "userName", userName ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
     retval.append( "    " + XMLHandler.addTagValue( "usePrivateKey", usePrivateKey ) );
     retval.append( "    " + XMLHandler.addTagValue( "keyFileName", keyFileName ) );
     retval.append( "    " + XMLHandler.addTagValue( "passPhrase", passPhrase ) );
@@ -393,7 +393,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " + XMLHandler.addTagValue( "proxyPort", proxyPort ) );
     retval.append( "    " + XMLHandler.addTagValue( "proxyUsername", proxyUsername ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "proxyPassword", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
+      XMLHandler.addTagValue( "proxyPassword", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
     return retval.toString();
   }
 
@@ -416,15 +416,15 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
       proxyHost = XMLHandler.getTagValue( stepnode, "proxyHost" );
       proxyPort = XMLHandler.getTagValue( stepnode, "proxyPort" );
       proxyUsername = XMLHandler.getTagValue( stepnode, "proxyUsername" );
-      proxyPassword = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "proxyPassword" ) );
+      proxyPassword =
+        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "proxyPassword" ) );
 
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "SSHMeta.Exception.UnableToReadStepInfo" ), e );
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
 
     try {
       dynamicCommandField = rep.getStepAttributeBoolean( id_step, "dynamicCommandField" );
@@ -444,15 +444,16 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
       proxyHost = rep.getStepAttributeString( id_step, "proxyHost" );
       proxyPort = rep.getStepAttributeString( id_step, "proxyPort" );
       proxyUsername = rep.getStepAttributeString( id_step, "proxyUsername" );
-      proxyPassword = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "proxyPassword" ) );
+      proxyPassword =
+        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "proxyPassword" ) );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SSHMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "SSHMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "dynamicCommandField", dynamicCommandField );
       rep.saveStepAttribute( id_transformation, id_step, "command", command );
@@ -460,7 +461,8 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "port", port );
       rep.saveStepAttribute( id_transformation, id_step, "servername", serverName );
       rep.saveStepAttribute( id_transformation, id_step, "userName", userName );
-      rep.saveStepAttribute( id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveStepAttribute( id_transformation, id_step, "password", Encr
+        .encryptPasswordIfNotUsingVariables( password ) );
 
       rep.saveStepAttribute( id_transformation, id_step, "usePrivateKey", usePrivateKey );
       rep.saveStepAttribute( id_transformation, id_step, "keyFileName", keyFileName );
@@ -472,16 +474,17 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "proxyPort", proxyPort );
       rep.saveStepAttribute( id_transformation, id_step, "proxyUsername", proxyUsername );
       rep.saveStepAttribute( id_transformation, id_step, "proxyPassword", Encr
-          .encryptPasswordIfNotUsingVariables( proxyPassword ) );
+        .encryptPasswordIfNotUsingVariables( proxyPassword ) );
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "SSHMeta.Exception.UnableToSaveStepInfo" ) + id_step, e );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "SSHMeta.Exception.UnableToSaveStepInfo" ) + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
     String error_message = "";
@@ -526,26 +529,26 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "SSHMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "SSHMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "SSHMeta.CheckResult.NoInpuReceived" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "SSHMeta.CheckResult.NoInpuReceived" ), stepMeta );
       remarks.add( cr );
     }
 
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     if ( !isDynamicCommand() ) {
       row.clear();
     }
     ValueMetaInterface v =
-        new ValueMeta( space.environmentSubstitute( getStdOutFieldName() ), ValueMetaInterface.TYPE_STRING );
+      new ValueMeta( space.environmentSubstitute( getStdOutFieldName() ), ValueMetaInterface.TYPE_STRING );
     v.setOrigin( name );
     row.addValueMeta( v );
 
@@ -557,8 +560,8 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new SSH( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -570,9 +573,9 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
     return true;
   }
 
-  public static Connection OpenConnection( String serveur, int port, String username, String password, boolean useKey,
-      String keyFilename, String passPhrase, int timeOut, VariableSpace space, String proxyhost, int proxyport,
-      String proxyusername, String proxypassword ) throws KettleException {
+  public static Connection OpenConnection( String serveur, int port, String username, String password,
+    boolean useKey, String keyFilename, String passPhrase, int timeOut, VariableSpace space, String proxyhost,
+    int proxyport, String proxyusername, String proxypassword ) throws KettleException {
     Connection conn = null;
     boolean isAuthenticated = false;
     File keyFile = null;
@@ -609,7 +612,8 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
       }
       // authenticate
       if ( useKey ) {
-        isAuthenticated = conn.authenticateWithPublicKey( username, keyFile, space.environmentSubstitute( passPhrase ) );
+        isAuthenticated =
+          conn.authenticateWithPublicKey( username, keyFile, space.environmentSubstitute( passPhrase ) );
       } else {
         isAuthenticated = conn.authenticateWithPassword( username, password );
       }
@@ -629,7 +633,7 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
 
   /**
    * Returns the Input/Output metadata for this step.
-   * 
+   *
    */
   public StepIOMetaInterface getStepIOMeta() {
     return new StepIOMeta( isDynamicCommand(), true, false, false, false, false );

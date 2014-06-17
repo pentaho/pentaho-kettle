@@ -75,7 +75,7 @@ public class KettleDependencies {
 
       // Used connections
       DatabaseMeta[] usedDatabaseConnections =
-          transMeta.getStep( s ).getStepMetaInterface().getUsedDatabaseConnections();
+        transMeta.getStep( s ).getStepMetaInterface().getUsedDatabaseConnections();
       for ( int c = 0; c < usedDatabaseConnections.length; c++ ) {
         String[] dbLibs = usedDatabaseConnections[c].getDatabaseInterface().getUsedLibraries();
         if ( dbLibs != null ) {

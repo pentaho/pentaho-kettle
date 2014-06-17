@@ -46,12 +46,12 @@ import org.w3c.dom.Node;
 
 /**
  * Job entry type to abort a job.
- * 
+ *
  * @author Samatar
  * @since 12-02-2007
  */
 public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryInterface {
-  private static Class<?> PKG = JobEntryAbort.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryAbort.class; // for i18n purposes, needed by Translator2!!
 
   private String messageAbort;
 
@@ -78,8 +78,8 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
     return retval.toString();
   }
 
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
-      IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
       messageAbort = XMLHandler.getTagValue( entrynode, "message" );
@@ -89,12 +89,12 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-      List<SlaveServer> slaveServers ) throws KettleException {
+    List<SlaveServer> slaveServers ) throws KettleException {
     try {
       messageAbort = rep.getJobEntryAttributeString( id_jobentry, "message" );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryAbort.UnableToLoadFromRepo.Label", String
-          .valueOf( id_jobentry ) ), dbe );
+        .valueOf( id_jobentry ) ), dbe );
     }
   }
 
@@ -106,7 +106,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
 
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobEntryAbort.UnableToSaveToRepo.Label", String
-          .valueOf( id_job ) ), dbe );
+        .valueOf( id_job ) ), dbe );
     }
   }
 
@@ -135,7 +135,7 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
   /**
    * Execute this job entry and return the result. In this case it means, just set the result boolean in the Result
    * class.
-   * 
+   *
    * @param previousResult
    *          The result of the previous execution
    * @return The Result of the execution.
@@ -170,8 +170,8 @@ public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryIn
     return messageAbort;
   }
 
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     addOkRemark( this, "messageabort", remarks );
   }
 }

@@ -47,12 +47,13 @@ public class XMLTransfer extends ByteArrayTransfer {
   }
 
   public void javaToNative( Object object, TransferData transferData ) {
-    if ( !checkMyType( object ) /* || !isSupportedType(transferData) */) {
+    if ( !checkMyType( object ) ) {
       return; // DND.error(DND.ERROR_INVALID_DATA);
     }
 
     try {
-      byte[] buffer = Base64.encodeBase64( ( (DragAndDropContainer) object ).getXML().getBytes() );
+      byte[] buffer =
+        Base64.encodeBase64( ( (DragAndDropContainer) object ).getXML().getBytes( Const.XML_ENCODING ) );
 
       super.javaToNative( buffer, transferData );
     } catch ( Exception e ) {
@@ -80,7 +81,7 @@ public class XMLTransfer extends ByteArrayTransfer {
         return new DragAndDropContainer( xml );
       } catch ( Exception e ) {
         log.logError( "Unexpected error trying to read a drag and drop container from the XML Transfer type: "
-            + e.toString() );
+          + e.toString() );
         log.logError( Const.getStackTracker( e ) );
         return null;
       }

@@ -109,8 +109,8 @@ public class GetXMLDataData extends BaseStepData implements StepDataInterface {
   public long size;
 
   /**
-	 * 
-	 */
+   *
+   */
   public GetXMLDataData() {
     super();
 

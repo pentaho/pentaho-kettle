@@ -44,12 +44,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Writes rows to a sql file.
- * 
+ *
  * @author Matt
  * @since 6-apr-2003
  */
 public class SQLFileOutput extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SQLFileOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SQLFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SQLFileOutputMeta meta;
   private SQLFileOutputData data;
@@ -59,7 +59,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
   String tableName;
 
   public SQLFileOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -68,8 +68,8 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
     data = (SQLFileOutputData) sdi;
 
     Object[] r = getRow(); // this also waits for a previous step to be finished.
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       return false;
     }
     if ( first ) {
@@ -91,8 +91,9 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
     boolean sendToErrorRow = false;
     String errorMessage = null;
 
-    if ( r != null && getLinesOutput() > 0 && meta.getSplitEvery() > 0
-        && ( ( getLinesOutput() + 1 ) % meta.getSplitEvery() ) == 0 ) {
+    if ( r != null
+      && getLinesOutput() > 0 && meta.getSplitEvery() > 0
+      && ( ( getLinesOutput() + 1 ) % meta.getSplitEvery() ) == 0 ) {
 
       // Done with this part or with everything.
       closeFile();
@@ -135,7 +136,8 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
     }
 
     try {
-      String sql = data.db.getSQLOutput( schemaName, tableName, data.insertRowMeta, r, meta.getDateFormat() ) + ";";
+      String sql =
+        data.db.getSQLOutput( schemaName, tableName, data.insertRowMeta, r, meta.getDateFormat() ) + ";";
 
       // Do we start a new line for this statement ?
       if ( meta.StartNewLine() ) {
@@ -198,8 +200,9 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
       if ( meta.AddToResult() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-            new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ),
-                getTransMeta().getName(), getStepname() );
+          new ResultFile(
+            ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( filename, getTransMeta() ), getTransMeta()
+              .getName(), getStepname() );
         resultFile.setComment( "This file was created with a text file output step" );
         addResultFile( resultFile );
       }
@@ -221,8 +224,8 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
           logDetailed( "Opening output stream in encoding: " + meta.getEncoding() );
         }
         data.writer =
-            new OutputStreamWriter( new BufferedOutputStream( outputStream, 5000 ), environmentSubstitute( meta
-                .getEncoding() ) );
+          new OutputStreamWriter( new BufferedOutputStream( outputStream, 5000 ), environmentSubstitute( meta
+            .getEncoding() ) );
       } else {
         if ( log.isBasic() ) {
           logDetailed( "Opening output stream in default encoding" );
@@ -359,9 +362,7 @@ public class SQLFileOutput extends BaseStep implements StepInterface {
         data.db.closeInsert();
       }
       closeFile();
-    }
-
-    catch ( Exception dbe ) {
+    } catch ( Exception dbe ) {
       logError( "Unexpected error committing the database connection: " + dbe.toString() );
       logError( Const.getStackTracker( dbe ) );
       setErrors( 1 );

@@ -28,15 +28,15 @@ import org.pentaho.di.laf.Handler;
  * Standard Message handler that takes a root package, plus key and resolves that into one/more resultant messages. This
  * Handler is used by all message types to enable flexible look and feel as well as i18n to be implemented in variable
  * ways.
- * 
+ *
  * @author dhushon
- * 
+ *
  */
 public interface MessageHandler extends Handler {
 
   /**
    * get a key from the default (System global) bundle
-   * 
+   *
    * @param key
    * @return
    */
@@ -44,7 +44,7 @@ public interface MessageHandler extends Handler {
 
   /**
    * get a key from the defined package bundle, by key
-   * 
+   *
    * @param packageName
    * @param key
    * @return
@@ -53,7 +53,7 @@ public interface MessageHandler extends Handler {
 
   /**
    * get a key from the defined package bundle, by key
-   * 
+   *
    * @param packageName
    * @param key
    * @param parameters
@@ -63,7 +63,7 @@ public interface MessageHandler extends Handler {
 
   /**
    * Get a string from the defined package bundle, by key and by a resource class
-   * 
+   *
    * @param packageName
    * @param key
    * @param resourceClass

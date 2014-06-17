@@ -33,7 +33,7 @@ public class DelegationAdapter implements DelegationListener {
 
   @Override
   public void transformationDelegationStarted( Trans delegatedTrans,
-      TransExecutionConfiguration transExecutionConfiguration ) {
+    TransExecutionConfiguration transExecutionConfiguration ) {
   }
 
 }

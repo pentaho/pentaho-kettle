@@ -39,7 +39,8 @@ public class UUIDResourceNaming extends SimpleResourceNaming {
   // Output Example 2 (file system prefix: ${KETTLE_FILE_BASE}!, no path used)
   // ${KETTLE_FILE_BASE}!Marc_Sample_Transformation_03a32f25-1538-11dc-ae07-5dbf1395f3fd.ktr
   // Output Example 3 (file system prefix: ${KETTLE_FILE_BASE}!, path is used)
-  // ${KETTLE_FILE_BASE}!japps/pentaho/kettle/samples/Marc_Sample_Transformation_03a32f25-1538-11dc-ae07-5dbf1395f3fd.ktr
+  // ${KETTLE_FILE_BASE}!japps/pentaho/kettle/samples/
+  //   Marc_Sample_Transformation_03a32f25-1538-11dc-ae07-5dbf1395f3fd.ktr
 
   protected String getFileNameUniqueIdentifier() {
     // This implementation assumes that the name alone

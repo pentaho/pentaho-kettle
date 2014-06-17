@@ -59,7 +59,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class TableExistsDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = TableExistsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TableExistsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CCombo wConnection;
 
@@ -343,8 +343,9 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
       }
 
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "TableExistsDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "TableExistsDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "TableExistsDialog.FailedToGetFields.DialogTitle" ), BaseMessages
+          .getString( PKG, "TableExistsDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }
@@ -364,9 +365,9 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-                  "System.Dialog.AvailableSchemas.Title", wConnection.getText() ), BaseMessages.getString( PKG,
-                  "System.Dialog.AvailableSchemas.Message" ) );
+            new EnterSelectionDialog( shell, schemas,
+              BaseMessages.getString( PKG, "System.Dialog.AvailableSchemas.Title", wConnection.getText() ),
+              BaseMessages.getString( PKG, "System.Dialog.AvailableSchemas.Message" ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchemaname.setText( Const.NVL( d.toString(), "" ) );
@@ -379,8 +380,8 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
           mb.open();
         }
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-            PKG, "System.Dialog.AvailableSchemas.ConnectionError" ), e );
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+          .getString( PKG, "System.Dialog.AvailableSchemas.ConnectionError" ), e );
       } finally {
         if ( database != null ) {
           database.disconnect();

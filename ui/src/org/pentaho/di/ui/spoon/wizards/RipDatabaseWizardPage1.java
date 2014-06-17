@@ -37,9 +37,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.ui.core.PropsUI;
 
 /**
- * 
+ *
  * On page one we select the source and target databases...
- * 
+ *
  * @author Matt
  * @since 17-apr-04
  */
@@ -160,7 +160,7 @@ public class RipDatabaseWizardPage1 extends WizardPage {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.wizard.WizardPage#getNextPage()
    */
   public IWizardPage getNextPage() {

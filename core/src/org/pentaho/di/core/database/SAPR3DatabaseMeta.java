@@ -28,7 +28,7 @@ import org.pentaho.di.core.util.EnvUtil;
 
 /**
  * Contains SAP ERP system specific information through static final members
- * 
+ *
  * @author Matt
  * @since 03-07-2005
  */
@@ -84,7 +84,7 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -101,13 +101,13 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return null;
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -124,13 +124,13 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return null;
   }
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     return null;
   }
 
@@ -146,8 +146,8 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   @Override
   public String getDatabaseFactoryName() {
-    return EnvUtil.getSystemProperty( Const.KETTLE_SAP_CONNECTION_FACTORY,
-        Const.KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME );
+    return EnvUtil.getSystemProperty(
+      Const.KETTLE_SAP_CONNECTION_FACTORY, Const.KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME );
   }
 
   /**

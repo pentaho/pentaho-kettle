@@ -34,7 +34,7 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
 public abstract class LazilyInitializedController extends AbstractXulEventHandler {
 
-  private static Class<?> PKG = RepositoryExplorer.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RepositoryExplorer.class; // for i18n purposes, needed by Translator2!!
 
   protected Repository repository;
 
@@ -70,8 +70,8 @@ public abstract class LazilyInitializedController extends AbstractXulEventHandle
     messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
     messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
     if ( e != null ) {
-      messageBox.setMessage( BaseMessages.getString( PKG, "LazilyInitializedController.Message.UnableToInitWithParam",
-          e.getLocalizedMessage() ) );
+      messageBox.setMessage( BaseMessages.getString(
+        PKG, "LazilyInitializedController.Message.UnableToInitWithParam", e.getLocalizedMessage() ) );
     } else {
       messageBox.setMessage( BaseMessages.getString( PKG, "LazilyInitializedController.Message.UnableToInit" ) );
     }

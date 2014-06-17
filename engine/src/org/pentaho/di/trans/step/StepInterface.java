@@ -40,11 +40,11 @@ import org.pentaho.metastore.api.IMetaStore;
 
 /**
  * The interface that any transformation step or plugin needs to implement.
- * 
+ *
  * Created on 12-AUG-2004
- * 
+ *
  * @author Matt
- * 
+ *
  */
 
 public interface StepInterface extends VariableSpace, HasLogChannelInterface {
@@ -56,7 +56,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   /**
    * Perform the equivalent of processing one row. Typically this means reading a row from input (getRow()) and passing
    * a row to output (putRow)).
-   * 
+   *
    * @param smi
    *          The steps metadata to work with
    * @param sdi
@@ -71,15 +71,15 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
    * This method checks if the step is capable of processing at least one row.
    * <p>
    * For example, if a step has no input records but needs at least one to function, it will return false.
-   * 
+   *
    * @return true if the step can process a row.
-   * 
+   *
    */
   public boolean canProcessOneRow();
 
   /**
    * Initialize and do work where other steps need to wait for...
-   * 
+   *
    * @param stepMetaInterface
    *          The metadata to work with
    * @param stepDataInterface
@@ -89,7 +89,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Dispose of this step: close files, empty logs, etc.
-   * 
+   *
    * @param sii
    *          The metadata to work with
    * @param sdi
@@ -99,27 +99,26 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Mark the start time of the step.
-   * 
+   *
    */
   public void markStart();
 
   /**
    * Mark the end time of the step.
-   * 
+   *
    */
   public void markStop();
 
   /**
    * Stop running operations...
-   * 
+   *
    * @param stepMetaInterface
    *          The metadata that might be needed by the step to stop running.
    * @param stepDataInterface
    *          The interface to the step data containing the connections, resultsets, open files, etc.
-   * 
+   *
    */
-  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
-    throws KettleException;
+  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException;
 
   /**
    * @return true if the step is running after having been initialized
@@ -128,7 +127,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Flag the step as running or not
-   * 
+   *
    * @param running
    *          the running flag to set
    */
@@ -167,7 +166,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Get the name of the step.
-   * 
+   *
    * @return the name of the step
    */
   public String getStepname();
@@ -184,14 +183,14 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Get the number of errors
-   * 
+   *
    * @return the number of errors
    */
   public long getErrors();
 
   /**
    * Sets the number of errors
-   * 
+   *
    * @param errors
    *          the number of errors to set
    */
@@ -235,7 +234,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Put a row on the destination rowsets.
-   * 
+   *
    * @param row
    *          The row to send to the destinations steps
    */
@@ -254,7 +253,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   /**
    * Add a rowlistener to the step allowing you to inspect (or manipulate, be careful) the rows coming in or exiting the
    * step.
-   * 
+   *
    * @param rowListener
    *          the rowlistener to add
    */
@@ -262,7 +261,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Remove a rowlistener from this step.
-   * 
+   *
    * @param rowListener
    *          the rowlistener to remove
    */
@@ -308,7 +307,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
    * This method is executed by Trans right before the threads start and right after initialization.<br>
    * <br>
    * <b>!!! A plugin implementing this method should make sure to also call <i>super.initBeforeStart();</i> !!!</b>
-   * 
+   *
    * @throws KettleStepException
    *           In case there is an error
    */
@@ -316,7 +315,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Attach a step listener to be notified when a step arrives in a certain state. (finished)
-   * 
+   *
    * @param stepListener
    *          The listener to add to the step
    */
@@ -398,7 +397,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   /**
    * Calling this method will alert the step that we finished passing a batch of records to the step. Specifically for
    * steps like "Sort Rows" it means that the buffered rows can be sorted and passed on.
-   * 
+   *
    * @throws KettleException
    *           In case an error occurs during the processing of the batch of rows.
    */
@@ -406,7 +405,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
 
   /**
    * Pass along the metastore to use when loading external elements at runtime.
-   * 
+   *
    * @param metaStore
    *          The metastore to use
    */

@@ -32,9 +32,9 @@ import org.pentaho.di.core.metrics.MetricsSnapshotInterface;
 
 /**
  * This singleton will capture all the metrics coming from the various log channels based on the log channel ID.
- * 
+ *
  * @author matt
- * 
+ *
  */
 public class MetricsRegistry {
   private static MetricsRegistry registry;
@@ -87,7 +87,7 @@ public class MetricsRegistry {
 
   /**
    * Get the snapshot list for the given log channel ID. If no list is available, one is created (and stored).
-   * 
+   *
    * @param logChannelId
    *          The log channel to use.
    * @return an existing or a new metrics snapshot list.
@@ -104,7 +104,7 @@ public class MetricsRegistry {
 
   /**
    * Get the snapshot map for the given log channel ID. If no map is available, one is created (and stored).
-   * 
+   *
    * @param logChannelId
    *          The log channel to use.
    * @return an existing or a new metrics snapshot map.

@@ -48,23 +48,23 @@ import org.pentaho.metastore.api.IMetaStore;
  * <li>The JobEntryInterface object's "changed" flag must be set to the value it had at the time the dialog opened</li>
  * <li>open() must return null</li>
  * </ul>
- * 
+ *
  * @author Matt
  * @since 29-okt-2004
- * 
+ *
  */
 public interface JobEntryDialogInterface {
 
   /**
    * Opens a JobEntryDialog and waits for the dialog to be confirmed or cancelled.
-   * 
+   *
    * @return the job entry interface if the dialog is confirmed, null otherwise
    */
   public JobEntryInterface open();
 
   /**
    * The MetaStore to pass
-   * 
+   *
    * @param metaStore
    */
   public void setMetaStore( IMetaStore metaStore );

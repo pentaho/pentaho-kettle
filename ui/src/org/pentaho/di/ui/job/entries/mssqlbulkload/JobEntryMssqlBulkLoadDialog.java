@@ -70,12 +70,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * Dialog class for the MSSqlBulkLoader.
- * 
+ *
  * @author Samatar Hassan
  * @since Jan-2007
  */
 public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryMssqlBulkLoad.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = JobEntryMssqlBulkLoad.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILETYPES = new String[] {
     BaseMessages.getString( PKG, "JobMssqlBulkLoad.Filetype.Text" ),
@@ -1325,7 +1325,7 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
         try {
           database.connect();
           String schemaTable =
-              databaseMeta.getQuotedSchemaTableCombination( wSchemaname.getText(), wTablename.getText() );
+            databaseMeta.getQuotedSchemaTableCombination( wSchemaname.getText(), wTablename.getText() );
           RowMetaInterface row = database.getTableFields( schemaTable );
           String[] available = row.getFieldNames();
 
@@ -1334,10 +1334,9 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
             source[i] = Const.trim( source[i] );
           }
           int[] idxSource = Const.indexsOfStrings( source, available );
-          EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, available, BaseMessages.getString( PKG,
-                  "JobMssqlBulkLoad.SelectColumns.Title" ), BaseMessages.getString( PKG,
-                  "JobMssqlBulkLoad.SelectColumns.Message" ) );
+          EnterSelectionDialog dialog = new EnterSelectionDialog( shell, available,
+            BaseMessages.getString( PKG, "JobMssqlBulkLoad.SelectColumns.Title" ),
+            BaseMessages.getString( PKG, "JobMssqlBulkLoad.SelectColumns.Message" ) );
           dialog.setMulti( true );
           dialog.setAvoidQuickSearch();
           dialog.setSelectedNrs( idxSource );
@@ -1353,8 +1352,8 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
             wOrderBy.setText( columns );
           }
         } catch ( KettleDatabaseException e ) {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-              PKG, "JobMssqlBulkLoad.ConnectionError2.DialogMessage" ), e );
+          new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+            .getString( PKG, "JobMssqlBulkLoad.ConnectionError2.DialogMessage" ), e );
         } finally {
           database.disconnect();
         }

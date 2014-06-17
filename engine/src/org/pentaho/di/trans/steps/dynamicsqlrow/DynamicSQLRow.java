@@ -41,18 +41,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Run dynamic SQL. SQL is defined in a field.
- * 
+ *
  * @author Samatar
  * @since 13-10-2008
  */
 public class DynamicSQLRow extends BaseStep implements StepInterface {
-  private static Class<?> PKG = DynamicSQLRowMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = DynamicSQLRowMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DynamicSQLRowMeta meta;
   private DynamicSQLRowData data;
 
   public DynamicSQLRow( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -61,8 +61,9 @@ public class DynamicSQLRow extends BaseStep implements StepInterface {
     if ( first ) {
       first = false;
       data.outputRowMeta = rowMeta.clone();
-      meta.getFields( data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this,
-          repository, metaStore );
+      meta.getFields(
+        data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this,
+        repository, metaStore );
 
       loadFromBuffer = false;
     }
@@ -130,8 +131,8 @@ public class DynamicSQLRow extends BaseStep implements StepInterface {
       if ( add != null ) {
         int nrTemplateFields = data.outputRowMeta.size() - getInputRowMeta().size();
         if ( addMeta.size() != nrTemplateFields ) {
-          throw new KettleException( BaseMessages.getString( PKG, "DynamicSQLRow.Exception.IncorrectNrTemplateFields",
-              nrTemplateFields, addMeta.size(), sql ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "DynamicSQLRow.Exception.IncorrectNrTemplateFields", nrTemplateFields, addMeta.size(), sql ) );
         }
         StringBuilder typeErrors = new StringBuilder();
         for ( int i = 0; i < addMeta.size(); i++ ) {
@@ -142,8 +143,9 @@ public class DynamicSQLRow extends BaseStep implements StepInterface {
             if ( typeErrors.length() > 0 ) {
               typeErrors.append( Const.CR );
             }
-            typeErrors.append( BaseMessages.getString( PKG, "DynamicSQLRow.Exception.TemplateReturnDataTypeError",
-                templateValueMeta.toString(), outputValueMeta.toString() ) );
+            typeErrors.append( BaseMessages.getString(
+              PKG, "DynamicSQLRow.Exception.TemplateReturnDataTypeError", templateValueMeta.toString(),
+              outputValueMeta.toString() ) );
           }
         }
         if ( typeErrors.length() > 0 ) {
@@ -174,7 +176,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface {
 
         if ( log.isRowLevel() ) {
           logRowlevel( BaseMessages.getString( PKG, "DynamicSQLRow.Log.PutoutRow" )
-              + data.outputRowMeta.getString( newRow ) );
+            + data.outputRowMeta.getString( newRow ) );
         }
 
         // Get a new row
@@ -219,8 +221,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface {
     data = (DynamicSQLRowData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -239,7 +240,7 @@ public class DynamicSQLRow extends BaseStep implements StepInterface {
         if ( data.indexOfSQLField < 0 ) {
           // The field is unreachable !
           throw new KettleException( BaseMessages.getString( PKG, "DynamicSQLRow.Exception.FieldNotFound", meta
-              .getSQLFieldName() ) );
+            .getSQLFieldName() ) );
         }
       }
     }

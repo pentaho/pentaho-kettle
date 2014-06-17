@@ -94,7 +94,7 @@ import org.xml.sax.InputSource;
 import com.ctc.wstx.exc.WstxParsingException;
 
 public class WebService extends BaseStep implements StepInterface {
-  private static Class<?> PKG = WebServiceMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = WebServiceMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String NS_PREFIX = "ns";
 
@@ -116,6 +116,18 @@ public class WebService extends BaseStep implements StepInterface {
 
   private Date dateRef;
 
+  private Wsdl cachedWsdl;
+
+  private HostConfiguration cachedHostConfiguration;
+
+  private HttpClient cachedHttpClient;
+
+  private String cachedURLService;
+
+  private WsdlOperation cachedOperation;
+
+  private WebServiceMeta cachedMeta;
+
   public WebService( StepMeta aStepMeta, StepDataInterface aStepData, int value, TransMeta aTransMeta, Trans aTrans ) {
     super( aStepMeta, aStepData, value, aTransMeta, aTrans );
 
@@ -134,14 +146,14 @@ public class WebService extends BaseStep implements StepInterface {
 
     // if a URL is not specified, throw an exception
     if ( Const.isEmpty( meta.getUrl() ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0014.urlNotSpecified",
-          getStepname() ) );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "WebServices.ERROR0014.urlNotSpecified", getStepname() ) );
     }
 
     // if an operation is not specified, throw an exception
     if ( Const.isEmpty( meta.getOperationName() ) ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0015.OperationNotSelected",
-          getStepname() ) );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "WebServices.ERROR0015.OperationNotSelected", getStepname() ) );
     }
 
     data = (WebServiceData) dataInterface;
@@ -173,8 +185,8 @@ public class WebService extends BaseStep implements StepInterface {
     }
 
     if ( ( vCurrentRow == null && ( nbRowProcess % meta.getCallStep() != 0 ) )
-        || ( vCurrentRow != null && ( ( nbRowProcess > 0 && nbRowProcess % meta.getCallStep() == 0 ) ) )
-        || ( vCurrentRow == null && ( !meta.hasFieldsIn() ) ) ) {
+      || ( vCurrentRow != null && ( ( nbRowProcess > 0 && nbRowProcess % meta.getCallStep() == 0 ) ) )
+      || ( vCurrentRow == null && ( !meta.hasFieldsIn() ) ) ) {
       requestSOAP( vCurrentRow, getInputRowMeta() );
     }
 
@@ -198,8 +210,8 @@ public class WebService extends BaseStep implements StepInterface {
         if ( index >= 0 ) {
           indexList.add( index );
         } else {
-          throw new KettleException( "Required input field [" + curField.getName()
-              + "] couldn't be found in the step input" );
+          throw new KettleException( "Required input field ["
+            + curField.getName() + "] couldn't be found in the step input" );
         }
       }
     }
@@ -237,7 +249,9 @@ public class WebService extends BaseStep implements StepInterface {
     // future how to manage multiple name spaces
     //
     xml.append( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" );
-    xml.append( "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:"
+    xml
+      .append( "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" "
+        + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:"
         + NS_PREFIX + "=\"" );
     xml.append( meta.getOperationNamespace() );
     xml.append( "\">\n" );
@@ -266,17 +280,16 @@ public class WebService extends BaseStep implements StepInterface {
   }
 
   /**
-   * 
+   *
    * @param xml
    *          the XML this method is appending to.
    * @param names
    *          the header names
-   * @param formNameIsQualified
+   * @param qualifyWSField
    *          indicates if the we are to use the namespace prefix when writing the WS field name
    * @throws KettleException
    */
-  private void addParametersToXML( StringBuffer xml, List<String> names, boolean qualifyWSField )
-    throws KettleException {
+  private void addParametersToXML( StringBuffer xml, List<String> names, boolean qualifyWSField ) throws KettleException {
 
     // Add the row parameters...
     //
@@ -302,8 +315,9 @@ public class WebService extends BaseStep implements StepInterface {
             if ( XsdType.TIME.equals( field.getXsdType() ) ) {
               // Allow to deal with hours like 36:12:12 (> 24h)
               long millis = vCurrentValue.getDate( data ).getTime() - dateRef.getTime();
-              xml.append( decFormat.format( millis / 3600000 ) + ":" + decFormat.format( ( millis % 3600000 ) / 60000 )
-                  + ":" + decFormat.format( ( ( millis % 60000 ) / 1000 ) ) );
+              xml.append( decFormat.format( millis / 3600000 )
+                + ":" + decFormat.format( ( millis % 3600000 ) / 60000 ) + ":"
+                + decFormat.format( ( ( millis % 60000 ) / 1000 ) ) );
             } else if ( XsdType.DATE.equals( field.getXsdType() ) ) {
               xml.append( dateFormat.format( vCurrentValue.getDate( data ) ) );
             } else if ( XsdType.BOOLEAN.equals( field.getXsdType() ) ) {
@@ -326,7 +340,7 @@ public class WebService extends BaseStep implements StepInterface {
 
           } else {
             xml.append( "          <" ).append( NS_PREFIX ).append( ":" ).append( field.getWsName() ).append(
-                " xsi:nil=\"true\"/>\n" );
+              " xsi:nil=\"true\"/>\n" );
           }
         }
       }
@@ -337,17 +351,108 @@ public class WebService extends BaseStep implements StepInterface {
   }
 
   private synchronized void requestSOAP( Object[] rowData, RowMetaInterface rowMeta ) throws KettleException {
-    Wsdl wsdl;
+    initWsdlEnv();
+    PostMethod vHttpMethod = null;
     try {
-      wsdl = new Wsdl( new java.net.URI( data.realUrl ), null, null, meta.getHttpLogin(), meta.getHttpPassword() );
+      String xml =
+          getRequestXML( cachedOperation, cachedWsdl.getWsdlTypes().isElementFormQualified(
+              cachedWsdl.getTargetNamespace() ) );
+
+      if ( log.isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "WebServices.Log.SOAPEnvelope" ) );
+        logDetailed( xml );
+      }
+
+      try {
+        vHttpMethod = getHttpMethod( cachedURLService );
+      } catch ( URIException e ) {
+        throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0002.InvalidURI",
+            cachedURLService ), e );
+      } catch ( UnsupportedEncodingException e ) {
+        throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0003.UnsupportedEncoding",
+            cachedURLService ), e );
+      }
+      RequestEntity requestEntity = new ByteArrayRequestEntity( xml.toString().getBytes( "UTF-8" ), "UTF-8" );
+      vHttpMethod.setRequestEntity( requestEntity );
+      // long currentRequestTime = Const.nanoTime();
+      int responseCode = cachedHttpClient.executeMethod( cachedHostConfiguration, vHttpMethod );
+      if ( responseCode == 200 ) {
+        processRows( vHttpMethod.getResponseBodyAsStream(), rowData, rowMeta, cachedWsdl.getWsdlTypes()
+            .isElementFormQualified( cachedWsdl.getTargetNamespace() ), vHttpMethod.getResponseCharSet() );
+      } else if ( responseCode == 401 ) {
+        throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0011.Authentication",
+            cachedURLService ) );
+      } else if ( responseCode == 404 ) {
+        throw new KettleStepException( BaseMessages.getString( PKG,
+                "WebServices.ERROR0012.NotFound", cachedURLService ) );
+      } else {
+        throw new KettleStepException( BaseMessages.getString( PKG,
+                "WebServices.ERROR0001.ServerError", Integer.toString( responseCode ),
+                Const.NVL( new String( vHttpMethod.getResponseBody() ), "" ), cachedURLService ) );
+      }
+      // requestTime += Const.nanoTime() - currentRequestTime;
+    } catch ( HttpException e ) {
+      throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0004.HttpException",
+          cachedURLService ), e );
+    } catch ( UnknownHostException e ) {
+      throw new KettleStepException( BaseMessages
+          .getString( PKG, "WebServices.ERROR0013.UnknownHost", cachedURLService ), e );
+    } catch ( IOException e ) {
+      throw new KettleStepException( BaseMessages
+          .getString( PKG, "WebServices.ERROR0005.IOException", cachedURLService ), e );
+    } finally {
+      data.argumentRows.clear(); // ready for the next batch.
+      if ( vHttpMethod != null ) {
+        vHttpMethod.releaseConnection();
+      }
+    }
+  }
+
+  private void initWsdlEnv() throws KettleException {
+    if ( meta.equals( cachedMeta ) ) {
+      return;
+    }
+    cachedMeta = meta;
+
+    try {
+      cachedWsdl = new Wsdl( new java.net.URI( data.realUrl ),
+              null, null, meta.getHttpLogin(), meta.getHttpPassword() );
     } catch ( Exception e ) {
       throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0013.ExceptionLoadingWSDL" ), e );
     }
-    String vURLService = wsdl.getServiceEndpoint();
 
-    HttpClient vHttpClient = SlaveConnectionManager.getInstance().createHttpClient();
+    cachedURLService = cachedWsdl.getServiceEndpoint();
+    cachedHostConfiguration = new HostConfiguration();
+    cachedHttpClient = getHttpClient( cachedHostConfiguration );
+    // Generate the XML to send over, determine the correct name for the request...
+    //
+    cachedOperation = cachedWsdl.getOperation( meta.getOperationName() );
+    if ( cachedOperation == null ) {
+      throw new KettleException( BaseMessages.getString( PKG, "WebServices.Exception.OperarationNotSupported", meta
+          .getOperationName(), meta.getUrl() ) );
+    }
+
+  }
+
+  private PostMethod getHttpMethod( String vURLService ) throws URIException, UnsupportedEncodingException {
     PostMethod vHttpMethod = new PostMethod( vURLService );
-    HostConfiguration vHostConfiguration = new HostConfiguration();
+    URI uri = new URI( vURLService, false );
+    vHttpMethod.setURI( uri );
+    vHttpMethod.setRequestHeader( "Content-Type", "text/xml;charset=UTF-8" );
+
+    String soapAction = "\"" + meta.getOperationNamespace();
+    if ( !meta.getOperationNamespace().endsWith( "/" ) ) {
+      soapAction += "/";
+    }
+    soapAction += meta.getOperationName() + "\"";
+    logDetailed( BaseMessages.getString( PKG, "WebServices.Log.UsingRequestHeaderSOAPAction", soapAction ) );
+    vHttpMethod.setRequestHeader( "SOAPAction", soapAction );
+
+    return vHttpMethod;
+  }
+
+  private HttpClient getHttpClient( HostConfiguration vHostConfiguration ) {
+    HttpClient vHttpClient = SlaveConnectionManager.getInstance().createHttpClient();
 
     String httpLogin = environmentSubstitute( meta.getHttpLogin() );
     if ( httpLogin != null && !"".equals( httpLogin ) ) {
@@ -361,68 +466,7 @@ public class WebService extends BaseStep implements StepInterface {
     if ( proxyHost != null && !"".equals( proxyHost ) ) {
       vHostConfiguration.setProxy( proxyHost, Const.toInt( environmentSubstitute( meta.getProxyPort() ), 8080 ) );
     }
-
-    try {
-      // Generate the XML to send over, determine the correct name for the request...
-      //
-      WsdlOperation operation = wsdl.getOperation( meta.getOperationName() );
-      if ( operation == null ) {
-        throw new KettleException( BaseMessages.getString( PKG, "WebServices.Exception.OperarationNotSupported", meta
-            .getOperationName(), meta.getUrl() ) );
-      }
-      String xml = getRequestXML( operation, wsdl.getWsdlTypes().isElementFormQualified( wsdl.getTargetNamespace() ) );
-
-      if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "WebServices.Log.SOAPEnvelope" ) );
-        logDetailed( xml );
-      }
-
-      data.argumentRows.clear(); // ready for the next batch.
-
-      URI uri = new URI( vURLService, false );
-      vHttpMethod.setURI( uri );
-      vHttpMethod.setRequestHeader( "Content-Type", "text/xml;charset=UTF-8" );
-
-      String soapAction = "\"" + meta.getOperationNamespace();
-      if ( !meta.getOperationNamespace().endsWith( "/" ) ) {
-        soapAction += "/";
-      }
-      soapAction += meta.getOperationName() + "\"";
-      logDetailed( BaseMessages.getString( PKG, "WebServices.Log.UsingRequestHeaderSOAPAction", soapAction ) );
-      vHttpMethod.setRequestHeader( "SOAPAction", soapAction );
-
-      RequestEntity requestEntity = new ByteArrayRequestEntity( xml.toString().getBytes( "UTF-8" ), "UTF-8" );
-      vHttpMethod.setRequestEntity( requestEntity );
-      // long currentRequestTime = Const.nanoTime();
-      int responseCode = vHttpClient.executeMethod( vHostConfiguration, vHttpMethod );
-      if ( responseCode == 200 ) {
-        processRows( vHttpMethod.getResponseBodyAsStream(), rowData, rowMeta, wsdl.getWsdlTypes()
-            .isElementFormQualified( wsdl.getTargetNamespace() ), vHttpMethod.getResponseCharSet() );
-      } else if ( responseCode == 401 ) {
-        throw new KettleStepException( BaseMessages
-            .getString( PKG, "WebServices.ERROR0011.Authentication", vURLService ) );
-      } else if ( responseCode == 404 ) {
-        throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0012.NotFound", vURLService ) );
-      } else {
-        throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0001.ServerError", Integer
-            .toString( responseCode ), Const.NVL( new String( vHttpMethod.getResponseBody() ), "" ), vURLService ) );
-      }
-      // requestTime += Const.nanoTime() - currentRequestTime;
-    } catch ( URIException e ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0002.InvalidURI", vURLService ), e );
-    } catch ( UnsupportedEncodingException e ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0003.UnsupportedEncoding",
-          vURLService ), e );
-    } catch ( HttpException e ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0004.HttpException", vURLService ),
-          e );
-    } catch ( UnknownHostException e ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0013.UnknownHost", vURLService ), e );
-    } catch ( IOException e ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0005.IOException", vURLService ), e );
-    } finally {
-      vHttpMethod.releaseConnection();
-    }
+    return vHttpClient;
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -431,6 +475,7 @@ public class WebService extends BaseStep implements StepInterface {
 
     data.indexMap = new Hashtable<String, Integer>();
     data.realUrl = environmentSubstitute( meta.getUrl() );
+
     return super.init( smi, sdi );
   }
 
@@ -465,7 +510,7 @@ public class WebService extends BaseStep implements StepInterface {
   }
 
   private void processRows( InputStream anXml, Object[] rowData, RowMetaInterface rowMeta,
-      boolean ignoreNamespacePrefix, String encoding ) throws KettleException {
+    boolean ignoreNamespacePrefix, String encoding ) throws KettleException {
     // Just to make sure the old transformations keep working...
     //
     if ( meta.isCompatible() ) {
@@ -649,7 +694,8 @@ public class WebService extends BaseStep implements StepInterface {
               if ( log.isDetailed() ) {
                 StringWriter nodeXML = new StringWriter();
                 transformer.transform( new DOMSource( node ), new StreamResult( nodeXML ) );
-                logDetailed( BaseMessages.getString( PKG, "WebServices.Log.ResultRowDataFound", nodeXML.toString() ) );
+                logDetailed( BaseMessages
+                  .getString( PKG, "WebServices.Log.ResultRowDataFound", nodeXML.toString() ) );
               }
 
               // Allocate a new row...
@@ -693,18 +739,18 @@ public class WebService extends BaseStep implements StepInterface {
         putRow( data.outputRowMeta, outputRowData );
       }
     } catch ( Exception e ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0010.OutputParsingError", response
-          .toString() ), e );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "WebServices.ERROR0010.OutputParsingError", response.toString() ), e );
     }
   }
 
   private Object[] createNewRow( Object[] inputRowData ) {
     return inputRowData == null ? RowDataUtil.allocateRowData( data.outputRowMeta.size() ) : RowDataUtil
-        .createResizedCopy( inputRowData, data.outputRowMeta.size() );
+      .createResizedCopy( inputRowData, data.outputRowMeta.size() );
   }
 
   private void compatibleProcessRows( InputStream anXml, Object[] rowData, RowMetaInterface rowMeta,
-      boolean ignoreNamespacePrefix, String encoding ) throws KettleException {
+    boolean ignoreNamespacePrefix, String encoding ) throws KettleException {
 
     // First we should get the complete string
     // The problem is that the string can contain XML or any other format such as HTML saying the service is no longer
@@ -778,7 +824,8 @@ public class WebService extends BaseStep implements StepInterface {
                   logRowlevel( "OutFieldArgumentName = " );
                 }
                 if ( processing ) {
-                  WebServiceField field = meta.getFieldOutFromWsName( vReader.getLocalName(), ignoreNamespacePrefix );
+                  WebServiceField field =
+                    meta.getFieldOutFromWsName( vReader.getLocalName(), ignoreNamespacePrefix );
                   if ( field != null ) {
                     int index = data.outputRowMeta.indexOfValue( field.getName() );
                     if ( index >= 0 ) {
@@ -787,7 +834,8 @@ public class WebService extends BaseStep implements StepInterface {
                   }
                   processing = false;
                 } else {
-                  WebServiceField field = meta.getFieldOutFromWsName( vReader.getLocalName(), ignoreNamespacePrefix );
+                  WebServiceField field =
+                    meta.getFieldOutFromWsName( vReader.getLocalName(), ignoreNamespacePrefix );
                   if ( meta.getFieldsOut().size() == 1 && field != null ) {
                     // This can be either a simple return element, or a complex type...
                     //
@@ -803,8 +851,9 @@ public class WebService extends BaseStep implements StepInterface {
                       outputRowData[outputIndex++] = getValue( vReader.getElementText(), field );
                       putRow( data.outputRowMeta, outputRowData );
                     } catch ( WstxParsingException e ) {
-                      throw new KettleStepException( "Unable to get value for field [" + field.getName()
-                          + "].  Verify that this is not a complex data type by looking at the response XML.", e );
+                      throw new KettleStepException( "Unable to get value for field ["
+                        + field.getName()
+                        + "].  Verify that this is not a complex data type by looking at the response XML.", e );
                     }
                   } else {
                     for ( WebServiceField curField : meta.getFieldsOut() ) {
@@ -834,10 +883,11 @@ public class WebService extends BaseStep implements StepInterface {
             }
             // If we end the xml element named as the return type, we
             // finish a row
-            if ( ( meta.getOutFieldArgumentName() == null && meta.getOperationName().equals( vReader.getLocalName() ) ) ) {
+            if ( ( meta.getOutFieldArgumentName() == null && meta.getOperationName().equals(
+              vReader.getLocalName() ) ) ) {
               oneValueRowProcessing = false;
             } else if ( meta.getOutFieldArgumentName() != null
-                && meta.getOutFieldArgumentName().equals( vReader.getLocalName() ) ) {
+              && meta.getOutFieldArgumentName().equals( vReader.getLocalName() ) ) {
               putRow( data.outputRowMeta, outputRowData );
               processing = false;
             }
@@ -928,13 +978,13 @@ public class WebService extends BaseStep implements StepInterface {
         }
       }
     } catch ( Exception e ) {
-      throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0010.OutputParsingError", response
-          .toString() ), e );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "WebServices.ERROR0010.OutputParsingError", response.toString() ), e );
     }
   }
 
   private boolean getNodeValue( Object[] outputRowData, Node node, WebServiceField field, Transformer transformer,
-      boolean singleRowScenario ) throws KettleException {
+    boolean singleRowScenario ) throws KettleException {
 
     Integer outputIndex = data.indexMap.get( field.getWsName() );
     if ( outputIndex == null ) {
@@ -956,8 +1006,8 @@ public class WebService extends BaseStep implements StepInterface {
         outputRowData[outputIndex] = rowValue;
         return true;
       } catch ( Exception e ) {
-        throw new KettleException( "Unable to convert value [" + textContent + "] for field [" + field.getWsName()
-            + "], type [" + field.getXsdType() + "]", e );
+        throw new KettleException( "Unable to convert value ["
+          + textContent + "] for field [" + field.getWsName() + "], type [" + field.getXsdType() + "]", e );
       }
     } else if ( node.getNodeType() == Node.ELEMENT_NODE ) {
       // Perhaps we're dealing with complex data types.
@@ -1011,8 +1061,8 @@ public class WebService extends BaseStep implements StepInterface {
           stopAll();
           return null;
         }
-      } else if ( XsdType.INTEGER.equals( field.getXsdType() ) || XsdType.SHORT.equals( field.getXsdType() )
-          || XsdType.INTEGER_DESC.equals( field.getXsdType() ) ) {
+      } else if ( XsdType.INTEGER.equals( field.getXsdType() )
+        || XsdType.SHORT.equals( field.getXsdType() ) || XsdType.INTEGER_DESC.equals( field.getXsdType() ) ) {
         try {
           return Long.parseLong( vNodeValue );
         } catch ( NumberFormatException e ) {

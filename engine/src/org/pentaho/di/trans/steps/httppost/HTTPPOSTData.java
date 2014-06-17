@@ -30,7 +30,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 24-jan-2005
- * 
+ *
  */
 public class HTTPPOSTData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;
@@ -59,9 +59,6 @@ public class HTTPPOSTData extends BaseStepData implements StepDataInterface {
   public int realConnectionTimeout;
   public int realcloseIdleConnectionsTime;
 
-  /**
-	 * 
-	 */
   public HTTPPOSTData() {
     super();
     indexOfUrlField = -1;

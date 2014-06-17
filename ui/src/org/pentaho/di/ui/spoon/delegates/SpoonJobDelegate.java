@@ -88,7 +88,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class SpoonJobDelegate extends SpoonDelegate {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   /**
    * This contains a map between the name of a transformation and the TransMeta object. If the transformation has no
@@ -184,9 +184,10 @@ public class SpoonJobDelegate extends SpoonDelegate {
         return null;
       }
     } catch ( Throwable e ) {
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG,
-          "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Title" ), BaseMessages.getString( PKG,
-          "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Message" ), new Exception( e ) );
+      new ErrorDialog( spoon.getShell(),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Title" ),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.UnexpectedErrorCreatingNewJobGraphEntry.Message" ),
+        new Exception( e ) );
       return null;
     }
   }
@@ -197,7 +198,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
     try {
       Class<?> dialogClass;
       Class<?>[] paramClasses =
-          new Class[] { spoon.getShell().getClass(), JobEntryInterface.class, Repository.class, JobMeta.class };
+        new Class<?>[] { spoon.getShell().getClass(), JobEntryInterface.class, Repository.class, JobMeta.class };
       Object[] paramArgs = new Object[] { spoon.getShell(), jobEntryInterface, spoon.getRepository(), jobMeta };
       Constructor<?> dialogConstructor;
 
@@ -205,7 +206,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
       dialogClass = PluginRegistry.getInstance().getClass( plugin, dialogClassName );
       dialogConstructor = dialogClass.getConstructor( paramClasses );
       JobEntryDialogInterface entryDialogInterface =
-          (JobEntryDialogInterface) dialogConstructor.newInstance( paramArgs );
+        (JobEntryDialogInterface) dialogConstructor.newInstance( paramArgs );
       entryDialogInterface.setMetaStore( spoon.getMetaStore() );
       return entryDialogInterface;
     } catch ( Throwable t ) {
@@ -221,7 +222,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
     try {
       Class<?> dialogClass;
       Class<?>[] paramClasses =
-          new Class[] { spoon.getShell().getClass(), Object.class, TransMeta.class, String.class };
+        new Class<?>[] { spoon.getShell().getClass(), Object.class, TransMeta.class, String.class };
       Object[] paramArgs = new Object[] { spoon.getShell(), stepMeta, transMeta, stepName };
       Constructor<?> dialogConstructor;
       dialogClass = stepMeta.getClass().getClassLoader().loadClass( dialogClassName );
@@ -235,7 +236,8 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
   public void editJobEntry( JobMeta jobMeta, JobEntryCopy je ) {
     try {
-      spoon.getLog().logBasic( spoon.toString(), BaseMessages.getString( PKG, "Spoon.Log.EditJobEntry", je.getName() ) );
+      spoon.getLog().logBasic(
+        spoon.toString(), BaseMessages.getString( PKG, "Spoon.Log.EditJobEntry", je.getName() ) );
 
       JobEntryCopy before = (JobEntryCopy) je.clone_deep();
 
@@ -257,8 +259,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
           jobMeta.renameJobEntryIfNameCollides( je );
 
           JobEntryCopy after = (JobEntryCopy) je.clone();
-          spoon.addUndoChange( jobMeta, new JobEntryCopy[] { before }, new JobEntryCopy[] { after },
-              new int[] { jobMeta.indexOfJobEntry( je ) } );
+          spoon.addUndoChange(
+            jobMeta, new JobEntryCopy[] { before }, new JobEntryCopy[] { after }, new int[] { jobMeta
+              .indexOfJobEntry( je ) } );
           spoon.refreshGraph();
           spoon.refreshTree();
         }
@@ -272,8 +275,8 @@ public class SpoonJobDelegate extends SpoonDelegate {
     } catch ( Exception e ) {
       if ( !spoon.getShell().isDisposed() ) {
         new ErrorDialog( spoon.getShell(),
-            BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorEditingJobEntry.Title" ), BaseMessages.getString( PKG,
-                "Spoon.ErrorDialog.ErrorEditingJobEntry.Message" ), e );
+          BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorEditingJobEntry.Title" ),
+          BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorEditingJobEntry.Message" ), e );
       }
     }
   }
@@ -378,8 +381,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
       for ( int i = 0; i < nr; i++ ) {
         Node entrynode = XMLHandler.getSubNodeByNr( entriesnode, "entry", i );
         JobEntryCopy copy =
-            new JobEntryCopy( entrynode, jobMeta.getDatabases(), jobMeta.getSlaveServers(), spoon.getRepository(),
-                spoon.getMetaStore() );
+          new JobEntryCopy(
+            entrynode, jobMeta.getDatabases(), jobMeta.getSlaveServers(), spoon.getRepository(), spoon
+              .getMetaStore() );
         if ( copy.isStart() && ( jobMeta.findStart() != null ) ) {
           JobGraph.showOnlyStartOnceMessage( spoon.getShell() );
           continue;
@@ -431,8 +435,8 @@ public class SpoonJobDelegate extends SpoonDelegate {
       }
     } catch ( KettleException e ) {
       new ErrorDialog( spoon.getShell(),
-          BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorPasingJobEntries.Title" ), BaseMessages.getString( PKG,
-              "Spoon.ErrorDialog.ErrorPasingJobEntries.Message" ), e );
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorPasingJobEntries.Title" ),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorPasingJobEntries.Message" ), e );
     }
   }
 
@@ -448,7 +452,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
    * Create a job that extracts tables & data from a database.
    * <p>
    * <p>
-   * 
+   *
    * 0) Select the database to rip
    * <p>
    * 1) Select the tables in the database to rip
@@ -465,7 +469,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
    * <p>
    * 7) add every created transformation to the job & evaluate
    * <p>
-   * 
+   *
    */
   public void ripDBWizard() {
     final List<DatabaseMeta> databases = spoon.getActiveDatabases();
@@ -481,8 +485,8 @@ public class SpoonJobDelegate extends SpoonDelegate {
       public boolean performFinish() {
         try {
           JobMeta jobMeta =
-              ripDB( databases, page3.getJobname(), page3.getRepositoryDirectory(), page3.getDirectory(), page1
-                  .getSourceDatabase(), page1.getTargetDatabase(), page2.getSelection() );
+            ripDB( databases, page3.getJobname(), page3.getRepositoryDirectory(), page3.getDirectory(), page1
+              .getSourceDatabase(), page1.getTargetDatabase(), page2.getSelection() );
           if ( jobMeta == null ) {
             return false;
           }
@@ -521,8 +525,8 @@ public class SpoonJobDelegate extends SpoonDelegate {
   }
 
   public JobMeta ripDB( final List<DatabaseMeta> databases, final String jobname,
-      final RepositoryDirectoryInterface repdir, final String directory, final DatabaseMeta sourceDbInfo,
-      final DatabaseMeta targetDbInfo, final String[] tables ) {
+    final RepositoryDirectoryInterface repdir, final String directory, final DatabaseMeta sourceDbInfo,
+    final DatabaseMeta targetDbInfo, final String[] tables ) {
     //
     // Create a new job...
     //
@@ -566,20 +570,22 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
           // Loop over the table-names...
           for ( int i = 0; i < tables.length && !monitor.isCanceled(); i++ ) {
-            monitor.setTaskName( BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.ProcessingTable" ) + tables[i]
-                + "]..." );
+            monitor.setTaskName( BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.ProcessingTable" )
+              + tables[i] + "]..." );
             //
             // Create the new transformation...
             //
             String transname =
-                BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Transname1" ) + sourceDbInfo + "].[" + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Transname2" ) + targetDbInfo + "]"; //$NON-NLS-3$ //$NON-NLS-4$
+              BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Transname1" )
+                + sourceDbInfo + "].[" + tables[i]
+                + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Transname2" ) + targetDbInfo + "]";
 
             TransMeta transMeta = new TransMeta();
             if ( repdir != null ) {
               transMeta.setRepositoryDirectory( repdir );
             } else {
-              transMeta
-                  .setFilename( Const.createFilename( directory, transname, "." + Const.STRING_TRANS_DEFAULT_EXT ) );
+              transMeta.setFilename( Const.createFilename( directory, transname, "."
+                + Const.STRING_TRANS_DEFAULT_EXT ) );
             }
 
             // Add the source & target db
@@ -590,16 +596,20 @@ public class SpoonJobDelegate extends SpoonDelegate {
             // Add a note
             //
             String note =
-                BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note1" ) + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note2" ) + sourceDbInfo + "]" + Const.CR; //$NON-NLS-3$
+              BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note1" )
+                + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note2" ) + sourceDbInfo + "]"
+                + Const.CR;
             note +=
-                BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note3" ) + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note4" ) + targetDbInfo + "]"; //$NON-NLS-3$
+              BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note3" )
+                + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.Note4" ) + targetDbInfo + "]";
             NotePadMeta ni = new NotePadMeta( note, 150, 10, -1, -1 );
             transMeta.addNote( ni );
 
             //
             // Add the TableInputMeta step...
             //
-            String fromstepname = BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.FromStep.Name" ) + tables[i] + "]";
+            String fromstepname =
+              BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.FromStep.Name" ) + tables[i] + "]";
             TableInputMeta tii = new TableInputMeta();
             tii.setDefault();
             tii.setDatabaseMeta( sourceDbInfo );
@@ -610,7 +620,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
             fromstep.setLocation( 150, 100 );
             fromstep.setDraw( true );
             fromstep
-                .setDescription( BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.FromStep.Description" ) + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.FromStep.Description2" ) + sourceDbInfo + "]" ); //$NON-NLS-3$
+              .setDescription( BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.FromStep.Description" )
+                + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.FromStep.Description2" )
+                + sourceDbInfo + "]" );
             transMeta.addStep( fromstep );
 
             //
@@ -628,7 +640,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
             tostep.setLocation( 500, 100 );
             tostep.setDraw( true );
             tostep
-                .setDescription( BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.ToStep.Description1" ) + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.ToStep.Description2" ) + targetDbInfo + "]" ); //$NON-NLS-3$
+              .setDescription( BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.ToStep.Description1" )
+                + tables[i] + BaseMessages.getString( PKG, "Spoon.RipDB.Monitor.ToStep.Description2" )
+                + targetDbInfo + "]" );
             transMeta.addStep( tostep );
 
             //
@@ -648,9 +662,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
             try {
               sql = transMeta.getSQLStatementsString();
             } catch ( KettleStepException kse ) {
-              throw new InvocationTargetException( kse, BaseMessages.getString( PKG,
-                  "Spoon.RipDB.Exception.ErrorGettingSQLFromTransformation" )
-                  + transMeta + "] : " + kse.getMessage() );
+              throw new InvocationTargetException( kse, BaseMessages.getString(
+                PKG, "Spoon.RipDB.Exception.ErrorGettingSQLFromTransformation" )
+                + transMeta + "] : " + kse.getMessage() );
             }
             // remove the limit
             tii.setSQL( tmpSql );
@@ -665,9 +679,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
               ok = spoon.saveToFile( transMeta );
             }
             if ( !ok ) {
-              throw new InvocationTargetException( new Exception( BaseMessages.getString( PKG,
-                  "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository" ) ), BaseMessages.getString( PKG,
-                  "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository" ) );
+              throw new InvocationTargetException( new Exception(
+                BaseMessages.getString( PKG, "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository" ) ),
+                BaseMessages.getString( PKG, "Spoon.RipDB.Exception.UnableToSaveTransformationToRepository" ) );
             }
 
             // We can now continue with the population of the job...
@@ -691,7 +705,8 @@ public class SpoonJobDelegate extends SpoonDelegate {
               jesql.setDatabase( targetDbInfo );
               jesql.setSQL( sql );
               jesql
-                  .setDescription( BaseMessages.getString( PKG, "Spoon.RipDB.JobEntrySQL.Description" ) + targetDbInfo + "].[" + tables[i] + "]" ); //$NON-NLS-3$
+                .setDescription( BaseMessages.getString( PKG, "Spoon.RipDB.JobEntrySQL.Description" )
+                  + targetDbInfo + "].[" + tables[i] + "]" );
 
               JobEntryCopy jecsql = new JobEntryCopy();
               jecsql.setEntry( jesql );
@@ -716,13 +731,18 @@ public class SpoonJobDelegate extends SpoonDelegate {
               jetrans.setDirectory( transMeta.getRepositoryDirectory().getPath() );
             } else {
               jetrans.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
-              jetrans.setFileName( Const.createFilename( "${" + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}",
-                  transMeta.getName(), "." + Const.STRING_TRANS_DEFAULT_EXT ) );
+              jetrans.setFileName( Const.createFilename( "${"
+                + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}", transMeta.getName(), "."
+                + Const.STRING_TRANS_DEFAULT_EXT ) );
             }
 
             JobEntryCopy jectrans = new JobEntryCopy( jetrans );
             jectrans
-                .setDescription( BaseMessages.getString( PKG, "Spoon.RipDB.JobEntryTrans.Description1" ) + Const.CR + BaseMessages.getString( PKG, "Spoon.RipDB.JobEntryTrans.Description2" ) + sourceDbInfo + "].[" + tables[i] + "]" + Const.CR + BaseMessages.getString( PKG, "Spoon.RipDB.JobEntryTrans.Description3" ) + targetDbInfo + "].[" + tables[i] + "]" ); //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+              .setDescription( BaseMessages.getString( PKG, "Spoon.RipDB.JobEntryTrans.Description1" )
+                + Const.CR + BaseMessages.getString( PKG, "Spoon.RipDB.JobEntryTrans.Description2" )
+                + sourceDbInfo + "].[" + tables[i] + "]" + Const.CR
+                + BaseMessages.getString( PKG, "Spoon.RipDB.JobEntryTrans.Description3" ) + targetDbInfo + "].["
+                + tables[i] + "]" );
             jectrans.setDrawn();
             location.x += 400;
             jectrans.setLocation( new Point( location.x, location.y ) );
@@ -748,14 +768,14 @@ public class SpoonJobDelegate extends SpoonDelegate {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( spoon.getShell() );
       pmd.run( false, true, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG,
-          "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title" ), BaseMessages.getString( PKG,
-          "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message" ), e );
+      new ErrorDialog( spoon.getShell(),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title" ),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message" ), e );
       return null;
     } catch ( InterruptedException e ) {
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG,
-          "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title" ), BaseMessages.getString( PKG,
-          "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message" ), e );
+      new ErrorDialog( spoon.getShell(),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title" ),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message" ), e );
       return null;
     } finally {
       spoon.refreshGraph();
@@ -800,7 +820,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
   /**
    * Add a job to the job map
-   * 
+   *
    * @param jobMeta
    *          the job to add to the map
    * @return true if the job was added
@@ -823,7 +843,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
   }
 
   /**
-   * @param transMeta
+   * @param jobMeta
    *          the transformation to close, make sure it's ok to dispose of it BEFORE you call this.
    */
   public void closeJob( JobMeta jobMeta ) {
@@ -883,8 +903,8 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
         TabItem tabItem = new TabItem( spoon.tabfolder, tabName, tabName );
         String toolTipText =
-            BaseMessages.getString( PKG, "Spoon.TabJob.Tooltip", spoon.delegates.tabs.makeTabName( jobMeta,
-                showLocation ) );
+          BaseMessages.getString( PKG, "Spoon.TabJob.Tooltip", spoon.delegates.tabs.makeTabName(
+            jobMeta, showLocation ) );
         if ( !Const.isEmpty( jobMeta.getFilename() ) ) {
           toolTipText += Const.CR + Const.CR + jobMeta.getFilename();
         }
@@ -894,7 +914,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
         // OK, also see if we need to open a new history window.
         if ( jobMeta.getJobLogTable().getDatabaseMeta() != null
-            && !Const.isEmpty( jobMeta.getJobLogTable().getTableName() ) ) {
+          && !Const.isEmpty( jobMeta.getJobLogTable().getTableName() ) ) {
           jobGraph.addAllTabs();
           jobGraph.extraViewTabFolder.setSelection( jobGraph.jobHistoryDelegate.getJobHistoryTab() );
         }
@@ -902,8 +922,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
         String versionLabel = jobMeta.getObjectRevision() == null ? null : jobMeta.getObjectRevision().getName();
 
         tabEntry =
-            new TabMapEntry( tabItem, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory(),
-                versionLabel, jobGraph, ObjectType.JOB_GRAPH );
+          new TabMapEntry(
+            tabItem, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory(), versionLabel,
+            jobGraph, ObjectType.JOB_GRAPH );
         tabEntry.setShowingLocation( showLocation );
 
         spoon.delegates.tabs.addTab( tabEntry );
@@ -940,16 +961,16 @@ public class SpoonJobDelegate extends SpoonDelegate {
    * tabName); tabItem.setText(tabName); tabItem.setToolTipText(BaseMessages.getString(PKG,
    * "Spoon.Title.ExecLogJobView.Tooltip", spoon.delegates.tabs .makeJobGraphTabName(jobMeta)));
    * tabItem.setControl(jobLog);
-   * 
+   *
    * // If there is an associated history window, we want to keep that // one up-to-date as well. // JobHistory
    * jobHistory = findJobHistoryOfJob(jobMeta); TabItem historyItem =
    * spoon.delegates.tabs.findTabItem(spoon.delegates.tabs.makeJobHistoryTabName(jobMeta),
    * TabMapEntry.OBJECT_TYPE_JOB_HISTORY);
-   * 
+   *
    * if (jobHistory != null && historyItem != null) { JobHistoryRefresher jobHistoryRefresher = new
    * JobHistoryRefresher(historyItem, jobHistory); spoon.tabfolder.addListener(jobHistoryRefresher); //
    * jobLog.setJobHistoryRefresher(jobHistoryRefresher); }
-   * 
+   *
    * spoon.delegates.tabs.addTab(new TabMapEntry(tabItem, tabName, jobLog, TabMapEntry.OBJECT_TYPE_JOB_LOG)); } int idx
    * = spoon.tabfolder.indexOf(tabItem); spoon.tabfolder.setSelected(idx); }
    */
@@ -988,8 +1009,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
     // NEW
     //
       case TransAction.TYPE_ACTION_NEW_JOB_ENTRY:
-      // re-delete the entry at correct location:
-      {
+        // re-delete the entry at correct location:
         JobEntryCopy[] si = (JobEntryCopy[]) transAction.getCurrent();
         int[] idx = transAction.getCurrentIndex();
         for ( int i = 0; i < idx.length; i++ ) {
@@ -997,72 +1017,61 @@ public class SpoonJobDelegate extends SpoonDelegate {
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       case TransAction.TYPE_ACTION_NEW_NOTE:
-      // re-insert the note at correct location:
-      {
+        // re-insert the note at correct location:
         NotePadMeta[] ni = (NotePadMeta[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.addNote( idx[i], ni[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       case TransAction.TYPE_ACTION_NEW_JOB_HOP:
-      // re-insert the hop at correct location:
-      {
+        // re-insert the hop at correct location:
         JobHopMeta[] hi = (JobHopMeta[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.addJobHop( idx[i], hi[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       //
       // DELETE
       //
       case TransAction.TYPE_ACTION_DELETE_JOB_ENTRY:
-      // re-remove the entry at correct location:
-      {
-        int[] idx = transAction.getCurrentIndex();
+        // re-remove the entry at correct location:
+        idx = transAction.getCurrentIndex();
         for ( int i = idx.length - 1; i >= 0; i-- ) {
           jobMeta.removeJobEntry( idx[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       case TransAction.TYPE_ACTION_DELETE_NOTE:
-      // re-remove the note at correct location:
-      {
-        int[] idx = transAction.getCurrentIndex();
+        // re-remove the note at correct location:
+        idx = transAction.getCurrentIndex();
         for ( int i = idx.length - 1; i >= 0; i-- ) {
           jobMeta.removeNote( idx[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       case TransAction.TYPE_ACTION_DELETE_JOB_HOP:
-      // re-remove the hop at correct location:
-      {
-        int[] idx = transAction.getCurrentIndex();
+        // re-remove the hop at correct location:
+        idx = transAction.getCurrentIndex();
         for ( int i = idx.length - 1; i >= 0; i-- ) {
           jobMeta.removeJobHop( idx[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       //
@@ -1071,23 +1080,20 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
       // We changed a step : undo this...
       case TransAction.TYPE_ACTION_CHANGE_JOB_ENTRY:
-      // replace with "current" version.
-      {
+        // replace with "current" version.
         for ( int i = 0; i < transAction.getCurrent().length; i++ ) {
           JobEntryCopy copy = (JobEntryCopy) ( (JobEntryCopy) ( transAction.getCurrent()[i] ) ).clone_deep();
           jobMeta.getJobEntry( transAction.getCurrentIndex()[i] ).replaceMeta( copy );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We changed a note : undo this...
       case TransAction.TYPE_ACTION_CHANGE_NOTE:
-      // Delete & re-insert
-      {
-        NotePadMeta[] ni = (NotePadMeta[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        // Delete & re-insert
+        ni = (NotePadMeta[]) transAction.getCurrent();
+        idx = transAction.getCurrentIndex();
 
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.removeNote( idx[i] );
@@ -1095,15 +1101,13 @@ public class SpoonJobDelegate extends SpoonDelegate {
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We changed a hop : undo this...
       case TransAction.TYPE_ACTION_CHANGE_JOB_HOP:
-      // Delete & re-insert
-      {
-        JobHopMeta[] hi = (JobHopMeta[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        // Delete & re-insert
+        hi = (JobHopMeta[]) transAction.getCurrent();
+        idx = transAction.getCurrentIndex();
 
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.removeJobHop( idx[i] );
@@ -1111,33 +1115,32 @@ public class SpoonJobDelegate extends SpoonDelegate {
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       //
       // CHANGE POSITION
       //
-      case TransAction.TYPE_ACTION_POSITION_JOB_ENTRY: {
+      case TransAction.TYPE_ACTION_POSITION_JOB_ENTRY:
         // Find the location of the step:
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         Point[] p = transAction.getCurrentLocation();
         for ( int i = 0; i < p.length; i++ ) {
           JobEntryCopy entry = jobMeta.getJobEntry( idx[i] );
           entry.setLocation( p[i] );
         }
         spoon.refreshGraph();
-      }
         break;
-      case TransAction.TYPE_ACTION_POSITION_NOTE: {
-        int[] idx = transAction.getCurrentIndex();
+
+      case TransAction.TYPE_ACTION_POSITION_NOTE:
+        idx = transAction.getCurrentIndex();
         Point[] curr = transAction.getCurrentLocation();
         for ( int i = 0; i < idx.length; i++ ) {
           NotePadMeta npi = jobMeta.getNote( idx[i] );
           npi.setLocation( curr[i] );
         }
         spoon.refreshGraph();
-      }
         break;
+
       default:
         break;
     }
@@ -1147,41 +1150,35 @@ public class SpoonJobDelegate extends SpoonDelegate {
     switch ( transAction.getType() ) {
     // We created a new entry : undo this...
       case TransAction.TYPE_ACTION_NEW_JOB_ENTRY:
-      // Delete the entry at correct location:
-      {
+        // Delete the entry at correct location:
         int[] idx = transAction.getCurrentIndex();
         for ( int i = idx.length - 1; i >= 0; i-- ) {
           jobMeta.removeJobEntry( idx[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We created a new note : undo this...
       case TransAction.TYPE_ACTION_NEW_NOTE:
-      // Delete the note at correct location:
-      {
-        int[] idx = transAction.getCurrentIndex();
+        // Delete the note at correct location:
+        idx = transAction.getCurrentIndex();
         for ( int i = idx.length - 1; i >= 0; i-- ) {
           jobMeta.removeNote( idx[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We created a new hop : undo this...
       case TransAction.TYPE_ACTION_NEW_JOB_HOP:
-      // Delete the hop at correct location:
-      {
-        int[] idx = transAction.getCurrentIndex();
+        // Delete the hop at correct location:
+        idx = transAction.getCurrentIndex();
         for ( int i = idx.length - 1; i >= 0; i-- ) {
           jobMeta.removeJobHop( idx[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       //
@@ -1190,44 +1187,38 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
       // We delete an entry : undo this...
       case TransAction.TYPE_ACTION_DELETE_STEP:
-      // un-Delete the entry at correct location: re-insert
-      {
+        // un-Delete the entry at correct location: re-insert
         JobEntryCopy[] ce = (JobEntryCopy[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < ce.length; i++ ) {
           jobMeta.addJobEntry( idx[i], ce[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We delete new note : undo this...
       case TransAction.TYPE_ACTION_DELETE_NOTE:
-      // re-insert the note at correct location:
-      {
+        // re-insert the note at correct location:
         NotePadMeta[] ni = (NotePadMeta[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.addNote( idx[i], ni[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We deleted a new hop : undo this...
       case TransAction.TYPE_ACTION_DELETE_JOB_HOP:
-      // re-insert the hop at correct location:
-      {
+        // re-insert the hop at correct location:
         JobHopMeta[] hi = (JobHopMeta[]) transAction.getCurrent();
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < hi.length; i++ ) {
           jobMeta.addJobHop( idx[i], hi[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       //
@@ -1236,8 +1227,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
       // We changed a job entry: undo this...
       case TransAction.TYPE_ACTION_CHANGE_JOB_ENTRY:
-      // Delete the current job entry, insert previous version.
-      {
+        // Delete the current job entry, insert previous version.
         for ( int i = 0; i < transAction.getPrevious().length; i++ ) {
           JobEntryCopy copy = (JobEntryCopy) ( (JobEntryCopy) transAction.getPrevious()[i] ).clone();
           jobMeta.getJobEntry( transAction.getCurrentIndex()[i] ).replaceMeta( copy );
@@ -1245,37 +1235,32 @@ public class SpoonJobDelegate extends SpoonDelegate {
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We changed a note : undo this...
       case TransAction.TYPE_ACTION_CHANGE_NOTE:
-      // Delete & re-insert
-      {
+        // Delete & re-insert
         NotePadMeta[] prev = (NotePadMeta[]) transAction.getPrevious();
-        int[] idx = transAction.getCurrentIndex();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.removeNote( idx[i] );
           jobMeta.addNote( idx[i], prev[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       // We changed a hop : undo this...
       case TransAction.TYPE_ACTION_CHANGE_JOB_HOP:
-      // Delete & re-insert
-      {
-        JobHopMeta[] prev = (JobHopMeta[]) transAction.getPrevious();
-        int[] idx = transAction.getCurrentIndex();
+        // Delete & re-insert
+        JobHopMeta[] prevHops = (JobHopMeta[]) transAction.getPrevious();
+        idx = transAction.getCurrentIndex();
         for ( int i = 0; i < idx.length; i++ ) {
           jobMeta.removeJobHop( idx[i] );
-          jobMeta.addJobHop( idx[i], prev[i] );
+          jobMeta.addJobHop( idx[i], prevHops[i] );
         }
         spoon.refreshTree();
         spoon.refreshGraph();
-      }
         break;
 
       //
@@ -1284,35 +1269,34 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
       // The position of a step has changed: undo this...
       case TransAction.TYPE_ACTION_POSITION_JOB_ENTRY:
-      // Find the location of the step:
-      {
-        int[] idx = transAction.getCurrentIndex();
+        // Find the location of the step:
+        idx = transAction.getCurrentIndex();
         Point[] p = transAction.getPreviousLocation();
         for ( int i = 0; i < p.length; i++ ) {
           JobEntryCopy entry = jobMeta.getJobEntry( idx[i] );
           entry.setLocation( p[i] );
         }
         spoon.refreshGraph();
-      }
         break;
 
       // The position of a note has changed: undo this...
       case TransAction.TYPE_ACTION_POSITION_NOTE:
-        int[] idx = transAction.getCurrentIndex();
-        Point[] prev = transAction.getPreviousLocation();
+        idx = transAction.getCurrentIndex();
+        Point[] prevLoc = transAction.getPreviousLocation();
         for ( int i = 0; i < idx.length; i++ ) {
           NotePadMeta npi = jobMeta.getNote( idx[i] );
-          npi.setLocation( prev[i] );
+          npi.setLocation( prevLoc[i] );
         }
         spoon.refreshGraph();
         break;
+
       default:
         break;
     }
   }
 
   public void executeJob( JobMeta jobMeta, boolean local, boolean remote, Date replayDate, boolean safe,
-      String startCopyName, int startCopyNr ) throws KettleException {
+    String startCopyName, int startCopyNr ) throws KettleException {
 
     if ( jobMeta == null ) {
       return;
@@ -1340,12 +1324,12 @@ public class SpoonJobDelegate extends SpoonDelegate {
     executionConfiguration.setLogLevel( DefaultLogLevel.getLogLevel() );
 
     JobExecutionConfigurationDialog dialog =
-        new JobExecutionConfigurationDialog( spoon.getShell(), executionConfiguration, jobMeta );
+      new JobExecutionConfigurationDialog( spoon.getShell(), executionConfiguration, jobMeta );
     if ( dialog.open() ) {
 
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobMetaExecutionStart.id, jobMeta );
-      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobExecutionConfiguration.id,
-          executionConfiguration );
+      ExtensionPointHandler.callExtensionPoint(
+        log, KettleExtensionPoint.SpoonJobExecutionConfiguration.id, executionConfiguration );
 
       // addJobLog(jobMeta);
       JobGraph jobGraph = spoon.getActiveJobGraph();
@@ -1368,11 +1352,10 @@ public class SpoonJobDelegate extends SpoonDelegate {
       //
       if ( executionConfiguration.isExecutingLocally() ) {
         jobGraph.startJob( executionConfiguration );
-      }
-
-      // Are we executing remotely?
-      //
-      else if ( executionConfiguration.isExecutingRemotely() ) {
+      } else if ( executionConfiguration.isExecutingRemotely() ) {
+        // Executing remotely
+        // Check if jobMeta has changed
+        jobGraph.handleJobMetaChanges( jobMeta );
 
         // Activate the parameters, turn them into variables...
         // jobMeta.hasChanged()

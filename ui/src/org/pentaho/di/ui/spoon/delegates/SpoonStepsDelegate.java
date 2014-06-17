@@ -47,7 +47,7 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.StepErrorMetaDialog;
 
 public class SpoonStepsDelegate extends SpoonDelegate {
-  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   public SpoonStepsDelegate( Spoon spoon ) {
     super( spoon );
@@ -62,7 +62,8 @@ public class SpoonStepsDelegate extends SpoonDelegate {
       List<StepMeta> targetSteps = transMeta.findNextSteps( stepMeta );
 
       // now edit this stepErrorMeta object:
-      StepErrorMetaDialog dialog = new StepErrorMetaDialog( spoon.getShell(), stepErrorMeta, transMeta, targetSteps );
+      StepErrorMetaDialog dialog =
+        new StepErrorMetaDialog( spoon.getShell(), stepErrorMeta, transMeta, targetSteps );
       if ( dialog.open() ) {
         stepMeta.setStepErrorMeta( stepErrorMeta );
         stepMeta.setChanged();
@@ -72,7 +73,8 @@ public class SpoonStepsDelegate extends SpoonDelegate {
   }
 
   public void dupeStep( TransMeta transMeta, StepMeta stepMeta ) {
-    spoon.getLog().logDebug( toString(), BaseMessages.getString( PKG, "Spoon.Log.DuplicateStep" ) + stepMeta.getName() );// Duplicate
+    spoon.getLog().logDebug(
+      toString(), BaseMessages.getString( PKG, "Spoon.Log.DuplicateStep" ) + stepMeta.getName() ); // Duplicate
     // step:
 
     StepMeta stMeta = (StepMeta) stepMeta.clone();
@@ -90,7 +92,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
       stMeta.setLocation( loc.x + 20, loc.y + 20 );
       transMeta.addStep( stMeta );
       spoon.addUndoNew( transMeta, new StepMeta[] { (StepMeta) stMeta.clone() }, new int[] { transMeta
-          .indexOfStep( stMeta ) } );
+        .indexOfStep( stMeta ) } );
       spoon.refreshTree();
       spoon.refreshGraph();
     }
@@ -143,8 +145,8 @@ public class SpoonStepsDelegate extends SpoonDelegate {
         if ( nr > 2 ) {
           stepname = newname;
           MessageBox mb = new MessageBox( spoon.getShell(), SWT.OK | SWT.ICON_INFORMATION );
-          mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.StepnameExists.Message", stepname ) ); // $NON-NLS-1$
-          mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.StepnameExists.Title" ) ); // $NON-NLS-1$
+          mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.StepnameExists.Message", stepname ) );
+          mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.StepnameExists.Title" ) );
           mb.open();
         }
 
@@ -160,7 +162,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
         //
         StepMeta after = (StepMeta) stepMeta.clone();
         spoon.addUndoChange( transMeta, new StepMeta[] { before }, new StepMeta[] { after }, new int[] { transMeta
-            .indexOfStep( stepMeta ) } );
+          .indexOfStep( stepMeta ) } );
       } else {
         // Scenario: change connections and click cancel...
         // Perhaps new connections were created in the step dialog?
@@ -178,8 +180,9 @@ public class SpoonStepsDelegate extends SpoonDelegate {
       if ( spoon.getShell().isDisposed() ) {
         return null;
       }
-      new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.UnableOpenDialog.Title" ),
-          BaseMessages.getString( PKG, "Spoon.Dialog.UnableOpenDialog.Message" ), e );
+      new ErrorDialog(
+        spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.UnableOpenDialog.Title" ), BaseMessages
+          .getString( PKG, "Spoon.Dialog.UnableOpenDialog.Message" ), e );
     }
 
     if ( refresh ) {
@@ -192,7 +195,8 @@ public class SpoonStepsDelegate extends SpoonDelegate {
   }
 
   public void delStep( TransMeta transMeta, StepMeta stepMeta ) {
-    spoon.getLog().logDebug( toString(), BaseMessages.getString( PKG, "Spoon.Log.DeleteStep" ) + stepMeta.getName() );// "Delete
+    spoon.getLog().logDebug(
+      toString(), BaseMessages.getString( PKG, "Spoon.Log.DeleteStep" ) + stepMeta.getName() ); // "Delete
     // step:
     // "
 
@@ -200,9 +204,9 @@ public class SpoonStepsDelegate extends SpoonDelegate {
       TransHopMeta hi = transMeta.getTransHop( i );
       if ( hi.getFromStep().equals( stepMeta ) || hi.getToStep().equals( stepMeta ) ) {
         int idx = transMeta.indexOfTransHop( hi );
-        spoon.addUndoDelete( transMeta, new TransHopMeta[] { (TransHopMeta) hi.clone() }, new int[] { idx }
+        spoon.addUndoDelete( transMeta, new TransHopMeta[] { (TransHopMeta) hi.clone() }, new int[] { idx } );
         // ,true // the true flag was causing the hops to not get restored on Undo delete step with hop(s)
-            );
+        // );
         transMeta.removeTransHop( idx );
         spoon.refreshTree();
       }
@@ -216,12 +220,11 @@ public class SpoonStepsDelegate extends SpoonDelegate {
     spoon.refreshGraph();
   }
 
-  public StepDialogInterface getStepDialog( StepMetaInterface stepMeta, TransMeta transMeta, String stepName )
-    throws KettleException {
+  public StepDialogInterface getStepDialog( StepMetaInterface stepMeta, TransMeta transMeta, String stepName ) throws KettleException {
     String dialogClassName = stepMeta.getDialogClassName();
 
     Class<?> dialogClass;
-    Class<?>[] paramClasses = new Class[] { Shell.class, Object.class, TransMeta.class, String.class };
+    Class<?>[] paramClasses = new Class<?>[] { Shell.class, Object.class, TransMeta.class, String.class };
     Object[] paramArgs = new Object[] { spoon.getShell(), stepMeta, transMeta, stepName };
     Constructor<?> dialogConstructor;
     try {
@@ -232,27 +235,35 @@ public class SpoonStepsDelegate extends SpoonDelegate {
       // try the old way for compatibility
       Method method = null;
       try {
-        Class<?>[] sig = new Class[] { Shell.class, StepMetaInterface.class, TransMeta.class, String.class };
+        Class<?>[] sig = new Class<?>[] { Shell.class, StepMetaInterface.class, TransMeta.class, String.class };
         method = stepMeta.getClass().getDeclaredMethod( "getDialog", sig );
         if ( method != null ) {
-          return (StepDialogInterface) method.invoke( stepMeta, new Object[] { spoon.getShell(), stepMeta, transMeta,
-            stepName } );
+          return (StepDialogInterface) method.invoke( stepMeta, new Object[] {
+            spoon.getShell(), stepMeta, transMeta, stepName } );
         }
       } catch ( Throwable t ) {
+        // Ignore errors
       }
+
+      String errorTitle =
+        BaseMessages.getString( PKG, "Spoon.Dialog.ErrorCreatingStepDialog.Title" );
+      String errorMsg =
+        BaseMessages.getString( PKG, "Spoon.Dialog.ErrorCreatingStepDialog.Message", stepMeta.getDialogClassName() );
+      new ErrorDialog(
+        spoon.getShell(), errorTitle, errorMsg, e );
 
       throw new KettleException( e );
     }
-
   }
 
   public StepDialogInterface getPartitionerDialog( StepMeta stepMeta, StepPartitioningMeta partitioningMeta,
-      TransMeta transMeta ) throws KettleException {
+    TransMeta transMeta ) throws KettleException {
     Partitioner partitioner = partitioningMeta.getPartitioner();
     String dialogClassName = partitioner.getDialogClassName();
 
     Class<?> dialogClass;
-    Class<?>[] paramClasses = new Class[] { Shell.class, StepMeta.class, StepPartitioningMeta.class, TransMeta.class };
+    Class<?>[] paramClasses =
+      new Class<?>[] { Shell.class, StepMeta.class, StepPartitioningMeta.class, TransMeta.class };
     Object[] paramArgs = new Object[] { spoon.getShell(), stepMeta, partitioningMeta, transMeta };
     Constructor<?> dialogConstructor;
     try {
@@ -263,12 +274,14 @@ public class SpoonStepsDelegate extends SpoonDelegate {
       // try the old way for compatibility
       Method method = null;
       try {
-        Class<?>[] sig = new Class[] { Shell.class, StepMetaInterface.class, TransMeta.class };
+        Class<?>[] sig = new Class<?>[] { Shell.class, StepMetaInterface.class, TransMeta.class };
         method = stepMeta.getClass().getDeclaredMethod( "getDialog", sig );
         if ( method != null ) {
-          return (StepDialogInterface) method.invoke( stepMeta, new Object[] { spoon.getShell(), stepMeta, transMeta } );
+          return (StepDialogInterface) method.invoke( stepMeta, new Object[] {
+            spoon.getShell(), stepMeta, transMeta } );
         }
       } catch ( Throwable t ) {
+        // Ignore errors
       }
 
       throw new KettleException( e );

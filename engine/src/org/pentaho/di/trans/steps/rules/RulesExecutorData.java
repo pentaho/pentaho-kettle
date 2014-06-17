@@ -47,12 +47,12 @@ import org.pentaho.di.trans.steps.rules.Rules.Column;
 
 /**
  * This Transformation Step allows a user to execute a rule set against an individual rule or a collection of rules.
- * 
+ *
  * Additional columns can be added to the output from the rules and these (of course) can be used for routing if
  * desired.
- * 
+ *
  * @author cboyden
- * 
+ *
  */
 
 public class RulesExecutorData extends BaseStepData implements StepDataInterface {
@@ -146,16 +146,31 @@ public class RulesExecutorData extends BaseStepData implements StepDataInterface
     for ( int i = 0; i < columnList.length; i++ ) {
       columnList[i].setPayload( r[i] );
     }
+    resultMap.clear();
   }
 
   public void execute() {
+    StatefulKnowledgeSession session = initNewKnowledgeSession();
+
+    Collection<Object> oList = fetchColumns( session );
+    for ( Object o : oList ) {
+      resultMap.put( ( (Column) o ).getName(), (Column) o );
+    }
+
+    session.dispose();
+  }
+
+  protected StatefulKnowledgeSession initNewKnowledgeSession() {
     StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
     for ( int i = 0; i < columnList.length; i++ ) {
       session.insert( columnList[i] );
     }
 
     session.fireAllRules();
+    return session;
+  }
 
+  protected Collection<Object> fetchColumns( StatefulKnowledgeSession session ) {
     Collection<Object> oList = session.getObjects( new ObjectFilter() {
       @Override
       public boolean accept( Object o ) {
@@ -165,16 +180,11 @@ public class RulesExecutorData extends BaseStepData implements StepDataInterface
         return false;
       }
     } );
-
-    for ( Object o : oList ) {
-      resultMap.put( ( (Column) o ).getName(), (Column) o );
-    }
-
-    session.dispose();
+    return oList;
   }
 
   /**
-   * 
+   *
    * @param columnName
    *          Column.payload associated with the result, or null if not found
    * @return
@@ -185,4 +195,5 @@ public class RulesExecutorData extends BaseStepData implements StepDataInterface
 
   public void shutdown() {
   }
+
 }

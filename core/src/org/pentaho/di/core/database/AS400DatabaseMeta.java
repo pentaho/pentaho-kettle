@@ -27,14 +27,15 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 /**
  * Contains AS/400 specific information through static final members
- * 
+ *
  * @author Matt
  * @since 11-mrt-2005
  */
 public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
   @Override
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
+    return new int[] {
+      DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
   }
 
   @Override
@@ -49,7 +50,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   /**
    * Get the maximum length of a text field for this database connection. This includes optional CLOB, Memo and Text
    * fields. (the maximum!)
-   * 
+   *
    * @return The maximum text field length for this database type. (mostly CLOB_LENGTH)
    */
   @Override
@@ -78,7 +79,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /**
    * Generates the SQL statement to add a column to the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -95,13 +96,13 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    */
   @Override
   public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+    String pk, boolean semicolon ) {
     return "ALTER TABLE " + tablename + " ADD " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
   }
 
   /**
    * Generates the SQL statement to modify a column in the specified table
-   * 
+   *
    * @param tablename
    *          The table to add
    * @param v
@@ -118,14 +119,15 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
    */
   @Override
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
-    return "ALTER TABLE " + tablename + " ALTER COLUMN " + v.getName() + " SET "
-        + getFieldDefinition( v, tk, pk, use_autoinc, false, false );
+    String pk, boolean semicolon ) {
+    return "ALTER TABLE "
+      + tablename + " ALTER COLUMN " + v.getName() + " SET "
+      + getFieldDefinition( v, tk, pk, use_autoinc, false, false );
   }
 
   @Override
   public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+    boolean add_fieldname, boolean add_cr ) {
     String retval = "";
 
     String fieldname = v.getName();
@@ -187,7 +189,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see DatabaseInterface#getReservedWords()
    */
   @Override
@@ -198,36 +200,39 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
       // For a list of additional words that may become reserved in the future, see the IBM SQL and
       // ANSI reserved words in the IBM SQL Reference Version 1 SC26-3255.
       "ACTIVATE", "ADD", "ALIAS", "ALL", "ALLOCATE", "ALLOW", "ALTER", "AND", "ANY", "AS", "ASENSITIVE", "AT",
-      "ATTRIBUTES", "AUTHORIZATION", "BEGIN", "BETWEEN", "BINARY", "BY", "CACHE", "CALL", "CALLED", "CARDINALITY",
-      "CASE", "CAST", "CCSID", "CHAR", "CHARACTER", "CHECK", "CLOSE", "COLLECTION", "COLUMN", "COMMENT", "COMMIT",
-      "CONCAT", "CONDITION", "CONNECT", "CONNECTION", "CONSTRAINT", "CONTAINS", "CONTINUE", "COUNT", "COUNT_BIG",
-      "CREATE", "CROSS", "CURRENT", "CURRENT_DATE", "CURRENT_PATH", "CURRENT_SCHEMA", "CURRENT_SERVER", "CURRENT_TIME",
-      "CURRENT_TIMESTAMP", "CURRENT_TIMEZONE", "CURRENT_USER", "CURSOR", "CYCLE", "DATABASE", "DATAPARTITIONNAME",
-      "DATAPARTITIONNUM", "DATE", "DAY", "DAYS", "DBINFO", "DBPARTITIONNAME", "DBPARTITIONNUM", "DB2GENERAL",
-      "DB2GENRL", "DB2SQL", "DEALLOCATE", "DECLARE", "DEFAULT", "DEFAULTS", "DEFINITION", "DELETE", "DENSERANK",
-      "DENSE_RANK", "DESCRIBE", "DESCRIPTOR", "DETERMINISTIC", "DIAGNOSTICS", "DISABLE", "DISALLOW", "DISCONNECT",
-      "DISTINCT", "DO", "DOUBLE", "DROP", "DYNAMIC", "EACH", "ELSE", "ELSEIF", "ENABLE", "ENCRYPTION", "END", "ENDING",
-      "END-EXEC", "ESCAPE", "EVERY", "EXCEPT", "EXCEPTION", "EXCLUDING", "EXCLUSIVE", "EXECUTE", "EXISTS", "EXIT",
-      "EXTERNAL", "EXTRACT", "FENCED", "FETCH", "FILE", "FINAL", "FOR", "FOREIGN", "FREE", "FROM", "FULL", "FUNCTION",
+      "ATTRIBUTES", "AUTHORIZATION", "BEGIN", "BETWEEN", "BINARY", "BY", "CACHE", "CALL", "CALLED",
+      "CARDINALITY", "CASE", "CAST", "CCSID", "CHAR", "CHARACTER", "CHECK", "CLOSE", "COLLECTION", "COLUMN",
+      "COMMENT", "COMMIT", "CONCAT", "CONDITION", "CONNECT", "CONNECTION", "CONSTRAINT", "CONTAINS", "CONTINUE",
+      "COUNT", "COUNT_BIG", "CREATE", "CROSS", "CURRENT", "CURRENT_DATE", "CURRENT_PATH", "CURRENT_SCHEMA",
+      "CURRENT_SERVER", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_TIMEZONE", "CURRENT_USER", "CURSOR",
+      "CYCLE", "DATABASE", "DATAPARTITIONNAME", "DATAPARTITIONNUM", "DATE", "DAY", "DAYS", "DBINFO",
+      "DBPARTITIONNAME", "DBPARTITIONNUM", "DB2GENERAL", "DB2GENRL", "DB2SQL", "DEALLOCATE", "DECLARE",
+      "DEFAULT", "DEFAULTS", "DEFINITION", "DELETE", "DENSERANK", "DENSE_RANK", "DESCRIBE", "DESCRIPTOR",
+      "DETERMINISTIC", "DIAGNOSTICS", "DISABLE", "DISALLOW", "DISCONNECT", "DISTINCT", "DO", "DOUBLE", "DROP",
+      "DYNAMIC", "EACH", "ELSE", "ELSEIF", "ENABLE", "ENCRYPTION", "END", "ENDING", "END-EXEC", "ESCAPE",
+      "EVERY", "EXCEPT", "EXCEPTION", "EXCLUDING", "EXCLUSIVE", "EXECUTE", "EXISTS", "EXIT", "EXTERNAL",
+      "EXTRACT", "FENCED", "FETCH", "FILE", "FINAL", "FOR", "FOREIGN", "FREE", "FROM", "FULL", "FUNCTION",
       "GENERAL", "GENERATED", "GET", "GLOBAL", "GO", "GOTO", "GRANT", "GRAPHIC", "GROUP", "HANDLER", "HASH",
-      "HASHED_VALUE", "HAVING", "HINT", "HOLD", "HOUR", "HOURS", "IDENTITY", "IF", "IMMEDIATE", "IN", "INCLUDING",
-      "INCLUSIVE", "INCREMENT", "INDEX", "INDICATOR", "INHERIT", "INNER", "INOUT", "INSENSITIVE", "INSERT",
-      "INTEGRITY", "INTERSECT", "INTO", "IS", "ISOLATION", "ITERATE", "JAVA", "JOIN", "KEY", "LABEL", "LANGUAGE",
-      "LATERAL", "LEAVE", "LEFT", "LIKE", "LINKTYPE", "LOCAL", "LOCALDATE", "LOCALTIME", "LOCALTIMESTAMP", "LOCK",
-      "LONG", "LOOP", "MAINTAINED", "MATERIALIZED", "MAXVALUE", "MICROSECOND", "MICROSECONDS", "MINUTE", "MINUTES",
-      "MINVALUE", "MODE", "MODIFIES", "MONTH", "MONTHS", "NEW", "NEW_TABLE", "NEXTVAL", "NO", "NOCACHE", "NOCYCLE",
-      "NODENAME", "NODENUMBER", "NOMAXVALUE", "NOMINVALUE", "NOORDER", "NORMALIZED", "NOT", "NULL", "OF", "OLD",
-      "OLD_TABLE", "ON", "OPEN", "OPTIMIZE", "OPTION", "OR", "ORDER", "OUT", "OUTER", "OVER", "OVERRIDING", "PACKAGE",
-      "PAGESIZE", "PARAMETER", "PART", "PARTITION", "PARTITIONING", "PARTITIONS", "PASSWORD", "PATH", "POSITION",
-      "PREPARE", "PREVVAL", "PRIMARY", "PRIVILEGES", "PROCEDURE", "PROGRAM", "QUERY", "RANGE", "RANK", "READ", "READS",
-      "RECOVERY", "REFERENCES", "REFERENCING", "REFRESH", "RELEASE", "RENAME", "REPEAT", "RESET", "RESIGNAL",
-      "RESTART", "RESULT", "RETURN", "RETURNS", "REVOKE", "RIGHT", "ROLLBACK", "ROUTINE", "ROW", "ROWNUMBER",
-      "ROW_NUMBER", "ROWS", "RRN", "RUN", "SAVEPOINT", "SCHEMA", "SCRATCHPAD", "SCROLL", "SEARCH", "SECOND", "SECONDS",
+      "HASHED_VALUE", "HAVING", "HINT", "HOLD", "HOUR", "HOURS", "IDENTITY", "IF", "IMMEDIATE", "IN",
+      "INCLUDING", "INCLUSIVE", "INCREMENT", "INDEX", "INDICATOR", "INHERIT", "INNER", "INOUT", "INSENSITIVE",
+      "INSERT", "INTEGRITY", "INTERSECT", "INTO", "IS", "ISOLATION", "ITERATE", "JAVA", "JOIN", "KEY", "LABEL",
+      "LANGUAGE", "LATERAL", "LEAVE", "LEFT", "LIKE", "LINKTYPE", "LOCAL", "LOCALDATE", "LOCALTIME",
+      "LOCALTIMESTAMP", "LOCK", "LONG", "LOOP", "MAINTAINED", "MATERIALIZED", "MAXVALUE", "MICROSECOND",
+      "MICROSECONDS", "MINUTE", "MINUTES", "MINVALUE", "MODE", "MODIFIES", "MONTH", "MONTHS", "NEW",
+      "NEW_TABLE", "NEXTVAL", "NO", "NOCACHE", "NOCYCLE", "NODENAME", "NODENUMBER", "NOMAXVALUE", "NOMINVALUE",
+      "NOORDER", "NORMALIZED", "NOT", "NULL", "OF", "OLD", "OLD_TABLE", "ON", "OPEN", "OPTIMIZE", "OPTION",
+      "OR", "ORDER", "OUT", "OUTER", "OVER", "OVERRIDING", "PACKAGE", "PAGESIZE", "PARAMETER", "PART",
+      "PARTITION", "PARTITIONING", "PARTITIONS", "PASSWORD", "PATH", "POSITION", "PREPARE", "PREVVAL",
+      "PRIMARY", "PRIVILEGES", "PROCEDURE", "PROGRAM", "QUERY", "RANGE", "RANK", "READ", "READS", "RECOVERY",
+      "REFERENCES", "REFERENCING", "REFRESH", "RELEASE", "RENAME", "REPEAT", "RESET", "RESIGNAL", "RESTART",
+      "RESULT", "RETURN", "RETURNS", "REVOKE", "RIGHT", "ROLLBACK", "ROUTINE", "ROW", "ROWNUMBER", "ROW_NUMBER",
+      "ROWS", "RRN", "RUN", "SAVEPOINT", "SCHEMA", "SCRATCHPAD", "SCROLL", "SEARCH", "SECOND", "SECONDS",
       "SELECT", "SENSITIVE", "SEQUENCE", "SESSION", "SESSION_USER", "SET", "SIGNAL", "SIMPLE", "SOME", "SOURCE",
       "SPECIFIC", "SQL", "SQLID", "STACKED", "START", "STARTING", "STATEMENT", "STATIC", "SUBSTRING", "SUMMARY",
-      "SYNONYM", "SYSTEM_USER", "TABLE", "THEN", "TIME", "TIMESTAMP", "TO", "TRANSACTION", "TRIGGER", "TRIM", "TYPE",
-      "UNDO", "UNION", "UNIQUE", "UNTIL", "UPDATE", "USAGE", "USER", "USING", "VALUE", "VALUES", "VARIABLE", "VARIANT",
-      "VERSION", "VIEW", "VOLATILE", "WHEN", "WHERE", "WHILE", "WITH", "WITHOUT", "WRITE", "YEAR", "YEARS" };
+      "SYNONYM", "SYSTEM_USER", "TABLE", "THEN", "TIME", "TIMESTAMP", "TO", "TRANSACTION", "TRIGGER", "TRIM",
+      "TYPE", "UNDO", "UNION", "UNIQUE", "UNTIL", "UPDATE", "USAGE", "USER", "USING", "VALUE", "VALUES",
+      "VARIABLE", "VARIANT", "VERSION", "VIEW", "VOLATILE", "WHEN", "WHERE", "WHILE", "WITH", "WITHOUT",
+      "WRITE", "YEAR", "YEARS" };
   }
 
   /**
@@ -240,7 +245,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /**
    * Most databases round number(7,2) 17.29999999 to 17.30, but some don't.
-   * 
+   *
    * @return true if the database supports roundinf of floating point data on update/insert
    */
   @Override
@@ -250,7 +255,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /**
    * Get the maximum length of a text field (VARCHAR) for this database connection. If this size is exceeded use a CLOB.
-   * 
+   *
    * @return The maximum VARCHAR field length for this database type. (mostly identical to getMaxTextFieldLength() -
    *         CLOB_LENGTH)
    */
@@ -269,7 +274,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /**
    * Check if a sequence exists.
-   * 
+   *
    * @param sequenceName
    *          The sequence to check
    * @return The SQL to get the name of the sequence back from the databases data dictionary
@@ -281,7 +286,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /**
    * Get the current value of a database sequence
-   * 
+   *
    * @param sequenceName
    *          The sequence to check
    * @return The current value of a database sequence
@@ -293,7 +298,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
   /**
    * Get the SQL to get the next value of a sequence. (Oracle only)
-   * 
+   *
    * @param sequenceName
    *          The sequence name
    * @return the SQL to get the next value of a sequence. (Oracle only)

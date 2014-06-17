@@ -52,7 +52,6 @@ import org.pentaho.ui.xul.swt.tags.SwtDialog;
 public class SlavesController extends LazilyInitializedController implements IUISupportController {
 
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   private XulTree slavesTable = null;
 
@@ -139,27 +138,30 @@ public class SlavesController extends LazilyInitializedController implements IUI
         // Make sure the slave does not already exist
         if ( slaveId != null ) {
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
-          mb.setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.AlreadyExists.Message",
-              slaveServer.getName() ) );
+          mb.setMessage( BaseMessages.getString(
+            PKG, "RepositoryExplorerDialog.Slave.AlreadyExists.Message", slaveServer.getName() ) );
           mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Create.Title" ) );
           mb.open();
         } else {
           if ( slaveServer.getName() != null && !slaveServer.getName().equals( "" ) ) {
-            repository.insertLogEntry( BaseMessages.getString( PKG, "SlavesController.Message.CreatingSlave",
-                slaveServer.getName() ) );
+            repository.insertLogEntry( BaseMessages.getString(
+              PKG, "SlavesController.Message.CreatingSlave", slaveServer.getName() ) );
 
             repository.save( slaveServer, Const.VERSION_COMMENT_INITIAL_VERSION, null );
           } else {
             MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
-            mb.setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Edit.InvalidName.Message" ) );
+            mb
+              .setMessage( BaseMessages.getString(
+                PKG, "RepositoryExplorerDialog.Slave.Edit.InvalidName.Message" ) );
             mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Create.Title" ) );
             mb.open();
           }
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Create.Title" ),
-          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Create.UnexpectedError.Message" ), e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Create.Title" ), BaseMessages
+          .getString( PKG, "RepositoryExplorerDialog.Slave.Create.UnexpectedError.Message" ), e );
     } finally {
       refreshSlaves();
     }
@@ -178,20 +180,21 @@ public class SlavesController extends LazilyInitializedController implements IUI
         ObjectId slaveId = repository.getSlaveID( slaveServer.getName() );
         if ( slaveId == null ) {
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
-          mb.setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message",
-              slaveServerName ) );
+          mb.setMessage( BaseMessages.getString(
+            PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message", slaveServerName ) );
           mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Edit.Title" ) );
           mb.open();
         } else {
           SlaveServerDialog ssd = new SlaveServerDialog( shell, slaveServer );
           if ( ssd.open() ) {
             if ( slaveServer.getName() != null && !slaveServer.getName().equals( "" ) ) {
-              repository.insertLogEntry( BaseMessages.getString( PKG, "SlavesController.Message.UpdatingSlave",
-                  slaveServer.getName() ) );
+              repository.insertLogEntry( BaseMessages.getString(
+                PKG, "SlavesController.Message.UpdatingSlave", slaveServer.getName() ) );
               repository.save( slaveServer, Const.VERSION_COMMENT_EDIT_VERSION, null );
             } else {
               MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
-              mb.setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Edit.InvalidName.Message" ) );
+              mb.setMessage( BaseMessages.getString(
+                PKG, "RepositoryExplorerDialog.Slave.Edit.InvalidName.Message" ) );
               mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Edit.Title" ) );
               mb.open();
             }
@@ -204,7 +207,8 @@ public class SlavesController extends LazilyInitializedController implements IUI
         mb.open();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Edit.Title" ), BaseMessages
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Edit.Title" ), BaseMessages
           .getString( PKG, "RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Message" )
           + slaveServerName + "]", e );
     } finally {
@@ -226,8 +230,8 @@ public class SlavesController extends LazilyInitializedController implements IUI
             ObjectId slaveId = repository.getSlaveID( slaveServer.getName() );
             if ( slaveId == null ) {
               MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
-              mb.setMessage( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message",
-                  slaveServerName ) );
+              mb.setMessage( BaseMessages.getString(
+                PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message", slaveServerName ) );
               mb.setText( BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Delete.Title" ) );
               mb.open();
             } else {
@@ -242,9 +246,10 @@ public class SlavesController extends LazilyInitializedController implements IUI
         mb.open();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Delete.Title" ),
-          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Message" )
-              + slaveServerName + "]", e );
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Delete.Title" ), BaseMessages
+          .getString( PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Message" )
+          + slaveServerName + "]", e );
     } finally {
       refreshSlaves();
     }

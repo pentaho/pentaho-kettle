@@ -52,12 +52,12 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while we're finding out loop nodes for an XML file
- * 
+ *
  * @author Samatar
  * @since 07-apr-2010
  */
 public class XMLInputFieldsImportProgressDialog {
-  private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static String VALUE_NAME = "Name";
   private static String VALUE_PATH = "Path";
@@ -88,7 +88,7 @@ public class XMLInputFieldsImportProgressDialog {
    * Creates a new dialog that will handle the wait while we're finding out loop nodes for an XML file
    */
   public XMLInputFieldsImportProgressDialog( Shell shell, GetXMLDataMeta meta, String filename, String encoding,
-      String loopXPath ) {
+    String loopXPath ) {
     this.shell = shell;
     this.meta = meta;
     this.fields = null;
@@ -101,7 +101,7 @@ public class XMLInputFieldsImportProgressDialog {
   }
 
   public XMLInputFieldsImportProgressDialog( Shell shell, GetXMLDataMeta meta, String xmlSource, boolean useUrl,
-      String loopXPath ) {
+    String loopXPath ) {
     this.shell = shell;
     this.meta = meta;
     this.fields = null;
@@ -127,8 +127,8 @@ public class XMLInputFieldsImportProgressDialog {
           fields = doScan( monitor );
         } catch ( Exception e ) {
           e.printStackTrace();
-          throw new InvocationTargetException( e, BaseMessages.getString( PKG,
-              "GetXMLDateLoopNodesImportProgressDialog.Exception.ErrorScanningFile", filename, e.toString() ) );
+          throw new InvocationTargetException( e, BaseMessages.getString(
+            PKG, "GetXMLDateLoopNodesImportProgressDialog.Exception.ErrorScanningFile", filename, e.toString() ) );
         }
       }
     };
@@ -137,13 +137,13 @@ public class XMLInputFieldsImportProgressDialog {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
       pmd.run( true, true, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "GetXMLDateLoopNodesImportProgressDialog.ErrorScanningFile.Title" ), BaseMessages.getString( PKG,
-          "GetXMLDateLoopNodesImportProgressDialog.ErrorScanningFile.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.ErrorScanningFile.Title" ),
+        BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.ErrorScanningFile.Message" ), e );
     } catch ( InterruptedException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG,
-          "GetXMLDateLoopNodesImportProgressDialog.ErrorScanningFile.Title" ), BaseMessages.getString( PKG,
-          "GetXMLDateLoopNodesImportProgressDialog.ErrorScanningFile.Message" ), e );
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.ErrorScanningFile.Title" ),
+        BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.ErrorScanningFile.Message" ), e );
     }
 
     return fields;
@@ -151,8 +151,8 @@ public class XMLInputFieldsImportProgressDialog {
 
   @SuppressWarnings( "unchecked" )
   private RowMetaAndData[] doScan( IProgressMonitor monitor ) throws Exception {
-    monitor.beginTask( BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.ScanningFile",
-        filename ), 1 );
+    monitor.beginTask( BaseMessages.getString(
+      PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.ScanningFile", filename ), 1 );
 
     SAXReader reader = new SAXReader();
     monitor.worked( 1 );
@@ -168,8 +168,8 @@ public class XMLInputFieldsImportProgressDialog {
       reader.setEntityResolver( new IgnoreDTDEntityResolver() );
     }
     monitor.worked( 1 );
-    monitor
-        .beginTask( BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.ReadingDocument" ), 1 );
+    monitor.beginTask( BaseMessages
+      .getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.ReadingDocument" ), 1 );
     if ( monitor.isCanceled() ) {
       return null;
     }
@@ -189,10 +189,11 @@ public class XMLInputFieldsImportProgressDialog {
       }
 
       monitor.worked( 1 );
-      monitor.beginTask( BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.DocumentOpened" ),
-          1 );
+      monitor.beginTask( BaseMessages.getString(
+        PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.DocumentOpened" ), 1 );
       monitor.worked( 1 );
-      monitor.beginTask( BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.ReadingNode" ), 1 );
+      monitor.beginTask(
+        BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.ReadingNode" ), 1 );
 
       if ( monitor.isCanceled() ) {
         return null;
@@ -210,10 +211,10 @@ public class XMLInputFieldsImportProgressDialog {
         }
 
         nr++;
-        monitor.subTask( BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.FetchNodes", String
-            .valueOf( nr ) ) );
-        monitor.subTask( BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.FetchNodes", node
-            .getPath() ) );
+        monitor.subTask( BaseMessages.getString(
+          PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.FetchNodes", String.valueOf( nr ) ) );
+        monitor.subTask( BaseMessages.getString(
+          PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.FetchNodes", node.getPath() ) );
         setNodeField( node, monitor );
         childNode( node, monitor );
 
@@ -230,7 +231,8 @@ public class XMLInputFieldsImportProgressDialog {
 
     RowMetaAndData[] listFields = fieldsList.toArray( new RowMetaAndData[fieldsList.size()] );
 
-    monitor.setTaskName( BaseMessages.getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.NodesReturned" ) );
+    monitor.setTaskName( BaseMessages
+      .getString( PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.NodesReturned" ) );
 
     monitor.done();
 
@@ -253,10 +255,10 @@ public class XMLInputFieldsImportProgressDialog {
 
     if ( !Const.isEmpty( nodenametxt ) && !list.contains( nodenametxt ) ) {
       nr++;
-      monitor.subTask( BaseMessages.getString( PKG, "GetXMLDataXMLInputFieldsImportProgressDialog.Task.FetchFields",
-          String.valueOf( nr ) ) );
-      monitor.subTask( BaseMessages.getString( PKG, "GetXMLDataXMLInputFieldsImportProgressDialog.Task.AddingField",
-          nodename ) );
+      monitor.subTask( BaseMessages.getString(
+        PKG, "GetXMLDataXMLInputFieldsImportProgressDialog.Task.FetchFields", String.valueOf( nr ) ) );
+      monitor.subTask( BaseMessages.getString(
+        PKG, "GetXMLDataXMLInputFieldsImportProgressDialog.Task.AddingField", nodename ) );
 
       RowMetaAndData row = new RowMetaAndData();
       row.addValue( VALUE_NAME, Value.VALUE_TYPE_STRING, nodename );
@@ -285,7 +287,7 @@ public class XMLInputFieldsImportProgressDialog {
       fieldsList.add( row );
       list.add( nodenametxt );
 
-    }// end if
+    } // end if
   }
 
   private void setAttributeField( Attribute attribute, IProgressMonitor monitor ) {
@@ -294,10 +296,10 @@ public class XMLInputFieldsImportProgressDialog {
     String attributnametxt = cleanString( attribute.getPath() );
     if ( !Const.isEmpty( attributnametxt ) && !list.contains( attribute.getPath() ) ) {
       nr++;
-      monitor.subTask( BaseMessages.getString( PKG, "GetXMLDataXMLInputFieldsImportProgressDialog.Task.FetchFields",
-          String.valueOf( nr ) ) );
-      monitor.subTask( BaseMessages.getString( PKG, "GetXMLDataXMLInputFieldsImportProgressDialog.Task.AddingField",
-          attributname ) );
+      monitor.subTask( BaseMessages.getString(
+        PKG, "GetXMLDataXMLInputFieldsImportProgressDialog.Task.FetchFields", String.valueOf( nr ) ) );
+      monitor.subTask( BaseMessages.getString(
+        PKG, "GetXMLDataXMLInputFieldsImportProgressDialog.Task.AddingField", attributname ) );
 
       RowMetaAndData row = new RowMetaAndData();
       row.addValue( VALUE_NAME, Value.VALUE_TYPE_STRING, attributname );
@@ -324,7 +326,7 @@ public class XMLInputFieldsImportProgressDialog {
         row.addValue( VALUE_FORMAT, Value.VALUE_TYPE_STRING, null );
       }
       list.add( attribute.getPath() );
-    }// end if
+    } // end if
 
   }
 

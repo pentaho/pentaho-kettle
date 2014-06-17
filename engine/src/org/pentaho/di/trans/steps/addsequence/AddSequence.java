@@ -41,19 +41,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Adds a sequential number to a stream of rows.
- * 
+ *
  * @author Matt
  * @since 13-may-2003
  */
 public class AddSequence extends BaseStep implements StepInterface {
-  private static Class<?> PKG = AddSequence.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AddSequence.class; // for i18n purposes, needed by Translator2!!
 
   private AddSequenceMeta meta;
 
   private AddSequenceData data;
 
   public AddSequence( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -79,8 +79,8 @@ public class AddSequence extends BaseStep implements StepInterface {
       try {
         next = data.getDb().getNextSequenceValue( data.realSchemaName, data.realSequenceName, meta.getValuename() );
       } catch ( KettleDatabaseException dbe ) {
-        throw new KettleStepException( BaseMessages.getString( PKG, "AddSequence.Exception.ErrorReadingSequence",
-            data.realSequenceName ), dbe );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "AddSequence.Exception.ErrorReadingSequence", data.realSequenceName ), dbe );
       }
     } else {
       // This should never happen, but if it does, don't continue!!!
@@ -95,9 +95,9 @@ public class AddSequence extends BaseStep implements StepInterface {
       outputRowData[inputRowMeta.size()] = next;
       return outputRowData;
     } else {
-      throw new KettleStepException( BaseMessages.getString( PKG,
-          "AddSequence.Exception.CouldNotFindNextValueForSequence" )
-          + meta.getValuename() );
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "AddSequence.Exception.CouldNotFindNextValueForSequence" )
+        + meta.getValuename() );
     }
   }
 
@@ -106,8 +106,8 @@ public class AddSequence extends BaseStep implements StepInterface {
     data = (AddSequenceData) sdi;
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) {
+      // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -119,16 +119,16 @@ public class AddSequence extends BaseStep implements StepInterface {
     }
 
     if ( log.isRowLevel() ) {
-      logRowlevel( BaseMessages.getString( PKG, "AddSequence.Log.ReadRow" ) + getLinesRead() + " : "
-          + getInputRowMeta().getString( r ) );
+      logRowlevel( BaseMessages.getString( PKG, "AddSequence.Log.ReadRow" )
+        + getLinesRead() + " : " + getInputRowMeta().getString( r ) );
     }
 
     try {
       putRow( data.outputRowMeta, addSequence( getInputRowMeta(), r ) );
 
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "AddSequence.Log.WriteRow" ) + getLinesWritten() + " : "
-            + getInputRowMeta().getString( r ) );
+        logRowlevel( BaseMessages.getString( PKG, "AddSequence.Log.WriteRow" )
+          + getLinesWritten() + " : " + getInputRowMeta().getString( r ) );
       }
       if ( checkFeedback( getLinesRead() ) ) {
         if ( log.isBasic() ) {
@@ -179,7 +179,7 @@ public class AddSequence extends BaseStep implements StepInterface {
           data.start = Long.parseLong( environmentSubstitute( meta.getStartAt() ) );
         } catch ( NumberFormatException ex ) {
           logError( BaseMessages.getString( PKG, "AddSequence.Log.CouldNotParseCounterValue", "start", meta
-              .getStartAt(), environmentSubstitute( meta.getStartAt() ), ex.getMessage() ) );
+            .getStartAt(), environmentSubstitute( meta.getStartAt() ), ex.getMessage() ) );
           doAbort = true;
         }
 
@@ -187,7 +187,7 @@ public class AddSequence extends BaseStep implements StepInterface {
           data.increment = Long.parseLong( environmentSubstitute( meta.getIncrementBy() ) );
         } catch ( NumberFormatException ex ) {
           logError( BaseMessages.getString( PKG, "AddSequence.Log.CouldNotParseCounterValue", "increment", meta
-              .getIncrementBy(), environmentSubstitute( meta.getIncrementBy() ), ex.getMessage() ) );
+            .getIncrementBy(), environmentSubstitute( meta.getIncrementBy() ), ex.getMessage() ) );
           doAbort = true;
         }
 
@@ -195,7 +195,7 @@ public class AddSequence extends BaseStep implements StepInterface {
           data.maximum = Long.parseLong( environmentSubstitute( meta.getMaxValue() ) );
         } catch ( NumberFormatException ex ) {
           logError( BaseMessages.getString( PKG, "AddSequence.Log.CouldNotParseCounterValue", "increment", meta
-              .getMaxValue(), environmentSubstitute( meta.getMaxValue() ), ex.getMessage() ) );
+            .getMaxValue(), environmentSubstitute( meta.getMaxValue() ), ex.getMessage() ) );
           doAbort = true;
         }
 
@@ -221,10 +221,11 @@ public class AddSequence extends BaseStep implements StepInterface {
             } else {
               // Check whether counter characteristics are the same as a previously
               // defined counter with the same name.
-              if ( ( data.counter.getStart() != data.start ) || ( data.counter.getIncrement() != data.increment )
-                  || ( data.counter.getMaximum() != data.maximum ) ) {
-                logError( BaseMessages.getString( PKG, "AddSequence.Log.CountersWithDifferentCharacteristics", data
-                    .getLookup() ) );
+              if ( ( data.counter.getStart() != data.start )
+                || ( data.counter.getIncrement() != data.increment )
+                || ( data.counter.getMaximum() != data.maximum ) ) {
+                logError( BaseMessages.getString(
+                  PKG, "AddSequence.Log.CountersWithDifferentCharacteristics", data.getLookup() ) );
                 return false;
               }
             }

@@ -32,12 +32,12 @@ import org.w3c.dom.Node;
 
 /**
  * Describes an RssInput field
- * 
+ *
  * @author Samatar Hassan
  * @since 13-10-2007
  */
 public class RssInputField implements Cloneable {
-  private static Class<?> PKG = RssInput.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = RssInput.class; // for i18n purposes, needed by Translator2!!
 
   public static final int TYPE_TRIM_NONE = 0;
   public static final int TYPE_TRIM_LEFT = 1;
@@ -54,19 +54,22 @@ public class RssInputField implements Cloneable {
 
   public static final String[] trimTypeCode = { "none", "left", "right", "both" };
 
-  public static final String[] trimTypeDesc = { BaseMessages.getString( PKG, "RssInput.Field.TrimType.None" ),
+  public static final String[] trimTypeDesc = {
+    BaseMessages.getString( PKG, "RssInput.Field.TrimType.None" ),
     BaseMessages.getString( PKG, "RssInput.Field.TrimType.Left" ),
     BaseMessages.getString( PKG, "RssInput.Field.TrimType.Right" ),
     BaseMessages.getString( PKG, "RssInput.Field.TrimType.Both" ) };
 
-  public static final String[] ColumnCode = { "title", "link", "descriptiontext", "descriptionhtml", "comments",
-    "guid", "pubdate" };
+  public static final String[] ColumnCode = {
+    "title", "link", "descriptiontext", "descriptionhtml", "comments", "guid", "pubdate" };
 
-  public static final String[] ColumnDesc = { BaseMessages.getString( PKG, "RssInput.Column.Title" ),
+  public static final String[] ColumnDesc = {
+    BaseMessages.getString( PKG, "RssInput.Column.Title" ),
     BaseMessages.getString( PKG, "RssInput.Column.Link" ),
     BaseMessages.getString( PKG, "RssInput.Column.DescriptionAsText" ),
     BaseMessages.getString( PKG, "RssInput.Column.DescriptionAsHtml" ),
-    BaseMessages.getString( PKG, "RssInput.Column.Comments" ), BaseMessages.getString( PKG, "RssInput.Column.Guid" ),
+    BaseMessages.getString( PKG, "RssInput.Column.Comments" ),
+    BaseMessages.getString( PKG, "RssInput.Column.Guid" ),
     BaseMessages.getString( PKG, "RssInput.Column.PubDate" ) };
 
   private String name;

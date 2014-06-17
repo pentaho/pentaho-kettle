@@ -183,8 +183,12 @@ public class Rest extends BaseStep implements StepInterface {
       }
 
       // Get Response
-      String body = response.getEntity( String.class );
-
+      String body;
+      try {
+        body = response.getEntity( String.class );
+      } catch ( UniformInterfaceException ex ) {
+        body = "";
+      }
       // for output
       int returnFieldsOffset = data.inputRowMeta.size();
       // add response to output
@@ -454,7 +458,8 @@ public class Rest extends BaseStep implements StepInterface {
       data.realProxyHost = environmentSubstitute( meta.getProxyHost() );
       data.realProxyPort = Const.toInt( environmentSubstitute( meta.getProxyPort() ), 8080 );
       data.realHttpLogin = environmentSubstitute( meta.getHttpLogin() );
-      data.realHttpPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getHttpPassword() ) );
+      data.realHttpPassword =
+              Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getHttpPassword() ) );
 
       if ( !meta.isDynamicMethod() ) {
         data.method = environmentSubstitute( meta.getMethod() );

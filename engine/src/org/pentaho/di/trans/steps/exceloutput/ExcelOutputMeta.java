@@ -58,13 +58,13 @@ import org.w3c.dom.Node;
 
 /**
  * Metadata of the Excel Output step.
- * 
+ *
  * @author Matt
  * @since on 6-sep-2006
  */
 
 public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final int FONT_NAME_ARIAL = 0;
   public static final int FONT_NAME_COURIER = 1;
@@ -73,7 +73,8 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   public static final String[] font_name_code = { "arial", "courier", "tahoma", "times" };
 
-  public static final String[] font_name_desc = { BaseMessages.getString( PKG, "ExcelOutputMeta.font_name.Arial" ),
+  public static final String[] font_name_desc = {
+    BaseMessages.getString( PKG, "ExcelOutputMeta.font_name.Arial" ),
     BaseMessages.getString( PKG, "ExcelOutputMeta.font_name.Courier" ),
     BaseMessages.getString( PKG, "ExcelOutputMeta.font_name.Tahoma" ),
     BaseMessages.getString( PKG, "ExcelOutputMeta.font_name.Times" ) };
@@ -84,8 +85,8 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
   public static final int FONT_UNDERLINE_DOUBLE = 3;
   public static final int FONT_UNDERLINE_DOUBLE_ACCOUNTING = 4;
 
-  public static final String[] font_underline_code = { "no", "single", "single_accounting", "double",
-    "double_accounting" };
+  public static final String[] font_underline_code = {
+    "no", "single", "single_accounting", "double", "double_accounting" };
 
   public static final String[] font_underline_desc = {
     BaseMessages.getString( PKG, "ExcelOutputMeta.font_underline.No" ),
@@ -102,8 +103,8 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
   public static final int FONT_ORIENTATION_STACKED = 5;
   public static final int FONT_ORIENTATION_VERTICAL = 6;
 
-  public static final String[] font_orientation_code = { "horizontal", "minus_45", "minus_90", "plus_45", "plus_90",
-    "stacked", "vertical" };
+  public static final String[] font_orientation_code = {
+    "horizontal", "minus_45", "minus_90", "plus_45", "plus_90", "stacked", "vertical" };
 
   public static final String[] font_orientation_desc = {
     BaseMessages.getString( PKG, "ExcelOutputMeta.font_orientation.Horizontal" ),
@@ -162,14 +163,16 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
   public static final int FONT_COLOR_BROWN = 45;
   public static final int FONT_COLOR_GREY_80pct = 46;
 
-  public static final String[] font_color_code = { "none", "black", "white", "red", "bright_green", "blue", "yellow",
-    "pink", "turquoise", "dark_red", "green", "dark_blue", "dark_yellow", "violet", "teal", "grey_25pct", "grey_50pct",
-    "periwinklepct", "plum", "ivory", "light_turquoise", "dark_purple", "coral", "ocean_blue", "ice_blue", "turqoise",
-    "sky_blue", "light_green", "very_light_yellow", "pale_blue", "rose", "lavender", "tan", "light_blue", "aqua",
-    "lime", "gold", "light_orange", "orange", "blue_grey", "grey_40pct", "dark_teal", "sea_green", "dark_green",
-    "olive_green", "brown", "grey_80pct" };
+  public static final String[] font_color_code = {
+    "none", "black", "white", "red", "bright_green", "blue", "yellow", "pink", "turquoise", "dark_red", "green",
+    "dark_blue", "dark_yellow", "violet", "teal", "grey_25pct", "grey_50pct", "periwinklepct", "plum", "ivory",
+    "light_turquoise", "dark_purple", "coral", "ocean_blue", "ice_blue", "turqoise", "sky_blue", "light_green",
+    "very_light_yellow", "pale_blue", "rose", "lavender", "tan", "light_blue", "aqua", "lime", "gold",
+    "light_orange", "orange", "blue_grey", "grey_40pct", "dark_teal", "sea_green", "dark_green", "olive_green",
+    "brown", "grey_80pct" };
 
-  public static final String[] font_color_desc = { BaseMessages.getString( PKG, "ExcelOutputMeta.font_color.None" ),
+  public static final String[] font_color_desc = {
+    BaseMessages.getString( PKG, "ExcelOutputMeta.font_color.None" ),
     BaseMessages.getString( PKG, "ExcelOutputMeta.font_color.BLACK" ),
     BaseMessages.getString( PKG, "ExcelOutputMeta.font_color.WHITE" ),
     BaseMessages.getString( PKG, "ExcelOutputMeta.font_color.RED" ),
@@ -763,8 +766,9 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
       extension = XMLHandler.getTagValue( stepnode, "file", "extention" );
 
       doNotOpenNewFileInit =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "do_not_open_newfile_init" ) );
-      createparentfolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "create_parent_folder" ) );
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "do_not_open_newfile_init" ) );
+      createparentfolder =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "create_parent_folder" ) );
 
       stepNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "split" ) );
       dateInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_date" ) );
@@ -798,32 +802,36 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
         outputFields[i].setFormat( XMLHandler.getTagValue( fnode, "format" ) );
       }
       Node customnode = XMLHandler.getSubNode( stepnode, "custom" );
-      header_font_name = getFontNameByCode( Const.NVL( XMLHandler.getTagValue( customnode, "header_font_name" ), "" ) );
-      header_font_size = Const.NVL( XMLHandler.getTagValue( customnode, "header_font_size" ), "" + DEFAULT_FONT_SIZE );
+      header_font_name =
+        getFontNameByCode( Const.NVL( XMLHandler.getTagValue( customnode, "header_font_name" ), "" ) );
+      header_font_size =
+        Const.NVL( XMLHandler.getTagValue( customnode, "header_font_size" ), "" + DEFAULT_FONT_SIZE );
       header_font_bold = "Y".equalsIgnoreCase( XMLHandler.getTagValue( customnode, "header_font_bold" ) );
       header_font_italic = "Y".equalsIgnoreCase( XMLHandler.getTagValue( customnode, "header_font_italic" ) );
       header_font_underline =
-          getFontUnderlineByCode( Const.NVL( XMLHandler.getTagValue( customnode, "header_font_underline" ), "" ) );
+        getFontUnderlineByCode( Const.NVL( XMLHandler.getTagValue( customnode, "header_font_underline" ), "" ) );
       header_font_orientation =
-          getFontOrientationByCode( Const.NVL( XMLHandler.getTagValue( customnode, "header_font_orientation" ), "" ) );
+        getFontOrientationByCode( Const
+          .NVL( XMLHandler.getTagValue( customnode, "header_font_orientation" ), "" ) );
       header_font_color =
-          getFontColorByCode( Const.NVL( XMLHandler.getTagValue( customnode, "header_font_color" ), ""
-              + FONT_COLOR_BLACK ) );
+        getFontColorByCode( Const.NVL( XMLHandler.getTagValue( customnode, "header_font_color" ), ""
+          + FONT_COLOR_BLACK ) );
       header_background_color =
-          getFontColorByCode( Const.NVL( XMLHandler.getTagValue( customnode, "header_background_color" ), ""
-              + FONT_COLOR_NONE ) );
+        getFontColorByCode( Const.NVL( XMLHandler.getTagValue( customnode, "header_background_color" ), ""
+          + FONT_COLOR_NONE ) );
       header_row_height = XMLHandler.getTagValue( customnode, "header_row_height" );
       header_alignment =
-          getFontAlignmentByCode( Const.NVL( XMLHandler.getTagValue( customnode, "header_alignment" ), "" ) );
+        getFontAlignmentByCode( Const.NVL( XMLHandler.getTagValue( customnode, "header_alignment" ), "" ) );
       header_image = XMLHandler.getTagValue( customnode, "header_image" );
       // Row font
       row_font_name = getFontNameByCode( Const.NVL( XMLHandler.getTagValue( customnode, "row_font_name" ), "" ) );
       row_font_size = Const.NVL( XMLHandler.getTagValue( customnode, "row_font_size" ), "" + DEFAULT_FONT_SIZE );
       row_font_color =
-          getFontColorByCode( Const.NVL( XMLHandler.getTagValue( customnode, "row_font_color" ), "" + FONT_COLOR_BLACK ) );
+        getFontColorByCode( Const.NVL( XMLHandler.getTagValue( customnode, "row_font_color" ), ""
+          + FONT_COLOR_BLACK ) );
       row_background_color =
-          getFontColorByCode( Const.NVL( XMLHandler.getTagValue( customnode, "row_background_color" ), ""
-              + FONT_COLOR_NONE ) );
+        getFontColorByCode( Const.NVL( XMLHandler.getTagValue( customnode, "row_background_color" ), ""
+          + FONT_COLOR_NONE ) );
 
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
@@ -970,7 +978,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) {
     if ( r == null ) {
       r = new RowMeta(); // give back values
     }
@@ -1002,7 +1010,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "nullisblank", nullIsBlank ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "protect_sheet", protectsheet ) );
     retval.append( "      " ).append(
-        XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+      XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "splitevery", splitEvery ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "usetempfiles", usetempfiles ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "tempdirectory", tempdirectory ) );
@@ -1034,26 +1042,27 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " + XMLHandler.addTagValue( "header_font_bold", header_font_bold ) );
     retval.append( "    " + XMLHandler.addTagValue( "header_font_italic", header_font_italic ) );
     retval.append( "    "
-        + XMLHandler.addTagValue( "header_font_underline", getFontUnderlineCode( header_font_underline ) ) );
+      + XMLHandler.addTagValue( "header_font_underline", getFontUnderlineCode( header_font_underline ) ) );
     retval.append( "    "
-        + XMLHandler.addTagValue( "header_font_orientation", getFontOrientationCode( header_font_orientation ) ) );
+      + XMLHandler.addTagValue( "header_font_orientation", getFontOrientationCode( header_font_orientation ) ) );
     retval.append( "    " + XMLHandler.addTagValue( "header_font_color", getFontColorCode( header_font_color ) ) );
     retval.append( "    "
-        + XMLHandler.addTagValue( "header_background_color", getFontColorCode( header_background_color ) ) );
+      + XMLHandler.addTagValue( "header_background_color", getFontColorCode( header_background_color ) ) );
     retval.append( "    " + XMLHandler.addTagValue( "header_row_height", header_row_height ) );
-    retval.append( "    " + XMLHandler.addTagValue( "header_alignment", getFontAlignmentCode( header_alignment ) ) );
+    retval
+      .append( "    " + XMLHandler.addTagValue( "header_alignment", getFontAlignmentCode( header_alignment ) ) );
     retval.append( "    " + XMLHandler.addTagValue( "header_image", header_image ) );
     // row font
     retval.append( "    " + XMLHandler.addTagValue( "row_font_name", getFontNameCode( row_font_name ) ) );
     retval.append( "    " + XMLHandler.addTagValue( "row_font_size", row_font_size ) );
     retval.append( "    " + XMLHandler.addTagValue( "row_font_color", getFontColorCode( row_font_color ) ) );
-    retval.append( "    " + XMLHandler.addTagValue( "row_background_color", getFontColorCode( row_background_color ) ) );
+    retval.append( "    "
+      + XMLHandler.addTagValue( "row_background_color", getFontColorCode( row_background_color ) ) );
     retval.append( "      </custom>" + Const.CR );
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       headerEnabled = rep.getStepAttributeBoolean( id_step, "header" );
       footerEnabled = rep.getStepAttributeBoolean( id_step, "footer" );
@@ -1101,33 +1110,36 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
         outputFields[i].setFormat( rep.getStepAttributeString( id_step, i, "field_format" ) );
       }
       // Header font
-      header_font_name = getFontNameByCode( Const.NVL( rep.getStepAttributeString( id_step, "header_font_name" ), "" ) );
-      header_font_size = Const.NVL( rep.getStepAttributeString( id_step, "header_font_size" ), "" + DEFAULT_FONT_SIZE );
+      header_font_name =
+        getFontNameByCode( Const.NVL( rep.getStepAttributeString( id_step, "header_font_name" ), "" ) );
+      header_font_size =
+        Const.NVL( rep.getStepAttributeString( id_step, "header_font_size" ), "" + DEFAULT_FONT_SIZE );
       header_font_bold = rep.getStepAttributeBoolean( id_step, "header_font_bold" );
       header_font_italic = rep.getStepAttributeBoolean( id_step, "header_font_italic" );
       header_font_underline =
-          getFontUnderlineByCode( Const.NVL( rep.getStepAttributeString( id_step, "header_font_underline" ), "" ) );
+        getFontUnderlineByCode( Const.NVL( rep.getStepAttributeString( id_step, "header_font_underline" ), "" ) );
       header_font_orientation =
-          getFontOrientationByCode( Const.NVL( rep.getStepAttributeString( id_step, "header_font_orientation" ), "" ) );
+        getFontOrientationByCode( Const.NVL(
+          rep.getStepAttributeString( id_step, "header_font_orientation" ), "" ) );
       header_font_color =
-          getFontColorByCode( Const.NVL( rep.getStepAttributeString( id_step, "header_font_color" ), ""
-              + FONT_COLOR_BLACK ) );
+        getFontColorByCode( Const.NVL( rep.getStepAttributeString( id_step, "header_font_color" ), ""
+          + FONT_COLOR_BLACK ) );
       header_background_color =
-          getFontColorByCode( Const.NVL( rep.getStepAttributeString( id_step, "header_background_color" ), ""
-              + FONT_COLOR_NONE ) );
+        getFontColorByCode( Const.NVL( rep.getStepAttributeString( id_step, "header_background_color" ), ""
+          + FONT_COLOR_NONE ) );
       header_row_height = rep.getStepAttributeString( id_step, "header_row_height" );
       header_alignment =
-          getFontAlignmentByCode( Const.NVL( rep.getStepAttributeString( id_step, "header_alignment" ), "" ) );
+        getFontAlignmentByCode( Const.NVL( rep.getStepAttributeString( id_step, "header_alignment" ), "" ) );
       header_image = rep.getStepAttributeString( id_step, "header_image" );
       // row font
       row_font_name = getFontNameByCode( Const.NVL( rep.getStepAttributeString( id_step, "row_font_name" ), "" ) );
       row_font_size = Const.NVL( rep.getStepAttributeString( id_step, "row_font_size" ), "" + DEFAULT_FONT_SIZE );
       row_font_color =
-          getFontColorByCode( Const
-              .NVL( rep.getStepAttributeString( id_step, "row_font_color" ), "" + FONT_COLOR_BLACK ) );
+        getFontColorByCode( Const.NVL( rep.getStepAttributeString( id_step, "row_font_color" ), ""
+          + FONT_COLOR_BLACK ) );
       row_background_color =
-          getFontColorByCode( Const.NVL( rep.getStepAttributeString( id_step, "row_background_color" ), ""
-              + FONT_COLOR_NONE ) );
+        getFontColorByCode( Const.NVL( rep.getStepAttributeString( id_step, "row_background_color" ), ""
+          + FONT_COLOR_NONE ) );
 
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
@@ -1169,8 +1181,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return font_color_code[i];
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "header", headerEnabled );
       rep.saveStepAttribute( id_transformation, id_step, "footer", footerEnabled );
@@ -1192,7 +1203,8 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "autosizecolums", autosizecolums );
       rep.saveStepAttribute( id_transformation, id_step, "nullisblank", nullIsBlank );
       rep.saveStepAttribute( id_transformation, id_step, "protect_sheet", protectsheet );
-      rep.saveStepAttribute( id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables( password ) );
+      rep.saveStepAttribute( id_transformation, id_step, "password", Encr
+        .encryptPasswordIfNotUsingVariables( password ) );
       rep.saveStepAttribute( id_transformation, id_step, "template_enabled", templateEnabled );
       rep.saveStepAttribute( id_transformation, id_step, "template_append", templateAppend );
       rep.saveStepAttribute( id_transformation, id_step, "template_filename", templateFileName );
@@ -1208,38 +1220,43 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "header_font_size", header_font_size );
       rep.saveStepAttribute( id_transformation, id_step, "header_font_bold", header_font_bold );
       rep.saveStepAttribute( id_transformation, id_step, "header_font_italic", header_font_italic );
-      rep.saveStepAttribute( id_transformation, id_step, "header_font_underline",
-          getFontUnderlineCode( header_font_underline ) );
-      rep.saveStepAttribute( id_transformation, id_step, "header_font_orientation",
+      rep.saveStepAttribute(
+        id_transformation, id_step, "header_font_underline", getFontUnderlineCode( header_font_underline ) );
+      rep
+        .saveStepAttribute(
+          id_transformation, id_step, "header_font_orientation",
           getFontOrientationCode( header_font_orientation ) );
-      rep.saveStepAttribute( id_transformation, id_step, "header_font_color", getFontColorCode( header_font_color ) );
-      rep.saveStepAttribute( id_transformation, id_step, "header_background_color",
-          getFontColorCode( header_background_color ) );
+      rep
+        .saveStepAttribute(
+          id_transformation, id_step, "header_font_color", getFontColorCode( header_font_color ) );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "header_background_color", getFontColorCode( header_background_color ) );
       rep.saveStepAttribute( id_transformation, id_step, "header_row_height", header_row_height );
-      rep.saveStepAttribute( id_transformation, id_step, "header_alignment", getFontAlignmentCode( header_alignment ) );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "header_alignment", getFontAlignmentCode( header_alignment ) );
       rep.saveStepAttribute( id_transformation, id_step, "header_image", header_image );
       // row font
       rep.saveStepAttribute( id_transformation, id_step, "row_font_name", getFontNameCode( row_font_name ) );
       rep.saveStepAttribute( id_transformation, id_step, "row_font_size", row_font_size );
       rep.saveStepAttribute( id_transformation, id_step, "row_font_color", getFontColorCode( row_font_color ) );
-      rep.saveStepAttribute( id_transformation, id_step, "row_background_color",
-          getFontColorCode( row_background_color ) );
+      rep.saveStepAttribute(
+        id_transformation, id_step, "row_background_color", getFontColorCode( row_background_color ) );
 
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // Check output fields
     if ( prev != null && prev.size() > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ExcelOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ExcelOutputMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -1259,8 +1276,8 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "ExcelOutputMeta.CheckResult.AllFieldsFound" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "ExcelOutputMeta.CheckResult.AllFieldsFound" ), stepMeta );
         remarks.add( cr );
       }
     }
@@ -1268,19 +1285,19 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "ExcelOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "ExcelOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "ExcelOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "ExcelOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
 
     cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString( PKG,
-            "ExcelOutputMeta.CheckResult.FilesNotChecked" ), stepMeta );
+      new CheckResult( CheckResultInterface.TYPE_RESULT_COMMENT, BaseMessages.getString(
+        PKG, "ExcelOutputMeta.CheckResult.FilesNotChecked" ), stepMeta );
     remarks.add( cr );
   }
 
@@ -1293,12 +1310,11 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -1314,8 +1330,8 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new ExcelOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

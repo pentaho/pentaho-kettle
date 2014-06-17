@@ -56,9 +56,9 @@ import org.w3c.dom.Node;
  * <li>Whether the transformation was stopped</li>
  * <li>Logging information (channel ID and text)</li>
  * </p>
- * 
+ *
  * After execution of a job or transformation, the Result can be evaluated.
- * 
+ *
  * @author Matt
  * @since 05-11-2003
  */
@@ -150,7 +150,7 @@ public class Result implements Cloneable {
 
   /**
    * Instantiates a new Result object, setting default values for all members and the entry number
-   * 
+   *
    * @param nr
    *          the entry number for the Result
    */
@@ -161,7 +161,7 @@ public class Result implements Cloneable {
 
   /**
    * Performs a semi-deep copy/clone but does not clone the rows from the Result
-   * 
+   *
    * @return An almost-clone of the Result, minus the rows
    */
   public Result lightClone() {
@@ -186,10 +186,10 @@ public class Result implements Cloneable {
 
   /**
    * Clones the Result, including rows and files. To perform a clone without rows, use lightClone()
-   * 
+   *
    * @see java.lang.Object#clone()
    * @see Result#lightClone
-   * 
+   *
    * @return A clone of the Result object
    */
   @Override
@@ -224,7 +224,7 @@ public class Result implements Cloneable {
   /**
    * Creates a string containing the read/write throughput. Throughput in this case is defined as two measures, number
    * of lines read or written and number of lines read/written per second.
-   * 
+   *
    * @param seconds
    *          the number of seconds with which to determine the read/write throughput
    * @return a string containing the read write throughput measures with labelling text
@@ -234,17 +234,20 @@ public class Result implements Cloneable {
     if ( seconds != 0 ) {
       String readClause = null, writtenClause = null;
       if ( getNrLinesRead() > 0 ) {
-        readClause = String.format( "lines read: %d ( %d lines/s)", getNrLinesRead(), ( getNrLinesRead() / seconds ) );
+        readClause =
+          String.format( "lines read: %d ( %d lines/s)", getNrLinesRead(), ( getNrLinesRead() / seconds ) );
       }
       if ( getNrLinesWritten() > 0 ) {
         writtenClause =
-            String.format( "%slines written: %d ( %d lines/s)", ( getNrLinesRead() > 0 ? "; " : "" ),
-                getNrLinesWritten(), ( getNrLinesWritten() / seconds ) );
+          String.format(
+            "%slines written: %d ( %d lines/s)", ( getNrLinesRead() > 0 ? "; " : "" ), getNrLinesWritten(),
+            ( getNrLinesWritten() / seconds ) );
       }
       if ( readClause != null || writtenClause != null ) {
         throughput =
-            String.format( "Transformation %s%s", ( getNrLinesRead() > 0 ? readClause : "" ), ( getNrLinesWritten() > 0
-                ? writtenClause : "" ) );
+          String.format(
+            "Transformation %s%s", ( getNrLinesRead() > 0 ? readClause : "" ), ( getNrLinesWritten() > 0
+              ? writtenClause : "" ) );
       }
     }
     return throughput;
@@ -252,18 +255,19 @@ public class Result implements Cloneable {
 
   /**
    * Returns a string representation of the Result object
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
-    return "nr=" + entryNr + ", errors=" + nrErrors + ", exit_status=" + exitStatus
-        + ( stopped ? " (Stopped)" : "" + ", result=" + result );
+    return "nr="
+      + entryNr + ", errors=" + nrErrors + ", exit_status=" + exitStatus
+      + ( stopped ? " (Stopped)" : "" + ", result=" + result );
   }
 
   /**
    * Returns the number of files retrieved during execution of this transformation or job
-   * 
+   *
    * @return the number of files retrieved
    */
   public long getNrFilesRetrieved() {
@@ -272,7 +276,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the number of files retrieved to the specified value
-   * 
+   *
    * @param filesRetrieved
    *          The number of files retrieved to set.
    */
@@ -282,7 +286,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns the entry number
-   * 
+   *
    * @return the entry number
    */
   public long getEntryNr() {
@@ -291,7 +295,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the entry number to the specified value
-   * 
+   *
    * @param entryNr
    *          The entry number to set.
    */
@@ -301,7 +305,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns the exit status value.
-   * 
+   *
    * @return the exit status.
    */
   public int getExitStatus() {
@@ -310,7 +314,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the exit status value to the specified value
-   * 
+   *
    * @param exitStatus
    *          The exit status to set.
    */
@@ -320,7 +324,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns the number of errors that occurred during this transformation or job
-   * 
+   *
    * @return the number of errors
    */
   public long getNrErrors() {
@@ -329,7 +333,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the number of errors that occurred during execution of this transformation or job
-   * 
+   *
    * @param nrErrors
    *          The number of errors to set
    */
@@ -339,7 +343,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns the number of lines input during execution of this transformation or job
-   * 
+   *
    * @return the number of lines input
    */
   public long getNrLinesInput() {
@@ -348,7 +352,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the number of lines input during execution of this transformation or job
-   * 
+   *
    * @param nrLinesInput
    *          The number of lines input to set.
    */
@@ -358,7 +362,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns the number of lines output during execution of this transformation or job
-   * 
+   *
    * @return the number of lines output
    */
   public long getNrLinesOutput() {
@@ -367,7 +371,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the number of lines output during execution of this transformation or job
-   * 
+   *
    * @param nrLinesOutput
    *          The number of lines output to set
    */
@@ -377,7 +381,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns the number of lines read during execution of this transformation or job
-   * 
+   *
    * @return the number of lines read
    */
   public long getNrLinesRead() {
@@ -386,7 +390,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the number of lines read during execution of this transformation or job
-   * 
+   *
    * @param nrLinesRead
    *          The number of lines read to set.
    */
@@ -396,7 +400,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns the number of lines updated during execution of this transformation or job
-   * 
+   *
    * @return the number of lines updated
    */
   public long getNrLinesUpdated() {
@@ -405,7 +409,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the number of lines updated during execution of this transformation or job
-   * 
+   *
    * @param nrLinesUpdated
    *          The number of lines updated to set.
    */
@@ -415,7 +419,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns the number of lines written during execution of this transformation or job
-   * 
+   *
    * @return the number of lines written
    */
   public long getNrLinesWritten() {
@@ -424,7 +428,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the number of lines written during execution of this transformation or job
-   * 
+   *
    * @param nrLinesWritten
    *          The number of lines written to set.
    */
@@ -434,7 +438,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns the number of lines deleted during execution of this transformation or job
-   * 
+   *
    * @return the number of lines deleted
    */
   public long getNrLinesDeleted() {
@@ -443,7 +447,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the number of lines deleted during execution of this transformation or job
-   * 
+   *
    * @param nrLinesDeleted
    *          The number of lines deleted to set.
    */
@@ -453,7 +457,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns the boolean result of this transformation or job
-   * 
+   *
    * @return true if the transformation or job was successful, false otherwise
    */
   public boolean getResult() {
@@ -463,7 +467,7 @@ public class Result implements Cloneable {
   /**
    * Sets the result of the transformation or job. A value of true should indicate a successful execution, a value of
    * false should indicate an error condition.
-   * 
+   *
    * @param result
    *          The boolean result to set.
    */
@@ -475,7 +479,7 @@ public class Result implements Cloneable {
    * Returns the resulting rowset from the job or transformation. For example, Result rows are used in jobs where
    * entries wish to receive the results of previous executions of jobs or transformations. The Result rows can be used
    * to do many kinds of transformation or job post-processing.
-   * 
+   *
    * @return a List of rows associated with the result of execution of a job or transformation
    */
   public List<RowMetaAndData> getRows() {
@@ -484,7 +488,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the resulting rowset from the job or transformation execution
-   * 
+   *
    * @param rows
    *          The List of rows to set.
    */
@@ -494,7 +498,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns whether the transformation or job was stopped before completion
-   * 
+   *
    * @return true if stopped, false otherwise
    */
   public boolean isStopped() {
@@ -503,7 +507,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets whether the transformation or job was stopped before completion
-   * 
+   *
    * @param stopped
    *          true if the transformation or job was stopped, false otherwise
    */
@@ -529,7 +533,7 @@ public class Result implements Cloneable {
 
   /**
    * Add the numbers of lines from a different result to this result
-   * 
+   *
    * @param res
    *          The Result object from which to add
    */
@@ -551,7 +555,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns a String object with the Result object serialized as XML
-   * 
+   *
    * @return This Result object serialized as XML
    */
   public String getXML() {
@@ -612,7 +616,7 @@ public class Result implements Cloneable {
 
   /**
    * Instantiates a new Result object from a DOM node
-   * 
+   *
    * @param node
    *          the DOM root node representing the desired Result
    * @throws KettleException
@@ -674,9 +678,9 @@ public class Result implements Cloneable {
 
   /**
    * Returns the result files as a Map with the filename as key and the ResultFile object as value
-   * 
+   *
    * @see org.pentaho.di.core.ResultFile
-   * 
+   *
    * @return a Map with String as key and ResultFile as value.
    */
   public Map<String, ResultFile> getResultFiles() {
@@ -685,7 +689,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns the result files as a List of type ResultFile
-   * 
+   *
    * @see org.pentaho.di.core.ResultFile
    * @return a list of type ResultFile containing this Result's ResultFile objects
    */
@@ -695,9 +699,9 @@ public class Result implements Cloneable {
 
   /**
    * Sets the result files for this Result to the specified Map of ResultFile objects
-   * 
+   *
    * @see org.pentaho.di.core.ResultFile
-   * 
+   *
    * @param usedFiles
    *          The Map of result files to set. This is a Map with the filename as key and ResultFile object as value
    */
@@ -707,7 +711,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns the number of lines rejected during execution of this transformation or job
-   * 
+   *
    * @return the number of lines rejected
    */
   public long getNrLinesRejected() {
@@ -716,7 +720,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the number of lines rejected during execution of this transformation or job
-   * 
+   *
    * @param nrLinesRejected
    *          the number of lines rejected to set
    */
@@ -726,7 +730,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns the log channel id of the object that was executed (trans, job, job entry, etc)
-   * 
+   *
    * @return the log channel id
    */
   public String getLogChannelId() {
@@ -735,7 +739,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the log channel id of the object that was executed (trans, job, job entry, etc)
-   * 
+   *
    * @param logChannelId
    *          the logChannelId to set
    */
@@ -745,7 +749,7 @@ public class Result implements Cloneable {
 
   /**
    * Increases the number of lines read by the specified value
-   * 
+   *
    * @param incr
    *          the amount to increment
    */
@@ -755,7 +759,7 @@ public class Result implements Cloneable {
 
   /**
    * Increases the number of lines written by the specified value
-   * 
+   *
    * @param incr
    *          the amount to increment
    */
@@ -765,7 +769,7 @@ public class Result implements Cloneable {
 
   /**
    * Increases the number of lines input by the specified value
-   * 
+   *
    * @param incr
    *          the amount to increment
    */
@@ -775,7 +779,7 @@ public class Result implements Cloneable {
 
   /**
    * Increases the number of lines output by the specified value
-   * 
+   *
    * @param incr
    *          the amount to increment
    */
@@ -785,7 +789,7 @@ public class Result implements Cloneable {
 
   /**
    * Increases the number of lines updated by the specified value
-   * 
+   *
    * @param incr
    *          the amount to increment
    */
@@ -795,7 +799,7 @@ public class Result implements Cloneable {
 
   /**
    * Increases the number of lines deleted by the specified value
-   * 
+   *
    * @param incr
    *          the amount to increment
    */
@@ -805,7 +809,7 @@ public class Result implements Cloneable {
 
   /**
    * Increases the number of lines rejected by the specified value
-   * 
+   *
    * @param incr
    *          the amount to increment
    */
@@ -815,7 +819,7 @@ public class Result implements Cloneable {
 
   /**
    * Increases the number of errors by the specified value
-   * 
+   *
    * @param incr
    *          the amount to increment
    */
@@ -825,7 +829,7 @@ public class Result implements Cloneable {
 
   /**
    * Returns all the text from any logging performed by the transformation or job
-   * 
+   *
    * @return the logging text as a string
    */
   public String getLogText() {
@@ -834,7 +838,7 @@ public class Result implements Cloneable {
 
   /**
    * Sets the logging text to the specified String
-   * 
+   *
    * @param logText
    *          the logText to set
    */

@@ -35,7 +35,7 @@ public class LongHashIndex {
 
   /**
    * Create a new long/long hash index
-   * 
+   *
    * @param size
    *          the initial size of the hash index
    */

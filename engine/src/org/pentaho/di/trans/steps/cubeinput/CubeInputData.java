@@ -41,9 +41,6 @@ public class CubeInputData extends BaseStepData implements StepDataInterface {
 
   public RowMetaInterface meta;
 
-  /**
-	 * 
-	 */
   public CubeInputData() {
     super();
   }

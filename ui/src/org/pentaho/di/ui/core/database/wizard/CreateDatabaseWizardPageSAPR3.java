@@ -41,14 +41,14 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 
 /**
- * 
+ *
  * On page one we select the database connection SAP/R3 specific settings 1) The data tablespace 2) The index tablespace
- * 
+ *
  * @author Jens Bleuel
  * @since 22-mar-2006
  */
 public class CreateDatabaseWizardPageSAPR3 extends WizardPage {
-  private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = CreateDatabaseWizard.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlHostname;
   private Text wHostname;
@@ -179,23 +179,25 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage {
   public void setData() {
     wHostname.setText( Const.NVL( info.getHostname(), "" ) );
 
-    wSAPLanguage.setText( Const.NVL( info.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, "" ),
-        "" ) );
+    wSAPLanguage.setText( Const.NVL( info.getAttributes().getProperty(
+      SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, "" ), "" ) );
     wSAPSystemNumber.setText( Const.NVL( info.getAttributes().getProperty(
-        SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, "" ), "" ) );
-    wSAPClient
-        .setText( Const.NVL( info.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, "" ), "" ) );
+      SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, "" ), "" ) );
+    wSAPClient.setText( Const.NVL(
+      info.getAttributes().getProperty( SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, "" ), "" ) );
   }
 
   public boolean canFlipToNextPage() {
-    String server = wHostname.getText() != null ? wHostname.getText().length() > 0 ? wHostname.getText() : null : null;
+    String server =
+      wHostname.getText() != null ? wHostname.getText().length() > 0 ? wHostname.getText() : null : null;
     String language =
-        wSAPLanguage.getText() != null ? wSAPLanguage.getText().length() > 0 ? wSAPLanguage.getText() : null : null;
+      wSAPLanguage.getText() != null
+        ? wSAPLanguage.getText().length() > 0 ? wSAPLanguage.getText() : null : null;
     String systemNumber =
-        wSAPSystemNumber.getText() != null ? wSAPSystemNumber.getText().length() > 0 ? wSAPSystemNumber.getText()
-            : null : null;
+      wSAPSystemNumber.getText() != null ? wSAPSystemNumber.getText().length() > 0
+        ? wSAPSystemNumber.getText() : null : null;
     String client =
-        wSAPClient.getText() != null ? wSAPClient.getText().length() > 0 ? wSAPClient.getText() : null : null;
+      wSAPClient.getText() != null ? wSAPClient.getText().length() > 0 ? wSAPClient.getText() : null : null;
 
     if ( server == null || language == null || systemNumber == null || client == null ) {
       setErrorMessage( BaseMessages.getString( PKG, "CreateDatabaseWizardPageSAPR3.ErrorMessage.InvalidInput" ) );
@@ -231,7 +233,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.jface.wizard.WizardPage#getNextPage()
    */
   public IWizardPage getNextPage() {

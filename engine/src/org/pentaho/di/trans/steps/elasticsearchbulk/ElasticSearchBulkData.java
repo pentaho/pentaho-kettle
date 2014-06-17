@@ -38,9 +38,6 @@ public class ElasticSearchBulkData extends BaseStepData implements StepDataInter
 
   public Object[][] inputRowBuffer;
 
-  /**
-	 * 
-	 */
   public ElasticSearchBulkData() {
     super();
 

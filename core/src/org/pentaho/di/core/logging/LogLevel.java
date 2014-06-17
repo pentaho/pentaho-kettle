@@ -26,8 +26,8 @@ import org.pentaho.di.i18n.BaseMessages;
 
 public enum LogLevel {
 
-  NOTHING( 0, "Nothing" ), ERROR( 1, "Error" ), MINIMAL( 2, "Minimal" ), BASIC( 3, "Basic" ), DETAILED( 4, "Detailed" ), DEBUG(
-      5, "Debug" ), ROWLEVEL( 6, "Rowlevel" );
+  NOTHING( 0, "Nothing" ), ERROR( 1, "Error" ), MINIMAL( 2, "Minimal" ), BASIC( 3, "Basic" ), DETAILED(
+    4, "Detailed" ), DEBUG( 5, "Debug" ), ROWLEVEL( 6, "Rowlevel" );
 
   /** for i18n purposes, needed by Translator2!! */
   private static Class<?> PKG = LogLevel.class;
@@ -63,7 +63,7 @@ public enum LogLevel {
 
   /**
    * Return the log level for a certain log level code
-   * 
+   *
    * @param code
    *          the code to look for
    * @return the log level or BASIC if nothing matches.

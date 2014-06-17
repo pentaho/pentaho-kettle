@@ -46,13 +46,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 
 public class TableCompare extends BaseStep implements StepInterface {
-  private static Class<?> PKG = TableCompare.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TableCompare.class; // for i18n purposes, needed by Translator2!!
 
   private TableCompareMeta meta;
   private TableCompareData data;
 
   public TableCompare( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (TableCompareMeta) getStepMeta().getStepMetaInterface();
@@ -64,8 +64,8 @@ public class TableCompare extends BaseStep implements StepInterface {
     data = (TableCompareData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -81,34 +81,37 @@ public class TableCompare extends BaseStep implements StepInterface {
       // Reference schema
       //
       if ( Const.isEmpty( meta.getReferenceSchemaField() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.ReferenceSchemaNotSpecified" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "TableCompare.Exception.ReferenceSchemaNotSpecified" ) );
       }
       data.refSchemaIndex = getInputRowMeta().indexOfValue( meta.getReferenceSchemaField() );
       if ( data.refSchemaIndex < 0 ) {
         throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.CanNotFindField", meta
-            .getReferenceSchemaField() ) );
+          .getReferenceSchemaField() ) );
       }
 
       // Reference table
       //
       if ( Const.isEmpty( meta.getReferenceTableField() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.ReferenceTableNotSpecified" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "TableCompare.Exception.ReferenceTableNotSpecified" ) );
       }
       data.refTableIndex = getInputRowMeta().indexOfValue( meta.getReferenceTableField() );
       if ( data.refTableIndex < 0 ) {
         throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.CanNotFindField", meta
-            .getReferenceTableField() ) );
+          .getReferenceTableField() ) );
       }
 
       // Compare schema
       //
       if ( Const.isEmpty( meta.getCompareSchemaField() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.CompareSchemaNotSpecified" ) );
+        throw new KettleException( BaseMessages
+          .getString( PKG, "TableCompare.Exception.CompareSchemaNotSpecified" ) );
       }
       data.cmpSchemaIndex = getInputRowMeta().indexOfValue( meta.getCompareSchemaField() );
       if ( data.cmpSchemaIndex < 0 ) {
         throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.CanNotFindField", meta
-            .getCompareSchemaField() ) );
+          .getCompareSchemaField() ) );
       }
 
       // Compare table
@@ -119,7 +122,7 @@ public class TableCompare extends BaseStep implements StepInterface {
       data.cmpTableIndex = getInputRowMeta().indexOfValue( meta.getCompareTableField() );
       if ( data.cmpTableIndex < 0 ) {
         throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.CanNotFindField", meta
-            .getCompareTableField() ) );
+          .getCompareTableField() ) );
       }
 
       // Key fields
@@ -130,53 +133,55 @@ public class TableCompare extends BaseStep implements StepInterface {
       data.keyFieldsIndex = getInputRowMeta().indexOfValue( meta.getKeyFieldsField() );
       if ( data.keyFieldsIndex < 0 ) {
         throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.CanNotFindField", meta
-            .getKeyFieldsField() ) );
+          .getKeyFieldsField() ) );
       }
 
       // Exclude fields
       //
       if ( Const.isEmpty( meta.getExcludeFieldsField() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.ExcludeFieldsNotSpecified" ) );
+        throw new KettleException( BaseMessages
+          .getString( PKG, "TableCompare.Exception.ExcludeFieldsNotSpecified" ) );
       }
       data.excludeFieldsIndex = getInputRowMeta().indexOfValue( meta.getExcludeFieldsField() );
       if ( data.excludeFieldsIndex < 0 ) {
         throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.CanNotFindField", meta
-            .getExcludeFieldsField() ) );
+          .getExcludeFieldsField() ) );
       }
 
       // error handling: Key description
       //
       if ( Const.isEmpty( meta.getKeyDescriptionField() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG,
-            "TableCompare.Exception.KeyDescriptionFieldNotSpecified" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "TableCompare.Exception.KeyDescriptionFieldNotSpecified" ) );
       }
       data.keyDescIndex = getInputRowMeta().indexOfValue( meta.getKeyDescriptionField() );
       if ( data.keyDescIndex < 0 ) {
         throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.CanNotFindField", meta
-            .getKeyDescriptionField() ) );
+          .getKeyDescriptionField() ) );
       }
 
       // error handling: reference value
       //
       if ( Const.isEmpty( meta.getValueReferenceField() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG,
-            "TableCompare.Exception.ValueReferenceFieldNotSpecified" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "TableCompare.Exception.ValueReferenceFieldNotSpecified" ) );
       }
       data.valueReferenceIndex = getInputRowMeta().indexOfValue( meta.getValueReferenceField() );
       if ( data.valueReferenceIndex < 0 ) {
         throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.CanNotFindField", meta
-            .getValueReferenceField() ) );
+          .getValueReferenceField() ) );
       }
 
       // error handling: compare value
       //
       if ( Const.isEmpty( meta.getValueCompareField() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.ValueCompareFieldNotSpecified" ) );
+        throw new KettleException( BaseMessages.getString(
+          PKG, "TableCompare.Exception.ValueCompareFieldNotSpecified" ) );
       }
       data.valueCompareIndex = getInputRowMeta().indexOfValue( meta.getValueCompareField() );
       if ( data.valueCompareIndex < 0 ) {
         throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.CanNotFindField", meta
-            .getValueCompareField() ) );
+          .getValueCompareField() ) );
       }
 
     } // end if first
@@ -196,16 +201,16 @@ public class TableCompare extends BaseStep implements StepInterface {
       String keyFields = getInputRowMeta().getString( r, data.keyFieldsIndex );
       String excludeFields = getInputRowMeta().getString( r, data.excludeFieldsIndex );
 
-      return compareTables( rowMeta, r, referenceSchema, referenceTable, compareSchema, compareTable, keyFields,
-          excludeFields );
+      return compareTables(
+        rowMeta, r, referenceSchema, referenceTable, compareSchema, compareTable, keyFields, excludeFields );
     } catch ( Exception e ) {
-      throw new KettleException(
-          BaseMessages.getString( PKG, "TableCompare.Exception.UnexpectedErrorComparingTables" ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "TableCompare.Exception.UnexpectedErrorComparingTables" ), e );
     }
   }
 
-  private Object[] compareTables( RowMetaInterface rowMeta, Object[] r, String referenceSchema, String referenceTable,
-      String compareSchema, String compareTable, String keyFields, String excludeFields ) throws KettleException {
+  private Object[] compareTables( RowMetaInterface rowMeta, Object[] r, String referenceSchema,
+    String referenceTable, String compareSchema, String compareTable, String keyFields, String excludeFields ) throws KettleException {
     long nrErrors = 0L;
     long nrLeftErrors = 0L;
     long nrRightErrors = 0L;
@@ -217,26 +222,27 @@ public class TableCompare extends BaseStep implements StepInterface {
 
     if ( Const.isEmpty( referenceTable ) ) {
       Object[] errorRowData = constructErrorRow( rowMeta, r, null, null, null );
-      putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString( PKG,
-          "TableCompare.Exception.NoReferenceTableDefined" ), null, "TAC008" );
+      putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
+        PKG, "TableCompare.Exception.NoReferenceTableDefined" ), null, "TAC008" );
       nrErrors++;
     }
 
     if ( Const.isEmpty( compareTable ) ) {
       Object[] errorRowData = constructErrorRow( rowMeta, r, null, null, null );
-      putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString( PKG,
-          "TableCompare.Exception.NoCompareTableDefined" ), null, "TAC008" );
+      putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
+        PKG, "TableCompare.Exception.NoCompareTableDefined" ), null, "TAC008" );
       nrErrors++;
     }
 
     String refSchemaTable =
-        meta.getReferenceConnection().getQuotedSchemaTableCombination( referenceSchema, referenceTable );
-    String cmpSchemaTable = meta.getCompareConnection().getQuotedSchemaTableCombination( compareSchema, compareTable );
+      meta.getReferenceConnection().getQuotedSchemaTableCombination( referenceSchema, referenceTable );
+    String cmpSchemaTable =
+      meta.getCompareConnection().getQuotedSchemaTableCombination( compareSchema, compareTable );
 
     if ( Const.isEmpty( keyFields ) ) {
       Object[] errorRowData = constructErrorRow( rowMeta, r, null, null, null );
-      putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString( PKG,
-          "TableCompare.Exception.NoKeyFieldsDefined", refSchemaTable, cmpSchemaTable ), null, "TAC007" );
+      putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
+        PKG, "TableCompare.Exception.NoKeyFieldsDefined", refSchemaTable, cmpSchemaTable ), null, "TAC007" );
       nrErrors++;
     }
 
@@ -275,9 +281,9 @@ public class TableCompare extends BaseStep implements StepInterface {
       //
       if ( refFields.size() != cmpFields.size() ) {
         Object[] errorRowData = constructErrorRow( rowMeta, r, null, null, null );
-        putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString( PKG,
-            "TableCompare.Error.NumberOfFieldsIsDifferent", refSchemaTable, Integer.toString( refFields.size() ),
-            cmpSchemaTable, Integer.toString( cmpFields.size() ) ), null, "TAC001" );
+        putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
+          PKG, "TableCompare.Error.NumberOfFieldsIsDifferent", refSchemaTable, Integer.toString( refFields
+            .size() ), cmpSchemaTable, Integer.toString( cmpFields.size() ) ), null, "TAC001" );
         nrErrors++;
       } else {
         // See if all the key fields exist in the reference & compare tables...
@@ -286,8 +292,10 @@ public class TableCompare extends BaseStep implements StepInterface {
           if ( refFields.indexOfValue( key ) < 0 ) {
             if ( getStepMeta().isDoingErrorHandling() ) {
               Object[] errorRowData = constructErrorRow( rowMeta, r, null, null, null );
-              putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString( PKG,
-                  "TableCompare.Error.KeyFieldWasNotFoundInReferenceTable", key, refSchemaTable ), null, "TAC002" );
+              putError(
+                data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
+                  PKG, "TableCompare.Error.KeyFieldWasNotFoundInReferenceTable", key, refSchemaTable ), null,
+                "TAC002" );
             }
             nrErrors++;
           }
@@ -296,8 +304,10 @@ public class TableCompare extends BaseStep implements StepInterface {
           if ( cmpFields.indexOfValue( key ) < 0 ) {
             if ( getStepMeta().isDoingErrorHandling() ) {
               Object[] errorRowData = constructErrorRow( rowMeta, r, null, null, null );
-              putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString( PKG,
-                  "TableCompare.Error.KeyFieldWasNotFoundInCompareTable", key, refSchemaTable ), null, "TAC003" );
+              putError(
+                data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
+                  PKG, "TableCompare.Error.KeyFieldWasNotFoundInCompareTable", key, refSchemaTable ), null,
+                "TAC003" );
             }
             nrErrors++;
           }
@@ -404,9 +414,9 @@ public class TableCompare extends BaseStep implements StepInterface {
             if ( getStepMeta().isDoingErrorHandling() ) {
               String keyDesc = getKeyDesc( keyRowMeta, keyNrs, two );
               Object[] errorRowData = constructErrorRow( rowMeta, r, keyDesc, null, null );
-              putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString( PKG,
-                  "TableCompare.Error.RecordNotInReferenceFoundInCompareTable", cmpSchemaTable, keyRowMeta
-                      .getString( two ) ), null, "TAC004" );
+              putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
+                PKG, "TableCompare.Error.RecordNotInReferenceFoundInCompareTable", cmpSchemaTable, keyRowMeta
+                  .getString( two ) ), null, "TAC004" );
             }
             nrErrors++;
             nrRightErrors++;
@@ -422,16 +432,16 @@ public class TableCompare extends BaseStep implements StepInterface {
             if ( getStepMeta().isDoingErrorHandling() ) {
               String keyDesc = getKeyDesc( keyRowMeta, keyNrs, one );
               Object[] errorRowData = constructErrorRow( rowMeta, r, keyDesc, null, null );
-              putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString( PKG,
-                  "TableCompare.Error.RecordInReferenceNotFoundInCompareTable", refSchemaTable, keyRowMeta
-                      .getString( one ) ), null, "TAC005" );
+              putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
+                PKG, "TableCompare.Error.RecordInReferenceNotFoundInCompareTable", refSchemaTable, keyRowMeta
+                  .getString( one ) ), null, "TAC005" );
             }
             nrErrors++;
             nrLeftErrors++;
 
             one = data.referenceDb.getRow( refSet );
             if ( one != null ) {
-              nrRecordsCompare++;
+              nrRecordsReference++;
             }
           } else {
             if ( one != null && two != null ) {
@@ -441,9 +451,7 @@ public class TableCompare extends BaseStep implements StepInterface {
               if ( compare == 0 ) // The Key matches, we CAN compare the two rows...
               {
                 int compareValues = oneMeta.compare( one, two, valueNrs );
-                if ( compareValues == 0 ) {
-                  // All is OK!
-                } else {
+                if ( compareValues != 0 ) {
                   // Return the compare (most recent) row
                   //
                   if ( getStepMeta().isDoingErrorHandling() ) {
@@ -462,9 +470,12 @@ public class TableCompare extends BaseStep implements StepInterface {
                         String referenceData = quote + valueMeta.getString( oneData ) + quote;
                         String compareData = quote + valueMeta.getString( twoData ) + quote;
 
-                        Object[] errorRowData = constructErrorRow( rowMeta, r, keyDesc, referenceData, compareData );
-                        putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString( PKG,
-                            "TableCompare.Error.CompareRowIsDifferentFromReference" ), valueMeta.getName(), "TAC006" );
+                        Object[] errorRowData =
+                          constructErrorRow( rowMeta, r, keyDesc, referenceData, compareData );
+                        putError(
+                          data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
+                            PKG, "TableCompare.Error.CompareRowIsDifferentFromReference" ), valueMeta
+                            .getName(), "TAC006" );
                       }
                     }
                   }
@@ -484,11 +495,11 @@ public class TableCompare extends BaseStep implements StepInterface {
               } else {
                 if ( compare < 0 ) {
                   if ( getStepMeta().isDoingErrorHandling() ) {
-                    String keyDesc = getKeyDesc( keyRowMeta, keyNrs, two );
+                    String keyDesc = getKeyDesc( keyRowMeta, keyNrs, one );
                     Object[] errorRowData = constructErrorRow( rowMeta, r, keyDesc, null, null );
-                    putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString( PKG,
-                        "TableCompare.Error.RecordNotInReferenceFoundInCompareTable", cmpSchemaTable, keyRowMeta
-                            .getString( two ) ), null, "TAC004" );
+                    putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
+                      PKG, "TableCompare.Error.RecordNotInReferenceFoundInCompareTable", cmpSchemaTable,
+                      keyRowMeta.getString( one ) ), null, "TAC004" );
                   }
                   nrErrors++;
                   nrRightErrors++;
@@ -499,11 +510,11 @@ public class TableCompare extends BaseStep implements StepInterface {
                   }
                 } else {
                   if ( getStepMeta().isDoingErrorHandling() ) {
-                    String keyDesc = getKeyDesc( keyRowMeta, keyNrs, one );
+                    String keyDesc = getKeyDesc( keyRowMeta, keyNrs, two );
                     Object[] errorRowData = constructErrorRow( rowMeta, r, keyDesc, null, null );
-                    putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString( PKG,
-                        "TableCompare.Error.RecordInReferenceNotFoundInCompareTable", refSchemaTable, keyRowMeta
-                            .getString( one ) ), null, "TAC005" );
+                    putError( data.errorRowMeta, errorRowData, 1, BaseMessages.getString(
+                      PKG, "TableCompare.Error.RecordInReferenceNotFoundInCompareTable", refSchemaTable,
+                      keyRowMeta.getString( two ) ), null, "TAC005" );
                   }
                   nrErrors++;
                   nrLeftErrors++;
@@ -524,8 +535,8 @@ public class TableCompare extends BaseStep implements StepInterface {
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "TableCompare.Exception.UnexpectedErrorComparingTables",
-          refSchemaTable, cmpSchemaTable ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "TableCompare.Exception.UnexpectedErrorComparingTables", refSchemaTable, cmpSchemaTable ), e );
     }
 
     int index = 0;
@@ -559,8 +570,8 @@ public class TableCompare extends BaseStep implements StepInterface {
     return keyDesc.toString();
   }
 
-  private Object[] constructErrorRow( RowMetaInterface rowMeta, Object[] r, String keyField, String referenceValue,
-      String compareValue ) throws KettleException {
+  private Object[] constructErrorRow( RowMetaInterface rowMeta, Object[] r, String keyField,
+    String referenceValue, String compareValue ) throws KettleException {
 
     if ( data.errorRowMeta == null ) {
       data.errorRowMeta = rowMeta.clone();
@@ -585,8 +596,9 @@ public class TableCompare extends BaseStep implements StepInterface {
         data.referenceDb.connect();
 
       } catch ( Exception e ) {
-        logError( BaseMessages.getString( PKG, "TableCompare.Exception.UnexpectedErrorConnectingToReferenceDatabase",
-            meta.getReferenceConnection().getName() ), e );
+        logError( BaseMessages.getString(
+          PKG, "TableCompare.Exception.UnexpectedErrorConnectingToReferenceDatabase", meta
+            .getReferenceConnection().getName() ), e );
         return false;
       }
 
@@ -595,8 +607,9 @@ public class TableCompare extends BaseStep implements StepInterface {
         data.compareDb.connect();
 
       } catch ( Exception e ) {
-        logError( BaseMessages.getString( PKG, "TableCompare.Exception.UnexpectedErrorConnectingToCompareDatabase",
-            meta.getCompareConnection().getName() ), e );
+        logError( BaseMessages.getString(
+          PKG, "TableCompare.Exception.UnexpectedErrorConnectingToCompareDatabase", meta
+            .getCompareConnection().getName() ), e );
         return false;
       }
       return true;

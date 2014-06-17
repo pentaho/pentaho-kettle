@@ -34,14 +34,14 @@ import org.w3c.dom.Node;
 
 /*
  * Created on 19-jun-2003
- * 
+ *
  */
 
 /**
  * Defines a link between 2 steps in a transformation
  */
 public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHopMeta> {
-  private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!
 
   public static final String XML_TAG = "hop";
 
@@ -106,10 +106,11 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
   }
 
   private StepMeta searchStep( List<StepMeta> steps, String name ) {
-    for ( StepMeta stepMeta : steps )
+    for ( StepMeta stepMeta : steps ) {
       if ( stepMeta.getName().equalsIgnoreCase( name ) ) {
         return stepMeta;
       }
+    }
 
     return null;
   }
@@ -180,7 +181,7 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
   public String toString() {
     String str_fr = ( from_step == null ) ? "(empty)" : from_step.getName();
     String str_to = ( to_step == null ) ? "(empty)" : to_step.getName();
-    return str_fr + " --> " + str_to + " (" + ( enabled ? "enabled" : "disabled" ) + ")"; //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+    return str_fr + " --> " + str_to + " (" + ( enabled ? "enabled" : "disabled" ) + ")";
   }
 
   public String getXML() {

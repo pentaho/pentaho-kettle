@@ -1,3 +1,4 @@
+//CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -28,7 +29,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -37,15 +37,14 @@ import java.util.Map;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
-import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
@@ -55,7 +54,6 @@ import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.attributes.AttributesUtil;
-import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -66,21 +64,14 @@ import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettlePluginLoaderException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.gui.UndoInterface;
-import org.pentaho.di.core.listeners.ContentChangedListener;
-import org.pentaho.di.core.listeners.FilenameChangedListener;
-import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.ChannelLogTable;
-import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -89,21 +80,16 @@ import org.pentaho.di.core.logging.MetricsLogTable;
 import org.pentaho.di.core.logging.PerformanceLogTable;
 import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.logging.TransLogTable;
-import org.pentaho.di.core.parameters.DuplicateParamException;
-import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
-import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
@@ -111,11 +97,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.HasRepositoryInterface;
-import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -145,16 +128,15 @@ import org.w3c.dom.Node;
 /**
  * This class defines information about a transformation and offers methods to save and load it from XML or a PDI
  * database repository, as well as methods to alter a transformation by adding/removing databases, steps, hops, etc.
- * 
+ *
  * @since 20-jun-2003
  * @author Matt Casters
  */
-public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>,
-    Cloneable, UndoInterface, HasDatabasesInterface, VariableSpace, EngineMetaInterface, ResourceExportInterface,
-    HasSlaveServersInterface, NamedParams, RepositoryElementInterface, LoggingObjectInterface, AttributesInterface {
+public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>,
+  Cloneable, ResourceExportInterface, RepositoryElementInterface, LoggingObjectInterface {
 
   /** The package name, used for internationalization of messages. */
-  private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!
 
   /** A constant specifying the tag value for the XML node of the transformation. */
   public static final String XML_TAG = "transformation";
@@ -167,9 +149,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /** A constant specifying the repository element type as a Transformation. */
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.TRANSFORMATION;
 
-  /** The list of databases associated with the transformation. */
-  protected List<DatabaseMeta> databases;
-
   /** The list of steps associated with the transformation. */
 
   protected List<StepMeta> steps;
@@ -177,14 +156,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /** The list of hops associated with the transformation. */
   protected List<TransHopMeta> hops;
 
-  /** The list of notes associated with the transformation. */
-  protected List<NotePadMeta> notes;
-
   /** The list of dependencies associated with the transformation. */
   protected List<TransDependency> dependencies;
-
-  /** The list of slave servers associated with the transformation. */
-  protected List<SlaveServer> slaveServers;
 
   /** The list of cluster schemas associated with the transformation. */
   protected List<ClusterSchema> clusterSchemas;
@@ -192,35 +165,17 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /** The list of partition schemas associated with the transformation. */
   private List<PartitionSchema> partitionSchemas;
 
-  /** The repository directory associated with the transformation. */
-  private RepositoryDirectoryInterface directory;
-
-  /** The name of the transformation. */
-  protected String name;
-
-  /** The description of the transformation. */
-  protected String description;
-
-  /** The extended description of the transformation. */
-  protected String extended_description;
-
   /** The version string for the transformation. */
   protected String trans_version;
 
   /** The status of the transformation. */
   protected int trans_status;
 
-  /** The filename associated with the transformation. */
-  protected String filename;
-
   /** The transformation logging table associated with the transformation. */
   protected TransLogTable transLogTable;
 
   /** The performance logging table associated with the transformation. */
   protected PerformanceLogTable performanceLogTable;
-
-  /** The channel logging table associated with the transformation. */
-  protected ChannelLogTable channelLogTable;
 
   /** The step logging table associated with the transformation. */
   protected StepLogTable stepLogTable;
@@ -248,7 +203,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * The list of arguments to the transformation.
-   * 
+   *
    * @deprecated Moved to Trans
    * */
   @Deprecated
@@ -256,35 +211,17 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * A table of named counters.
-   * 
+   *
    * @deprecated Moved to Trans
    */
   @Deprecated
   protected Hashtable<String, Counter> counters;
 
   /** Indicators for changes in steps, databases, hops, and notes. */
-  protected boolean changed_steps, changed_databases, changed_hops, changed_notes;
-
-  /** The list of actions supporting the "undo" operation. */
-  protected List<TransAction> undo;
-
-  /** The maximum number of actions to keep to support the "undo" operation. */
-  protected int max_undo;
-
-  /** The current index into the undo/redo action list. */
-  protected int undo_position;
+  protected boolean changed_steps, changed_hops;
 
   /** The database cache. */
   protected DBCache dbCache;
-
-  /** The object ID for the transformation. */
-  protected ObjectId id;
-
-  /** The names of the users who created and last modified the transformation. */
-  protected String createdUser, modifiedUser;
-
-  /** The dates the transformation was created and last modified. */
-  protected Date createdDate, modifiedDate;
 
   /** The time (in nanoseconds) to wait when the input buffer is empty. */
   protected int sleepTimeEmpty;
@@ -297,7 +234,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * The result rows.
-   * 
+   *
    * @deprecated
    * */
   @Deprecated
@@ -305,7 +242,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * The result files.
-   * 
+   *
    * @deprecated
    * */
   @Deprecated
@@ -326,23 +263,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   protected boolean usingThreadPriorityManagment;
 
-  /** If this is null, we load from the default shared objects file : $KETTLE_HOME/.kettle/shared.xml */
-  protected String sharedObjectsFile;
-
-  /** The last load of the shared objects file by this TransMet object. */
-  protected SharedObjects sharedObjects;
-
-  /** The variable bindings for the transformation. */
-  protected VariableSpace variables = new Variables();
-
   /** The slave-step-copy/partition distribution. Only used for slave transformations in a clustering environment. */
   protected SlaveStepCopyPartitionDistribution slaveStepCopyPartitionDistribution;
 
   /** Just a flag indicating that this is a slave transformation - internal use only, no GUI option. */
   protected boolean slaveTransformation;
-
-  /** The repository to reference in the one-off case that it is needed. */
-  protected Repository repository;
 
   /** Whether the transformation is capturing step performance snap shots. */
   protected boolean capturingStepPerformanceSnapShots;
@@ -359,27 +284,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /** The loop cache. */
   protected Map<String, Boolean> loopCache;
 
-  /** The list of name changed listeners. */
-  protected List<NameChangedListener> nameChangedListeners;
-
-  /** The list of filename changed listeners. */
-  protected List<FilenameChangedListener> filenameChangedListeners;
-
-  /** The named parameters. */
-  protected NamedParams namedParams = new NamedParamsDefault();
-
   /** The log channel interface. */
   protected LogChannelInterface log;
-
-  /** The log level. */
-  protected LogLevel logLevel = DefaultLogLevel.getLogLevel();
-
-  /** The container object id. */
-  protected String containerObjectId;
-
-  protected IMetaStore metaStore;
-
-  protected Map<String, Map<String, String>> attributesMap;
 
   /**
    * The TransformationType enum describes the various types of transformations in terms of execution, including Normal,
@@ -390,12 +296,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     /** A normal transformation. */
     Normal( "Normal", BaseMessages.getString( PKG, "TransMeta.TransformationType.Normal" ) ),
 
-    /** A serial single-threaded transformation. */
-    SerialSingleThreaded( "SerialSingleThreaded", BaseMessages.getString( PKG,
-        "TransMeta.TransformationType.SerialSingleThreaded" ) ),
+      /** A serial single-threaded transformation. */
+      SerialSingleThreaded( "SerialSingleThreaded", BaseMessages.getString(
+        PKG, "TransMeta.TransformationType.SerialSingleThreaded" ) ),
 
-    /** A single-threaded transformation. */
-    SingleThreaded( "SingleThreaded", BaseMessages.getString( PKG, "TransMeta.TransformationType.SingleThreaded" ) ), ;
+      /** A single-threaded transformation. */
+      SingleThreaded( "SingleThreaded", BaseMessages
+        .getString( PKG, "TransMeta.TransformationType.SingleThreaded" ) );
 
     /** The code corresponding to the transformation type. */
     private String code;
@@ -405,7 +312,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     /**
      * Instantiates a new transformation type.
-     * 
+     *
      * @param code
      *          the code
      * @param description
@@ -418,7 +325,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     /**
      * Gets the code corresponding to the transformation type.
-     * 
+     *
      * @return the code
      */
     public String getCode() {
@@ -427,7 +334,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     /**
      * Gets the description of the transformation type.
-     * 
+     *
      * @return the description
      */
     public String getDescription() {
@@ -436,7 +343,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     /**
      * Gets the transformation type by code.
-     * 
+     *
      * @param transTypeCode
      *          the trans type code
      * @return the transformation type by code
@@ -454,7 +361,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     /**
      * Gets the transformation types descriptions.
-     * 
+     *
      * @return the transformation types descriptions
      */
     public static String[] getTransformationTypesDescriptions() {
@@ -471,28 +378,19 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   // //////////////////////////////////////////////////////////////////////////
 
-  /** A constant indicating a Change action, used in "undo/redo" operations. */
-  public static final int TYPE_UNDO_CHANGE = 1;
-
-  /** A constant indicating a New action, used in "undo/redo" operations. */
-  public static final int TYPE_UNDO_NEW = 2;
-
-  /** A constant indicating a Delete action, used in "undo/redo" operations. */
-  public static final int TYPE_UNDO_DELETE = 3;
-
-  /** A constant indicating a Position Change action, used in "undo/redo" operations. */
-  public static final int TYPE_UNDO_POSITION = 4;
-
   /** A list of localized strings corresponding to string descriptions of the undo/redo actions. */
   public static final String[] desc_type_undo =
-      {
-        "", BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoChange" ), BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoNew" ), BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoDelete" ), BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoPosition" ) }; //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+  {
+    "", BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoChange" ),
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoNew" ),
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoDelete" ),
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoPosition" ) };
 
   /** A constant specifying the tag value for the XML node of the transformation information. */
   protected static final String XML_TAG_INFO = "info";
 
   /** A constant specifying the tag value for the XML node of the order of steps. */
-  protected static final String XML_TAG_ORDER = "order";
+  public static final String XML_TAG_ORDER = "order";
 
   /** A constant specifying the tag value for the XML node of the notes. */
   public static final String XML_TAG_NOTEPADS = "notepads";
@@ -513,7 +411,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   public static final String XML_TAG_CLUSTERSCHEMAS = "clusterschemas";
 
   /** A constant specifying the tag value for the XML node of the steps' error-handling information. */
-  protected static final String XML_TAG_STEP_ERROR_HANDLING = "step_error_handling";
+  public static final String XML_TAG_STEP_ERROR_HANDLING = "step_error_handling";
 
   /**
    * Builds a new empty transformation. The transformation will have default logging capability and no variables, and
@@ -526,7 +424,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Builds a new empty transformation with a set of variables to inherit from.
-   * 
+   *
    * @param parent
    *          the variable space to inherit from
    */
@@ -544,7 +442,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Constructs a new transformation specifying the filename, name and arguments.
-   * 
+   *
    * @param filename
    *          The filename of the transformation
    * @param name
@@ -563,12 +461,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Compares two transformation on name, filename, repository directory, etc. The comparison algorithm is as follows:<br/>
+   * Compares two transformation on name, filename, repository directory, etc. 
+   * The comparison algorithm is as follows:<br/>
    * <ol>
    * <li>The first transformation's filename is checked first; if it has none, the transformation comes from a
    * repository. If the second transformation does not come from a repository, -1 is returned.</li>
    * <li>If the transformations are both from a repository, the transformations' names are compared. If the first
-   * transformation has no name and the second one does, a -1 is returned. If the opposite is true, a 1 is returned.</li>
+   * transformation has no name and the second one does, a -1 is returned. 
+   * If the opposite is true, a 1 is returned.</li>
    * <li>If they both have names they are compared as strings. If the result is non-zero it is returned. Otherwise the
    * repository directories are compared using the same technique of checking empty values and then performing a string
    * comparison, returning any non-zero result.</li>
@@ -579,13 +479,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * the transformation names and filenames are subsequently compared using the same technique of checking empty values
    * and then performing a string comparison, ultimately returning the result of the filename string comparison.
    * </ol>
-   * 
+   *
    * @param t1
    *          the first transformation to compare
    * @param t2
    *          the second transformation to compare
    * @return 0 if the two transformations are equal, 1 or -1 depending on the values (see description above)
-   * 
+   *
    */
   public int compare( TransMeta t1, TransMeta t2 ) {
     // If we don't have a filename, the transformation comes from a repository
@@ -656,7 +556,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Compares this transformation's meta-data to the specified transformation's meta-data. This method simply calls
    * compare(this, o)
-   * 
+   *
    * @param o
    *          the o
    * @return the int
@@ -671,7 +571,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Checks whether this transformation's meta-data object is equal to the specified object. If the specified object is
    * not an instance of TransMeta, false is returned. Otherwise the method returns whether a call to compare() indicates
    * equality (i.e. compare(this, (TransMeta)obj)==0).
-   * 
+   *
    * @param obj
    *          the obj
    * @return true, if successful
@@ -688,7 +588,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Clones the transformation meta-data object.
-   * 
+   *
    * @return a clone of the transformation meta-data object
    * @see java.lang.Object#clone()
    */
@@ -701,7 +601,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Perform a real clone of the transformation meta-data object, including cloning all lists and copying all values. If
    * the doClear parameter is true, the clone will be cleared of ALL values before the copy. If false, only the copied
    * fields will be cleared.
-   * 
+   *
    * @param doClear
    *          Whether to clear all of the clone's data before copying from the source object
    * @return a real clone of the calling object
@@ -724,24 +624,33 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         transMeta.clusterSchemas = new ArrayList<ClusterSchema>();
         transMeta.namedParams = new NamedParamsDefault();
       }
-      for ( DatabaseMeta db : databases )
+      for ( DatabaseMeta db : databases ) {
         transMeta.addDatabase( (DatabaseMeta) db.clone() );
-      for ( StepMeta step : steps )
+      }
+      for ( StepMeta step : steps ) {
         transMeta.addStep( (StepMeta) step.clone() );
-      for ( TransHopMeta hop : hops )
+      }
+      for ( TransHopMeta hop : hops ) {
         transMeta.addTransHop( (TransHopMeta) hop.clone() );
-      for ( NotePadMeta note : notes )
+      }
+      for ( NotePadMeta note : notes ) {
         transMeta.addNote( (NotePadMeta) note.clone() );
-      for ( TransDependency dep : dependencies )
+      }
+      for ( TransDependency dep : dependencies ) {
         transMeta.addDependency( (TransDependency) dep.clone() );
-      for ( SlaveServer slave : slaveServers )
+      }
+      for ( SlaveServer slave : slaveServers ) {
         transMeta.getSlaveServers().add( (SlaveServer) slave.clone() );
-      for ( ClusterSchema schema : clusterSchemas )
+      }
+      for ( ClusterSchema schema : clusterSchemas ) {
         transMeta.getClusterSchemas().add( schema.clone() );
-      for ( PartitionSchema schema : partitionSchemas )
+      }
+      for ( PartitionSchema schema : partitionSchemas ) {
         transMeta.getPartitionSchemas().add( (PartitionSchema) schema.clone() );
-      for ( String key : listParameters() )
+      }
+      for ( String key : listParameters() ) {
         transMeta.addParameterDefinition( key, getParameterDefault( key ), getParameterDescription( key ) );
+      }
 
       return transMeta;
     } catch ( Exception e ) {
@@ -751,56 +660,28 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Get the database ID in the repository for this object.
-   * 
-   * @return the database ID in the repository for this object.
-   */
-  public ObjectId getObjectId() {
-    return id;
-  }
-
-  /**
-   * Set the database ID for this object in the repository.
-   * 
-   * @param id
-   *          the database ID for this object in the repository.
-   */
-  public void setObjectId( ObjectId id ) {
-    this.id = id;
-  }
-
-  /**
    * Clears the transformation's meta-data, including the lists of databases, steps, hops, notes, dependencies,
    * partition schemas, slave servers, and cluster schemas. Logging information and timeouts are reset to defaults, and
    * recent connection info is cleared.
    */
+  @Override
   public void clear() {
     setObjectId( null );
-    databases = new ArrayList<DatabaseMeta>();
     steps = new ArrayList<StepMeta>();
     hops = new ArrayList<TransHopMeta>();
-    notes = new ArrayList<NotePadMeta>();
     dependencies = new ArrayList<TransDependency>();
     partitionSchemas = new ArrayList<PartitionSchema>();
-    slaveServers = new ArrayList<SlaveServer>();
     clusterSchemas = new ArrayList<ClusterSchema>();
 
     slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution();
 
-    setName( null );
-    description = null;
     trans_status = -1;
     trans_version = null;
-    extended_description = null;
-    setFilename( null );
 
     transLogTable = TransLogTable.getDefault( this, this, steps );
     performanceLogTable = PerformanceLogTable.getDefault( this, this );
-    channelLogTable = ChannelLogTable.getDefault( this, this );
     stepLogTable = StepLogTable.getDefault( this, this );
     metricsLogTable = MetricsLogTable.getDefault( this, this );
-
-    attributesMap = new HashMap<String, Map<String, String>>();
 
     sizeRowset = Const.ROWS_IN_ROWSET;
     sleepTimeEmpty = Const.TIMEOUT_GET_MILLIS;
@@ -820,20 +701,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     counters = new Hashtable<String, Counter>();
     resultRows = null;
 
-    clearUndo();
-    clearChanged();
-
-    createdUser = "-";
-    createdDate = new Date();
-
-    modifiedUser = "-";
-    modifiedDate = new Date();
+    super.clear();
 
     // LOAD THE DATABASE CACHE!
     dbCache = DBCache.getInstance();
-
-    // Default directory: root
-    directory = new RepositoryDirectory();
 
     resultRows = new ArrayList<RowMetaAndData>();
     resultFiles = new ArrayList<ResultFile>();
@@ -857,73 +728,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     loopCache = new HashMap<String, Boolean>();
     transformationType = TransformationType.Normal;
 
-    log = new LogChannel( STRING_TRANSMETA );
-  }
-
-  /**
-   * Clears the list of undo actions. Also resets the undo position (index).
-   */
-  public void clearUndo() {
-    undo = new ArrayList<TransAction>();
-    undo_position = -1;
-  }
-
-  /**
-   * Gets the list of databases associated with the transformation.
-   * 
-   * @return the list of databases associated with the transformation
-   * @see org.pentaho.di.trans.HasDatabaseInterface#getDatabases()
-   */
-  public List<DatabaseMeta> getDatabases() {
-    return databases;
-  }
-
-  /**
-   * Sets the databases associated with the transformation.
-   * 
-   * @param databases
-   *          the new databases
-   * @see org.pentaho.di.trans.HasDatabaseInterface#setDatabases(java.util.ArrayList)
-   */
-  public void setDatabases( List<DatabaseMeta> databases ) {
-    Collections.sort( databases, DatabaseMeta.comparator );
-    this.databases = databases;
-  }
-
-  /**
-   * Adds the specified database (via database meta-data) to the list of associated databases for the transformation.
-   * 
-   * @param databaseMeta
-   *          the database meta to add
-   * @see org.pentaho.di.trans.HasDatabaseInterface#addDatabase(org.pentaho.di.core.database.DatabaseMeta)
-   */
-  public void addDatabase( DatabaseMeta databaseMeta ) {
-    databases.add( databaseMeta );
-    Collections.sort( databases, DatabaseMeta.comparator );
-  }
-
-  /**
-   * Adds the specified database (via database meta-data) to the list of associated databases for the transformation, or
-   * replaces the database if it already exists in the list
-   * 
-   * @param databaseMeta
-   *          the database meta to add or replace
-   * @see org.pentaho.di.trans.HasDatabaseInterface#addOrReplaceDatabase(org.pentaho.di.core.database.DatabaseMeta)
-   */
-  public void addOrReplaceDatabase( DatabaseMeta databaseMeta ) {
-    int index = databases.indexOf( databaseMeta );
-    if ( index < 0 ) {
-      addDatabase( databaseMeta );
-    } else {
-      DatabaseMeta previous = getDatabase( index );
-      previous.replaceMeta( databaseMeta );
-    }
-    changed_databases = true;
+    log = LogChannel.GENERAL;
   }
 
   /**
    * Add a new step to the transformation. Also marks that the transformation's steps have changed.
-   * 
+   *
    * @param stepMeta
    *          The meta-data for the step to be added.
    */
@@ -936,7 +746,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Add a new step to the transformation if that step didn't exist yet. Otherwise, replace the step. This method also
    * marks that the transformation's steps have changed.
-   * 
+   *
    * @param stepMeta
    *          The meta-data for the step to be added.
    */
@@ -955,7 +765,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Add a new hop to the transformation. The hop information (source and target steps, e.g.) should be configured in
    * the TransHopMeta object before calling addTransHop(). Also marks that the transformation's hops have changed.
-   * 
+   *
    * @param hi
    *          The hop meta-data to be added.
    */
@@ -965,19 +775,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Add a new note to the transformation. Also marks that the transformation's notes have changed.
-   * 
-   * @param ni
-   *          The note to be added.
-   */
-  public void addNote( NotePadMeta ni ) {
-    notes.add( ni );
-    changed_notes = true;
-  }
-
-  /**
    * Add a new dependency to the transformation.
-   * 
+   *
    * @param td
    *          The transformation dependency to be added.
    */
@@ -986,22 +785,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Adds a database association to the transformation at the given index
-   * 
-   * @param p
-   *          the index into the database list
-   * @param ci
-   *          the database meta-data
-   * @see org.pentaho.di.trans.HasDatabaseInterface#addDatabase(int, org.pentaho.di.core.database.DatabaseMeta)
-   */
-  public void addDatabase( int p, DatabaseMeta ci ) {
-    databases.add( p, ci );
-  }
-
-  /**
    * Add a new step to the transformation at the specified index. This method sets the step's parent transformation to
    * the this transformation, and marks that the transformations' steps have changed.
-   * 
+   *
    * @param p
    *          The index into the step list
    * @param stepMeta
@@ -1016,7 +802,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Add a new hop to the transformation on a certain location (i.e. the specified index). Also marks that the
    * transformation's hops have changed.
-   * 
+   *
    * @param p
    *          the index into the hop list
    * @param hi
@@ -1028,22 +814,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Add a new note to the transformation on a certain location (i.e. the specified index). Also marks that the
-   * transformation's notes have changed.
-   * 
-   * @param p
-   *          The index into the notes list
-   * @param ni
-   *          The note to be added.
-   */
-  public void addNote( int p, NotePadMeta ni ) {
-    notes.add( p, ni );
-    changed_notes = true;
-  }
-
-  /**
    * Add a new dependency to the transformation on a certain location (i.e. the specified index).
-   * 
+   *
    * @param p
    *          The index into the dependencies list.
    * @param td
@@ -1054,20 +826,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the database at the specified index.
-   * 
-   * @param i
-   *          the index into the database list
-   * @return the database meta-data object at the specified index
-   * @see org.pentaho.di.trans.HasDatabaseInterface#getDatabase(int)
-   */
-  public DatabaseMeta getDatabase( int i ) {
-    return databases.get( i );
-  }
-
-  /**
    * Get a list of defined steps in this transformation.
-   * 
+   *
    * @return an ArrayList of defined steps.
    */
   public List<StepMeta> getSteps() {
@@ -1076,7 +836,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Retrieves a step on a certain location (i.e. the specified index).
-   * 
+   *
    * @param i
    *          The index into the steps list.
    * @return The desired step's meta-data.
@@ -1087,7 +847,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Retrieves a hop on a certain location (i.e. the specified index).
-   * 
+   *
    * @param i
    *          The index into the hops list.
    * @return The desired hop's meta-data.
@@ -1097,19 +857,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Retrieves notepad information on a certain location (i.e. the specified index).
-   * 
-   * @param i
-   *          The index into the notes list.
-   * @return The notepad information.
-   */
-  public NotePadMeta getNote( int i ) {
-    return notes.get( i );
-  }
-
-  /**
    * Retrieves a dependency on a certain location (i.e. the specified index).
-   * 
+   *
    * @param i
    *          The index into the dependencies list.
    * @return The dependency object.
@@ -1119,24 +868,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Removes the database at the specified index. Also marks that the transformation's databases have changed.
-   * 
-   * @param i
-   *          the index at which to remove the database
-   * @see org.pentaho.di.trans.HasDatabaseInterface#removeDatabase(int)
-   */
-  public void removeDatabase( int i ) {
-    if ( i < 0 || i >= databases.size() ) {
-      return;
-    }
-    databases.remove( i );
-    changed_databases = true;
-  }
-
-  /**
    * Removes a step from the transformation on a certain location (i.e. the specified index). Also marks that the
    * transformation's steps have changed.
-   * 
+   *
    * @param i
    *          The index
    */
@@ -1152,7 +886,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Removes a hop from the transformation on a certain location (i.e. the specified index). Also marks that the
    * transformation's hops have changed.
-   * 
+   *
    * @param i
    *          The index into the hops list
    */
@@ -1166,55 +900,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Removes a note from the transformation on a certain location (i.e. the specified index). Also marks that the
-   * transformation's notes have changed.
-   * 
-   * @param i
-   *          The index into the notes list
-   */
-  public void removeNote( int i ) {
-    if ( i < 0 || i >= notes.size() ) {
-      return;
-    }
-    notes.remove( i );
-    changed_notes = true;
-  }
-
-  /**
-   * Raises a note to the "top" of the list by removing the note at the specified index and re-inserting it at the end.
-   * Also marks that the transformation's notes have changed.
-   * 
-   * @param p
-   *          the index into the notes list.
-   */
-  public void raiseNote( int p ) {
-    // if valid index and not last index
-    if ( ( p >= 0 ) && ( p < notes.size() - 1 ) ) {
-      NotePadMeta note = notes.remove( p );
-      notes.add( note );
-      changed_notes = true;
-    }
-  }
-
-  /**
-   * Lowers a note to the "bottom" of the list by removing the note at the specified index and re-inserting it at the
-   * front. Also marks that the transformation's notes have changed.
-   * 
-   * @param p
-   *          the index into the notes list.
-   */
-  public void lowerNote( int p ) {
-    // if valid index and not first index
-    if ( ( p > 0 ) && ( p < notes.size() ) ) {
-      NotePadMeta note = notes.remove( p );
-      notes.add( 0, note );
-      changed_notes = true;
-    }
-  }
-
-  /**
    * Removes a dependency from the transformation on a certain location (i.e. the specified index).
-   * 
+   *
    * @param i
    *          The location
    */
@@ -1233,18 +920,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the number of databases associated with the transformation.
-   * 
-   * @return the number of databases associated with the transformation
-   * @see org.pentaho.di.trans.HasDatabaseInterface#nrDatabases()
-   */
-  public int nrDatabases() {
-    return databases.size();
-  }
-
-  /**
    * Gets the number of steps in the transformation.
-   * 
+   *
    * @return The number of steps in the transformation.
    */
   public int nrSteps() {
@@ -1253,7 +930,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the number of hops in the transformation.
-   * 
+   *
    * @return The number of hops in the transformation.
    */
   public int nrTransHops() {
@@ -1261,17 +938,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the number of notes in the transformation.
-   * 
-   * @return The number of notes in the transformation.
-   */
-  public int nrNotes() {
-    return notes.size();
-  }
-
-  /**
    * Gets the number of dependencies in the transformation.
-   * 
+   *
    * @return The number of dependencies in the transformation.
    */
   public int nrDependencies() {
@@ -1282,7 +950,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Changes the content of a step on a certain position. This is accomplished by setting the step's metadata at the
    * specified index to the specified meta-data object. The new step's parent transformation is updated to be this
    * transformation.
-   * 
+   *
    * @param i
    *          The index into the steps list
    * @param stepMeta
@@ -1296,7 +964,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Changes the content of a hop on a certain position. This is accomplished by setting the hop's metadata at the
    * specified index to the specified meta-data object.
-   * 
+   *
    * @param i
    *          The index into the hops list
    * @param hi
@@ -1308,7 +976,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the list of used steps, which are the steps that are connected by hops.
-   * 
+   *
    * @return a list with all the used steps
    */
   public List<StepMeta> getUsedSteps() {
@@ -1324,27 +992,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Find a database (associated with the transformation) by name
-   * 
-   * @param name
-   *          the name of the desired database
-   * @return the desired database's meta-data, or null if no database is found
-   * @see org.pentaho.di.trans.HasDatabaseInterface#findDatabase(java.lang.String)
-   */
-  public DatabaseMeta findDatabase( String name ) {
-    int i;
-    for ( i = 0; i < nrDatabases(); i++ ) {
-      DatabaseMeta ci = getDatabase( i );
-      if ( ci.getName().equalsIgnoreCase( name ) ) {
-        return ci;
-      }
-    }
-    return null;
-  }
-
-  /**
    * Searches the list of steps for a step with a certain name.
-   * 
+   *
    * @param name
    *          The name of the step to look for
    * @return The step information or null if no nothing was found.
@@ -1355,7 +1004,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Searches the list of steps for a step with a certain name while excluding one step.
-   * 
+   *
    * @param name
    *          The name of the step to look for
    * @param exclude
@@ -1383,7 +1032,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Searches the list of hops for a hop with a certain name.
-   * 
+   *
    * @param name
    *          The name of the hop to look for
    * @return The hop information or null if nothing was found.
@@ -1402,7 +1051,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Search all hops for a hop where a certain step is at the start.
-   * 
+   *
    * @param fromstep
    *          The step at the start of the hop.
    * @return The hop or null if no hop was found.
@@ -1421,7 +1070,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find a certain hop in the transformation.
-   * 
+   *
    * @param hi
    *          The hop information to look for.
    * @return The hop or null if no hop was found.
@@ -1432,7 +1081,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Search all hops for a hop where a certain step is at the start and another is at the end.
-   * 
+   *
    * @param from
    *          The step at the start of the hop.
    * @param to
@@ -1445,7 +1094,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Search all hops for a hop where a certain step is at the start and another is at the end.
-   * 
+   *
    * @param from
    *          The step at the start of the hop.
    * @param to
@@ -1455,13 +1104,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return The hop or null if no hop was found.
    */
   public TransHopMeta findTransHop( StepMeta from, StepMeta to, boolean disabledToo ) {
-
-    int i;
-    for ( i = 0; i < nrTransHops(); i++ ) {
+    for ( int i = 0; i < nrTransHops(); i++ ) {
       TransHopMeta hi = getTransHop( i );
       if ( hi.isEnabled() || disabledToo ) {
-        if ( hi.getFromStep() != null && hi.getToStep() != null && hi.getFromStep().equals( from )
-            && hi.getToStep().equals( to ) ) {
+        if ( hi.getFromStep() != null
+          && hi.getToStep() != null && hi.getFromStep().equals( from ) && hi.getToStep().equals( to ) ) {
           return hi;
         }
       }
@@ -1471,7 +1118,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Search all hops for a hop where a certain step is at the end.
-   * 
+   *
    * @param tostep
    *          The step at the end of the hop.
    * @return The hop or null if no hop was found.
@@ -1492,7 +1139,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Determines whether or not a certain step is informative. This means that the previous step is sending information
    * to this step, but only informative. This means that this step is using the information to process the actual stream
    * of data. We use this in StreamLookup, TableInput and other types of steps.
-   * 
+   *
    * @param this_step
    *          The step that is receiving information.
    * @param prev_step
@@ -1515,7 +1162,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Counts the number of previous steps for a step name.
-   * 
+   *
    * @param stepname
    *          The name of the step to start from
    * @return The number of preceding steps.
@@ -1528,7 +1175,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Counts the number of previous steps for a step name taking into account whether or not they are informational.
-   * 
+   *
    * @param stepname
    *          The name of the step to start from
    * @param info
@@ -1543,10 +1190,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the number of steps that precede the indicated step.
-   * 
+   *
    * @param stepMeta
    *          The source step
-   * 
+   *
    * @return The number of preceding steps found.
    */
   public int findNrPrevSteps( StepMeta stepMeta ) {
@@ -1555,12 +1202,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the previous step on a certain location (i.e. the specified index).
-   * 
+   *
    * @param stepname
    *          The source step name
    * @param nr
    *          the index into the step list
-   * 
+   *
    * @return The preceding step found.
    * @deprecated
    */
@@ -1571,7 +1218,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the previous step on a certain location taking into account the steps being informational or not.
-   * 
+   *
    * @param stepname
    *          The name of the step
    * @param nr
@@ -1588,12 +1235,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the previous step on a certain location (i.e. the specified index).
-   * 
+   *
    * @param stepMeta
    *          The source step information
    * @param nr
    *          the index into the hops list
-   * 
+   *
    * @return The preceding step found.
    */
   public StepMeta findPrevStep( StepMeta stepMeta, int nr ) {
@@ -1602,7 +1249,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Count the number of previous steps on a certain location taking into account the steps being informational or not.
-   * 
+   *
    * @param stepMeta
    *          The name of the step
    * @param info
@@ -1615,8 +1262,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     int count = 0;
     int i;
 
-    for ( i = 0; i < nrTransHops(); i++ ) // Look at all the hops;
-    {
+    for ( i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
       TransHopMeta hi = getTransHop( i );
       if ( hi.getToStep() != null && hi.isEnabled() && hi.getToStep().equals( stepMeta ) ) {
         // Check if this previous step isn't informative (StreamValueLookup)
@@ -1631,7 +1277,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the previous step on a certain location taking into account the steps being informational or not.
-   * 
+   *
    * @param stepMeta
    *          The step
    * @param nr
@@ -1646,8 +1292,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     int count = 0;
     int i;
 
-    for ( i = 0; i < nrTransHops(); i++ ) // Look at all the hops;
-    {
+    for ( i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
+
       TransHopMeta hi = getTransHop( i );
       if ( hi.getToStep() != null && hi.isEnabled() && hi.getToStep().equals( stepMeta ) ) {
         if ( info || !isStepInformative( stepMeta, hi.getFromStep() ) ) {
@@ -1663,7 +1309,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Get the list of previous steps for a certain reference step. This includes the info steps.
-   * 
+   *
    * @param stepMeta
    *          The reference step
    * @return The list of the preceding steps, including the info steps.
@@ -1674,7 +1320,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Get the previous steps on a certain location taking into account the steps being informational or not.
-   * 
+   *
    * @param stepMeta
    *          The name of the step
    * @param info
@@ -1699,7 +1345,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Get the informational steps for a certain step. An informational step is a step that provides information for
    * lookups, etc.
-   * 
+   *
    * @param stepMeta
    *          The name of the step
    * @return An array of the informational steps found
@@ -1720,7 +1366,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the the number of informational steps for a certain step.
-   * 
+   *
    * @param stepMeta
    *          The step
    * @return The number of informational steps found.
@@ -1732,8 +1378,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     int count = 0;
 
-    for ( int i = 0; i < nrTransHops(); i++ ) // Look at all the hops;
-    {
+    for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
+
       TransHopMeta hi = getTransHop( i );
       if ( hi == null || hi.getToStep() == null ) {
         log.logError( BaseMessages.getString( PKG, "TransMeta.Log.DestinationOfHopCannotBeNull" ) );
@@ -1751,7 +1397,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the informational fields coming from an informational step into the step specified.
-   * 
+   *
    * @param stepname
    *          The name of the step
    * @return A row containing fields with origin.
@@ -1764,7 +1410,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the informational fields coming from an informational step into the step specified.
-   * 
+   *
    * @param stepMeta
    *          The receiving step
    * @return A row containing fields with origin.
@@ -1774,8 +1420,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   public RowMetaInterface getPrevInfoFields( StepMeta stepMeta ) throws KettleStepException {
     RowMetaInterface row = new RowMeta();
 
-    for ( int i = 0; i < nrTransHops(); i++ ) // Look at all the hops;
-    {
+    for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
+
       TransHopMeta hi = getTransHop( i );
       if ( hi.isEnabled() && hi.getToStep().equals( stepMeta ) ) {
         StepMeta infoStep = hi.getFromStep();
@@ -1791,7 +1437,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the number of succeeding steps for a certain originating step.
-   * 
+   *
    * @param stepMeta
    *          The originating step
    * @return The number of succeeding steps.
@@ -1801,8 +1447,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   public int findNrNextSteps( StepMeta stepMeta ) {
     int count = 0;
     int i;
-    for ( i = 0; i < nrTransHops(); i++ ) // Look at all the hops;
-    {
+    for ( i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
+
       TransHopMeta hi = getTransHop( i );
       if ( hi.isEnabled() && hi.getFromStep().equals( stepMeta ) ) {
         count++;
@@ -1813,7 +1459,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the succeeding step at a location for an originating step.
-   * 
+   *
    * @param stepMeta
    *          The originating step
    * @param nr
@@ -1826,8 +1472,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     int count = 0;
     int i;
 
-    for ( i = 0; i < nrTransHops(); i++ ) // Look at all the hops;
-    {
+    for ( i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
+
       TransHopMeta hi = getTransHop( i );
       if ( hi.isEnabled() && hi.getFromStep().equals( stepMeta ) ) {
         if ( count == nr ) {
@@ -1841,15 +1487,15 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Retrieve an array of preceding steps for a certain destination step. This includes the info steps.
-   * 
+   *
    * @param stepMeta
    *          The destination step
    * @return An array containing the preceding steps.
    */
   public StepMeta[] getPrevSteps( StepMeta stepMeta ) {
     List<StepMeta> prevSteps = new ArrayList<StepMeta>();
-    for ( int i = 0; i < nrTransHops(); i++ ) // Look at all the hops;
-    {
+    for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
+
       TransHopMeta hopMeta = getTransHop( i );
       if ( hopMeta.isEnabled() && hopMeta.getToStep().equals( stepMeta ) ) {
         prevSteps.add( hopMeta.getFromStep() );
@@ -1861,7 +1507,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Retrieve an array of succeeding step names for a certain originating step name.
-   * 
+   *
    * @param stepname
    *          The originating step name
    * @return An array of succeeding step names
@@ -1872,7 +1518,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Retrieve an array of preceding steps for a certain destination step.
-   * 
+   *
    * @param stepMeta
    *          The destination step
    * @return an array of preceding step names.
@@ -1889,7 +1535,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Retrieve an array of succeeding steps for a certain originating step.
-   * 
+   *
    * @param stepMeta
    *          The originating step
    * @return an array of succeeding steps.
@@ -1898,8 +1544,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   @Deprecated
   public StepMeta[] getNextSteps( StepMeta stepMeta ) {
     List<StepMeta> nextSteps = new ArrayList<StepMeta>();
-    for ( int i = 0; i < nrTransHops(); i++ ) // Look at all the hops;
-    {
+    for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
+
       TransHopMeta hi = getTransHop( i );
       if ( hi.isEnabled() && hi.getFromStep().equals( stepMeta ) ) {
         nextSteps.add( hi.getToStep() );
@@ -1911,15 +1557,15 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Retrieve a list of succeeding steps for a certain originating step.
-   * 
+   *
    * @param stepMeta
    *          The originating step
    * @return an array of succeeding steps.
    */
   public List<StepMeta> findNextSteps( StepMeta stepMeta ) {
     List<StepMeta> nextSteps = new ArrayList<StepMeta>();
-    for ( int i = 0; i < nrTransHops(); i++ ) // Look at all the hops;
-    {
+    for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
+
       TransHopMeta hi = getTransHop( i );
       if ( hi.isEnabled() && hi.getFromStep().equals( stepMeta ) ) {
         nextSteps.add( hi.getToStep() );
@@ -1931,7 +1577,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Retrieve an array of succeeding step names for a certain originating step.
-   * 
+   *
    * @param stepMeta
    *          The originating step
    * @return an array of succeeding step names.
@@ -1948,7 +1594,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the step that is located on a certain point on the canvas, taking into account the icon size.
-   * 
+   *
    * @param x
    *          the x-coordinate of the point queried
    * @param y
@@ -1977,33 +1623,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Find the note that is located on a certain point on the canvas.
-   * 
-   * @param x
-   *          the x-coordinate of the point queried
-   * @param y
-   *          the y-coordinate of the point queried
-   * @return The note information if a note is located at the point. Otherwise, if nothing was found: null.
-   */
-  public NotePadMeta getNote( int x, int y ) {
-    int i, s;
-    s = notes.size();
-    for ( i = s - 1; i >= 0; i-- ) // Back to front because drawing goes from start to end
-    {
-      NotePadMeta ni = notes.get( i );
-      Point loc = ni.getLocation();
-      Point p = new Point( loc.x, loc.y );
-      if ( x >= p.x && x <= p.x + ni.width + 2 * Const.NOTE_MARGIN && y >= p.y
-          && y <= p.y + ni.height + 2 * Const.NOTE_MARGIN ) {
-        return ni;
-      }
-    }
-    return null;
-  }
-
-  /**
    * Determines whether or not a certain step is part of a hop.
-   * 
+   *
    * @param stepMeta
    *          The step queried
    * @return true if the step is part of a hop.
@@ -2024,7 +1645,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Returns the fields that are emitted by a certain step name.
-   * 
+   *
    * @param stepname
    *          The stepname of the step to be queried.
    * @return A row containing the fields emitted.
@@ -2042,7 +1663,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Returns the fields that are emitted by a certain step.
-   * 
+   *
    * @param stepMeta
    *          The step to be queried.
    * @return A row containing the fields emitted.
@@ -2055,7 +1676,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the fields for each of the specified steps and merges them into a single set
-   * 
+   *
    * @param stepMeta
    *          the step meta
    * @return an interface to the step fields
@@ -2076,7 +1697,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Returns the fields that are emitted by a certain step.
-   * 
+   *
    * @param stepMeta
    *          The step to be queried.
    * @param monitor
@@ -2085,8 +1706,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @throws KettleStepException
    *           the kettle step exception
    */
-  public RowMetaInterface getStepFields( StepMeta stepMeta, ProgressMonitorListener monitor )
-    throws KettleStepException {
+  public RowMetaInterface getStepFields( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleStepException {
     clearStepFieldsCachce();
     setRepositoryOnMappingSteps();
     return getStepFields( stepMeta, null, monitor );
@@ -2094,7 +1714,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Returns the fields that are emitted by a certain step.
-   * 
+   *
    * @param stepMeta
    *          The step to be queried.
    * @param targetStep
@@ -2105,8 +1725,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @throws KettleStepException
    *           the kettle step exception
    */
-  public RowMetaInterface getStepFields( StepMeta stepMeta, StepMeta targetStep, ProgressMonitorListener monitor )
-    throws KettleStepException {
+  public RowMetaInterface getStepFields( StepMeta stepMeta, StepMeta targetStep, ProgressMonitorListener monitor ) throws KettleStepException {
     RowMetaInterface row = new RowMeta();
 
     if ( stepMeta == null ) {
@@ -2141,10 +1760,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     // Resume the regular program...
 
     if ( log.isDebug() ) {
-      log.logDebug( BaseMessages
+      log
+        .logDebug( BaseMessages
           .getString(
-              PKG,
-              "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf( findNrPrevSteps( stepMeta ) ) ) ); //$NON-NLS-3$
+            PKG,
+            "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String
+              .valueOf( findNrPrevSteps( stepMeta ) ) ) );
     }
     int nrPrevious = findNrPrevSteps( stepMeta );
     for ( int i = 0; i < nrPrevious; i++ ) {
@@ -2152,7 +1773,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
       if ( monitor != null ) {
         monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.CheckingStepTask.Title", prevStepMeta
-            .getName() ) );
+          .getName() ) );
       }
 
       RowMetaInterface add = getStepFields( prevStepMeta, stepMeta, monitor );
@@ -2203,7 +1824,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the fields that are entering a step with a certain name.
-   * 
+   *
    * @param stepname
    *          The name of the step queried
    * @return A row containing the fields (w/ origin) entering the step
@@ -2217,7 +1838,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the fields that are entering a certain step.
-   * 
+   *
    * @param stepMeta
    *          The step queried
    * @return A row containing the fields (w/ origin) entering the step
@@ -2231,7 +1852,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find the fields that are entering a certain step.
-   * 
+   *
    * @param stepMeta
    *          The step queried
    * @param monitor
@@ -2240,8 +1861,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @throws KettleStepException
    *           the kettle step exception
    */
-  public RowMetaInterface getPrevStepFields( StepMeta stepMeta, ProgressMonitorListener monitor )
-    throws KettleStepException {
+  public RowMetaInterface getPrevStepFields( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleStepException {
     clearStepFieldsCachce();
 
     RowMetaInterface row = new RowMeta();
@@ -2251,17 +1871,19 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
 
     if ( log.isDebug() ) {
-      log.logDebug( BaseMessages
+      log
+        .logDebug( BaseMessages
           .getString(
-              PKG,
-              "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf( findNrPrevSteps( stepMeta ) ) ) ); //$NON-NLS-3$
+            PKG,
+            "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String
+              .valueOf( findNrPrevSteps( stepMeta ) ) ) );
     }
     for ( int i = 0; i < findNrPrevSteps( stepMeta ); i++ ) {
       StepMeta prevStepMeta = findPrevStep( stepMeta, i );
 
       if ( monitor != null ) {
         monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.CheckingStepTask.Title", prevStepMeta
-            .getName() ) );
+          .getName() ) );
       }
 
       RowMetaInterface add = getStepFields( prevStepMeta, stepMeta, monitor );
@@ -2269,8 +1891,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       if ( log.isDebug() ) {
         log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.FoundFieldsToAdd2" ) + add.toString() );
       }
-      if ( i == 0 ) // we expect all input streams to be of the same layout!
-      {
+      if ( i == 0 ) {
+        // we expect all input streams to be of the same layout!
+
         row.addRowMeta( add ); // recursive!
       } else {
         // See if the add fields are not already in the row
@@ -2288,7 +1911,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Return the fields that are emitted by a step with a certain name.
-   * 
+   *
    * @param stepname
    *          The name of the step that's being queried.
    * @param row
@@ -2303,7 +1926,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Returns the fields that are emitted by a step.
-   * 
+   *
    * @param stepMeta
    *          : The StepMeta object that's being queried
    * @param nextStep
@@ -2314,14 +1937,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @throws KettleStepException
    *           the kettle step exception
    */
-  public RowMetaInterface getThisStepFields( StepMeta stepMeta, StepMeta nextStep, RowMetaInterface row )
-    throws KettleStepException {
+  public RowMetaInterface getThisStepFields( StepMeta stepMeta, StepMeta nextStep, RowMetaInterface row ) throws KettleStepException {
     return getThisStepFields( stepMeta, nextStep, row, null );
   }
 
   /**
    * Returns the fields that are emitted by a step.
-   * 
+   *
    * @param stepMeta
    *          : The StepMeta object that's being queried
    * @param nextStep
@@ -2335,11 +1957,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    *           the kettle step exception
    */
   public RowMetaInterface getThisStepFields( StepMeta stepMeta, StepMeta nextStep, RowMetaInterface row,
-      ProgressMonitorListener monitor ) throws KettleStepException {
+    ProgressMonitorListener monitor ) throws KettleStepException {
     // Then this one.
     if ( log.isDebug() ) {
-      log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.GettingFieldsFromStep", stepMeta.getName(), stepMeta
-          .getStepID() ) );
+      log.logDebug( BaseMessages.getString(
+        PKG, "TransMeta.Log.GettingFieldsFromStep", stepMeta.getName(), stepMeta.getStepID() ) );
     }
     String name = stepMeta.getName();
 
@@ -2374,7 +1996,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   @SuppressWarnings( "deprecation" )
   private void compatibleGetStepFields( StepMetaInterface stepint, RowMetaInterface row, String name,
-      RowMetaInterface[] inform, StepMeta nextStep, VariableSpace space ) throws KettleStepException {
+    RowMetaInterface[] inform, StepMeta nextStep, VariableSpace space ) throws KettleStepException {
 
     stepint.getFields( row, name, inform, nextStep, space );
 
@@ -2463,7 +2085,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Checks if the transformation is using the specified partition schema.
-   * 
+   *
    * @param partitionSchema
    *          the partition schema
    * @return true if the transformation is using the partition schema, false otherwise
@@ -2484,7 +2106,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Checks if the transformation is using a cluster schema.
-   * 
+   *
    * @return true if a cluster schema is used on one or more steps in this transformation, false otherwise
    */
   public boolean isUsingAClusterSchema() {
@@ -2493,7 +2115,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Checks if the transformation is using the specified cluster schema.
-   * 
+   *
    * @param clusterSchema
    *          the cluster schema to check
    * @return true if the specified cluster schema is used on one or more steps in this transformation
@@ -2511,7 +2133,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Checks if the transformation is using the specified slave server.
-   * 
+   *
    * @param slaveServer
    *          the slave server
    * @return true if the transformation is using the slave server, false otherwise
@@ -2536,7 +2158,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Checks if the transformation is referenced by a repository.
-   * 
+   *
    * @return true if the transformation is referenced by a repository, false otherwise
    */
   public boolean isRepReference() {
@@ -2546,7 +2168,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Checks if the transformation is referenced by a file. If the transformation is not referenced by a repository, it
    * is assumed to be referenced by a file.
-   * 
+   *
    * @return true if the transformation is referenced by a file, false otherwise
    * @see #isRepReference()
    */
@@ -2558,7 +2180,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Checks (using the exact filename and transformation name) if the transformation is referenced by a repository. If
    * referenced by a repository, the exact filename should be empty and the exact transformation name should be
    * non-empty.
-   * 
+   *
    * @param exactFilename
    *          the exact filename
    * @param exactTransname
@@ -2573,7 +2195,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Checks (using the exact filename and transformation name) if the transformation is referenced by a file. If
    * referenced by a repository, the exact filename should be non-empty and the exact transformation name should be
    * empty.
-   * 
+   *
    * @param exactFilename
    *          the exact filename
    * @param exactTransname
@@ -2587,7 +2209,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Finds the location (index) of the specified hop.
-   * 
+   *
    * @param hi
    *          The hop queried
    * @return The location of the hop, or -1 if nothing was found.
@@ -2598,7 +2220,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Finds the location (index) of the specified step.
-   * 
+   *
    * @param stepMeta
    *          The step queried
    * @return The location of the step, or -1 if nothing was found.
@@ -2608,31 +2230,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Finds the location (index) of the specified database.
-   * 
-   * @param ci
-   *          the database queried
-   * @return the index of the database, or -1 if nothing was found
-   * @see org.pentaho.di.trans.HasDatabaseInterface#indexOfDatabase(org.pentaho.di.core.database.DatabaseMeta)
-   */
-  public int indexOfDatabase( DatabaseMeta ci ) {
-    return databases.indexOf( ci );
-  }
-
-  /**
-   * Finds the location (index) of the specified note.
-   * 
-   * @param ni
-   *          The note queried
-   * @return The location of the note, or -1 if nothing was found.
-   */
-  public int indexOfNote( NotePadMeta ni ) {
-    return notes.indexOf( ni );
-  }
-
-  /**
    * Gets the file type. For TransMeta, this returns a value corresponding to Transformation
-   * 
+   *
    * @return the file type
    * @see org.pentaho.di.core.EngineMetaInterface#getFileType()
    */
@@ -2642,7 +2241,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the transformation filter names.
-   * 
+   *
    * @return the filter names
    * @see org.pentaho.di.core.EngineMetaInterface#getFilterNames()
    */
@@ -2653,7 +2252,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Gets the transformation filter extensions. For TransMeta, this method returns the value of
    * {@link Const#STRING_TRANS_FILTER_EXT}
-   * 
+   *
    * @return the filter extensions
    * @see org.pentaho.di.core.EngineMetaInterface#getFilterExtensions()
    */
@@ -2664,7 +2263,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Gets the default extension for a transformation. For TransMeta, this method returns the value of
    * {@link Const#STRING_TRANS_DEFAULT_EXT}
-   * 
+   *
    * @return the default extension
    * @see org.pentaho.di.core.EngineMetaInterface#getDefaultExtension()
    */
@@ -2674,7 +2273,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the XML representation of this transformation.
-   * 
+   *
    * @return the XML representation of this transformation
    * @throws KettleException
    *           if any errors occur during generation of the XML
@@ -2687,7 +2286,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Gets the XML representation of this transformation, including or excluding step, database, slave server, cluster,
    * or partition information as specified by the parameters
-   * 
+   *
    * @param includeSteps
    *          whether to include step data
    * @param includeDatabase
@@ -2702,8 +2301,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @throws KettleException
    *           if any errors occur during generation of the XML
    */
-  public String getXML( boolean includeSteps, boolean includeDatabase, boolean includeSlaves, boolean includeClusters,
-      boolean includePartitions ) throws KettleException {
+  public String getXML( boolean includeSteps, boolean includeDatabase, boolean includeSlaves,
+    boolean includeClusters, boolean includePartitions ) throws KettleException {
     Props props = null;
     if ( Props.isInitialized() ) {
       props = Props.getInstance();
@@ -2717,7 +2316,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "name", name ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "description", description ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "extended_description", extended_description ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "extended_description", extendedDescription ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "trans_version", trans_version ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "trans_type", transformationType.getCode() ) );
 
@@ -2725,8 +2324,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       retval.append( "    " ).append( XMLHandler.addTagValue( "trans_status", trans_status ) );
     }
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "directory", directory != null ? directory.getPath()
-            : RepositoryDirectory.DIRECTORY_SEPARATOR ) );
+      XMLHandler.addTagValue( "directory", directory != null
+        ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR ) );
 
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
     String[] parameters = listParameters();
@@ -2734,9 +2333,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       retval.append( "        " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
       retval.append( "            " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
       retval.append( "            " ).append(
-          XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
+        XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
       retval.append( "            " ).append(
-          XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
+        XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
       retval.append( "        " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
     }
     retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
@@ -2754,7 +2353,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     retval.append( "    </log>" ).append( Const.CR );
     retval.append( "    <maxdate>" ).append( Const.CR );
     retval
-        .append( "      " ).append( XMLHandler.addTagValue( "connection", maxDateConnection == null ? "" : maxDateConnection.getName() ) ); //$NON-NLS-3$
+      .append( "      " ).append(
+        XMLHandler.addTagValue( "connection", maxDateConnection == null ? "" : maxDateConnection.getName() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "table", maxDateTable ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "field", maxDateField ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "offset", maxDateOffset ) );
@@ -2770,17 +2370,18 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "feedback_shown", feedbackShown ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "feedback_size", feedbackSize ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "using_thread_priorities", usingThreadPriorityManagment ) ); // $NON-NLS-1$
-    retval.append( "    " ).append( XMLHandler.addTagValue( "shared_objects_file", sharedObjectsFile ) ); // $NON-NLS-1$
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "using_thread_priorities", usingThreadPriorityManagment ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "shared_objects_file", sharedObjectsFile ) );
 
     // Performance monitoring
     //
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "capture_step_performance", capturingStepPerformanceSnapShots ) ); // $NON-NLS-1$
+      XMLHandler.addTagValue( "capture_step_performance", capturingStepPerformanceSnapShots ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "step_performance_capturing_delay", stepPerformanceCapturingDelay ) ); // $NON-NLS-1$
+      XMLHandler.addTagValue( "step_performance_capturing_delay", stepPerformanceCapturingDelay ) );
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "step_performance_capturing_size_limit", stepPerformanceCapturingSizeLimit ) ); // $NON-NLS-1$
+      XMLHandler.addTagValue( "step_performance_capturing_size_limit", stepPerformanceCapturingSizeLimit ) );
 
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_DEPENDENCIES ) ).append( Const.CR );
     for ( int i = 0; i < nrDependencies(); i++ ) {
@@ -2824,7 +2425,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     retval.append( "  " ).append( XMLHandler.addTagValue( "created_user", createdUser ) );
     retval.append( "  " ).append( XMLHandler.addTagValue( "created_date", XMLHandler.date2string( createdDate ) ) );
     retval.append( "  " ).append( XMLHandler.addTagValue( "modified_user", modifiedUser ) );
-    retval.append( "  " ).append( XMLHandler.addTagValue( "modified_date", XMLHandler.date2string( modifiedDate ) ) );
+    retval
+      .append( "  " ).append( XMLHandler.addTagValue( "modified_date", XMLHandler.date2string( modifiedDate ) ) );
 
     retval.append( "  " ).append( XMLHandler.closeTag( XML_TAG_INFO ) ).append( Const.CR );
 
@@ -2899,7 +2501,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Parses a file containing the XML that describes the transformation. No default connections are loaded since no
    * repository is available at this time. Since the filename is set, internal variables are being set that relate to
    * this.
-   * 
+   *
    * @param fname
    *          The filename
    * @throws KettleXMLException
@@ -2915,7 +2517,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Parses a file containing the XML that describes the transformation. No default connections are loaded since no
    * repository is available at this time. Since the filename is set, variables are set in the specified variable space
    * that relate to this.
-   * 
+   *
    * @param fname
    *          The filename
    * @param parentVariableSpace
@@ -2933,7 +2535,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Parses a file containing the XML that describes the transformation. No default connections are loaded since no
    * repository is available at this time.
-   * 
+   *
    * @param fname
    *          The filename
    * @param setInternalVariables
@@ -2950,7 +2552,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Parses a file containing the XML that describes the transformation.
-   * 
+   *
    * @param fname
    *          The filename
    * @param rep
@@ -2966,7 +2568,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Parses a file containing the XML that describes the transformation.
-   * 
+   *
    * @param fname
    *          The filename
    * @param rep
@@ -2985,7 +2587,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Parses a file containing the XML that describes the transformation.
-   * 
+   *
    * @param fname
    *          The filename
    * @param rep
@@ -2999,14 +2601,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
    */
-  public TransMeta( String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace )
-    throws KettleXMLException, KettleMissingPluginsException {
+  public TransMeta( String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace ) throws KettleXMLException, KettleMissingPluginsException {
     this( fname, rep, setInternalVariables, parentVariableSpace, null );
   }
 
   /**
    * Parses a file containing the XML that describes the transformation.
-   * 
+   *
    * @param fname
    *          The filename
    * @param rep
@@ -3023,13 +2624,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public TransMeta( String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace,
-      OverwritePrompter prompter ) throws KettleXMLException, KettleMissingPluginsException {
+    OverwritePrompter prompter ) throws KettleXMLException, KettleMissingPluginsException {
     this( fname, null, rep, setInternalVariables, parentVariableSpace, prompter );
   }
 
   /**
    * Parses a file containing the XML that describes the transformation.
-   * 
+   *
    * @param fname
    *          The filename
    * @param metaStore
@@ -3048,7 +2649,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public TransMeta( String fname, IMetaStore metaStore, Repository rep, boolean setInternalVariables,
-      VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException,
+    VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException,
     KettleMissingPluginsException {
     this.metaStore = metaStore;
     this.repository = rep;
@@ -3058,8 +2659,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     try {
       doc = XMLHandler.loadXMLFile( KettleVFS.getFileObject( fname, parentVariableSpace ) );
     } catch ( KettleFileException e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname ), e );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname ), e );
     }
 
     if ( doc != null ) {
@@ -3067,22 +2668,22 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       Node transnode = XMLHandler.getSubNode( doc, XML_TAG );
 
       if ( transnode == null ) {
-        throw new KettleXMLException( BaseMessages.getString( PKG, "TransMeta.Exception.NotValidTransformationXML",
-            fname ) );
+        throw new KettleXMLException( BaseMessages.getString(
+          PKG, "TransMeta.Exception.NotValidTransformationXML", fname ) );
       }
 
       // Load from this node...
       loadXML( transnode, fname, metaStore, rep, setInternalVariables, parentVariableSpace, prompter );
 
     } else {
-      throw new KettleXMLException( BaseMessages.getString( PKG,
-          "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname ) );
+      throw new KettleXMLException( BaseMessages.getString(
+        PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname ) );
     }
   }
 
   /**
    * Instantiates a new transformation meta-data object.
-   * 
+   *
    * @param xmlStream
    *          the XML input stream from which to read the transformation definition
    * @param rep
@@ -3099,7 +2700,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public TransMeta( InputStream xmlStream, Repository rep, boolean setInternalVariables,
-      VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException,
+    VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException,
     KettleMissingPluginsException {
     Document doc = XMLHandler.loadXMLFile( xmlStream, null, false, false );
     Node transnode = XMLHandler.getSubNode( doc, XML_TAG );
@@ -3109,7 +2710,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Parse a file containing the XML that describes the transformation. Specify a repository to load default list of
    * database connections from and to reference in mappings etc.
-   * 
+   *
    * @param transnode
    *          The XML node to load from
    * @param rep
@@ -3125,7 +2726,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Parses an XML DOM (starting at the specified Node) that describes the transformation.
-   * 
+   *
    * @param transnode
    *          The XML node to load from
    * @param rep
@@ -3144,7 +2745,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Parses an XML DOM (starting at the specified Node) that describes the transformation.
-   * 
+   *
    * @param transnode
    *          The XML node to load from
    * @param rep
@@ -3158,14 +2759,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
    */
-  public void loadXML( Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace )
-    throws KettleXMLException, KettleMissingPluginsException {
+  public void loadXML( Node transnode, Repository rep, boolean setInternalVariables,
+    VariableSpace parentVariableSpace ) throws KettleXMLException, KettleMissingPluginsException {
     loadXML( transnode, rep, setInternalVariables, parentVariableSpace, null );
   }
 
   /**
    * Parses an XML DOM (starting at the specified Node) that describes the transformation.
-   * 
+   *
    * @param transnode
    *          The XML node to load from
    * @param rep
@@ -3181,14 +2782,15 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @throws KettleMissingPluginsException
    *           in case missing plugins were found (details are in the exception in that case)
    */
-  public void loadXML( Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace,
-      OverwritePrompter prompter ) throws KettleXMLException, KettleMissingPluginsException {
+  public void loadXML( Node transnode, Repository rep, boolean setInternalVariables,
+    VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException,
+    KettleMissingPluginsException {
     loadXML( transnode, null, rep, setInternalVariables, parentVariableSpace, prompter );
   }
 
   /**
    * Parses an XML DOM (starting at the specified Node) that describes the transformation.
-   * 
+   *
    * @param transnode
    *          The XML node to load from
    * @param fname
@@ -3207,14 +2809,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public void loadXML( Node transnode, String fname, Repository rep, boolean setInternalVariables,
-      VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException,
+    VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException,
     KettleMissingPluginsException {
     loadXML( transnode, fname, null, rep, setInternalVariables, parentVariableSpace, prompter );
   }
 
   /**
    * Parses an XML DOM (starting at the specified Node) that describes the transformation.
-   * 
+   *
    * @param transnode
    *          The XML node to load from
    * @param fname
@@ -3233,12 +2835,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public void loadXML( Node transnode, String fname, IMetaStore metaStore, Repository rep,
-      boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter )
-    throws KettleXMLException, KettleMissingPluginsException {
+    boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException, KettleMissingPluginsException {
 
     KettleMissingPluginsException missingPluginsException =
-        new KettleMissingPluginsException( BaseMessages.getString( PKG,
-            "TransMeta.MissingPluginsFoundWhileLoadingTransformation.Exception" ) );
+      new KettleMissingPluginsException( BaseMessages.getString(
+        PKG, "TransMeta.MissingPluginsFoundWhileLoadingTransformation.Exception" ) );
 
     this.metaStore = metaStore; // Remember this as the primary meta store.
 
@@ -3268,7 +2869,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           sharedObjectsFile = XMLHandler.getTagValue( transnode, "info", "shared_objects_file" );
           sharedObjects = rep != null ? rep.readTransSharedObjects( this ) : readSharedObjects();
         } catch ( Exception e ) {
-          log.logError( BaseMessages.getString( PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString() ) );
+          log
+            .logError( BaseMessages.getString( PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString() ) );
           log.logError( Const.getStackTracker( e ) );
         }
 
@@ -3296,19 +2898,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           } else {
             if ( !exist.isShared() ) // otherwise, we just keep the shared connection.
             {
-              boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
-              boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
-              if ( askOverwrite ) {
-                if ( prompter != null ) {
-                  overwrite =
-                      prompter.overwritePrompt( BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnectionYN",
-                          dbcon.getName() ), BaseMessages.getString( PKG,
-                          "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ),
-                          Props.STRING_ASK_ABOUT_REPLACING_DATABASES );
-                }
-              }
-
-              if ( overwrite ) {
+              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteConnectionYN", dbcon.getName() ), BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
                 int idx = indexOfDatabase( exist );
                 removeDatabase( idx );
                 addDatabase( idx, dbcon );
@@ -3349,8 +2941,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             //
             StepMeta check = findStep( stepMeta.getName() );
             if ( check != null ) {
-              if ( !check.isShared() ) // Don't overwrite shared objects
-              {
+              if ( !check.isShared() ) {
+                // Don't overwrite shared objects
+
                 addOrReplaceStep( stepMeta );
               } else {
                 check.setDraw( stepMeta.isDrawn() ); // Just keep the drawn flag and location
@@ -3421,7 +3014,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
         // extended description
         //
-        extended_description = XMLHandler.getTagValue( infonode, "extended_description" );
+        extendedDescription = XMLHandler.getTagValue( infonode, "extended_description" );
 
         // trans version
         //
@@ -3458,25 +3051,25 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             // Load the XML
             //
             transLogTable.findField( TransLogTable.ID.LINES_READ ).setSubject(
-                findStep( XMLHandler.getTagValue( infonode, "log", "read" ) ) );
+              findStep( XMLHandler.getTagValue( infonode, "log", "read" ) ) );
             transLogTable.findField( TransLogTable.ID.LINES_WRITTEN ).setSubject(
-                findStep( XMLHandler.getTagValue( infonode, "log", "write" ) ) );
+              findStep( XMLHandler.getTagValue( infonode, "log", "write" ) ) );
             transLogTable.findField( TransLogTable.ID.LINES_INPUT ).setSubject(
-                findStep( XMLHandler.getTagValue( infonode, "log", "input" ) ) );
+              findStep( XMLHandler.getTagValue( infonode, "log", "input" ) ) );
             transLogTable.findField( TransLogTable.ID.LINES_OUTPUT ).setSubject(
-                findStep( XMLHandler.getTagValue( infonode, "log", "output" ) ) );
+              findStep( XMLHandler.getTagValue( infonode, "log", "output" ) ) );
             transLogTable.findField( TransLogTable.ID.LINES_UPDATED ).setSubject(
-                findStep( XMLHandler.getTagValue( infonode, "log", "update" ) ) );
+              findStep( XMLHandler.getTagValue( infonode, "log", "update" ) ) );
             transLogTable.findField( TransLogTable.ID.LINES_REJECTED ).setSubject(
-                findStep( XMLHandler.getTagValue( infonode, "log", "rejected" ) ) );
+              findStep( XMLHandler.getTagValue( infonode, "log", "rejected" ) ) );
 
             transLogTable.setConnectionName( XMLHandler.getTagValue( infonode, "log", "connection" ) );
             transLogTable.setSchemaName( XMLHandler.getTagValue( infonode, "log", "schema" ) );
             transLogTable.setTableName( XMLHandler.getTagValue( infonode, "log", "table" ) );
             transLogTable.findField( TransLogTable.ID.ID_BATCH ).setEnabled(
-                "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "log", "use_batchid" ) ) ); //$NON-NLS-3$
+              "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "log", "use_batchid" ) ) );
             transLogTable.findField( TransLogTable.ID.LOG_FIELD ).setEnabled(
-                "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "log", "USE_LOGFIELD" ) ) ); //$NON-NLS-3$
+              "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "log", "USE_LOGFIELD" ) ) );
             transLogTable.setLogSizeLimit( XMLHandler.getTagValue( infonode, "log", "size_limit_lines" ) );
             transLogTable.setLogInterval( XMLHandler.getTagValue( infonode, "log", "interval" ) );
             transLogTable.findField( TransLogTable.ID.CHANNEL_ID ).setEnabled( false );
@@ -3558,9 +3151,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           //
           PartitionSchema check = findPartitionSchema( partitionSchema.getName() );
           if ( check != null ) {
-            if ( !check.isShared() ) // we don't overwrite shared objects.
-            {
-              addOrReplacePartitionSchema( partitionSchema );
+            if ( !check.isShared() ) {
+              // we don't overwrite shared objects.
+              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwritePartitionSchemaYN", partitionSchema.getName() ), BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
+                addOrReplacePartitionSchema( partitionSchema );
+              }
             }
           } else {
             partitionSchemas.add( partitionSchema );
@@ -3595,9 +3192,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           // The stored XML is only for backup purposes.
           SlaveServer check = findSlaveServer( slaveServer.getName() );
           if ( check != null ) {
-            if ( !check.isShared() ) // we don't overwrite shared objects.
-            {
-              addOrReplaceSlaveServer( slaveServer );
+            if ( !check.isShared() ) {
+              // we don't overwrite shared objects.
+              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteSlaveServerYN", slaveServer.getName() ), BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
+                addOrReplaceSlaveServer( slaveServer );
+              }
             }
           } else {
             slaveServers.add( slaveServer );
@@ -3618,9 +3219,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           // The stored XML is only for backup purposes.
           ClusterSchema check = findClusterSchema( clusterSchema.getName() );
           if ( check != null ) {
-            if ( !check.isShared() ) // we don't overwrite shared objects.
-            {
-              addOrReplaceClusterSchema( clusterSchema );
+            if ( !check.isShared() ) {
+              // we don't overwrite shared objects.
+              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteClusterSchemaYN", clusterSchema.getName() ), BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
+                addOrReplaceClusterSchema( clusterSchema );
+              }
             }
           } else {
             clusterSchemas.add( clusterSchema );
@@ -3635,22 +3240,25 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
         String srowset = XMLHandler.getTagValue( infonode, "size_rowset" );
         sizeRowset = Const.toInt( srowset, Const.ROWS_IN_ROWSET );
-        sleepTimeEmpty = Const.toInt( XMLHandler.getTagValue( infonode, "sleep_time_empty" ), Const.TIMEOUT_GET_MILLIS );
-        sleepTimeFull = Const.toInt( XMLHandler.getTagValue( infonode, "sleep_time_full" ), Const.TIMEOUT_PUT_MILLIS );
+        sleepTimeEmpty =
+          Const.toInt( XMLHandler.getTagValue( infonode, "sleep_time_empty" ), Const.TIMEOUT_GET_MILLIS );
+        sleepTimeFull =
+          Const.toInt( XMLHandler.getTagValue( infonode, "sleep_time_full" ), Const.TIMEOUT_PUT_MILLIS );
         usingUniqueConnections = "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "unique_connections" ) );
 
         feedbackShown = !"N".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "feedback_shown" ) );
         feedbackSize = Const.toInt( XMLHandler.getTagValue( infonode, "feedback_size" ), Const.ROWS_UPDATE );
         usingThreadPriorityManagment =
-            !"N".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "using_thread_priorities" ) );
+          !"N".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "using_thread_priorities" ) );
 
         // Performance monitoring for steps...
         //
         capturingStepPerformanceSnapShots =
-            "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "capture_step_performance" ) ); // $NON-NLS-1$
+          "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "capture_step_performance" ) );
         stepPerformanceCapturingDelay =
-            Const.toLong( XMLHandler.getTagValue( infonode, "step_performance_capturing_delay" ), 1000 ); // $NON-NLS-1$
-        stepPerformanceCapturingSizeLimit = XMLHandler.getTagValue( infonode, "step_performance_capturing_size_limit" ); // $NON-NLS-1$
+          Const.toLong( XMLHandler.getTagValue( infonode, "step_performance_capturing_delay" ), 1000 );
+        stepPerformanceCapturingSizeLimit =
+          XMLHandler.getTagValue( infonode, "step_performance_capturing_size_limit" );
 
         // Created user/date
         createdUser = XMLHandler.getTagValue( infonode, "created_user" );
@@ -3687,8 +3295,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         attributesMap = AttributesUtil.loadAttributes( XMLHandler.getSubNode( transnode, AttributesUtil.XML_TAG ) );
 
       } catch ( KettleXMLException xe ) {
-        throw new KettleXMLException( BaseMessages.getString( PKG, "TransMeta.Exception.ErrorReadingTransformation" ),
-            xe );
+        throw new KettleXMLException( BaseMessages.getString(
+          PKG, "TransMeta.Exception.ErrorReadingTransformation" ), xe );
       } catch ( KettleException e ) {
         throw new KettleXMLException( e );
       } finally {
@@ -3705,8 +3313,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       if ( !missingPluginsException.getMissingPluginDetailsList().isEmpty() ) {
         throw missingPluginsException;
       } else {
-        throw new KettleXMLException( BaseMessages.getString( PKG, "TransMeta.Exception.ErrorReadingTransformation" ),
-            e );
+        throw new KettleXMLException( BaseMessages.getString(
+          PKG, "TransMeta.Exception.ErrorReadingTransformation" ), e );
       }
     } finally {
       if ( !missingPluginsException.getMissingPluginDetailsList().isEmpty() ) {
@@ -3721,12 +3329,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     //
     if ( metaStore != null ) {
       IMetaStoreElementType databaseType =
-          metaStore.getElementTypeByName( PentahoDefaults.NAMESPACE,
-              PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
+        metaStore.getElementTypeByName(
+          PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
       if ( databaseType != null ) {
         List<IMetaStoreElement> databaseElements = metaStore.getElements( PentahoDefaults.NAMESPACE, databaseType );
         for ( IMetaStoreElement databaseElement : databaseElements ) {
-          addOrReplaceDatabase( DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement( metaStore, databaseElement ) );
+          addOrReplaceDatabase( DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(
+            metaStore, databaseElement ) );
         }
       }
     }
@@ -3736,7 +3345,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Reads the shared objects (steps, connections, etc.).
-   * 
+   *
    * @return the shared objects
    * @throws KettleException
    *           if any errors occur while reading the shared objects
@@ -3783,7 +3392,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * transformation. The others will not be executed.<br/>
    * Update 3.0 : we also add those steps that are not linked to another hop, but have at least one remote input or
    * output step defined.
-   * 
+   *
    * @param all
    *          true if you want to get ALL the steps from the transformation, false otherwise
    * @return A List of steps
@@ -3824,59 +3433,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Get the name of the transformation.
-   * 
-   * @return The name of the transformation
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Set the name of the transformation.
-   * 
-   * @param newName
-   *          The new name of the transformation
-   */
-  public void setName( String newName ) {
-    fireNameChangedListeners( this.name, newName );
-    this.name = newName;
-    setInternalNameKettleVariable( variables );
-  }
-
-  /**
-   * Builds a name for the transformation. If no name is yet set, create the name from the filename.
-   */
-  public void nameFromFilename() {
-    if ( !Const.isEmpty( filename ) ) {
-      setName( Const.createName( filename ) );
-    }
-  }
-
-  /**
-   * Get the filename (if any) of the transformation.
-   * 
-   * @return The filename of the transformation.
-   */
-  public String getFilename() {
-    return filename;
-  }
-
-  /**
-   * Set the filename of the transformation.
-   * 
-   * @param fname
-   *          The new filename of the transformation.
-   */
-  public void setFilename( String fname ) {
-    fireFilenameChangedListeners( this.filename, fname );
-    this.filename = fname;
-    setInternalFilenameKettleVariables( variables );
-  }
-
-  /**
    * Checks if a step has been used in a hop or not.
-   * 
+   *
    * @param stepMeta
    *          The step queried.
    * @return true if a step is used in a hop (active or not), false otherwise
@@ -3891,29 +3449,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Sets whether the transformation has changed.
-   * 
-   * @param ch
-   *          true if you want to mark the transformation as changed, false otherwise
-   */
-  public void setChanged( boolean ch ) {
-    if ( ch ) {
-      setChanged();
-      fireContentChangedListeners();
-    } else {
-      clearChanged();
-    }
-  }
-
-  /**
    * Clears the different changed flags of the transformation.
-   * 
+   *
    */
+  @Override
   public void clearChanged() {
-    clearChangedDatabases();
     changed_steps = false;
     changed_hops = false;
-    changed_notes = false;
 
     for ( int i = 0; i < nrSteps(); i++ ) {
       getStep( i ).setChanged( false );
@@ -3923,9 +3465,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
     for ( int i = 0; i < nrTransHops(); i++ ) {
       getTransHop( i ).setChanged( false );
-    }
-    for ( int i = 0; i < nrNotes(); i++ ) {
-      getNote( i ).setChanged( false );
     }
     for ( int i = 0; i < partitionSchemas.size(); i++ ) {
       partitionSchemas.get( i ).setChanged( false );
@@ -3938,40 +3477,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Clears the flags for whether the transformation's databases have changed.
-   * 
-   */
-  public void clearChangedDatabases() {
-    changed_databases = false;
-
-    for ( int i = 0; i < nrDatabases(); i++ ) {
-      getDatabase( i ).setChanged( false );
-    }
-  }
-
-  /**
-   * Checks for whether the transformation's connections have changed.
-   * 
-   * @return true if the transformation's connections have changed, false otherwise
-   * @see org.pentaho.di.trans.HasDatabaseInterface#haveConnectionsChanged()
-   */
-  public boolean haveConnectionsChanged() {
-    if ( changed_databases ) {
-      return true;
-    }
-
-    for ( int i = 0; i < nrDatabases(); i++ ) {
-      DatabaseMeta ci = getDatabase( i );
-      if ( ci.hasChanged() ) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * Checks whether or not the steps have changed.
-   * 
+   *
    * @return true if the steps have been changed, false otherwise
    */
   public boolean haveStepsChanged() {
@@ -3993,7 +3500,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Checks whether or not any of the hops have been changed.
-   * 
+   *
    * @return true if a hop has been changed, false otherwise
    */
   public boolean haveHopsChanged() {
@@ -4011,28 +3518,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Checks whether or not any of the notes have been changed.
-   * 
-   * @return true if the notes have been changed, false otherwise
-   */
-  public boolean haveNotesChanged() {
-    if ( changed_notes ) {
-      return true;
-    }
-
-    for ( int i = 0; i < nrNotes(); i++ ) {
-      NotePadMeta ni = getNote( i );
-      if ( ni.hasChanged() ) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  /**
    * Checks whether or not any of the partitioning schemas have been changed.
-   * 
+   *
    * @return true if the partitioning schemas have been changed, false otherwise
    */
   public boolean havePartitionSchemasChanged() {
@@ -4048,7 +3535,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Checks whether or not any of the clustering schemas have been changed.
-   * 
+   *
    * @return true if the clustering schemas have been changed, false otherwise
    */
   public boolean haveClusterSchemasChanged() {
@@ -4064,24 +3551,18 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Checks whether or not the transformation has changed.
-   * 
+   *
    * @return true if the transformation has changed, false otherwise
    */
+  @Override
   public boolean hasChanged() {
     if ( super.hasChanged() ) {
-      return true;
-    }
-
-    if ( haveConnectionsChanged() ) {
       return true;
     }
     if ( haveStepsChanged() ) {
       return true;
     }
     if ( haveHopsChanged() ) {
-      return true;
-    }
-    if ( haveNotesChanged() ) {
       return true;
     }
     if ( havePartitionSchemasChanged() ) {
@@ -4098,10 +3579,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * See if there are any loops in the transformation, starting at the indicated step. This works by looking at all the
    * previous steps. If you keep going backward and find the step, there is a loop. Both the informational and the
    * normal steps need to be checked for loops!
-   * 
+   *
    * @param stepMeta
    *          The step position to start looking
-   * 
+   *
    * @return true if a loop has been found, false if no loop is found.
    */
   public boolean hasLoop( StepMeta stepMeta ) {
@@ -4112,19 +3593,20 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * See if there are any loops in the transformation, starting at the indicated step. This works by looking at all the
    * previous steps. If you keep going backward and find the original step again, there is a loop.
-   * 
+   *
    * @param stepMeta
    *          The step position to start looking
    * @param lookup
    *          The original step when wandering around the transformation.
    * @param info
    *          Check the informational steps or not.
-   * 
+   *
    * @return true if a loop has been found, false if no loop is found.
    */
   private boolean hasLoop( StepMeta stepMeta, StepMeta lookup, boolean info ) {
     String cacheKey =
-        stepMeta.getName() + " - " + ( lookup != null ? lookup.getName() : "" ) + " - " + ( info ? "true" : "false" );
+      stepMeta.getName()
+        + " - " + ( lookup != null ? lookup.getName() : "" ) + " - " + ( info ? "true" : "false" );
     Boolean loop = loopCache.get( cacheKey );
     if ( loop != null ) {
       return loop.booleanValue();
@@ -4158,7 +3640,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Mark all steps in the transformation as selected.
-   * 
+   *
    */
   public void selectAll() {
     int i;
@@ -4177,7 +3659,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Clear the selection of all steps.
-   * 
+   *
    */
   public void unselectAll() {
     int i;
@@ -4193,7 +3675,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Get an array of all the selected step locations.
-   * 
+   *
    * @return The selected step locations.
    */
   public Point[] getSelectedStepLocations() {
@@ -4209,7 +3691,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Get an array of all the selected note locations.
-   * 
+   *
    * @return The selected note locations.
    */
   public Point[] getSelectedNoteLocations() {
@@ -4225,7 +3707,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets a list of the selected steps.
-   * 
+   *
    * @return A list of all the selected steps.
    */
   public List<StepMeta> getSelectedSteps() {
@@ -4240,23 +3722,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets an array of all the selected notes.
-   * 
-   * @return An array of all the selected notes.
-   */
-  public List<NotePadMeta> getSelectedNotes() {
-    List<NotePadMeta> selection = new ArrayList<NotePadMeta>();
-    for ( NotePadMeta note : notes ) {
-      if ( note.isSelected() ) {
-        selection.add( note );
-      }
-    }
-    return selection;
-  }
-
-  /**
    * Gets an array of all the selected step names.
-   * 
+   *
    * @return An array of all the selected step names.
    */
   public String[] getSelectedStepNames() {
@@ -4271,7 +3738,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets an array of the locations of an array of steps.
-   * 
+   *
    * @param steps
    *          An array of steps
    * @return an array of the locations of an array of steps
@@ -4287,188 +3754,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets an array of the locations of an array of notes.
-   * 
-   * @param notes
-   *          An array of notes
-   * @return an array of the locations of an array of notes
-   */
-  public int[] getNoteIndexes( List<NotePadMeta> notes ) {
-    int[] retval = new int[notes.size()];
-
-    for ( int i = 0; i < notes.size(); i++ ) {
-      retval[i] = indexOfNote( notes.get( i ) );
-    }
-
-    return retval;
-  }
-
-  /**
-   * Gets the maximum number of undo operations possible.
-   * 
-   * @return The maximum number of undo operations that are allowed.
-   */
-  public int getMaxUndo() {
-    return max_undo;
-  }
-
-  /**
-   * Sets the maximum number of undo operations that are allowed.
-   * 
-   * @param mu
-   *          The maximum number of undo operations that are allowed.
-   */
-  public void setMaxUndo( int mu ) {
-    max_undo = mu;
-    while ( undo.size() > mu && undo.size() > 0 ) {
-      undo.remove( 0 );
-    }
-  }
-
-  /**
-   * Adds an undo operation to the undo list.
-   * 
-   * @param from
-   *          array of objects representing the old state
-   * @param to
-   *          array of objectes representing the new state
-   * @param pos
-   *          An array of object locations
-   * @param prev
-   *          An array of points representing the old positions
-   * @param curr
-   *          An array of points representing the new positions
-   * @param type_of_change
-   *          The type of change that's being done to the transformation.
-   * @param nextAlso
-   *          indicates that the next undo operation needs to follow this one.
-   */
-  public void addUndo( Object[] from, Object[] to, int[] pos, Point[] prev, Point[] curr, int type_of_change,
-      boolean nextAlso ) {
-    // First clean up after the current position.
-    // Example: position at 3, size=5
-    // 012345
-    // ^
-    // remove 34
-    // Add 4
-    // 01234
-
-    while ( undo.size() > undo_position + 1 && undo.size() > 0 ) {
-      int last = undo.size() - 1;
-      undo.remove( last );
-    }
-
-    TransAction ta = new TransAction();
-    switch ( type_of_change ) {
-      case TYPE_UNDO_CHANGE:
-        ta.setChanged( from, to, pos );
-        break;
-      case TYPE_UNDO_DELETE:
-        ta.setDelete( from, pos );
-        break;
-      case TYPE_UNDO_NEW:
-        ta.setNew( from, pos );
-        break;
-      case TYPE_UNDO_POSITION:
-        ta.setPosition( from, pos, prev, curr );
-        break;
-      default:
-        break;
-    }
-    ta.setNextAlso( nextAlso );
-    undo.add( ta );
-    undo_position++;
-
-    if ( undo.size() > max_undo ) {
-      undo.remove( 0 );
-      undo_position--;
-    }
-  }
-
-  /**
-   * Gets the previous undo operation and change the undo pointer.
-   * 
-   * @return The undo transaction to be performed.
-   */
-  public TransAction previousUndo() {
-    if ( undo.isEmpty() || undo_position < 0 ) {
-      return null; // No undo left!
-    }
-
-    TransAction retval = undo.get( undo_position );
-
-    undo_position--;
-
-    return retval;
-  }
-
-  /**
-   * Views current undo action. This method does not change the undo position.
-   * 
-   * @return The current undo transaction
-   */
-  public TransAction viewThisUndo() {
-    if ( undo.isEmpty() || undo_position < 0 ) {
-      return null; // No undo left!
-    }
-
-    TransAction retval = undo.get( undo_position );
-
-    return retval;
-  }
-
-  /**
-   * Views previous undo action. This method does not change the undo position.
-   * 
-   * @return The previous undo transaction
-   */
-  public TransAction viewPreviousUndo() {
-    if ( undo.isEmpty() || undo_position - 1 < 0 ) {
-      return null; // No undo left!
-    }
-
-    TransAction retval = undo.get( undo_position - 1 );
-
-    return retval;
-  }
-
-  /**
-   * Gets the next undo transaction on the list. This method changes the undo pointer.
-   * 
-   * @return The next undo transaction (for redo)
-   */
-  public TransAction nextUndo() {
-    int size = undo.size();
-    if ( size == 0 || undo_position >= size - 1 ) {
-      return null; // no redo left...
-    }
-
-    undo_position++;
-
-    TransAction retval = undo.get( undo_position );
-
-    return retval;
-  }
-
-  /**
-   * Gets the next undo transaction on the list. This method does not change the undo position.
-   * 
-   * @return The next undo transaction (for redo)
-   */
-  public TransAction viewNextUndo() {
-    int size = undo.size();
-    if ( size == 0 || undo_position >= size - 1 ) {
-      return null; // no redo left...
-    }
-
-    TransAction retval = undo.get( undo_position + 1 );
-
-    return retval;
-  }
-
-  /**
    * Gets the maximum size of the canvas by calculating the maximum location of a step.
-   * 
+   *
    * @return Maximum coordinate of a step in the transformation + (100,100) for safety.
    */
   public Point getMaximum() {
@@ -4499,7 +3786,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the minimum point on the canvas of a transformation.
-   * 
+   *
    * @return Minimum coordinate of a step in the transformation
    */
   public Point getMinimum() {
@@ -4541,7 +3828,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the names of all the steps.
-   * 
+   *
    * @return An array of step names.
    */
   public String[] getStepNames() {
@@ -4556,7 +3843,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets all the steps as an array.
-   * 
+   *
    * @return An array of all the steps in the transformation.
    */
   public StepMeta[] getStepsArray() {
@@ -4571,7 +3858,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Looks in the transformation to find a step in a previous location starting somewhere.
-   * 
+   *
    * @param startStep
    *          The starting step
    * @param stepToFind
@@ -4644,15 +3931,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /** The previous count. */
   private long prevCount;
 
-  /** The object version. */
-  private ObjectRevision objectVersion;
-
-  private List<ContentChangedListener> contentChangedListeners;
-
   /**
    * Puts the steps in a more natural order: from start to finish. For the moment, we ignore splits and joins. Splits
    * and joins can't be listed sequentially in any case!
-   * 
+   *
    * @return a map containing all the previous steps per step
    */
   public Map<StepMeta, Map<StepMeta, Boolean>> sortStepsNatural() {
@@ -4712,8 +3994,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     } );
 
     long endTime = System.currentTimeMillis();
-    log.logBasic( BaseMessages.getString( PKG, "TransMeta.Log.TimeExecutionStepSort", ( endTime - startTime ),
-        prevCount ) );
+    log.logBasic( BaseMessages.getString(
+      PKG, "TransMeta.Log.TimeExecutionStepSort", ( endTime - startTime ), prevCount ) );
 
     return stepMap;
   }
@@ -4723,7 +4005,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * provided that contains the specified previous step, it is immediately returned to avoid unnecessary processing.
    * Otherwise, the previous steps are determined and added to the map recursively, and a cache is constructed for later
    * use.
-   * 
+   *
    * @param previousCache
    *          the previous cache, must be non-null
    * @param beforeCache
@@ -4735,7 +4017,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @return the map
    */
   private Map<StepMeta, Boolean> updateFillStepMap( Map<StepMeta, List<StepMeta>> previousCache,
-      Map<StepMeta, Map<StepMeta, Boolean>> beforeCache, StepMeta originStepMeta, StepMeta previousStepMeta ) {
+    Map<StepMeta, Map<StepMeta, Boolean>> beforeCache, StepMeta originStepMeta, StepMeta previousStepMeta ) {
 
     // See if we have a hash map to store step occurrence (located before the step)
     //
@@ -4801,7 +4083,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Determines the impact of the different steps in a transformation on databases, tables and field.
-   * 
+   *
    * @param impact
    *          An ArrayList of DatabaseImpact objects.
    * @param monitor
@@ -4811,13 +4093,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public void analyseImpact( List<DatabaseImpact> impact, ProgressMonitorListener monitor ) throws KettleStepException {
     if ( monitor != null ) {
-      monitor.beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.DeterminingImpactTask.Title" ), nrSteps() );
+      monitor
+        .beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.DeterminingImpactTask.Title" ), nrSteps() );
     }
     boolean stop = false;
     for ( int i = 0; i < nrSteps() && !stop; i++ ) {
       if ( monitor != null ) {
-        monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.LookingAtStepTask.Title" ) + ( i + 1 ) + "/"
-            + nrSteps() );
+        monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.LookingAtStepTask.Title" )
+          + ( i + 1 ) + "/" + nrSteps() );
       }
       StepMeta stepMeta = getStep( i );
 
@@ -4847,14 +4130,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   @SuppressWarnings( "deprecation" )
   private void compatibleAnalyseImpactStep( List<DatabaseImpact> impact, StepMetaInterface stepint,
-      TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, RowMetaInterface inform )
-    throws KettleStepException {
+    TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, RowMetaInterface inform ) throws KettleStepException {
     stepint.analyseImpact( impact, transMeta, stepMeta, prev, null, null, inform );
   }
 
   /**
    * Proposes an alternative stepname when the original already exists.
-   * 
+   *
    * @param stepname
    *          The stepname to find an alternative for
    * @return The suggested alternative stepname.
@@ -4874,7 +4156,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Builds a list of all the SQL statements that this transformation needs in order to work properly.
-   * 
+   *
    * @return An ArrayList of SQLStatement objects.
    * @throws KettleStepException
    *           if any errors occur during SQL statement generation
@@ -4885,7 +4167,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Builds a list of all the SQL statements that this transformation needs in order to work properly.
-   * 
+   *
    * @param monitor
    *          a progress monitor listener to be updated as the SQL statements are generated
    * @return An ArrayList of SQLStatement objects.
@@ -4894,23 +4176,25 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public List<SQLStatement> getSQLStatements( ProgressMonitorListener monitor ) throws KettleStepException {
     if ( monitor != null ) {
-      monitor.beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.GettingTheSQLForTransformationTask.Title" ),
-          nrSteps() + 1 );
+      monitor.beginTask( BaseMessages
+        .getString( PKG, "TransMeta.Monitor.GettingTheSQLForTransformationTask.Title" ), nrSteps() + 1 );
     }
     List<SQLStatement> stats = new ArrayList<SQLStatement>();
 
     for ( int i = 0; i < nrSteps(); i++ ) {
       StepMeta stepMeta = getStep( i );
       if ( monitor != null ) {
-        monitor.subTask( BaseMessages
-            .getString( PKG, "TransMeta.Monitor.GettingTheSQLForStepTask.Title", "" + stepMeta ) );
+        monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.GettingTheSQLForStepTask.Title", ""
+          + stepMeta ) );
       }
       RowMetaInterface prev = getPrevStepFields( stepMeta );
-      SQLStatement sqlCompat = compatibleStepMetaGetSQLStatements( stepMeta.getStepMetaInterface(), stepMeta, prev );
+      SQLStatement sqlCompat =
+        compatibleStepMetaGetSQLStatements( stepMeta.getStepMetaInterface(), stepMeta, prev );
       if ( sqlCompat.getSQL() != null || sqlCompat.hasError() ) {
         stats.add( sqlCompat );
       }
-      SQLStatement sql = stepMeta.getStepMetaInterface().getSQLStatements( this, stepMeta, prev, repository, metaStore );
+      SQLStatement sql =
+        stepMeta.getStepMetaInterface().getSQLStatements( this, stepMeta, prev, repository, metaStore );
       if ( sql.getSQL() != null || sql.hasError() ) {
         stats.add( sql );
       }
@@ -4922,13 +4206,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     // Also check the sql for the logtable...
     //
     if ( monitor != null ) {
-      monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.GettingTheSQLForTransformationTask.Title2" ) );
+      monitor
+        .subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.GettingTheSQLForTransformationTask.Title2" ) );
     }
     if ( transLogTable.getDatabaseMeta() != null
-        && ( !Const.isEmpty( transLogTable.getTableName() ) || !Const.isEmpty( performanceLogTable.getTableName() ) ) ) {
+      && ( !Const.isEmpty( transLogTable.getTableName() ) || !Const.isEmpty( performanceLogTable.getTableName() ) ) ) {
       try {
-        for ( LogTableInterface logTable : new LogTableInterface[] { transLogTable, performanceLogTable,
-          channelLogTable, stepLogTable, } ) {
+        for ( LogTableInterface logTable : new LogTableInterface[] {
+          transLogTable, performanceLogTable, channelLogTable, stepLogTable, } ) {
           if ( logTable.getDatabaseMeta() != null && !Const.isEmpty( logTable.getTableName() ) ) {
 
             Database db = null;
@@ -4939,16 +4224,17 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
               RowMetaInterface fields = logTable.getLogRecord( LogStatus.START, null, null ).getRowMeta();
               String schemaTable =
-                  logTable.getDatabaseMeta().getQuotedSchemaTableCombination( logTable.getSchemaName(),
-                      logTable.getTableName() );
+                logTable.getDatabaseMeta().getQuotedSchemaTableCombination(
+                  logTable.getSchemaName(), logTable.getTableName() );
               String sql = db.getDDL( schemaTable, fields );
               if ( !Const.isEmpty( sql ) ) {
-                SQLStatement stat = new SQLStatement( "<this transformation>", transLogTable.getDatabaseMeta(), sql );
+                SQLStatement stat =
+                  new SQLStatement( "<this transformation>", transLogTable.getDatabaseMeta(), sql );
                 stats.add( stat );
               }
             } catch ( Exception e ) {
-              throw new KettleDatabaseException( "Unable to connect to logging database [" + logTable.getDatabaseMeta()
-                  + "]", e );
+              throw new KettleDatabaseException( "Unable to connect to logging database ["
+                + logTable.getDatabaseMeta() + "]", e );
             } finally {
               if ( db != null ) {
                 db.disconnect();
@@ -4958,9 +4244,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
       } catch ( KettleDatabaseException dbe ) {
         SQLStatement stat = new SQLStatement( "<this transformation>", transLogTable.getDatabaseMeta(), null );
-        stat.setError( BaseMessages.getString( PKG,
-            "TransMeta.SQLStatement.ErrorDesc.ErrorObtainingTransformationLogTableInfo" )
-            + dbe.getMessage() );
+        stat.setError( BaseMessages.getString(
+          PKG, "TransMeta.SQLStatement.ErrorDesc.ErrorObtainingTransformationLogTableInfo" )
+          + dbe.getMessage() );
         stats.add( stat );
       }
     }
@@ -4976,13 +4262,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   @SuppressWarnings( "deprecation" )
   private SQLStatement compatibleStepMetaGetSQLStatements( StepMetaInterface stepMetaInterface, StepMeta stepMeta,
-      RowMetaInterface prev ) throws KettleStepException {
+    RowMetaInterface prev ) throws KettleStepException {
     return stepMetaInterface.getSQLStatements( this, stepMeta, prev );
   }
 
   /**
    * Get the SQL statements (needed to run this transformation) as a single String.
-   * 
+   *
    * @return the SQL statements needed to run this transformation
    * @throws KettleStepException
    *           if any errors occur during SQL statement generation
@@ -5002,7 +4288,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Checks all the steps and fills a List of (CheckResult) remarks.
-   * 
+   *
    * @param remarks
    *          The remarks list to add to.
    * @param only_selected
@@ -5011,13 +4297,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    *          a progress monitor listener to be updated as the SQL statements are generated
    */
   @Deprecated
-  public void checkSteps( List<CheckResultInterface> remarks, boolean only_selected, ProgressMonitorListener monitor ) {
+  public void checkSteps( List<CheckResultInterface> remarks, boolean only_selected,
+    ProgressMonitorListener monitor ) {
     checkSteps( remarks, only_selected, monitor, this, null, null );
   }
 
   /**
    * Checks all the steps and fills a List of (CheckResult) remarks.
-   * 
+   *
    * @param remarks
    *          The remarks list to add to.
    * @param only_selected
@@ -5025,8 +4312,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @param monitor
    *          a progress monitor listener to be updated as the SQL statements are generated
    */
-  public void checkSteps( List<CheckResultInterface> remarks, boolean only_selected, ProgressMonitorListener monitor,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) {
+  public void checkSteps( List<CheckResultInterface> remarks, boolean only_selected,
+    ProgressMonitorListener monitor, VariableSpace space, Repository repository, IMetaStore metaStore ) {
     try {
       remarks.clear(); // Start with a clean slate...
 
@@ -5045,13 +4332,15 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       boolean stop_checking = false;
 
       if ( monitor != null ) {
-        monitor.beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.VerifyingThisTransformationTask.Title" ),
-            steps.length + 2 );
+        monitor.beginTask(
+          BaseMessages.getString( PKG, "TransMeta.Monitor.VerifyingThisTransformationTask.Title" ),
+          steps.length + 2 );
       }
 
       for ( int i = 0; i < steps.length && !stop_checking; i++ ) {
         if ( monitor != null ) {
-          monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.VerifyingStepTask.Title", stepnames[i] ) );
+          monitor
+            .subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.VerifyingStepTask.Title", stepnames[i] ) );
         }
 
         StepMeta stepMeta = steps[i];
@@ -5069,9 +4358,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           } catch ( KettleStepException kse ) {
             info = null;
             CheckResult cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                    "TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingStepInfoFields.Description", ""
-                        + stepMeta, Const.CR + kse.getMessage() ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingStepInfoFields.Description",
+                "" + stepMeta, Const.CR + kse.getMessage() ), stepMeta );
             remarks.add( cr );
           }
         }
@@ -5082,9 +4371,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           prev = getPrevStepFields( stepMeta );
         } catch ( KettleStepException kse ) {
           CheckResult cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                  "TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingInputFields.Description", "" + stepMeta,
-                  Const.CR + kse.getMessage() ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+              PKG, "TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingInputFields.Description", ""
+                + stepMeta, Const.CR + kse.getMessage() ), stepMeta );
           remarks.add( cr );
           // This is a severe error: stop checking...
           // Otherwise we wind up checking time & time again because nothing gets put in the database
@@ -5107,19 +4396,20 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
               ValueMetaInterface v = prev.getValueMeta( x );
               String name = v.getName();
               if ( name == null ) {
-                values.put( v, BaseMessages.getString( PKG,
-                    "TransMeta.Value.CheckingFieldName.FieldNameIsEmpty.Description" ) );
+                values.put( v, BaseMessages.getString(
+                  PKG, "TransMeta.Value.CheckingFieldName.FieldNameIsEmpty.Description" ) );
               } else if ( name.indexOf( ' ' ) >= 0 ) {
-                values.put( v, BaseMessages.getString( PKG,
-                    "TransMeta.Value.CheckingFieldName.FieldNameContainsSpaces.Description" ) );
+                values.put( v, BaseMessages.getString(
+                  PKG, "TransMeta.Value.CheckingFieldName.FieldNameContainsSpaces.Description" ) );
               } else {
                 char[] list =
-                    new char[] { '.', ',', '-', '/', '+', '*', '\'', '\t', '"', '|', '@', '(', ')', '{', '}', '!', '^' };
+                  new char[] {
+                    '.', ',', '-', '/', '+', '*', '\'', '\t', '"', '|', '@', '(', ')', '{', '}', '!', '^' };
                 for ( int c = 0; c < list.length; c++ ) {
                   if ( name.indexOf( list[c] ) >= 0 ) {
-                    values.put( v, BaseMessages.getString( PKG,
-                        "TransMeta.Value.CheckingFieldName.FieldNameContainsUnfriendlyCodes.Description", String
-                            .valueOf( list[c] ) ) );
+                    values.put( v, BaseMessages.getString(
+                      PKG, "TransMeta.Value.CheckingFieldName.FieldNameContainsUnfriendlyCodes.Description",
+                      String.valueOf( list[c] ) ) );
                   }
                 }
               }
@@ -5136,9 +4426,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 if ( prevName.equalsIgnoreCase( sortedNames[x] ) ) {
                   // Give a warning!!
                   CheckResult cr =
-                      new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                          "TransMeta.CheckResult.TypeResultWarning.HaveTheSameNameField.Description", prevName ),
-                          stepMeta );
+                    new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                      PKG, "TransMeta.CheckResult.TypeResultWarning.HaveTheSameNameField.Description",
+                      prevName ), stepMeta );
                   remarks.add( cr );
                 } else {
                   prevName = sortedNames[x];
@@ -5147,15 +4437,15 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             }
           } else {
             CheckResult cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                    "TransMeta.CheckResult.TypeResultError.CannotFindPreviousFields.Description" )
-                    + stepMeta.getName(), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                PKG, "TransMeta.CheckResult.TypeResultError.CannotFindPreviousFields.Description" )
+                + stepMeta.getName(), stepMeta );
             remarks.add( cr );
           }
         } else {
           CheckResult cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                  "TransMeta.CheckResult.TypeResultWarning.StepIsNotUsed.Description" ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "TransMeta.CheckResult.TypeResultWarning.StepIsNotUsed.Description" ), stepMeta );
           remarks.add( cr );
         }
 
@@ -5186,47 +4476,47 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           try {
             logdb.connect();
             CheckResult cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                    "TransMeta.CheckResult.TypeResultOK.ConnectingWorks.Description" ), null );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                PKG, "TransMeta.CheckResult.TypeResultOK.ConnectingWorks.Description" ), null );
             remarks.add( cr );
 
             if ( transLogTable.getTableName() != null ) {
               if ( logdb.checkTableExists( transLogTable.getTableName() ) ) {
                 cr =
-                    new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                        "TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description", transLogTable
-                            .getTableName() ), null );
+                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                    PKG, "TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description", transLogTable
+                      .getTableName() ), null );
                 remarks.add( cr );
 
                 RowMetaInterface fields = transLogTable.getLogRecord( LogStatus.START, null, null ).getRowMeta();
                 String sql = logdb.getDDL( transLogTable.getTableName(), fields );
                 if ( sql == null || sql.length() == 0 ) {
                   cr =
-                      new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                          "TransMeta.CheckResult.TypeResultOK.CorrectLayout.Description" ), null );
+                    new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+                      PKG, "TransMeta.CheckResult.TypeResultOK.CorrectLayout.Description" ), null );
                   remarks.add( cr );
                 } else {
                   cr =
-                      new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                          "TransMeta.CheckResult.TypeResultError.LoggingTableNeedsAdjustments.Description" )
-                          + Const.CR + sql, null );
+                    new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                      PKG, "TransMeta.CheckResult.TypeResultError.LoggingTableNeedsAdjustments.Description" )
+                      + Const.CR + sql, null );
                   remarks.add( cr );
                 }
 
               } else {
                 cr =
-                    new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                        "TransMeta.CheckResult.TypeResultError.LoggingTableDoesNotExist.Description" ), null );
+                  new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                    PKG, "TransMeta.CheckResult.TypeResultError.LoggingTableDoesNotExist.Description" ), null );
                 remarks.add( cr );
               }
             } else {
               cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-                      "TransMeta.CheckResult.TypeResultError.LogTableNotSpecified.Description" ), null );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+                  PKG, "TransMeta.CheckResult.TypeResultError.LogTableNotSpecified.Description" ), null );
               remarks.add( cr );
             }
           } catch ( KettleDatabaseException dbe ) {
-
+            // Ignore errors
           } finally {
             logdb.disconnect();
           }
@@ -5238,22 +4528,23 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       }
 
       if ( monitor != null ) {
-        monitor.subTask( BaseMessages.getString( PKG,
-            "TransMeta.Monitor.CheckingForDatabaseUnfriendlyCharactersInFieldNamesTask.Title" ) );
+        monitor.subTask( BaseMessages.getString(
+          PKG, "TransMeta.Monitor.CheckingForDatabaseUnfriendlyCharactersInFieldNamesTask.Title" ) );
       }
       if ( values.size() > 0 ) {
         for ( ValueMetaInterface v : values.keySet() ) {
           String message = values.get( v );
           CheckResult cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                  "TransMeta.CheckResult.TypeResultWarning.Description", v.getName(), message, v.getOrigin() ),
-                  findStep( v.getOrigin() ) );
+            new CheckResult(
+              CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
+                PKG, "TransMeta.CheckResult.TypeResultWarning.Description", v.getName(), message, v
+                  .getOrigin() ), findStep( v.getOrigin() ) );
           remarks.add( cr );
         }
       } else {
         CheckResult cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "TransMeta.CheckResult.TypeResultOK.Description" ), null );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "TransMeta.CheckResult.TypeResultOK.Description" ), null );
         remarks.add( cr );
       }
       if ( monitor != null ) {
@@ -5267,7 +4558,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the result rows.
-   * 
+   *
    * @return a list containing the result rows.
    * @deprecated Moved to Trans to make this class stateless
    */
@@ -5278,7 +4569,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the list of result rows.
-   * 
+   *
    * @param resultRows
    *          The list of result rows to set.
    * @deprecated Moved to Trans to make this class stateless
@@ -5289,28 +4580,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the repository directory.
-   * 
-   * @return Returns the repository directory.
-   */
-  public RepositoryDirectoryInterface getRepositoryDirectory() {
-    return directory;
-  }
-
-  /**
-   * Sets the repository directory.
-   * 
-   * @param directory
-   *          The directory to set.
-   */
-  public void setRepositoryDirectory( RepositoryDirectoryInterface directory ) {
-    this.directory = directory;
-    setInternalKettleVariables();
-  }
-
-  /**
    * Gets the repository directory path and name of the transformation.
-   * 
+   *
    * @return The repository directory path plus the name of the transformation
    */
   public String getPathAndName() {
@@ -5323,7 +4594,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the arguments used for this transformation.
-   * 
+   *
    * @return an array of String arguments for the transformation
    * @deprecated moved to Trans
    */
@@ -5334,7 +4605,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the arguments used for this transformation.
-   * 
+   *
    * @param arguments
    *          The arguments to set.
    * @deprecated moved to Trans
@@ -5346,7 +4617,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the counters (database sequence values, e.g.) for the transformation.
-   * 
+   *
    * @return a named table of counters.
    * @deprecated moved to Trans
    */
@@ -5357,7 +4628,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the counters (database sequence values, e.g.) for the transformation.
-   * 
+   *
    * @param counters
    *          The counters to set.
    * @deprecated moved to Trans
@@ -5369,7 +4640,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets a list of dependencies for the transformation
-   * 
+   *
    * @return a list of the dependencies for the transformation
    */
   public List<TransDependency> getDependencies() {
@@ -5378,7 +4649,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the dependencies for the transformation.
-   * 
+   *
    * @param dependencies
    *          The dependency list to set.
    */
@@ -5391,7 +4662,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * and field, allows for the filtering of the number of rows to process in a transformation by time, such as only
    * processing the rows/records since the last time the transformation ran correctly. This can be used for auditing and
    * throttling data during warehousing operations.
-   * 
+   *
    * @return Returns the meta-data associated with the most recent database connection.
    */
   public DatabaseMeta getMaxDateConnection() {
@@ -5400,7 +4671,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the database connection associated with "max date" processing.
-   * 
+   *
    * @param maxDateConnection
    *          the database meta-data to set
    * @see #getMaxDateConnection()
@@ -5412,7 +4683,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Gets the maximum date difference between start and end dates for row/record processing. This can be used for
    * auditing and throttling data during warehousing operations.
-   * 
+   *
    * @return the maximum date difference
    */
   public double getMaxDateDifference() {
@@ -5421,7 +4692,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the maximum date difference between start and end dates for row/record processing.
-   * 
+   *
    * @param maxDateDifference
    *          The date difference to set.
    * @see #getMaxDateDifference()
@@ -5434,7 +4705,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Gets the date field associated with "max date" processing. This allows for the filtering of the number of rows to
    * process in a transformation by time, such as only processing the rows/records since the last time the
    * transformation ran correctly. This can be used for auditing and throttling data during warehousing operations.
-   * 
+   *
    * @return a string representing the date for the most recent database connection.
    * @see #getMaxDateConnection()
    */
@@ -5444,7 +4715,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the date field associated with "max date" processing.
-   * 
+   *
    * @param maxDateField
    *          The date field to set.
    * @see #getMaxDateField()
@@ -5457,7 +4728,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Gets the amount by which to increase the "max date" difference. This is used in "max date" processing, and can be
    * used to provide more fine-grained control of the date range. For example, if the end date specifies a minute for
    * which the data is not complete, you can "roll-back" the end date by one minute by
-   * 
+   *
    * @return Returns the maxDateOffset.
    * @see #setMaxDateOffset(double)
    */
@@ -5469,7 +4740,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Sets the amount by which to increase the end date in "max date" processing. This can be used to provide more
    * fine-grained control of the date range. For example, if the end date specifies a minute for which the data is not
    * complete, you can "roll-back" the end date by one minute by setting the offset to -60.
-   * 
+   *
    * @param maxDateOffset
    *          The maxDateOffset to set.
    */
@@ -5481,7 +4752,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Gets the database table providing a date to be used in "max date" processing. This allows for the filtering of the
    * number of rows to process in a transformation by time, such as only processing the rows/records since the last time
    * the transformation ran correctly.
-   * 
+   *
    * @return Returns the maxDateTable.
    * @see #getMaxDateConnection()
    */
@@ -5491,7 +4762,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the table name associated with "max date" processing.
-   * 
+   *
    * @param maxDateTable
    *          The maxDateTable to set.
    * @see #getMaxDateTable()
@@ -5502,7 +4773,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the size of the rowsets.
-   * 
+   *
    * @return Returns the size of the rowsets.
    */
   public int getSizeRowset() {
@@ -5518,7 +4789,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Sets the size of the rowsets. This method allows you to change the size of the buffers between the connected steps
    * in a transformation. <b>NOTE:</b> Do not change this parameter unless you are running low on memory, for example.
-   * 
+   *
    * @param sizeRowset
    *          The sizeRowset to set.
    */
@@ -5528,7 +4799,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the database cache object.
-   * 
+   *
    * @return the database cache object.
    */
   public DBCache getDbCache() {
@@ -5537,7 +4808,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the database cache object.
-   * 
+   *
    * @param dbCache
    *          the database cache object to set
    */
@@ -5546,122 +4817,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the date the transformation was created.
-   * 
-   * @return the date the transformation was created.
-   */
-  public Date getCreatedDate() {
-    return createdDate;
-  }
-
-  /**
-   * Sets the date the transformation was created.
-   * 
-   * @param createdDate
-   *          The creation date to set.
-   */
-  public void setCreatedDate( Date createdDate ) {
-    this.createdDate = createdDate;
-  }
-
-  /**
-   * Sets the user by whom the transformation was created.
-   * 
-   * @param createdUser
-   *          The user to set.
-   */
-  public void setCreatedUser( String createdUser ) {
-    this.createdUser = createdUser;
-  }
-
-  /**
-   * Gets the user by whom the transformation was created.
-   * 
-   * @return the user by whom the transformation was created.
-   */
-  public String getCreatedUser() {
-    return createdUser;
-  }
-
-  /**
-   * Sets the date the transformation was modified.
-   * 
-   * @param modifiedDate
-   *          The modified date to set.
-   */
-  public void setModifiedDate( Date modifiedDate ) {
-    this.modifiedDate = modifiedDate;
-  }
-
-  /**
-   * Gets the date the transformation was modified.
-   * 
-   * @return the date the transformation was modified.
-   */
-  public Date getModifiedDate() {
-    return modifiedDate;
-  }
-
-  /**
-   * Sets the user who last modified the transformation.
-   * 
-   * @param modifiedUser
-   *          The user name to set.
-   */
-  public void setModifiedUser( String modifiedUser ) {
-    this.modifiedUser = modifiedUser;
-  }
-
-  /**
-   * Gets the user who last modified the transformation.
-   * 
-   * @return the user who last modified the transformation.
-   */
-  public String getModifiedUser() {
-    return modifiedUser;
-  }
-
-  /**
-   * Gets the description of the transformation.
-   * 
-   * @return The description of the transformation.
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  /**
-   * Sets the description of the transformation.
-   * 
-   * @param n
-   *          The description of the transformation to set.
-   */
-  public void setDescription( String n ) {
-    description = n;
-  }
-
-  /**
-   * Sets the extended description of the transformation.
-   * 
-   * @param n
-   *          The extended description of the transformation to set.
-   */
-  public void setExtendedDescription( String n ) {
-    extended_description = n;
-  }
-
-  /**
-   * Gets the extended description of the transformation.
-   * 
-   * @return The extended description of the transformation.
-   */
-  public String getExtendedDescription() {
-    return extended_description;
-  }
-
-  /**
    * Gets the version of the transformation.
-   * 
+   *
    * @return The version of the transformation
    */
   public String getTransversion() {
@@ -5670,7 +4827,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the version of the transformation.
-   * 
+   *
    * @param n
    *          The new version description of the transformation
    */
@@ -5680,7 +4837,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the status of the transformation.
-   * 
+   *
    * @param n
    *          The new status description of the transformation
    */
@@ -5690,7 +4847,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the status of the transformation.
-   * 
+   *
    * @return The status of the transformation
    */
   public int getTransstatus() {
@@ -5700,7 +4857,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Gets a textual representation of the transformation. If its name has been set, it will be returned, otherwise the
    * classname is returned.
-   * 
+   *
    * @return the textual representation of the transformation.
    */
   @Override
@@ -5731,7 +4888,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Cancels queries opened for checking & fieldprediction.
-   * 
+   *
    * @throws KettleDatabaseException
    *           if any errors occur during query cancellation
    */
@@ -5745,7 +4902,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Gets the arguments (and their values) used by this transformation. If argument values are supplied by parameter,
    * the values will used for the arguments. If the values are null or empty, the method will attempt to use argument
    * values from a previous execution.
-   * 
+   *
    * @param arguments
    *          the values for the arguments
    * @return A row with the used arguments (and their values) in it.
@@ -5773,8 +4930,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       if ( arguments != null && argNr > 0 && argNr <= arguments.length ) {
         value = Const.NVL( arguments[argNr - 1], "" );
       }
-      if ( value.length() == 0 ) // try the saved option...
-      {
+      if ( value.length() == 0 ) { // try the saved option...
+
         if ( argNr > 0 && argNr < saved.length && saved[argNr] != null ) {
           value = saved[argNr - 1];
         }
@@ -5787,7 +4944,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the amount of time (in nano-seconds) to wait while the input buffer is empty.
-   * 
+   *
    * @return the number of nano-seconds to wait while the input buffer is empty.
    */
   public int getSleepTimeEmpty() {
@@ -5796,7 +4953,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the amount of time (in nano-seconds) to wait while the input buffer is full.
-   * 
+   *
    * @return the number of nano-seconds to wait while the input buffer is full.
    */
   public int getSleepTimeFull() {
@@ -5805,7 +4962,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the amount of time (in nano-seconds) to wait while the input buffer is empty.
-   * 
+   *
    * @param sleepTimeEmpty
    *          the number of nano-seconds to wait while the input buffer is empty.
    */
@@ -5815,7 +4972,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the amount of time (in nano-seconds) to wait while the input buffer is full.
-   * 
+   *
    * @param sleepTimeFull
    *          the number of nano-seconds to wait while the input buffer is full.
    */
@@ -5826,7 +4983,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * This method asks all steps in the transformation whether or not the specified database connection is used. The
    * connection is used in the transformation if any of the steps uses it or if it is being used to log to.
-   * 
+   *
    * @param databaseMeta
    *          The connection to check
    * @return true if the connection is used in this transformation.
@@ -5851,14 +5008,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /*
    * public List getInputFiles() { return inputFiles; }
-   * 
+   *
    * public void setInputFiles(List inputFiles) { this.inputFiles = inputFiles; }
    */
 
   /**
    * Gets a list of all the strings used in this transformation. The parameters indicate which collections to search and
    * which to exclude.
-   * 
+   *
    * @param searchSteps
    *          true if steps should be searched, false otherwise
    * @param searchDatabases
@@ -5869,19 +5026,19 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    *          true if passwords should be searched, false otherwise
    * @return a list of search results for strings used in the transformation.
    */
-  public List<StringSearchResult> getStringList( boolean searchSteps, boolean searchDatabases, boolean searchNotes,
-      boolean includePasswords ) {
+  public List<StringSearchResult> getStringList( boolean searchSteps, boolean searchDatabases,
+    boolean searchNotes, boolean includePasswords ) {
     List<StringSearchResult> stringList = new ArrayList<StringSearchResult>();
 
     if ( searchSteps ) {
       // Loop over all steps in the transformation and see what the used vars are...
       for ( int i = 0; i < nrSteps(); i++ ) {
         StepMeta stepMeta = getStep( i );
-        stringList.add( new StringSearchResult( stepMeta.getName(), stepMeta, this, BaseMessages.getString( PKG,
-            "TransMeta.SearchMetadata.StepName" ) ) );
+        stringList.add( new StringSearchResult( stepMeta.getName(), stepMeta, this, BaseMessages.getString(
+          PKG, "TransMeta.SearchMetadata.StepName" ) ) );
         if ( stepMeta.getDescription() != null ) {
-          stringList.add( new StringSearchResult( stepMeta.getDescription(), stepMeta, this, BaseMessages.getString(
-              PKG, "TransMeta.SearchMetadata.StepDescription" ) ) );
+          stringList.add( new StringSearchResult( stepMeta.getDescription(), stepMeta, this, BaseMessages
+            .getString( PKG, "TransMeta.SearchMetadata.StepDescription" ) ) );
         }
         StepMetaInterface metaInterface = stepMeta.getStepMetaInterface();
         StringSearcher.findMetaData( metaInterface, 1, stringList, stepMeta, this );
@@ -5892,36 +5049,36 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     if ( searchDatabases ) {
       for ( int i = 0; i < nrDatabases(); i++ ) {
         DatabaseMeta meta = getDatabase( i );
-        stringList.add( new StringSearchResult( meta.getName(), meta, this, BaseMessages.getString( PKG,
-            "TransMeta.SearchMetadata.DatabaseConnectionName" ) ) );
+        stringList.add( new StringSearchResult( meta.getName(), meta, this, BaseMessages.getString(
+          PKG, "TransMeta.SearchMetadata.DatabaseConnectionName" ) ) );
         if ( meta.getHostname() != null ) {
-          stringList.add( new StringSearchResult( meta.getHostname(), meta, this, BaseMessages.getString( PKG,
-              "TransMeta.SearchMetadata.DatabaseHostName" ) ) );
+          stringList.add( new StringSearchResult( meta.getHostname(), meta, this, BaseMessages.getString(
+            PKG, "TransMeta.SearchMetadata.DatabaseHostName" ) ) );
         }
         if ( meta.getDatabaseName() != null ) {
-          stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this, BaseMessages.getString( PKG,
-              "TransMeta.SearchMetadata.DatabaseName" ) ) );
+          stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this, BaseMessages.getString(
+            PKG, "TransMeta.SearchMetadata.DatabaseName" ) ) );
         }
         if ( meta.getUsername() != null ) {
-          stringList.add( new StringSearchResult( meta.getUsername(), meta, this, BaseMessages.getString( PKG,
-              "TransMeta.SearchMetadata.DatabaseUsername" ) ) );
+          stringList.add( new StringSearchResult( meta.getUsername(), meta, this, BaseMessages.getString(
+            PKG, "TransMeta.SearchMetadata.DatabaseUsername" ) ) );
         }
         if ( meta.getPluginId() != null ) {
-          stringList.add( new StringSearchResult( meta.getPluginId(), meta, this, BaseMessages.getString( PKG,
-              "TransMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
+          stringList.add( new StringSearchResult( meta.getPluginId(), meta, this, BaseMessages.getString(
+            PKG, "TransMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
         }
         if ( meta.getDatabasePortNumberString() != null ) {
           stringList.add( new StringSearchResult( meta.getDatabasePortNumberString(), meta, this, BaseMessages
-              .getString( PKG, "TransMeta.SearchMetadata.DatabasePort" ) ) );
+            .getString( PKG, "TransMeta.SearchMetadata.DatabasePort" ) ) );
         }
         if ( meta.getServername() != null ) {
-          stringList.add( new StringSearchResult( meta.getServername(), meta, this, BaseMessages.getString( PKG,
-              "TransMeta.SearchMetadata.DatabaseServer" ) ) );
+          stringList.add( new StringSearchResult( meta.getServername(), meta, this, BaseMessages.getString(
+            PKG, "TransMeta.SearchMetadata.DatabaseServer" ) ) );
         }
         if ( includePasswords ) {
           if ( meta.getPassword() != null ) {
-            stringList.add( new StringSearchResult( meta.getPassword(), meta, this, BaseMessages.getString( PKG,
-                "TransMeta.SearchMetadata.DatabasePassword" ) ) );
+            stringList.add( new StringSearchResult( meta.getPassword(), meta, this, BaseMessages.getString(
+              PKG, "TransMeta.SearchMetadata.DatabasePassword" ) ) );
           }
         }
       }
@@ -5932,8 +5089,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       for ( int i = 0; i < nrNotes(); i++ ) {
         NotePadMeta meta = getNote( i );
         if ( meta.getNote() != null ) {
-          stringList.add( new StringSearchResult( meta.getNote(), meta, this, BaseMessages.getString( PKG,
-              "TransMeta.SearchMetadata.NotepadText" ) ) );
+          stringList.add( new StringSearchResult( meta.getNote(), meta, this, BaseMessages.getString(
+            PKG, "TransMeta.SearchMetadata.NotepadText" ) ) );
         }
       }
     }
@@ -5944,7 +5101,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   /**
    * Get a list of all the strings used in this transformation. The parameters indicate which collections to search and
    * which to exclude.
-   * 
+   *
    * @param searchSteps
    *          true if steps should be searched, false otherwise
    * @param searchDatabases
@@ -5959,7 +5116,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets a list of the used variables in this transformation.
-   * 
+   *
    * @return a list of the used variables in this transformation.
    */
   public List<String> getUsedVariables() {
@@ -5979,7 +5136,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the previous result.
-   * 
+   *
    * @return the previous Result.
    * @deprecated this was moved to Trans to keep the metadata stateless
    */
@@ -5990,7 +5147,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the previous result.
-   * 
+   *
    * @param previousResult
    *          The previous Result to set.
    * @deprecated this was moved to Trans to keep the metadata stateless
@@ -6002,9 +5159,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets a list of the files in the result.
-   * 
+   *
    * @return a list of ResultFiles.
-   * 
+   *
    * @deprecated this was moved to Trans to keep the metadata stateless
    */
   @Deprecated
@@ -6014,7 +5171,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the list of the files in the result.
-   * 
+   *
    * @param resultFiles
    *          The list of ResultFiles to set.
    * @deprecated this was moved to Trans to keep the metadata stateless
@@ -6026,7 +5183,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets a list of partition schemas for this transformation.
-   * 
+   *
    * @return a list of PartitionSchemas
    */
   public List<PartitionSchema> getPartitionSchemas() {
@@ -6035,7 +5192,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the list of partition schemas for this transformation.
-   * 
+   *
    * @param partitionSchemas
    *          the list of PartitionSchemas to set
    */
@@ -6045,7 +5202,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the partition schemas' names.
-   * 
+   *
    * @return a String array containing the available partition schema names.
    */
   public String[] getPartitionSchemasNames() {
@@ -6058,7 +5215,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Checks if is feedback shown.
-   * 
+   *
    * @return true if feedback is shown, false otherwise
    */
   public boolean isFeedbackShown() {
@@ -6067,7 +5224,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets whether the feedback should be shown.
-   * 
+   *
    * @param feedbackShown
    *          true if feedback should be shown, false otherwise
    */
@@ -6077,7 +5234,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the feedback size.
-   * 
+   *
    * @return the feedback size
    */
   public int getFeedbackSize() {
@@ -6086,7 +5243,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the feedback size.
-   * 
+   *
    * @param feedbackSize
    *          the feedback size to set
    */
@@ -6096,7 +5253,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Checks if the transformation is using unique database connections.
-   * 
+   *
    * @return true if the transformation is using unique database connections, false otherwise
    */
   public boolean isUsingUniqueConnections() {
@@ -6105,7 +5262,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets whether the transformation is using unique database connections.
-   * 
+   *
    * @param usingUniqueConnections
    *          true if the transformation is using unique database connections, false otherwise
    */
@@ -6115,7 +5272,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets a list of the cluster schemas used by the transformation.
-   * 
+   *
    * @return a list of ClusterSchemas
    */
   public List<ClusterSchema> getClusterSchemas() {
@@ -6124,7 +5281,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets list of the cluster schemas used by the transformation.
-   * 
+   *
    * @param clusterSchemas
    *          the list of ClusterSchemas to set
    */
@@ -6134,7 +5291,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the cluster schema names.
-   * 
+   *
    * @return a String array containing the cluster schemas' names
    */
   public String[] getClusterSchemaNames() {
@@ -6147,7 +5304,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find a partition schema using its name.
-   * 
+   *
    * @param name
    *          The name of the partition schema to look for.
    * @return the partition with the specified name of null if nothing was found
@@ -6164,7 +5321,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Find a clustering schema using its name.
-   * 
+   *
    * @param name
    *          The name of the clustering schema to look for.
    * @return the cluster schema with the specified name of null if nothing was found
@@ -6181,7 +5338,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Add a new partition schema to the transformation if that didn't exist yet. Otherwise, replace it.
-   * 
+   *
    * @param partitionSchema
    *          The partition schema to be added.
    */
@@ -6197,25 +5354,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Add a new slave server to the transformation if that didn't exist yet. Otherwise, replace it.
-   * 
-   * @param slaveServer
-   *          The slave server to be added.
-   */
-  public void addOrReplaceSlaveServer( SlaveServer slaveServer ) {
-    int index = slaveServers.indexOf( slaveServer );
-    if ( index < 0 ) {
-      slaveServers.add( slaveServer );
-    } else {
-      SlaveServer previous = slaveServers.get( index );
-      previous.replaceMeta( slaveServer );
-    }
-    setChanged();
-  }
-
-  /**
    * Add a new cluster schema to the transformation if that didn't exist yet. Otherwise, replace it.
-   * 
+   *
    * @param clusterSchema
    *          The cluster schema to be added.
    */
@@ -6231,27 +5371,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the shared objects file.
-   * 
-   * @return the shared objects file
-   */
-  public String getSharedObjectsFile() {
-    return sharedObjectsFile;
-  }
-
-  /**
-   * Sets the shared objects file.
-   * 
-   * @param sharedObjectsFile
-   *          the new shared objects file
-   */
-  public void setSharedObjectsFile( String sharedObjectsFile ) {
-    this.sharedObjectsFile = sharedObjectsFile;
-  }
-
-  /**
    * Save shared objects, including databases, steps, partition schemas, slave servers, and cluster schemas, to a file
-   * 
+   *
    * @throws KettleException
    *           the kettle exception
    * @see org.pentaho.di.core.EngineMetaInterface#saveSharedObjects()
@@ -6291,7 +5412,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Checks whether the transformation is using thread priority management.
-   * 
+   *
    * @return true if the transformation is using thread priority management, false otherwise
    */
   public boolean isUsingThreadPriorityManagment() {
@@ -6300,7 +5421,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets whether the transformation is using thread priority management.
-   * 
+   *
    * @param usingThreadPriorityManagment
    *          true if the transformation is using thread priority management, false otherwise
    */
@@ -6309,49 +5430,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Find a slave server with the given name. This method performs a case-insensitive search of the slave servers by
-   * name. If no slave server is found, null is returned
-   * 
-   * @param serverString
-   *          the name of the slave server to find
-   * @return the slave server with the specified name, or null if no slave server is found
-   */
-  public SlaveServer findSlaveServer( String serverString ) {
-    return SlaveServer.findSlaveServer( slaveServers, serverString );
-  }
-
-  /**
-   * Gets the slave server names.
-   * 
-   * @return a String array containing the slave server names
-   */
-  public String[] getSlaveServerNames() {
-    return SlaveServer.getSlaveServerNames( slaveServers );
-  }
-
-  /**
-   * Gets a list of the slave servers.
-   * 
-   * @return a list of SlaveServers.
-   */
-  public List<SlaveServer> getSlaveServers() {
-    return slaveServers;
-  }
-
-  /**
-   * Sets the list of slave servers.
-   * 
-   * @param slaveServers
-   *          the list of SlaveServers to set
-   */
-  public void setSlaveServers( List<SlaveServer> slaveServers ) {
-    this.slaveServers = slaveServers;
-  }
-
-  /**
    * Check a step to see if there are no multiple steps to read from. If so, check to see if the receiving rows are all
    * the same in layout. We only want to ONLY use the DBCache for this to prevent GUI stalls.
-   * 
+   *
    * @param stepMeta
    *          the step to check
    * @param monitor
@@ -6371,9 +5452,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           if ( referenceRow == null ) {
             referenceRow = row;
           } else if ( !stepMeta.getStepMetaInterface().excludeFromRowLayoutVerification() ) {
-            {
-              BaseStep.safeModeChecking( referenceRow, row );
-            }
+            BaseStep.safeModeChecking( referenceRow, row );
           }
         } catch ( KettleStepException e ) {
           // We ignore this one because we are in the process of designing the transformation, anything intermediate can
@@ -6385,16 +5464,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the internal kettle variables.
-   * 
-   * @see org.pentaho.di.core.EngineMetaInterface#setInternalKettleVariables()
-   */
-  public void setInternalKettleVariables() {
-    setInternalKettleVariables( variables );
-  }
-
-  /**
-   * Sets the internal kettle variables.
-   * 
+   *
    * @param var
    *          the new internal kettle variables
    */
@@ -6405,7 +5475,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     // The name of the directory in the repository
     //
     var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, directory != null ? directory
-        .getPath() : "" );
+      .getPath() : "" );
 
     // Here we don't remove the job specific parameters, as they may come in handy.
     //
@@ -6429,7 +5499,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * @param var
    *          the new internal name kettle variable
    */
-  private void setInternalNameKettleVariable( VariableSpace var ) {
+  protected void setInternalNameKettleVariable( VariableSpace var ) {
     // The name of the transformation
     //
     var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL( name, "" ) );
@@ -6437,11 +5507,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the internal filename kettle variables.
-   * 
+   *
    * @param var
    *          the new internal filename kettle variables
    */
-  private void setInternalFilenameKettleVariables( VariableSpace var ) {
+  protected void setInternalFilenameKettleVariables( VariableSpace var ) {
     // If we have a filename that's defined, set variables. If not, clear them.
     //
     if ( !Const.isEmpty( filename ) ) {
@@ -6469,174 +5539,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Copies variables from the specified variable space into this transformation's variable space.
-   * 
-   * @param space
-   *          the variable space from which to copy
-   * @see org.pentaho.di.core.variables.VariableSpace#copyVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
-   */
-  public void copyVariablesFrom( VariableSpace space ) {
-    variables.copyVariablesFrom( space );
-  }
-
-  /**
-   * Resolves the given string against environment variables by performing substitution. The resolved string is
-   * returned.
-   * 
-   * @param aString
-   *          the string to resolve
-   * @return the string after been resolved against environment variables
-   * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String)
-   */
-  public String environmentSubstitute( String aString ) {
-    return variables.environmentSubstitute( aString );
-  }
-
-  /**
-   * Resolves the given strings against environment variables by performing substitution. The array of resolved strings
-   * is returned.
-   * 
-   * @param aString
-   *          the string array to resolve
-   * @return the array strings after having been resolved against environment variables
-   * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String[])
-   */
-  public String[] environmentSubstitute( String[] aString ) {
-    return variables.environmentSubstitute( aString );
-  }
-
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
-    return variables.fieldSubstitute( aString, rowMeta, rowData );
-  }
-
-  /**
-   * Gets the parent variable space.
-   * 
-   * @return the parent variable space
-   * @see org.pentaho.di.core.variables.VariableSpace#getParentVariableSpace()
-   */
-  public VariableSpace getParentVariableSpace() {
-    return variables.getParentVariableSpace();
-  }
-
-  /**
-   * Sets the parent variable space.
-   * 
-   * @param parent
-   *          the new parent variable space
-   * @see org.pentaho.di.core.variables.VariableSpace#setParentVariableSpace(org.pentaho.di.core.variables.VariableSpace)
-   */
-  public void setParentVariableSpace( VariableSpace parent ) {
-    variables.setParentVariableSpace( parent );
-  }
-
-  /**
-   * Gets the value for a variable with the specified name. If the variable has no value assigned, the specified default
-   * value is returned
-   * 
-   * @param variableName
-   *          the variable name
-   * @param defaultValue
-   *          the default value
-   * @return the variable value (or default value if the variable is unassigned)
-   * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String, java.lang.String)
-   */
-  public String getVariable( String variableName, String defaultValue ) {
-    return variables.getVariable( variableName, defaultValue );
-  }
-
-  /**
-   * Gets the value for a variable with the specified name.
-   * 
-   * @param variableName
-   *          the variable name
-   * @return the variable's value
-   * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String)
-   */
-  public String getVariable( String variableName ) {
-    return variables.getVariable( variableName );
-  }
-
-  /**
-   * Returns a boolean representation of the specified variable after performing any necessary substitution. Truth
-   * values include case-insensitive versions of "Y", "YES", "TRUE" or "1".
-   * 
-   * @param variableName
-   *          the name of the variable to interrogate
-   * @boolean defaultValue the value to use if the specified variable is unassigned.
-   * @return a boolean representation of the specified variable after performing any necessary substitution
-   * @see org.pentaho.di.core.variables.VariableSpace#getBooleanValueOfVariable(java.lang.String, boolean)
-   */
-  public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
-    if ( !Const.isEmpty( variableName ) ) {
-      String value = environmentSubstitute( variableName );
-      if ( !Const.isEmpty( value ) ) {
-        return ValueMeta.convertStringToBoolean( value );
-      }
-    }
-    return defaultValue;
-  }
-
-  /**
-   * Initialize variables from the specified variable space.
-   * 
-   * @param parent
-   *          the parent variable space
-   * @see org.pentaho.di.core.variables.VariableSpace#initializeVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
-   */
-  public void initializeVariablesFrom( VariableSpace parent ) {
-    variables.initializeVariablesFrom( parent );
-  }
-
-  /**
-   * Gets an array of variable names.
-   * 
-   * @return the string array of variable names
-   * @see org.pentaho.di.core.variables.VariableSpace#listVariables()
-   */
-  public String[] listVariables() {
-    return variables.listVariables();
-  }
-
-  /**
-   * Sets the specified variable to the specified value
-   * 
-   * @param variableName
-   *          the variable name
-   * @param variableValue
-   *          the variable value
-   * @see org.pentaho.di.core.variables.VariableSpace#setVariable(java.lang.String, java.lang.String)
-   */
-  public void setVariable( String variableName, String variableValue ) {
-    variables.setVariable( variableName, variableValue );
-  }
-
-  /**
-   * Share variables with the specified variable space.
-   * 
-   * @param space
-   *          the variable space with which to share variables
-   * @see org.pentaho.di.core.variables.VariableSpace#shareVariablesWith(org.pentaho.di.core.variables.VariableSpace)
-   */
-  public void shareVariablesWith( VariableSpace space ) {
-    variables = space;
-  }
-
-  /**
-   * Inject variables from a properties map.
-   * 
-   * @param prop
-   *          the properties Map from which to inject variables
-   * @see org.pentaho.di.core.variables.VariableSpace#injectVariables(java.util.Map)
-   */
-  public void injectVariables( Map<String, String> prop ) {
-    variables.injectVariables( prop );
-  }
-
-  /**
    * Finds the mapping input step with the specified name. If no mapping input step is found, null is returned
-   * 
+   *
    * @param stepname
    *          the name to search for
    * @return the step meta-data corresponding to the desired mapping input step, or null if no step was found
@@ -6647,7 +5551,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     if ( !Const.isEmpty( stepname ) ) {
       StepMeta stepMeta = findStep( stepname ); // TODO verify that it's a mapping input!!
       if ( stepMeta == null ) {
-        throw new KettleStepException( BaseMessages.getString( PKG, "TransMeta.Exception.StepNameNotFound", stepname ) );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "TransMeta.Exception.StepNameNotFound", stepname ) );
       }
       return stepMeta;
     } else {
@@ -6658,13 +5563,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           if ( stepMeta == null ) {
             stepMeta = mappingStep;
           } else if ( stepMeta != null ) {
-            throw new KettleStepException( BaseMessages.getString( PKG,
-                "TransMeta.Exception.OnlyOneMappingInputStepAllowed", "2" ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "TransMeta.Exception.OnlyOneMappingInputStepAllowed", "2" ) );
           }
         }
       }
       if ( stepMeta == null ) {
-        throw new KettleStepException( BaseMessages.getString( PKG, "TransMeta.Exception.OneMappingInputStepRequired" ) );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "TransMeta.Exception.OneMappingInputStepRequired" ) );
       }
       return stepMeta;
     }
@@ -6672,7 +5578,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Finds the mapping output step with the specified name. If no mapping output step is found, null is returned.
-   * 
+   *
    * @param stepname
    *          the name to search for
    * @return the step meta-data corresponding to the desired mapping input step, or null if no step was found
@@ -6683,7 +5589,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     if ( !Const.isEmpty( stepname ) ) {
       StepMeta stepMeta = findStep( stepname ); // TODO verify that it's a mapping output step.
       if ( stepMeta == null ) {
-        throw new KettleStepException( BaseMessages.getString( PKG, "TransMeta.Exception.StepNameNotFound", stepname ) );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "TransMeta.Exception.StepNameNotFound", stepname ) );
       }
       return stepMeta;
     } else {
@@ -6694,13 +5601,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
           if ( stepMeta == null ) {
             stepMeta = mappingStep;
           } else if ( stepMeta != null ) {
-            throw new KettleStepException( BaseMessages.getString( PKG,
-                "TransMeta.Exception.OnlyOneMappingOutputStepAllowed", "2" ) );
+            throw new KettleStepException( BaseMessages.getString(
+              PKG, "TransMeta.Exception.OnlyOneMappingOutputStepAllowed", "2" ) );
           }
         }
       }
       if ( stepMeta == null ) {
-        throw new KettleStepException( BaseMessages.getString( PKG, "TransMeta.Exception.OneMappingOutputStepRequired" ) );
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "TransMeta.Exception.OneMappingOutputStepRequired" ) );
       }
       return stepMeta;
     }
@@ -6708,7 +5616,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets a list of the resource dependencies.
-   * 
+   *
    * @return a list of ResourceReferences
    */
   public List<ResourceReference> getResourceDependencies() {
@@ -6725,7 +5633,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    * Exports the specified objects to a flat-file system, adding content with filename keys to a set of definitions. The
    * supplied resource naming interface allows the object to name appropriately without worrying about those parts of
    * the implementation specific details.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -6734,12 +5642,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
 
     try {
       // Handle naming for both repository and XML bases resources...
@@ -6754,9 +5661,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         originalPath = directory.getPath();
         baseName = getName();
         fullname =
-            directory.getPath()
-                + ( directory.getPath().endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR ) ? ""
-                    : RepositoryDirectory.DIRECTORY_SEPARATOR ) + getName() + "." + extension; // $NON-NLS-1$ //
+          directory.getPath()
+            + ( directory.getPath().endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR )
+              ? "" : RepositoryDirectory.DIRECTORY_SEPARATOR ) + getName() + "." + extension; //
       } else {
         // Assume file
         //
@@ -6767,8 +5674,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       }
 
       String exportFileName =
-          resourceNamingInterface.nameResource( baseName, originalPath, extension,
-              ResourceNamingInterface.FileNamingType.TRANSFORMATION );
+        resourceNamingInterface.nameResource(
+          baseName, originalPath, extension, ResourceNamingInterface.FileNamingType.TRANSFORMATION );
       ResourceDefinition definition = definitions.get( exportFileName );
       if ( definition == null ) {
         // If we do this once, it will be plenty :-)
@@ -6825,17 +5732,17 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
       }
       return exportFileName;
     } catch ( FileSystemException e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile",
-          getFilename() ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename() ), e );
     } catch ( KettleFileException e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile",
-          getFilename() ), e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename() ), e );
     }
   }
 
   /**
    * Gets the slave step copy partition distribution.
-   * 
+   *
    * @return the SlaveStepCopyPartitionDistribution
    */
   public SlaveStepCopyPartitionDistribution getSlaveStepCopyPartitionDistribution() {
@@ -6844,18 +5751,18 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the slave step copy partition distribution.
-   * 
+   *
    * @param slaveStepCopyPartitionDistribution
    *          the slaveStepCopyPartitionDistribution to set
    */
   public void setSlaveStepCopyPartitionDistribution(
-      SlaveStepCopyPartitionDistribution slaveStepCopyPartitionDistribution ) {
+    SlaveStepCopyPartitionDistribution slaveStepCopyPartitionDistribution ) {
     this.slaveStepCopyPartitionDistribution = slaveStepCopyPartitionDistribution;
   }
 
   /**
    * Finds the first used cluster schema.
-   * 
+   *
    * @return the first used cluster schema
    */
   public ClusterSchema findFirstUsedClusterSchema() {
@@ -6869,7 +5776,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Checks whether the transformation is a slave transformation.
-   * 
+   *
    * @return true if the transformation is a slave transformation, false otherwise
    */
   public boolean isSlaveTransformation() {
@@ -6878,7 +5785,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets whether the transformation is a slave transformation.
-   * 
+   *
    * @param slaveTransformation
    *          true if the transformation is a slave transformation, false otherwise
    */
@@ -6887,27 +5794,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the repository.
-   * 
-   * @return the repository
-   */
-  public Repository getRepository() {
-    return repository;
-  }
-
-  /**
-   * Sets the repository.
-   * 
-   * @param repository
-   *          the repository to set
-   */
-  public void setRepository( Repository repository ) {
-    this.repository = repository;
-  }
-
-  /**
    * Checks whether the transformation is capturing step performance snapshots.
-   * 
+   *
    * @return true if the transformation is capturing step performance snapshots, false otherwise
    */
   public boolean isCapturingStepPerformanceSnapShots() {
@@ -6916,7 +5804,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets whether the transformation is capturing step performance snapshots.
-   * 
+   *
    * @param capturingStepPerformanceSnapShots
    *          true if the transformation is capturing step performance snapshots, false otherwise
    */
@@ -6926,7 +5814,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the step performance capturing delay.
-   * 
+   *
    * @return the step performance capturing delay
    */
   public long getStepPerformanceCapturingDelay() {
@@ -6935,7 +5823,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the step performance capturing delay.
-   * 
+   *
    * @param stepPerformanceCapturingDelay
    *          the stepPerformanceCapturingDelay to set
    */
@@ -6945,7 +5833,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the step performance capturing size limit.
-   * 
+   *
    * @return the step performance capturing size limit
    */
   public String getStepPerformanceCapturingSizeLimit() {
@@ -6954,31 +5842,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the step performance capturing size limit.
-   * 
+   *
    * @param stepPerformanceCapturingSizeLimit
    *          the step performance capturing size limit to set
    */
   public void setStepPerformanceCapturingSizeLimit( String stepPerformanceCapturingSizeLimit ) {
     this.stepPerformanceCapturingSizeLimit = stepPerformanceCapturingSizeLimit;
-  }
-
-  /**
-   * Gets the shared objects.
-   * 
-   * @return the shared objects
-   */
-  public SharedObjects getSharedObjects() {
-    return sharedObjects;
-  }
-
-  /**
-   * Sets the shared objects.
-   * 
-   * @param sharedObjects
-   *          the SharedObjects to set
-   */
-  public void setSharedObjects( SharedObjects sharedObjects ) {
-    this.sharedObjects = sharedObjects;
   }
 
   /**
@@ -7004,279 +5873,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Adds a listener for "name changed" events.
-   * 
-   * @param listener
-   *          the listener to add
-   */
-  public void addNameChangedListener( NameChangedListener listener ) {
-    if ( nameChangedListeners == null ) {
-      nameChangedListeners = new ArrayList<NameChangedListener>();
-    }
-    nameChangedListeners.add( listener );
-  }
-
-  /**
-   * Removes the specified NameChangedListener.
-   * 
-   * @param listener
-   *          the listener
-   */
-  public void removeNameChangedListener( NameChangedListener listener ) {
-    nameChangedListeners.remove( listener );
-  }
-
-  /**
-   * Adds a listener for "filename changed" events.
-   * 
-   * @param listener
-   *          the listener to add
-   */
-  public void addFilenameChangedListener( FilenameChangedListener listener ) {
-    if ( filenameChangedListeners == null ) {
-      filenameChangedListeners = new ArrayList<FilenameChangedListener>();
-    }
-    filenameChangedListeners.add( listener );
-  }
-
-  /**
-   * Removes the specified FilenameChangedListener.
-   * 
-   * @param listener
-   *          the listener
-   */
-  public void removeFilenameChangedListener( FilenameChangedListener listener ) {
-    filenameChangedListeners.remove( listener );
-  }
-
-  public void addContentChangedListener( ContentChangedListener listener ) {
-    if ( contentChangedListeners == null ) {
-      contentChangedListeners = new ArrayList<ContentChangedListener>();
-    }
-    contentChangedListeners.add( listener );
-  }
-
-  public void removeContentChangedListener( ContentChangedListener listener ) {
-    contentChangedListeners.remove( listener );
-  }
-
-  /**
-   * Checks whether the specified name has changed (i.e. is different from the specified old name). If both names are
-   * null, false is returned. If the old name is null and the new new name is non-null, true is returned. Otherwise, if
-   * the name strings are equal then true is returned; false is returned if the name strings are not equal.
-   * 
-   * @param oldName
-   *          the old name
-   * @param newName
-   *          the new name
-   * @return true if the names have changed, false otherwise
-   */
-  private boolean nameChanged( String oldName, String newName ) {
-    if ( oldName == null && newName == null ) {
-      return false;
-    }
-    if ( oldName == null && newName != null ) {
-      return true;
-    }
-    return oldName.equals( newName );
-  }
-
-  /**
-   * Fires the filename changed listeners if the filename has changed.
-   * 
-   * @param oldFilename
-   *          the old filename
-   * @param newFilename
-   *          the new filename
-   */
-  private void fireFilenameChangedListeners( String oldFilename, String newFilename ) {
-    if ( nameChanged( oldFilename, newFilename ) ) {
-      if ( filenameChangedListeners != null ) {
-        for ( FilenameChangedListener listener : filenameChangedListeners ) {
-          listener.filenameChanged( this, oldFilename, newFilename );
-        }
-      }
-    }
-  }
-
-  /**
-   * Fires the name changed listeners if the name has changed
-   * 
-   * @param oldName
-   *          the old name
-   * @param newName
-   *          the new name
-   */
-  private void fireNameChangedListeners( String oldName, String newName ) {
-    if ( nameChanged( oldName, newName ) ) {
-      if ( nameChangedListeners != null ) {
-        for ( NameChangedListener listener : nameChangedListeners ) {
-          listener.nameChanged( this, oldName, newName );
-        }
-      }
-    }
-  }
-
-  /**
-   * Fire content changed listeners.
-   */
-  protected void fireContentChangedListeners() {
-    if ( contentChangedListeners != null ) {
-      for ( ContentChangedListener listener : contentChangedListeners ) {
-        listener.contentChanged( this );
-      }
-    }
-  }
-
-  /**
-   * Activates the parameters.
-   * 
-   * @see org.pentaho.di.core.parameters.NamedParams#activateParameters()
-   */
-  public void activateParameters() {
-    String[] keys = listParameters();
-
-    for ( String key : keys ) {
-      String value;
-      try {
-        value = getParameterValue( key );
-      } catch ( UnknownParamException e ) {
-        value = "";
-      }
-
-      String defValue;
-      try {
-        defValue = getParameterDefault( key );
-      } catch ( UnknownParamException e ) {
-        defValue = "";
-      }
-
-      if ( Const.isEmpty( value ) ) {
-        setVariable( key, Const.NVL( defValue, "" ) );
-      } else {
-        setVariable( key, Const.NVL( value, "" ) );
-      }
-    }
-  }
-
-  /**
-   * Adds the parameter definition.
-   * 
-   * @param key
-   *          the key
-   * @param defaultValue
-   *          the default value
-   * @param description
-   *          the description
-   * @throws DuplicateParamException
-   *           the duplicate param exception
-   * @see org.pentaho.di.core.parameters.NamedParams#addParameterDefinition(java.lang.String, java.lang.String,
-   *      java.lang.String)
-   */
-  public void addParameterDefinition( String key, String defaultValue, String description )
-    throws DuplicateParamException {
-    namedParams.addParameterDefinition( key, defaultValue, description );
-  }
-
-  /**
-   * Gets the parameter description.
-   * 
-   * @param key
-   *          the key
-   * @return the parameter description
-   * @throws UnknownParamException
-   *           the unknown param exception
-   * @see org.pentaho.di.core.parameters.NamedParams#getParameterDescription(java.lang.String)
-   */
-  public String getParameterDescription( String key ) throws UnknownParamException {
-    return namedParams.getParameterDescription( key );
-  }
-
-  /**
-   * Gets the parameter default.
-   * 
-   * @param key
-   *          the key
-   * @return the parameter default
-   * @throws UnknownParamException
-   *           the unknown param exception
-   * @see org.pentaho.di.core.parameters.NamedParams#getParameterDefault(java.lang.String)
-   */
-  public String getParameterDefault( String key ) throws UnknownParamException {
-    return namedParams.getParameterDefault( key );
-  }
-
-  /**
-   * Gets the parameter value.
-   * 
-   * @param key
-   *          the name of the parameter
-   * @return the parameter value
-   * @throws UnknownParamException
-   *           if no such parameter exists
-   * @see org.pentaho.di.core.parameters.NamedParams#getParameterValue(java.lang.String)
-   */
-  public String getParameterValue( String key ) throws UnknownParamException {
-    return namedParams.getParameterValue( key );
-  }
-
-  /**
-   * Gets an array of parameter names.
-   * 
-   * @return an array of parameter names.
-   * @see org.pentaho.di.core.parameters.NamedParams#listParameters()
-   */
-  public String[] listParameters() {
-    return namedParams.listParameters();
-  }
-
-  /**
-   * Sets the specified parameter to the specified value.
-   * 
-   * @param key
-   *          the name of the parameter
-   * @param value
-   *          the value to set
-   * @throws UnknownParamException
-   *           if no such parameter exists
-   * @see org.pentaho.di.core.parameters.NamedParams#setParameterValue(java.lang.String, java.lang.String)
-   */
-  public void setParameterValue( String key, String value ) throws UnknownParamException {
-    namedParams.setParameterValue( key, value );
-  }
-
-  /**
-   * Erases all parameters (both name and value)
-   * 
-   * @see org.pentaho.di.core.parameters.NamedParams#eraseParameters()
-   */
-  public void eraseParameters() {
-    namedParams.eraseParameters();
-  }
-
-  /**
-   * Clears the parameters' values.
-   * 
-   * @see org.pentaho.di.core.parameters.NamedParams#clearParameters()
-   */
-  public void clearParameters() {
-    namedParams.clearParameters();
-  }
-
-  /**
-   * Copy parameters from the specified parameters.
-   * 
-   * @param params
-   *          the parameters from which to copy
-   * @see org.pentaho.di.core.parameters.NamedParams#copyParametersFrom(org.pentaho.di.core.parameters.NamedParams)
-   */
-  public void copyParametersFrom( NamedParams params ) {
-    namedParams.copyParametersFrom( params );
-  }
-
-  /**
    * Gets the repository element type.
-   * 
+   *
    * @return the repository element type
    * @see org.pentaho.di.repository.RepositoryElementInterface#getRepositoryElementType()
    */
@@ -7285,29 +5883,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Sets the object revision.
-   * 
-   * @param objectRevision
-   *          the new object revision
-   * @see org.pentaho.di.repository.RepositoryElementInterface#setObjectRevision(org.pentaho.di.repository.ObjectRevision)
-   */
-  public void setObjectRevision( ObjectRevision objectRevision ) {
-    this.objectVersion = objectRevision;
-  }
-
-  /**
-   * Gets the object revision.
-   * 
-   * @return the object revision
-   * @see org.pentaho.di.repository.RepositoryElementInterface#getObjectRevision()
-   */
-  public ObjectRevision getObjectRevision() {
-    return objectVersion;
-  }
-
-  /**
    * Gets the log channel.
-   * 
+   *
    * @return the log channel
    */
   public LogChannelInterface getLogChannel() {
@@ -7316,7 +5893,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the log channel ID.
-   * 
+   *
    * @return the log channel ID
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogChannelId()
    */
@@ -7325,28 +5902,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the object name.
-   * 
-   * @return the object name
-   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectName()
-   */
-  public String getObjectName() {
-    return getName();
-  }
-
-  /**
-   * Gets the object copy.
-   * 
-   * @return the object copy
-   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectCopy()
-   */
-  public String getObjectCopy() {
-    return null;
-  }
-
-  /**
    * Gets the object type.
-   * 
+   *
    * @return the object type
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getObjectType()
    */
@@ -7355,39 +5912,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the interface to the parent log object. For TransMeta, this method always returns null.
-   * 
-   * @return null
-   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getParent()
-   */
-  public LoggingObjectInterface getParent() {
-    return null; // TODO, we could also keep a link to the parent and job metadata
-  }
-
-  /**
-   * Gets the log level for the transformation.
-   * 
-   * @return the log level
-   * @see org.pentaho.di.core.logging.LoggingObjectInterface#getLogLevel()
-   */
-  public LogLevel getLogLevel() {
-    return logLevel;
-  }
-
-  /**
-   * Sets the log level for the transformation.
-   * 
-   * @param logLevel
-   *          the new log level
-   */
-  public void setLogLevel( LogLevel logLevel ) {
-    this.logLevel = logLevel;
-    log.setLogLevel( logLevel );
-  }
-
-  /**
    * Gets the log table for the transformation.
-   * 
+   *
    * @return the log table for the transformation
    */
   public TransLogTable getTransLogTable() {
@@ -7396,7 +5922,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the log table for the transformation.
-   * 
+   *
    * @param the
    *          log table to set
    */
@@ -7405,21 +5931,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the database names.
-   * 
-   * @return an array of database names
-   */
-  public String[] getDatabaseNames() {
-    String[] names = new String[databases.size()];
-    for ( int i = 0; i < names.length; i++ ) {
-      names[i] = databases.get( i ).getName();
-    }
-    return names;
-  }
-
-  /**
    * Gets the performance log table for the transformation.
-   * 
+   *
    * @return the performance log table for the transformation
    */
   public PerformanceLogTable getPerformanceLogTable() {
@@ -7428,7 +5941,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the performance log table for the transformation.
-   * 
+   *
    * @param performanceLogTable
    *          the performance log table to set
    */
@@ -7437,27 +5950,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the channel log table for the transformation.
-   * 
-   * @return the channel log table for the transformation
-   */
-  public ChannelLogTable getChannelLogTable() {
-    return channelLogTable;
-  }
-
-  /**
-   * Sets the channel log table for the transformation.
-   * 
-   * @param channelLogTable
-   *          the channel log table to set
-   */
-  public void setChannelLogTable( ChannelLogTable channelLogTable ) {
-    this.channelLogTable = channelLogTable;
-  }
-
-  /**
    * Gets the step log table for the transformation.
-   * 
+   *
    * @return the step log table for the transformation
    */
   public StepLogTable getStepLogTable() {
@@ -7466,7 +5960,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the step log table for the transformation.
-   * 
+   *
    * @param stepLogTable
    *          the step log table to set
    */
@@ -7476,7 +5970,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets a list of the log tables (transformation, step, performance, channel) for the transformation.
-   * 
+   *
    * @return a list of LogTableInterfaces for the transformation
    */
   public List<LogTableInterface> getLogTables() {
@@ -7491,7 +5985,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Gets the transformation type.
-   * 
+   *
    * @return the transformationType
    */
   public TransformationType getTransformationType() {
@@ -7500,7 +5994,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Sets the transformation type.
-   * 
+   *
    * @param transformationType
    *          the transformationType to set
    */
@@ -7509,37 +6003,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Checks whether the transformation can be saved. For TransMeta, this method always returns true
-   * 
-   * @return true
-   * @see org.pentaho.di.core.EngineMetaInterface#canSave()
-   */
-  public boolean canSave() {
-    return true;
-  }
-
-  /**
-   * Gets the container object ID.
-   * 
-   * @return the container object ID to set
-   */
-  public String getContainerObjectId() {
-    return containerObjectId;
-  }
-
-  /**
-   * Sets the carte object ID.
-   * 
-   * @param containerObjectId
-   *          the container object ID to set
-   */
-  public void setCarteObjectId( String containerObjectId ) {
-    this.containerObjectId = containerObjectId;
-  }
-
-  /**
    * Utility method to write the XML of this transformation to a file, mostly for testing purposes.
-   * 
+   *
    * @param filename
    *          The filename to save to
    * @throws KettleXMLException
@@ -7565,17 +6030,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   }
 
   /**
-   * Gets the registration date for the transformation. For TransMeta, this method always returns null.
-   * 
-   * @return null
-   */
-  public Date getRegistrationDate() {
-    return null;
-  }
-
-  /**
    * Checks whether the transformation has repository references.
-   * 
+   *
    * @return true if the transformation has repository references, false otherwise
    */
   public boolean hasRepositoryReferences() {
@@ -7589,7 +6045,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
   /**
    * Looks up the references after a repository import.
-   * 
+   *
    * @param repository
    *          the repository to reference.
    * @throws KettleException
@@ -7636,19 +6092,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     log.setForcingSeparateLogging( forcingSeparateLogging );
   }
 
-  public IMetaStore getMetaStore() {
-    return metaStore;
-  }
-
-  public void setMetaStore( IMetaStore metaStore ) {
-    this.metaStore = metaStore;
-  }
-
   /**
    * This method needs to be called to store those objects which are used and referenced in the transformation metadata
    * but not saved in the XML serialization. For example, the Kettle data service definition is referenced by name but
    * not stored when getXML() is called.
-   * 
+   *
    * @param metaStore
    *          The store to save to
    * @throws MetaStoreException
@@ -7656,44 +6104,5 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public void saveMetaStoreObjects( Repository repository, IMetaStore metaStore ) throws MetaStoreException {
 
-  }
-
-  @Override
-  public void setAttributesMap( Map<String, Map<String, String>> attributesMap ) {
-    this.attributesMap = attributesMap;
-  }
-
-  @Override
-  public Map<String, Map<String, String>> getAttributesMap() {
-    return attributesMap;
-  }
-
-  @Override
-  public void setAttribute( String groupName, String key, String value ) {
-    Map<String, String> attributes = getAttributes( groupName );
-    if ( attributes == null ) {
-      attributes = new HashMap<String, String>();
-      attributesMap.put( groupName, attributes );
-    }
-    attributes.put( key, value );
-  }
-
-  @Override
-  public void setAttributes( String groupName, Map<String, String> attributes ) {
-    attributesMap.put( groupName, attributes );
-  }
-
-  @Override
-  public Map<String, String> getAttributes( String groupName ) {
-    return attributesMap.get( groupName );
-  }
-
-  @Override
-  public String getAttribute( String groupName, String key ) {
-    Map<String, String> attributes = attributesMap.get( groupName );
-    if ( attributes == null ) {
-      return null;
-    }
-    return attributes.get( key );
   }
 }

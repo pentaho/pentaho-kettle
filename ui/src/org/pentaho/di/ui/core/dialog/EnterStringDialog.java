@@ -51,12 +51,12 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to enter a (single line) String.
- * 
+ *
  * @author Matt
  * @since 21-11-2004
  */
 public class EnterStringDialog extends Dialog {
-  private static Class<?> PKG = EnterStringDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = EnterStringDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlString;
 
@@ -91,7 +91,7 @@ public class EnterStringDialog extends Dialog {
   /**
    * This constructs without allowing for variable substitution. This constructor allows for backwards compatibility for
    * objects that wish to create this object without variable substitution.
-   * 
+   *
    * @param parent
    *          Parent gui object
    * @param string
@@ -105,7 +105,7 @@ public class EnterStringDialog extends Dialog {
 
   /**
    * Constructs with the ability to use environmental variable substitution.
-   * 
+   *
    * @param parent
    *          Parent gui object
    * @param string
@@ -117,8 +117,8 @@ public class EnterStringDialog extends Dialog {
    * @param TransMeta
    *          This object has the has the environmental variables
    */
-  public EnterStringDialog( Shell parent, String string, String shellText, String lineText, boolean allowVariables,
-      TransMeta transMeta ) {
+  public EnterStringDialog( Shell parent, String string, String shellText, String lineText,
+    boolean allowVariables, TransMeta transMeta ) {
     super( parent, SWT.NONE );
     this.props = PropsUI.getInstance();
     this.string = string;

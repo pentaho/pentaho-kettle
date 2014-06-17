@@ -29,7 +29,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 /**
  * @author Samatar
  * @since 03-Juin-2008
- * 
+ *
  */
 public class CreditCardValidatorData extends BaseStepData implements StepDataInterface {
   public int indexOfField;
@@ -40,9 +40,6 @@ public class CreditCardValidatorData extends BaseStepData implements StepDataInt
   public int NrPrevFields;
   public RowMetaInterface previousRowMeta;
 
-  /**
-	 * 
-	 */
   public CreditCardValidatorData() {
     super();
     indexOfField = -1;

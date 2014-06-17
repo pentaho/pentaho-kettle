@@ -60,7 +60,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class TransExecutionConfigurationDialog extends Dialog {
-  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Display display;
   private Shell parent;
@@ -104,7 +104,8 @@ public class TransExecutionConfigurationDialog extends Dialog {
   private Group gDetails;
   private Button wPassExport;
 
-  public TransExecutionConfigurationDialog( Shell parent, TransExecutionConfiguration configuration, TransMeta transMeta ) {
+  public TransExecutionConfigurationDialog( Shell parent, TransExecutionConfiguration configuration,
+    TransMeta transMeta ) {
     super( parent );
     this.parent = parent;
     this.configuration = configuration;
@@ -173,7 +174,8 @@ public class TransExecutionConfigurationDialog extends Dialog {
     //
     wExecLocal = new Button( gLocal, SWT.RADIO );
     wExecLocal.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ExecLocal.Label" ) );
-    wExecLocal.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ExecLocal.Tooltip" ) );
+    wExecLocal
+      .setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ExecLocal.Tooltip" ) );
     props.setLook( wExecLocal );
     FormData fdExecLocal = new FormData();
     fdExecLocal.left = new FormAttachment( 0, 0 );
@@ -190,7 +192,8 @@ public class TransExecutionConfigurationDialog extends Dialog {
     //
     wExecRemote = new Button( gLocal, SWT.RADIO );
     wExecRemote.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ExecRemote.Label" ) );
-    wExecRemote.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ExecRemote.Tooltip" ) );
+    wExecRemote.setToolTipText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.ExecRemote.Tooltip" ) );
     props.setLook( wExecRemote );
     FormData fdExecRemote = new FormData();
     fdExecRemote.left = new FormAttachment( 33, margin );
@@ -205,14 +208,16 @@ public class TransExecutionConfigurationDialog extends Dialog {
     wlRemoteHost = new Label( gLocal, SWT.LEFT );
     props.setLook( wlRemoteHost );
     wlRemoteHost.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.RemoteHost.Label" ) );
-    wlRemoteHost.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.RemoteHost.Tooltip" ) );
+    wlRemoteHost.setToolTipText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.RemoteHost.Tooltip" ) );
     FormData fdlRemoteHost = new FormData();
     fdlRemoteHost.left = new FormAttachment( 33, tabsize );
     fdlRemoteHost.top = new FormAttachment( wExecRemote, margin * 2 );
     wlRemoteHost.setLayoutData( fdlRemoteHost );
 
     wRemoteHost = new CCombo( gLocal, SWT.READ_ONLY | SWT.BORDER );
-    wRemoteHost.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.RemoteHost.Tooltip" ) );
+    wRemoteHost.setToolTipText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.RemoteHost.Tooltip" ) );
     props.setLook( wRemoteHost );
     FormData fdRemoteHost = new FormData();
     fdRemoteHost.left = new FormAttachment( wlRemoteHost, margin );
@@ -226,7 +231,8 @@ public class TransExecutionConfigurationDialog extends Dialog {
 
     wPassExport = new Button( gLocal, SWT.CHECK );
     wPassExport.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.PassExport.Label" ) );
-    wPassExport.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.PassExport.Tooltip" ) );
+    wPassExport.setToolTipText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.PassExport.Tooltip" ) );
     props.setLook( wPassExport );
     FormData fdPassExport = new FormData();
     fdPassExport.left = new FormAttachment( 33, margin );
@@ -238,8 +244,8 @@ public class TransExecutionConfigurationDialog extends Dialog {
     //
     wExecCluster = new Button( gLocal, SWT.RADIO );
     wExecCluster.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ExecCluster.Label" ) );
-    wExecCluster
-        .setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ExecCluster.Tooltip" ) );
+    wExecCluster.setToolTipText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.ExecCluster.Tooltip" ) );
     props.setLook( wExecCluster );
     FormData fdExecCluster = new FormData();
     fdExecCluster.left = new FormAttachment( 66, margin );
@@ -252,10 +258,10 @@ public class TransExecutionConfigurationDialog extends Dialog {
     } );
 
     wPostTransformation = new Button( gLocal, SWT.CHECK );
-    wPostTransformation.setText( BaseMessages.getString( PKG,
-        "TransExecutionConfigurationDialog.PostTransformation.Label" ) );
-    wPostTransformation.setToolTipText( BaseMessages.getString( PKG,
-        "TransExecutionConfigurationDialog.PostTransformation.Tooltip" ) );
+    wPostTransformation.setText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.PostTransformation.Label" ) );
+    wPostTransformation.setToolTipText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.PostTransformation.Tooltip" ) );
     props.setLook( wPostTransformation );
     FormData fdPostTransformation = new FormData();
     fdPostTransformation.left = new FormAttachment( 66, tabsize );
@@ -264,10 +270,10 @@ public class TransExecutionConfigurationDialog extends Dialog {
     wPostTransformation.setLayoutData( fdPostTransformation );
 
     wPrepareExecution = new Button( gLocal, SWT.CHECK );
-    wPrepareExecution
-        .setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.PrepareExecution.Label" ) );
-    wPrepareExecution.setToolTipText( BaseMessages.getString( PKG,
-        "TransExecutionConfigurationDialog.PrepareExecution.Tooltip" ) );
+    wPrepareExecution.setText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.PrepareExecution.Label" ) );
+    wPrepareExecution.setToolTipText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.PrepareExecution.Tooltip" ) );
     props.setLook( wPrepareExecution );
     FormData fdPrepareExecution = new FormData();
     fdPrepareExecution.left = new FormAttachment( 66, tabsize );
@@ -276,9 +282,10 @@ public class TransExecutionConfigurationDialog extends Dialog {
     wPrepareExecution.setLayoutData( fdPrepareExecution );
 
     wStartExecution = new Button( gLocal, SWT.CHECK );
-    wStartExecution.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.StartExecution.Label" ) );
-    wStartExecution.setToolTipText( BaseMessages.getString( PKG,
-        "TransExecutionConfigurationDialog.StartExecution.Tooltip" ) );
+    wStartExecution.setText( BaseMessages
+      .getString( PKG, "TransExecutionConfigurationDialog.StartExecution.Label" ) );
+    wStartExecution.setToolTipText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.StartExecution.Tooltip" ) );
     props.setLook( wStartExecution );
     FormData fdStartExecution = new FormData();
     fdStartExecution.left = new FormAttachment( 66, tabsize );
@@ -287,10 +294,10 @@ public class TransExecutionConfigurationDialog extends Dialog {
     wStartExecution.setLayoutData( fdStartExecution );
 
     wShowTransformations = new Button( gLocal, SWT.CHECK );
-    wShowTransformations.setText( BaseMessages.getString( PKG,
-        "TransExecutionConfigurationDialog.ShowTransformations.Label" ) );
-    wShowTransformations.setToolTipText( BaseMessages.getString( PKG,
-        "TransExecutionConfigurationDialog.ShowTransformations.Tooltip" ) );
+    wShowTransformations.setText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.ShowTransformations.Label" ) );
+    wShowTransformations.setToolTipText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.ShowTransformations.Tooltip" ) );
     props.setLook( wShowTransformations );
     FormData fdShowTransformations = new FormData();
     fdShowTransformations.left = new FormAttachment( 66, tabsize );
@@ -333,9 +340,10 @@ public class TransExecutionConfigurationDialog extends Dialog {
     } );
 
     wGatherMetrics = new Button( gDetails, SWT.CHECK );
-    wGatherMetrics.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.GatherMetrics.Label" ) );
-    wGatherMetrics.setToolTipText( BaseMessages.getString( PKG,
-        "TransExecutionConfigurationDialog.GatherMetrics.Tooltip" ) );
+    wGatherMetrics
+      .setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.GatherMetrics.Label" ) );
+    wGatherMetrics.setToolTipText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.GatherMetrics.Tooltip" ) );
     props.setLook( wGatherMetrics );
     FormData fdGatherMetrics = new FormData();
     fdGatherMetrics.left = new FormAttachment( props.getMiddlePct(), margin );
@@ -366,7 +374,8 @@ public class TransExecutionConfigurationDialog extends Dialog {
     wlLogLevel = new Label( gDetails, SWT.RIGHT );
     props.setLook( wlLogLevel );
     wlLogLevel.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.LogLevel.Label" ) );
-    wlLogLevel.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.LogLevel.Tooltip" ) );
+    wlLogLevel
+      .setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.LogLevel.Tooltip" ) );
     FormData fdlLogLevel = new FormData();
     fdlLogLevel.left = new FormAttachment( 0, 0 );
     fdlLogLevel.right = new FormAttachment( props.getMiddlePct(), 0 );
@@ -387,7 +396,8 @@ public class TransExecutionConfigurationDialog extends Dialog {
     wlReplayDate = new Label( gDetails, SWT.RIGHT );
     props.setLook( wlReplayDate );
     wlReplayDate.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ReplayDate.Label" ) );
-    wlReplayDate.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ReplayDate.Tooltip" ) );
+    wlReplayDate.setToolTipText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.ReplayDate.Tooltip" ) );
     FormData fdlReplayDate = new FormData();
     fdlReplayDate.left = new FormAttachment( 0, 0 );
     fdlReplayDate.right = new FormAttachment( props.getMiddlePct(), 0 );
@@ -396,7 +406,8 @@ public class TransExecutionConfigurationDialog extends Dialog {
 
     wReplayDate = new Text( gDetails, SWT.LEFT | SWT.BORDER | SWT.SINGLE );
     props.setLook( wReplayDate );
-    wReplayDate.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ReplayDate.Tooltip" ) );
+    wReplayDate.setToolTipText( BaseMessages.getString(
+      PKG, "TransExecutionConfigurationDialog.ReplayDate.Tooltip" ) );
     FormData fdReplayDate = new FormData();
     fdReplayDate.left = new FormAttachment( props.getMiddlePct(), margin );
     fdReplayDate.right = new FormAttachment( 100, 0 );
@@ -407,7 +418,8 @@ public class TransExecutionConfigurationDialog extends Dialog {
     wlVariables = new Label( shell, SWT.LEFT );
     props.setLook( wlVariables );
     wlVariables.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.Variables.Label" ) );
-    wlVariables.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.Variables.Tooltip" ) );
+    wlVariables.setToolTipText( BaseMessages
+      .getString( PKG, "TransExecutionConfigurationDialog.Variables.Tooltip" ) );
     FormData fdlVariables = new FormData();
     fdlVariables.left = new FormAttachment( 50, margin );
     fdlVariables.right = new FormAttachment( 100, 0 );
@@ -415,17 +427,20 @@ public class TransExecutionConfigurationDialog extends Dialog {
     wlVariables.setLayoutData( fdlVariables );
 
     ColumnInfo[] cVariables =
-        {
-          new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.VariablesColumn.Argument" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Stepname
-          new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.VariablesColumn.Value" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Preview size
-        };
+    {
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.VariablesColumn.Argument" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Stepname
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.VariablesColumn.Value" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Preview size
+    };
 
     int nrVariables = configuration.getVariables() != null ? configuration.getVariables().size() : 0;
     wVariables =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, false,
-            null, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, false, null,
+        props );
     FormData fdVariables = new FormData();
     fdVariables.left = new FormAttachment( 50, margin );
     fdVariables.right = new FormAttachment( 100, 0 );
@@ -437,7 +452,8 @@ public class TransExecutionConfigurationDialog extends Dialog {
     wlArguments = new Label( shell, SWT.LEFT );
     props.setLook( wlArguments );
     wlArguments.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.Arguments.Label" ) );
-    wlArguments.setToolTipText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.Arguments.Tooltip" ) );
+    wlArguments.setToolTipText( BaseMessages
+      .getString( PKG, "TransExecutionConfigurationDialog.Arguments.Tooltip" ) );
     FormData fdlArguments = new FormData();
     fdlArguments.left = new FormAttachment( 0, 0 );
     fdlArguments.right = new FormAttachment( 50, -margin );
@@ -445,17 +461,20 @@ public class TransExecutionConfigurationDialog extends Dialog {
     wlArguments.setLayoutData( fdlArguments );
 
     ColumnInfo[] cArguments =
-        {
-          new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ArgumentsColumn.Argument" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Argument name
-          new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ArgumentsColumn.Value" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Actual value
-        };
+    {
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ArgumentsColumn.Argument" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Argument name
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ArgumentsColumn.Value" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Actual value
+    };
 
     int nrArguments = configuration.getArguments() != null ? configuration.getArguments().size() : 0;
     wArguments =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, true,
-            null, props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, true, null,
+        props );
     FormData fdArguments = new FormData();
     fdArguments.left = new FormAttachment( 0, 0 );
     fdArguments.right = new FormAttachment( 50, -margin );
@@ -475,20 +494,23 @@ public class TransExecutionConfigurationDialog extends Dialog {
     wlParams.setLayoutData( fdlParams );
 
     ColumnInfo[] cParams =
-        {
-          new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ParamsColumn.Argument" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Stepname
-          new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ParamsColumn.Value" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Preview size
-          new ColumnInfo( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ParamsColumn.Default" ),
-              ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Preview size
-        };
+    {
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ParamsColumn.Argument" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Stepname
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ParamsColumn.Value" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false, false ), // Preview size
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ParamsColumn.Default" ),
+        ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Preview size
+    };
 
     String[] namedParams = transMeta.listParameters();
     int nrParams = namedParams.length;
     wParams =
-        new TableView( transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cParams, nrParams, true, null,
-            props );
+      new TableView(
+        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cParams, nrParams, true, null, props );
     FormData fdParams = new FormData();
     fdParams.left = new FormAttachment( 0, 0 );
     fdParams.right = new FormAttachment( 50, -margin );
@@ -610,7 +632,8 @@ public class TransExecutionConfigurationDialog extends Dialog {
     wPostTransformation.setSelection( configuration.isClusterPosting() );
     wStartExecution.setSelection( configuration.isClusterStarting() );
     wShowTransformations.setSelection( configuration.isClusterShowingTransformation() );
-    wRemoteHost.setText( configuration.getRemoteServer() == null ? "" : configuration.getRemoteServer().toString() );
+    wRemoteHost
+      .setText( configuration.getRemoteServer() == null ? "" : configuration.getRemoteServer().toString() );
     wPassExport.setSelection( configuration.isPassingExport() );
     wGatherMetrics.setSelection( configuration.isGatheringMetrics() );
 

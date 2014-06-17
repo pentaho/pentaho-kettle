@@ -27,9 +27,9 @@ import java.util.Iterator;
 
 /**
  * A factory delegate for a specific kind of LAFHandler
- * 
+ *
  * @author dhushon
- * 
+ *
  * @param <E>
  */
 public class LAFDelegate<E extends Handler> {
@@ -42,7 +42,7 @@ public class LAFDelegate<E extends Handler> {
   private HashSet<LAFChangeListener<E>> registry = new HashSet<LAFChangeListener<E>>();
 
   /**
-   * 
+   *
    */
   public LAFDelegate( Class<E> handler, Class<E> defaultHandler ) {
     handlerClass = handler;
@@ -63,7 +63,7 @@ public class LAFDelegate<E extends Handler> {
   /**
    * load a concrete Handler for a given Interface (by String classname) if the class is not instantiable, will fallback
    * to default, and then fallback to an abstract implementation. Will always return non-null.
-   * 
+   *
    * @param classname
    * @return
    */
@@ -99,7 +99,7 @@ public class LAFDelegate<E extends Handler> {
 
   /**
    * unregister a @see LAFChangeListener from the Map which will prevent notification on @see Handler change
-   * 
+   *
    * @param listener
    */
   public void unregisterChangeListener( LAFChangeListener<E> listener ) {

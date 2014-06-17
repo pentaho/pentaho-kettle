@@ -34,7 +34,7 @@ import org.postgresql.PGConnection;
 
 /**
  * Stores data for the GPBulkLoader step.
- * 
+ *
  * @author Sven Boden
  * @since 20-feb-2005
  */

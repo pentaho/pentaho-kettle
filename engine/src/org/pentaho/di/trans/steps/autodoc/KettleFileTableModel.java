@@ -48,9 +48,9 @@ import org.pentaho.di.trans.TransMeta;
 public class KettleFileTableModel implements TableModel {
 
   public enum Field {
-    location( ReportSubjectLocation.class ), filename( String.class ), name( String.class ), description( String.class ), extended_description(
-        String.class ), logging( String.class ), creation( String.class ), modification( String.class ), last_exec_result(
-        String.class ), image( Drawable.class ), ;
+    location( ReportSubjectLocation.class ), filename( String.class ), name( String.class ), description(
+      String.class ), extended_description( String.class ), logging( String.class ), creation( String.class ),
+      modification( String.class ), last_exec_result( String.class ), image( Drawable.class );
 
     private Class<?> clazz;
 
@@ -213,7 +213,7 @@ public class KettleFileTableModel implements TableModel {
   }
 
   public static String getLastExecutionResult( LogChannelInterface log, LoggingObjectInterface parentObject,
-      ReportSubjectLocation filename ) throws KettleException {
+    ReportSubjectLocation filename ) throws KettleException {
 
     LogTableInterface logTable = null;
     if ( filename.isTransformation() ) {

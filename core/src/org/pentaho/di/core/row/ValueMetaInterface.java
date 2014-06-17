@@ -169,8 +169,9 @@ public interface ValueMetaInterface extends Cloneable {
   public static final int TYPE_INET = 10;
 
   /** The Constant typeCodes. */
-  public static final String[] typeCodes = new String[] { "-", "Number", "String", "Date", "Boolean", "Integer",
-    "BigNumber", "Serializable", "Binary", "Timestamp", "Internet Address", };
+  public static final String[] typeCodes = new String[] {
+    "-", "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary", "Timestamp",
+    "Internet Address", };
 
   /** The storage type is the same as the indicated value type */
   public static final int STORAGE_TYPE_NORMAL = 0;
@@ -211,7 +212,9 @@ public interface ValueMetaInterface extends Cloneable {
   /** Indicating that the string content should be RIGHT trimmed if conversion is to occur to another data type */
   public static final int TRIM_TYPE_RIGHT = 2;
 
-  /** Indicating that the string content should be LEFT AND RIGHT trimmed if conversion is to occur to another data type */
+  /**
+   * Indicating that the string content should be LEFT AND RIGHT trimmed if conversion is to occur to another data type
+   */
   public static final int TRIM_TYPE_BOTH = 3;
 
   /** Default integer length for hardcoded metadata integers */
@@ -219,14 +222,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the name.
-   * 
+   *
    * @return the name
    */
   public String getName();
 
   /**
    * Sets the name.
-   * 
+   *
    * @param name
    *          the new name
    */
@@ -234,14 +237,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the length.
-   * 
+   *
    * @return the length
    */
   public int getLength();
 
   /**
    * Sets the length.
-   * 
+   *
    * @param length
    *          the new length
    */
@@ -249,14 +252,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the precision.
-   * 
+   *
    * @return the precision
    */
   public int getPrecision();
 
   /**
    * Sets the precision.
-   * 
+   *
    * @param precision
    *          the new precision
    */
@@ -264,7 +267,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Sets the length.
-   * 
+   *
    * @param length
    *          the length
    * @param precision
@@ -274,14 +277,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the origin.
-   * 
+   *
    * @return the origin
    */
   public String getOrigin();
 
   /**
    * Sets the origin.
-   * 
+   *
    * @param origin
    *          the new origin
    */
@@ -289,14 +292,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the comments.
-   * 
+   *
    * @return the comments
    */
   public String getComments();
 
   /**
    * Sets the comments for the object implementing the interface.
-   * 
+   *
    * @param comments
    *          the new comments
    */
@@ -304,17 +307,17 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the type.
-   * 
+   *
    * @return the type
    */
   public int getType();
 
   /**
    * Sets the type.
-   * 
+   *
    * @param type
    *          the new type
-   * 
+   *
    * @deprecated This method is deprecated. The same code is still used underneath.
    */
   @Deprecated
@@ -322,14 +325,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the storage type.
-   * 
+   *
    * @return the storage type
    */
   public int getStorageType();
 
   /**
    * Sets the storage type.
-   * 
+   *
    * @param storageType
    *          the new storage type
    */
@@ -337,14 +340,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the trim type.
-   * 
+   *
    * @return the trim type
    */
   public int getTrimType();
 
   /**
    * Sets the trim type.
-   * 
+   *
    * @param trimType
    *          the new trim type
    */
@@ -352,14 +355,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the index.
-   * 
+   *
    * @return the index
    */
   public Object[] getIndex();
 
   /**
    * Sets the index.
-   * 
+   *
    * @param index
    *          the new index
    */
@@ -367,35 +370,35 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Checks if is storage normal.
-   * 
+   *
    * @return true, if is storage normal
    */
   public boolean isStorageNormal();
 
   /**
    * Checks if is storage indexed.
-   * 
+   *
    * @return true, if is storage indexed
    */
   public boolean isStorageIndexed();
 
   /**
    * Checks if is storage binary string.
-   * 
+   *
    * @return true, if is storage binary string
    */
   public boolean isStorageBinaryString();
 
   /**
    * Gets the conversion mask.
-   * 
+   *
    * @return the conversion mask
    */
   public String getConversionMask();
 
   /**
    * Sets the conversion mask.
-   * 
+   *
    * @param conversionMask
    *          the new conversion mask
    */
@@ -403,14 +406,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the decimal symbol.
-   * 
+   *
    * @return the decimal symbol
    */
   public String getDecimalSymbol();
 
   /**
    * Sets the decimal symbol.
-   * 
+   *
    * @param decimalSymbol
    *          the new decimal symbol
    */
@@ -418,14 +421,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the grouping symbol.
-   * 
+   *
    * @return the grouping symbol
    */
   public String getGroupingSymbol();
 
   /**
    * Sets the grouping symbol.
-   * 
+   *
    * @param groupingSymbol
    *          the new grouping symbol
    */
@@ -433,14 +436,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the currency symbol.
-   * 
+   *
    * @return the currency symbol
    */
   public String getCurrencySymbol();
 
   /**
    * Sets the currency symbol.
-   * 
+   *
    * @param currencySymbol
    *          the new currency symbol
    */
@@ -448,21 +451,21 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the date format.
-   * 
+   *
    * @return the date format
    */
   public SimpleDateFormat getDateFormat();
 
   /**
    * Gets the decimal format.
-   * 
+   *
    * @return the decimal format
    */
   public DecimalFormat getDecimalFormat();
 
   /**
    * Gets the decimal format.
-   * 
+   *
    * @param useBigDecimal
    *          the use big decimal
    * @return the decimal format
@@ -471,14 +474,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the string encoding.
-   * 
+   *
    * @return the string encoding
    */
   public String getStringEncoding();
 
   /**
    * Sets the string encoding.
-   * 
+   *
    * @param stringEncoding
    *          the new string encoding
    */
@@ -491,7 +494,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Determine if an object is null. This is the case if data==null or if it's an empty string.
-   * 
+   *
    * @param data
    *          the object to test
    * @return true if the object is considered null.
@@ -502,7 +505,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Returns a true of the value object is case insensitive, false if it is case sensitive,
-   * 
+   *
    * @return the caseInsensitive
    */
   public boolean isCaseInsensitive();
@@ -510,7 +513,7 @@ public interface ValueMetaInterface extends Cloneable {
   /**
    * Sets whether or not the value object is case sensitive. This information is useful if the value is involved in
    * string comparisons.
-   * 
+   *
    * @param caseInsensitive
    *          the caseInsensitive to set
    */
@@ -518,14 +521,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Returns whether or not the value should be sorted in descending order.
-   * 
+   *
    * @return the sortedDescending
    */
   public boolean isSortedDescending();
 
   /**
    * Sets whether or not the value should be set in a descending order.
-   * 
+   *
    * @param sortedDescending
    *          the sortedDescending to set
    */
@@ -533,14 +536,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Returns true if output padding is enabled (padding to specified length).
-   * 
+   *
    * @return true if output padding is enabled (padding to specified length)
    */
   public boolean isOutputPaddingEnabled();
 
   /**
    * Set to true if output padding is to be enabled (padding to specified length).
-   * 
+   *
    * @param outputPaddingEnabled
    *          Set to true if output padding is to be enabled (padding to specified length)
    */
@@ -548,14 +551,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Returns true if this is a large text field (CLOB, TEXT) with arbitrary length.
-   * 
+   *
    * @return true if this is a large text field (CLOB, TEXT) with arbitrary length.
    */
   public boolean isLargeTextField();
 
   /**
    * Set to true if the this is to be a large text field (CLOB, TEXT) with arbitrary length.
-   * 
+   *
    * @param largeTextField
    *          Set to true if this is to be a large text field (CLOB, TEXT) with arbitrary length.
    */
@@ -564,22 +567,22 @@ public interface ValueMetaInterface extends Cloneable {
   /**
    * Returns true of the date format is leniant, false if it is strict. <br/>
    * See also {@link setDateFormatLenient(boolean)}
-   * 
+   *
    * @return true if the the date formatting (parsing) is to be lenient.
-   * 
+   *
    */
   public boolean isDateFormatLenient();
 
   /**
    * Set to true if the date formatting (parsing) is to be set to lenient. Being lenient means that the "date format" is
    * tolerant to some formatting errors. For example, a month specified as "15" will be interpreted as "March": <br/>
-   * 
+   *
    * <pre>
    * 15 - (December = 12) = 3 = March.
    * </pre>
-   * 
+   *
    * Set to false for stricter formatting validation.
-   * 
+   *
    * @param dateFormatLenient
    *          true if the the date formatting (parsing) is to be set to lenient.
    */
@@ -587,14 +590,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Returns the locale from the date format.
-   * 
+   *
    * @return the date format locale
    */
   public Locale getDateFormatLocale();
 
   /**
    * Sets the locale of the date format.
-   * 
+   *
    * @param dateFormatLocale
    *          the date format locale to set
    */
@@ -613,7 +616,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * store original JDBC RecordSetMetaData for later use
-   * 
+   *
    * @see java.sql.ResultSetMetaData
    */
 
@@ -621,7 +624,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Sets the original column type.
-   * 
+   *
    * @param originalColumnType
    *          the new original column type
    */
@@ -629,14 +632,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the original column type name.
-   * 
+   *
    * @return the original column type name
    */
   public String getOriginalColumnTypeName();
 
   /**
    * Sets the original column type name.
-   * 
+   *
    * @param originalColumnTypeName
    *          the new original column type name
    */
@@ -644,14 +647,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the original precision.
-   * 
+   *
    * @return the original precision
    */
   public int getOriginalPrecision();
 
   /**
    * Sets the original precision.
-   * 
+   *
    * @param originalPrecision
    *          the new original precision
    */
@@ -659,14 +662,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Gets the original scale.
-   * 
+   *
    * @return the original scale
    */
   public int getOriginalScale();
 
   /**
    * Sets the original scale.
-   * 
+   *
    * @param originalScale
    *          the new original scale
    */
@@ -674,14 +677,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Checks if is original auto increment.
-   * 
+   *
    * @return true, if is original auto increment
    */
   public boolean isOriginalAutoIncrement();
 
   /**
    * Sets the original auto increment.
-   * 
+   *
    * @param originalAutoIncrement
    *          the new original auto increment
    */
@@ -689,14 +692,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Checks if is original nullable.
-   * 
+   *
    * @return the int
    */
   public int isOriginalNullable();
 
   /**
    * Sets the original nullable.
-   * 
+   *
    * @param originalNullable
    *          the new original nullable
    */
@@ -704,14 +707,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Checks if is original signed.
-   * 
+   *
    * @return true, if is original signed
    */
   public boolean isOriginalSigned();
 
   /**
    * Sets the original signed.
-   * 
+   *
    * @param originalSigned
    *          the new original signed
    */
@@ -721,7 +724,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Clone value data.
-   * 
+   *
    * @param object
    *          the object
    * @return the object
@@ -764,84 +767,84 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Checks whether or not the value is a String.
-   * 
+   *
    * @return true if the value is a String.
    */
   public boolean isString();
 
   /**
    * Checks whether or not this value is a Date
-   * 
+   *
    * @return true if the value is a Date
    */
   public boolean isDate();
 
   /**
    * Checks whether or not the value is a Big Number
-   * 
+   *
    * @return true is this value is a big number
    */
   public boolean isBigNumber();
 
   /**
    * Checks whether or not the value is a Number
-   * 
+   *
    * @return true is this value is a number
    */
   public boolean isNumber();
 
   /**
    * Checks whether or not this value is a boolean
-   * 
+   *
    * @return true if this value has type boolean.
    */
   public boolean isBoolean();
 
   /**
    * Checks whether or not this value is of type Serializable
-   * 
+   *
    * @return true if this value has type Serializable
    */
   public boolean isSerializableType();
 
   /**
    * Checks whether or not this value is of type Binary
-   * 
+   *
    * @return true if this value has type Binary
    */
   public boolean isBinary();
 
   /**
    * Checks whether or not this value is an Integer
-   * 
+   *
    * @return true if this value is an integer
    */
   public boolean isInteger();
 
   /**
    * Checks whether or not this Value is Numeric A Value is numeric if it is either of type Number or Integer
-   * 
+   *
    * @return true if the value is either of type Number or Integer
    */
   public boolean isNumeric();
 
   /**
    * Return the type of a value in a textual form: "String", "Number", "Integer", "Boolean", "Date", ...
-   * 
+   *
    * @return A String describing the type of value.
    */
   public String getTypeDesc();
 
   /**
    * a String text representation of this Value, optionally padded to the specified length
-   * 
+   *
    * @return a String text representation of this Value, optionally padded to the specified length
    */
   public String toStringMeta();
 
   /**
    * Write the content of this class (metadata) to the specified output stream.
-   * 
+   *
    * @param outputStream
    *          the outputstream to write to
    * @throws KettleFileException
@@ -851,7 +854,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Serialize the content of the specified data object to the outputStream. No metadata is written.
-   * 
+   *
    * @param outputStream
    *          the outputstream to write to
    * @param object
@@ -863,7 +866,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * De-serialize data from an inputstream. No metadata is read or changed.
-   * 
+   *
    * @param inputStream
    *          the input stream to read from
    * @return a new data object
@@ -880,7 +883,7 @@ public interface ValueMetaInterface extends Cloneable {
   /**
    * Read the attributes of this particular value meta object from the specified input stream. Loading the type is not
    * handled here, this should be read from the stream previously!
-   * 
+   *
    * @param inputStream
    *          the input stream to read from
    * @throws KettleFileException
@@ -892,7 +895,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Compare 2 values of the same data type
-   * 
+   *
    * @param data1
    *          the first value
    * @param data2
@@ -905,7 +908,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Compare 2 values of the same data type
-   * 
+   *
    * @param data1
    *          the first value
    * @param meta2
@@ -920,7 +923,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Convert the specified data to the data type specified in this object.
-   * 
+   *
    * @param meta2
    *          the metadata of the object to be converted
    * @param data2
@@ -934,7 +937,7 @@ public interface ValueMetaInterface extends Cloneable {
   /**
    * Convert the specified data to the data type specified in this object. For String conversion, be compatible with
    * version 2.5.2.
-   * 
+   *
    * @param meta2
    *          the metadata of the object to be converted
    * @param data2
@@ -947,7 +950,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Convert an object to the data type specified in the conversion metadata
-   * 
+   *
    * @param data
    *          The data
    * @return The data converted to the conversion data type
@@ -958,7 +961,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Convert the specified string to the data type specified in this object.
-   * 
+   *
    * @param pol
    *          the string to be converted
    * @param convertMeta
@@ -974,11 +977,11 @@ public interface ValueMetaInterface extends Cloneable {
    *           in case there is a data conversion error
    */
   public Object convertDataFromString( String pol, ValueMetaInterface convertMeta, String nullif, String ifNull,
-      int trim_type ) throws KettleValueException;
+    int trim_type ) throws KettleValueException;
 
   /**
    * Converts the specified data object to the normal storage type.
-   * 
+   *
    * @param object
    *          the data object to convert
    * @return the data in a normal storage type
@@ -996,7 +999,7 @@ public interface ValueMetaInterface extends Cloneable {
    * - byte[] --> Boolean (Boolean)<br>
    * - byte[] --> byte[] (Binary)<br>
    * <br>
-   * 
+   *
    * @param binary
    *          the binary data read from file or database
    * @return the native data type after conversion
@@ -1007,7 +1010,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Convert a normal storage type to a binary string object. (for comparison reasons)
-   * 
+   *
    * @param object
    *          The object expressed in a normal storage type
    * @return a binary string
@@ -1018,7 +1021,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Converts the specified data object to the binary string storage type.
-   * 
+   *
    * @param object
    *          the data object to convert
    * @return the data in a binary string storage type
@@ -1029,7 +1032,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Calculate the hashcode of the specified data object
-   * 
+   *
    * @param object
    *          the data value to calculate a hashcode for
    * @return the calculated hashcode
@@ -1040,7 +1043,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Create an old-style value for backward compatibility reasons
-   * 
+   *
    * @param data
    *          the data to store in the value
    * @return a newly created Value object
@@ -1051,7 +1054,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Extracts the primitive data from an old style Value object
-   * 
+   *
    * @param value
    *          the old style Value object
    * @return the value's data, NOT the meta data.
@@ -1064,7 +1067,7 @@ public interface ValueMetaInterface extends Cloneable {
    * Returns the storage Meta data that is needed for internal conversion from BinaryString or String to the specified
    * type. This storage Meta data object survives cloning and should travel through the transformation unchanged as long
    * as the data type remains the same.
-   * 
+   *
    * @return the storage Meta data that is needed for internal conversion from BinaryString or String to the specified
    *         type.
    */
@@ -1072,7 +1075,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Sets the storage meta data.
-   * 
+   *
    * @param storageMetadata
    *          the storage Meta data that is needed for internal conversion from BinaryString or String to the specified
    *          type. This storage Meta data object survives cloning and should travel through the transformation
@@ -1083,7 +1086,7 @@ public interface ValueMetaInterface extends Cloneable {
   /**
    * This conversion metadata can be attached to a String object to see where it came from and with which mask it was
    * generated, the encoding, the local languages used, padding, etc.
-   * 
+   *
    * @return The conversion metadata
    */
   public ValueMetaInterface getConversionMetadata();
@@ -1091,7 +1094,7 @@ public interface ValueMetaInterface extends Cloneable {
   /**
    * Attach conversion metadata to a String object to see where it came from and with which mask it was generated, the
    * encoding, the local languages used, padding, etc.
-   * 
+   *
    * @param conversionMetadata
    *          the conversionMetadata to set
    */
@@ -1099,7 +1102,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Returns an XML representation of the row metadata.
-   * 
+   *
    * @return an XML representation of the row metadata
    * @throws IOException
    *           Thrown in case there is an (Base64/GZip) decoding problem
@@ -1108,7 +1111,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Returns an XML representation of the row data.
-   * 
+   *
    * @param value
    *          The data to serialize as XML
    * @return an XML representation of the row data
@@ -1120,7 +1123,7 @@ public interface ValueMetaInterface extends Cloneable {
   /**
    * Convert a data XML node to an Object that corresponds to the metadata. This is basically String to Object
    * conversion that is being done.
-   * 
+   *
    * @param node
    *          the node to retrieve the data value from
    * @return the converted data value
@@ -1131,14 +1134,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Returns the number of binary string to native data type conversions done with this object conversions
-   * 
+   *
    * @return the number of binary string to native data type conversions done with this object conversions
    */
   public long getNumberOfBinaryStringConversions();
 
   /**
    * Returns the number of binary string to native data type done with this object conversions to set.
-   * 
+   *
    * @param numberOfBinaryStringConversions
    *          the number of binary string to native data type done with this object conversions to set
    */
@@ -1146,7 +1149,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Returns true if the data type requires a real copy. Usually a binary or Serializable object.
-   * 
+   *
    * @return boolean
    */
   public boolean requiresRealClone();
@@ -1166,7 +1169,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * This method draws the value using the supplied graphical context.
-   * 
+   *
    * @param gc
    *          The graphical context to draw on.
    */
@@ -1175,7 +1178,7 @@ public interface ValueMetaInterface extends Cloneable {
   /**
    * Investigate JDBC result set metadata at the specified index. If this value metadata is interested in handling this
    * SQL type, it should return the value meta. Otherwise it should return null.
-   * 
+   *
    * @param databaseMeta
    *          the database metadata to reference capabilities and so on.
    * @param name
@@ -1193,11 +1196,11 @@ public interface ValueMetaInterface extends Cloneable {
    *           In case something went wrong.
    */
   public ValueMetaInterface getValueFromSQLType( DatabaseMeta databaseMeta, String name, ResultSetMetaData rm,
-      int index, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException;
+    int index, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException;
 
   /**
    * Get a value from a result set column based on the current value metadata
-   * 
+   *
    * @param databaseInterface
    *          the database metadata to use
    * @param resultSet
@@ -1208,12 +1211,11 @@ public interface ValueMetaInterface extends Cloneable {
    * @throws KettleDatabaseException
    *           in case something goes wrong.
    */
-  public Object getValueFromResultSet( DatabaseInterface databaseInterface, ResultSet resultSet, int index )
-    throws KettleDatabaseException;
+  public Object getValueFromResultSet( DatabaseInterface databaseInterface, ResultSet resultSet, int index ) throws KettleDatabaseException;
 
   /**
    * Set a value on a JDBC prepared statement on the specified position
-   * 
+   *
    * @param databaseMeta
    *          the database metadata to reference
    * @param preparedStatement
@@ -1225,13 +1227,13 @@ public interface ValueMetaInterface extends Cloneable {
    * @throws KettleDatabaseException
    *           in case something goes wrong
    */
-  public void setPreparedStatementValue( DatabaseMeta databaseMeta, PreparedStatement preparedStatement, int index,
-      Object data ) throws KettleDatabaseException;
+  public void setPreparedStatementValue( DatabaseMeta databaseMeta, PreparedStatement preparedStatement,
+    int index, Object data ) throws KettleDatabaseException;
 
   /**
    * This method gives you the native Java data type corresponding to the value meta-data. Conversions from other
    * storage types and other operations are done automatically according to the specified value meta-data.
-   * 
+   *
    * @param object
    *          The input data
    * @return The native data type
@@ -1242,7 +1244,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   /**
    * Ask for suggestions as to how this plugin data type should be represented in the specified database interface
-   * 
+   *
    * @param databaseInterface
    *          The database type/dialect to get the column type definition for
    * @param tk
@@ -1258,6 +1260,6 @@ public interface ValueMetaInterface extends Cloneable {
    * @return The field type definition
    */
   public String getDatabaseColumnTypeDefinition( DatabaseInterface databaseInterface, String tk, String pk,
-      boolean use_autoinc, boolean add_fieldname, boolean add_cr );
+    boolean use_autoinc, boolean add_fieldname, boolean add_cr );
 
 }

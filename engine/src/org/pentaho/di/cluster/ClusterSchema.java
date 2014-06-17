@@ -52,13 +52,13 @@ import org.w3c.dom.Node;
  * A cluster schema combines a list of slave servers so that they can be set altogether. It (can) also contain a number
  * of performance tuning options regarding this cluster. For example options regarding communications with the master
  * node of the nodes themselves come to mind.
- * 
+ *
  * @author Matt
  * @since 17-nov-2006
  */
 public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace,
-    RepositoryElementInterface, XMLInterface {
-  private static Class<?> PKG = ClusterSchema.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  RepositoryElementInterface, XMLInterface {
+  private static Class<?> PKG = ClusterSchema.class; // for i18n purposes, needed by Translator2!!
 
   public static final String XML_TAG = "clusterschema";
 
@@ -369,12 +369,11 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     return variables.environmentSubstitute( aString );
   }
 
-  public String[] environmentSubstitute( String aString[] ) {
+  public String[] environmentSubstitute( String[] aString ) {
     return variables.environmentSubstitute( aString );
   }
 
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
 

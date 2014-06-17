@@ -37,6 +37,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -53,18 +54,18 @@ import com.wcohen.ss.NeedlemanWunsch;
 
 /**
  * Performs a fuzzy match for each main stream field row An approximative match is done in a lookup stream
- * 
+ *
  * @author Samatar
  * @since 03-mars-2008
  */
 public class FuzzyMatch extends BaseStep implements StepInterface {
-  private static Class<?> PKG = FuzzyMatchMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = FuzzyMatchMeta.class; // for i18n purposes, needed by Translator2!!
 
   private FuzzyMatchMeta meta;
   private FuzzyMatchData data;
 
   public FuzzyMatch( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -76,8 +77,8 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
     }
 
     if ( isDetailed() ) {
-      logDetailed( BaseMessages.getString( PKG, "FuzzyMatch.Log.ReadingFromStream" ) + data.infoStream.getStepname()
-          + "]" );
+      logDetailed( BaseMessages.getString( PKG, "FuzzyMatch.Log.ReadingFromStream" )
+        + data.infoStream.getStepname() + "]" );
     }
 
     boolean firstRun = true;
@@ -93,32 +94,37 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
         int indexOfLookupField = data.infoMeta.indexOfValue( environmentSubstitute( meta.getLookupField() ) );
         if ( indexOfLookupField < 0 ) {
           // The field is unreachable !
-          throw new KettleException( BaseMessages.getString( PKG, "FuzzyMatch.Exception.CouldnotFindLookField", meta
-              .getLookupField() ) );
+          throw new KettleException( BaseMessages.getString(
+            PKG, "FuzzyMatch.Exception.CouldnotFindLookField", meta.getLookupField() ) );
         }
         data.infoCache = new RowMeta();
-        data.infoCache.addValueMeta( data.infoMeta.getValueMeta( indexOfLookupField ) );
+        ValueMetaInterface keyValueMeta = data.infoMeta.getValueMeta( indexOfLookupField );
+        keyValueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+        data.infoCache.addValueMeta( keyValueMeta );
         // Add key
         data.indexOfCachedFields[0] = indexOfLookupField;
 
         // Check additional fields
         if ( data.addAdditionalFields ) {
+          ValueMetaInterface additionalFieldValueMeta;
           for ( int i = 0; i < meta.getValue().length; i++ ) {
             int fi = i + 1;
             data.indexOfCachedFields[fi] = data.infoMeta.indexOfValue( meta.getValue()[i] );
             if ( data.indexOfCachedFields[fi] < 0 ) {
               // The field is unreachable !
-              throw new KettleException( BaseMessages.getString( PKG, "FuzzyMatch.Exception.CouldnotFindLookField",
-                  meta.getValue()[i] ) );
+              throw new KettleException( BaseMessages.getString(
+                PKG, "FuzzyMatch.Exception.CouldnotFindLookField", meta.getValue()[i] ) );
             }
-            data.infoCache.addValueMeta( data.infoMeta.getValueMeta( data.indexOfCachedFields[fi] ) );
+            additionalFieldValueMeta = data.infoMeta.getValueMeta( data.indexOfCachedFields[fi] );
+            additionalFieldValueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+            data.infoCache.addValueMeta( additionalFieldValueMeta );
           }
           data.nrCachedFields += meta.getValue().length;
         }
       }
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "FuzzyMatch.Log.ReadLookupRow" )
-            + rowSet.getRowMeta().getString( rowData ) );
+          + rowSet.getRowMeta().getString( rowData ) );
       }
 
       // Look up the keys in the source rows
@@ -126,15 +132,29 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
 
       Object[] storeData = new Object[data.nrCachedFields];
       // Add key field
-      storeData[0] = rowData[data.indexOfCachedFields[0]] == null ? "" : rowData[data.indexOfCachedFields[0]];
+      if ( rowData[data.indexOfCachedFields[0]] == null ) {
+        storeData[0] = "";
+      } else {
+        ValueMetaInterface fromStreamRowMeta = rowSet.getRowMeta().getValueMeta( data.indexOfCachedFields[0] );
+        if ( fromStreamRowMeta.isStorageBinaryString() ) {
+          storeData[0] = fromStreamRowMeta.convertToNormalStorageType( rowData[data.indexOfCachedFields[0]] );
+        } else {
+          storeData[0] = rowData[data.indexOfCachedFields[0]];
+        }
+      }
 
       // Add additional fields?
       for ( int i = 1; i < data.nrCachedFields; i++ ) {
-        storeData[i] = rowData[data.indexOfCachedFields[i]];
+        ValueMetaInterface fromStreamRowMeta = rowSet.getRowMeta().getValueMeta( data.indexOfCachedFields[i] );
+        if ( fromStreamRowMeta.isStorageBinaryString() ) {
+          storeData[i] = fromStreamRowMeta.convertToNormalStorageType( rowData[data.indexOfCachedFields[i]] );
+        } else {
+          storeData[i] = rowData[data.indexOfCachedFields[0]];
+        }
       }
       if ( isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "FuzzyMatch.Log.AddingValueToCache", data.infoCache
-            .getString( storeData ) ) );
+          .getString( storeData ) ) );
       }
 
       addToCache( storeData );
@@ -154,15 +174,16 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
       first = false;
 
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null, this,
-          repository, metaStore );
+      meta.getFields(
+        data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.infoMeta }, null, this, repository,
+        metaStore );
 
       // Check lookup field
       data.indexOfMainField = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getMainStreamField() ) );
       if ( data.indexOfMainField < 0 ) {
         // The field is unreachable !
         throw new KettleException( BaseMessages.getString( PKG, "FuzzyMatch.Exception.CouldnotFindMainField", meta
-            .getMainStreamField() ) );
+          .getMainStreamField() ) );
       }
     }
     Object[] add = null;
@@ -186,8 +207,8 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
 
   private Object[] getFromCache( Object[] keyRow ) throws KettleValueException {
     if ( isDebug() ) {
-      logDebug( BaseMessages.getString( PKG, "FuzzyMatch.Log.ReadingMainStreamRow", getInputRowMeta()
-          .getString( keyRow ) ) );
+      logDebug( BaseMessages.getString( PKG, "FuzzyMatch.Log.ReadingMainStreamRow", getInputRowMeta().getString(
+        keyRow ) ) );
     }
     Object[] retval = null;
     switch ( meta.getAlgorithmType() ) {
@@ -422,7 +443,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
 
   /**
    * Build an empty row based on the meta-data...
-   * 
+   *
    * @return
    */
 
@@ -527,7 +548,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
       // only when the fieldname is provided
       // and user want to return the closer value
       data.addValueFieldName =
-          ( !Const.isEmpty( environmentSubstitute( meta.getOutputValueField() ) ) && meta.isGetCloserValue() );
+        ( !Const.isEmpty( environmentSubstitute( meta.getOutputValueField() ) ) && meta.isGetCloserValue() );
 
       // Set the number of fields to cache
       // default value is one
@@ -535,10 +556,11 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
 
       if ( meta.getValue() != null && meta.getValue().length > 0 ) {
 
-        if ( meta.isGetCloserValue() || ( meta.getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE )
-            || ( meta.getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX )
-            || ( meta.getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX )
-            || ( meta.getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_METAPHONE ) ) {
+        if ( meta.isGetCloserValue()
+          || ( meta.getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE )
+          || ( meta.getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX )
+          || ( meta.getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX )
+          || ( meta.getAlgorithmType() == FuzzyMatchMeta.OPERATION_TYPE_METAPHONE ) ) {
           // cache also additional fields
           data.addAdditionalFields = true;
           nrFields += meta.getValue().length;

@@ -56,7 +56,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class AddSequenceDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = AddSequenceMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = AddSequenceMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlValuename;
   private Text wValuename;
@@ -209,8 +209,8 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
     wbnConnection = new Button( gDatabase, SWT.PUSH );
     wbeConnection = new Button( gDatabase, SWT.PUSH );
     wConnection =
-        addConnectionLine( gDatabase, wUseDatabase, middle, margin, wlConnection, wbwConnection, wbnConnection,
-            wbeConnection );
+      addConnectionLine(
+        gDatabase, wUseDatabase, middle, margin, wlConnection, wbwConnection, wbnConnection, wbeConnection );
     if ( input.getDatabase() == null && transMeta.nrDatabases() == 1 ) {
       wConnection.select( 0 );
     }
@@ -573,9 +573,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
         if ( null != sequences && sequences.length > 0 ) {
           sequences = Const.sortStrings( sequences );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, sequences, BaseMessages.getString( PKG,
-                  "AddSequenceDialog.SelectSequence.Title", wConnection.getText() ), BaseMessages.getString( PKG,
-                  "AddSequenceDialog.SelectSequence.Message" ) );
+            new EnterSelectionDialog( shell, sequences,
+              BaseMessages.getString( PKG, "AddSequenceDialog.SelectSequence.Title", wConnection.getText() ),
+              BaseMessages.getString( PKG, "AddSequenceDialog.SelectSequence.Message" ) );
 
           String d = dialog.open();
           if ( d != null ) {
@@ -589,8 +589,8 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
           mb.open();
         }
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-            PKG, "AddSequenceDialog.ErrorGettingSequences" ), e );
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+          .getString( PKG, "AddSequenceDialog.ErrorGettingSequences" ), e );
       } finally {
         if ( database != null ) {
           database.disconnect();
@@ -614,9 +614,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-              new EnterSelectionDialog( shell, schemas, BaseMessages.getString( PKG,
-                  "AddSequenceDialog.SelectSequence.Title", wConnection.getText() ), BaseMessages.getString( PKG,
-                  "AddSequenceDialog.SelectSequence.Message" ) );
+            new EnterSelectionDialog( shell, schemas,
+              BaseMessages.getString( PKG, "AddSequenceDialog.SelectSequence.Title", wConnection.getText() ),
+              BaseMessages.getString( PKG, "AddSequenceDialog.SelectSequence.Message" ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchema.setText( Const.NVL( d.toString(), "" ) );
@@ -629,8 +629,8 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
           mb.open();
         }
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
-            PKG, "AddSequenceDialog.ErrorGettingSchemas" ), e );
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+          .getString( PKG, "AddSequenceDialog.ErrorGettingSchemas" ), e );
       } finally {
         if ( database != null ) {
           database.disconnect();

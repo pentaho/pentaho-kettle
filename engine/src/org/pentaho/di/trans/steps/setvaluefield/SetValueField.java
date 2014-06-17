@@ -37,18 +37,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Set value field with another value field.
- * 
+ *
  * @author Samatar
  * @since 10-11-2008
  */
 public class SetValueField extends BaseStep implements StepInterface {
-  private static Class<?> PKG = SetValueFieldMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = SetValueFieldMeta.class; // for i18n purposes, needed by Translator2!!
 
   private SetValueFieldMeta meta;
   private SetValueFieldData data;
 
   public SetValueField( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -59,8 +59,8 @@ public class SetValueField extends BaseStep implements StepInterface {
     // Get one row from one of the rowsets...
     Object[] r = getRow();
 
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
+
       setOutputDone();
       return false;
     }
@@ -78,26 +78,26 @@ public class SetValueField extends BaseStep implements StepInterface {
         for ( int j = 0; j < meta.getFieldName().length; j++ ) {
           if ( meta.getFieldName()[j].equals( meta.getFieldName()[i] ) ) {
             if ( j != i ) {
-              throw new KettleException( BaseMessages.getString( PKG, "SetValueField.Log.FieldSpecifiedMoreThatOne",
-                  meta.getFieldName()[i], "" + i, "" + j ) );
+              throw new KettleException( BaseMessages.getString(
+                PKG, "SetValueField.Log.FieldSpecifiedMoreThatOne", meta.getFieldName()[i], "" + i, "" + j ) );
             }
           }
         }
 
         data.indexOfField[i] = data.outputRowMeta.indexOfValue( environmentSubstitute( meta.getFieldName()[i] ) );
         if ( data.indexOfField[i] < 0 ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "SetValueField.Log.CouldNotFindFieldInRow", meta
-              .getFieldName()[i] ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "SetValueField.Log.CouldNotFindFieldInRow", meta.getFieldName()[i] ) );
         }
         String sourceField = environmentSubstitute( meta.getReplaceByFieldValue()[i] );
         if ( Const.isEmpty( sourceField ) ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "SetValueField.Log.ReplaceByValueFieldMissing",
-              "" + i ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "SetValueField.Log.ReplaceByValueFieldMissing", "" + i ) );
         }
         data.indexOfReplaceByValue[i] = data.outputRowMeta.indexOfValue( sourceField );
         if ( data.indexOfReplaceByValue[i] < 0 ) {
-          throw new KettleStepException( BaseMessages.getString( PKG, "SetValueField.Log.CouldNotFindFieldInRow",
-              sourceField ) );
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "SetValueField.Log.CouldNotFindFieldInRow", sourceField ) );
         }
         // Compare fields type
         ValueMetaInterface SourceValue = getInputRowMeta().getValueMeta( data.indexOfField[i] );
@@ -105,9 +105,9 @@ public class SetValueField extends BaseStep implements StepInterface {
 
         if ( SourceValue.getType() != ReplaceByValue.getType() ) {
           String err =
-              BaseMessages.getString( PKG, "SetValueField.Log.FieldsTypeDifferent", SourceValue.getName() + " ("
-                  + SourceValue.getTypeDesc() + ")", ReplaceByValue.getName() + " (" + ReplaceByValue.getTypeDesc()
-                  + ")" );
+            BaseMessages.getString( PKG, "SetValueField.Log.FieldsTypeDifferent", SourceValue.getName()
+              + " (" + SourceValue.getTypeDesc() + ")", ReplaceByValue.getName()
+              + " (" + ReplaceByValue.getTypeDesc() + ")" );
           throw new KettleStepException( err );
         }
       }

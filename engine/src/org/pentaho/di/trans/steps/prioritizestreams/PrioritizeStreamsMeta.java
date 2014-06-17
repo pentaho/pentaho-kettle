@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
  */
 
 public class PrioritizeStreamsMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = PrioritizeStreamsMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = PrioritizeStreamsMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** by which steps to display? */
   private String[] stepName;
@@ -100,7 +100,7 @@ public class PrioritizeStreamsMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Default: nothing changes to rowMeta
   }
 
@@ -144,8 +144,7 @@ public class PrioritizeStreamsMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
 
       int nrsteps = rep.countNrStepAttributes( id_step, "step_name" );
@@ -160,8 +159,7 @@ public class PrioritizeStreamsMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       for ( int i = 0; i < stepName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "step_name", stepName[i] );
@@ -171,26 +169,26 @@ public class PrioritizeStreamsMeta extends BaseStepMeta implements StepMetaInter
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "PrioritizeStreamsMeta.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "PrioritizeStreamsMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       if ( stepName.length > 0 ) {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                "PrioritizeStreamsMeta.CheckResult.AllStepsFound" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+            PKG, "PrioritizeStreamsMeta.CheckResult.AllStepsFound" ), stepMeta );
         remarks.add( cr );
       } else {
         cr =
-            new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                "PrioritizeStreamsMeta.CheckResult.NoStepsEntered" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+            PKG, "PrioritizeStreamsMeta.CheckResult.NoStepsEntered" ), stepMeta );
         remarks.add( cr );
       }
 
@@ -199,19 +197,19 @@ public class PrioritizeStreamsMeta extends BaseStepMeta implements StepMetaInter
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "PrioritizeStreamsMeta.CheckResult.StepRecevingData2" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "PrioritizeStreamsMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "PrioritizeStreamsMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "PrioritizeStreamsMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new PrioritizeStreams( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

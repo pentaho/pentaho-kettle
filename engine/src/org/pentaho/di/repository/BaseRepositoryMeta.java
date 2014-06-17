@@ -43,13 +43,13 @@ public class BaseRepositoryMeta {
   /**
    * This returns the expected name for the dialog that edits this repository metadata object The expected name is in
    * the org.pentaho.di.ui tree and has a class name that is the name of the job entry with 'Dialog' added to the end.
-   * 
+   *
    * e.g. if the repository meta class is org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta the dialog would be
    * org.pentaho.di.ui.repository.kdr.KettleDatabaseRepositoryDialog
-   * 
+   *
    * If the dialog class does not match this pattern, the RepositoryMeta class should override this method and return
    * the appropriate class name
-   * 
+   *
    * @return full class name of the dialog
    */
   public String getDialogClassName() {
@@ -65,13 +65,13 @@ public class BaseRepositoryMeta {
   /**
    * This returns the expected name for the dialog that edits this repository metadata object The expected name is in
    * the org.pentaho.di.ui tree and has a class name that is the name of the job entry with 'Dialog' added to the end.
-   * 
+   *
    * e.g. if the repository meta class is org.pentaho.di.pur.PurRepositoryMeta the dialog would be
    * org.pentaho.di.ui.repository.pur.PurRepositoryRevisionBrowserDialog
-   * 
+   *
    * If the dialog class does not match this pattern, the RepositoryMeta class should override this method and return
    * the appropriate class name
-   * 
+   *
    * @return full class name of the dialog
    */
   public String getRevisionBrowserDialogClassName() {
@@ -97,7 +97,7 @@ public class BaseRepositoryMeta {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.repository.RepositoryMeta#loadXML(org.w3c.dom.Node, java.util.List)
    */
   public void loadXML( Node repnode, List<DatabaseMeta> databases ) throws KettleException {
@@ -113,7 +113,7 @@ public class BaseRepositoryMeta {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.repository.RepositoryMeta#getXML()
    */
   public String getXML() {
@@ -128,7 +128,7 @@ public class BaseRepositoryMeta {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.repository.RepositoryMeta#getId()
    */
   public String getId() {
@@ -137,7 +137,7 @@ public class BaseRepositoryMeta {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.repository.RepositoryMeta#setId(java.lang.String)
    */
   public void setId( String id ) {
@@ -146,7 +146,7 @@ public class BaseRepositoryMeta {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.repository.RepositoryMeta#getName()
    */
   public String getName() {
@@ -155,7 +155,7 @@ public class BaseRepositoryMeta {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.repository.RepositoryMeta#setName(java.lang.String)
    */
   public void setName( String name ) {
@@ -164,7 +164,7 @@ public class BaseRepositoryMeta {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.repository.RepositoryMeta#getDescription()
    */
   public String getDescription() {
@@ -173,7 +173,7 @@ public class BaseRepositoryMeta {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.di.repository.RepositoryMeta#setDescription(java.lang.String)
    */
   public void setDescription( String description ) {

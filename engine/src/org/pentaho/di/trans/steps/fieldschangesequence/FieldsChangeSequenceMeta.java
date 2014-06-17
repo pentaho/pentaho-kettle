@@ -55,7 +55,6 @@ import org.w3c.dom.Node;
 
 public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = FieldsChangeSequenceMeta.class; // for i18n purposes, needed by Translator2!!
-                                                                // $NON-NLS-1$
 
   /** by which fields to display? */
   private String[] fieldName;
@@ -187,8 +186,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       start = rep.getStepAttributeString( id_step, "start" );
       increment = rep.getStepAttributeString( id_step, "increment" );
@@ -205,8 +203,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "start", start );
       rep.saveStepAttribute( id_transformation, id_step, "increment", increment );
@@ -220,7 +217,7 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) {
     if ( !Const.isEmpty( resultfieldName ) ) {
       ValueMetaInterface v = new ValueMeta( resultfieldName, ValueMetaInterface.TYPE_INTEGER );
       v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
@@ -229,9 +226,9 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -246,13 +243,13 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
 
     if ( prev == null || prev.size() == 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceMeta.CheckResult.NotReceivingFields" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+          PKG, "FieldsChangeSequenceMeta.CheckResult.NotReceivingFields" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "FieldsChangeSequenceMeta.CheckResult.StepRecevingData", prev.size() + "" ), stepMeta );
       remarks.add( cr );
 
       boolean error_found = false;
@@ -267,20 +264,21 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
         }
       }
       if ( error_found ) {
-        error_message = BaseMessages.getString( PKG, "FieldsChangeSequenceMeta.CheckResult.FieldsFound", error_message );
+        error_message =
+          BaseMessages.getString( PKG, "FieldsChangeSequenceMeta.CheckResult.FieldsFound", error_message );
 
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } else {
         if ( fieldName.length > 0 ) {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-                  "FieldsChangeSequenceMeta.CheckResult.AllFieldsFound" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "FieldsChangeSequenceMeta.CheckResult.AllFieldsFound" ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-              new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString( PKG,
-                  "FieldsChangeSequenceMeta.CheckResult.NoFieldsEntered" ), stepMeta );
+            new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
+              PKG, "FieldsChangeSequenceMeta.CheckResult.NoFieldsEntered" ), stepMeta );
           remarks.add( cr );
         }
       }
@@ -290,19 +288,19 @@ public class FieldsChangeSequenceMeta extends BaseStepMeta implements StepMetaIn
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceMeta.CheckResult.StepRecevingData2" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "FieldsChangeSequenceMeta.CheckResult.StepRecevingData2" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "FieldsChangeSequenceMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
+        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "FieldsChangeSequenceMeta.CheckResult.NoInputReceivedFromOtherSteps" ), stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new FieldsChangeSequence( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

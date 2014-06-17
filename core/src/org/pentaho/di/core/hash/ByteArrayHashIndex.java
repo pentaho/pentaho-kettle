@@ -38,7 +38,7 @@ public class ByteArrayHashIndex {
 
   /**
    * Create a Byte array hash index to store row
-   * 
+   *
    * @param rowMeta
    */
   public ByteArrayHashIndex( RowMetaInterface keyRowMeta, int size ) {

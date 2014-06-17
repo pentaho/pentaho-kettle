@@ -60,24 +60,23 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Read XML files, parse them and convert them to rows and writes these to one or more output streams.
- * 
+ *
  * @author Samatar,Brahim
  * @since 20-06-2007
  */
 public class GetXMLData extends BaseStep implements StepInterface {
-  private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!
 
   private GetXMLDataMeta meta;
   private GetXMLDataData data;
   private Object[] prevRow = null; // A pre-allocated spot for the previous row
 
   public GetXMLData( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
-  protected boolean setDocument( String StringXML, FileObject file, boolean IsInXMLField, boolean readurl )
-    throws KettleException {
+  protected boolean setDocument( String StringXML, FileObject file, boolean IsInXMLField, boolean readurl ) throws KettleException {
 
     this.prevRow = buildEmptyRow(); // pre-allocate previous row
 
@@ -188,7 +187,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
   /**
    * Process chunk of data in streaming mode. Called only by the handler when pruning is true. Not allowed in
    * combination with meta.getIsInFields(), but could be redesigned later on.
-   * 
+   *
    */
   private void processStreaming( Element row ) throws KettleException {
     data.document = row.getDocument();
@@ -275,21 +274,19 @@ public class GetXMLData extends BaseStep implements StepInterface {
 
   /**
    * Build an empty row based on the meta-data.
-   * 
-   * @return
+   *
+   * @return empty row built
    */
   private Object[] buildEmptyRow() {
-    Object[] rowData = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
-
-    return rowData;
+    return RowDataUtil.allocateRowData( data.outputRowMeta.size() );
   }
 
   private void handleMissingFiles() throws KettleException {
     List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
     if ( nonExistantFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonExistantFiles );
-      logError( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "GetXMLData.Log.RequiredFiles", message ) );
+      logError( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredFilesTitle" ), BaseMessages.getString(
+        PKG, "GetXMLData.Log.RequiredFiles", message ) );
 
       throw new KettleException( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredFilesMissing", message ) );
     }
@@ -297,21 +294,23 @@ public class GetXMLData extends BaseStep implements StepInterface {
     List<FileObject> nonAccessibleFiles = data.files.getNonAccessibleFiles();
     if ( nonAccessibleFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
-      logError( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "GetXMLData.Log.RequiredNotAccessibleFiles", message ) );
+      logError( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredFilesTitle" ), BaseMessages.getString(
+        PKG, "GetXMLData.Log.RequiredNotAccessibleFiles", message ) );
 
-      throw new KettleException( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredNotAccessibleFilesMissing",
-          message ) );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "GetXMLData.Log.RequiredNotAccessibleFilesMissing", message ) );
     }
   }
 
   private boolean ReadNextString() {
 
     try {
-      data.readrow = getRow(); // Grab another row ...
+      // Grab another row ...
+      data.readrow = getRow();
 
-      if ( data.readrow == null ) // finished processing!
-      {
+      if ( data.readrow == null ) {
+        // finished processing!
+
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "GetXMLData.Log.FinishedProcessing" ) );
         }
@@ -321,9 +320,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       if ( first ) {
         first = false;
 
-        if ( data.readrow != null ) {
-          data.nrReadRow = data.readrow.length;
-        }
+        data.nrReadRow = getInputRowMeta().size();
         data.inputRowMeta = getInputRowMeta();
         data.outputRowMeta = data.inputRowMeta.clone();
         meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
@@ -334,8 +331,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
         // Create convert meta-data objects that will contain Date & Number formatters
         data.convertRowMeta = new RowMeta();
         for ( ValueMetaInterface valueMeta : data.convertRowMeta.getValueMetaList() ) {
-          data.convertRowMeta
-              .addValueMeta( ValueMetaFactory.cloneValueMeta( valueMeta, ValueMetaInterface.TYPE_STRING ) );
+          data.convertRowMeta.addValueMeta( ValueMetaFactory.cloneValueMeta(
+            valueMeta, ValueMetaInterface.TYPE_STRING ) );
         }
 
         // For String to <type> conversions, we allocate a conversion meta data row as well...
@@ -355,7 +352,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "GetXMLData.Log.ErrorFindingField", meta.getXMLField() ) );
             throw new KettleException( BaseMessages.getString( PKG, "GetXMLData.Exception.CouldnotFindField", meta
-                .getXMLField() ) );
+              .getXMLField() ) );
           }
         }
       }
@@ -385,8 +382,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
             addFileToResultFilesname( file );
 
             if ( log.isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "GetXMLData.Log.LoopFileOccurences", "" + data.nodesize, file
-                  .getName().getBaseName() ) );
+              logDetailed( BaseMessages.getString(
+                PKG, "GetXMLData.Log.LoopFileOccurences", "" + data.nodesize, file.getName().getBaseName() ) );
             }
 
           } catch ( Exception e ) {
@@ -397,6 +394,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
                 file.close();
               }
             } catch ( Exception e ) {
+              // Ignore close errors
             }
           }
         } else {
@@ -436,7 +434,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
     if ( meta.addResultFile() ) {
       // Add this to the result file names...
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
       resultFile.setComment( BaseMessages.getString( PKG, "GetXMLData.Log.FileAddedResult" ) );
       addResultFile( resultFile );
     }
@@ -459,8 +457,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
       int length = 0;
       for ( int i = 0; i < data.NSPath.size(); i++ ) {
         if ( data.NSPath.get( i ).length() > length && fullPath.startsWith( data.NSPath.get( i ) ) ) {
-          java.util.Arrays.fill( indexs, data.NSPath.get( i ).split( GetXMLDataMeta.N0DE_SEPARATOR ).length - 2,
-              indexs.length, i );
+          java.util.Arrays.fill(
+            indexs, data.NSPath.get( i ).split( GetXMLDataMeta.N0DE_SEPARATOR ).length - 2, indexs.length, i );
           length = data.NSPath.get( i ).length();
         }
       }
@@ -472,8 +470,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
         if ( newPath.length() > 0 ) {
           newPath.append( GetXMLDataMeta.N0DE_SEPARATOR );
         }
-        if ( tmp.length() > 0 && tmp.indexOf( ":" ) == -1 && tmp.indexOf( "." ) == -1
-            && tmp.indexOf( GetXMLDataMeta.AT ) == -1 ) {
+        if ( tmp.length() > 0 && !tmp.contains( ":" ) && !tmp.contains( "." ) && !tmp.contains( GetXMLDataMeta.AT ) ) {
           int index = indexs[i + indexs.length - pathStrs.length];
           if ( index >= 0 ) {
             newPath.append( "pre" ).append( index ).append( ":" ).append( tmp );
@@ -510,8 +507,9 @@ public class GetXMLData extends BaseStep implements StepInterface {
 
   private boolean openNextFile() {
     try {
-      if ( data.filenr >= data.files.nrOfFiles() ) // finished processing!
-      {
+      if ( data.filenr >= data.files.nrOfFiles() ) {
+        // finished processing!
+
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "GetXMLData.Log.FinishedProcessing" ) );
         }
@@ -585,13 +583,13 @@ public class GetXMLData extends BaseStep implements StepInterface {
 
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "GetXMLData.Log.FileOpened", data.file.toString() ) );
-          logDetailed( BaseMessages.getString( PKG, "GetXMLData.Log.LoopFileOccurences", "" + data.nodesize, data.file
-              .getName().getBaseName() ) );
+          logDetailed( BaseMessages.getString(
+            PKG, "GetXMLData.Log.LoopFileOccurences", "" + data.nodesize, data.file.getName().getBaseName() ) );
         }
       }
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "GetXMLData.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(),
-          e.toString() ) );
+      logError( BaseMessages.getString( PKG, "GetXMLData.Log.UnableToOpenFile", "" + data.filenr, data.file
+        .toString(), e.toString() ) );
       stopAll();
       setErrors( 1 );
       return false;
@@ -667,11 +665,10 @@ public class GetXMLData extends BaseStep implements StepInterface {
 
   private Object[] getXMLRowPutRowWithErrorhandling() throws KettleException {
     // Build an empty row based on the meta-data
-    Object[] r = null;
+    Object[] r;
     data.errorInRowButContinue = false;
     try {
       if ( meta.isInFields() ) {
-
         while ( ( data.nodenr >= data.nodesize || data.readrow == null ) ) {
           if ( !ReadNextString() ) {
             return null;
@@ -720,7 +717,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
         }
 
         // Get node value
-        String nodevalue = null;
+        String nodevalue;
 
         // Handle namespaces
         if ( meta.isNamespaceAware() ) {
@@ -778,7 +775,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
             outputRowData[data.totalpreviousfields + i] = data.previousRow[data.totalpreviousfields + i];
           }
         }
-      }// End of loop over fields...
+      } // End of loop over fields...
 
       int rowIndex = data.totalpreviousfields + data.nrInputFields;
 
@@ -788,7 +785,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       }
       // See if we need to add the row number to the row...
       if ( meta.includeRowNumber() && !Const.isEmpty( meta.getRowNumberField() ) ) {
-        outputRowData[rowIndex++] = new Long( data.rownr );
+        outputRowData[rowIndex++] = data.rownr;
       }
       // Possibly add short filename...
       if ( meta.getShortFileNameField() != null && meta.getShortFileNameField().length() > 0 ) {
@@ -804,11 +801,11 @@ public class GetXMLData extends BaseStep implements StepInterface {
       }
       // Add Size
       if ( meta.getSizeField() != null && meta.getSizeField().length() > 0 ) {
-        outputRowData[rowIndex++] = new Long( data.size );
+        outputRowData[rowIndex++] = data.size;
       }
       // add Hidden
       if ( meta.isHiddenField() != null && meta.isHiddenField().length() > 0 ) {
-        outputRowData[rowIndex++] = new Boolean( data.path );
+        outputRowData[rowIndex++] = Boolean.valueOf( data.path );
       }
       // Add modification date
       if ( meta.getLastModificationDateField() != null && meta.getLastModificationDateField().length() > 0 ) {
@@ -820,7 +817,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       }
       // Add RootUri
       if ( meta.getRootUriField() != null && meta.getRootUriField().length() > 0 ) {
-        outputRowData[rowIndex++] = data.rootUriName;
+        outputRowData[rowIndex] = data.rootUriName;
       }
 
       RowMetaInterface irow = getInputRowMeta();
@@ -830,14 +827,10 @@ public class GetXMLData extends BaseStep implements StepInterface {
       } else {
         // clone to previously allocated array to make sure next step doesn't
         // change it in between...
-        for ( int i = 0; i < outputRowData.length; i++ ) {
-          // Clone without re-allocating array
-          this.prevRow[i] = outputRowData[i]; // Direct copy
-        }
-        data.previousRow = irow.cloneRow( outputRowData, this.prevRow ); // Pick up everything else that needs a real
-                                                                         // deep clone
+        System.arraycopy( outputRowData, 0, this.prevRow, 0, outputRowData.length );
+        // Pick up everything else that needs a real deep clone
+        data.previousRow = irow.cloneRow( outputRowData, this.prevRow );
       }
-
     } catch ( Exception e ) {
       if ( getStepMeta().isDoingErrorHandling() ) {
         // Simply add this row to the error row
@@ -857,7 +850,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       return null;
     }
 
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
 
     String rest = aString;
 
@@ -965,6 +958,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       try {
         data.file.close();
       } catch ( Exception e ) {
+        // Ignore close errors
       }
     }
     if ( data.an != null ) {

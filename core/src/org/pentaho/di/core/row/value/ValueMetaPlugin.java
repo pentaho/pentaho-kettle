@@ -31,9 +31,9 @@ import java.lang.annotation.Target;
 /**
  * Classes annotated with "ValueMetaPlugin" are automatically recognized and registered as a new data type in the form
  * of a ValueMetaInterface class.
- * 
+ *
  * @author matt
- * 
+ *
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
@@ -59,4 +59,6 @@ public @interface ValueMetaPlugin {
   String casesUrl() default "";
 
   String forumUrl() default "";
+
+  String classLoaderGroup() default "";
 }

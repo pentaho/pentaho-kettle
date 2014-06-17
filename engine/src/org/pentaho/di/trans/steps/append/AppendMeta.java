@@ -58,7 +58,7 @@ import org.w3c.dom.Node;
  * @since 3-june-2007
  */
 public class AppendMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = Append.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Append.class; // for i18n purposes, needed by Translator2!!
 
   public AppendMeta() {
     super(); // allocate BaseStepMeta
@@ -99,8 +99,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface {
   public void setDefault() {
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
       StreamInterface headStream = infoStreams.get( 0 );
@@ -108,13 +107,12 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface {
       headStream.setSubject( rep.getStepAttributeString( id_step, "head_name" ) );
       tailStream.setSubject( rep.getStepAttributeString( id_step, "tail_name" ) );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "AppendMeta.Exception.UnexpectedErrorReadingStepInfo" ),
-          e );
+      throw new KettleException( BaseMessages.getString(
+        PKG, "AppendMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
       StreamInterface headStream = infoStreams.get( 0 );
@@ -122,8 +120,8 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "head_name", headStream.getStepname() );
       rep.saveStepAttribute( id_transformation, id_step, "tail_name", tailStream.getStepname() );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "AppendMeta.Exception.UnableToSaveStepInfo" ) + id_step,
-          e );
+      throw new KettleException( BaseMessages.getString( PKG, "AppendMeta.Exception.UnableToSaveStepInfo" )
+        + id_step, e );
     }
   }
 
@@ -143,7 +141,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // We don't have any input fields here in "r" as they are all info fields.
     // So we just take the info fields.
     //
@@ -154,9 +152,9 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
@@ -165,24 +163,24 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface {
 
     if ( headStream.getStepname() != null && tailStream.getStepname() != null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AppendMeta.CheckResult.SourceStepsOK" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "AppendMeta.CheckResult.SourceStepsOK" ), stepMeta );
       remarks.add( cr );
     } else if ( headStream.getStepname() == null && tailStream.getStepname() == null ) {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
-              "AppendMeta.CheckResult.SourceStepsMissing" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          PKG, "AppendMeta.CheckResult.SourceStepsMissing" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
-              "AppendMeta.CheckResult.OneSourceStepMissing" ), stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          PKG, "AppendMeta.CheckResult.OneSourceStepMissing" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-      Trans trans ) {
+    Trans trans ) {
     return new Append( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -198,10 +196,10 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface {
 
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
 
-      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString( PKG,
-          "AppendMeta.InfoStream.FirstStream.Description" ), StreamIcon.INFO, null ) );
-      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString( PKG,
-          "AppendMeta.InfoStream.SecondStream.Description" ), StreamIcon.INFO, null ) );
+      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString(
+        PKG, "AppendMeta.InfoStream.FirstStream.Description" ), StreamIcon.INFO, null ) );
+      ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString(
+        PKG, "AppendMeta.InfoStream.SecondStream.Description" ), StreamIcon.INFO, null ) );
     }
 
     return ioMeta;

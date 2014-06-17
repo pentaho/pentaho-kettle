@@ -140,14 +140,16 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
   public void setDefault() {
     databaseMeta = null;
     sql =
-        "select\n" + " {([Gender].[F], [Measures].[Unit Sales]),\n" + "  ([Gender].[M], [Measures].[Store Sales]),\n"
-            + "  ([Gender].[F], [Measures].[Unit Sales])} on columns,\n" + " CrossJoin([Marital Status].Members,\n"
-            + "           [Product].Children) on rows\n" + "from [Sales]";
+      "select\n"
+        + " {([Gender].[F], [Measures].[Unit Sales]),\n" + "  ([Gender].[M], [Measures].[Store Sales]),\n"
+        + "  ([Gender].[F], [Measures].[Unit Sales])} on columns,\n"
+        + " CrossJoin([Marital Status].Members,\n" + "           [Product].Children) on rows\n"
+        + "from [Sales]";
     variableReplacementActive = false;
   }
 
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( databaseMeta == null ) {
       return; // TODO: throw an exception here
     }
@@ -183,7 +185,8 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
   public String getXML() {
     StringBuffer retval = new StringBuffer();
 
-    retval.append( "    " + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
+    retval.append( "    "
+      + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
     retval.append( "    " + XMLHandler.addTagValue( "sql", sql ) );
     retval.append( "    " + XMLHandler.addTagValue( "catalog", catalog ) );
     retval.append( "    " + XMLHandler.addTagValue( "role", role ) );
@@ -192,8 +195,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
 
@@ -206,8 +208,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
       rep.saveStepAttribute( id_transformation, id_step, "sql", sql );
@@ -224,9 +225,9 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-      IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+    Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( databaseMeta != null ) {
@@ -236,14 +237,14 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
       // TODO: perform lookup to see if it all works fine.
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use",
-              stepMeta );
+        new CheckResult(
+          CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use", stepMeta );
       remarks.add( cr );
     }
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
-      Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
+    TransMeta transMeta, Trans trans ) {
     return new MondrianInput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -252,8 +253,8 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-      IMetaStore metaStore ) throws KettleStepException {
+    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+    IMetaStore metaStore ) throws KettleStepException {
     // you can't really analyze the database impact since it runs on a Mondrian server
   }
 
@@ -293,7 +294,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
    * what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -302,12 +303,11 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

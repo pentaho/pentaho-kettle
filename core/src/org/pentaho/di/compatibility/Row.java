@@ -45,16 +45,16 @@ import org.w3c.dom.Node;
 
 /**
  * This class describes a single row in a stream of data. A row is a array/list of Value objects.
- * 
+ *
  * Note that most methods in this class assume that a value with a certain name only occurs once in the Row.
- * 
+ *
  * @author Matt
  * @since Beginning 2003.
  * @see Value
- * 
+ *
  */
 public class Row implements XMLInterface, Comparable<Row>, Serializable {
-  private static Class<?> PKG = Row.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = Row.class; // for i18n purposes, needed by Translator2!!
 
   public static final String XML_TAG = "row";
 
@@ -75,7 +75,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Creates a new row as a duplicate of the given row. The values are copied one by one into new values.
-   * 
+   *
    * @param r
    *          The row to be copied.
    */
@@ -91,7 +91,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Get the value on a given position in the row.
-   * 
+   *
    * @param index
    *          The position to look for
    * @return The Value on in the given index
@@ -110,7 +110,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Add a value after the last value of the row
-   * 
+   *
    * @param v
    *          The value to add to the row
    */
@@ -120,7 +120,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Set the value on index idx.
-   * 
+   *
    * @param idx
    *          The index
    * @param v
@@ -132,7 +132,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Add a value on a certain location in the row.
-   * 
+   *
    * @param idx
    *          The index where the value needs to be put in the row
    * @param v
@@ -144,10 +144,10 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Add an object to the row.
-   * 
+   *
    * @param obj
    *          the object to add
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -157,11 +157,11 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Get an object from the row.
-   * 
+   *
    * @param idx
    *          the index to get the object from
    * @return the object
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -171,10 +171,10 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Remove an object in the row on index idx.
-   * 
+   *
    * @param idx
    *          The object to remove
-   * 
+   *
    * @deprecated
    */
   @Deprecated
@@ -184,10 +184,10 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Remove a value with a given name from the row.
-   * 
+   *
    * @param valname
    *          The value name to remove from this row
-   * 
+   *
    * @return true if the value was found and removed, false if the value wasn't found.
    */
   public boolean removeValue( String valname ) {
@@ -201,7 +201,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Remove a value on a certain index.
-   * 
+   *
    * @param idx
    *          the index to remove in the row
    */
@@ -218,7 +218,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Add all the values of row r to the Row.
-   * 
+   *
    * @param r
    *          The row to be added to this row.
    */
@@ -237,7 +237,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
   /**
    * Merge the values of row r to this Row. Merge means: only the values that are not yet in the row are added
    * (comparing on the value name).
-   * 
+   *
    * @param r
    *          The row to be merged with this row
    */
@@ -258,7 +258,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
    * Merge the data of row r to this Row. That means: All fields in row r that do exist in this row (same name and same
    * type) and have non-empty values will have their values written into this row, if the value of that field is empty
    * in this row.
-   * 
+   *
    * @param r
    *          The row to be merged with this row
    */
@@ -278,7 +278,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Search the Value by name in the row, return the Values index.
-   * 
+   *
    * @param name
    *          the value name to search for.
    * @return the index of the value with the given name, -1 is nothing was found.
@@ -300,7 +300,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Search the Value by name in the row.
-   * 
+   *
    * @param name
    *          the value name to search for
    * @return the Value with the given name, null if nothing was found.
@@ -324,7 +324,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Return number of Values in Row.
-   * 
+   *
    * @return number of Values.
    */
   public int size() {
@@ -337,13 +337,13 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
   public void print() {
     int i;
     for ( i = 0; i < size(); i++ ) {
-      System.out.println( "Element[" + i + "] = [" + getValue( i ).getName() + "] = " + getValue( i ).toString() ); //$NON-NLS-3$
+      System.out.println( "Element[" + i + "] = [" + getValue( i ).getName() + "] = " + getValue( i ).toString() );
     }
   }
 
   /**
    * Convert the row to a String representation.
-   * 
+   *
    * @return the row as a String.
    */
   @Override
@@ -370,7 +370,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Return the meta-data of a row as a String.
-   * 
+   *
    * @return the meta-data of a row as a String
    */
   public String toStringMeta() {
@@ -413,7 +413,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Marks this row as to be ignored or not by the next steps.
-   * 
+   *
    * @param i
    *          true: ignore this row, false: don't ignore.
    */
@@ -423,7 +423,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Check wether or not this row should be ignored...
-   * 
+   *
    * @return true if the row should be ignored.
    */
   public boolean isIgnored() {
@@ -432,7 +432,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Write the object to an ObjectOutputStream.
-   * 
+   *
    * @param out
    * @throws IOException
    */
@@ -456,7 +456,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Write the content of the row to a DataOutputStream.
-   * 
+   *
    * @param dos
    *          The DataOutputStream to write to
    * @throws KettleFileException
@@ -484,7 +484,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Read a row of Values from an input-stream.
-   * 
+   *
    * @param dis
    *          The DataInputStream to read from
    */
@@ -500,7 +500,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Read a number of Values without meta-data into a row.
-   * 
+   *
    * @param dis
    *          The DataInputStream to read from
    * @param meta
@@ -515,7 +515,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Read a number of Values without meta-data into a row.
-   * 
+   *
    * @param dis
    *          The DataInputStream to read from
    * @param size
@@ -540,7 +540,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Write a row of Values to a DataOutputStream, without saving the meta-data.
-   * 
+   *
    * @param dos
    *          The DataOutputStream to write to
    * @return true if the row was written successfuly, false if something went wrong.
@@ -557,7 +557,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Compare 2 rows with each other using certain values in the rows and also considering an ascending clause.
-   * 
+   *
    * @param r
    *          The row to compare with
    * @param fieldnrs
@@ -576,7 +576,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Compare 2 rows with each other using certain values in the rows and also considering an ascending clause.
-   * 
+   *
    * @param r
    *          The row to compare with
    * @param fieldnrs
@@ -617,7 +617,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Compare 2 rows with each other using one value in the rows and also considering an ascending clause.
-   * 
+   *
    * @param r
    *          The row to compare with
    * @param fieldnr
@@ -644,7 +644,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Compare 2 complete rows of values with each other. Strings are compared in a case insensitive way
-   * 
+   *
    * @param r
    *          the row to compare with
    * @return -1 if the row is smaller, 0 if both rows are equal, 1 if the row is larger.
@@ -655,7 +655,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Compare 2 complete rows of values with each other
-   * 
+   *
    * @param r
    *          the row to compare with
    * @return -1 if the row is smaller, 0 if both rows are equal, 1 if the row is larger.
@@ -706,7 +706,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
   /**
    * Returns an exact copy of this row. On purpose not the real clone() method (notice the uppercase 'C') because of
    * (rhino) javascript problems with it.
-   * 
+   *
    * @return an exact copy of this row
    */
   public synchronized Row Clone() {
@@ -715,19 +715,19 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /*
    * Sets the logging date to "now" for this row.
-   * 
+   *
    * public void setLogdate() { logdate=new Date(); }
    */
 
   /*
    * Get the logging date of this row.
-   * 
+   *
    * @return the logging date of this row. public Date getLogdate() { return logdate; }
    */
 
   /*
    * Get the logging time for this row.
-   * 
+   *
    * @return the logging time for this row. public long getLogtime() { if (logdate==null) return 0L; return
    * logdate.getTime(); }
    */
@@ -735,7 +735,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
   /**
    * Checks whether or not the row is empty A row is empty if all the values in the row are null A row is empty if there
    * are no values in the row.
-   * 
+   *
    * @return true if the row is considered empty, false if the row is not empty.
    */
   public boolean isEmpty() {
@@ -752,7 +752,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Get an array of the names of all the Values in the Row.
-   * 
+   *
    * @return an array of Strings: the names of all the Values in the Row.
    */
   public String[] getFieldNames() {
@@ -768,7 +768,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
   /**
    * Get an array of strings showing the name of the values in the row padded to a maximum length, followed by the types
    * of the values.
-   * 
+   *
    * @param maxlen
    *          The length to which the name will be padded.
    * @return an array of strings: the names and the types of the fieldnames in the row.
@@ -786,7 +786,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Search for a value, if it doesn't occur in the row, return the default value.
-   * 
+   *
    * @param valuename
    *          The valuename to look for
    * @param def
@@ -803,7 +803,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Search for a value, if it doesn't occur in the row, return the default value.
-   * 
+   *
    * @param valuename
    *          The valuename to look for
    * @param def
@@ -820,7 +820,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Search for a value, if it doesn't occur in the row, return the default value.
-   * 
+   *
    * @param valuename
    *          The valuename to look for
    * @param def
@@ -837,7 +837,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Search for a value, if it doesn't occur in the row, return the default value.
-   * 
+   *
    * @param valuename
    *          The valuename to look for
    * @param def
@@ -854,7 +854,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Search for a value, if it doesn't occur in the row, return the default value.
-   * 
+   *
    * @param valuename
    *          The valuename to look for
    * @param def
@@ -871,7 +871,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Search for a value, if it doesn't occur in the row, return the default value.
-   * 
+   *
    * @param valuename
    *          The valuename to look for
    * @param def
@@ -888,7 +888,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
 
   /**
    * Return the XML representation of a row.
-   * 
+   *
    * @return The XML representation of this row
    */
   @Override

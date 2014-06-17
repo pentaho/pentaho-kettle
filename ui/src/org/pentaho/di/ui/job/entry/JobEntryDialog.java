@@ -52,22 +52,22 @@ import org.pentaho.metastore.api.IMetaStore;
  * The JobEntryDialog class is responsible for constructing and opening the settings dialog for the job entry. Whenever
  * the user opens the job entry settings in Spoon, it will instantiate the dialog class passing in the JobEntryInterface
  * object and call the
- * 
+ *
  * <pre>
  * open()
  * </pre>
- * 
+ *
  * method on the dialog. SWT is the native windowing environment of Spoon, and it is typically the framework used for
  * implementing job entry dialogs.
  */
 public class JobEntryDialog extends Dialog {
 
   /** The package name, used for internationalization. */
-  private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!
 
   /** The loggingObject for the dialog */
-  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Job entry dialog",
-      LoggingObjectType.JOBENTRYDIALOG, null );
+  public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
+    "Job entry dialog", LoggingObjectType.JOBENTRYDIALOG, null );
 
   /** A reference to the job entry interface */
   protected JobEntryInterface jobEntryInt;
@@ -95,7 +95,7 @@ public class JobEntryDialog extends Dialog {
 
   /**
    * Instantiates a new job entry dialog.
-   * 
+   *
    * @param parent
    *          the parent shell
    * @param jobEntry
@@ -117,7 +117,7 @@ public class JobEntryDialog extends Dialog {
 
   /**
    * Gets the database dialog.
-   * 
+   *
    * @return the database dialog
    */
   private DatabaseDialog getDatabaseDialog() {
@@ -130,7 +130,7 @@ public class JobEntryDialog extends Dialog {
 
   /**
    * Adds the connection line for the given parent and previous control, and returns a combo box UI component
-   * 
+   *
    * @param parent
    *          the parent composite object
    * @param previous
@@ -142,13 +142,13 @@ public class JobEntryDialog extends Dialog {
    * @return the combo box UI component
    */
   public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin ) {
-    return addConnectionLine( parent, previous, middle, margin, new Label( parent, SWT.RIGHT ), new Button( parent,
-        SWT.PUSH ), new Button( parent, SWT.PUSH ), new Button( parent, SWT.PUSH ) );
+    return addConnectionLine( parent, previous, middle, margin, new Label( parent, SWT.RIGHT ), new Button(
+      parent, SWT.PUSH ), new Button( parent, SWT.PUSH ), new Button( parent, SWT.PUSH ) );
   }
 
   /**
    * Adds the connection line for the given parent and previous control, and returns a combo box UI component
-   * 
+   *
    * @param parent
    *          the parent composite object
    * @param previous
@@ -165,8 +165,8 @@ public class JobEntryDialog extends Dialog {
    *          the "edit connection" button
    * @return the combo box UI component
    */
-  public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin,
-      final Label wlConnection, final Button wbwConnection, final Button wbnConnection, final Button wbeConnection ) {
+  public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin, final Label wlConnection,
+    final Button wbwConnection, final Button wbnConnection, final Button wbeConnection ) {
     final CCombo wConnection;
     final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection, fdbwConnection;
 
@@ -285,7 +285,7 @@ public class JobEntryDialog extends Dialog {
 
   /**
    * Adds the databases from the job metadata to the combo box.
-   * 
+   *
    * @param wConnection
    *          the w connection
    */
@@ -298,7 +298,7 @@ public class JobEntryDialog extends Dialog {
 
   /**
    * Selects a database from the combo box
-   * 
+   *
    * @param wConnection
    *          the combo box list of connections
    * @param name
