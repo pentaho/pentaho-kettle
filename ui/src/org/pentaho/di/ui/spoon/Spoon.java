@@ -5727,19 +5727,19 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public void helpAbout() {
     MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION | SWT.CENTER | SWT.SHEET );
 
-    // resolve the release text
     String releaseText = Const.RELEASE.getMessage();
     StringBuilder messageBuilder = new StringBuilder();
     BuildVersion buildVersion = BuildVersion.getInstance();
 
-    // buildVsionInfo correspond to ${release.minor.number}.${release.milestone.number}.${build.id}
-    String buildVsionInfo = buildVersion.getVersion();
+    // buildVersionInfo correspond to
+    // ${release.major.number}.${release.minor.number}.${release.milestone.number}.${build.id}
+    String buildVersionInfo = buildVersion.getVersion();
 
-    if ( Const.isEmpty( buildVsionInfo ) ) {
-      buildVsionInfo = "Unknown";
+    if ( Const.isEmpty( buildVersionInfo ) ) {
+      buildVersionInfo = "Unknown";
     }
 
-    // suppose buildVersion consist of releaseInfo and buildStatus for non - stable version
+    // suppose buildVersion consists of releaseInfo and commit id
     String releaseInfo = "";
     String buildStatus = "";
 
@@ -5748,27 +5748,32 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     messageBuilder.append( releaseText );
     messageBuilder.append( " - " );
 
-    if ( buildVsionInfo.contains( "NIGHTLY" ) || buildVsionInfo.contains( "stable" )
-        || buildVsionInfo.contains( "Unknown" ) || buildVsionInfo.contains( "TRUNK-SNAPSHOT" ) ) {
-      releaseInfo = buildVsionInfo;
+    // Regex represents the string that contains a git 40-character checksum hash
+    String containingChecksumRegex = ".+\\b([a-f0-9]{40})\\b";
+
+    // check if string contains VCS checksum
+    if ( !buildVersionInfo.matches( containingChecksumRegex ) ) {
+      releaseInfo = buildVersionInfo;
     } else {
-      /*
-       * the next actions will not have sense when the next string: " <entry key="impl.version"
-       * value="${release.major.number}.${release.minor.number}.${release.milestone.number}.${build.id}"
-       * />" in "\kettle\engine\build-res\subfloor.xml" file will be appropriately changed
-       */
-      String[] buildVsionInfoElts = buildVsionInfo.split( "\\." );
-      if ( buildVsionInfoElts.length != 1 ) {
-        int elementCount = buildVsionInfoElts.length;
-        for ( int i = 0; i < elementCount - 1; i++ ) {
-          releaseInfo += buildVsionInfoElts[i] + ".";
+      // The next actions will not have sense when we will have separate string for commit id in manifest file in
+      // kettle-engine jar
+      String[] buildVsionInfoElts = buildVersionInfo.split( "\\." );
+      int elementCount = buildVsionInfoElts.length;
+
+      for ( int i = 0; i < elementCount; i++ ) {
+        String currentElement = buildVsionInfoElts[i];
+
+        // check if current element VCS checksum
+        if ( currentElement.length() != 40 ) {
+          releaseInfo += currentElement + ".";
+        } else {
+          buildStatus = currentElement;
         }
-        releaseInfo = new String( releaseInfo.substring( 0, releaseInfo.length() - 1 ) );
-        buildStatus = buildVsionInfoElts[elementCount - 1];
-      } else {
-        releaseInfo = buildVsionInfoElts[0];
       }
+      // delete dot symbol at the end position
+      releaseInfo = new String( releaseInfo.substring( 0, releaseInfo.length() - 1 ) );
     }
+
     messageBuilder.append( releaseInfo );
     messageBuilder.append( Const.CR );
     messageBuilder.append( Const.CR );
