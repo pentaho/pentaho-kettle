@@ -90,7 +90,7 @@ public final class ExportFeedback {
     return type;
   }
 
-  void setType( Type type ) {
+  public void setType( Type type ) {
     this.type = type;
   }
 
@@ -98,7 +98,7 @@ public final class ExportFeedback {
     return time;
   }
 
-  void setTime( Date time ) {
+  public void setTime( Date time ) {
     this.time = time;
   }
 
@@ -106,7 +106,7 @@ public final class ExportFeedback {
     return status;
   }
 
-  void setStatus( Status status ) {
+  public void setStatus( Status status ) {
     this.status = status;
   }
 
@@ -114,7 +114,7 @@ public final class ExportFeedback {
     return itemPath;
   }
 
-  void setItemPath( String itemPath ) {
+  public void setItemPath( String itemPath ) {
     this.itemPath = itemPath;
   }
 
@@ -122,7 +122,7 @@ public final class ExportFeedback {
     return itemName;
   }
 
-  void setItemName( String itemName ) {
+  public void setItemName( String itemName ) {
     this.itemName = itemName;
   }
 
@@ -130,7 +130,7 @@ public final class ExportFeedback {
     return result;
   }
 
-  void setResult( List<ImportValidationFeedback> result ) {
+  public void setResult( List<ImportValidationFeedback> result ) {
     this.result = result;
   }
 
@@ -138,7 +138,7 @@ public final class ExportFeedback {
     return isSimpleString;
   }
 
-  void setSimpleString( boolean isSimpleString ) {
+  public void setSimpleString( boolean isSimpleString ) {
     this.isSimpleString = isSimpleString;
   }
 
