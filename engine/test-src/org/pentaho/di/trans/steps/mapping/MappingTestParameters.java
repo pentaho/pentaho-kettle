@@ -1,5 +1,9 @@
 package org.pentaho.di.trans.steps.mapping;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,9 +42,13 @@ public class MappingTestParameters {
   @Test
   public void testInheritAllParametersCopy() throws Exception {
     MappingParameters param = new MappingParameters();
+    step.setVariable( "a", "1" );
+    step.setVariable( "b", "2" );
     param.setInheritingAllVariables( true );
+    when( transMeta.listParameters() ).thenReturn( new String[] { "a" } );
     step.setMappingParameters( trans, transMeta, param );
-    Mockito.verify( trans, Mockito.times( 1 ) ).copyVariablesFrom( Mockito.any( VariableSpace.class ) );
+    verify( trans ).setVariable( "b", "2" );
+    verify( trans ).setParameterValue( "a", "1" );
   }
 
   /**
@@ -53,15 +61,13 @@ public class MappingTestParameters {
     MappingParameters param = Mockito.mock( MappingParameters.class );
     Mockito.when( param.getVariable() ).thenReturn( new String[] { "a", "b" } );
     Mockito.when( param.getInputField() ).thenReturn( new String[] { "11", "12" } );
-
+    when( transMeta.listParameters() ).thenReturn( new String[] { "a" } );
     step.setMappingParameters( trans, transMeta, param );
 
     // parameters was overridden 2 times
-    Mockito.verify( trans, Mockito.times( 2 ) )
+    Mockito.verify( trans, Mockito.times( 1 ) )
       .setParameterValue( Mockito.anyString(), Mockito.anyString() );
-    Mockito.verify( trans, Mockito.times( 2 ) )
+    Mockito.verify( trans, Mockito.times( 1 ) )
       .setVariable( Mockito.anyString(), Mockito.anyString() );
-    Mockito.verify( transMeta, Mockito.times( 2 ) )
-      .setParameterValue( Mockito.anyString(), Mockito.anyString() );
   }
 }
