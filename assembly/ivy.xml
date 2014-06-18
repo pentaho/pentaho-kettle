@@ -131,6 +131,12 @@
 	<dependency org="pentaho-doc" name="workflows" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
 		<artifact name="workflows" type="pdf" />
 	</dependency>
+    <dependency org="pentaho-doc" name="pdi_security" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+        <artifact name="pdi_security" type="pdf" />
+    </dependency>
+    <dependency org="pentaho-doc" name="troubleshooting_guide_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
+        <artifact name="troubleshooting_guide_pdi" type="pdf" />
+    </dependency>
     
  	<!--  OSS Licenses file -->
 	<dependency org="pentaho" name="oss-licenses" rev="${dependency.oss-licenses.revision}" conf="oss-licenses->default">
