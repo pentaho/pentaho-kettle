@@ -29,10 +29,8 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig.Feature;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -42,9 +40,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * @since 22-jan-2005
  */
 public class JsonOutputData extends BaseStepData implements StepDataInterface {
-
-  public ObjectMapper mapper = new ObjectMapper();
-
   public RowMetaInterface inputRowMeta;
   public RowMetaInterface outputRowMeta;
   public int inputRowMetaSize;
@@ -52,9 +47,8 @@ public class JsonOutputData extends BaseStepData implements StepDataInterface {
   public int nrFields;
 
   public int[] fieldIndexes;
-  public ObjectNode jg;
-  public ArrayNode jsonArray;
-
+  public JSONObject jg;
+  public JSONArray ja;
   public int nrRow;
   public boolean rowsAreSafe;
   public NumberFormat nf;
@@ -79,13 +73,11 @@ public class JsonOutputData extends BaseStepData implements StepDataInterface {
   public int nrRowsInBloc;
 
   /**
-     *
-     */
+   *
+   */
   public JsonOutputData() {
     super();
-    //this.ja = new JSONArray();
-    mapper.configure( Feature.INDENT_OUTPUT, true );
-    this.jsonArray = mapper.createArrayNode();
+    this.ja = new JSONArray();
     this.nrRow = 0;
     this.outputValue = false;
     this.writeToFile = false;
