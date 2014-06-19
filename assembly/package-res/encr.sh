@@ -31,7 +31,7 @@ done
 # ** Platform specific libraries ...              **
 # **************************************************
 
-OPT="-cp $CLASSPATH"
+OPT="$OPT -cp $CLASSPATH"
 
 # ***************
 # ** Run...    **
