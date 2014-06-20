@@ -96,7 +96,7 @@
           
       Unzips the non-core plugin packages into the distribution area. 
     ====================================================================-->	
-  <target name="assemble-plugins" depends="install-antcontrib,resolve-plugins" description="Unzip plugins to distribution directory">
+  <target name="assemble-plugins" depends="install-antcontrib,resolve-plugins,assembly-step-plugins" description="Unzip plugins to distribution directory">
     
   	<for param="plugin">
   	<path id="plugin-list">
@@ -108,10 +108,19 @@
   	 	<unzip src="@{plugin}" dest="${stage.dir}/${package.root.dir}/plugins" overwrite="true"/>
   	 </sequential>
   	</for>
-    
     <delete dir="${plugins.dir}"/>
   </target>
 	
+
+  <target name="assembly-step-plugins"
+          description="Unzip step plugins to steps folder under distribution directory">
+    <for list="${step.plugins.list}" param="plugin" trim="true">
+      <sequential>
+        <unzip src="${plugins.dir}/@{plugin}-${dependency.@{plugin}.revision}.zip" dest="${stage.dir}/${package.root.dir}/plugins/steps" overwrite="true"/>
+        <delete file="${plugins.dir}/@{plugin}-${dependency.@{plugin}.revision}.zip"/>
+      </sequential>
+    </for>
+  </target>
 	
 	<!--=======================================================================
 	      publish-local
