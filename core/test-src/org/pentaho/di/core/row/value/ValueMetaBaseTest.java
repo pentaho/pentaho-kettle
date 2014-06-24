@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.sql.Types;
 
 import org.junit.BeforeClass;
@@ -21,6 +22,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.NetezzaDatabaseMeta;
 import org.pentaho.di.core.database.Vertica5DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -155,10 +157,10 @@ public class ValueMetaBaseTest {
     Mockito.when( metaData.getColumnType( 1 ) ).thenReturn( Types.TIME );
     Mockito.when( resultSet.getTime( 1 ) ).thenReturn( new Time( 0 ) );
     Mockito.when( valueMetaInterface.getOriginalColumnType() ).thenReturn( Types.TIME );
-    Mockito.when( valueMetaInterface.getType() ).thenReturn(  ValueMetaInterface.TYPE_DATE );
+    Mockito.when( valueMetaInterface.getType() ).thenReturn( ValueMetaInterface.TYPE_DATE );
 
     DatabaseInterface databaseInterface = new Vertica5DatabaseMeta();
-    Object ret = databaseInterface.getValueFromResultSet(  resultSet, valueMetaInterface, 0 );
+    Object ret = databaseInterface.getValueFromResultSet( resultSet, valueMetaInterface, 0 );
     assertEquals( new Time( 0 ), ret );
   }
 
@@ -288,6 +290,17 @@ public class ValueMetaBaseTest {
     assertEquals( base.getPrecision(), 6 );
     base.setPrecision( -1 );
     assertEquals( base.getPrecision(), -1 );
+  }
+
+  @Test
+  public void testConvertStringToTimestampType() throws KettleValueException {
+    String timestampStringRepresentation = "2014/06/18 16:45:15.000000000";
+    Timestamp expectedTimestamp = Timestamp.valueOf( "2014-06-18 16:45:15.000000000" );
+
+    ValueMetaBase base = new ValueMetaString( "ValueMetaStringColumn" );
+    base.setConversionMetadata( new ValueMetaTimestamp( "ValueMetaTimestamp" ) );
+    Timestamp timestamp = (Timestamp) base.convertDataUsingConversionMetaData( timestampStringRepresentation );
+    assertEquals( expectedTimestamp, timestamp );
   }
 
 }
