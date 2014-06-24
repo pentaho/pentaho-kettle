@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
@@ -67,10 +68,10 @@ import org.pentaho.ui.xul.swt.custom.DialogConstant;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
 /**
- *
+ * 
  * This is the XulEventHandler for the browse panel of the repository explorer. It sets up the bindings for browse
  * functionality.
- *
+ * 
  */
 public class BrowseController extends AbstractXulEventHandler implements IUISupportController, IBrowseController {
 
@@ -136,7 +137,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   private void fireFoldersAndItemsChange( List<UIRepositoryDirectory> previousValue,
-    UIRepositoryObjects previousRepoObjects ) {
+      UIRepositoryObjects previousRepoObjects ) {
     firePropertyChange( "repositoryDirectories", previousValue, getRepositoryDirectories() );
     firePropertyChange( "selectedRepoDirChildren", previousRepoObjects, getSelectedRepoDirChildren() );
   }
@@ -150,11 +151,11 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       mainController = (MainController) this.getXulDomContainer().getEventHandler( "mainController" );
       try {
         this.repositoryDirectory =
-          UIObjectRegistry.getInstance().constructUIRepositoryDirectory(
-            repository.loadRepositoryDirectoryTree(), null, repository );
+            UIObjectRegistry.getInstance().constructUIRepositoryDirectory( repository.loadRepositoryDirectoryTree(),
+                null, repository );
       } catch ( UIObjectCreationException uoe ) {
         this.repositoryDirectory =
-          new UIRepositoryDirectory( repository.loadRepositoryDirectoryTree(), null, repository );
+            new UIRepositoryDirectory( repository.loadRepositoryDirectoryTree(), null, repository );
       }
       dirMap = new HashMap<ObjectId, UIRepositoryDirectory>();
       populateDirMap( repositoryDirectory );
@@ -190,8 +191,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       }
     };
     bf.setBindingType( Binding.Type.ONE_WAY );
-    bf.createBinding(
-      fileTable, "selectedItems", "file-context-rename", "!disabled", checkIfMultipleItemsAreSelected );
+    bf.createBinding( fileTable, "selectedItems", "file-context-rename", "!disabled", checkIfMultipleItemsAreSelected );
     bf.createBinding( fileTable, "selectedItems", this, "selectedFileItems" );
 
     // begin PDI-3326 hack
@@ -317,7 +317,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
           selectedFolder.add( o );
           folderTree.setSelectedItems( selectedFolder );
         } else if ( ( mainController != null && mainController.getCallback() != null )
-          && ( o instanceof UIRepositoryContent ) ) {
+            && ( o instanceof UIRepositoryContent ) ) {
 
           mainController.getCallback().open( (UIRepositoryContent) o, null );
           // TODO: fire request to close dialog
@@ -344,51 +344,61 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     }
   }
 
+  protected void confirm( String title, String message, final Callable<Void> onAccept ) throws XulException {
+    confirmBox = (XulConfirmBox) document.createElement( "confirmbox" );
+    confirmBox.setTitle( BaseMessages.getString( PKG, title ) );
+    confirmBox.setMessage( BaseMessages.getString( PKG, message ) );
+    confirmBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
+    confirmBox.setCancelLabel( BaseMessages.getString( PKG, "Dialog.Cancel" ) );
+    confirmBox.addDialogCallback( new XulDialogCallback<Object>() {
+
+      public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
+        if ( returnCode == Status.ACCEPT ) {
+          try {
+            onAccept.call();
+          } catch ( Exception e ) {
+            messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
+            messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
+            messageBox.setMessage( BaseMessages.getString( PKG, e.getLocalizedMessage() ) );
+            messageBox.open();
+          }
+        }
+      }
+
+      public void onError( XulComponent sender, Throwable t ) {
+        throw new RuntimeException( t );
+      }
+    } );
+    confirmBox.open();
+  }
+
   public void deleteContent() throws Exception {
     try {
       for ( Object object : fileTable.getSelectedItems() ) {
         if ( object instanceof UIRepositoryObject ) {
           final UIRepositoryObject repoObject = (UIRepositoryObject) object;
           if ( repoObject != null ) {
+            Callable<Void> deleteCallable = new Callable<Void>() {
+
+              @Override
+              public Void call() throws Exception {
+                deleteContent( repoObject );
+                return null;
+              }
+            };
             // If content to be deleted is a folder and they have either subfolder or jobs or transformation in it,
             // We will display a warning message that folder is not empty. If you choose to delete this folder, all its
             // item(s)
             // will be lost. If the user accept this, then we will delete that folder otherwise we will end this method
             // call
             if ( repoObject instanceof UIRepositoryDirectory
-              && ( ( (UIRepositoryDirectory) repoObject ).getChildren().size() > 0
-              || ( (UIRepositoryDirectory) repoObject )
-                .getRepositoryObjects().size() > 0 ) ) {
-              confirmBox = (XulConfirmBox) document.createElement( "confirmbox" );
-              confirmBox.setTitle( BaseMessages.getString(
-                PKG, "BrowseController.DeleteNonEmptyFolderWarningTitle" ) );
-              confirmBox.setMessage( BaseMessages.getString(
-                PKG, "BrowseController.DeleteNonEmptyFolderWarningMessage" ) );
-              confirmBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-              confirmBox.setCancelLabel( BaseMessages.getString( PKG, "Dialog.Cancel" ) );
-              confirmBox.addDialogCallback( new XulDialogCallback<Object>() {
-
-                public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
-                  if ( returnCode == Status.ACCEPT ) {
-                    try {
-                      deleteContent( repoObject );
-                    } catch ( Exception e ) {
-                      messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
-                      messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-                      messageBox.setMessage( BaseMessages.getString( PKG, e.getLocalizedMessage() ) );
-                      messageBox.open();
-                    }
-                  }
-                }
-
-                public void onError( XulComponent sender, Throwable t ) {
-                  throw new RuntimeException( t );
-                }
-              } );
-              confirmBox.open();
-              break;
+                && ( ( (UIRepositoryDirectory) repoObject ).getChildren().size() > 0 || ( (UIRepositoryDirectory) repoObject )
+                    .getRepositoryObjects().size() > 0 ) ) {
+              confirm( "BrowseController.DeleteNonEmptyFolderWarningTitle",
+                  "BrowseController.DeleteNonEmptyFolderWarningMessage", deleteCallable );
             } else {
-              deleteContent( repoObject );
+              confirm( "BrowseController.DeleteFileWarningTitle", "BrowseController.DeleteFileWarningMessage",
+                  deleteCallable );
             }
           }
         }
@@ -491,10 +501,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
             // call
             if ( repoDir.getChildren().size() > 0 || repoDir.getRepositoryObjects().size() > 0 ) {
               confirmBox = (XulConfirmBox) document.createElement( "confirmbox" );
-              confirmBox.setTitle( BaseMessages.getString(
-                PKG, "BrowseController.DeleteNonEmptyFolderWarningTitle" ) );
-              confirmBox.setMessage( BaseMessages.getString(
-                PKG, "BrowseController.DeleteNonEmptyFolderWarningMessage" ) );
+              confirmBox.setTitle( BaseMessages.getString( PKG, "BrowseController.DeleteNonEmptyFolderWarningTitle" ) );
+              confirmBox.setMessage( BaseMessages
+                  .getString( PKG, "BrowseController.DeleteNonEmptyFolderWarningMessage" ) );
               confirmBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
               confirmBox.setCancelLabel( BaseMessages.getString( PKG, "Dialog.Cancel" ) );
               confirmBox.addDialogCallback( new XulDialogCallback<Object>() {
@@ -584,7 +593,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   protected XulPromptBox promptForName( final UIRepositoryObject object ) throws XulException {
     XulPromptBox prompt = (XulPromptBox) document.createElement( "promptbox" );
     String currentName =
-      ( object == null ) ? BaseMessages.getString( PKG, "BrowserController.NewFolder" ) : object.getName();
+        ( object == null ) ? BaseMessages.getString( PKG, "BrowserController.NewFolder" ) : object.getName();
 
     prompt.setTitle( BaseMessages.getString( PKG, "BrowserController.Name" ).concat( currentName ) );
     prompt.setButtons( new DialogConstant[] { DialogConstant.OK, DialogConstant.CANCEL } );
@@ -634,19 +643,18 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         // Check for overwriting
         for ( UIRepositoryObject newChild : moveList ) {
           for ( UIRepositoryObject currChild : targetDirectory.getRepositoryObjects() ) {
-            if ( ( currChild instanceof UIRepositoryDirectory )
-              && ( newChild instanceof UIRepositoryDirectory )
-              && ( currChild.getName().equalsIgnoreCase( newChild.getName() ) ) ) {
+            if ( ( currChild instanceof UIRepositoryDirectory ) && ( newChild instanceof UIRepositoryDirectory )
+                && ( currChild.getName().equalsIgnoreCase( newChild.getName() ) ) ) {
               messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
               messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-              messageBox.setMessage( BaseMessages.getString(
-                PKG, "BrowseController.UnableToMove.DirectoryAlreadyExists", currChild.getPath() ) );
+              messageBox.setMessage( BaseMessages.getString( PKG,
+                  "BrowseController.UnableToMove.DirectoryAlreadyExists", currChild.getPath() ) );
               messageBox.open();
               result = false;
               break;
             } else if ( !( currChild instanceof UIRepositoryDirectory )
-              && ( currChild.getType().equalsIgnoreCase( newChild.getType() ) )
-              && ( currChild.getName().equalsIgnoreCase( newChild.getName() ) ) ) {
+                && ( currChild.getType().equalsIgnoreCase( newChild.getType() ) )
+                && ( currChild.getName().equalsIgnoreCase( newChild.getName() ) ) ) {
               collisionObjects.add( currChild );
             }
           }
@@ -658,8 +666,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         // Prompt to overwrite
         if ( result && collisionObjects.size() > 0 ) {
           FileOverwriteDialogController fileOverwriteDialog =
-            FileOverwriteDialogController.getInstance( getXulDomContainer().getOuterContext() instanceof Shell
-              ? (Shell) getXulDomContainer().getOuterContext() : null, collisionObjects );
+              FileOverwriteDialogController.getInstance( getXulDomContainer().getOuterContext() instanceof Shell
+                  ? (Shell) getXulDomContainer().getOuterContext() : null, collisionObjects );
           fileOverwriteDialog.show();
           if ( fileOverwriteDialog.isOverwriteFiles() ) {
             // Delete the files before moving
@@ -684,8 +692,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       event.setAccepted( false );
       messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
       messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-      messageBox.setMessage( BaseMessages
-        .getString( PKG, "BrowseController.UnableToMove", e.getLocalizedMessage() ) );
+      messageBox.setMessage( BaseMessages.getString( PKG, "BrowseController.UnableToMove", e.getLocalizedMessage() ) );
       messageBox.open();
     }
 
@@ -786,16 +793,15 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
       // Remove children listener
       if ( this.repositoryDirectories != null && this.repositoryDirectories.size() > 0 ) {
-        this.repositoryDirectories.get( 0 ).getRepositoryObjects().removePropertyChangeListener(
-          fileChildrenListener );
+        this.repositoryDirectories.get( 0 ).getRepositoryObjects().removePropertyChangeListener( fileChildrenListener );
       }
 
       this.repositoryDirectories = selectedFolderItems;
 
       // Add children Listener
       if ( this.repositoryDirectories != null && this.repositoryDirectories.size() > 0 ) {
-        this.repositoryDirectories.get( 0 ).getRepositoryObjects().addPropertyChangeListener(
-          "children", fileChildrenListener );
+        this.repositoryDirectories.get( 0 ).getRepositoryObjects().addPropertyChangeListener( "children",
+            fileChildrenListener );
 
       }
     } catch ( KettleException e ) {
