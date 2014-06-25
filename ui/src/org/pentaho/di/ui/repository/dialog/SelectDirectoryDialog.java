@@ -64,7 +64,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  *
  * @author Matt
  * @since 18-05-2003
- *
  */
 public class SelectDirectoryDialog extends Dialog {
   private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!
@@ -235,7 +234,7 @@ public class SelectDirectoryDialog extends Dialog {
       miNew.addSelectionListener( new SelectionAdapter() {
         public void widgetSelected( SelectionEvent e ) {
           if ( !readOnly ) {
-            TreeItem ti = wTree.getSelection()[0];
+            TreeItem ti = wTree.getSelection()[ 0 ];
             String[] str = ConstUI.getTreeStrings( ti );
             //
             // In which directory do we want create a subdirectory?
@@ -289,8 +288,67 @@ public class SelectDirectoryDialog extends Dialog {
        */
       MenuItem miRen = new MenuItem( mTree, SWT.CASCADE );
       miRen.setText( BaseMessages.getString( PKG, "SelectDirectoryDialog.PopupMenu.Directory.Rename" ) );
+      miRen.addSelectionListener( new SelectionAdapter() {
+        public void widgetSelected( SelectionEvent e ) {
+          if ( !readOnly ) {
+            TreeItem ti = wTree.getSelection()[ 0 ];
+            String[] str = ConstUI.getTreeStrings( ti );
+            RepositoryDirectoryInterface dir = repositoryTree.findDirectory( str );
+            if ( dir != null ) {
+              //
+              // What's the new name of the directory?
+              //
+              String oldName = dir.getName();
+              EnterStringDialog etd = new EnterStringDialog( shell,
+                oldName,
+                BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryNewName.Message" ),
+                BaseMessages.getString( PKG, "SelectDirectoryDialog.Dialog.EnterDirectoryNewName.Title" ) );
+              String newName = etd.open();
+              if ( newName != null && !newName.equals( oldName ) ) {
+                dir.setName( newName );
+                try {
+                  rep.renameRepositoryDirectory( dir.getObjectId(), dir.getParent(), newName );
+                  ti.setText( newName );
+                  wTree.setSelection( ti );
+                } catch ( Exception exception ) {
+                  new ErrorDialog(
+                    shell,
+                    BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message1" )
+                      + oldName + "]" + Const.CR
+                      + BaseMessages
+                      .getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Message2" ),
+                    BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Rename.UnexpectedError.Title" ),
+                    exception );
+                }
+              }
+            }
+          }
+        }
+      } );
+
       MenuItem miDel = new MenuItem( mTree, SWT.CASCADE );
       miDel.setText( BaseMessages.getString( PKG, "SelectDirectoryDialog.PopupMenu.Directory.Delete" ) );
+      miDel.addSelectionListener( new SelectionAdapter() {
+        public void widgetSelected( SelectionEvent e ) {
+          if ( !readOnly ) {
+            TreeItem ti = wTree.getSelection()[ 0 ];
+            String[] str = ConstUI.getTreeStrings( ti );
+            RepositoryDirectoryInterface dir = repositoryTree.findDirectory( str );
+            if ( dir != null ) {
+              try {
+                rep.deleteRepositoryDirectory( dir );
+                ti.dispose();
+              } catch ( KettleException exception ) {
+                new ErrorDialog( shell,
+                  BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Title" ),
+                  BaseMessages.getString( PKG, "RepositoryExplorerDialog.Directory.Delete.ErrorRemoving.Message1" ),
+                  exception );
+              }
+            }
+          }
+        }
+      } );
+
     }
     wTree.setMenu( mTree );
   }
@@ -303,7 +361,7 @@ public class SelectDirectoryDialog extends Dialog {
   public void handleOK() {
     TreeItem[] ti = wTree.getSelection();
     if ( ti.length == 1 ) {
-      String[] tree = ConstUI.getTreeStrings( ti[0] );
+      String[] tree = ConstUI.getTreeStrings( ti[ 0 ] );
       selection = repositoryTree.findDirectory( tree );
       dispose();
     }
