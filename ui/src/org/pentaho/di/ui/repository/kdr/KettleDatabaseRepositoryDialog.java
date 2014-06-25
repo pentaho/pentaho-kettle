@@ -236,41 +236,41 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
         }
       }
     } );
-
-    // ID line
-    wlId = new Label( shell, SWT.RIGHT );
-    wlId.setText( BaseMessages.getString( PKG, "RepositoryDialog.Label.ID" ) );
-    props.setLook( wlId );
-    fldId = new FormData();
-    fldId.left = new FormAttachment( 0, 0 );
-    fldId.top = new FormAttachment( wnConnection, margin * 2 );
-    fldId.right = new FormAttachment( middle, -margin );
-    wlId.setLayoutData( fldId );
-    wId = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wId );
-    fdId = new FormData();
-    fdId.left = new FormAttachment( middle, 0 );
-    fdId.top = new FormAttachment( wnConnection, margin * 2 );
-    fdId.right = new FormAttachment( 100, 0 );
-    wId.setLayoutData( fdId );
-
     // Name line
     wlName = new Label( shell, SWT.RIGHT );
     wlName.setText( BaseMessages.getString( PKG, "RepositoryDialog.Label.Name" ) );
     props.setLook( wlName );
     fdlName = new FormData();
     fdlName.left = new FormAttachment( 0, 0 );
-    fdlName.top = new FormAttachment( wId, margin );
+    fdlName.top = new FormAttachment( wnConnection, margin * 2 );
     fdlName.right = new FormAttachment( middle, -margin );
     wlName.setLayoutData( fdlName );
     wName = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wName );
     fdName = new FormData();
     fdName.left = new FormAttachment( middle, 0 );
-    fdName.top = new FormAttachment( wId, margin );
+    fdName.top = new FormAttachment( wnConnection, margin * 2 );
     fdName.right = new FormAttachment( 100, 0 );
     wName.setLayoutData( fdName );
-
+    
+    // Description line
+    wlId = new Label( shell, SWT.RIGHT );
+    wlId.setText( BaseMessages.getString( PKG, "RepositoryDialog.Label.Description" ) );
+    props.setLook( wlId );
+    fldId = new FormData();
+    fldId.left = new FormAttachment( 0, 0 );
+    fldId.top = new FormAttachment( wlName, margin * 3 );
+    fldId.right = new FormAttachment( middle, -margin );
+    wlId.setLayoutData( fldId );
+    wId = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wId );
+    fdId = new FormData();
+    fdId.left = new FormAttachment( middle, 0 );
+    fdId.top = new FormAttachment( wlName, margin * 3 );
+    fdId.right = new FormAttachment( 100, 0 );
+    wId.setLayoutData( fdId );
+    
+    //buttons
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
     lsOK = new Listener() {
@@ -307,7 +307,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     };
     wCancel.addListener( SWT.Selection, lsCancel );
 
-    BaseStepDialog.positionBottomButtons( shell, new Button[] { wOK, wCreate, wDrop, wCancel }, margin, wName );
+    BaseStepDialog.positionBottomButtons( shell, new Button[] { wOK, wCreate, wDrop, wCancel }, margin, wlId );
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
       public void shellClosed( ShellEvent e ) {
