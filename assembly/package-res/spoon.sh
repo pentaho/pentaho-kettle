@@ -42,7 +42,7 @@ setPentahoEnv
 # **************************************************
 
 LIBPATH="NONE"
-STARTUP="-jar launcher/launcher.jar"
+STARTUP="$DIR/launcher/launcher.jar"
 
 case `uname -s` in 
 	AIX)
@@ -197,4 +197,4 @@ OPT="$OPT $PENTAHO_DI_JAVA_OPTIONS -Djava.library.path=$LIBPATH -DKETTLE_HOME=$K
 # ***************
 # ** Run...    **
 # ***************
-"$_PENTAHO_JAVA" $OPT $STARTUP -lib $LIBPATH "${1+$@}"
+"$_PENTAHO_JAVA" $OPT -jar "$STARTUP" -lib $LIBPATH "${1+$@}"
