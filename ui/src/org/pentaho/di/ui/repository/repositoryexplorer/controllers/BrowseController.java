@@ -68,10 +68,10 @@ import org.pentaho.ui.xul.swt.custom.DialogConstant;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
 /**
- * 
+ *
  * This is the XulEventHandler for the browse panel of the repository explorer. It sets up the bindings for browse
  * functionality.
- * 
+ *
  */
 public class BrowseController extends AbstractXulEventHandler implements IUISupportController, IBrowseController {
 
@@ -373,41 +373,29 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void deleteContent() throws Exception {
-    try {
-      for ( Object object : fileTable.getSelectedItems() ) {
-        if ( object instanceof UIRepositoryObject ) {
-          final UIRepositoryObject repoObject = (UIRepositoryObject) object;
-          if ( repoObject != null ) {
-            Callable<Void> deleteCallable = new Callable<Void>() {
+    for ( Object object : fileTable.getSelectedItems() ) {
+      if ( object instanceof UIRepositoryObject ) {
+        final UIRepositoryObject repoObject = (UIRepositoryObject) object;
+        Callable<Void> deleteCallable = new Callable<Void>() {
 
-              @Override
-              public Void call() throws Exception {
-                deleteContent( repoObject );
-                return null;
-              }
-            };
-            // If content to be deleted is a folder and they have either subfolder or jobs or transformation in it,
-            // We will display a warning message that folder is not empty. If you choose to delete this folder, all its
-            // item(s)
-            // will be lost. If the user accept this, then we will delete that folder otherwise we will end this method
-            // call
-            if ( repoObject instanceof UIRepositoryDirectory
-                && ( ( (UIRepositoryDirectory) repoObject ).getChildren().size() > 0 || ( (UIRepositoryDirectory) repoObject )
-                    .getRepositoryObjects().size() > 0 ) ) {
-              confirm( "BrowseController.DeleteNonEmptyFolderWarningTitle",
-                  "BrowseController.DeleteNonEmptyFolderWarningMessage", deleteCallable );
-            } else {
-              confirm( "BrowseController.DeleteFileWarningTitle", "BrowseController.DeleteFileWarningMessage",
-                  deleteCallable );
-            }
+          @Override
+          public Void call() throws Exception {
+            deleteContent( repoObject );
+            return null;
           }
+        };
+        // If content to be deleted is a folder we will display a warning message
+        // notwithstanding the folder is empty or not. If you choose to delete this folder, all its
+        // item(s) will be lost. If the user accept this, then we will delete that folder
+        // otherwise we will end this method call
+        if ( repoObject instanceof UIRepositoryDirectory ) {
+          confirm( "BrowseController.DeleteNonEmptyFolderWarningTitle",
+            "BrowseController.DeleteFolderWarningMessage", deleteCallable );
+        } else {
+          confirm( "BrowseController.DeleteFileWarningTitle",
+            "BrowseController.DeleteFileWarningMessage", deleteCallable );
         }
       }
-    } catch ( KettleException ke ) {
-      messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
-      messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-      messageBox.setMessage( BaseMessages.getString( PKG, ke.getLocalizedMessage() ) );
-      messageBox.open();
     }
   }
 
@@ -487,57 +475,45 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   public void deleteFolder() throws Exception {
     UIRepositoryDirectory newSelectedItem = null;
-    try {
-      for ( Object object : folderTree.getSelectedItems() ) {
+    for ( Object object : folderTree.getSelectedItems() ) {
+      if ( object instanceof UIRepositoryDirectory ) {
+        repoDir = (UIRepositoryDirectory) object;
+        newSelectedItem = repoDir.getParent();
 
-        if ( object instanceof UIRepositoryDirectory ) {
-          repoDir = (UIRepositoryDirectory) object;
-          if ( repoDir != null ) {
-            newSelectedItem = repoDir.getParent();
-            // If content to be deleted is a folder and they have either sub folder or jobs or transformation in it,
-            // We will display a warning message that folder is not empty. If you choose to delete this folder, all its
-            // item(s)
-            // will be lost. If the user accept this, then we will delete that folder otherwise we will end this method
-            // call
-            if ( repoDir.getChildren().size() > 0 || repoDir.getRepositoryObjects().size() > 0 ) {
-              confirmBox = (XulConfirmBox) document.createElement( "confirmbox" );
-              confirmBox.setTitle( BaseMessages.getString( PKG, "BrowseController.DeleteNonEmptyFolderWarningTitle" ) );
-              confirmBox.setMessage( BaseMessages
-                  .getString( PKG, "BrowseController.DeleteNonEmptyFolderWarningMessage" ) );
-              confirmBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-              confirmBox.setCancelLabel( BaseMessages.getString( PKG, "Dialog.Cancel" ) );
-              confirmBox.addDialogCallback( new XulDialogCallback<Object>() {
+        // If content to be deleted is a folder we will display a warning message
+        // notwithstanding the folder is empty or not. If you choose to delete this folder, all its
+        // item(s) will be lost. If the user accept this, then we will delete that folder
+        // otherwise we will end this method call
+        confirmBox = (XulConfirmBox) document.createElement( "confirmbox" );
+        confirmBox.setTitle( BaseMessages.getString( PKG, "BrowseController.DeleteNonEmptyFolderWarningTitle" ) );
+        confirmBox.setMessage( BaseMessages
+          .getString( PKG, "BrowseController.DeleteFolderWarningMessage" ) );
+        confirmBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
+        confirmBox.setCancelLabel( BaseMessages.getString( PKG, "Dialog.Cancel" ) );
+        confirmBox.addDialogCallback( new XulDialogCallback<Object>() {
 
-                public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
-                  if ( returnCode == Status.ACCEPT ) {
-                    try {
-                      deleteFolder( repoDir );
-                    } catch ( Exception e ) {
-                      messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
-                      messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-                      messageBox.setMessage( BaseMessages.getString( PKG, e.getLocalizedMessage() ) );
-                      messageBox.open();
-                    }
-                  }
-                }
-
-                public void onError( XulComponent sender, Throwable t ) {
-                  throw new RuntimeException( t );
-                }
-              } );
-              confirmBox.open();
-              break;
-            } else {
-              deleteFolder( repoDir );
+          public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
+            if ( returnCode == Status.ACCEPT ) {
+              try {
+                deleteFolder( repoDir );
+              } catch ( Exception e ) {
+                messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
+                messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
+                messageBox.setMessage( BaseMessages.getString( PKG, e.getLocalizedMessage() ) );
+                messageBox.open();
+              }
             }
           }
-        }
+
+          public void onError( XulComponent sender, Throwable t ) {
+            throw new RuntimeException( t );
+          }
+        } );
+        confirmBox.open();
+        break;
+      } else {
+        deleteFolder( repoDir );
       }
-    } catch ( KettleException ke ) {
-      messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
-      messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-      messageBox.setMessage( BaseMessages.getString( PKG, ke.getLocalizedMessage() ) );
-      messageBox.open();
     }
 
     // since old selected item is the now deleted one, set the parent as the selected item
