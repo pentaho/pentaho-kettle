@@ -23,7 +23,9 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 
 public class UIJob extends UIRepositoryContent {
@@ -40,8 +42,12 @@ public class UIJob extends UIRepositoryContent {
   @Override
   public void setName( String name ) throws Exception {
     super.setName( name );
-    rep.renameJob( this.getObjectId(), getRepositoryDirectory(), name );
+    renameJob( this.getObjectId(), getRepositoryDirectory(), name );
     uiParent.fireCollectionChanged();
+  }
+
+  protected ObjectId renameJob( ObjectId objectId, RepositoryDirectory directory, String name ) throws Exception {
+    return rep.renameJob( this.getObjectId(), getRepositoryDirectory(), name );
   }
 
   public void delete() throws Exception {

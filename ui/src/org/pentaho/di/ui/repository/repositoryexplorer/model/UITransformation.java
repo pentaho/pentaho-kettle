@@ -23,7 +23,9 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 
 public class UITransformation extends UIRepositoryContent {
@@ -40,8 +42,13 @@ public class UITransformation extends UIRepositoryContent {
   @Override
   public void setName( String name ) throws Exception {
     super.setName( name );
-    rep.renameTransformation( this.getObjectId(), getRepositoryDirectory(), name );
+    renameTransformation( this.getObjectId(), getRepositoryDirectory(), name );
     uiParent.fireCollectionChanged();
+  }
+
+  protected ObjectId renameTransformation( ObjectId objectId, RepositoryDirectory directory, String name )
+    throws Exception {
+    return rep.renameTransformation( this.getObjectId(), getRepositoryDirectory(), name );
   }
 
   public void delete() throws Exception {
