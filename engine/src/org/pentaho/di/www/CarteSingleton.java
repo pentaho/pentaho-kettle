@@ -22,6 +22,7 @@
 
 package org.pentaho.di.www;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -29,6 +30,7 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.io.IOUtils;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
@@ -49,6 +51,7 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 
 public class CarteSingleton {
 
+  private static final String ESAPI_RESOURCES = "org.owasp.esapi.resources";
   private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!!
 
   private static SlaveServerConfig slaveServerConfig;
@@ -75,6 +78,7 @@ public class CarteSingleton {
     socketRepository = new SocketRepository( log );
 
     installPurgeTimer( config, log, transformationMap, jobMap );
+    installESAPIProperties( log );
 
     SlaveServer slaveServer = config.getSlaveServer();
     if ( slaveServer != null ) {
@@ -116,6 +120,38 @@ public class CarteSingleton {
           }
         }
       }
+    }
+  }
+
+  public static void installESAPIProperties( LogChannelInterface log ) {
+    if ( System.getProperty( ESAPI_RESOURCES ) != null ) {
+      return;
+    }
+    final String directory = Const.getKettleDirectory() + Const.FILE_SEPARATOR + "esapi";
+    try {
+      File esapiDir = new File( directory );
+      if ( !esapiDir.exists() ) {
+        esapiDir.mkdirs();
+      }
+      ClassLoader classLoader = CarteSingleton.class.getClassLoader();
+      final String[] esapiFiles = { "ESAPI.properties", "validation.properties" };
+      for ( String filename : esapiFiles ) {
+        File file = new File( directory, filename );
+        // Unpack default properties if otherwise unavailable
+        if ( !file.canRead() ) {
+          InputStream input = classLoader.getResourceAsStream( "esapi/" + filename );
+          OutputStream output = new FileOutputStream( file );
+          if ( input != null ) {
+            log.logBasic( "Unpacking " + filename + " into " + directory );
+            IOUtils.copy( input, output );
+            input.close();
+          }
+          output.close();
+        }
+      }
+      System.setProperty( ESAPI_RESOURCES, directory );
+    } catch ( IOException e ) {
+      e.printStackTrace();
     }
   }
 
