@@ -38,7 +38,7 @@ public class MetricsPainterTest {
     callPaint( durations );
   }
 
-  @Test( timeout = 100 )
+  @Test( timeout = 1000 )
   public void testDrawTimeScaleLineInfinityLoop() {
     GCInterface gCInterfaceMock = mock( GCInterface.class );
     when( metricsPainter.getGc() ).thenReturn( gCInterfaceMock );

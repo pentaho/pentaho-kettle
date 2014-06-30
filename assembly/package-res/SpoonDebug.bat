@@ -30,5 +30,5 @@ echo -
 echo Launching Spoon: "%~dp0spoon.bat" %SPOON_OPTIONS%
 if not "%SPOON_REDIRECT%"=="1" "%~dp0spoon.bat" %SPOON_OPTIONS%
 if "%SPOON_REDIRECT%"=="1" echo Console output gets redirected to "%~dp0SpoonDebug.txt"
-if "%SPOON_REDIRECT%"=="1" "%~dp0spoon.bat" %SPOON_OPTIONS% >>"%~dp0SpoonDebug.txt"
+if "%SPOON_REDIRECT%"=="1" "%~dp0spoon.bat" %SPOON_OPTIONS% >>"%~dp0SpoonDebug.txt" 2>&1
 

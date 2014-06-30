@@ -386,8 +386,8 @@ public class ThinUtil {
     }
 
     if ( index + 1 > sql.length() ) {
-      throw new KettleSQLException( "No closing "
-        + nextChar + " found, starting at location " + quoteIndex + " in : [" + sql + "]" );
+      throw new KettleSQLException( "No closing " + nextChar + " found, starting at location " + quoteIndex + " in : ["
+          + sql + "]" );
     }
     index++;
     return index;
@@ -397,7 +397,8 @@ public class ThinUtil {
     return findNextBracket( sql, skipChar, nextChar, index, false );
   }
 
-  public static int findNextBracket( String sql, char skipChar, char nextChar, int index, boolean escape ) throws KettleSQLException {
+  public static int findNextBracket( String sql, char skipChar, char nextChar, int index, boolean escape )
+    throws KettleSQLException {
 
     int counter = 0;
     for ( int i = index; i < sql.length(); i++ ) {
@@ -417,16 +418,16 @@ public class ThinUtil {
       }
     }
 
-    throw new KettleSQLException( "No closing "
-      + nextChar + " bracket found for " + skipChar + " at location " + index + " in : [" + sql + "]" );
+    throw new KettleSQLException( "No closing " + nextChar + " bracket found for " + skipChar + " at location " + index
+        + " in : [" + sql + "]" );
   }
 
   public static String stripQuotes( String string, char... quoteChars ) {
     StringBuilder builder = new StringBuilder( string );
     for ( char quoteChar : quoteChars ) {
       if ( countQuotes( builder.toString(), quoteChar ) == 2 ) {
-        if ( builder.length() > 0
-          && builder.charAt( 0 ) == quoteChar && builder.charAt( builder.length() - 1 ) == quoteChar ) {
+        if ( builder.length() > 0 && builder.charAt( 0 ) == quoteChar
+            && builder.charAt( builder.length() - 1 ) == quoteChar ) {
           // If there are quotes in between, don't do it...
           //
           builder.deleteCharAt( builder.length() - 1 );
@@ -447,7 +448,8 @@ public class ThinUtil {
     return count;
   }
 
-  public static List<String> splitClause( String fieldClause, char splitChar, char... skipChars ) throws KettleSQLException {
+  public static List<String> splitClause( String fieldClause, char splitChar, char... skipChars )
+    throws KettleSQLException {
     List<String> strings = new ArrayList<String>();
     int startIndex = 0;
     for ( int index = 0; index < fieldClause.length(); index++ ) {
@@ -492,9 +494,15 @@ public class ThinUtil {
     return fieldClause.length();
   }
 
-  public static String findClause( String sqlString, String startClause, String... endClauses ) throws KettleSQLException {
+  public static String findClause( String sqlString, String startClause, String... endClauses )
+    throws KettleSQLException {
+    return findClauseWithRest( sqlString, startClause, endClauses ).getClause();
+  }
+
+  public static FoundClause findClauseWithRest( String sqlString, String startClause, String... endClauses )
+    throws KettleSQLException {
     if ( Const.isEmpty( sqlString ) ) {
-      return null;
+      return new FoundClause( null, null );
     }
 
     String sql = sqlString.toUpperCase();
@@ -509,19 +517,21 @@ public class ThinUtil {
     }
 
     if ( startIndex < 0 || startIndex >= sql.length() ) {
-      return null;
+      return new FoundClause( null, sqlString );
     }
 
     startIndex += startClause.length() + 1;
     if ( endClauses.length == 0 ) {
-      return sql.substring( startIndex );
+      return new FoundClause( sqlString.substring( startIndex ), null );
     }
 
+    // Index of first character of end clause
     int endIndex = sql.length();
+
     for ( String endClause : endClauses ) {
 
       int index = startIndex;
-      while ( index < sql.length() ) {
+      while ( index < endIndex ) {
         index = ThinUtil.skipChars( sql, index, '"', '\'' );
 
         // See if the end-clause is present at this location.
@@ -534,6 +544,14 @@ public class ThinUtil {
         index++;
       }
     }
-    return Const.trim( sqlString.substring( startIndex, endIndex ) );
+    String foundClause = Const.trim( sqlString.substring( startIndex, endIndex ) );
+    String rest = null;
+    if ( endIndex < sql.length() ) {
+      rest = Const.trim( sqlString.substring( endIndex ) );
+      if ( rest.length() == 0 ) {
+        rest = null;
+      }
+    }
+    return new FoundClause( foundClause, rest );
   }
 }

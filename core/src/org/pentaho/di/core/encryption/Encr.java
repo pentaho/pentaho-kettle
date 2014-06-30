@@ -183,7 +183,7 @@ public class Encr {
    */
   public static void main( String[] args ) throws KettleException {
     KettleClientEnvironment.init();
-    if ( args.length <= 2 ) {
+    if ( args.length != 2 ) {
       printOptions();
       System.exit( 9 );
     }

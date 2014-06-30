@@ -1022,8 +1022,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * @return If user agrees with closing of tabs then return true so we can disconnect from the repo.
    */
   public boolean closeAllJobsAndTransformations() {
-    // Check to see if there are any open jobs/trans
-    if ( getActiveMeta() == null ) {
+    // Check to see if there are any open jobs/trans.  If there are not any then we don't need to close anything.
+    // Keep in mind that the 'Welcome' tab can be active.
+    final List<TransMeta> transList = delegates.trans.getTransformationList();
+    final List<JobMeta> jobList = delegates.jobs.getJobList();
+    if ( ( transList.size() == 0 ) && ( jobList.size() == 0 ) ) {
       return true;
     }
 
