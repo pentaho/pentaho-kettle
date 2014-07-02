@@ -255,7 +255,10 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         try {
           repositoryName = serverConfig.getRepository() != null ? serverConfig.getRepository().getName() : "";
         } catch ( Exception e ) {
-          repositoryName = Const.getStackTracker( e );
+          logError( BaseMessages.getString( PKG, "GetStatusServlet.Parameter.RepositoryName.UnableToConnect",
+              serverConfig.getRepositoryId() ), e );
+          repositoryName = BaseMessages.getString( PKG, "GetStatusServlet.Parameter.RepositoryName.UnableToConnect",
+              serverConfig.getRepositoryId() );
         }
         out.print( "<tr> <td>"
           + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.RepositoryName" ) + "</td> <td>"
