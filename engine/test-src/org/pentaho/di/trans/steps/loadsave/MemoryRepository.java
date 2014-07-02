@@ -1,3 +1,25 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package org.pentaho.di.trans.steps.loadsave;
 
 import java.util.Calendar;
@@ -6,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
@@ -30,18 +55,43 @@ import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 
 public class MemoryRepository extends AbstractRepository {
   private final Map<ObjectId, Map<Integer, Map<String, String>>> stepAttributeMap =
-    new HashMap<ObjectId, Map<Integer, Map<String, String>>>();
+      new HashMap<ObjectId, Map<Integer, Map<String, String>>>();
   private final Map<ObjectId, Map<Integer, Map<String, String>>> jobAttributeMap =
-    new HashMap<ObjectId, Map<Integer, Map<String, String>>>();
+      new HashMap<ObjectId, Map<Integer, Map<String, String>>>();
+
+  public MemoryRepository() {
+
+  }
+
+  private void populateMap( Map<ObjectId, Map<Integer, Map<String, String>>> attributeMap, JSONObject jsonObject ) {
+    for ( Object objectId : jsonObject.keySet() ) {
+      JSONObject nrsObject = (JSONObject) jsonObject.get( objectId );
+      for ( Object nrKey : nrsObject.keySet() ) {
+        JSONObject nrObject = (JSONObject) nrsObject.get( nrKey );
+        for ( Object stringKey : nrObject.keySet() ) {
+          setAttribute( attributeMap, new StringObjectId( objectId.toString() ), Integer.valueOf( nrKey.toString() ),
+              stringKey.toString(), nrObject.get( stringKey ).toString() );
+        }
+      }
+    }
+  }
+
+  public MemoryRepository( String json ) throws ParseException {
+    Object repoObj = new JSONParser().parse( json );
+    JSONObject jsonRepoObj = (JSONObject) repoObj;
+    populateMap( stepAttributeMap, (JSONObject) jsonRepoObj.get( "step" ) );
+    populateMap( jobAttributeMap, (JSONObject) jsonRepoObj.get( "job" ) );
+  }
 
   private String getAttribute( Map<ObjectId, Map<Integer, Map<String, String>>> attributeMap, ObjectId id, int nr,
-    String code, String def ) {
+      String code, String def ) {
     String value = null;
     Map<Integer, Map<String, String>> stepMap = attributeMap.get( id );
     if ( stepMap != null ) {
@@ -54,7 +104,7 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   private void setAttribute( Map<ObjectId, Map<Integer, Map<String, String>>> attributeMap, ObjectId id, int nr,
-    String code, String value ) {
+      String code, String value ) {
     Map<Integer, Map<String, String>> stepMap = attributeMap.get( id );
     if ( stepMap == null ) {
       stepMap = new HashMap<Integer, Map<String, String>>();
@@ -150,14 +200,16 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public boolean exists( String name, RepositoryDirectoryInterface repositoryDirectory,
-    RepositoryObjectType objectType ) throws KettleException {
+  public boolean
+  exists( String name, RepositoryDirectoryInterface repositoryDirectory, RepositoryObjectType objectType )
+    throws KettleException {
     // TODO Auto-generated method stub
     return false;
   }
 
   @Override
-  public ObjectId getTransformationID( String name, RepositoryDirectoryInterface repositoryDirectory ) throws KettleException {
+  public ObjectId getTransformationID( String name, RepositoryDirectoryInterface repositoryDirectory )
+    throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -170,20 +222,21 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public void save( RepositoryElementInterface repositoryElement, String versionComment,
-    ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
+      ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
     // TODO Auto-generated method stub
 
   }
 
   @Override
   public void save( RepositoryElementInterface repositoryElement, String versionComment, Calendar versionDate,
-    ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
+      ProgressMonitorListener monitor, boolean overwrite ) throws KettleException {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public RepositoryDirectoryInterface getDefaultSaveDirectory( RepositoryElementInterface repositoryElement ) throws KettleException {
+  public RepositoryDirectoryInterface getDefaultSaveDirectory( RepositoryElementInterface repositoryElement )
+    throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -202,7 +255,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public TransMeta loadTransformation( String transname, RepositoryDirectoryInterface repdir,
-    ProgressMonitorListener monitor, boolean setInternalVariables, String revision ) throws KettleException {
+      ProgressMonitorListener monitor, boolean setInternalVariables, String revision ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -221,7 +274,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public ObjectId renameTransformation( ObjectId id_transformation, RepositoryDirectoryInterface newDirectory,
-    String newName ) throws KettleException {
+      String newName ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -234,7 +287,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public JobMeta loadJob( String jobname, RepositoryDirectoryInterface repdir, ProgressMonitorListener monitor,
-    String revision ) throws KettleException {
+      String revision ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -252,7 +305,8 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public ObjectId renameJob( ObjectId id_job, RepositoryDirectoryInterface newDirectory, String newName ) throws KettleException {
+  public ObjectId renameJob( ObjectId id_job, RepositoryDirectoryInterface newDirectory, String newName )
+    throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -301,7 +355,7 @@ public class MemoryRepository extends AbstractRepository {
 
   @Override
   public ClusterSchema loadClusterSchema( ObjectId id_cluster_schema, List<SlaveServer> slaveServers,
-    String versionLabel ) throws KettleException {
+      String versionLabel ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -367,7 +421,8 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public PartitionSchema loadPartitionSchema( ObjectId id_partition_schema, String versionLabel ) throws KettleException {
+  public PartitionSchema loadPartitionSchema( ObjectId id_partition_schema, String versionLabel )
+    throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -427,14 +482,15 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName ) throws KettleException {
+  public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName )
+    throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public RepositoryDirectoryInterface createRepositoryDirectory( RepositoryDirectoryInterface parentDirectory,
-    String directoryPath ) throws KettleException {
+      String directoryPath ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -446,20 +502,22 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public List<RepositoryElementMetaInterface> getJobObjects( ObjectId id_directory, boolean includeDeleted ) throws KettleException {
+  public List<RepositoryElementMetaInterface> getJobObjects( ObjectId id_directory, boolean includeDeleted )
+    throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public List<RepositoryElementMetaInterface> getTransformationObjects( ObjectId id_directory, boolean includeDeleted ) throws KettleException {
+  public List<RepositoryElementMetaInterface> getTransformationObjects( ObjectId id_directory, boolean includeDeleted )
+    throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public List<RepositoryElementMetaInterface> getJobAndTransformationObjects( ObjectId id_directory,
-    boolean includeDeleted ) throws KettleException {
+      boolean includeDeleted ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -483,20 +541,23 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public void insertStepDatabase( ObjectId id_transformation, ObjectId id_step, ObjectId id_database ) throws KettleException {
+  public void insertStepDatabase( ObjectId id_transformation, ObjectId id_step, ObjectId id_database )
+    throws KettleException {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void insertJobEntryDatabase( ObjectId id_job, ObjectId id_jobentry, ObjectId id_database ) throws KettleException {
+  public void insertJobEntryDatabase( ObjectId id_job, ObjectId id_jobentry, ObjectId id_database )
+    throws KettleException {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code,
-    Condition condition ) throws KettleException {
+  public void
+  saveConditionStepAttribute( ObjectId id_transformation, ObjectId id_step, String code, Condition condition )
+    throws KettleException {
     // TODO Auto-generated method stub
 
   }
@@ -523,22 +584,26 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, String value ) throws KettleException {
+  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, String value )
+    throws KettleException {
     setStepAttribute( id_transformation, id_step, nr, code, value );
   }
 
   @Override
-  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, boolean value ) throws KettleException {
+  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, boolean value )
+    throws KettleException {
     setStepAttribute( id_transformation, id_step, nr, code, value ? "Y" : "N" );
   }
 
   @Override
-  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, long value ) throws KettleException {
+  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, long value )
+    throws KettleException {
     setStepAttribute( id_transformation, id_step, nr, code, Long.toString( value ) );
   }
 
   @Override
-  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, double value ) throws KettleException {
+  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, double value )
+    throws KettleException {
     setStepAttribute( id_transformation, id_step, nr, code, Double.toString( value ) );
   }
 
@@ -571,43 +636,47 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, String value ) throws KettleException {
+  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, String value )
+    throws KettleException {
     setJobAttribute( id_jobentry, nr, code, value );
   }
 
   @Override
-  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, boolean value ) throws KettleException {
+  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, boolean value )
+    throws KettleException {
     setJobAttribute( id_jobentry, nr, code, value ? "Y" : "N" );
   }
 
   @Override
-  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, long value ) throws KettleException {
+  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, long value )
+    throws KettleException {
     setJobAttribute( id_jobentry, nr, code, Long.toString( value ) );
   }
 
   @Override
-  public DatabaseMeta loadDatabaseMetaFromStepAttribute( ObjectId id_step, String code, List<DatabaseMeta> databases ) throws KettleException {
+  public DatabaseMeta loadDatabaseMetaFromStepAttribute( ObjectId id_step, String code, List<DatabaseMeta> databases )
+    throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public void saveDatabaseMetaStepAttribute( ObjectId id_transformation, ObjectId id_step, String code,
-    DatabaseMeta database ) throws KettleException {
+      DatabaseMeta database ) throws KettleException {
     // TODO Auto-generated method stub
 
   }
 
   @Override
   public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute( ObjectId id_jobentry, String nameCode, int nr,
-    String idCode, List<DatabaseMeta> databases ) throws KettleException {
+      String idCode, List<DatabaseMeta> databases ) throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public void saveDatabaseMetaJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String nameCode,
-    String idCode, DatabaseMeta database ) throws KettleException {
+      String idCode, DatabaseMeta database ) throws KettleException {
     // TODO Auto-generated method stub
 
   }
@@ -637,7 +706,8 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public RepositoryObject getObjectInformation( ObjectId objectId, RepositoryObjectType objectType ) throws KettleException {
+  public RepositoryObject getObjectInformation( ObjectId objectId, RepositoryObjectType objectType )
+    throws KettleException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -679,7 +749,8 @@ public class MemoryRepository extends AbstractRepository {
   }
 
   @Override
-  public boolean getJobEntryAttributeBoolean( ObjectId id_jobentry, int nr, String code, boolean def ) throws KettleException {
+  public boolean getJobEntryAttributeBoolean( ObjectId id_jobentry, int nr, String code, boolean def )
+    throws KettleException {
     return "Y".equalsIgnoreCase( getJobAttribute( id_jobentry, nr, code, def ? "Y" : "N" ) );
   }
 

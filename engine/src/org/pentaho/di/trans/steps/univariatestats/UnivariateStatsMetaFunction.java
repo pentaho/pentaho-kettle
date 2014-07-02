@@ -179,7 +179,7 @@ public class UnivariateStatsMetaFunction implements Cloneable {
     if ( ( obj != null ) && ( obj.getClass().equals( this.getClass() ) ) ) {
       UnivariateStatsMetaFunction mf = (UnivariateStatsMetaFunction) obj;
 
-      return ( getXML() == mf.getXML() );
+      return ( getXML().equals( mf.getXML() ) );
     }
 
     return false;
