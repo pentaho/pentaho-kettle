@@ -275,12 +275,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
         setEmptyString[i] = rep.getStepAttributeBoolean( id_step, i, "set_empty_string", false );
       }
 
-      long longLimit = rep.getStepAttributeInteger( id_step, "limit" );
-      if ( longLimit <= 0 ) {
-        rowLimit = rep.getStepAttributeString( id_step, "limit" );
-      } else {
-        rowLimit = Long.toString( longLimit );
-      }
+      rowLimit = rep.getStepAttributeString( id_step, "limit" );
 
       neverEnding = rep.getStepAttributeBoolean( id_step, "never_ending" );
       intervalInMs = rep.getStepAttributeString( id_step, "interval_in_ms" );
