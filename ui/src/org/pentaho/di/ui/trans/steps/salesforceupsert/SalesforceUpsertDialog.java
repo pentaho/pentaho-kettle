@@ -1,4 +1,6 @@
-/*! ******************************************************************************
+
+<!-- saved from url=(0180)https://raw.githubusercontent.com/malsmith/pentaho-kettle/f3b57c22ea0fada4693a9bff2215c72195b2a9ec/ui/src/org/pentaho/di/ui/trans/steps/salesforceupsert/SalesforceUpsertDialog.java -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">/*! ******************************************************************************
  *
  * Pentaho Data Integration
  *
@@ -85,7 +87,7 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialogInterface {
 
-  private static Class<?> PKG = SalesforceUpsertMeta.class; // for i18n purposes, needed by Translator2!!
+  private static Class&lt;?&gt; PKG = SalesforceUpsertMeta.class; // for i18n purposes, needed by Translator2!!
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -108,7 +110,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 
   private Label wlUpsertField;
 
-  private Map<String, Integer> inputFields;
+  private Map&lt;String, Integer&gt; inputFields;
 
   private ColumnInfo[] ciReturn;
 
@@ -172,13 +174,13 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
   /**
    * List of ColumnInfo that should have the field names of the selected database table
    */
-  private static List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
+  private static List&lt;ColumnInfo&gt; tableFieldColumns = new ArrayList&lt;ColumnInfo&gt;();
   private boolean gotFields = false;
 
   public SalesforceUpsertDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
     input = (SalesforceUpsertMeta) in;
-    inputFields = new HashMap<String, Integer>();
+    inputFields = new HashMap&lt;String, Integer&gt;();
   }
 
   public String open() {
@@ -609,7 +611,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
             RowMetaInterface row = transMeta.getPrevStepFields( stepMeta );
 
             // Remember these fields...
-            for ( int i = 0; i < row.size(); i++ ) {
+            for ( int i = 0; i &lt; row.size(); i++ ) {
               inputFields.put( row.getValueMeta( i ).getName(), Integer.valueOf( i ) );
             }
 
@@ -618,7 +620,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
             Display.getDefault().asyncExec( new Runnable() {
               public void run() {
                 if ( !wReturn.isDisposed() ) {
-                  for ( int i = 0; i < wReturn.table.getItemCount(); i++ ) {
+                  for ( int i = 0; i &lt; wReturn.table.getItemCount(); i++ ) {
                     TableItem it = wReturn.table.getItem( i );
                     if ( !Const.isEmpty( it.getText( 2 ) ) ) {
                       if ( !inputFields.containsKey( it.getText( 2 ) ) ) {
@@ -826,7 +828,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
     }
 
     if ( input.getUpdateLookup() != null ) {
-      for ( int i = 0; i < input.getUpdateLookup().length; i++ ) {
+      for ( int i = 0; i &lt; input.getUpdateLookup().length; i++ ) {
         TableItem item = wReturn.table.getItem( i );
         if ( input.getUpdateLookup()[i] != null ) {
           item.setText( 1, input.getUpdateLookup()[i] );
@@ -887,7 +889,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
     in.allocate( nrfields );
 
     //CHECKSTYLE:Indentation:OFF
-    for ( int i = 0; i < nrfields; i++ ) {
+    for ( int i = 0; i &lt; nrfields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       in.getUpdateLookup()[i] = item.getText( 1 );
       in.getUpdateStream()[i] = item.getText( 2 );
@@ -941,7 +943,24 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
       // connect to Salesforce
       connection.connect();
       // return fieldsname for the module
-      return connection.getFields( selectedModule );
+      
+      com.sforce.soap.partner.Field [] rawFieldList = connection.getObjectFields(selectedModule);
+      ArrayList&lt;String&gt; finalFieldList = new ArrayList&lt;String&gt;();
+      for (com.sforce.soap.partner.Field f : rawFieldList) {
+    	  // Leave out fields that can't be updated and relationship fields
+    	  if (!f.isCalculated() &amp;&amp; f.isUpdateable() &amp;&amp; f.getType() != com.sforce.soap.partner.FieldType.fromString("reference")) {
+    		  // It is good to go
+    		  finalFieldList.add(f.getName());
+    	  }
+      }  
+      for (com.sforce.soap.partner.Field f : rawFieldList) {
+    	  // Now get the updatable reference fields as well
+    	  if (!f.isCalculated() &amp;&amp; f.isUpdateable() &amp;&amp; f.getType() == com.sforce.soap.partner.FieldType.fromString("reference")) {
+    		  // Use a placeholder external id
+    		  finalFieldList.add(String.format("%s:%s/%s", f.getReferenceTo(0),wUpsertField.getText().trim(),f.getRelationshipName()));
+    	  }
+      }  
+      return finalFieldList.toArray(new String[finalFieldList.size()]);
     } catch ( Exception e ) {
       throw new KettleException( "Erreur getting fields from module [" + url + "]!", e );
     } finally {
@@ -979,7 +998,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
     try {
 
       String[] fields = getModuleFields();
-      for ( int i = 0; i < fields.length; i++ ) {
+      for ( int i = 0; i &lt; fields.length; i++ ) {
         targetFields.addValueMeta( new ValueMeta( fields[i] ) );
       }
     } catch ( Exception e ) {
@@ -990,32 +1009,32 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
     }
 
     String[] inputNames = new String[sourceFields.size()];
-    for ( int i = 0; i < sourceFields.size(); i++ ) {
+    for ( int i = 0; i &lt; sourceFields.size(); i++ ) {
       ValueMetaInterface value = sourceFields.getValueMeta( i );
       inputNames[i] = value.getName() + EnterMappingDialog.STRING_ORIGIN_SEPARATOR + value.getOrigin() + ")";
     }
 
     // Create the existing mapping list...
     //
-    List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
+    List&lt;SourceToTargetMapping&gt; mappings = new ArrayList&lt;SourceToTargetMapping&gt;();
     StringBuffer missingSourceFields = new StringBuffer();
     StringBuffer missingTargetFields = new StringBuffer();
 
     int nrFields = wReturn.nrNonEmpty();
-    for ( int i = 0; i < nrFields; i++ ) {
+    for ( int i = 0; i &lt; nrFields; i++ ) {
       TableItem item = wReturn.getNonEmpty( i );
       String source = item.getText( 2 );
       String target = item.getText( 1 );
 
       int sourceIndex = sourceFields.indexOfValue( source );
-      if ( sourceIndex < 0 ) {
-        missingSourceFields.append( Const.CR + "   " + source + " --> " + target );
+      if ( sourceIndex &lt; 0 ) {
+        missingSourceFields.append( Const.CR + "   " + source + " --&gt; " + target );
       }
       int targetIndex = targetFields.indexOfValue( target );
-      if ( targetIndex < 0 ) {
-        missingTargetFields.append( Const.CR + "   " + source + " --> " + target );
+      if ( targetIndex &lt; 0 ) {
+        missingTargetFields.append( Const.CR + "   " + source + " --&gt; " + target );
       }
-      if ( sourceIndex < 0 || targetIndex < 0 ) {
+      if ( sourceIndex &lt; 0 || targetIndex &lt; 0 ) {
         continue;
       }
 
@@ -1025,16 +1044,16 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
 
     // show a confirm dialog if some missing field was found
     //
-    if ( missingSourceFields.length() > 0 || missingTargetFields.length() > 0 ) {
+    if ( missingSourceFields.length() &gt; 0 || missingTargetFields.length() &gt; 0 ) {
 
       String message = "";
-      if ( missingSourceFields.length() > 0 ) {
+      if ( missingSourceFields.length() &gt; 0 ) {
         message +=
           BaseMessages.getString(
             PKG, "SalesforceUpsertDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields.toString() )
             + Const.CR;
       }
-      if ( missingTargetFields.length() > 0 ) {
+      if ( missingTargetFields.length() &gt; 0 ) {
         message +=
           BaseMessages.getString(
             PKG, "SalesforceUpsertDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields.toString() )
@@ -1063,7 +1082,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
       //
       wReturn.table.removeAll();
       wReturn.table.setItemCount( mappings.size() );
-      for ( int i = 0; i < mappings.size(); i++ ) {
+      for ( int i = 0; i &lt; mappings.size(); i++ ) {
         SourceToTargetMapping mapping = mappings.get( i );
         TableItem item = wReturn.table.getItem( i );
         item.setText( 2, sourceFields.getValueMeta( mapping.getSourcePosition() ).getName() );
@@ -1077,13 +1096,13 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
   protected void setComboBoxes() {
     // Something was changed in the row.
     //
-    final Map<String, Integer> fields = new HashMap<String, Integer>();
+    final Map&lt;String, Integer&gt; fields = new HashMap&lt;String, Integer&gt;();
 
     // Add the currentMeta fields...
     fields.putAll( inputFields );
 
-    Set<String> keySet = fields.keySet();
-    List<String> entries = new ArrayList<String>( keySet );
+    Set&lt;String&gt; keySet = fields.keySet();
+    List&lt;String&gt; entries = new ArrayList&lt;String&gt;( keySet );
 
     String[] fieldNames = entries.toArray( new String[entries.size()] );
     Const.sortStrings( fieldNames );
@@ -1145,7 +1164,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
       display.asyncExec( new Runnable() {
         public void run() {
           // clear
-          for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
+          for ( int i = 0; i &lt; tableFieldColumns.size(); i++ ) {
             ColumnInfo colInfo = tableFieldColumns.get( i );
             colInfo.setComboValues( new String[] {} );
           }
@@ -1159,13 +1178,13 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
               String[] fieldsName = getModuleFields();
 
               if ( fieldsName != null ) {
-                for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
+                for ( int i = 0; i &lt; tableFieldColumns.size(); i++ ) {
                   ColumnInfo colInfo = tableFieldColumns.get( i );
                   colInfo.setComboValues( fieldsName );
                 }
               }
             } catch ( Exception e ) {
-              for ( int i = 0; i < tableFieldColumns.size(); i++ ) {
+              for ( int i = 0; i &lt; tableFieldColumns.size(); i++ ) {
                 ColumnInfo colInfo = tableFieldColumns.get( i );
                 colInfo.setComboValues( new String[] {} );
               }
@@ -1180,3 +1199,4 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
   }
 
 }
+</pre></body></html>

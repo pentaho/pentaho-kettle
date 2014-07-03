@@ -1,4 +1,6 @@
-/*! ******************************************************************************
+
+<!-- saved from url=(0159)https://raw.githubusercontent.com/malsmith/pentaho-kettle/f3b57c22ea0fada4693a9bff2215c72195b2a9ec/ui/src/org/pentaho/di/ui/core/dialog/EnterMappingDialog.java -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">/*! ******************************************************************************
  *
  * Pentaho Data Integration
  *
@@ -23,6 +25,9 @@
 package org.pentaho.di.ui.core.dialog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -56,9 +61,54 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * @since 23-03-2006
  */
 public class EnterMappingDialog extends Dialog {
-  private static Class<?> PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!!
+	public class GuessPair {
+		private int _srcIndex = -1;
+		private int _targetIndex = -1;
+		private boolean _found = false;
+		public GuessPair() {
+			_found = false;
+		}
+		
+		public GuessPair(int src) {
+			_srcIndex = src;
+			_found = false;
+		}
+		public GuessPair(int src, int target, boolean found) {
+			_srcIndex = src;
+			_targetIndex = target;
+			_found = found;
+		}
+		public GuessPair(int src, int target) {
+			_srcIndex = src;
+			_targetIndex = target;
+			_found = true;
+		}
+		public int getTargetIndex() {
+			return _targetIndex;
+		}
+
+		public void setTargetIndex(int targetIndex) {
+			_found = true;
+			_targetIndex = targetIndex;
+		}
+
+		public int getSrcIndex() {
+			return _srcIndex;
+		}
+
+		public void setSrcIndex(int srcIndex) {
+			_srcIndex = srcIndex;
+		}
+		public boolean getFound() {
+			return _found;
+		}
+	}
+	
+  private static Class&lt;?&gt; PKG = DatabaseDialog.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_ORIGIN_SEPARATOR = "            (";
+  
+  public static final String  STRING_SFORCE_EXTERNALID_SEPARATOR = "/";
 
   private Label wlSource;
 
@@ -122,7 +172,7 @@ public class EnterMappingDialog extends Dialog {
 
   private PropsUI props;
 
-  private java.util.List<SourceToTargetMapping> mappings;
+  private java.util.List&lt;SourceToTargetMapping&gt; mappings;
 
   /**
    * Create a new dialog allowing the user to enter a mapping
@@ -135,7 +185,7 @@ public class EnterMappingDialog extends Dialog {
    *          the target values
    */
   public EnterMappingDialog( Shell parent, String[] source, String[] target ) {
-    this( parent, source, target, new ArrayList<SourceToTargetMapping>() );
+    this( parent, source, target, new ArrayList&lt;SourceToTargetMapping&gt;() );
   }
 
   /**
@@ -148,10 +198,10 @@ public class EnterMappingDialog extends Dialog {
    * @param target
    *          the target values
    * @param mappings
-   *          the already selected mappings (ArrayList containing <code>SourceToTargetMapping</code>s)
+   *          the already selected mappings (ArrayList containing &lt;code&gt;SourceToTargetMapping&lt;/code&gt;s)
    */
   public EnterMappingDialog( Shell parent, String[] source, String[] target,
-    java.util.List<SourceToTargetMapping> mappings ) {
+    java.util.List&lt;SourceToTargetMapping&gt; mappings ) {
     super( parent, SWT.NONE );
     props = PropsUI.getInstance();
     this.sourceList = source;
@@ -160,7 +210,7 @@ public class EnterMappingDialog extends Dialog {
     this.mappings = mappings;
   }
 
-  public java.util.List<SourceToTargetMapping> open() {
+  public java.util.List&lt;SourceToTargetMapping&gt; open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
 
@@ -190,7 +240,7 @@ public class EnterMappingDialog extends Dialog {
     fdlSource.top = new FormAttachment( 0, margin );
     wlSource.setLayoutData( fdlSource );
     wSource = new List( shell, SWT.SINGLE | SWT.RIGHT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
-    for ( int i = 0; i < sourceList.length; i++ ) {
+    for ( int i = 0; i &lt; sourceList.length; i++ ) {
       wSource.add( sourceList[i] );
     }
     props.setLook( wSource );
@@ -249,7 +299,7 @@ public class EnterMappingDialog extends Dialog {
     fdlTarget.top = new FormAttachment( 0, margin );
     wlTarget.setLayoutData( fdlTarget );
     wTarget = new List( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
-    for ( int i = 0; i < targetList.length; i++ ) {
+    for ( int i = 0; i &lt; targetList.length; i++ ) {
       wTarget.add( targetList[i] );
     }
     props.setLook( wTarget );
@@ -337,7 +387,7 @@ public class EnterMappingDialog extends Dialog {
     fdlResult.top = new FormAttachment( 0, margin );
     wlResult.setLayoutData( fdlResult );
     wResult = new List( shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL );
-    for ( int i = 0; i < targetList.length; i++ ) {
+    for ( int i = 0; i &lt; targetList.length; i++ ) {
       wResult.add( targetList[i] );
     }
     props.setLook( wResult );
@@ -425,52 +475,95 @@ public class EnterMappingDialog extends Dialog {
 
   private void guess() {
     // Guess the target for all the sources...
-    for ( int i = 0; i < sourceList.length; i++ ) {
-      int idx = Const.indexOfString( sourceList[i], wSource.getItems() );
-      if ( idx >= 0 ) {
-        wSource.select( idx );
-        if ( findTarget() ) {
-          add();
-        }
+	String [] sortedSourceList = Arrays.copyOf(sourceList, sourceList.length);
+	
+	// Sort Longest to Shortest string - makes matching better
+	Arrays.sort(sortedSourceList,new Comparator&lt;String&gt;() 
+			{
+				public int compare(String s1,String s2)
+				{
+					return s2.length() - s1.length();
+				}
+			});
+	// Look for matches using longest field name to shortest
+	ArrayList&lt;GuessPair&gt; pList = new ArrayList&lt;GuessPair&gt;();
+	for ( int i = 0; i &lt; sourceList.length; i++ ) {
+      int idx = Const.indexOfString( sortedSourceList[i], wSource.getItems() );
+      if ( idx &gt;= 0 ) {
+        pList.add(findTargetPair(idx));
       }
     }
+	// Now add them in order or source field list
+    Collections.sort(pList,new Comparator&lt;GuessPair&gt;()
+	  {
+			public int compare(GuessPair s1,GuessPair s2)
+			{
+				return s1.getSrcIndex() - s2.getSrcIndex() ;
+			}
+	  });
+    for ( GuessPair p : pList) {
+    	if (p.getFound()) {
+            SourceToTargetMapping mapping = new SourceToTargetMapping( p.getSrcIndex(),p.getTargetIndex());
+            mappings.add( mapping );
+    	}
+    }
+    refreshMappings();
+
+  
   }
 
   private boolean findTarget() {
+	  int sourceIndex = wSource.getSelectionIndex();
+	  GuessPair p = findTargetPair(sourceIndex);
+	  if (p.getFound()) {
+          wTarget.setSelection( p.getTargetIndex());
+	  }
+	  return p.getFound();
+  }
+  
+  private GuessPair findTargetPair(int sourceIndex) {
     // Guess, user selects an entry in the list on the left.
     // Find a comparable entry in the target list...
-    boolean found = false;
+    GuessPair result = new GuessPair(sourceIndex);
 
-    int sourceIndex = wSource.getSelectionIndex();
-    if ( sourceIndex < 0 ) {
-      return false;
+    if ( sourceIndex &lt; 0 ) {
+      return result;  // Not Found
     }
 
-    // Skip eventhing after the bracket...
+    // Skip everything after the bracket...
     String sourceStr = wSource.getItem( sourceIndex ).toUpperCase();
 
     int indexOfBracket = sourceStr.indexOf( EnterMappingDialog.STRING_ORIGIN_SEPARATOR );
     String sourceString = sourceStr;
-    if ( indexOfBracket >= 0 ) {
+    if ( indexOfBracket &gt;= 0 ) {
       sourceString = sourceStr.substring( 0, indexOfBracket );
     }
-
     int length = sourceString.length();
     boolean first = true;
 
-    while ( !found && ( length >= 2 || first ) ) {
+    boolean found = false;
+    while ( !found &amp;&amp; ( length &gt;= ((int)(sourceString.length() * 0.85)) || first ) ) {
       first = false;
 
-      for ( int i = 0; i < wTarget.getItemCount() && !found; i++ ) {
-        if ( wTarget.getItem( i ).toUpperCase().indexOf( sourceString.substring( 0, length ) ) >= 0 ) {
-          wTarget.setSelection( i );
+      for ( int i = 0; i &lt; wTarget.getItemCount() &amp;&amp; !found; i++ ) {
+    	String test = wTarget.getItem(i).toUpperCase();
+    	// Clean up field names in the form of OBJECT:LOOKUPFIELD/OBJECTNAME
+    	if (test.contains(EnterMappingDialog.STRING_SFORCE_EXTERNALID_SEPARATOR) ) {
+    		String tmp[] = test.split(EnterMappingDialog.STRING_SFORCE_EXTERNALID_SEPARATOR);
+    		test = tmp[tmp.length-1];
+    		if (test.endsWith("__R")) {
+    			test = test.substring(0,test.length()-3) + "__C";
+    		}
+    	}
+        if ( test.indexOf( sourceString.substring( 0, length ) ) &gt;= 0 ) {
+          result.setSrcIndex(sourceIndex);
+          result.setTargetIndex(i);
           found = true;
         }
       }
       length--;
     }
-
-    return found;
+    return result;
   }
 
   private boolean findSource() {
@@ -485,11 +578,11 @@ public class EnterMappingDialog extends Dialog {
     int length = targetString.length();
     boolean first = true;
 
-    while ( !found && ( length >= 2 || first ) ) {
+    while ( !found &amp;&amp; ( length &gt;= 2 || first ) ) {
       first = false;
 
-      for ( int i = 0; i < wSource.getItemCount() && !found; i++ ) {
-        if ( wSource.getItem( i ).toUpperCase().indexOf( targetString.substring( 0, length ) ) >= 0 ) {
+      for ( int i = 0; i &lt; wSource.getItemCount() &amp;&amp; !found; i++ ) {
+        if ( wSource.getItem( i ).toUpperCase().indexOf( targetString.substring( 0, length ) ) &gt;= 0 ) {
           wSource.setSelection( i );
           found = true;
         }
@@ -500,14 +593,14 @@ public class EnterMappingDialog extends Dialog {
   }
 
   private void add() {
-    if ( wSource.getSelectionCount() == 1 && wTarget.getSelectionCount() == 1 ) {
+    if ( wSource.getSelectionCount() == 1 &amp;&amp; wTarget.getSelectionCount() == 1 ) {
       String sourceString = wSource.getSelection()[0];
       String targetString = wTarget.getSelection()[0];
 
       int srcIndex = Const.indexOfString( sourceString, sourceList );
       int tgtIndex = Const.indexOfString( targetString, targetList );
 
-      if ( srcIndex >= 0 && tgtIndex >= 0 ) {
+      if ( srcIndex &gt;= 0 &amp;&amp; tgtIndex &gt;= 0 ) {
         // New mapping: add it to the list...
         SourceToTargetMapping mapping = new SourceToTargetMapping( srcIndex, tgtIndex );
         mappings.add( mapping );
@@ -520,19 +613,19 @@ public class EnterMappingDialog extends Dialog {
   private void refreshMappings() {
     // Refresh the results...
     wResult.removeAll();
-    for ( int i = 0; i < mappings.size(); i++ ) {
+    for ( int i = 0; i &lt; mappings.size(); i++ ) {
       SourceToTargetMapping mapping = mappings.get( i );
       String mappingString =
-        sourceList[mapping.getSourcePosition()] + " --> " + targetList[mapping.getTargetPosition()];
+        sourceList[mapping.getSourcePosition()] + " --&gt; " + targetList[mapping.getTargetPosition()];
       wResult.add( mappingString );
     }
 
     wSource.removeAll();
     // Refresh the sources
-    for ( int a = 0; a < sourceList.length; a++ ) {
+    for ( int a = 0; a &lt; sourceList.length; a++ ) {
       boolean found = false;
       if ( wSourceHide.getSelection() ) {
-        for ( int b = 0; b < mappings.size() && !found; b++ ) {
+        for ( int b = 0; b &lt; mappings.size() &amp;&amp; !found; b++ ) {
           SourceToTargetMapping mapping = mappings.get( b );
           if ( mapping.getSourcePosition() == Const.indexOfString( sourceList[a], sourceList ) ) {
             found = true;
@@ -547,10 +640,10 @@ public class EnterMappingDialog extends Dialog {
 
     wTarget.removeAll();
     // Refresh the targets
-    for ( int a = 0; a < targetList.length; a++ ) {
+    for ( int a = 0; a &lt; targetList.length; a++ ) {
       boolean found = false;
       if ( wTargetHide.getSelection() ) {
-        for ( int b = 0; b < mappings.size() && !found; b++ ) {
+        for ( int b = 0; b &lt; mappings.size() &amp;&amp; !found; b++ ) {
           SourceToTargetMapping mapping = mappings.get( b );
           if ( mapping.getTargetPosition() == Const.indexOfString( targetList[a], targetList ) ) {
             found = true;
@@ -567,9 +660,9 @@ public class EnterMappingDialog extends Dialog {
 
   private void delete() {
     String[] result = wResult.getSelection();
-    for ( int i = result.length - 1; i >= 0; i-- ) {
+    for ( int i = result.length - 1; i &gt;= 0; i-- ) {
       int idx = wResult.indexOf( result[i] );
-      if ( idx >= 0 && idx < mappings.size() ) {
+      if ( idx &gt;= 0 &amp;&amp; idx &lt; mappings.size() ) {
         mappings.remove( idx );
       }
     }
@@ -594,3 +687,4 @@ public class EnterMappingDialog extends Dialog {
     dispose();
   }
 }
+</pre></body></html>

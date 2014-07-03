@@ -1460,12 +1460,17 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     String fieldLength = null;
     String fieldPrecision = null;
     if ( !fieldType.equals( "boolean" ) && !fieldType.equals( "datetime" ) && !fieldType.equals( "date" ) ) {
-      fieldLength = Integer.toString( field.getLength() );
+      int length = field.getLength();
+	  if(length == 18 || length > 30000)
+	  fieldLength = Integer.toString( length );
+	  else
+	  fieldLength = Integer.toString( length*4 );
+	  
       fieldPrecision = Integer.toString( field.getPrecision() );
     }
 
     addField(
-      field.getLabel(), field.getName(), field.isIdLookup(), field.getType().getValue(), fieldLength,
+      field.getName(), field.getName(), field.isIdLookup(), field.getType().getValue(), fieldLength,
       fieldPrecision );
   }
 
@@ -1614,7 +1619,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
             PKG, "System.Combo.No" );
         String type = field.getTypeDesc();
         String format = field.getFormat();
-        String length = "" + field.getLength();
+        int lengthInt = field.getLength();
+        String length = lengthInt == 18 || lengthInt > 30000 ? "" + lengthInt : "" + lengthInt*4;
         String prec = "" + field.getPrecision();
         String curr = field.getCurrencySymbol();
         String group = field.getGroupSymbol();
