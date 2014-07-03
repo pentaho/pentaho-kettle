@@ -55,7 +55,7 @@ public class Vertica5DatabaseMeta extends VerticaDatabaseMeta {
    */
   @Override
   public boolean supportsTimeStampToDateConversion() {
-    return false;
+    return true;
   }
 
   /**
