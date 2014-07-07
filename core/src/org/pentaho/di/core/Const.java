@@ -699,6 +699,11 @@ public class Const {
    * System wide flag to ignore timezone while writing date/timestamp value to the database. See PDI-10749 for details.
    */
   public static final String KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE = "KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE";
+  
+  /**
+   * System wide flag to use the root path prefix for a directory reference. See PDI-6779 for details.
+   */
+  public static final String KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES = "KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES";
 
   /**
    * System wide flag to set or not append and header options dependency on Text file output step. See PDI-5252 for

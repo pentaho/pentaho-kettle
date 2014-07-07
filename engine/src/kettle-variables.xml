@@ -386,5 +386,12 @@
     <default-value></default-value>
   </kettle-variable>
   
+  <kettle-variable>
+    <description>Set this variable to Y for backward compatibility when importing a reference to a directory with a variable. When set to Y, a directory reference is always prefixed with the root path independently if variables are used or not.
+    </description>
+    <variable>KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+  
 </kettle-variables>
 
