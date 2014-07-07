@@ -7,17 +7,17 @@ import java.util.Map.Entry;
 
 import org.pentaho.di.trans.steps.loadsave.setter.Setter;
 
-public class GetterSetterTest<T> {
+public class GetterSetterTester<T> {
   private final Map<String, ObjectTester<?>> objectTesterMap;
   private final Class<? extends T> clazz;
   private final Map<String, String> getterMap;
   private final Map<String, String> setterMap;
 
-  public GetterSetterTest( Class<? extends T> clazz ) {
+  public GetterSetterTester( Class<? extends T> clazz ) {
     this( clazz, new HashMap<String, String>(), new HashMap<String, String>() );
   }
 
-  public GetterSetterTest( Class<? extends T> clazz, Map<String, String> getterMap, Map<String, String> setterMap ) {
+  public GetterSetterTester( Class<? extends T> clazz, Map<String, String> getterMap, Map<String, String> setterMap ) {
     this.clazz = clazz;
     this.getterMap = getterMap;
     this.setterMap = setterMap;
