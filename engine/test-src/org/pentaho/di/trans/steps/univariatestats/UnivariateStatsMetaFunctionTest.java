@@ -40,7 +40,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.trans.steps.loadsave.MemoryRepository;
-import org.pentaho.test.util.GetterSetterTest;
+import org.pentaho.test.util.GetterSetterTester;
 import org.pentaho.test.util.ObjectTester;
 import org.pentaho.test.util.ObjectTesterBuilder;
 import org.pentaho.test.util.ObjectValidator;
@@ -166,8 +166,8 @@ public class UnivariateStatsMetaFunctionTest {
 
   @Test
   public void testGettersAndSetters() {
-    GetterSetterTest<UnivariateStatsMetaFunction> getterSetterTest =
-        new GetterSetterTest<UnivariateStatsMetaFunction>( UnivariateStatsMetaFunction.class );
+    GetterSetterTester<UnivariateStatsMetaFunction> getterSetterTest =
+        new GetterSetterTester<UnivariateStatsMetaFunction>( UnivariateStatsMetaFunction.class );
     ObjectTester<Boolean> primitiveBooleanTester =
         new ObjectTesterBuilder<Boolean>().addObject( true ).addObject( false ).build();
     getterSetterTest.addObjectTester( "sourceFieldName", new ObjectTesterBuilder<String>().addObject( null ).addObject(
