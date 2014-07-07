@@ -1,0 +1,10 @@
+<univariate_stats><source_field_name></source_field_name>
+<N>N</N>
+<mean>N</mean>
+<stdDev>N</stdDev>
+<min>N</min>
+<max>N</max>
+<median>N</median>
+<percentile>falsey</percentile>
+<interpolate>N</interpolate>
+</univariate_stats>

@@ -24,12 +24,10 @@ package org.pentaho.di.trans.steps.univariatestats;
 
 import java.text.NumberFormat;
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -53,7 +51,7 @@ import org.w3c.dom.Node;
 
 /**
  * Contains the meta-data for the UnivariateStats step: calculates predefined univariate statistics
- *
+ * 
  * @author Mark Hall (mhall{[at]}pentaho.org)
  * @version 1.0
  */
@@ -72,7 +70,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Get the stats to be computed for the input fields
-   *
+   * 
    * @return an <code>UnivariateStatsMetaFunction[]</code> value
    */
   public UnivariateStatsMetaFunction[] getInputFieldMetaFunctions() {
@@ -83,7 +81,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
    * Returns how many UnivariateStatsMetaFunctions are currently being used. Each UnivariateStatsMetaFunction represents
    * an input field to be processed along with the user-requested stats to compute for it. The same input field may
    * occur in more than one UnivariateStatsMetaFunction as more than one percentile may be required.
-   *
+   * 
    * @return the number of non-unique input fields
    */
   public int getNumFieldsToProcess() {
@@ -92,7 +90,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Set the stats to be computed for the input fields
-   *
+   * 
    * @param mf
    *          an array of <code>UnivariateStatsMetaFunction</code>s
    */
@@ -102,7 +100,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Allocate space for stats to compute
-   *
+   * 
    * @param nrStats
    *          the number of UnivariateStatsMetaFunctions to allocate
    */
@@ -112,12 +110,13 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Loads the meta data for this (configured) step from XML.
-   *
+   * 
    * @param stepnode
    *          the step to load
    * @exception KettleXMLException
    *              if an error occurs
    */
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
 
     int nrStats = XMLHandler.countNodes( stepnode, UnivariateStatsMetaFunction.XML_TAG );
@@ -131,9 +130,10 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Return the XML describing this (configured) step
-   *
+   * 
    * @return a <code>String</code> containing the XML
    */
+  @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer( 300 );
 
@@ -147,15 +147,16 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Check for equality
-   *
+   * 
    * @param obj
    *          an <code>Object</code> to compare with
    * @return true if equal to the supplied object
    */
+  @Override
   public boolean equals( Object obj ) {
     if ( obj != null && ( obj.getClass().equals( this.getClass() ) ) ) {
       UnivariateStatsMeta m = (UnivariateStatsMeta) obj;
-      return ( getXML() == m.getXML() );
+      return ( getXML().equals( m.getXML() ) );
     }
 
     return false;
@@ -163,15 +164,16 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Clone this step's meta data
-   *
+   * 
    * @return the cloned meta data
    */
+  @Override
   public Object clone() {
     UnivariateStatsMeta retval = (UnivariateStatsMeta) super.clone();
     if ( m_stats != null ) {
       retval.allocate( m_stats.length );
       for ( int i = 0; i < m_stats.length; i++ ) {
-        //CHECKSTYLE:Indentation:OFF
+        // CHECKSTYLE:Indentation:OFF
         retval.getInputFieldMetaFunctions()[i] = (UnivariateStatsMetaFunction) m_stats[i].clone();
       }
     } else {
@@ -183,12 +185,14 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
   /**
    * Set the default state of the meta data?
    */
+  @Override
   public void setDefault() {
     m_stats = new UnivariateStatsMetaFunction[0];
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases,
-    Map<String, Counter> counters ) throws KettleException {
+  @Override
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
 
     int nrStats = rep.countNrStepAttributes( id_step, "source_field_name" );
     allocate( nrStats );
@@ -200,7 +204,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Save this step's meta data to a repository
-   *
+   * 
    * @param rep
    *          the repository to save to
    * @param metaStore
@@ -212,15 +216,18 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
    * @exception KettleException
    *              if an error occurs
    */
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  @Override
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
 
     for ( int i = 0; i < m_stats.length; i++ ) {
       m_stats[i].saveRep( rep, metaStore, id_transformation, id_step, i );
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
 
     row.clear();
     for ( int i = 0; i < m_stats.length; i++ ) {
@@ -237,7 +244,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
   /**
    * Returns an array of ValueMetaInterface that contains the meta data for each value computed by the supplied
    * UnivariateStatsMetaFunction
-   *
+   * 
    * @param fn
    *          the <code>UnivariateStatsMetaFunction</code> to construct meta data for
    * @param origin
@@ -291,8 +298,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
       NumberFormat pF = NumberFormat.getInstance();
       pF.setMaximumFractionDigits( 2 );
       String res = pF.format( percent * 100 );
-      v[index] =
-        new ValueMeta( fn.getSourceFieldName() + "(" + res + "th percentile)", ValueMetaInterface.TYPE_NUMBER );
+      v[index] = new ValueMeta( fn.getSourceFieldName() + "(" + res + "th percentile)", ValueMetaInterface.TYPE_NUMBER );
       v[index].setOrigin( origin );
       index++;
     }
@@ -301,7 +307,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Check the settings of this step and put findings in a remarks list.
-   *
+   * 
    * @param remarks
    *          the list to put the remarks in. see <code>org.pentaho.di.core.CheckResult</code>
    * @param transmeta
@@ -317,21 +323,20 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
    * @param info
    *          the fields that are used as information by the step
    */
-  public void check( List<CheckResultInterface> remarks, TransMeta transmeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+  @Override
+  public void check( List<CheckResultInterface> remarks, TransMeta transmeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
 
     CheckResult cr;
 
     if ( ( prev == null ) || ( prev.size() == 0 ) ) {
-      cr =
-        new CheckResult(
-          CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepMeta );
+      cr = new CheckResult( CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepMeta );
       remarks.add( cr );
     } else {
       cr =
-        new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "
-          + prev.size() + " fields", stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving " + prev.size()
+              + " fields", stepMeta );
       remarks.add( cr );
     }
 
@@ -347,7 +352,7 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
 
   /**
    * Get the executing step, needed by Trans to launch a step.
-   *
+   * 
    * @param stepMeta
    *          the step info
    * @param stepDataInterface
@@ -361,17 +366,19 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
    *          the launching transformation
    * @return a <code>StepInterface</code> value
    */
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-    Trans trans ) {
+      Trans trans ) {
     return new UnivariateStats( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
   /**
    * Get a new instance of the appropriate data class. This data class implements the StepDataInterface. It basically
    * contains the persisting data that needs to live on, even if a worker thread is terminated.
-   *
+   * 
    * @return a <code>StepDataInterface</code> value
    */
+  @Override
   public StepDataInterface getStepData() {
     return new UnivariateStatsData();
   }
