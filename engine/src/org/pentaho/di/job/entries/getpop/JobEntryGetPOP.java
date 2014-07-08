@@ -1201,30 +1201,35 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
                   logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.EmailSubject.Label", Const.NVL( mailConn
                       .getMessage().getSubject(), "" ) ) );
                 }
-                if ( isSaveMessage() ) {
-                  // get local message filename
-                  String localfilename_message = replaceTokens( realFilenamePattern, i );
 
-                  if ( isDebug() ) {
-                    logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.LocalFilename.Label",
-                        localfilename_message ) );
-                  }
-
-                  // save message content in the file
-                  mailConn.saveMessageContentToFile( localfilename_message, realOutputFolder );
-                  // PDI-10942 explicitly set message as read
-                  mailConn.getMessage().setFlag( Flag.SEEN, true );
-
-                  if ( isDetailed() ) {
-                    logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageSaved.Label", ""
-                        + messagenumber, localfilename_message, realOutputFolder ) );
-                  }
+                // get local message filename
+                String localfilename_message = replaceTokens( realFilenamePattern, i );
+                if ( isDebug() ) {
+                  logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.LocalFilename.Label",
+                      localfilename_message ) );
+                }
+                // save message content in the file
+                mailConn.saveMessageContentToFile( localfilename_message, realOutputFolder );
+                if ( isDetailed() ) {
+                  logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.MessageSaved.Label",
+                      "" + messagenumber, localfilename_message, realOutputFolder ) );
                 }
 
                 // Do we need to save attached file?
                 if ( isSaveAttachment() ) {
                   mailConn.saveAttachedFiles( targetAttachmentFolder, attachementPattern );
                 }
+
+                if ( isSaveMessage() ) {
+                  // PDI-10942 explicitly set message as read
+                  mailConn.getMessage().setFlag( Flag.SEEN, true );
+
+                } else {
+                  // delete file
+                  FileObject fileObj = KettleVFS.getFileObject( mailConn.getFullPathToSavedMessage() );
+                  fileObj.delete();
+                }
+
                 // We successfully retrieved message
                 // do we need to make another action (delete, move)?
                 if ( usePOP3 ) {

@@ -22,10 +22,7 @@
 
 package org.pentaho.di.job.entries.getpop;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -45,6 +42,7 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.URLName;
+import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.AndTerm;
 import javax.mail.search.BodyTerm;
@@ -57,9 +55,12 @@ import javax.mail.search.RecipientStringTerm;
 import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -139,6 +140,11 @@ public class MailConnection {
   private Folder destinationIMAPFolder = null;
 
   private LogChannelInterface log;
+
+  /**
+   * Full path to saved message
+   */
+  private String fullPathToSavedMessage;
 
   /**
    * Construct a new Database MailConnection
@@ -418,9 +424,10 @@ public class MailConnection {
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( defaultFolder ? BaseMessages.getString( PKG,
-          "JobGetMailsFromPOP.Error.OpeningDefaultFolder" ) : BaseMessages.getString( PKG,
-          "JobGetMailsFromPOP.Error.OpeningFolder", foldername ), e );
+      String message =
+          defaultFolder ? BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningDefaultFolder" ) : BaseMessages
+              .getString( PKG, "JobGetMailsFromPOP.Error.OpeningFolder", foldername );
+      throw new KettleException( message, e );
     }
   }
 
@@ -736,20 +743,16 @@ public class MailConnection {
   public void saveMessageContentToFile( String filename, String foldername ) throws KettleException {
     OutputStream os = null;
     try {
-      os = KettleVFS.getOutputStream( foldername + ( foldername.endsWith( "/" ) ? "" : "/" ) + filename, false );
+      String fullPath = foldername + ( foldername.endsWith( "/" ) ? "" : "/" ) + filename;
+      os = KettleVFS.getOutputStream( fullPath, false );
       getMessage().writeTo( os );
       updateSavedMessagesCounter();
+      setFullPathToSavedMessage( fullPath );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.SavingMessageContent", ""
           + this.message.getMessageNumber(), filename, foldername ), e );
     } finally {
-      if ( os != null ) {
-        try {
-          os.close();
-          os = null;
-        } catch ( Exception e ) { /* Ignore */
-        }
-      }
+      IOUtils.closeQuietly( os );
     }
   }
 
@@ -775,8 +778,19 @@ public class MailConnection {
    */
   public void saveAttachedFiles( String foldername, Pattern pattern ) throws KettleException {
     Object content = null;
+    InputStream inputStream = null;
     try {
-      content = getMessage().getContent();
+      // PDI-11884 - when imap server sends attribute CHARSET without quotes error occurs. Java mail library cannot
+      // process this case and throws exception. As workaround was invented approach with getting attachment from saved
+      // file
+      String fullPath = getFullPathToSavedMessage();
+      if ( fullPath == null || fullPath.isEmpty() ) {
+        throw new RuntimeException( BaseMessages
+            .getString( PKG, "MailConnection.Error.SavingAttachedFiles.SaveContent" ) );
+      }
+      inputStream = KettleVFS.getInputStream( fullPath );
+      MimeMessage mimMessage = new MimeMessage( session, inputStream );
+      content = mimMessage.getContent();
       if ( content instanceof Multipart ) {
         handleMultipart( foldername, (Multipart) content, pattern );
       }
@@ -784,6 +798,7 @@ public class MailConnection {
       throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.SavingAttachedFiles", ""
           + this.message.getMessageNumber(), foldername ), e );
     } finally {
+      IOUtils.closeQuietly( inputStream );
       if ( content != null ) {
         content = null;
       }
@@ -836,41 +851,29 @@ public class MailConnection {
   }
 
   private static void saveFile( String foldername, String filename, InputStream input ) throws KettleException {
-    FileOutputStream fos = null;
     BufferedOutputStream bos = null;
-    File file = null;
-    BufferedInputStream bis = null;
+    FileObject fileObj;
     try {
       if ( filename == null ) {
-        filename = File.createTempFile( "xx", ".out" ).getName();
+        filename =
+            new StringBuffer( 50 ).append( "xx" ).append( '_' ).append( UUIDUtil.getUUIDAsString() ).append( ".out" )
+                .toString();
       }
       // Do no overwrite existing file
-      file = new File( foldername, filename );
-      for ( int i = 0; file.exists(); i++ ) {
-        file = new File( foldername, filename + i );
+      String fullPath = foldername + ( foldername.endsWith( "/" ) ? "" : "/" ) + filename;
+      fileObj = KettleVFS.getFileObject( fullPath );
+
+      for ( int i = 0; fileObj.exists(); i++ ) {
+        fileObj = KettleVFS.getFileObject( fullPath + i );
       }
-      fos = new FileOutputStream( file );
-      bos = new BufferedOutputStream( fos );
-      bis = new BufferedInputStream( input );
-      int aByte;
-      while ( ( aByte = bis.read() ) != -1 ) {
-        bos.write( aByte );
-      }
+
+      bos = new BufferedOutputStream( KettleVFS.getOutputStream( fileObj, false ) );
+      IOUtils.copy( input, bos );
     } catch ( Exception e ) {
       throw new KettleException( e );
     } finally {
-      try {
-        if ( bos != null ) {
-          bos.flush();
-          bos.close();
-        }
-        if ( bis != null ) {
-          bis.close();
-          bis = null;
-        }
-        file = null;
-      } catch ( Exception e ) { /* Ignore */
-      }
+      IOUtils.closeQuietly( bos );
+      IOUtils.closeQuietly( input );
     }
   }
 
@@ -1069,6 +1072,22 @@ public class MailConnection {
    */
   private void updatedMovedMessagesCounter() {
     this.nrMovedMessages++;
+  }
+
+  /**
+   * Returns full path for current saved message
+   * 
+   * @return full path for current saved message
+   */
+  public String getFullPathToSavedMessage() {
+    return fullPathToSavedMessage;
+  }
+
+  /**
+   * Sets full path for current saved message
+   */
+  private void setFullPathToSavedMessage( String fullPath ) {
+    this.fullPathToSavedMessage = fullPath;
   }
 
   /**
@@ -1402,4 +1421,5 @@ public class MailConnection {
     }
     return retval;
   }
+
 }
