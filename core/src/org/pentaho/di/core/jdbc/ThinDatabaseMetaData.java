@@ -233,10 +233,10 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
       List<Object[]> rows = new ArrayList<Object[]>();
       for ( ThinServiceInformation service : services ) {
 
-        if ( Const.isEmpty( tableNamePattern ) || service.getName().equalsIgnoreCase( tableNamePattern ) ) {
+        if ( Const.isEmpty( tableNamePattern ) || ThinUtil.like( service.getName(), tableNamePattern ) ) {
           int ordinal = 1;
           for ( ValueMetaInterface valueMeta : service.getServiceFields().getValueMetaList() ) {
-            if ( Const.isEmpty( columnNamePattern ) || valueMeta.getName().equalsIgnoreCase( columnNamePattern ) ) {
+            if ( Const.isEmpty( columnNamePattern ) || ThinUtil.like( valueMeta.getName(), columnNamePattern ) ) {
               Object[] row = RowDataUtil.allocateRowData( rowMeta.size() );
               int index = 0;
               row[index++] = null; // TABLE_CAT - TYPE_STRING
@@ -675,7 +675,7 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
 
       List<Object[]> rows = new ArrayList<Object[]>();
       for ( ThinServiceInformation service : services ) {
-        if ( Const.isEmpty( tableNamePattern ) || service.getName().equalsIgnoreCase( tableNamePattern ) ) {
+        if ( Const.isEmpty( tableNamePattern ) || ThinUtil.like( service.getName(), tableNamePattern ) ) {
           Object[] row = RowDataUtil.allocateRowData( rowMeta.size() );
           int index = 0;
           row[index++] = null; // TABLE_CAT
