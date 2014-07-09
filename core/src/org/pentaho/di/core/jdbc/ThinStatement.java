@@ -25,6 +25,7 @@ package org.pentaho.di.core.jdbc;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
@@ -170,14 +171,22 @@ public class ThinStatement implements Statement {
 
   @Override
   public boolean getMoreResults() throws SQLException {
-    resultSet.close();
-    return true;
+    if( resultSet == null ) {
+      throw new SQLException( "Statement is closed." );
+    } else if( resultSet.isLast() || resultSet.isClosed() ) {
+      resultSet.close();
+      return false;
+    } else {
+      return true;
+    }
   }
 
   @Override
-  public boolean getMoreResults( int arg0 ) throws SQLException {
-    resultSet.close();
-    return true;
+  public boolean getMoreResults( int current ) throws SQLException {
+    if( current != Statement.CLOSE_CURRENT_RESULT ){
+      throw new SQLFeatureNotSupportedException( "Multiple open result sets not supported" );
+    }
+    return getMoreResults();
   }
 
   @Override
