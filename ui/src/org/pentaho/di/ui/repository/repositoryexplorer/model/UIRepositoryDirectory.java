@@ -219,6 +219,8 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     UIRepositoryDirectories directories = getChildren();
     if ( !contains( directories, newDir ) ) {
       directories.add( newDir );
+    } else {
+      throw new KettleException( "Unable to create folder with the same name [" + name + "]" );
     }
     kidElementCache = null; // rebuild the element cache for correct positioning.
     return newDir;
@@ -269,8 +271,8 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
 
   /**
    * Synchronize this folder with the back-end
-   *
-   *
+   * 
+   * 
    */
   public void refresh() {
     try {
@@ -341,7 +343,9 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     for ( int i = 0; i < directories.size(); i++ ) {
       UIRepositoryObject dir = directories.get( i );
       if ( dir instanceof UIRepositoryDirectory ) {
-        return dir.getName() != null && dir.getName().equals( searchDir.getName() );
+        if ( dir.getName() != null && dir.getName().equals( searchDir.getName() ) ) {
+          return true;
+        }
       }
     }
     return false;
