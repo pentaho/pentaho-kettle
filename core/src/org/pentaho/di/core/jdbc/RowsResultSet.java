@@ -444,11 +444,9 @@ public class RowsResultSet implements ResultSet {
   @Deprecated
   public String getString( int index ) throws SQLException {
     try {
-      String string = rowMeta.getString( rows.get( currentIndex ), index - 1 );
-      if ( string == null ) {
-        lastNull = true;
-      }
-      lastNull = false;
+      Object value = rows.get( currentIndex )[ index - 1 ];
+      String string = value == null ? null : value.toString();
+      lastNull = ( string == null );
       System.out.println( "getString(" + index + ") --> " + string );
       return string;
     } catch ( Exception e ) {

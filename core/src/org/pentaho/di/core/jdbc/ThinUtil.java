@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
@@ -553,5 +554,34 @@ public class ThinUtil {
       }
     }
     return new FoundClause( foundClause, rest );
+  }
+
+  public static boolean like( String subject, String pattern ) {
+    return like( pattern ).matcher( subject ).matches();
+  }
+
+  public static Pattern like( String pattern ) {
+    if ( pattern == null ) {
+      throw new IllegalArgumentException( "Pattern cannot be null" );
+    }
+
+    // Escape regex meta characters
+    int len = pattern.length();
+    if ( len > 0 ) {
+      StringBuilder sb = new StringBuilder( len * 2 );
+      for ( int i = 0; i < len; i++ ) {
+        char c = pattern.charAt( i );
+        if ( "[](){}.*+?$^|#\\".indexOf( c ) != -1 ) {
+          sb.append( '\\' );
+        }
+        sb.append( c );
+      }
+      pattern = sb.toString();
+    }
+
+    // Translate LIKE operators to REGEX
+    pattern = pattern.replace( "_", "." ).replace("%", ".*?");
+
+    return Pattern.compile( pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
   }
 }
