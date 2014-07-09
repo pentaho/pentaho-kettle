@@ -180,7 +180,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
         break;
       case ValueMetaInterface.TYPE_STRING:
         if ( length >= DatabaseMeta.CLOB_LENGTH ) {
-          retval.append( "TEXT" );
+          retval.append( "LONGVARCHAR" );
         } else {
           retval.append( "VARCHAR" );
           if ( length > 0 ) {

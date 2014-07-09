@@ -243,21 +243,10 @@ public class BaseStepDialog extends Dialog {
    * @param shell
    *          the shell
    * @param stepMetaInterface
-   *          the step meta interface
+   *          the step meta interface (because of the legacy code)
    */
   public void setShellImage( Shell shell, StepMetaInterface stepMetaInterface ) {
-    try {
-      final PluginInterface plugin =
-        PluginRegistry.getInstance().getPlugin( StepPluginType.class, stepMeta.getStepMetaInterface() );
-      createHelpButton( shell, stepMeta, plugin );
-
-      String id = plugin.getIds()[0];
-      if ( id != null ) {
-        shell.setImage( GUIResource.getInstance().getImagesSteps().get( id ) );
-      }
-    } catch ( Throwable e ) {
-      // Ignore
-    }
+    setShellImage( shell );
   }
 
   /**
@@ -1392,6 +1381,17 @@ public class BaseStepDialog extends Dialog {
 
   protected Button createHelpButton( final Shell shell, final StepMeta stepMeta, final PluginInterface plugin ) {
     return HelpUtils.createHelpButton( shell, HelpUtils.getHelpDialogTitle( plugin ), plugin );
+  }
+
+  private void setShellImage( Shell shell ) {
+    PluginInterface plugin =
+  PluginRegistry.getInstance().getPlugin( StepPluginType.class, stepMeta.getStepMetaInterface() );
+    createHelpButton( shell, stepMeta, plugin );
+
+    String id = plugin.getIds()[0];
+    if ( id != null ) {
+      shell.setImage( GUIResource.getInstance().getImagesSteps().get( id ) );
+    }
   }
 
   public IMetaStore getMetaStore() {

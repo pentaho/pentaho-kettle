@@ -107,8 +107,7 @@ public class JaninoMetaFunction implements Cloneable {
     replaceField = XMLHandler.getTagValue( calcnode, "replace_field" );
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int nr )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int nr ) throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, nr, "field_name", fieldName );
     rep.saveStepAttribute( id_transformation, id_step, nr, "formula_string", formula );
     rep.saveStepAttribute( id_transformation, id_step, nr, "value_type", ValueMeta.getTypeDesc( valueType ) );

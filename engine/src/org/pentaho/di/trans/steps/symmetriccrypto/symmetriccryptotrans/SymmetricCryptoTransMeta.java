@@ -228,8 +228,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
     this.messageField = fieldnamein;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -318,8 +317,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       operationType =
         getOperationTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "operation_type" ), "" ) );
@@ -347,8 +345,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
     return operationTypeCode[i];
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "operation_type", getOperationTypeCode( operationType ) );
       rep.saveStepAttribute( id_transformation, id_step, "algorithm", algorithm );

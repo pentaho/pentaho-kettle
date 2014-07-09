@@ -297,8 +297,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
     return true;
   }
 
-  protected void finishTheJob( FileObject file, String sourceData, FileObject destinationFolder )
-    throws KettleException {
+  protected void finishTheJob( FileObject file, String sourceData, FileObject destinationFolder ) throws KettleException {
     try {
       switch ( meta.getAfterFTPS() ) {
         case JobEntrySFTPPUT.AFTER_FTPSPUT_DELETE:

@@ -102,8 +102,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     this.setEmptyStringAll = setEmptyStringAll;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -295,8 +294,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     return replaceAllMask;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
-    throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       selectFields = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "selectFields" ) );
       selectValuesType = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "selectValuesType" ) );
@@ -391,8 +389,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       replaceAllByValue = rep.getStepAttributeString( id_step, "replaceAllByValue" );
       replaceAllMask = rep.getStepAttributeString( id_step, "replaceAllMask" );
@@ -422,8 +419,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "replaceAllByValue", replaceAllByValue );
       rep.saveStepAttribute( id_transformation, id_step, "replaceAllMask", replaceAllMask );

@@ -172,7 +172,6 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     createlocalfolder = false;
     aftergetimap = MailConnectionMeta.AFTER_GET_IMAP_NOTHING;
     includesubfolders = false;
-    setID( -1L );
   }
 
   public JobEntryGetPOP() {

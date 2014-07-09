@@ -558,7 +558,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     wAddDate.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
-        // System.out.println("wAddDate.getSelection()="+wAddDate.getSelection());
       }
     } );
     // Create multi-part file?
@@ -640,7 +639,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     wbShowFiles.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         TextFileOutputMeta tfoi = new TextFileOutputMeta();
-        getInfo( tfoi );
+        saveInfoInMeta( tfoi );
         String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
           EnterSelectionDialog esd = new EnterSelectionDialog( shell, files,
@@ -728,6 +727,15 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     wAppend.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
+
+        if ( checkAppendNoHeaderVariable( "y" ) ) {
+          headerDisabling();
+        }
+      }
+
+      private void headerDisabling() {
+        wHeader.setSelection( false );
+        wHeader.setEnabled( !wAppend.getSelection() );
       }
     } );
 
@@ -844,7 +852,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         input.setChanged();
       }
     } );
-
     wlFooter = new Label( wContentComp, SWT.RIGHT );
     wlFooter.setText( BaseMessages.getString( PKG, "TextFileOutputDialog.Footer.Label" ) );
     props.setLook( wlFooter );
@@ -1270,6 +1277,12 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     setSize();
 
     getData();
+
+    if ( checkAppendNoHeaderVariable( "y" ) ) {
+      // Actual info just after getData() calling
+      wHeader.setEnabled( !wAppend.getSelection() );
+    }
+
     activeFileNameField();
     enableParentFolder();
     input.setChanged( changed );
@@ -1539,7 +1552,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     dispose();
   }
 
-  private void getInfo( TextFileOutputMeta tfoi ) {
+  private void saveInfoInMeta( TextFileOutputMeta tfoi ) {
     tfoi.setFileName( wFilename.getText() );
     tfoi.setFileAsCommand( wFileIsCommand.getSelection() );
     tfoi.setServletOutput( wServletOutput.getSelection() );
@@ -1562,6 +1575,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     tfoi.setHeaderEnabled( wHeader.getSelection() );
     tfoi.setFooterEnabled( wFooter.getSelection() );
     tfoi.setFileAppended( wAppend.getSelection() );
+    System.out.println( "wAppend.getSelection()-1: " + wAppend.getSelection() );
     tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
     tfoi.setPartNrInFilename( wAddPartnr.getSelection() );
     tfoi.setDateInFilename( wAddDate.getSelection() );
@@ -1605,7 +1619,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
     stepname = wStepname.getText(); // return value
 
-    getInfo( input );
+    saveInfoInMeta( input );
 
     dispose();
   }
@@ -1710,5 +1724,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
   private void enableParentFolder() {
     wlCreateParentFolder.setEnabled( !wFileIsCommand.getSelection() );
     wCreateParentFolder.setEnabled( !wFileIsCommand.getSelection() );
+  }
+
+  private boolean checkAppendNoHeaderVariable( String expectedResult ) {
+    String value = Const.NVL( System.getProperty( Const.KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER ), "N" );
+    return value.equalsIgnoreCase( expectedResult );
   }
 }

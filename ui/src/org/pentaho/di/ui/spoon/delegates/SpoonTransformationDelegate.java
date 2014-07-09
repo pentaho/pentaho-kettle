@@ -737,7 +737,10 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
     // Set repository and safe mode information in both the exec config and the metadata
     transMeta.setRepository( spoon.rep );
+    transMeta.setMetaStore( spoon.metaStore );
+
     executionConfiguration.setRepository( spoon.rep );
+
     executionConfiguration.setSafeModeEnabled( safe );
 
     if ( debug ) {
@@ -922,8 +925,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
   }
 
-  protected void splitTrans( final TransMeta transMeta, final TransExecutionConfiguration executionConfiguration )
-    throws KettleException {
+  protected void splitTrans( final TransMeta transMeta, final TransExecutionConfiguration executionConfiguration ) throws KettleException {
     try {
       final TransSplitter transSplitter = new TransSplitter( transMeta );
 

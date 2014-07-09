@@ -479,8 +479,7 @@ public class KettleFileRepository extends AbstractRepository {
     return new ObjectId[] {};
   }
 
-  private ObjectId getObjectId( RepositoryDirectoryInterface repositoryDirectory, String name, String extension )
-    throws KettleException {
+  private ObjectId getObjectId( RepositoryDirectoryInterface repositoryDirectory, String name, String extension ) throws KettleException {
     try {
       String filename = calcFilename( repositoryDirectory, name, extension );
       if ( !KettleVFS.getFileObject( filename ).exists() ) {
@@ -650,8 +649,7 @@ public class KettleFileRepository extends AbstractRepository {
     return list;
   }
 
-  public boolean getStepAttributeBoolean( ObjectId id_step, int nr, String code, boolean def )
-    throws KettleException {
+  public boolean getStepAttributeBoolean( ObjectId id_step, int nr, String code, boolean def ) throws KettleException {
     return false;
   }
 
@@ -671,8 +669,7 @@ public class KettleFileRepository extends AbstractRepository {
     return null;
   }
 
-  public boolean getJobEntryAttributeBoolean( ObjectId id_jobentry, int nr, String code, boolean def )
-    throws KettleException {
+  public boolean getJobEntryAttributeBoolean( ObjectId id_jobentry, int nr, String code, boolean def ) throws KettleException {
     return false;
   }
 
@@ -699,8 +696,7 @@ public class KettleFileRepository extends AbstractRepository {
     return new ObjectId[] {};
   }
 
-  public ObjectId getTransformationID( String name, RepositoryDirectoryInterface repositoryDirectory )
-    throws KettleException {
+  public ObjectId getTransformationID( String name, RepositoryDirectoryInterface repositoryDirectory ) throws KettleException {
     return getObjectId( repositoryDirectory, name, EXT_TRANSFORMATION );
   }
 
@@ -759,13 +755,11 @@ public class KettleFileRepository extends AbstractRepository {
     return FILE_REPOSITORY_VERSION;
   }
 
-  public ObjectId insertClusterSlave( ClusterSchema clusterSchema, SlaveServer slaveServer )
-    throws KettleException {
+  public ObjectId insertClusterSlave( ClusterSchema clusterSchema, SlaveServer slaveServer ) throws KettleException {
     return null;
   }
 
-  public void insertJobEntryDatabase( ObjectId id_job, ObjectId id_jobentry, ObjectId id_database )
-    throws KettleException {
+  public void insertJobEntryDatabase( ObjectId id_job, ObjectId id_jobentry, ObjectId id_database ) throws KettleException {
   }
 
   public void insertJobNote( ObjectId id_job, ObjectId id_note ) throws KettleException {
@@ -785,8 +779,7 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
-  public void insertStepDatabase( ObjectId id_transformation, ObjectId id_step, ObjectId id_database )
-    throws KettleException {
+  public void insertStepDatabase( ObjectId id_transformation, ObjectId id_step, ObjectId id_database ) throws KettleException {
 
   }
 
@@ -794,25 +787,21 @@ public class KettleFileRepository extends AbstractRepository {
 
   }
 
-  public void insertTransStepCondition( ObjectId id_transformation, ObjectId id_step, ObjectId id_condition )
-    throws KettleException {
+  public void insertTransStepCondition( ObjectId id_transformation, ObjectId id_step, ObjectId id_condition ) throws KettleException {
 
   }
 
-  public ObjectId insertTransformationCluster( ObjectId id_transformation, ObjectId id_cluster )
-    throws KettleException {
+  public ObjectId insertTransformationCluster( ObjectId id_transformation, ObjectId id_cluster ) throws KettleException {
 
     return null;
   }
 
-  public ObjectId insertTransformationPartitionSchema( ObjectId id_transformation, ObjectId id_partition_schema )
-    throws KettleException {
+  public ObjectId insertTransformationPartitionSchema( ObjectId id_transformation, ObjectId id_partition_schema ) throws KettleException {
 
     return null;
   }
 
-  public ObjectId insertTransformationSlave( ObjectId id_transformation, ObjectId id_slave )
-    throws KettleException {
+  public ObjectId insertTransformationSlave( ObjectId id_transformation, ObjectId id_slave ) throws KettleException {
 
     return null;
   }
@@ -892,8 +881,7 @@ public class KettleFileRepository extends AbstractRepository {
 
   }
 
-  public PartitionSchema loadPartitionSchema( ObjectId id_partition_schema, String versionName )
-    throws KettleException {
+  public PartitionSchema loadPartitionSchema( ObjectId id_partition_schema, String versionName ) throws KettleException {
     try {
       return new PartitionSchema( loadNodeFromXML( id_partition_schema, PartitionSchema.XML_TAG ) );
     } catch ( Exception e ) {
@@ -907,8 +895,7 @@ public class KettleFileRepository extends AbstractRepository {
     return loadRepositoryDirectoryTree( root );
   }
 
-  public RepositoryDirectoryInterface loadRepositoryDirectoryTree( RepositoryDirectoryInterface dir )
-    throws KettleException {
+  public RepositoryDirectoryInterface loadRepositoryDirectoryTree( RepositoryDirectoryInterface dir ) throws KettleException {
     try {
       String folderName = calcDirectoryName( dir );
       FileObject folder = KettleVFS.getFileObject( folderName );
@@ -978,8 +965,7 @@ public class KettleFileRepository extends AbstractRepository {
     }
   }
 
-  public List<RepositoryElementMetaInterface> getJobObjects( ObjectId id_directory, boolean includeDeleted )
-    throws KettleException {
+  public List<RepositoryElementMetaInterface> getJobObjects( ObjectId id_directory, boolean includeDeleted ) throws KettleException {
 
     try {
       List<RepositoryElementMetaInterface> list = new ArrayList<RepositoryElementMetaInterface>();
@@ -1084,13 +1070,11 @@ public class KettleFileRepository extends AbstractRepository {
     return null;
   }
 
-  public void moveJob( String jobname, ObjectId id_directory_from, ObjectId id_directory_to )
-    throws KettleException {
+  public void moveJob( String jobname, ObjectId id_directory_from, ObjectId id_directory_to ) throws KettleException {
 
   }
 
-  public void moveTransformation( String transname, ObjectId id_directory_from, ObjectId id_directory_to )
-    throws KettleException {
+  public void moveTransformation( String transname, ObjectId id_directory_from, ObjectId id_directory_to ) throws KettleException {
 
   }
 
@@ -1199,14 +1183,12 @@ public class KettleFileRepository extends AbstractRepository {
     return id.getId().substring( slashIndex + 1, dotIndex );
   }
 
-  public ObjectId renameJob( ObjectId id_job, RepositoryDirectoryInterface newDir, String newName )
-    throws KettleException {
+  public ObjectId renameJob( ObjectId id_job, RepositoryDirectoryInterface newDir, String newName ) throws KettleException {
     return renameObject( id_job, newDir, newName, EXT_JOB );
 
   }
 
-  public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName )
-    throws KettleException {
+  public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName ) throws KettleException {
     if ( newParentDir != null || newName != null ) {
       try {
         // In case of a root object, the ID is the same as the relative filename...
@@ -1268,32 +1250,25 @@ public class KettleFileRepository extends AbstractRepository {
     DatabaseMeta database ) throws KettleException {
   }
 
-  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, String value )
-    throws KettleException {
+  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, String value ) throws KettleException {
   }
 
-  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, boolean value )
-    throws KettleException {
+  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, boolean value ) throws KettleException {
   }
 
-  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, long value )
-    throws KettleException {
+  public void saveJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String code, long value ) throws KettleException {
   }
 
-  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, String value )
-    throws KettleException {
+  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, String value ) throws KettleException {
   }
 
-  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, boolean value )
-    throws KettleException {
+  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, boolean value ) throws KettleException {
   }
 
-  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, long value )
-    throws KettleException {
+  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, long value ) throws KettleException {
   }
 
-  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, double value )
-    throws KettleException {
+  public void saveStepAttribute( ObjectId id_transformation, ObjectId id_step, int nr, String code, double value ) throws KettleException {
   }
 
   public void delUser( ObjectId id_user ) throws KettleException {
@@ -1378,8 +1353,7 @@ public class KettleFileRepository extends AbstractRepository {
     return serviceMap.containsKey( clazz );
   }
 
-  public RepositoryDirectoryInterface getDefaultSaveDirectory( RepositoryElementInterface repositoryElement )
-    throws KettleException {
+  public RepositoryDirectoryInterface getDefaultSaveDirectory( RepositoryElementInterface repositoryElement ) throws KettleException {
     return getUserHomeDirectory();
   }
 
@@ -1389,8 +1363,7 @@ public class KettleFileRepository extends AbstractRepository {
     return loadRepositoryDirectoryTree( root );
   }
 
-  public RepositoryObject getObjectInformation( ObjectId objectId, RepositoryObjectType objectType )
-    throws KettleException {
+  public RepositoryObject getObjectInformation( ObjectId objectId, RepositoryObjectType objectType ) throws KettleException {
     try {
       String filename = calcDirectoryName( null );
       if ( objectId.getId().startsWith( "/" ) ) {

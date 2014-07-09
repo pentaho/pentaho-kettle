@@ -114,14 +114,12 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
     fieldsOut = new ArrayList<WebServiceField>();
   }
 
-  public WebServiceMeta( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public WebServiceMeta( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     this();
     loadXML( stepnode, databases, metaStore );
   }
 
-  public WebServiceMeta( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public WebServiceMeta( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     this();
     readRep( rep, metaStore, id_step, databases );
   }
@@ -257,8 +255,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     // Load the URL
     //
     setUrl( XMLHandler.getTagValue( stepnode, "wsURL" ) );
@@ -318,8 +315,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     // Load the URL
     //
     setUrl( rep.getStepAttributeString( id_step, "wsUrl" ) );
@@ -370,8 +366,7 @@ public class WebServiceMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     // Store the URL
     //
     rep.saveStepAttribute( id_transformation, id_step, "wsUrl", getUrl() );

@@ -108,8 +108,7 @@ public abstract class AbstractStepMeta extends BaseStepMeta implements StepMetaI
    *
    * @see org.pentaho.di.trans.step.StepMetaInterface#loadXML(org.w3c.dom.Node, java.util.List, java.util.Map)
    */
-  public void loadXML( final Node node, final List<DatabaseMeta> databaseMeta, final IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( final Node node, final List<DatabaseMeta> databaseMeta, final IMetaStore metaStore ) throws KettleXMLException {
     this.getProperties().walk( new LoadXml( node ) );
     initDbMeta( databaseMeta );
   }

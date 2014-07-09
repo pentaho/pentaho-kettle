@@ -86,8 +86,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface {
     validations = new ArrayList<Validation>( nrValidations );
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     int nrCalcs = XMLHandler.countNodes( stepnode, Validation.XML_TAG );
     allocate( nrCalcs );
     validatingAll = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "validate_all" ) );
@@ -141,8 +140,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface {
     concatenationSeparator = "|";
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     int nrValidationFields = rep.countNrStepAttributes( id_step, "validator_field_name" );
     allocate( nrValidationFields );
     validatingAll = rep.getStepAttributeBoolean( id_step, "validate_all" );
@@ -154,8 +152,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, "validate_all", validatingAll );
     rep.saveStepAttribute( id_transformation, id_step, "concat_errors", concatenatingErrors );
     rep.saveStepAttribute( id_transformation, id_step, "concat_separator", concatenationSeparator );

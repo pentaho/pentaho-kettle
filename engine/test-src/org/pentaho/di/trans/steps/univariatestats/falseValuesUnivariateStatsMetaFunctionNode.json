@@ -1,0 +1,12 @@
+{ "step" : { "test" : { "0": {
+    "source_field_name": "",
+    "N": "N",
+    "mean": "N",
+    "stdDev": "N",
+    "min": "N",
+    "max": "N",
+    "median": "N",
+    "percentile": "falsey",
+    "interpolate": "N"
+  }}},
+  "job" : {} }

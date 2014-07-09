@@ -62,8 +62,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
   private String sequenceName;
   private String increment;
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -72,8 +71,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
     return retval;
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
-    throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       valuename = XMLHandler.getTagValue( stepnode, "valuename" );
       slaveServerName = XMLHandler.getTagValue( stepnode, "slave" );
@@ -110,8 +108,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       valuename = rep.getStepAttributeString( id_step, "valuename" );
       slaveServerName = rep.getStepAttributeString( id_step, "slave" );
@@ -123,8 +120,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "valuename", valuename );
       rep.saveStepAttribute( id_transformation, id_step, "slave", slaveServerName );

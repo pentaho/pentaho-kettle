@@ -248,8 +248,7 @@ public class GPG {
    *          decrypted filename
    * @throws KettleException
    */
-  public void decryptFile( FileObject cryptedFilename, String passPhrase, FileObject decryptedFilename )
-    throws KettleException {
+  public void decryptFile( FileObject cryptedFilename, String passPhrase, FileObject decryptedFilename ) throws KettleException {
 
     decryptFile( KettleVFS.getFilename( cryptedFilename ), passPhrase, KettleVFS.getFilename( decryptedFilename ) );
   }
@@ -265,8 +264,7 @@ public class GPG {
    *          decrypted filename
    * @throws KettleException
    */
-  public void decryptFile( String cryptedFilename, String passPhrase, String decryptedFilename )
-    throws KettleException {
+  public void decryptFile( String cryptedFilename, String passPhrase, String decryptedFilename ) throws KettleException {
 
     try {
       execGnuPG( "--batch --yes "
@@ -291,8 +289,7 @@ public class GPG {
    *          output ASCII file
    * @throws KettleException
    */
-  public void encryptFile( FileObject filename, String userID, FileObject cryptedFilename, boolean asciiMode )
-    throws KettleException {
+  public void encryptFile( FileObject filename, String userID, FileObject cryptedFilename, boolean asciiMode ) throws KettleException {
     encryptFile( KettleVFS.getFilename( filename ), userID, KettleVFS.getFilename( cryptedFilename ), asciiMode );
   }
 
@@ -309,8 +306,7 @@ public class GPG {
    *          output ASCII file
    * @throws KettleException
    */
-  public void encryptFile( String filename, String userID, String cryptedFilename, boolean asciiMode )
-    throws KettleException {
+  public void encryptFile( String filename, String userID, String cryptedFilename, boolean asciiMode ) throws KettleException {
     try {
       execGnuPG( "--batch --yes"
         + ( asciiMode ? " -a" : "" ) + " -r " + "\"" + Const.NVL( userID, "" ) + "\" " + "--output " + "\""
@@ -334,8 +330,7 @@ public class GPG {
    *          output ASCII file
    * @throws KettleException
    */
-  public void signAndEncryptFile( FileObject file, String userID, FileObject cryptedFile, boolean asciiMode )
-    throws KettleException {
+  public void signAndEncryptFile( FileObject file, String userID, FileObject cryptedFile, boolean asciiMode ) throws KettleException {
     signAndEncryptFile( KettleVFS.getFilename( file ), userID, KettleVFS.getFilename( cryptedFile ), asciiMode );
   }
 
@@ -352,8 +347,7 @@ public class GPG {
    *          output ASCII file
    * @throws KettleException
    */
-  public void signAndEncryptFile( String filename, String userID, String cryptedFilename, boolean asciiMode )
-    throws KettleException {
+  public void signAndEncryptFile( String filename, String userID, String cryptedFilename, boolean asciiMode ) throws KettleException {
 
     try {
 
@@ -380,8 +374,7 @@ public class GPG {
    *          output ASCII file
    * @throws KettleException
    */
-  public void signFile( String filename, String userID, String signedFilename, boolean asciiMode )
-    throws KettleException {
+  public void signFile( String filename, String userID, String signedFilename, boolean asciiMode ) throws KettleException {
     try {
       execGnuPG( "--batch --yes"
         + ( asciiMode ? " -a" : "" ) + ( Const.isEmpty( userID ) ? "" : " -r " + "\"" + userID + "\"" ) + " "
@@ -406,8 +399,7 @@ public class GPG {
    *          output ASCII file
    * @throws KettleException
    */
-  public void signFile( FileObject file, String userID, FileObject signedFile, boolean asciiMode )
-    throws KettleException {
+  public void signFile( FileObject file, String userID, FileObject signedFile, boolean asciiMode ) throws KettleException {
     try {
       signFile( KettleVFS.getFilename( file ), userID, KettleVFS.getFilename( signedFile ), asciiMode );
 

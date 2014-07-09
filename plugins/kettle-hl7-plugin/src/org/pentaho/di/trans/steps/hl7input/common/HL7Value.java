@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.di.trans.steps.hl7input.common;
 
@@ -42,7 +42,8 @@ public class HL7Value {
    * @param description
    * @param value
    */
-  public HL7Value(String version, String parentGroup, String groupName, String structureName, String structureNumber, String fieldName, String coordinate, String dataType, String description, String value) {
+  public HL7Value( String version, String parentGroup, String groupName, String structureName, String structureNumber,
+      String fieldName, String coordinate, String dataType, String description, String value ) {
     this.version = version;
     this.parentGroup = parentGroup;
     this.groupName = groupName;
@@ -57,7 +58,8 @@ public class HL7Value {
 
   @Override
   public String toString() {
-    return version+" ("+parentGroup+") "+groupName+" "+structureName+" "+structureNumber+" : "+fieldName+" "+coordinate+" ("+dataType+" "+description+") : "+Const.NVL(value, "");
+    return version + " (" + parentGroup + ") " + groupName + " " + structureName + " " + structureNumber + " : "
+        + fieldName + " " + coordinate + " (" + dataType + " " + description + ") : " + Const.NVL( value, "" );
   }
 
   /**
@@ -68,9 +70,10 @@ public class HL7Value {
   }
 
   /**
-   * @param version the version to set
+   * @param version
+   *          the version to set
    */
-  public void setVersion(String version) {
+  public void setVersion( String version ) {
     this.version = version;
   }
 
@@ -82,9 +85,10 @@ public class HL7Value {
   }
 
   /**
-   * @param parentGroup the parentGroup to set
+   * @param parentGroup
+   *          the parentGroup to set
    */
-  public void setParentGroup(String parentGroup) {
+  public void setParentGroup( String parentGroup ) {
     this.parentGroup = parentGroup;
   }
 
@@ -96,9 +100,10 @@ public class HL7Value {
   }
 
   /**
-   * @param groupName the groupName to set
+   * @param groupName
+   *          the groupName to set
    */
-  public void setGroupName(String groupName) {
+  public void setGroupName( String groupName ) {
     this.groupName = groupName;
   }
 
@@ -110,9 +115,10 @@ public class HL7Value {
   }
 
   /**
-   * @param structureName the structureName to set
+   * @param structureName
+   *          the structureName to set
    */
-  public void setStructureName(String structureName) {
+  public void setStructureName( String structureName ) {
     this.structureName = structureName;
   }
 
@@ -124,9 +130,10 @@ public class HL7Value {
   }
 
   /**
-   * @param fieldName the fieldName to set
+   * @param fieldName
+   *          the fieldName to set
    */
-  public void setFieldName(String fieldName) {
+  public void setFieldName( String fieldName ) {
     this.fieldName = fieldName;
   }
 
@@ -138,9 +145,10 @@ public class HL7Value {
   }
 
   /**
-   * @param dataType the dataType to set
+   * @param dataType
+   *          the dataType to set
    */
-  public void setDataType(String dataType) {
+  public void setDataType( String dataType ) {
     this.dataType = dataType;
   }
 
@@ -152,9 +160,10 @@ public class HL7Value {
   }
 
   /**
-   * @param description the description to set
+   * @param description
+   *          the description to set
    */
-  public void setDescription(String description) {
+  public void setDescription( String description ) {
     this.description = description;
   }
 
@@ -166,9 +175,10 @@ public class HL7Value {
   }
 
   /**
-   * @param value the value to set
+   * @param value
+   *          the value to set
    */
-  public void setValue(String value) {
+  public void setValue( String value ) {
     this.value = value;
   }
 
@@ -180,9 +190,10 @@ public class HL7Value {
   }
 
   /**
-   * @param structureNumber the structureNumber to set
+   * @param structureNumber
+   *          the structureNumber to set
    */
-  public void setStructureNumber(String structureNumber) {
+  public void setStructureNumber( String structureNumber ) {
     this.structureNumber = structureNumber;
   }
 
@@ -194,9 +205,10 @@ public class HL7Value {
   }
 
   /**
-   * @param coordinate the coordinate to set
+   * @param coordinate
+   *          the coordinate to set
    */
-  public void setCoordinate(String coordinate) {
+  public void setCoordinate( String coordinate ) {
     this.coordinate = coordinate;
   }
 }

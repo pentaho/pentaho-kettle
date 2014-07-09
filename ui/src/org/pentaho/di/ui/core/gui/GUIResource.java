@@ -142,6 +142,8 @@ public class GUIResource {
 
   private ManagedFont fontSmall;
 
+  private ManagedFont fontBold;
+
   /* * * Images * * */
   private Map<String, Image> imagesSteps = new Hashtable<String, Image>();
 
@@ -341,8 +343,6 @@ public class GUIResource {
   private Map<String, Image> imageMap;
 
   private Map<RGB, Color> colorMap;
-
-  private ManagedFont fontBold;
 
   private Image imageSpoonHigh;
 
@@ -714,18 +714,11 @@ public class GUIResource {
         .getGraphFont().getStyle() );
     fontSmall = new ManagedFont( display, smallFontData );
 
-    // Create a bold version of the default font to display shared objects
-    // in the trees
-    int extraHeigth = 0;
-    if ( Const.isOSX() ) {
-      extraHeigth = 3;
-    }
     FontData boldFontData =
-      new FontData( props.getDefaultFont().getName(), props.getDefaultFont().getHeight() + extraHeigth, props
-        .getDefaultFont().getStyle()
+      new FontData( props.getDefaultFontData().getName(), props.getDefaultFontData().getHeight(), props
+        .getDefaultFontData().getStyle()
         | SWT.BOLD );
     fontBold = new ManagedFont( display, boldFontData );
-
   }
 
   private void loadCommonImages() {

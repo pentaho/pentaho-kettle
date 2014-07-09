@@ -171,8 +171,7 @@ public class DatabaseMetaInformation {
     this.procedures = procedures;
   }
 
-  public void getData( LoggingObjectInterface parentLoggingObject, ProgressMonitorListener monitor )
-    throws KettleDatabaseException {
+  public void getData( LoggingObjectInterface parentLoggingObject, ProgressMonitorListener monitor ) throws KettleDatabaseException {
     if ( monitor != null ) {
       monitor.beginTask( BaseMessages.getString( PKG, "DatabaseMeta.Info.GettingInfoFromDb" ), 8 );
     }

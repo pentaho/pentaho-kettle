@@ -230,8 +230,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
     incrementLinesOutput();
   }
 
-  private void writeField( ValueMetaInterface valueMeta, Object valueData, String element )
-    throws KettleStepException {
+  private void writeField( ValueMetaInterface valueMeta, Object valueData, String element ) throws KettleStepException {
     try {
       String str = XMLHandler.addTagValue( element, valueMeta.getString( valueData ), false );
       if ( str != null ) {

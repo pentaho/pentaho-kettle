@@ -1,4 +1,4 @@
-//CHECKSTYLE:FileLength:OFF
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -56,6 +56,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.version.BuildVersion;
@@ -82,13 +83,33 @@ public class Const {
   /**
    * Copyright year
    */
-  public static final String COPYRIGHT_YEAR = "2013";
+  public static final String COPYRIGHT_YEAR = "2014";
 
   /**
    * Release Type
    */
   public enum ReleaseType {
-    RELEASE_CANDIDATE, MILESTONE, PREVIEW, GA
+    RELEASE_CANDIDATE {
+      public String getMessage() {
+        return BaseMessages.getString( PKG, "Const.PreviewRelease.HelpAboutText" );
+      }
+    },
+    MILESTONE {
+      public String getMessage() {
+        return BaseMessages.getString( PKG, "Const.Candidate.HelpAboutText" );
+      }
+    },
+    PREVIEW {
+      public String getMessage() {
+        return BaseMessages.getString( PKG, "Const.Milestone.HelpAboutText" );
+      }
+    },
+    GA {
+      public String getMessage() {
+        return BaseMessages.getString( PKG, "Const.GA.HelpAboutText" );
+      }
+    };
+    public abstract String getMessage();
   }
 
   /**
@@ -154,7 +175,7 @@ public class Const {
   /**
    * Path to the users home directory (keep this entry above references to getKettleDirectory())
    *
-   * @deprecated Use {@link Const.getUserHomeDirectory()} instead.
+   * @deprecated Use {@link Const#getUserHomeDirectory()} instead.
    */
   @Deprecated
   public static final String USER_HOME_DIRECTORY = NVL( System.getProperty( "KETTLE_HOME" ), System
@@ -680,6 +701,19 @@ public class Const {
   public static final String KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE = "KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE";
 
   /**
+   * System wide flag to set or not append and header options dependency on Text file output step. See PDI-5252 for
+   * details.
+   */
+  public static final String KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER =
+    "KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER";
+
+  /**
+   * You can use this variable to speed up hostname lookup. 
+   * Hostname lookup is performed by Kettle so that it is capable of logging the server on which a job or transformation is executed.
+   */
+  public static final String KETTLE_SYSTEM_HOSTNAME = "KETTLE_SYSTEM_HOSTNAME";
+
+  /**
    * System wide flag to set the maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all
    * rows (default)
    */
@@ -799,10 +833,26 @@ public class Const {
   public static final String XML_FILE_KETTLE_VALUEMETA_PLUGINS = "kettle-valuemeta-plugins.xml";
 
   /**
+   * The XML file that contains the list of native Kettle two-way password encoder plugins
+   */
+  public static final String XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS = "kettle-password-encoder-plugins.xml";
+
+  /**
    * The name of the environment variable that will contain the alternative location of the kettle-valuemeta-plugins.xml
    * file
    */
   public static final String KETTLE_VALUEMETA_PLUGINS_FILE = "KETTLE_VALUEMETA_PLUGINS_FILE";
+
+  /**
+   * Specifies the password encoding plugin to use by ID (Kettle is the default).
+   */
+  public static final String KETTLE_PASSWORD_ENCODER_PLUGIN = "KETTLE_PASSWORD_ENCODER_PLUGIN";
+
+  /**
+   * The name of the environment variable that will contain the alternative location of the kettle-password-encoder-plugins.xml
+   * file
+   */
+  public static final String KETTLE_PASSWORD_ENCODER_PLUGINS_FILE = "KETTLE_PASSWORD_ENCODER_PLUGINS_FILE";
 
   /**
    * The XML file that contains the list of native Kettle logging plugins
@@ -897,6 +947,15 @@ public class Const {
    */
   public static final String KETTLE_DEFAULT_DATE_FORMAT = "KETTLE_DEFAULT_DATE_FORMAT";
 
+  // Null values tweaks
+  public static final String KETTLE_AGGREGATION_MIN_NULL_IS_VALUED = "KETTLE_AGGREGATION_MIN_NULL_IS_VALUED";
+  public static final String KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO = "KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO";
+
+  /**
+   * The name of the variable containing an alternative default timestamp format
+   */
+  public static final String KETTLE_DEFAULT_TIMESTAMP_FORMAT = "KETTLE_DEFAULT_TIMESTAMP_FORMAT";
+
   /**
    * Compatibility settings for setNrErrors
    */
@@ -929,15 +988,20 @@ public class Const {
   public static final String PENTAHO_METASTORE_NAME = "Pentaho Local Client Metastore";
 
   /**
-   * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
-   * overflow while rounding
-   *
-   * @param f
-   *          The value to round
-   * @param places
-   *          The number of decimal places
-   * @return The rounded floating point value
+   * A variable to configure turning on/off detailed subjects in log.
    */
+  public static final String KETTLE_LOG_MARK_MAPPINGS = "KETTLE_LOG_MARK_MAPPINGS";
+
+  /**
+  * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
+  * overflow while rounding
+  *
+  * @param f
+  *          The value to round
+  * @param places
+  *          The number of decimal places
+  * @return The rounded floating point value
+  */
 
   public static final double round( double f, int places ) {
     return round( f, places, java.math.BigDecimal.ROUND_HALF_EVEN );
@@ -1075,7 +1139,7 @@ public class Const {
   /**
    * Left trim: remove spaces to the left of a String.
    *
-   * @param str
+   * @param source
    *          The String to left trim
    * @return The left trimmed String
    */
@@ -1094,7 +1158,7 @@ public class Const {
   /**
    * Right trim: remove spaces to the right of a string
    *
-   * @param str
+   * @param source
    *          The string to right trim
    * @return The trimmed string.
    */
@@ -1355,6 +1419,14 @@ public class Const {
       return cachedHostname;
     }
 
+    // In case we don't want to leave anything to doubt...
+    //
+    String systemHostname = EnvUtil.getSystemProperty( KETTLE_SYSTEM_HOSTNAME );
+    if ( !isEmpty( systemHostname ) ) {
+      cachedHostname = systemHostname;
+      return systemHostname;
+    }
+
     String lastHostname = "localhost";
     try {
       Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
@@ -1389,6 +1461,14 @@ public class Const {
    * @return The hostname
    */
   public static final String getHostnameReal() {
+
+    // In case we don't want to leave anything to doubt...
+    //
+    String systemHostname = EnvUtil.getSystemProperty( KETTLE_SYSTEM_HOSTNAME );
+    if ( !isEmpty( systemHostname ) ) {
+      return systemHostname;
+    }
+
     if ( isWindows() ) {
       // Windows will always set the 'COMPUTERNAME' variable
       return System.getenv( "COMPUTERNAME" );
@@ -2243,7 +2323,7 @@ public class Const {
    * Check if the string array supplied is empty. A String array is empty when it is null or when the number of elements
    * is 0
    *
-   * @param string
+   * @param strings
    *          The string array to check
    * @return true if the string array supplied is empty
    */

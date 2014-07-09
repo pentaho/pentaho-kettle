@@ -83,7 +83,6 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
     this.arguments = null;
     this.schemaname = null;
     this.connection = null;
-    setID( -1L );
   }
 
   public JobEntryTruncateTables() {

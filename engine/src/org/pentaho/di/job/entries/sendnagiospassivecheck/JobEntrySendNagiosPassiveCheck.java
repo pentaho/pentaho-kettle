@@ -131,8 +131,6 @@ public class JobEntrySendNagiosPassiveCheck extends JobEntryBase implements Clon
     encryptionMode = ENCRYPTION_MODE_NONE;
     level = LEVEL_TYPE_UNKNOWN;
     password = null;
-
-    setID( -1L );
   }
 
   public JobEntrySendNagiosPassiveCheck() {

@@ -1,5 +1,6 @@
 package org.pentaho.di.core.database;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.concurrent.Callable;
@@ -13,8 +14,7 @@ import org.junit.Test;
 
 public class DatabaseMetaTest {
   @Test
-  public void testGetDatabaseInterfacesMapWontReturnNullIfCalledSimultaneouslyWithClear()
-    throws InterruptedException, ExecutionException {
+  public void testGetDatabaseInterfacesMapWontReturnNullIfCalledSimultaneouslyWithClear() throws InterruptedException, ExecutionException {
     final AtomicBoolean done = new AtomicBoolean( false );
     ExecutorService executorService = Executors.newCachedThreadPool();
     executorService.submit( new Runnable() {
@@ -41,5 +41,12 @@ public class DatabaseMetaTest {
       }
     } );
     getFuture.get();
+  }
+
+  @Test
+  public void testDatabaseAccessTypeCode() throws Exception {
+    String expectedJndi = "JNDI";
+    String access = DatabaseMeta.getAccessTypeDesc( DatabaseMeta.getAccessType( expectedJndi ) );
+    assertEquals( expectedJndi, access );
   }
 }

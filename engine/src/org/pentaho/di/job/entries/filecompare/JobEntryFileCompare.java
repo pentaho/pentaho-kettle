@@ -81,7 +81,6 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
     filename1 = null;
     filename2 = null;
     addFilenameToResult = false;
-    setID( -1L );
   }
 
   public JobEntryFileCompare() {

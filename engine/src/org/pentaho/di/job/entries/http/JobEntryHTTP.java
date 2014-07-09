@@ -124,7 +124,6 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     super( n, "" );
     url = null;
     addfilenameresult = true;
-    setID( -1L );
   }
 
   public JobEntryHTTP() {

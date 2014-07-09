@@ -37,8 +37,7 @@ public interface LogExceptionBehaviourInterface {
    * @param key
    * @param parameters
    */
-  public void registerException( LogChannelInterface log, Class<?> packageClass, String key, String... parameters )
-    throws KettleDatabaseException;
+  public void registerException( LogChannelInterface log, Class<?> packageClass, String key, String... parameters ) throws KettleDatabaseException;
 
   public void registerException( LogChannelInterface log, Exception e, Class<?> packageClass, String key,
       String... parameters ) throws KettleDatabaseException;

@@ -127,7 +127,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
       m_dataCache = new ArrayList[m_meta.getNumFieldsToProcess()];
 
       // Initialize the step meta data
-      UnivariateStatsData.FieldIndex[] fi = new UnivariateStatsData.FieldIndex[m_meta.getNumFieldsToProcess()];
+      FieldIndex[] fi = new FieldIndex[m_meta.getNumFieldsToProcess()];
 
       m_data.setFieldIndexes( fi );
 
@@ -136,7 +136,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
       for ( int i = 0; i < m_meta.getNumFieldsToProcess(); i++ ) {
         UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[i];
         //CHECKSTYLE:Indentation:OFF
-        m_data.getFieldIndexes()[i] = new UnivariateStatsData.FieldIndex();
+        m_data.getFieldIndexes()[i] = new FieldIndex();
 
         // check that this univariate stats computation has been
         // defined on an input field
@@ -148,7 +148,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
               + usmf.getSourceFieldName() + "' for stats calc #" + ( i + 1 ) );
           }
 
-          UnivariateStatsData.FieldIndex tempData = m_data.getFieldIndexes()[i];
+          FieldIndex tempData = m_data.getFieldIndexes()[i];
 
           tempData.m_columnIndex = fieldIndex;
 
@@ -179,7 +179,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
 
       UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[i];
       if ( !Const.isEmpty( usmf.getSourceFieldName() ) ) {
-        UnivariateStatsData.FieldIndex tempData = m_data.getFieldIndexes()[i];
+        FieldIndex tempData = m_data.getFieldIndexes()[i];
 
         ValueMetaInterface metaI = getInputRowMeta().getValueMeta( tempData.m_columnIndex );
 

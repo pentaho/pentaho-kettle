@@ -70,7 +70,6 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
     schemaname = null;
     tablename = null;
     connection = null;
-    setID( -1L );
   }
 
   public JobEntryTableExists() {

@@ -171,8 +171,7 @@ public class AddXML extends BaseStep implements StepInterface {
     return true;
   }
 
-  private String formatField( ValueMetaInterface valueMeta, Object valueData, XMLField field )
-    throws KettleValueException {
+  private String formatField( ValueMetaInterface valueMeta, Object valueData, XMLField field ) throws KettleValueException {
     String retval = "";
     if ( field == null ) {
       return "";

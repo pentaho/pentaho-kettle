@@ -122,8 +122,7 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   @Override
-  public void loadXML( Node stepnode, List<DatabaseMeta> _databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> _databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
       Node fields = XMLHandler.getSubNode( stepnode, StorageKeys.NODE_FIELDS.toString() );
       int nrfields = XMLHandler.countNodes( fields, StorageKeys.SUBNODE_FIELD.toString() );
@@ -167,8 +166,7 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   @Override
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> _databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> _databases ) throws KettleException {
 
     int nrfields = rep.countNrStepAttributes( idStep, StorageKeys.COLUMN_NAME.toString() );
 
@@ -187,8 +185,7 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   @Override
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep ) throws KettleException {
 
     for ( int i = 0; i < ruleResultColumns.size(); i++ ) {
       rep.saveStepAttribute( idTransformation, idStep, i, StorageKeys.COLUMN_NAME.toString(), ruleResultColumns

@@ -565,6 +565,8 @@ public class DataHandler extends AbstractXulEventHandler {
 
     // Name:
     meta.setName( connectionNameBox.getValue() );
+    // Display Name: (PDI-12292)
+    meta.setDisplayName( connectionNameBox.getValue() );
 
     // Connection type:
     Object connection = connectionBox.getSelectedItem();

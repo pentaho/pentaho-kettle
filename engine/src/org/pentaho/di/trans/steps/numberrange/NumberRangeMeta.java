@@ -75,13 +75,11 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     rules = new LinkedList<NumberRangeRule>();
   }
 
-  public NumberRangeMeta( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public NumberRangeMeta( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     loadXML( stepnode, databases, metaStore );
   }
 
-  public NumberRangeMeta( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public NumberRangeMeta( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     readRep( rep, metaStore, id_step, databases );
   }
 
@@ -118,8 +116,7 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     return retval;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
       inputField = XMLHandler.getTagValue( stepnode, "inputField" );
       outputField = XMLHandler.getTagValue( stepnode, "outputField" );
@@ -158,8 +155,7 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     outputField = "range";
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       inputField = rep.getStepAttributeString( id_step, "inputField" );
       outputField = rep.getStepAttributeString( id_step, "outputField" );
@@ -184,8 +180,7 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "inputField", inputField );
       rep.saveStepAttribute( id_transformation, id_step, "outputField", outputField );

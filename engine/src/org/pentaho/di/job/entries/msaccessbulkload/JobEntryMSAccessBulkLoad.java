@@ -102,8 +102,6 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
     delimiter = null;
     target_Db = null;
     target_table = null;
-
-    setID( -1L );
   }
 
   public JobEntryMSAccessBulkLoad() {

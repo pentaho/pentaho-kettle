@@ -124,7 +124,6 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 
     action = "copy";
     success_condition = SUCCESS_IF_NO_ERRORS;
-    setID( -1L );
   }
 
   public JobEntryCopyMoveResultFilenames() {

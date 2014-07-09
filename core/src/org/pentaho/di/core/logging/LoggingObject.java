@@ -85,10 +85,14 @@ public class LoggingObject implements LoggingObjectInterface {
         return true;
       }
 
-      // If the filename is the same, it's the same object...
-      //
-      if ( sameCarteFamily
-        && !Const.isEmpty( loggingObject.getFilename() ) && loggingObject.getFilename().equals( getFilename() ) ) {
+      // Check if objects have the same parent
+      boolean sameParents =
+          loggingObject.getParent() == null && this.getParent() == null || loggingObject.getParent() != null
+              && this.getParent() != null && loggingObject.getParent().equals( this.getParent() );
+
+      // If the filename is the same and parent is the same, it's the same object...
+      if ( sameCarteFamily && !Const.isEmpty( loggingObject.getFilename() )
+          && loggingObject.getFilename().equals( getFilename() ) && sameParents ) {
         return true;
       }
 

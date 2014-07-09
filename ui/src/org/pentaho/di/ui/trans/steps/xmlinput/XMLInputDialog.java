@@ -1210,8 +1210,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
    * @param row
    *          The
    */
-  private void getValues( Node node, RowMetaInterface row, List<XMLInputFieldPosition> path, int level )
-    throws KettleException {
+  private void getValues( Node node, RowMetaInterface row, List<XMLInputFieldPosition> path, int level ) throws KettleException {
     String baseName = "";
     for ( int p = 0; p < path.size(); p++ ) {
       XMLInputFieldPosition pos = path.get( p );

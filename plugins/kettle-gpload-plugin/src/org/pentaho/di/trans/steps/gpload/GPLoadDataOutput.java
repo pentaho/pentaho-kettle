@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.di.trans.steps.gpload;
 
@@ -38,13 +38,13 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
- * Does the opening of the output "stream". It's either a file or inter process
- * communication which is transparent to users of this class.
- *
+ * Does the opening of the output "stream". It's either a file or inter process communication which is transparent to
+ * users of this class.
+ * 
  * Copied from Sven Boden's Oracle version
- *
+ * 
  * @author Luke Lonergan
- * @since  28-mar-2008
+ * @since 28-mar-2008
  */
 public class GPLoadDataOutput {
   private static Class<?> PKG = GPLoadDataOutput.class; // for i18n purposes, needed by Translator2!!
@@ -78,9 +78,9 @@ public class GPLoadDataOutput {
       OutputStream os = null;
 
       // if ( GPLoadMeta.METHOD_AUTO_CONCURRENT.equals(loadMethod)) {
-      //   String dataFile = meta.getControlFile();
-      //   dataFile = StringUtil.environmentSubstitute(dataFile);
-      //   os = new FileOutputStream(dataFile, true);
+      // String dataFile = meta.getControlFile();
+      // dataFile = StringUtil.environmentSubstitute(dataFile);
+      // os = new FileOutputStream(dataFile, true);
       // } else {
       // Else open the data file filled in.
 
@@ -155,8 +155,8 @@ public class GPLoadDataOutput {
       for ( int i = 0; i < fieldNumbers.length; i++ ) {
         fieldNumbers[i] = mi.indexOfValue( meta.getFieldStream()[i] );
         if ( fieldNumbers[i] < 0 ) {
-          throw new KettleException( BaseMessages.getString( PKG, "GPLoadDataOutput.Exception.FieldNotFound",
-            meta.getFieldStream()[i] ) );
+          throw new KettleException( BaseMessages.getString( PKG, "GPLoadDataOutput.Exception.FieldNotFound", meta
+              .getFieldStream()[i] ) );
         }
       }
 
@@ -169,7 +169,7 @@ public class GPLoadDataOutput {
     int number = 0;
 
     for ( int i = 0; i < fieldNumbers.length; i++ ) {
-      //  TODO:  variable substitution
+      // TODO: variable substitution
       if ( i != 0 ) {
         output.print( delimiter );
       }
@@ -249,8 +249,8 @@ public class GPLoadDataOutput {
             output.print( "<endlob>" );
             break;
           default:
-            throw new KettleException( BaseMessages.getString( PKG, "GPLoadDataOutput.Exception.TypeNotSupported",
-              v.getType() ) );
+            throw new KettleException( BaseMessages.getString( PKG, "GPLoadDataOutput.Exception.TypeNotSupported", v
+                .getType() ) );
         }
       }
     }

@@ -176,7 +176,6 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     keyFilePass = null;
     serverName = null;
     FTPSConnectionType = FTPSConnection.CONNECTION_TYPE_FTP;
-    setID( -1L );
   }
 
   public JobEntryFTPDelete() {

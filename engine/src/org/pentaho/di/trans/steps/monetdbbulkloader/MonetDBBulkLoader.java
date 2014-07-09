@@ -53,7 +53,7 @@ import org.pentaho.di.trans.steps.tableagilemart.AgileMartUtil;
 
 /**
  * Performs a bulk load to a MonetDB table.
- *
+ * <p/>
  * Based on (copied from) Sven Boden's Oracle Bulk Loader step
  *
  * @author matt
@@ -75,7 +75,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
   }
 
   public MonetDBBulkLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-    TransMeta transMeta, Trans trans ) {
+      TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     localTransMeta = transMeta;
   }
@@ -329,9 +329,9 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
                 line.append( data.nullrepresentation );
               } else {
                 if ( value.booleanValue() ) {
-                  line.append( "Y" );
+                  line.append( true );
                 } else {
-                  line.append( "N" );
+                  line.append( false );
                 }
               }
               break;
@@ -462,16 +462,16 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
       // first write the COPY INTO command...
       //
 
-      String nullRep = meta.getNULLrepresentation();
+      String nullRep = environmentSubstitute( meta.getNULLrepresentation() );
       if ( nullRep == null ) {
         nullRep = new String( data.nullrepresentation );
       }
 
       cmdBuff
-        .append( "COPY " ).append( data.bufferIndex ).append( " RECORDS INTO " ).append( data.schemaTable )
-        .append( " FROM STDIN USING DELIMITERS '" ).append( new String( data.separator ) ).append(
+          .append( "COPY " ).append( data.bufferIndex ).append( " RECORDS INTO " ).append( data.schemaTable )
+          .append( " FROM STDIN USING DELIMITERS '" ).append( new String( data.separator ) ).append(
           "','" + Const.CR + "','" ).append( new String( data.quote ) )
-        .append( "' NULL AS '" + nullRep + "';" );
+          .append( "' NULL AS '" + nullRep + "';" );
       String cmd = cmdBuff.toString();
       if ( log.isDetailed() ) {
         logDetailed( cmd );
@@ -527,32 +527,36 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
     data = (MonetDBBulkLoaderData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      data.quote = meta.getFieldEnclosure();
-      data.separator = meta.getFieldSeparator();
-      if ( meta.getNULLrepresentation() == null ) {
+      data.quote = environmentSubstitute( meta.getFieldEnclosure() );
+      data.separator = environmentSubstitute( meta.getFieldSeparator() );
+
+      String nulls = environmentSubstitute( meta.getNULLrepresentation() );
+      if ( nulls == null ) {
         data.nullrepresentation = new String();
       } else {
-        data.nullrepresentation = meta.getNULLrepresentation();
+        data.nullrepresentation = nulls;
       }
       data.newline = Const.CR;
 
+      String encoding = environmentSubstitute( meta.getEncoding() );
+
       data.monetDateMeta = new ValueMeta( "dateMeta", ValueMetaInterface.TYPE_DATE );
       data.monetDateMeta.setConversionMask( "yyyy/MM/dd" );
-      data.monetDateMeta.setStringEncoding( meta.getEncoding() );
+      data.monetDateMeta.setStringEncoding( encoding );
 
       data.monetTimestampMeta = new ValueMeta( "timestampMeta", ValueMetaInterface.TYPE_DATE );
       data.monetTimestampMeta.setConversionMask( "yyyy/MM/dd HH:mm:ss" );
-      data.monetTimestampMeta.setStringEncoding( meta.getEncoding() );
+      data.monetTimestampMeta.setStringEncoding( encoding );
 
       data.monetTimeMeta = new ValueMeta( "timeMeta", ValueMetaInterface.TYPE_DATE );
       data.monetTimeMeta.setConversionMask( "HH:mm:ss" );
-      data.monetTimeMeta.setStringEncoding( meta.getEncoding() );
+      data.monetTimeMeta.setStringEncoding( encoding );
 
       data.monetNumberMeta = new ValueMeta( "numberMeta", ValueMetaInterface.TYPE_NUMBER );
       data.monetNumberMeta.setConversionMask( "#.#" );
       data.monetNumberMeta.setGroupingSymbol( "," );
       data.monetNumberMeta.setDecimalSymbol( "." );
-      data.monetNumberMeta.setStringEncoding( meta.getEncoding() );
+      data.monetNumberMeta.setStringEncoding( encoding );
 
       data.bufferSize = Const.toInt( environmentSubstitute( meta.getBufferSize() ), 100000 );
 
@@ -563,7 +567,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
 
       // Make sure our database connection settings are consistent with our dialog settings by
       // altering the connection with an updated answer depending on the dialog setting.
-      meta.getDatabaseMeta().setQuoteAllFields( meta.isFullyQuoteSQL() );
+      meta.getDatabaseMeta().setQuoteAllFields(  meta.isFullyQuoteSQL() );
 
       // Support parameterized database connection names
       String connectionName = meta.getDbConnectionName();
@@ -573,8 +577,8 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
 
       // Schema-table combination...
       data.schemaTable =
-        meta.getDatabaseMeta( this ).getQuotedSchemaTableCombination(
-          environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
+          meta.getDatabaseMeta( this ).getQuotedSchemaTableCombination(
+              environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
       return true;
     }
@@ -609,12 +613,12 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
   }
 
   protected static MapiSocket getMonetDBConnection( String host, int port,
-    String user, String password, String db ) throws Exception {
+      String user, String password, String db ) throws Exception {
     return getMonetDBConnection( host, port, user, password, db, null );
   }
 
   protected static MapiSocket getMonetDBConnection( String host, int port,
-    String user, String password, String db, LogChannelInterface log ) throws Exception {
+      String user, String password, String db, LogChannelInterface log ) throws Exception {
     MapiSocket mserver = new MapiSocket();
     mserver.setDatabase( db );
     mserver.setLanguage( "sql" );
@@ -665,8 +669,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
    *
    * @param database to connect to
    */
-  protected static void executeSql( String query, String host, int port, String user, String password, String db )
-    throws Exception {
+  protected static void executeSql( String query, String host, int port, String user, String password, String db ) throws Exception {
     MapiSocket mserver = null;
     try {
       mserver = getMonetDBConnection( host, port, user, password, db );

@@ -38,6 +38,8 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
@@ -52,6 +54,8 @@ import org.w3c.dom.Node;
 
 public class TransExecutionConfiguration implements Cloneable {
   public static final String XML_TAG = "transformation_execution_configuration";
+
+  private final LogChannelInterface log = LogChannel.GENERAL;
 
   private boolean executingLocally;
 
@@ -625,29 +629,36 @@ public class TransExecutionConfiguration implements Cloneable {
       String username = XMLHandler.getTagValue( repNode, "login" );
       String password = Encr.decryptPassword( XMLHandler.getTagValue( repNode, "password" ) );
 
-      // Verify that the repository exists on the slave server...
-      //
       RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
       try {
         repositoriesMeta.readData();
       } catch ( Exception e ) {
-        throw new KettleException( "Unable to get a list of repositories to locate repository '"
-          + repositoryName + "'" );
+        throw new KettleException( "Unable to get a list of repositories to locate repository '" + repositoryName + "'" );
       }
-      RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repositoryName );
-      if ( repositoryMeta == null ) {
-        throw new KettleException( "I couldn't find the repository with name '" + repositoryName + "'" );
-      }
-      Repository rep =
-        PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
-      rep.init( repositoryMeta );
+      connectRepository( repositoriesMeta, repositoryName, username, password );
+    }
+  }
 
-      try {
-        rep.connect( username, password );
-        setRepository( rep );
-      } catch ( Exception e ) {
-        throw new KettleException( "Unable to connect to the repository with name '" + repositoryName + "'", e );
-      }
+  public Repository connectRepository( RepositoriesMeta repositoriesMeta, String repositoryName, String username, String password ) throws KettleException {
+    RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( repositoryName );
+    if ( repositoryMeta == null ) {
+      log.logBasic( "I couldn't find the repository with name '" + repositoryName + "'" );
+      return null;
+    }
+    Repository rep = PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
+    if ( rep == null ) {
+      log.logBasic( "Unable to load repository plugin for '" + repositoryName + "'" );
+      return null;
+    }
+    rep.init( repositoryMeta );
+
+    try {
+      rep.connect( username, password );
+      setRepository( rep );
+      return rep;
+    } catch ( Exception e ) {
+      log.logBasic( "Unable to connect to the repository with name '" + repositoryName + "'" );
+      return null;
     }
   }
 

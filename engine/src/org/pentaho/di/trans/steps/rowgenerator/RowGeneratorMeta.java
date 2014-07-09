@@ -94,8 +94,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -256,8 +255,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
@@ -277,12 +275,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
         setEmptyString[i] = rep.getStepAttributeBoolean( id_step, i, "set_empty_string", false );
       }
 
-      long longLimit = rep.getStepAttributeInteger( id_step, "limit" );
-      if ( longLimit <= 0 ) {
-        rowLimit = rep.getStepAttributeString( id_step, "limit" );
-      } else {
-        rowLimit = Long.toString( longLimit );
-      }
+      rowLimit = rep.getStepAttributeString( id_step, "limit" );
 
       neverEnding = rep.getStepAttributeBoolean( id_step, "never_ending" );
       intervalInMs = rep.getStepAttributeString( id_step, "interval_in_ms" );
@@ -293,8 +286,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       for ( int i = 0; i < fieldName.length; i++ ) {
         if ( fieldName[i] != null && fieldName[i].length() != 0 ) {

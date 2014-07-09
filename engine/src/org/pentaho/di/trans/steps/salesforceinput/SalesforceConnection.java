@@ -97,8 +97,7 @@ public class SalesforceConnection {
   /**
    * Construct a new Salesforce Connection
    */
-  public SalesforceConnection( LogChannelInterface logInterface, String url, String username, String password )
-    throws KettleException {
+  public SalesforceConnection( LogChannelInterface logInterface, String url, String username, String password ) throws KettleException {
     this.log = logInterface;
     this.url = url;
     setUsername( username );
@@ -153,8 +152,7 @@ public class SalesforceConnection {
     this.queryAll = value;
   }
 
-  public void setCalendar( int recordsFilter, GregorianCalendar startDate, GregorianCalendar endDate )
-    throws KettleException {
+  public void setCalendar( int recordsFilter, GregorianCalendar startDate, GregorianCalendar endDate ) throws KettleException {
     this.startDate = startDate;
     this.endDate = endDate;
     this.recordsFilter = recordsFilter;
@@ -796,8 +794,7 @@ public class SalesforceConnection {
     }
   }
 
-  public static MessageElement createMessageElement( String name, Object value, boolean useExternalKey )
-    throws Exception {
+  public static MessageElement createMessageElement( String name, Object value, boolean useExternalKey ) throws Exception {
 
     MessageElement me = null;
 
@@ -865,8 +862,7 @@ public class SalesforceConnection {
     TEMPLATE_XML_ELEMENT.removeAttribute( "xmlns:xsi" );
   }
 
-  public static MessageElement fromTemplateElement( String name, Object value, boolean setValue )
-    throws SOAPException {
+  public static MessageElement fromTemplateElement( String name, Object value, boolean setValue ) throws SOAPException {
     // Use the TEMPLATE org.w3c.dom.Element to create new Message Elements
     MessageElement me = new MessageElement( TEMPLATE_XML_ELEMENT );
     if ( setValue ) {

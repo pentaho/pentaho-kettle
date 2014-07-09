@@ -1,4 +1,4 @@
-//CHECKSTYLE:FileLength:OFF
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -470,7 +470,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
     // Install and load the jdbc Driver
     PluginInterface plugin =
-        PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
+      PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
 
     try {
       synchronized ( java.sql.DriverManager.class ) {
@@ -480,7 +480,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         // Only need DelegatingDriver for drivers not from our classloader
         if ( driverClass.getClassLoader() != this.getClass().getClassLoader() ) {
           String pluginId =
-              PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
+            PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
           Set<String> registeredDriversFromPlugin = registeredDrivers.get( pluginId );
           if ( registeredDriversFromPlugin == null ) {
             registeredDriversFromPlugin = new HashSet<String>();
@@ -498,10 +498,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
     } catch ( NoClassDefFoundError e ) {
       throw new KettleDatabaseException( BaseMessages.getString( PKG,
-          "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName() ), e );
+        "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName() ), e );
     } catch ( ClassNotFoundException e ) {
       throw new KettleDatabaseException( BaseMessages.getString( PKG,
-          "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName() ), e );
+        "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName() ), e );
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Exception while loading class", e );
     }
@@ -793,7 +793,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     } catch ( Exception e ) {
       DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
         .registerException( log, e, PKG, "Database.Error.UnableToCommitToLogTable",
-              logTable.getActualTableName() );
+          logTable.getActualTableName() );
     }
   }
 
@@ -876,8 +876,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @throws KettleDatabaseException
    *           if something went wrong.
    */
-  public void prepareInsert( RowMetaInterface rowMeta, String schemaName, String tableName )
-    throws KettleDatabaseException {
+  public void prepareInsert( RowMetaInterface rowMeta, String schemaName, String tableName ) throws KettleDatabaseException {
     if ( rowMeta.size() == 0 ) {
       throw new KettleDatabaseException( "No fields in row, can't insert!" );
     }
@@ -985,8 +984,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     setValues( rowMeta, data, prepStatementLookup );
   }
 
-  public void setProcValues( RowMetaInterface rowMeta, Object[] data, int[] argnrs, String[] argdir, boolean result )
-    throws KettleDatabaseException {
+  public void setProcValues( RowMetaInterface rowMeta, Object[] data, int[] argnrs, String[] argdir, boolean result ) throws KettleDatabaseException {
     int pos;
 
     if ( result ) {
@@ -1008,8 +1006,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
   }
 
-  public void setValue( PreparedStatement ps, ValueMetaInterface v, Object object, int pos )
-    throws KettleDatabaseException {
+  public void setValue( PreparedStatement ps, ValueMetaInterface v, Object object, int pos ) throws KettleDatabaseException {
 
     v.setPreparedStatementValue( databaseMeta, ps, pos, object );
 
@@ -1019,8 +1016,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     setValues( row.getRowMeta(), row.getData(), ps );
   }
 
-  public void setValues( RowMetaInterface rowMeta, Object[] data, PreparedStatement ps )
-    throws KettleDatabaseException {
+  public void setValues( RowMetaInterface rowMeta, Object[] data, PreparedStatement ps ) throws KettleDatabaseException {
     // now set the values in the row!
     for ( int i = 0; i < rowMeta.size(); i++ ) {
       ValueMetaInterface v = rowMeta.getValueMeta( i );
@@ -1040,8 +1036,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @param rowMeta
    * @param data
    */
-  public void setValues( RowMetaInterface rowMeta, Object[] data, PreparedStatement ps, int ignoreThisValueIndex )
-    throws KettleDatabaseException {
+  public void setValues( RowMetaInterface rowMeta, Object[] data, PreparedStatement ps, int ignoreThisValueIndex ) throws KettleDatabaseException {
     // now set the values in the row!
     int index = 0;
     for ( int i = 0; i < rowMeta.size(); i++ ) {
@@ -1100,8 +1095,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return getNextSequenceValue( null, sequenceName, keyfield );
   }
 
-  public Long getNextSequenceValue( String schemaName, String sequenceName, String keyfield )
-    throws KettleDatabaseException {
+  public Long getNextSequenceValue( String schemaName, String sequenceName, String keyfield ) throws KettleDatabaseException {
     Long retval = null;
 
     String schemaSequence = databaseMeta.getQuotedSchemaTableCombination( schemaName, sequenceName );
@@ -1133,8 +1127,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     insertRow( null, tableName, fields, data );
   }
 
-  public void insertRow( String schemaName, String tableName, RowMetaInterface fields, Object[] data )
-    throws KettleDatabaseException {
+  public void insertRow( String schemaName, String tableName, RowMetaInterface fields, Object[] data ) throws KettleDatabaseException {
     prepareInsert( fields, schemaName, tableName );
     setValuesInsert( fields, data );
     insertRow();
@@ -1216,10 +1209,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @return true if the rows are safe: if batch of rows was sent to the database OR if a commit was done.
    * @throws KettleDatabaseException
    */
-  public boolean insertRow( PreparedStatement ps, boolean batch, boolean handleCommit )
-    throws KettleDatabaseException {
+  public boolean insertRow( PreparedStatement ps, boolean batch, boolean handleCommit ) throws KettleDatabaseException {
     String debug = "insertRow start";
     boolean rowsAreSafe = false;
+    boolean isBatchUpdate = false;
 
     try {
       // Unique connections and Batch inserts don't mix when you want to roll
@@ -1252,6 +1245,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
                             // TableOutput step)
         if ( !isAutoCommit() && ( written % commitsize ) == 0 ) {
           if ( useBatchInsert ) {
+            isBatchUpdate = true;
             debug = "insertRow executeBatch commit";
             ps.executeBatch();
             commit();
@@ -1267,21 +1261,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       return rowsAreSafe;
     } catch ( BatchUpdateException ex ) {
-      KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException( "Error updating batch", ex );
-      kdbe.setUpdateCounts( ex.getUpdateCounts() );
-      List<Exception> exceptions = new ArrayList<Exception>();
-
-      // 'seed' the loop with the root exception
-      SQLException nextException = ex;
-      do {
-        exceptions.add( nextException );
-        // while current exception has next exception, add to list
-      } while ( ( nextException = nextException.getNextException() ) != null );
-      kdbe.setExceptionsList( exceptions );
-      throw kdbe;
+      throw createKettleDatabaseBatchException( "Error updating batch", ex );
     } catch ( SQLException ex ) {
-      // log.logError(Const.getStackTracker(ex));
-      throw new KettleDatabaseException( "Error inserting/updating row", ex );
+      if ( isBatchUpdate ) {
+        throw createKettleDatabaseBatchException( "Error updating batch", ex );
+      } else {
+        throw new KettleDatabaseException( "Error inserting/updating row", ex );
+      }
     } catch ( Exception e ) {
       // System.out.println("Unexpected exception in ["+debug+"] : "+e.getMessage());
       throw new KettleDatabaseException( "Unexpected error inserting/updating row in part [" + debug + "]", e );
@@ -1335,14 +1321,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    *          The number of rows on the batch queue
    * @throws KettleDatabaseException
    */
-  public void emptyAndCommit( PreparedStatement ps, boolean batch, int batchCounter )
-    throws KettleDatabaseException {
-
+  public void emptyAndCommit( PreparedStatement ps, boolean batch, int batchCounter ) throws KettleDatabaseException {
+    boolean isBatchUpdate = false;
     try {
       if ( ps != null ) {
         if ( !isAutoCommit() ) {
           // Execute the batch or just perform a commit.
-          //
           if ( batch && getDatabaseMetaData().supportsBatchUpdates() && batchCounter > 0 ) {
             // The problem with the batch counters is that you can't just
             // execute the current batch.
@@ -1353,7 +1337,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             // do anything.
             // That leaves the task of keeping track of the number of rows up to
             // our responsibility.
-            //
+            isBatchUpdate = true;
             ps.executeBatch();
             commit();
             ps.clearBatch();
@@ -1367,27 +1351,40 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         ps.close();
       }
     } catch ( BatchUpdateException ex ) {
-      KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException( "Error updating batch", ex );
-      kdbe.setUpdateCounts( ex.getUpdateCounts() );
-      List<Exception> exceptions = new ArrayList<Exception>();
-      SQLException nextException = ex.getNextException();
-      SQLException oldException = null;
-
-      // This construction is specifically done for some JDBC drivers, these
-      // drivers
-      // always return the same exception on getNextException() (and thus go
-      // into an infinite loop).
-      // So it's not "equals" but != (comments from Sven Boden).
-      while ( ( nextException != null ) && ( oldException != nextException ) ) {
-        exceptions.add( nextException );
-        oldException = nextException;
-        nextException = nextException.getNextException();
-      }
-      kdbe.setExceptionsList( exceptions );
-      throw kdbe;
+      throw createKettleDatabaseBatchException( "Error updating batch", ex );
     } catch ( SQLException ex ) {
-      throw new KettleDatabaseException( "Unable to empty ps and commit connection.", ex );
+      if ( isBatchUpdate ) {
+        throw createKettleDatabaseBatchException( "Error updating batch", ex );
+      } else {
+        throw new KettleDatabaseException( "Unable to empty ps and commit connection.", ex );
+      }
     }
+  }
+
+  public static KettleDatabaseBatchException createKettleDatabaseBatchException( String message, SQLException ex ) {
+    KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException( message, ex );
+    if ( ex instanceof BatchUpdateException ) {
+      kdbe.setUpdateCounts( ( (BatchUpdateException) ex ).getUpdateCounts() );
+    } else {
+      // Null update count forces rollback of batch
+      kdbe.setUpdateCounts( null );
+    }
+    List<Exception> exceptions = new ArrayList<Exception>();
+    SQLException nextException = ex.getNextException();
+    SQLException oldException = null;
+
+    // This construction is specifically done for some JDBC drivers, these
+    // drivers
+    // always return the same exception on getNextException() (and thus go
+    // into an infinite loop).
+    // So it's not "equals" but != (comments from Sven Boden).
+    while ( ( nextException != null ) && ( oldException != nextException ) ) {
+      exceptions.add( nextException );
+      oldException = nextException;
+      nextException = nextException.getNextException();
+    }
+    kdbe.setExceptionsList( exceptions );
+    return kdbe;
   }
 
   /**
@@ -1405,11 +1402,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    */
   @Deprecated
   public void insertFinished( PreparedStatement ps, boolean batch ) throws KettleDatabaseException {
+    boolean isBatchUpdate = false;
     try {
       if ( ps != null ) {
         if ( !isAutoCommit() ) {
           // Execute the batch or just perform a commit.
-          //
           if ( batch && getDatabaseMetaData().supportsBatchUpdates() ) {
             // The problem with the batch counters is that you can't just
             // execute the current batch.
@@ -1420,7 +1417,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             // do anything.
             // That leaves the task of keeping track of the number of rows up to
             // our responsibility.
-            //
+            isBatchUpdate = true;
             ps.executeBatch();
             commit();
           } else {
@@ -1433,26 +1430,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         ps.close();
       }
     } catch ( BatchUpdateException ex ) {
-      KettleDatabaseBatchException kdbe = new KettleDatabaseBatchException( "Error updating batch", ex );
-      kdbe.setUpdateCounts( ex.getUpdateCounts() );
-      List<Exception> exceptions = new ArrayList<Exception>();
-      SQLException nextException = ex.getNextException();
-      SQLException oldException = null;
-
-      // This construction is specifically done for some JDBC drivers, these
-      // drivers
-      // always return the same exception on getNextException() (and thus go
-      // into an infinite loop).
-      // So it's not "equals" but != (comments from Sven Boden).
-      while ( ( nextException != null ) && ( oldException != nextException ) ) {
-        exceptions.add( nextException );
-        oldException = nextException;
-        nextException = nextException.getNextException();
-      }
-      kdbe.setExceptionsList( exceptions );
-      throw kdbe;
+      throw createKettleDatabaseBatchException( "Error updating batch", ex );
     } catch ( SQLException ex ) {
-      throw new KettleDatabaseException( "Unable to commit connection after having inserted rows.", ex );
+      if ( isBatchUpdate ) {
+        throw createKettleDatabaseBatchException( "Error updating batch", ex );
+      } else {
+        throw new KettleDatabaseException( "Unable to commit connection after having inserted rows.", ex );
+      }
     }
   }
 
@@ -1469,8 +1453,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return execStatement( sql, null, null );
   }
 
-  public Result execStatement( String rawsql, RowMetaInterface params, Object[] data )
-    throws KettleDatabaseException {
+  public Result execStatement( String rawsql, RowMetaInterface params, Object[] data ) throws KettleDatabaseException {
     Result result = new Result();
 
     // Replace existing code with a class that removes comments from the raw
@@ -1565,8 +1548,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    *           In case an error occurs
    * @return A result with counts of the number or records updates, inserted, deleted or read.
    */
-  public Result execStatements( String script, RowMetaInterface params, Object[] data )
-    throws KettleDatabaseException {
+  public Result execStatements( String script, RowMetaInterface params, Object[] data ) throws KettleDatabaseException {
     Result result = new Result();
 
     // Deleting all the single-line and multi-line comments from the string
@@ -1661,8 +1643,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return openQuery( sql, params, data, ResultSet.FETCH_FORWARD );
   }
 
-  public ResultSet openQuery( String sql, RowMetaInterface params, Object[] data, int fetch_mode )
-    throws KettleDatabaseException {
+  public ResultSet openQuery( String sql, RowMetaInterface params, Object[] data, int fetch_mode ) throws KettleDatabaseException {
     return openQuery( sql, params, data, fetch_mode, false );
   }
 
@@ -1750,8 +1731,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         || ( databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults() ) );
   }
 
-  public ResultSet openQuery( PreparedStatement ps, RowMetaInterface params, Object[] data )
-    throws KettleDatabaseException {
+  public ResultSet openQuery( PreparedStatement ps, RowMetaInterface params, Object[] data ) throws KettleDatabaseException {
     ResultSet res;
 
     // Create a Statement
@@ -1963,8 +1943,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    *          The fields on which the indexe is checked
    * @return True if the index exists
    */
-  public boolean checkIndexExists( String schemaName, String tableName, String[] idx_fields )
-    throws KettleDatabaseException {
+  public boolean checkIndexExists( String schemaName, String tableName, String[] idx_fields ) throws KettleDatabaseException {
     String tablename = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
     if ( !checkTableExists( tablename ) ) {
       return false;
@@ -2081,8 +2060,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return cr_seq;
   }
 
-  public RowMetaInterface getQueryFields( String sql, boolean param, RowMetaInterface inform, Object[] data )
-    throws KettleDatabaseException {
+  public RowMetaInterface getQueryFields( String sql, boolean param, RowMetaInterface inform, Object[] data ) throws KettleDatabaseException {
     RowMetaInterface fields;
     DBCache dbcache = DBCache.getInstance();
 
@@ -2240,8 +2218,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @param lazyConversion
    *          true if lazy conversion needs to be enabled where possible
    */
-  private RowMetaInterface getRowInfo( ResultSetMetaData rm, boolean ignoreLength, boolean lazyConversion )
-    throws KettleDatabaseException {
+  private RowMetaInterface getRowInfo( ResultSetMetaData rm, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException {
     try {
       log.snap( Metrics.METRIC_DATABASE_GET_ROW_META_START, databaseMeta.getName() );
 
@@ -2249,7 +2226,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         throw new KettleDatabaseException( "No result set metadata available to retrieve row metadata!" );
       }
 
-      rowMeta = new RowMeta();
+      RowMetaInterface rowMeta = new RowMeta();
 
       try {
         int nrcols = rm.getColumnCount();
@@ -2279,7 +2256,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         Collections.sort( valueMetaPluginClasses, new Comparator<ValueMetaInterface>() {
           @Override
           public int compare( ValueMetaInterface o1, ValueMetaInterface o2 ) {
-            return Integer.valueOf( o1.getType() ).compareTo( Integer.valueOf( o2.getType() ) );
+            // Reverse the sort list
+            return ( Integer.valueOf( o1.getType() ).compareTo( Integer.valueOf( o2.getType() ) ) ) * -1;
           }
         } );
       } catch ( Exception e ) {
@@ -2311,6 +2289,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         valueMetaClass.getValueFromSQLType( databaseMeta, name, rm, i, ignoreLength, lazyConversion );
       if ( v != null ) {
         valueMeta = v;
+        break;
       }
     }
 
@@ -2396,8 +2375,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    *          The resultset to get the row from
    * @return one row or null if no row was found on the resultset or if an error occurred.
    */
-  public Object[] getRow( ResultSet rs, ResultSetMetaData dummy, RowMetaInterface rowInfo )
-    throws KettleDatabaseException {
+  public Object[] getRow( ResultSet rs, ResultSetMetaData dummy, RowMetaInterface rowInfo ) throws KettleDatabaseException {
     long startTime = System.currentTimeMillis();
 
     try {
@@ -2796,8 +2774,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return getDDL( tablename, fields, null, false, null, true );
   }
 
-  public String getDDL( String tablename, RowMetaInterface fields, String tk, boolean use_autoinc, String pk )
-    throws KettleDatabaseException {
+  public String getDDL( String tablename, RowMetaInterface fields, String tk, boolean use_autoinc, String pk ) throws KettleDatabaseException {
     return getDDL( tablename, fields, tk, use_autoinc, pk, true );
   }
 
@@ -2878,43 +2855,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
 
     if ( semicolon ) {
-      retval.append( ";" );
-    }
-
-    // TODO: All this custom database code shouldn't really be in Database.java.
-    // It should be in the DB implementations.
-    //
-    if ( databaseMeta.getDatabaseInterface() instanceof VerticaDatabaseMeta ) {
-      retval
-        .append( Const.CR ).append( "CREATE PROJECTION " ).append( tableName ).append( "_unseg_super" ).append(
-          Const.CR );
-
-      retval.append( "(" ).append( Const.CR );
-      for ( int i = 0; i < fields.size(); i++ ) {
-        if ( i > 0 ) {
-          retval.append( ", " );
-        } else {
-          retval.append( "  " );
-        }
-
-        retval.append( fields.getValueMeta( i ).getName() ).append( Const.CR );
-      }
-      retval.append( ")" ).append( Const.CR );
-
-      retval.append( "AS SELECT" ).append( Const.CR );
-      for ( int i = 0; i < fields.size(); i++ ) {
-        if ( i > 0 ) {
-          retval.append( ", " );
-        } else {
-          retval.append( "  " );
-        }
-
-        retval.append( fields.getValueMeta( i ).getName() ).append( Const.CR );
-      }
-      retval.append( "FROM " ).append( tableName ).append( Const.CR );
-      retval.append( "-- Replace UNSEGMENTED with a hash segmentation for optimum performance" ).append( Const.CR );
-      retval.append( "--SEGMENTED BY HASH(X,Y,Z)" ).append( Const.CR );
-      retval.append( "UNSEGMENTED ALL NODES" ).append( Const.CR );
       retval.append( ";" );
     }
 
@@ -3071,8 +3011,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return meta;
   }
 
-  public RowMetaAndData getOneRow( String sql, RowMetaInterface param, Object[] data )
-    throws KettleDatabaseException {
+  public RowMetaAndData getOneRow( String sql, RowMetaInterface param, Object[] data ) throws KettleDatabaseException {
     ResultSet rs = openQuery( sql, param, data );
     if ( rs != null ) {
       Object[] row = getRow( rs ); // One value: a number;
@@ -3230,8 +3169,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return par;
   }
 
-  public void writeLogRecord( LogTableCoreInterface logTable, LogStatus status, Object subject, Object parent )
-    throws KettleDatabaseException {
+  public void writeLogRecord( LogTableCoreInterface logTable, LogStatus status, Object subject, Object parent ) throws KettleDatabaseException {
     try {
       RowMetaAndData logRecord = logTable.getLogRecord( status, subject, parent );
       if ( logRecord == null ) {
@@ -3280,7 +3218,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
     } catch ( Exception e ) {
       DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
-          .registerException(log, e, PKG, "Database.Error.WriteLogTable",
+        .registerException( log, e, PKG, "Database.Error.WriteLogTable",
           environmentSubstitute( logTable.getActualTableName() ) );
     }
   }
@@ -3294,24 +3232,24 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
 
     String schemaTable =
-        databaseMeta.getQuotedSchemaTableCombination( environmentSubstitute( logTable.getActualSchemaName() ),
-            environmentSubstitute( logTable.getActualTableName() ) );
+      databaseMeta.getQuotedSchemaTableCombination( environmentSubstitute( logTable.getActualSchemaName() ),
+        environmentSubstitute( logTable.getActualTableName() ) );
 
     if ( schemaTable.isEmpty() ) {
       //we can't process without table name
       DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
-          .registerException( log, PKG, "DatabaseMeta.Error.LogTableNameNotFound" );
+        .registerException( log, PKG, "DatabaseMeta.Error.LogTableNameNotFound" );
     }
 
     LogTableField logField = logTable.getLogDateField();
     if ( logField == null ) {
       //can't stand without logField
       DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
-          .registerException(log, PKG, "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField" );
+        .registerException( log, PKG, "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField" );
     }
 
     String sql =
-        "DELETE FROM " + schemaTable + " WHERE " + databaseMeta.quoteField( logField.getFieldName() ) + " < ?";
+      "DELETE FROM " + schemaTable + " WHERE " + databaseMeta.quoteField( logField.getFieldName() ) + " < ?";
     long now = System.currentTimeMillis();
     long limit = now - Math.round( timeout * 24 * 60 * 60 * 1000 );
     RowMetaAndData row = new RowMetaAndData();
@@ -3322,13 +3260,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       execStatement( sql, row.getRowMeta(), row.getData() );
     } catch ( Exception e ) {
       DatabaseLogExceptionFactory.getExceptionStrategy( logTable )
-          .registerException( log, PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable",
+        .registerException( log, PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable",
           environmentSubstitute( logTable.getActualTableName() ) );
     }
   }
 
-  public Object[] getLastLogDate( String logtable, String name, boolean job, LogStatus status )
-    throws KettleDatabaseException {
+  public Object[] getLastLogDate( String logtable, String name, boolean job, LogStatus status ) throws KettleDatabaseException {
     Object[] row = null;
 
     String jobtrans = job ? databaseMeta.quoteField( "JOBNAME" ) : databaseMeta.quoteField( "TRANSNAME" );
@@ -3368,8 +3305,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return row;
   }
 
-  public synchronized Long getNextValue( Hashtable<String, Counter> counters, String tableName, String val_key )
-    throws KettleDatabaseException {
+  public synchronized Long getNextValue( Hashtable<String, Counter> counters, String tableName, String val_key ) throws KettleDatabaseException {
     return getNextValue( counters, null, tableName, val_key );
   }
 
@@ -3462,8 +3398,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @throws KettleDatabaseException
    *           if something goes wrong.
    */
-  public List<Object[]> getRows( String sql, int limit, ProgressMonitorListener monitor )
-    throws KettleDatabaseException {
+  public List<Object[]> getRows( String sql, int limit, ProgressMonitorListener monitor ) throws KettleDatabaseException {
 
     return getRows( sql, null, null, ResultSet.FETCH_FORWARD, false, limit, monitor );
   }
@@ -3512,8 +3447,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @throws KettleDatabaseException
    *           if something goes wrong.
    */
-  public List<Object[]> getRows( ResultSet rset, int limit, ProgressMonitorListener monitor )
-    throws KettleDatabaseException {
+  public List<Object[]> getRows( ResultSet rset, int limit, ProgressMonitorListener monitor ) throws KettleDatabaseException {
     try {
       List<Object[]> result = new ArrayList<Object[]>();
       boolean stop = false;
@@ -3567,8 +3501,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @throws KettleDatabaseException
    *           in case something goes wrong
    */
-  public List<Object[]> getFirstRows( String table_name, int limit, ProgressMonitorListener monitor )
-    throws KettleDatabaseException {
+  public List<Object[]> getFirstRows( String table_name, int limit, ProgressMonitorListener monitor ) throws KettleDatabaseException {
     String sql = "SELECT";
     if ( databaseMeta.getDatabaseInterface() instanceof NeoviewDatabaseMeta ) {
       sql += " [FIRST " + limit + "]";
@@ -4157,8 +4090,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   @Override
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
 

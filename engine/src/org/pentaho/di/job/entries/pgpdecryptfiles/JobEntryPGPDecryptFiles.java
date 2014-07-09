@@ -145,7 +145,6 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
     date_time_format = null;
     AddDateBeforeExtension = false;
     iffileexists = "do_nothing";
-    setID( -1L );
   }
 
   public JobEntryPGPDecryptFiles() {

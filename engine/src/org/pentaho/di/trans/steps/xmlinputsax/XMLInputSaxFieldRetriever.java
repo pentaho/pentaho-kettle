@@ -155,8 +155,7 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler {
   }
 
   // Event Handlers
-  public void startElement( String uri, String localName, String qName, Attributes attributes )
-    throws SAXException {
+  public void startElement( String uri, String localName, String qName, Attributes attributes ) throws SAXException {
     // set the _counter level
     position[_counter + 1] += 1;
     _counter++;

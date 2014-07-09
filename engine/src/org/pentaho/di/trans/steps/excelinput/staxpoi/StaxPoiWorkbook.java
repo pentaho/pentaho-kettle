@@ -30,9 +30,33 @@ public class StaxPoiWorkbook implements KWorkbook {
   // mapping of the sheet object with its ID/Name
   private Map<String, StaxPoiSheet> openSheetsMap;
 
+  public StaxPoiWorkbook() {
+    openSheetsMap = new HashMap<String, StaxPoiSheet>();
+  }
+
   public StaxPoiWorkbook( String filename, String encoding ) throws KettleException {
+    this();
     try {
       OPCPackage pkg = OPCPackage.open( filename );
+      openFile( pkg, encoding );
+    } catch ( Exception e ) {
+      throw new KettleException( e );
+    }
+
+  }
+
+  public StaxPoiWorkbook( InputStream inputStream, String encoding ) throws KettleException {
+    this();
+    try {
+      OPCPackage pkg = OPCPackage.open( inputStream );
+      openFile( pkg, encoding );
+    } catch ( Exception e ) {
+      throw new KettleException( e );
+    }
+  }
+
+  private void openFile( OPCPackage pkg, String encoding ) throws KettleException {
+    try {
       reader = new XSSFReader( pkg );
       sheetNameIDMap = new HashMap<String, String>();
       List<String> sheetList = new ArrayList<String>();
@@ -55,7 +79,6 @@ public class StaxPoiWorkbook implements KWorkbook {
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
-    openSheetsMap = new HashMap<String, StaxPoiSheet>();
   }
 
   @Override

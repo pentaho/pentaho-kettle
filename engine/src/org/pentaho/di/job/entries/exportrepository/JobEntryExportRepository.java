@@ -140,7 +140,6 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
     add_result_filesname = false;
     nr_errors_less_than = "10";
     success_condition = SUCCESS_IF_NO_ERRORS;
-    setID( -1L );
   }
 
   public JobEntryExportRepository() {
@@ -756,8 +755,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
     return retval;
   }
 
-  private void connectRep( LogChannelInterface log, String realrepName, String realusername, String realpassword )
-    throws Exception {
+  private void connectRep( LogChannelInterface log, String realrepName, String realusername, String realpassword ) throws Exception {
     this.repsinfo = new RepositoriesMeta();
     try {
       this.repsinfo.readData();

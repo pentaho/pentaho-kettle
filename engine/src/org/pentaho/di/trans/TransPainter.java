@@ -684,8 +684,9 @@ public class TransPainter extends BasePainter {
       areaOwners.add( new AreaOwner( AreaType.STEP_ICON, x, y, iconsize, iconsize, offset, transMeta, stepMeta ) );
     }
 
-    gc.drawStepIcon( x, y, stepMeta );
     gc.setBackground( EColor.BACKGROUND );
+    gc.fillRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1 );
+    gc.drawStepIcon( x, y, stepMeta );
     if ( stepError ) {
       gc.setForeground( EColor.RED );
     } else {

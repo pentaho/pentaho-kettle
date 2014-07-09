@@ -72,8 +72,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
     calculation = new CalculatorMetaFunction[nrCalcs];
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     int nrCalcs = XMLHandler.countNodes( stepnode, CalculatorMetaFunction.XML_TAG );
     allocate( nrCalcs );
     for ( int i = 0; i < nrCalcs; i++ ) {
@@ -86,8 +85,8 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
     StringBuilder retval = new StringBuilder( 300 );
 
     if ( calculation != null ) {
-      for ( int i = 0; i < calculation.length; i++ ) {
-        retval.append( "       " ).append( calculation[i].getXML() ).append( Const.CR );
+      for ( CalculatorMetaFunction aCalculation : calculation ) {
+        retval.append( "       " ).append( aCalculation.getXML() ).append( Const.CR );
       }
     }
 
@@ -97,7 +96,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
   public boolean equals( Object obj ) {
     if ( obj != null && ( obj.getClass().equals( this.getClass() ) ) ) {
       CalculatorMeta m = (CalculatorMeta) obj;
-      return ( getXML() == m.getXML() );
+      return ( getXML().equals( m.getXML() ) );
     }
 
     return false;
@@ -120,8 +119,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
     calculation = new CalculatorMetaFunction[0];
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     int nrCalcs = rep.countNrStepAttributes( id_step, "field_name" );
     allocate( nrCalcs );
     for ( int i = 0; i < nrCalcs; i++ ) {
@@ -129,8 +127,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     for ( int i = 0; i < calculation.length; i++ ) {
       calculation[i].saveRep( rep, metaStore, id_transformation, id_step, i );
     }
@@ -138,8 +135,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    for ( int i = 0; i < calculation.length; i++ ) {
-      CalculatorMetaFunction fn = calculation[i];
+    for ( CalculatorMetaFunction fn : calculation ) {
       if ( !fn.isRemovedFromResult() ) {
         if ( !Const.isEmpty( fn.getFieldName() ) ) { // It's a new field!
           ValueMetaInterface v = getValueMeta( fn, origin );
@@ -150,7 +146,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   private ValueMetaInterface getValueMeta( CalculatorMetaFunction fn, String origin ) {
-    ValueMetaInterface v = null;
+    ValueMetaInterface v;
     // What if the user didn't specify a data type?
     // In that case we look for the default data type
     //
@@ -178,8 +174,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
   public RowMetaInterface getAllFields( RowMetaInterface inputRowMeta ) {
     RowMetaInterface rowMeta = inputRowMeta.clone();
 
-    for ( int i = 0; i < calculation.length; i++ ) {
-      CalculatorMetaFunction fn = calculation[i];
+    for ( CalculatorMetaFunction fn : getCalculation() ) {
       if ( !Const.isEmpty( fn.getFieldName() ) ) { // It's a new field!
         ValueMetaInterface v = getValueMeta( fn, null );
         rowMeta.addValueMeta( v );
@@ -191,7 +186,7 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface {
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
-    CheckResult cr = null;
+    CheckResult cr;
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {

@@ -42,8 +42,10 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectRevision;
+import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.repository.RepositorySecurityUI;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonBrowser;
 import org.pentaho.di.ui.spoon.TabItemInterface;
@@ -74,13 +76,17 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     List<TabMapEntry> collection = new ArrayList<TabMapEntry>();
     collection.addAll( tabMap );
 
+    boolean createPerms = !RepositorySecurityUI
+        .verifyOperations( Spoon.getInstance().getShell(), Spoon.getInstance().getRepository(), false,
+            RepositoryOperation.MODIFY_TRANSFORMATION, RepositoryOperation.MODIFY_JOB );
+
     boolean close = true;
     for ( TabMapEntry entry : collection ) {
       if ( item.equals( entry.getTabItem() ) ) {
         TabItemInterface itemInterface = entry.getObject();
 
-        // Can we close this tab?
-        if ( !itemInterface.canBeClosed() ) {
+        // Can we close this tab? Only allow users with create content perms to save
+        if ( !itemInterface.canBeClosed() && createPerms ) {
           int reply = itemInterface.showChangedWarning();
           if ( reply == SWT.YES ) {
             close = itemInterface.applyChanges();

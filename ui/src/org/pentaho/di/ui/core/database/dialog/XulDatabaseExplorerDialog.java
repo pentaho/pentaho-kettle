@@ -88,11 +88,15 @@ public class XulDatabaseExplorerDialog {
 
       this.runner = new SwtXulRunner();
       this.runner.addContainer( this.container );
+
       this.runner.initialize();
 
       this.controller.setSelectedSchemaAndTable( schemaName, selectedTable );
 
-      theExplorerDialog.show();
+      // show dialog if connection is success only.
+      if ( controller.getActionStatus() == UiPostActionStatus.OK ) {
+        theExplorerDialog.show();
+      }
 
     } catch ( Exception e ) {
       LogChannel.GENERAL.logError( "Error exploring database", e );

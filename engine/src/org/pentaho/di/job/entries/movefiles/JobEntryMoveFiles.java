@@ -140,7 +140,6 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
     date_time_format = null;
     AddDateBeforeExtension = false;
     iffileexists = "do_nothing";
-    setID( -1L );
   }
 
   public JobEntryMoveFiles() {

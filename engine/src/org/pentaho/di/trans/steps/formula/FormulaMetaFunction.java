@@ -44,14 +44,18 @@ public class FormulaMetaFunction implements Cloneable {
   private String replaceField;
 
   /**
+   * This value will be discovered on runtime and need not to be persisted into xml or rep.
+   */
+  private transient boolean needDataConversion = false;
+
+  /**
+   * 
    * @param fieldName
-   * @param calcType
-   * @param fieldA
-   * @param fieldB
-   * @param fieldC
+   * @param formula
    * @param valueType
    * @param valueLength
    * @param valuePrecision
+   * @param replaceField
    */
   public FormulaMetaFunction( String fieldName, String formula, int valueType, int valueLength,
     int valuePrecision, String replaceField ) {
@@ -107,8 +111,7 @@ public class FormulaMetaFunction implements Cloneable {
     replaceField = XMLHandler.getTagValue( calcnode, "replace_field" );
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int nr )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step, int nr ) throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, nr, "field_name", fieldName );
     rep.saveStepAttribute( id_transformation, id_step, nr, "formula_string", formula );
     rep.saveStepAttribute( id_transformation, id_step, nr, "value_type", ValueMeta.getTypeDesc( valueType ) );
@@ -214,5 +217,19 @@ public class FormulaMetaFunction implements Cloneable {
    */
   public void setReplaceField( String replaceField ) {
     this.replaceField = replaceField;
+  }
+
+  /**
+   * @return the needDataConversion
+   */
+  public boolean isNeedDataConversion() {
+    return needDataConversion;
+  }
+
+  /**
+   * @param needDataConversion the needDataConversion to set
+   */
+  public void setNeedDataConversion( boolean needDataConversion ) {
+    this.needDataConversion = needDataConversion;
   }
 }

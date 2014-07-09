@@ -71,7 +71,6 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
   public JobEntryFileExists( String n ) {
     super( n, "" );
     filename = null;
-    setID( -1L );
   }
 
   public JobEntryFileExists() {
@@ -203,8 +202,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
    *           in case something goes wrong during the export
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore )
-    throws KettleException {
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

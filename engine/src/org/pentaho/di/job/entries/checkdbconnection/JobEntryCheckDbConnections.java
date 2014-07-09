@@ -84,7 +84,6 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
     connections = null;
     waitfors = null;
     waittimes = null;
-    setID( -1L );
   }
 
   public JobEntryCheckDbConnections() {

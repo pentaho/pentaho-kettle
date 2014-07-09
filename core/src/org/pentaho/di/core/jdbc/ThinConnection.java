@@ -208,8 +208,7 @@ public class ThinConnection implements Connection {
   }
 
   @Override
-  public Statement createStatement( int resultSetType, int resultSetConcurrency, int resultSetHoldability )
-    throws SQLException {
+  public Statement createStatement( int resultSetType, int resultSetConcurrency, int resultSetHoldability ) throws SQLException {
     return new ThinStatement( this, resultSetType, resultSetConcurrency, resultSetHoldability );
   }
 
@@ -323,8 +322,7 @@ public class ThinConnection implements Connection {
   }
 
   @Override
-  public PreparedStatement prepareStatement( String sql, int resultSetType, int resultSetConcurrency )
-    throws SQLException {
+  public PreparedStatement prepareStatement( String sql, int resultSetType, int resultSetConcurrency ) throws SQLException {
     return new ThinPreparedStatement( this, sql );
   }
 

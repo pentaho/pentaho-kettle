@@ -90,8 +90,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     return repositoryDirectory;
   }
 
-  public RepositoryDirectoryInterface loadRepositoryDirectoryTree( RepositoryDirectoryInterface root )
-    throws KettleException {
+  public RepositoryDirectoryInterface loadRepositoryDirectoryTree( RepositoryDirectoryInterface root ) throws KettleException {
     try {
       synchronized ( repository ) {
 
@@ -110,8 +109,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     }
   }
 
-  public void loadRepositoryDirectory( RepositoryDirectory repositoryDirectory, ObjectId id_directory )
-    throws KettleException {
+  public void loadRepositoryDirectory( RepositoryDirectory repositoryDirectory, ObjectId id_directory ) throws KettleException {
     if ( id_directory == null ) {
       // This is the root directory, id = OL
       id_directory = new LongObjectId( 0L );
@@ -149,8 +147,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
    * }
    */
 
-  private synchronized ObjectId insertDirectory( ObjectId id_directory_parent, RepositoryDirectoryInterface dir )
-    throws KettleException {
+  private synchronized ObjectId insertDirectory( ObjectId id_directory_parent, RepositoryDirectoryInterface dir ) throws KettleException {
     ObjectId id = repository.connectionDelegate.getNextDirectoryID();
 
     String tablename = KettleDatabaseRepository.TABLE_R_DIRECTORY;
@@ -219,8 +216,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
    *          New name for this directory (null if the name does not change)
    * @throws KettleException
    */
-  public synchronized void renameDirectory( ObjectId id_directory, ObjectId id_directory_parent, String newName )
-    throws KettleException {
+  public synchronized void renameDirectory( ObjectId id_directory, ObjectId id_directory_parent, String newName ) throws KettleException {
     if ( id_directory.equals( id_directory_parent ) ) {
       // Make sure the directory cannot become its own parent
       throw new KettleException( "Failed to copy directory into itself" );
@@ -315,8 +311,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     }
   }
 
-  public void delRepositoryDirectory( RepositoryDirectoryInterface dir, boolean deleteNonEmptyFolder )
-    throws KettleException {
+  public void delRepositoryDirectory( RepositoryDirectoryInterface dir, boolean deleteNonEmptyFolder ) throws KettleException {
     try {
       if ( !deleteNonEmptyFolder ) {
         String[] trans = repository.getTransformationNames( dir.getObjectId(), false ); // TODO : include or exclude
@@ -349,8 +344,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     }
   }
 
-  public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName )
-    throws KettleException {
+  public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName ) throws KettleException {
     ObjectId parentId = null;
     if ( newParentDir != null ) {
       parentId = newParentDir.getObjectId();

@@ -138,9 +138,9 @@ public class TextFileInput extends BaseStep implements StepInterface {
           while ( c >= 0 ) {
             c = reader.read();
 
-            if ( encodingType.isReturn( c ) ) {
+            if ( encodingType.isLinefeed( c ) ) {
               return line.toString();
-            } else if ( !encodingType.isLinefeed( c ) ) {
+            } else if ( !encodingType.isReturn( c ) ) {
               if ( c >= 0 ) {
                 line.append( (char) c );
               }
@@ -423,7 +423,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
             boolean is_enclosure =
                 len_encl > 0 && p + len_encl < length
-                    && line.substring( p, p + len_encl ).equalsIgnoreCase( inf.getEnclosure() );
+                    && line.substring( p, p + len_encl ).equalsIgnoreCase( enclosure );
             boolean is_escape =
                 len_esc > 0 && p + len_esc < length
                     && line.substring( p, p + len_esc ).equalsIgnoreCase( inf.getEscapeCharacter() );
@@ -451,7 +451,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
               enclosure_after = false;
               is_enclosure =
                   len_encl > 0 && p + len_encl < length
-                      && line.substring( p, p + len_encl ).equals( inf.getEnclosure() );
+                      && line.substring( p, p + len_encl ).equals( enclosure );
               is_escape =
                   len_esc > 0 && p + len_esc < length
                       && line.substring( p, p + len_esc ).equals( inf.getEscapeCharacter() );
@@ -1590,12 +1590,13 @@ public class TextFileInput extends BaseStep implements StepInterface {
   private void initErrorHandling() {
     List<FileErrorHandler> dataErrorLineHandlers = new ArrayList<FileErrorHandler>( 2 );
     if ( meta.getLineNumberFilesDestinationDirectory() != null ) {
-      dataErrorLineHandlers.add( new FileErrorHandlerContentLineNumber( getTrans().getCurrentDate(), meta
-          .getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), meta.getEncoding(), this ) );
+      dataErrorLineHandlers
+        .add( new FileErrorHandlerContentLineNumber( getTrans().getCurrentDate(), environmentSubstitute( meta
+          .getLineNumberFilesDestinationDirectory() ), meta.getLineNumberFilesExtension(), meta.getEncoding(), this ) );
     }
     if ( meta.getErrorFilesDestinationDirectory() != null ) {
-      dataErrorLineHandlers.add( new FileErrorHandlerMissingFiles( getTrans().getCurrentDate(), meta
-          .getErrorFilesDestinationDirectory(), meta.getErrorLineFilesExtension(), meta.getEncoding(), this ) );
+      dataErrorLineHandlers.add( new FileErrorHandlerMissingFiles( getTrans().getCurrentDate(), environmentSubstitute(
+        meta.getErrorFilesDestinationDirectory() ), meta.getErrorLineFilesExtension(), meta.getEncoding(), this ) );
     }
     data.dataErrorLineHandler = new CompositeFileErrorHandler( dataErrorLineHandlers );
   }

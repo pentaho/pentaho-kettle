@@ -76,7 +76,6 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
     super( n, "" );
     filename = null;
     failIfFileNotExists = false;
-    setID( -1L );
   }
 
   public JobEntryDeleteFile() {

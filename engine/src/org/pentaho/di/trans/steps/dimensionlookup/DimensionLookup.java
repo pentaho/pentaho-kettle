@@ -1260,8 +1260,7 @@ public class DimensionLookup extends BaseStep implements StepInterface {
     return technicalKey;
   }
 
-  public void dimUpdate( RowMetaInterface rowMeta, Object[] row, Long dimkey, Date valueDate )
-    throws KettleDatabaseException {
+  public void dimUpdate( RowMetaInterface rowMeta, Object[] row, Long dimkey, Date valueDate ) throws KettleDatabaseException {
     if ( data.prepStatementDimensionUpdate == null ) {
       // first time: construct prepared statement
       //

@@ -506,8 +506,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     this.versionField = versionField;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
   }
 
@@ -818,8 +817,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     return retval.toString();
   }
 
-  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases )
-    throws KettleXMLException {
+  private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       String upd;
       int nrkeys, nrfields;
@@ -899,8 +897,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
 
@@ -952,8 +949,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "schema", schemaName );
       rep.saveStepAttribute( id_transformation, id_step, "table", tableName );
@@ -1855,8 +1851,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     this.useBatchUpdate = useBatchUpdate;
   }
 
-  protected RowMetaInterface getDatabaseTableFields( Database db, String schemaName, String tableName )
-    throws KettleDatabaseException {
+  protected RowMetaInterface getDatabaseTableFields( Database db, String schemaName, String tableName ) throws KettleDatabaseException {
     // First try without connecting to the database... (can be S L O W)
     String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
     RowMetaInterface extraFields = db.getTableFields( schemaTable );

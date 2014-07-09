@@ -196,8 +196,7 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
     this.fieldName = fieldnamein;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -349,8 +348,7 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       xslFilename = rep.getStepAttributeString( id_step, "xslfilename" );
       fieldName = rep.getStepAttributeString( id_step, "fieldname" );
@@ -383,8 +381,7 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "xslfilename", xslFilename );
       rep.saveStepAttribute( id_transformation, id_step, "fieldname", fieldName );

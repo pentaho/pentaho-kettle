@@ -64,8 +64,7 @@ public class XmlJoinOmitNullValuesTest {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root xmlns=\"http://www.myns1.com\" xmlns:xsi=\"http://www.myns2.com\" xsi:schemalocation=\"http://www.mysl1.com\"><child xmlns=\"\"><subChild a=\"\"/><subChild><subSubChild a=\"\"/></subChild></child></root>" );
   }
 
-  private void doTest( final String sourceXml, final String targetXml, final String expectedXml )
-    throws KettleException {
+  private void doTest( final String sourceXml, final String targetXml, final String expectedXml ) throws KettleException {
     XMLJoin spy = spy( new XMLJoin( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
 
     doReturn( createSourceRowSet( sourceXml ) ).when( spy ).findInputRowSet( "source" );

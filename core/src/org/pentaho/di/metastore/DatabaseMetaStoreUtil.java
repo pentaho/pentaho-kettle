@@ -71,8 +71,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     return databases;
   }
 
-  public static void createDatabaseElement( IMetaStore metaStore, DatabaseMeta databaseMeta )
-    throws MetaStoreException {
+  public static void createDatabaseElement( IMetaStore metaStore, DatabaseMeta databaseMeta ) throws MetaStoreException {
 
     // If the Pentaho namespace doesn't exist, create it!
     //
@@ -99,8 +98,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     metaStore.createElement( PentahoDefaults.NAMESPACE, databaseElement.getElementType(), databaseElement );
   }
 
-  public static IMetaStoreElementType populateDatabaseElementType( IMetaStore metaStore )
-    throws MetaStoreException {
+  public static IMetaStoreElementType populateDatabaseElementType( IMetaStore metaStore ) throws MetaStoreException {
 
     // The new type will typically have an ID so all we need to do is give the type a name and a description.
     //
@@ -113,8 +111,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     return elementType;
   }
 
-  public static IMetaStoreElement populateDatabaseElement( IMetaStore metaStore, DatabaseMeta databaseMeta )
-    throws MetaStoreException {
+  public static IMetaStoreElement populateDatabaseElement( IMetaStore metaStore, DatabaseMeta databaseMeta ) throws MetaStoreException {
 
     if ( !metaStore.namespaceExists( PentahoDefaults.NAMESPACE ) ) {
       throw new MetaStoreException( "Namespace '" + PentahoDefaults.NAMESPACE + "' doesn't exist." );
@@ -191,8 +188,7 @@ public class DatabaseMetaStoreUtil extends MetaStoreUtil {
     return element;
   }
 
-  public static DatabaseMeta loadDatabaseMetaFromDatabaseElement( IMetaStore metaStore, IMetaStoreElement element )
-    throws KettlePluginException {
+  public static DatabaseMeta loadDatabaseMetaFromDatabaseElement( IMetaStore metaStore, IMetaStoreElement element ) throws KettlePluginException {
     DatabaseMeta databaseMeta = new DatabaseMeta();
     PluginRegistry pluginRegistry = PluginRegistry.getInstance();
 

@@ -239,8 +239,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
     }
   }
 
-  protected synchronized String convertInternetAddressToString( InetAddress inetAddress )
-    throws KettleValueException {
+  protected synchronized String convertInternetAddressToString( InetAddress inetAddress ) throws KettleValueException {
 
     if ( inetAddress == null ) {
       return null;
@@ -431,8 +430,7 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
   }
 
   @Override
-  public Object getValueFromResultSet( DatabaseInterface databaseInterface, ResultSet resultSet, int index )
-    throws KettleDatabaseException {
+  public Object getValueFromResultSet( DatabaseInterface databaseInterface, ResultSet resultSet, int index ) throws KettleDatabaseException {
 
     try {
 

@@ -63,30 +63,8 @@
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
-         <slaveserver><name>CARTE</name><hostname>&#x24;&#x7b;CARTE_HOSTNAME&#x7d;</hostname><port>&#x24;&#x7b;CARTE_PORT&#x7d;</port><webAppName/><username>&#x24;&#x7b;CARTE_USER&#x7d;</username><password>&#x24;&#x7b;CARTE_PWD&#x7d;</password><proxy_hostname>&#x24;&#x7b;CARTE_PROXY_HOST&#x7d;</proxy_hostname><proxy_port>&#x24;&#x7b;CARTE_PROXY_PORT&#x7d;</proxy_port><non_proxy_hosts>&#x24;&#x7b;CARTE_NON_PROXY&#x7d;</non_proxy_hosts><master>Y</master></slaveserver>
-         <slaveserver><name>9999</name><hostname>localhost</hostname><port>9999</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
     </slaveservers>
     <clusterschemas>
-        <clusterschema>
-          <name>YetAnotherYarnCluster</name>
-          <base_port>0</base_port>
-          <sockets_buffer_size>2000</sockets_buffer_size>
-          <sockets_flush_interval>5000</sockets_flush_interval>
-          <sockets_compressed>N</sockets_compressed>
-          <dynamic>N</dynamic>
-          <slaveservers>
-          </slaveservers>
-        </clusterschema>
-        <clusterschema>
-          <name>YARN cluster &#x40; sandbox.hortonworks.com</name>
-          <base_port>0</base_port>
-          <sockets_buffer_size>2000</sockets_buffer_size>
-          <sockets_flush_interval>5000</sockets_flush_interval>
-          <sockets_compressed>N</sockets_compressed>
-          <dynamic>N</dynamic>
-          <slaveservers>
-          </slaveservers>
-        </clusterschema>
     </clusterschemas>
   <created_user/>
   <created_date>2010&#x2f;08&#x2f;19 13&#x3a;44&#x3a;19.217</created_date>
@@ -96,179 +74,62 @@
   <notepads>
   </notepads>
   <connection>
-    <name>AgileBI</name>
-    <server>localhost</server>
-    <type>MONETDB</type>
-    <access>Native</access>
-    <database>pentaho-instaview</database>
-    <port>50006</port>
-    <username>monetdb</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb14a17edb86abd8</password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <read_only>true</read_only>
-    <attributes>
-      <attribute><code>EXTRA_OPTION_INFOBRIGHT.characterEncoding</code><attribute>UTF-8</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>50006</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
-      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
-    </attributes>
-  </connection>
-  <connection>
-    <name>Logging</name>
+    <name>Sampledata</name>
     <server/>
     <type>H2</type>
-    <access>Native</access>
-    <database>LOGGING</database>
-    <port>-1</port>
+    <access>JNDI</access>
+    <database>SampleData</database>
+    <port>1521</port>
     <username/>
-    <password>Encrypted </password>
+    <password>Encrypted</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
     <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>-1</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
-  <connection>
-    <name>LucidDB</name>
-    <server>127.0.0.1</server>
-    <type>LucidDB</type>
-    <access>Native</access>
-    <database>nimbuzz</database>
-    <port>8034</port>
-    <username>MATT</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>8034</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
-  <connection>
-    <name>MySQL</name>
-    <server>localhost</server>
-    <type>MYSQL</type>
-    <access>Native</access>
-    <database>test</database>
-    <port>3306</port>
-    <username>matt</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>EXTRA_OPTION_MYSQL.characterEncoding</code><attribute>UTF-8</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.characterSetResults</code><attribute>UTF-8</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.useServerPrepStmts</code><attribute>false</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.useUnicode</code><attribute>true</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
-  <connection>
-    <name>Nimbuzz</name>
-    <server>localhost</server>
-    <type>MYSQL</type>
-    <access>Native</access>
-    <database>nimbuzz</database>
-    <port>3306</port>
-    <username>matt</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>EXTRA_OPTION_MYSQL.characterEncoding</code><attribute>UTF-8</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.characterSetResults</code><attribute>UTF-8</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.useUnicode</code><attribute>true</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
-  <connection>
-    <name>Postgres</name>
-    <server>localhost</server>
-    <type>POSTGRESQL</type>
-    <access>Native</access>
-    <database>test</database>
-    <port>5432</port>
-    <username>matt</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>5432</attribute></attribute>
-      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
-      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
-  <connection>
-    <name>VectorWise</name>
-    <server>localhost</server>
-    <type>INGRES</type>
-    <access>Native</access>
-    <database>test</database>
-    <port>VW7</port>
-    <username>ingres</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>VW7</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>IS_CLUSTERED</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>PORT_NUMBER</code>
+        <attribute>1521</attribute>
+      </attribute>
+      <attribute>
+        <code>PRESERVE_RESERVED_WORD_CASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>QUOTE_ALL_FIELDS</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>USE_POOLING</code>
+        <attribute>N</attribute>
+      </attribute>
     </attributes>
   </connection>
   <order>
   <hop> <from>Fields</from><to>ETL Metadata Injection</to><enabled>Y</enabled> </hop>
-  <hop> <from>Filename</from><to>ETL Metadata Injection</to><enabled>Y</enabled> </hop>
   <hop> <from>Rename</from><to>ETL Metadata Injection</to><enabled>Y</enabled> </hop>
   <hop> <from>Remove</from><to>ETL Metadata Injection</to><enabled>Y</enabled> </hop>
+  <hop> <from>Filename 2</from><to>Using variable to resolve filename</to><enabled>Y</enabled> </hop>
+  <hop> <from>Using variable to resolve filename</from><to>ETL Metadata Injection</to><enabled>Y</enabled> </hop>
   </order>
   <step>
     <name>ETL Metadata Injection</name>
@@ -287,10 +148,8 @@
     <filename>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;read_csv_file.ktr</filename>
     <directory_path/>
     <source_step/>
-    <source_output_fields>    </source_output_fields>    <target_file/>
+    <target_file/>
     <no_execution>N</no_execution>
-    <stream_source_step/>
-    <stream_target_step/>
     <mappings>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>group</target_attribute_key>
         <target_detail>Y</target_detail>
@@ -344,7 +203,7 @@
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>FILENAME</target_attribute_key>
         <target_detail>N</target_detail>
-        <source_step>Filename</source_step>
+        <source_step>Using variable to resolve filename</source_step>
         <source_field>filename</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>format</target_attribute_key>
@@ -382,30 +241,30 @@
         <source_step>Fields</source_step>
         <source_field>length</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
-        <target_attribute_key>trim_type</target_attribute_key>
+        <target_attribute_key>field_group</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
-        <source_field>trimtype</source_field>
+        <source_field>group</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>name</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
         <source_field>name</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
-        <target_attribute_key>field_group</target_attribute_key>
+        <target_attribute_key>trim_type</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
-        <source_field>group</source_field>
-      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
-        <target_attribute_key>FIELD_TYPE</target_attribute_key>
-        <target_detail>Y</target_detail>
-        <source_step>Fields</source_step>
-        <source_field>type</source_field>
+        <source_field>trimtype</source_field>
       </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
         <target_attribute_key>META_RENAME</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Rename</source_step>
         <source_field>rename</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>FIELD_TYPE</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Fields</source_step>
+        <source_field>type</source_field>
       </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
         <target_attribute_key>meta_name</target_attribute_key>
         <target_detail>Y</target_detail>
@@ -612,41 +471,6 @@
     </step>
 
   <step>
-    <name>Filename</name>
-    <type>DataGrid</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <fields>
-      <field>
-        <name>filename</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
-      </field>
-    </fields>
-    <data>
-      <line> <item>samples&#x2f;transformations&#x2f;files&#x2f;customers-100.txt</item> </line>
-    </data>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>70</xloc>
-      <yloc>128</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
     <name>Remove</name>
     <type>DataGrid</type>
     <description/>
@@ -723,6 +547,72 @@
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>409</xloc>
       <yloc>33</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Filename 2</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>filename</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms>5000</interval_in_ms>
+    <row_time_field>now</row_time_field>
+    <last_time_field>FiveSecondsAgo</last_time_field>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>167</xloc>
+      <yloc>375</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Using variable to resolve filename</name>
+    <type>SetValueConstant</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+   <usevar>Y</usevar>
+    <fields>
+      <field>
+        <name>filename</name>
+        <value>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;..&#x2f;files&#x2f;customers-100.txt</value>
+        <mask/>
+        <set_empty_string>N</set_empty_string>
+        </field>
+      </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>167</xloc>
+      <yloc>240</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

@@ -1,23 +1,23 @@
 /*
-*   This file is part of PaloKettlePlugin.
-*
-*   PaloKettlePlugin is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Lesser General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.
-*
-*   PaloKettlePlugin is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Lesser General Public License for more details.
-*
-*   You should have received a copy of the GNU Lesser General Public License
-*   along with PaloKettlePlugin.  If not, see <http://www.gnu.org/licenses/>.
-*
-*   Portions Copyright 2008 Stratebi Business Solutions, S.L.
-*   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
-*   Portions Copyright 2011 - 2013 Pentaho Corporation
-*/
+ *   This file is part of PaloKettlePlugin.
+ *
+ *   PaloKettlePlugin is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Lesser General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   PaloKettlePlugin is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public License
+ *   along with PaloKettlePlugin.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *   Portions Copyright 2008 Stratebi Business Solutions, S.L.
+ *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
+ *   Portions Copyright 2011 - 2013 Pentaho Corporation
+ */
 
 package org.pentaho.di.trans.steps.palo.cellinput;
 
@@ -34,44 +34,46 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class PaloCellInput extends BaseStep implements StepInterface {
 
-  private PaloCellInputMeta     meta;
-  private PaloCellInputData     data;
+  private PaloCellInputMeta meta;
+  private PaloCellInputData data;
   private ListenerWithException listener;
 
-  public PaloCellInput(final StepMeta stepMeta, final StepDataInterface stepDataInterface, final int copyNr, final TransMeta transMeta, final Trans trans) {
-    super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
+  public PaloCellInput( final StepMeta stepMeta, final StepDataInterface stepDataInterface, final int copyNr,
+      final TransMeta transMeta, final Trans trans ) {
+    super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   private abstract class ListenerWithException implements PaloHelper.Listener {
     protected Exception throwedException = null;
   }
 
-  public final boolean processRow(final StepMetaInterface smi, final StepDataInterface sdi) throws KettleException {
+  public final boolean processRow( final StepMetaInterface smi, final StepDataInterface sdi ) throws KettleException {
 
-    this.logBasic("Getting row meta.");
-    final RowMetaInterface rowMeta = data.helper.getCellRowMeta(meta.getCube(), meta.getFields(), meta.getCubeMeasure());
+    this.logBasic( "Getting row meta." );
+    final RowMetaInterface rowMeta =
+        data.helper.getCellRowMeta( meta.getCube(), meta.getFields(), meta.getCubeMeasure() );
 
-    this.logBasic("Number of fields:" + meta.getFields().size());
-    this.logBasic("Row Meta Size: " + rowMeta.size());
+    this.logBasic( "Number of fields:" + meta.getFields().size() );
+    this.logBasic( "Row Meta Size: " + rowMeta.size() );
 
-    this.logBasic("Creating Listener.");
+    this.logBasic( "Creating Listener." );
     listener = new ListenerWithException() {
-      private boolean stop   = false;
+      private boolean stop = false;
       private boolean cancel = false;
 
-      public void oneMoreElement(final Object element) {
+      public void oneMoreElement( final Object element ) {
         final Object[] row = (Object[]) element;
         try {
-          assert (rowMeta.size() != row.length);
+          assert ( rowMeta.size() != row.length );
           incrementLinesInput();
-          putRow(rowMeta, row);
-        } catch (Exception ex) {
+          putRow( rowMeta, row );
+        } catch ( Exception ex ) {
           this.throwedException = ex;
           this.cancel();
         }
       }
 
-      public void prepareElements(final int maxNumberOfElements) {
+      public void prepareElements( final int maxNumberOfElements ) {
       }
 
       public void stop() {
@@ -94,50 +96,50 @@ public class PaloCellInput extends BaseStep implements StepInterface {
         return this.cancel;
       }
     };
-    data.helper.getCells(meta.getCube(), rowMeta, listener);
-    if (listener.throwedException != null)
-      throw new KettleException("Failed to process some row", listener.throwedException);
-
+    data.helper.getCells( meta.getCube(), rowMeta, listener );
+    if ( listener.throwedException != null ) {
+      throw new KettleException( "Failed to process some row", listener.throwedException );
+    }
     setOutputDone();
     return false;
   }
 
   public void pauseRunning() {
     this.listener.stop();
-    this.logDebug("Process Stopped");
+    this.logDebug( "Process Stopped" );
   }
 
   public void stopAll() {
     this.listener.cancel();
-    this.logDebug("Process Cancelled");
+    this.logDebug( "Process Cancelled" );
   }
 
   public void resumeRunning() {
     this.listener.resume();
-    this.logDebug("Process Resumed");
+    this.logDebug( "Process Resumed" );
   }
 
-  public final boolean init(StepMetaInterface smi, StepDataInterface sdi) {
+  public final boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (PaloCellInputMeta) smi;
     data = (PaloCellInputData) sdi;
 
-    if (super.init(smi, sdi)) {
+    if ( super.init( smi, sdi ) ) {
       try {
-        this.logDebug("Meta Fields: " + meta.getFields().size());
-        data.helper = new PaloHelper(meta.getDatabaseMeta(), getLogLevel());
+        this.logDebug( "Meta Fields: " + meta.getFields().size() );
+        data.helper = new PaloHelper( meta.getDatabaseMeta(), getLogLevel() );
         data.helper.connect();
         return true;
-      } catch (Exception e) {
-        logError("An error occurred, processing will be stopped: " + e.getMessage());
-        setErrors(1);
+      } catch ( Exception e ) {
+        logError( "An error occurred, processing will be stopped: " + e.getMessage() );
+        setErrors( 1 );
         stopAll();
       }
     }
     return false;
   }
 
-  public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     data.helper.disconnect();
-    super.dispose(smi, sdi);
+    super.dispose( smi, sdi );
   }
 }

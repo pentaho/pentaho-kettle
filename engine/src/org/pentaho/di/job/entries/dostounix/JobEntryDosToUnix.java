@@ -122,8 +122,6 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     include_subfolders = false;
     nr_errors_less_than = "10";
     success_condition = SUCCESS_IF_NO_ERRORS;
-
-    setID( -1L );
   }
 
   public JobEntryDosToUnix() {
@@ -662,8 +660,7 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
     return entrystatus;
   }
 
-  private boolean convertOneFile( FileObject file, int convertion, Result result, Job parentJob )
-    throws KettleException {
+  private boolean convertOneFile( FileObject file, int convertion, Result result, Job parentJob ) throws KettleException {
     boolean retval = false;
     try {
       // We deal with a file..

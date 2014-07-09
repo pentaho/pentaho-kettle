@@ -16,8 +16,10 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.InjectMocks;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -88,6 +90,11 @@ public class HTTPPOSTTest {
   @InjectMocks
   private StepMockHelper<HTTPPOSTMeta, HTTPPOSTData> stepMockHelper;
   private HttpServer httpServer;
+
+  @BeforeClass
+  public static void setupBeforeClass() throws KettleException {
+    KettleClientEnvironment.init();
+  }
 
   @Before
   public void setUp() throws Exception {

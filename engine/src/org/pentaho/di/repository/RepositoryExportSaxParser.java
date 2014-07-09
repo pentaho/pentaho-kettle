@@ -22,6 +22,8 @@
 
 package org.pentaho.di.repository;
 
+import java.io.File;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -64,11 +66,10 @@ public class RepositoryExportSaxParser extends DefaultHandler2 {
 
     this.factory = SAXParserFactory.newInstance();
     this.saxParser = this.factory.newSAXParser();
-    this.saxParser.parse( filename, this );
+    this.saxParser.parse( new File( filename ), this );
   }
 
-  public void startElement( String uri, String localName, String qName, Attributes attributes )
-    throws SAXException {
+  public void startElement( String uri, String localName, String qName, Attributes attributes ) throws SAXException {
     if ( STRING_REPOSITORY.equals( qName ) || STRING_TRANSFORMATIONS.equals( qName ) || STRING_JOBS.equals( qName ) ) {
       add = false;
     } else {

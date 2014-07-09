@@ -45,13 +45,16 @@ import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.kitchen.Kitchen;
+import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.version.BuildVersion;
+import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import org.w3c.dom.Document;
 
 public class Pan {
@@ -61,7 +64,7 @@ public class Pan {
 
   private static FileLoggingEventListener fileLoggingEventListener;
 
-  public static void main( String[] a ) throws KettleException {
+  public static void main( String[] a ) throws Exception {
     KettleEnvironment.init();
     KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.PAN );
 
@@ -71,6 +74,10 @@ public class Pan {
         args.add( a[i] );
       }
     }
+
+    DelegatingMetaStore metaStore = new DelegatingMetaStore();
+    metaStore.addMetaStore( MetaStoreConst.openLocalPentahoMetaStore() );
+    metaStore.setActiveMetaStoreName( metaStore.getName() );
 
     RepositoryMeta repositoryMeta = null;
     Trans trans = null;
@@ -286,9 +293,17 @@ public class Pan {
             rep.connect( optionUsername != null ? optionUsername.toString() : null, optionPassword != null
               ? optionPassword.toString() : null );
 
-            RepositoryDirectoryInterface directory = rep.loadRepositoryDirectoryTree(); // Default
-            // =
-            // root
+            rep.getSecurityProvider().validateAction( RepositoryOperation.EXECUTE_TRANSFORMATION );
+
+            // Default is the root directory
+            //
+            RepositoryDirectoryInterface directory = rep.loadRepositoryDirectoryTree();
+
+            // Add the IMetaStore of the repository to our delegation
+            //
+            if ( rep.getMetaStore() != null ) {
+              metaStore.addMetaStore( rep.getMetaStore() );
+            }
 
             // Find the directory name if one is specified...
             if ( !Const.isEmpty( optionDirname ) ) {
@@ -314,6 +329,8 @@ public class Pan {
 
                 trans = new Trans( transMeta );
                 trans.setRepository( rep );
+                trans.setMetaStore( metaStore );
+
               } else if ( "Y".equalsIgnoreCase( optionListtrans.toString() ) ) {
                 // List the transformations in the repository
                 if ( log.isDebug() ) {

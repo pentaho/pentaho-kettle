@@ -25,6 +25,9 @@
   
 
   <import file="build-res/subfloor-pkg.xml" />
+	
+	
+  <property name="pdf.docs.dir" value="${approot.stage.dir}/docs/English" />
 
   <target name="dist" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,package" description="Builds and packages the application"/>
   	
@@ -33,9 +36,26 @@
   <target name="assemble-no-plugins" depends="init,resolve-all,assemble" description="Builds the application" />
 
   <target name="resolve-all" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins"/>
+
+  <!-- - - - - - - - - - - - - - - - - - 
+    target: resolve-pdf-docs
+  - - - - - - - - - - - - - - - - - -->
+  <target name="resolve-pdf-docs" depends="install-ivy">
+    <ivy:resolve file="${ivyfile}" conf="pdf-docs" />
+    <ivy:retrieve conf="pdf-docs" pattern="${pdf.docs.dir}/[module].[ext]" />
+  </target>
 	
-  <target name="assemble" depends="resolve-swtlibs,subfloor-pkg.assemble" description="copy jar files to distribution directory" >
-  	<echo>Construct the distribution package...</echo>
+  <!-- - - - - - - - - - - - - - - - - - 
+	target: resolve-oss-licenses
+  - - - - - - - - - - - - - - - - - -->
+  <target name="resolve-oss-licenses" depends="install-ivy">
+	 <ivy:resolve file="${ivyfile}" conf="oss-licenses" />
+     <ivy:retrieve conf="oss-licenses" pattern="${bin.dir}/[module].[ext]" />
+  </target>
+	
+  <target name="assemble" depends="resolve-swtlibs,resolve-pdf-docs,resolve-oss-licenses,create-sampledb-from-sql,subfloor-pkg.assemble"
+          description="copy jar files to distribution directory">
+    <echo>Construct the distribution package...</echo>
     <!-- make JavaApplicationStub executable for OSX -->
     <chmod file="${approot.stage.dir}/Data Integration.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
   	<!-- insert version info into the canned info.plist -->
@@ -60,6 +80,13 @@
       <include name="*.sh"/>
       <replacefilter token="@KETTLE_VERSION_STRING@" value="${dependency.kettle.revision}"/>     
     </replace>
+  	
+    <unzip src="${bin.dir}/oss-licenses.zip" dest="${approot.stage.dir}">
+      <patternset>
+        <include name="PentahoDataIntegrationClientEE_OSS_Licenses.html"/>
+      	<include name="PentahoDataIntegrationServerEE_OSS_Licenses.html"/>
+      </patternset>
+    </unzip>
   	
   	<chmod perm="a+x" dir="${approot.stage.dir}" includes="**/*.sh" />
   </target>
@@ -173,5 +200,34 @@
         <include name="**/*.zip"/>
       </fileset>
     </unzip>
-  </target>  
+  </target>
+
+  <target name="create-sampledb-from-sql">
+    <property name="samples.db.dir" value="${package.resdir}/samples/db"/>
+    <echo message="${samples.db.dir}"/>
+    <property file="${samples.db.dir}/sampledb.init.properties"/>
+    <property name="db.postfix" value="db"/>
+    <delete quiet="true" includeemptydirs="true">
+      <dirset dir="${samples.db.dir}" includes="**/${sample.db.name}*${db.postfix}"/>
+      <fileset dir="${samples.db.dir}" includes="**/${sample.db.name}*${db.postfix}"/>
+    </delete>
+    <echo message="${sample.db.url}${samples.db.dir}/${sample.db.name}" />
+    <sql
+        driver="${sample.db.driver}"
+        url="${sample.db.url}${samples.db.dir}/${sample.db.name}"
+        userid="${sample.db.driver}"
+        password="${sample.db.password}"
+        >
+      <path>
+        <fileset dir="${samples.db.dir}">
+          <include name="**/*.sql"/>
+        </fileset>
+      </path>
+      <classpath>
+        <fileset dir="${lib.dir}">
+          <include name="**/h2*.jar"/>
+        </fileset>
+      </classpath>
+    </sql>
+  </target>
 </project>

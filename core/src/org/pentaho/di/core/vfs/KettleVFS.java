@@ -102,13 +102,11 @@ public class KettleVFS {
     return getFileObject( vfsFilename, space, null );
   }
 
-  public static FileObject getFileObject( String vfsFilename, FileSystemOptions fsOptions )
-    throws KettleFileException {
+  public static FileObject getFileObject( String vfsFilename, FileSystemOptions fsOptions ) throws KettleFileException {
     return getFileObject( vfsFilename, defaultVariableSpace, fsOptions );
   }
 
-  public static FileObject getFileObject( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions )
-    throws KettleFileException {
+  public static FileObject getFileObject( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions ) throws KettleFileException {
     try {
       FileSystemManager fsManager = getInstance().getFileSystemManager();
 
@@ -199,8 +197,7 @@ public class KettleVFS {
     return getTextFileContent( vfsFilename, null, charSetName );
   }
 
-  public static String getTextFileContent( String vfsFilename, VariableSpace space, String charSetName )
-    throws KettleFileException {
+  public static String getTextFileContent( String vfsFilename, VariableSpace space, String charSetName ) throws KettleFileException {
     try {
       InputStream inputStream = null;
 
@@ -297,8 +294,7 @@ public class KettleVFS {
     return getOutputStream( vfsFilename, null, append );
   }
 
-  public static OutputStream getOutputStream( String vfsFilename, VariableSpace space, boolean append )
-    throws KettleFileException {
+  public static OutputStream getOutputStream( String vfsFilename, VariableSpace space, boolean append ) throws KettleFileException {
     try {
       FileObject fileObject = getFileObject( vfsFilename, space );
       return getOutputStream( fileObject, append );
@@ -338,13 +334,11 @@ public class KettleVFS {
     return fileString;
   }
 
-  public static FileObject createTempFile( String prefix, String suffix, String directory )
-    throws KettleFileException {
+  public static FileObject createTempFile( String prefix, String suffix, String directory ) throws KettleFileException {
     return createTempFile( prefix, suffix, directory, null );
   }
 
-  public static FileObject createTempFile( String prefix, String suffix, String directory, VariableSpace space )
-    throws KettleFileException {
+  public static FileObject createTempFile( String prefix, String suffix, String directory, VariableSpace space ) throws KettleFileException {
     try {
       FileObject fileObject;
       do {

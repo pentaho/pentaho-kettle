@@ -39,8 +39,9 @@ import org.pentaho.di.trans.step.StepMeta;
  *
  */
 public class SingleThreaderData extends BaseStepData implements StepDataInterface {
-  public SingleThreadedTransExecutor executor;
   public Trans mappingTrans;
+
+  public SingleThreadedTransExecutor executor;
 
   public int batchSize;
 
@@ -63,4 +64,11 @@ public class SingleThreaderData extends BaseStepData implements StepDataInterfac
 
   }
 
+  public Trans getMappingTrans() {
+    return mappingTrans;
+  }
+
+  public void setMappingTrans( Trans mappingTrans ) {
+    this.mappingTrans = mappingTrans;
+  }
 }

@@ -213,8 +213,7 @@ public class TransSplitter {
   }
 
   private String getWriterName( ClusterSchema clusterSchema, SlaveServer sourceSlaveServer, String sourceStepname,
-    int sourceStepCopy, SlaveServer targetSlaveServer, String targetStepName, int targetStepCopy )
-    throws Exception {
+    int sourceStepCopy, SlaveServer targetSlaveServer, String targetStepName, int targetStepCopy ) throws Exception {
     return "Writer : "
       + getPort(
         clusterSchema, sourceSlaveServer, sourceStepname, sourceStepCopy, targetSlaveServer, targetStepName,
@@ -222,8 +221,7 @@ public class TransSplitter {
   }
 
   private String getReaderName( ClusterSchema clusterSchema, SlaveServer sourceSlaveServer, String sourceStepname,
-    int sourceStepCopy, SlaveServer targetSlaveServer, String targetStepName, int targetStepCopy )
-    throws Exception {
+    int sourceStepCopy, SlaveServer targetSlaveServer, String targetStepName, int targetStepCopy ) throws Exception {
     return "Reader : "
       + getPort(
         clusterSchema, sourceSlaveServer, sourceStepname, sourceStepCopy, targetSlaveServer, targetStepName,
@@ -287,8 +285,7 @@ public class TransSplitter {
    *          the slave server to reference
    * @return
    */
-  private TransMeta getSlaveTransformation( ClusterSchema clusterSchema, SlaveServer slaveServer )
-    throws KettleException {
+  private TransMeta getSlaveTransformation( ClusterSchema clusterSchema, SlaveServer slaveServer ) throws KettleException {
     TransMeta slave = slaveTransMap.get( slaveServer );
     if ( slave == null ) {
       slave = getOriginalCopy( true, clusterSchema, slaveServer );
@@ -297,8 +294,7 @@ public class TransSplitter {
     return slave;
   }
 
-  private TransMeta getOriginalCopy( boolean isSlaveTrans, ClusterSchema clusterSchema, SlaveServer slaveServer )
-    throws KettleException {
+  private TransMeta getOriginalCopy( boolean isSlaveTrans, ClusterSchema clusterSchema, SlaveServer slaveServer ) throws KettleException {
     TransMeta transMeta = new TransMeta();
     transMeta.setSlaveTransformation( true );
 

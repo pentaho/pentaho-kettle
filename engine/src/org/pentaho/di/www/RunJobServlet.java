@@ -39,6 +39,7 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobAdapter;
 import org.pentaho.di.job.JobConfiguration;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
@@ -85,8 +86,12 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
 
     try {
 
-      final Repository repository = transformationMap.getSlaveServerConfig().getRepository();
-      final JobMeta jobMeta = loadJob( repository, transOption );
+      SlaveServerConfig serverConfig = transformationMap.getSlaveServerConfig();
+      Repository slaveServerRepository = serverConfig.getRepository();
+      if ( slaveServerRepository == null ) {
+        throw new KettleException( "Unable to connect to repository in Slave Server Config: " + serverConfig.getRepositoryId() );
+      }
+      final JobMeta jobMeta = loadJob( slaveServerRepository, transOption );
 
       // Set the servlet parameters as variables in the transformation
       //
@@ -113,6 +118,12 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
       JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
       LogLevel logLevel = LogLevel.getLogLevelForCode( levelOption );
       jobExecutionConfiguration.setLogLevel( logLevel );
+
+      // Create new repository connection for this job
+      //
+      final Repository repository = jobExecutionConfiguration.connectRepository(
+          serverConfig.getRepositoryId(), serverConfig.getRepositoryUsername(), serverConfig.getRepositoryPassword() );
+
       JobConfiguration jobConfiguration = new JobConfiguration( jobMeta, jobExecutionConfiguration );
 
       String carteObjectId = UUID.randomUUID().toString();
@@ -146,18 +157,25 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
 
       job.setSocketRepository( getSocketRepository() );
 
-      getJobMap().addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
+      JobMap jobMap = getJobMap();
+      synchronized ( jobMap ) {
+        jobMap.addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
+      }
 
-      // DO NOT disconnect from the shared repository connection when the job finishes.
+
+      // Disconnect from the job's repository when the job finishes.
       //
+      job.addJobListener( new JobAdapter() {
+        public void jobFinished( Job job ) {
+          repository.disconnect();
+        }
+      } );
+
       String message = "Job '" + job.getJobname() + "' was added to the list with id " + carteObjectId;
       logBasic( message );
 
-      //
       try {
-        // Execute the transformation...
-        //
-        job.start();
+        runJob( job );
 
         WebResult webResult = new WebResult( WebResult.STRING_OK, "Job started", carteObjectId );
         out.println( webResult.getXML() );
@@ -172,6 +190,12 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
       out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
         PKG, "RunJobServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
     }
+  }
+
+  protected void runJob( Job job ) {
+    // Execute the transformation...
+    //
+    job.start();
   }
 
   private JobMeta loadJob( Repository repository, String job ) throws KettleException {

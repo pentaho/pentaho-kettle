@@ -125,6 +125,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
         trans.setSafeModeEnabled( executionConfiguration.isSafeModeEnabled() );
         trans.setGatheringMetrics( executionConfiguration.isGatheringMetrics() );
         trans.injectVariables( executionConfiguration.getVariables() );
+        trans.setPreviousResult( executionConfiguration.getPreviousResult() );
 
         try {
           trans.prepareExecution( null );

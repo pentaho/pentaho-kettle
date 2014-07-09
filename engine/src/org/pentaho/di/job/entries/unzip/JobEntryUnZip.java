@@ -166,8 +166,6 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 
     addOriginalTimestamp = false;
     setOriginalModificationDate = false;
-
-    setID( -1L );
   }
 
   public JobEntryUnZip() {

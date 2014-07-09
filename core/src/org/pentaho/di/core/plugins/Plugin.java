@@ -417,10 +417,12 @@ public class Plugin implements PluginInterface {
     this.forumUrl = forumUrl;
   }
 
+  @Override
   public String getClassLoaderGroup() {
     return classLoaderGroup;
   }
 
+  @Override
   public void setClassLoaderGroup( String classLoaderGroup ) {
     this.classLoaderGroup = classLoaderGroup;
   }

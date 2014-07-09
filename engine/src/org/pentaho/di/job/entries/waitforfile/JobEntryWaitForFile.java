@@ -83,7 +83,6 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     successOnTimeout = false;
     fileSizeCheck = false;
     addFilenameToResult = false;
-    setID( -1L );
   }
 
   public JobEntryWaitForFile() {

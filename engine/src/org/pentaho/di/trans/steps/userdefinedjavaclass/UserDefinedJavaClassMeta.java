@@ -199,8 +199,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     changed = true;
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -479,8 +478,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       int nrScripts = rep.countNrStepAttributes( id_step, ElementNames.class_name.name() );
       for ( int i = 0; i < nrScripts; i++ ) {
@@ -544,8 +542,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
 
       for ( int i = 0; i < definitions.size(); i++ ) {

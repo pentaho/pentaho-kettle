@@ -10,8 +10,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -23,7 +23,7 @@ public class JobEntryFTPTest {
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    KettleLogStore.init();
+    KettleClientEnvironment.init();
   }
 
   @Before

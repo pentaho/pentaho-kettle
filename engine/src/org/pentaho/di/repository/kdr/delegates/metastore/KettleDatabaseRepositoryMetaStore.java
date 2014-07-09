@@ -224,8 +224,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public IMetaStoreElementType getElementTypeByName( String namespace, String elementTypeName )
-    throws MetaStoreException {
+  public IMetaStoreElementType getElementTypeByName( String namespace, String elementTypeName ) throws MetaStoreException {
     try {
       LongObjectId namespaceId = delegate.getNamespaceId( namespace );
       if ( namespaceId == null ) {
@@ -300,8 +299,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public List<IMetaStoreElement> getElements( String namespace, IMetaStoreElementType elementType )
-    throws MetaStoreException {
+  public List<IMetaStoreElement> getElements( String namespace, IMetaStoreElementType elementType ) throws MetaStoreException {
     try {
       IMetaStoreElementType type = getElementTypeByName( namespace, elementType.getName() );
       if ( type == null ) {
@@ -322,8 +320,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public List<String> getElementIds( String namespace, IMetaStoreElementType elementType )
-    throws MetaStoreException {
+  public List<String> getElementIds( String namespace, IMetaStoreElementType elementType ) throws MetaStoreException {
     List<String> ids = new ArrayList<String>();
     List<IMetaStoreElement> elements = getElements( namespace, elementType );
     for ( IMetaStoreElement element : elements ) {
@@ -333,8 +330,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public IMetaStoreElement getElement( String namespace, IMetaStoreElementType elementType, String elementId )
-    throws MetaStoreException {
+  public IMetaStoreElement getElement( String namespace, IMetaStoreElementType elementType, String elementId ) throws MetaStoreException {
     try {
       RowMetaAndData elementRow = delegate.getElement( new LongObjectId( new StringObjectId( elementId ) ) );
       if ( elementRow == null ) {
@@ -347,8 +343,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public IMetaStoreElement getElementByName( String namespace, IMetaStoreElementType elementType, String name )
-    throws MetaStoreException {
+  public IMetaStoreElement getElementByName( String namespace, IMetaStoreElementType elementType, String name ) throws MetaStoreException {
     try {
       LongObjectId namespaceId = delegate.getNamespaceId( namespace );
       if ( namespaceId == null ) {
@@ -375,8 +370,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public void createElement( String namespace, IMetaStoreElementType elementType, IMetaStoreElement element )
-    throws MetaStoreException, MetaStoreElementExistException {
+  public void createElement( String namespace, IMetaStoreElementType elementType, IMetaStoreElement element ) throws MetaStoreException, MetaStoreElementExistException {
     try {
       IMetaStoreElement found = getElementByName( namespace, elementType, element.getName() );
       if ( found != null ) {
@@ -396,8 +390,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public void deleteElement( String namespace, IMetaStoreElementType elementType, String elementId )
-    throws MetaStoreException {
+  public void deleteElement( String namespace, IMetaStoreElementType elementType, String elementId ) throws MetaStoreException {
     try {
       IMetaStoreElementType type = getElementTypeByName( namespace, elementType.getName() );
       if ( type == null ) {
@@ -440,8 +433,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public IMetaStoreElement newElement( IMetaStoreElementType elementType, String id, Object value )
-    throws MetaStoreException {
+  public IMetaStoreElement newElement( IMetaStoreElementType elementType, String id, Object value ) throws MetaStoreException {
     return new KDBRMetaStoreElement( delegate, elementType, id, value );
   }
 
@@ -451,8 +443,7 @@ public class KettleDatabaseRepositoryMetaStore extends MemoryMetaStore implement
   }
 
   @Override
-  public IMetaStoreElementOwner newElementOwner( String name, MetaStoreElementOwnerType ownerType )
-    throws MetaStoreException {
+  public IMetaStoreElementOwner newElementOwner( String name, MetaStoreElementOwnerType ownerType ) throws MetaStoreException {
     return new MemoryMetaStoreElementOwner( name, ownerType );
   }
 

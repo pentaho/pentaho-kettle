@@ -52,8 +52,7 @@ public class UISupportRegistery {
     uiSupportMap.put( service, supportClass );
   }
 
-  public IRepositoryExplorerUISupport createUISupport( Class<? extends IRepositoryService> service )
-    throws UIObjectCreationException {
+  public IRepositoryExplorerUISupport createUISupport( Class<? extends IRepositoryService> service ) throws UIObjectCreationException {
     Class<? extends IRepositoryExplorerUISupport> supportClass = uiSupportMap.get( service );
     if ( supportClass != null ) {
       return contruct( supportClass );
@@ -63,8 +62,7 @@ public class UISupportRegistery {
 
   }
 
-  private IRepositoryExplorerUISupport contruct( Class<? extends IRepositoryExplorerUISupport> supportClass )
-    throws UIObjectCreationException {
+  private IRepositoryExplorerUISupport contruct( Class<? extends IRepositoryExplorerUISupport> supportClass ) throws UIObjectCreationException {
     try {
       return supportClass.newInstance();
     } catch ( Throwable th ) {

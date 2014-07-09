@@ -329,8 +329,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
    *          the image for the plugin
    * @throws KettlePluginException
    */
-  public void registerCustom( Class<?> clazz, String cat, String id, String name, String desc, String image )
-    throws KettlePluginException {
+  public void registerCustom( Class<?> clazz, String cat, String id, String name, String desc, String image ) throws KettlePluginException {
     Class<? extends PluginTypeInterface> pluginType = getClass();
     Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
     PluginMainClassType mainClassTypesAnnotation = pluginType.getAnnotation( PluginMainClassType.class );
@@ -343,8 +342,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
   }
 
   protected PluginInterface registerPluginFromXmlResource( Node pluginNode, String path,
-    Class<? extends PluginTypeInterface> pluginType, boolean nativePlugin, URL pluginFolder )
-    throws KettlePluginException {
+    Class<? extends PluginTypeInterface> pluginType, boolean nativePlugin, URL pluginFolder ) throws KettlePluginException {
     try {
 
       String id = XMLHandler.getTagAttribute( pluginNode, "id" );
@@ -674,6 +672,10 @@ public abstract class BasePluginType implements PluginTypeInterface {
       new Plugin(
         ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader,
         nativePluginType, classMap, libraries, null, pluginFolder, documentationUrl, casesUrl, forumUrl );
+    ParentFirst parentFirstAnnotation = clazz.getAnnotation( ParentFirst.class );
+    if ( parentFirstAnnotation != null ) {
+      registry.addParentClassLoaderPatterns( plugin, parentFirstAnnotation.patterns() );
+    }
     registry.registerPlugin( this.getClass(), plugin );
 
     if ( libraries != null && libraries.size() > 0 ) {

@@ -54,9 +54,8 @@ public class LogWriter {
   public static final String STRING_PENTAHO_DI_LOGGER_NAME = "org.pentaho.di";
 
   public static final String STRING_PENTAHO_DI_CONSOLE_APPENDER = "ConsoleAppender:" + STRING_PENTAHO_DI_LOGGER_NAME;
-  public static final String STRING_PENTAHO_BASERVER_FILE_APPENDER = "PENTAHOFILE";       //$NON-NLS-1$
+  public static final String STRING_PENTAHO_BASERVER_FILE_APPENDER = "PENTAHOFILE"; //$NON-NLS-1$
   public static final String STRING_PENTAHO_BASERVER_CONSOLE_APPENDER = "PENTAHOCONSOLE"; //$NON-NLS-1$
-
 
   // String...
   private int type;
@@ -73,8 +72,8 @@ public class LogWriter {
   private static Layout layout;
 
   // synchronizing logWriter singleton instance PDI-6840
-  synchronized public static final LogWriter getInstance() {
-    if (logWriter != null) {
+  public static final synchronized LogWriter getInstance() {
+    if ( logWriter != null ) {
       return logWriter;
     }
 
@@ -84,13 +83,13 @@ public class LogWriter {
   }
 
   private LogWriter() {
-    pentahoLogger = Logger.getLogger(STRING_PENTAHO_DI_LOGGER_NAME);
-    pentahoLogger.setAdditivity(false);
+    pentahoLogger = Logger.getLogger( STRING_PENTAHO_DI_LOGGER_NAME );
+    pentahoLogger.setAdditivity( false );
 
     // ensure all messages get logged in this logger since we filtered it above
     // we do not set the level in the rootLogger so the rootLogger can decide by itself (e.g. in the platform)
     //
-    pentahoLogger.setLevel(Level.ALL);
+    pentahoLogger.setLevel( Level.ALL );
 
     layout = new Log4jKettleLayout();
 
@@ -140,18 +139,18 @@ public class LogWriter {
    * @return the LogWriter object
    */
   // synchronizing logWriter singleton instance PDI-6840
-  synchronized public static final LogWriter getInstance(String filename, boolean exact) throws KettleException {
-    if (logWriter != null) {
+  public static final synchronized LogWriter getInstance( String filename, boolean exact ) throws KettleException {
+    if ( logWriter != null ) {
       // OK, see if we have a file appender already for this
       //
-      if (logWriter.pentahoLogger.getAppender(LogWriter.createFileAppenderName(filename, exact)) == null) {
-        logWriter.fileAppender = createFileAppender(filename, exact);
-        logWriter.addAppender(logWriter.fileAppender);
+      if ( logWriter.pentahoLogger.getAppender( LogWriter.createFileAppenderName( filename, exact ) ) == null ) {
+        logWriter.fileAppender = createFileAppender( filename, exact );
+        logWriter.addAppender( logWriter.fileAppender );
       }
       return logWriter;
     }
 
-    logWriter = new LogWriter(filename, exact);
+    logWriter = new LogWriter( filename, exact );
     return logWriter;
   }
 
@@ -159,20 +158,20 @@ public class LogWriter {
    * Closes the file appender opened by the getInstance(filename, exact, level) method
    */
   public static final void closeAndRemoveFileAppender() {
-    if (logWriter.fileAppender != null) {
+    if ( logWriter.fileAppender != null ) {
       logWriter.fileAppender.close();
-      logWriter.pentahoLogger.removeAppender(logWriter.fileAppender);
+      logWriter.pentahoLogger.removeAppender( logWriter.fileAppender );
     }
   }
 
-  private LogWriter(String filename, boolean exact) {
+  private LogWriter( String filename, boolean exact ) {
     this();
 
     try {
-      fileAppender = createFileAppender(filename, exact);
-      addAppender(fileAppender);
-    } catch (Exception e) {
-      System.out.println("ERROR OPENING LOG FILE [" + filename + "] --> " + e.toString());
+      fileAppender = createFileAppender( filename, exact );
+      addAppender( fileAppender );
+    } catch ( Exception e ) {
+      System.out.println( "ERROR OPENING LOG FILE [" + filename + "] --> " + e.toString() );
     }
   }
 
@@ -183,22 +182,22 @@ public class LogWriter {
    * @return A new file appender
    * @throws KettleFileException In case there is a problem opening the file.
    */
-  public static final Log4jFileAppender createFileAppender(String filename, boolean exact) throws KettleFileException {
+  public static final Log4jFileAppender createFileAppender( String filename, boolean exact ) throws KettleFileException {
     try {
       FileObject file;
-      if (!exact) {
-        file = KettleVFS.createTempFile(filename, ".log", System.getProperty("java.io.tmpdir"));
+      if ( !exact ) {
+        file = KettleVFS.createTempFile( filename, ".log", System.getProperty( "java.io.tmpdir" ) );
       } else {
-        file = KettleVFS.getFileObject(filename);
+        file = KettleVFS.getFileObject( filename );
       }
 
-      Log4jFileAppender appender = new Log4jFileAppender(file);
-      appender.setLayout(new Log4jKettleLayout(true));
-      appender.setName(LogWriter.createFileAppenderName(filename, exact));
+      Log4jFileAppender appender = new Log4jFileAppender( file );
+      appender.setLayout( new Log4jKettleLayout( true ) );
+      appender.setName( LogWriter.createFileAppenderName( filename, exact ) );
 
       return appender;
-    } catch (IOException e) {
-      throw new KettleFileException("Unable to add Kettle file appender to Log4J", e);
+    } catch ( IOException e ) {
+      throw new KettleFileException( "Unable to add Kettle file appender to Log4J", e );
     }
   }
 
@@ -210,28 +209,27 @@ public class LogWriter {
    * @return A new file appender
    * @throws KettleFileException In case there is a problem opening the file.
    */
-  public static final Log4jFileAppender createFileAppender(String filename, boolean exact, boolean append)
-      throws KettleFileException {
+  public static final Log4jFileAppender createFileAppender( String filename, boolean exact, boolean append ) throws KettleFileException {
     try {
       FileObject file;
-      if (!exact) {
-        file = KettleVFS.createTempFile(filename, ".log", System.getProperty("java.io.tmpdir"));
+      if ( !exact ) {
+        file = KettleVFS.createTempFile( filename, ".log", System.getProperty( "java.io.tmpdir" ) );
       } else {
-        file = KettleVFS.getFileObject(filename);
+        file = KettleVFS.getFileObject( filename );
       }
 
-      Log4jFileAppender appender = new Log4jFileAppender(file, append);
-      appender.setLayout(new Log4jKettleLayout(true));
-      appender.setName(LogWriter.createFileAppenderName(filename, exact));
+      Log4jFileAppender appender = new Log4jFileAppender( file, append );
+      appender.setLayout( new Log4jKettleLayout( true ) );
+      appender.setName( LogWriter.createFileAppenderName( filename, exact ) );
 
       return appender;
-    } catch (IOException e) {
-      throw new KettleFileException("Unable to add Kettle file appender to Log4J", e);
+    } catch ( IOException e ) {
+      throw new KettleFileException( "Unable to add Kettle file appender to Log4J", e );
     }
   }
 
-  public static final String createFileAppenderName(String filename, boolean exact) {
-    if (!exact) {
+  public static final String createFileAppenderName( String filename, boolean exact ) {
+    if ( !exact ) {
       return "<temp file> : " + filename;
     } else {
       return filename;
@@ -249,19 +247,19 @@ public class LogWriter {
   @Deprecated
   public static final Log4jStringAppender createStringAppender() {
     Log4jStringAppender appender = new Log4jStringAppender();
-    appender.setLayout(new Log4jKettleLayout(true));
+    appender.setLayout( new Log4jKettleLayout( true ) );
 
     return appender;
   }
 
   public static void setConsoleAppenderDebug() {
-    Enumeration<?> appenders = Logger.getLogger(STRING_PENTAHO_DI_LOGGER_NAME).getAllAppenders();
+    Enumeration<?> appenders = Logger.getLogger( STRING_PENTAHO_DI_LOGGER_NAME ).getAllAppenders();
 
-    while (appenders.hasMoreElements()) {
+    while ( appenders.hasMoreElements() ) {
       Object appender = appenders.nextElement();
-      if (appender instanceof ConsoleAppender || appender instanceof Log4jConsoleAppender) {
-        if (appender instanceof ConsoleAppender) {
-          ((ConsoleAppender) appender).setThreshold(Level.DEBUG);
+      if ( appender instanceof ConsoleAppender || appender instanceof Log4jConsoleAppender ) {
+        if ( appender instanceof ConsoleAppender ) {
+          ( (ConsoleAppender) appender ).setThreshold( Level.DEBUG );
         }
       }
     }
@@ -271,45 +269,41 @@ public class LogWriter {
     return type;
   }
 
-  public void setType(int type) {
+  public void setType( int type ) {
     this.type = type;
   }
 
   public boolean close() {
     boolean isNotEmbedded = true;
-    try
-    {
+    try {
       // Close all appenders only if we are not embedded (ie. running a report in BA Server
       // that has a PDI data source is considered embedded)
-      Logger logger = Logger.getLogger(STRING_PENTAHO_DI_LOGGER_NAME);
+      Logger logger = Logger.getLogger( STRING_PENTAHO_DI_LOGGER_NAME );
       Enumeration<?> appenders = logger.getAllAppenders();
-      while (appenders.hasMoreElements())
-      {
+      while ( appenders.hasMoreElements() ) {
         final Appender appender = (Appender) appenders.nextElement();
         // Check to see if we have registered BA Server appenders
-        if ((appender.getName().compareTo(STRING_PENTAHO_BASERVER_FILE_APPENDER) == 0) ||
-                (appender.getName().compareTo(STRING_PENTAHO_BASERVER_CONSOLE_APPENDER) == 0)) {
+        if ( ( appender.getName().compareTo( STRING_PENTAHO_BASERVER_FILE_APPENDER ) == 0 )
+          || ( appender.getName().compareTo( STRING_PENTAHO_BASERVER_CONSOLE_APPENDER ) == 0 ) ) {
           isNotEmbedded = false;
           break;
         }
       }
 
       // If we are not embedded, we can safely close all appenders.
-      if (isNotEmbedded == true) {
+      if ( isNotEmbedded == true ) {
         pentahoLogger.removeAllAppenders();
         LogWriter.unsetLogWriter();
       }
-    }
-    catch(Exception e)
-    {
-      isNotEmbedded=false;
+    } catch ( Exception e ) {
+      isNotEmbedded = false;
     }
 
     return isNotEmbedded;
   }
 
   // synchronizing logWriter singleton instance PDI-6840
-  synchronized static private void unsetLogWriter() {
+  private static synchronized void unsetLogWriter() {
     logWriter = null;
   }
 
@@ -318,49 +312,50 @@ public class LogWriter {
    * @param logMessage
    * @param channelLogLevel
    */
-  public void println(LogMessageInterface logMessage, LogLevel channelLogLevel) {
+  public void println( LogMessageInterface logMessage, LogLevel channelLogLevel ) {
     String subject = null;
 
     LogLevel logLevel = logMessage.getLevel();
 
-    if (!logLevel.isVisible(channelLogLevel)) {
+    if ( !logLevel.isVisible( channelLogLevel ) ) {
       return; // not for our eyes.
     }
 
-    if (subject == null)
+    if ( subject == null ) {
       subject = "Kettle";
+    }
 
     // Are the message filtered?
     //
-    if (!logLevel.isError() && !Const.isEmpty(filter)) {
-      if (subject.indexOf(filter) < 0 && logMessage.toString().indexOf(filter) < 0) {
+    if ( !logLevel.isError() && !Const.isEmpty( filter ) ) {
+      if ( subject.indexOf( filter ) < 0 && logMessage.toString().indexOf( filter ) < 0 ) {
         return; // "filter" not found in row: don't show!
       }
     }
 
-    switch (logLevel) {
+    switch ( logLevel ) {
       case ERROR:
-        pentahoLogger.error(logMessage);
+        pentahoLogger.error( logMessage );
         break;
       case ROWLEVEL:
       case DEBUG:
-        pentahoLogger.debug(logMessage);
+        pentahoLogger.debug( logMessage );
         break;
       default:
-        pentahoLogger.info(logMessage);
+        pentahoLogger.info( logMessage );
         break;
     }
   }
 
-  public void println(LogMessageInterface message, Throwable e, LogLevel channelLogLevel) {
-    println(message, channelLogLevel);
+  public void println( LogMessageInterface message, Throwable e, LogLevel channelLogLevel ) {
+    println( message, channelLogLevel );
 
-    String stackTrace = Const.getStackTracker(e);
-    LogMessage traceMessage = new LogMessage(stackTrace, message.getLogChannelId(), LogLevel.ERROR);
-    println(traceMessage, channelLogLevel);
+    String stackTrace = Const.getStackTracker( e );
+    LogMessage traceMessage = new LogMessage( stackTrace, message.getLogChannelId(), LogLevel.ERROR );
+    println( traceMessage, channelLogLevel );
   }
 
-  public void setFilter(String filter) {
+  public void setFilter( String filter ) {
     this.filter = filter;
   }
 
@@ -372,7 +367,7 @@ public class LogWriter {
    * This is not thread safe: please try to get the file appender yourself using the static constructor and work from there
    */
   public InputStream getFileInputStream() throws IOException {
-    return KettleVFS.getInputStream(fileAppender.getFile());
+    return KettleVFS.getInputStream( fileAppender.getFile() );
   }
 
   /**
@@ -390,12 +385,12 @@ public class LogWriter {
    * @return The file input stream of the appender
    * @throws IOException in case the appender ocan't be found
    */
-  public FileInputStream getFileInputStream(String filename, boolean exact) throws IOException {
-    Appender appender = pentahoLogger.getAppender(createFileAppenderName(filename, exact));
-    if (appender == null) {
-      throw new IOException("Unable to find appender for file: " + filename + " (exact=" + exact + ")");
+  public FileInputStream getFileInputStream( String filename, boolean exact ) throws IOException {
+    Appender appender = pentahoLogger.getAppender( createFileAppenderName( filename, exact ) );
+    if ( appender == null ) {
+      throw new IOException( "Unable to find appender for file: " + filename + " (exact=" + exact + ")" );
     }
-    return new FileInputStream(((Log4jFileAppender) appender).getFile().getName().getPathDecoded());
+    return new FileInputStream( ( (Log4jFileAppender) appender ).getFile().getName().getPathDecoded() );
   }
 
   /**
@@ -408,26 +403,26 @@ public class LogWriter {
   /**
    * @param realFilename The realFilename to set.
    */
-  public void setRealFilename(File realFilename) {
+  public void setRealFilename( File realFilename ) {
     this.realFilename = realFilename;
   }
 
-  public void addAppender(Appender appender) {
-    pentahoLogger.addAppender(appender);
+  public void addAppender( Appender appender ) {
+    pentahoLogger.addAppender( appender );
   }
 
-  public void removeAppender(Appender appender) {
-    pentahoLogger.removeAppender(appender);
+  public void removeAppender( Appender appender ) {
+    pentahoLogger.removeAppender( appender );
   }
 
-  public static void setLayout(Layout layout) {
+  public static void setLayout( Layout layout ) {
     LogWriter.layout = layout; // save for later creation of new files...
 
     Enumeration<?> appenders = logWriter.pentahoLogger.getAllAppenders();
-    while (appenders.hasMoreElements()) {
+    while ( appenders.hasMoreElements() ) {
       Appender appender = (Appender) appenders.nextElement();
-      if (appender instanceof Log4jConsoleAppender || appender instanceof Log4jFileAppender) {
-        appender.setLayout(layout);
+      if ( appender instanceof Log4jConsoleAppender || appender instanceof Log4jFileAppender ) {
+        appender.setLayout( layout );
       }
     }
   }

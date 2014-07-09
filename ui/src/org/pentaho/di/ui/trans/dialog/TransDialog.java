@@ -1,4 +1,4 @@
-//CHECKSTYLE:FileLength:OFF
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -22,7 +22,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.ui.trans.dialog;
-
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
@@ -95,6 +94,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
 
 public class TransDialog extends Dialog {
   public static final int LOG_INDEX_TRANS = 0;

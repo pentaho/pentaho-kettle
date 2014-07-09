@@ -22,8 +22,11 @@
 
 package org.pentaho.di.core.encryption;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleValueException;
 
 /**
@@ -31,12 +34,19 @@ import org.pentaho.di.core.exception.KettleValueException;
  *
  * @author Sven Boden
  */
-public class EncrTest extends TestCase {
+public class EncrTest {
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
+    KettleClientEnvironment.init();
+  }
+
   /**
    * Test password encryption.
    *
    * @throws KettleValueException
    */
+  @Test
   public void testEncryptPassword() throws KettleValueException {
     String encryption;
 
@@ -70,6 +80,7 @@ public class EncrTest extends TestCase {
    *
    * @throws KettleValueException
    */
+  @Test
   public void testDecryptPassword() throws KettleValueException {
     String encryption;
     String decryption;
@@ -112,6 +123,7 @@ public class EncrTest extends TestCase {
    *
    * @throws KettleValueException
    */
+  @Test
   public void testEncryptPasswordIfNotUsingVariables() throws KettleValueException {
     String encryption;
 
@@ -142,6 +154,7 @@ public class EncrTest extends TestCase {
    *
    * @throws KettleValueException
    */
+  @Test
   public void testDecryptPasswordIfNotUsingVariables() throws KettleValueException {
     String encryption;
     String decryption;

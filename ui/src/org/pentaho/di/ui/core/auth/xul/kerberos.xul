@@ -10,22 +10,22 @@
                 </columns>
                 <rows>
                     <row>
-                        <label value="Username"/>
+                        <label value="${kerberos.principal}"/>
                         <textbox flex="1" id="principal"/>
                         <spacer/>
                     </row>
                     <row>
-                        <label value="Password"/>
+                        <label value="${kerberos.password}"/>
                         <textbox flex="1" id="password" type="password"/>
                         <spacer/>
                     </row>
                     <row>
-                        <label value="Use Keytab"/>
+                        <label value="${kerberos.usekeytab}"/>
                         <checkbox id="useKeytab" />
                         <spacer/>
                     </row>
                     <row>
-                        <label value="Keytab"/>
+                        <label value="${kerberos.keytab}"/>
                         <textbox flex="1" id="keytab"/>
                         <button id="browse" label="..."  onclick="handler.browse()"/>
                     </row>

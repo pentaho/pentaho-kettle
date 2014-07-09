@@ -10,14 +10,19 @@ import org.pentaho.di.core.spreadsheet.KCellType;
 public class StaxPoiCell implements KCell {
 
   private KCellType type;
-  private String value;
+  private Object value;
   private int row;
 
-  // only string type supported yet, everything else is cast to String
   public StaxPoiCell( String value, int row ) {
     this.value = value;
     this.row = row;
     type = KCellType.STRING_FORMULA;
+  }
+
+  public StaxPoiCell( Object value, KCellType type, int row ) {
+    this.value = value;
+    this.type = type;
+    this.row = row;
   }
 
   @Override
@@ -32,7 +37,7 @@ public class StaxPoiCell implements KCell {
 
   @Override
   public String getContents() {
-    return value;
+    return value == null ? null : value.toString();
   }
 
   @Override

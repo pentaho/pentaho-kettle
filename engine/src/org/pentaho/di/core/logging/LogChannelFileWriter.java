@@ -63,8 +63,7 @@ public class LogChannelFileWriter {
    * @throws KettleException
    *           in case the specified log file can't be created.
    */
-  public LogChannelFileWriter( String logChannelId, FileObject logFile, boolean appending, int pollingInterval )
-    throws KettleException {
+  public LogChannelFileWriter( String logChannelId, FileObject logFile, boolean appending, int pollingInterval ) throws KettleException {
     this.logChannelId = logChannelId;
     this.logFile = logFile;
     this.appending = appending;

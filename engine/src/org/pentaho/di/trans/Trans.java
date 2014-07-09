@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
@@ -296,7 +297,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   private String transactionId;
 
   /** Whether the transformation is preparing for execution. */
-  private boolean preparing;
+  private volatile boolean preparing;
 
   /** Whether the transformation is initializing. */
   private boolean initializing;
@@ -393,7 +394,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   protected Hashtable<String, Counter> counters;
 
-  private HttpServletResponse servletresponse;
+  private HttpServletResponse servletResponse;
 
   private HttpServletRequest servletRequest;
 
@@ -541,8 +542,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * loading a transformation from a file (if the filename is provided but not a repository object) or from a repository
    * (if the repository object, repository directory name, and transformation name are specified).
    *
-   * @param parentVariableSpace
-   *          the parent variable space
+   * @param parent
+   *          the parent variable space and named params
    * @param rep
    *          the repository
    * @param name
@@ -554,8 +555,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @throws KettleException
    *           if any error occurs during loading, parsing, or creation of the transformation
    */
-  public Trans( VariableSpace parentVariableSpace, Repository rep, String name, String dirname, String filename )
-    throws KettleException {
+  public <Parent extends VariableSpace & NamedParams> Trans( Parent parent, Repository rep, String name,
+      String dirname, String filename ) throws KettleException {
     this();
     try {
       if ( rep != null ) {
@@ -570,12 +571,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         transMeta = new TransMeta( filename, false );
       }
 
-      this.log = new LogChannel( this );
+      this.log = LogChannel.GENERAL;
 
-      transMeta.initializeVariablesFrom( parentVariableSpace );
-      initializeVariablesFrom( parentVariableSpace );
-      transMeta.copyParametersFrom( this );
-      transMeta.activateParameters();
+      transMeta.initializeVariablesFrom( parent );
+      initializeVariablesFrom( parent );
+      // PDI-3064 do not erase parameters from meta!
+      // instead of this - copy parameters to actual transformation
+      this.copyParametersFrom( parent );
+      this.activateParameters();
+
       this.setDefaultLogCommitSize();
 
       // Get a valid transactionId in case we run database transactional.
@@ -1224,8 +1228,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             //
             if ( step.getErrors() > 0 ) {
 
-              log.logMinimal( getName(), BaseMessages.getString( PKG, "Trans.Log.TransformationDetectedErrors" ) );
-              log.logMinimal( getName(), BaseMessages.getString(
+              log.logMinimal( BaseMessages.getString( PKG, "Trans.Log.TransformationDetectedErrors" ) );
+              log.logMinimal( BaseMessages.getString(
                 PKG, "Trans.Log.TransformationIsKillingTheOtherSteps" ) );
 
               killAllNoWait();
@@ -1279,7 +1283,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       public void transFinished( Trans trans ) {
 
         try {
-          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationFinish.id, this );
+          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationFinish.id, trans );
         } catch ( KettleException e ) {
           throw new RuntimeException( "Error calling extension point at end of transformation", e );
         }
@@ -1646,6 +1650,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   private void setFinished( boolean newValue ) {
     finished.set( newValue );
+  }
+
+  public boolean isFinishedOrStopped() {
+    return isFinished() || isStopped();
   }
 
   /**
@@ -4357,8 +4365,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     return variables.environmentSubstitute( aString );
   }
 
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
 
@@ -4536,6 +4543,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @return the repository
    */
   public Repository getRepository() {
+
+    if ( repository == null ) {
+      // Does the transmeta have a repo?
+      // This is a valid case, when a non-repo trans is attempting to retrieve
+      // a transformation in the repository.
+      if ( transMeta != null ) {
+        return transMeta.getRepository();
+      }
+    }
     return repository;
   }
 
@@ -4764,8 +4780,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @see org.pentaho.di.core.parameters.NamedParams#addParameterDefinition(java.lang.String, java.lang.String,
    *      java.lang.String)
    */
-  public void addParameterDefinition( String key, String defValue, String description )
-    throws DuplicateParamException {
+  public void addParameterDefinition( String key, String defValue, String description ) throws DuplicateParamException {
     namedParams.addParameterDefinition( key, defValue, description );
   }
 
@@ -5333,21 +5348,34 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
   }
 
+
+  /**
+   * Sets encoding of HttpServletResponse according to System encoding.Check if system encoding is null or an empty and
+   * set it to HttpServletResponse when not and writes error to log if null. Throw IllegalArgumentException if input
+   * parameter is null.
+   * 
+   * @param response
+   *          the HttpServletResponse to set encoding, mayn't be null
+   */
   public void setServletReponse( HttpServletResponse response ) {
+    if ( response == null ) {
+      throw new IllegalArgumentException( "Response is not valid: " + response );
+    }
     String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
-    if ( encoding != null && !Const.isEmpty( encoding.trim() ) ) {
+    // true if encoding is null or an empty (also for the next kin of strings: "   ")
+    if ( !StringUtils.isBlank( encoding ) ) {
       try {
-        response.setCharacterEncoding( encoding );
+        response.setCharacterEncoding( encoding.trim() );
         response.setContentType( "text/html; charset=" + encoding );
       } catch ( Exception ex ) {
         LogChannel.GENERAL.logError( "Unable to encode data with encoding : '" + encoding + "'", ex );
       }
     }
-    this.servletresponse = response;
+    this.servletResponse = response;
   }
 
   public HttpServletResponse getServletResponse() {
-    return servletresponse;
+    return servletResponse;
   }
 
   public void setServletRequest( HttpServletRequest request ) {

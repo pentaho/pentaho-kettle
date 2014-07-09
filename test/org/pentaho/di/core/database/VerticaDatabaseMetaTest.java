@@ -23,7 +23,11 @@
 package org.pentaho.di.core.database;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 
 /**
  * Tests for the Vertica Database Meta classes.
@@ -32,6 +36,15 @@ import org.junit.Test;
  *
  */
 public class VerticaDatabaseMetaTest {
+
+  /**
+   * 
+   */
+  private static final String PRIMARY_KEY_NAME = "PrimaryKeyName";
+  /**
+   * 
+   */
+  private static final String TECHNICAL_KEY_NAME = "TechnicalKeyName";
 
   /**
    * Tests the supportsTimeStampToDateConversion method.
@@ -45,4 +58,59 @@ public class VerticaDatabaseMetaTest {
     assertFalse( databaseInterface.supportsTimeStampToDateConversion() );
 
   }
+
+  @Test
+  public void testSupportBlob() {
+    DatabaseInterface databaseInterface = new VerticaDatabaseMeta();
+    assertFalse( databaseInterface.supportsGetBlob() );
+  }
+
+  @Test
+  public void testIsDisplaySizeTwiceThePrecision() {
+    DatabaseInterface databaseInterface = new VerticaDatabaseMeta();
+    assertTrue( databaseInterface.isDisplaySizeTwiceThePrecision() );
+  }
+
+  @Test
+  public void testGetDefaultBinaryFieldDefinition() {
+
+    ValueMetaInterface vm = new ValueMetaBase( "TestFieldBinary", ValueMetaInterface.TYPE_BINARY, -1, 1 );
+    String expDefaultBinaryField = "VARBINARY";
+
+    DatabaseInterface databaseInterface = new VerticaDatabaseMeta();
+    String defaultBinaryField =
+        databaseInterface.getFieldDefinition( vm, TECHNICAL_KEY_NAME, PRIMARY_KEY_NAME, false, false, false );
+    String assertMessage = defaultBinaryField + " should be equal to expected " + expDefaultBinaryField;
+
+    assertTrue( assertMessage, expDefaultBinaryField.equals( defaultBinaryField ) );
+  }
+
+  @Test
+  public void testGetOneByteBinaryFieldDefinition() {
+
+    ValueMetaInterface vm = new ValueMetaBase( "TestFieldBinary", ValueMetaInterface.TYPE_BINARY, 1, 1 );
+    String expDefaultBinaryField = "VARBINARY(1)";
+
+    DatabaseInterface databaseInterface = new VerticaDatabaseMeta();
+    String defaultBinaryField =
+        databaseInterface.getFieldDefinition( vm, TECHNICAL_KEY_NAME, PRIMARY_KEY_NAME, false, false, false );
+    String assertMessage = defaultBinaryField + " should be equal to expected " + expDefaultBinaryField;
+
+    assertTrue( assertMessage, expDefaultBinaryField.equals( defaultBinaryField ) );
+  }
+
+  @Test
+  public void testGetMaximumByteBinaryFieldDefinition() {
+
+    ValueMetaInterface vm = new ValueMetaBase( "TestFieldBinary", ValueMetaInterface.TYPE_BINARY, 65000, 1 );
+    String expDefaultBinaryField = "VARBINARY(65000)";
+
+    DatabaseInterface databaseInterface = new VerticaDatabaseMeta();
+    String defaultBinaryField =
+        databaseInterface.getFieldDefinition( vm, TECHNICAL_KEY_NAME, PRIMARY_KEY_NAME, false, false, false );
+    String assertMessage = defaultBinaryField + " should be equal to expected " + expDefaultBinaryField;
+
+    assertTrue( assertMessage, expDefaultBinaryField.equals( defaultBinaryField ) );
+  }
+
 }

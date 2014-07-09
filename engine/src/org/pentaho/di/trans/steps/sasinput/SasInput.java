@@ -222,8 +222,7 @@ public class SasInput extends BaseStep implements StepInterface {
     return true;
   }
 
-  protected void convertData( RowMetaInterface source, Object[] sourceData, RowMetaInterface target )
-    throws KettleException {
+  protected void convertData( RowMetaInterface source, Object[] sourceData, RowMetaInterface target ) throws KettleException {
     int targetIndex = getInputRowMeta().size();
     for ( int i = 0; i < data.fieldIndexes.size(); i++ ) {
       int fieldIndex = data.fieldIndexes.get( i );
@@ -236,8 +235,7 @@ public class SasInput extends BaseStep implements StepInterface {
   }
 
   @Override
-  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
-    throws KettleException {
+  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException {
   }
 
 }

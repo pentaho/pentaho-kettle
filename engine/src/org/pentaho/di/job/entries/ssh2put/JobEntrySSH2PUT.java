@@ -128,7 +128,6 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
     createDestinationFolder = false;
     cachehostkey = false;
     timeout = 0;
-    setID( -1L );
   }
 
   public JobEntrySSH2PUT() {

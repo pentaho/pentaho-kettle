@@ -64,8 +64,7 @@ public class KettleURLClassLoader extends URLClassLoader {
     return name;
   }
 
-  @Override
-  protected synchronized Class<?> loadClass( String arg0, boolean arg1 ) throws ClassNotFoundException {
+  protected Class<?> loadClassFromThisLoader( String arg0, boolean arg1 ) throws ClassNotFoundException {
     Class<?> clz = null;
     if ( ( clz = findLoadedClass( arg0 ) ) != null ) {
       if ( arg1 ) {
@@ -73,21 +72,18 @@ public class KettleURLClassLoader extends URLClassLoader {
       }
       return clz;
     }
-    try {
-      if ( ( clz = findClass( arg0 ) ) != null ) {
-        if ( arg1 ) {
-          resolveClass( clz );
-        }
-        return clz;
+
+    if ( ( clz = findClass( arg0 ) ) != null ) {
+      if ( arg1 ) {
+        resolveClass( clz );
       }
-    } catch ( ClassNotFoundException e ) {
-      // ignore
-
-    } catch ( NoClassDefFoundError e ) {
-      // ignore
-
+      return clz;
     }
+    return clz;
+  }
 
+  protected Class<?> loadClassFromParent( String arg0, boolean arg1 ) throws ClassNotFoundException {
+    Class<?> clz;
     if ( ( clz = getParent().loadClass( arg0 ) ) != null ) {
       if ( arg1 ) {
         resolveClass( clz );
@@ -95,6 +91,19 @@ public class KettleURLClassLoader extends URLClassLoader {
       return clz;
     }
     throw new ClassNotFoundException( "Could not find :" + arg0 );
+  }
+
+  @Override
+  protected synchronized Class<?> loadClass( String arg0, boolean arg1 ) throws ClassNotFoundException {
+    try {
+      return loadClassFromThisLoader( arg0, arg1 );
+    } catch ( ClassNotFoundException e ) {
+      // ignore
+    } catch ( NoClassDefFoundError e ) {
+      // ignore
+    }
+
+    return loadClassFromParent( arg0, arg1 );
   }
 
   /*
@@ -107,11 +116,11 @@ public class KettleURLClassLoader extends URLClassLoader {
       // Get the jar, load the bytes from the jar file, construct class from scratch as in snippet below...
 
       /*
-       *
+       * 
        * loaded = super.findClass(name);
-       *
+       * 
        * URL url = super.findResource(newName);
-       *
+       * 
        * InputStream clis = getResourceAsStream(newName);
        */
 
@@ -149,7 +158,7 @@ public class KettleURLClassLoader extends URLClassLoader {
       return retval;
     } catch ( Exception e ) {
       System.out.println( BaseMessages.getString( PKG, "KettleURLClassLoader.Exception.UnableToReadClass" )
-        + e.toString() );
+          + e.toString() );
       return null;
     }
   }
@@ -162,7 +171,7 @@ public class KettleURLClassLoader extends URLClassLoader {
 
   /**
    * This method is designed to clear out classloader file locks in windows.
-   *
+   * 
    * @param clazzLdr
    *          class loader to clean up
    */

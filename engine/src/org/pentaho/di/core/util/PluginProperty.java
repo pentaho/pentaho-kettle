@@ -114,6 +114,5 @@ public interface PluginProperty {
    * @throws KettleException
    *           ...
    */
-  void readFromRepositoryStep( final Repository repository, final IMetaStore metaStore, final ObjectId stepId )
-    throws KettleException;
+  void readFromRepositoryStep( final Repository repository, final IMetaStore metaStore, final ObjectId stepId ) throws KettleException;
 }

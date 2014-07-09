@@ -223,8 +223,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
       filename = Const.NVL( XMLHandler.getTagValue( stepnode, "filename" ), "" );
       addResultFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addResultFile" ) );
@@ -418,8 +417,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       filename = Const.NVL( rep.getStepAttributeString( id_step, "filename" ), "" );
       addResultFile = rep.getStepAttributeBoolean( id_step, "addResultFile" );
@@ -488,8 +486,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "filename", filename );
       rep.saveStepAttribute( id_transformation, id_step, "addResultFile", addResultFile );

@@ -109,8 +109,7 @@ public class WebServer {
   }
 
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
-    SocketRepository socketRepository, List<SlaveServerDetection> slaveServers, String hostname, int port )
-    throws Exception {
+    SocketRepository socketRepository, List<SlaveServerDetection> slaveServers, String hostname, int port ) throws Exception {
     this( log, transformationMap, jobMap, socketRepository, slaveServers, hostname, port, true );
   }
 

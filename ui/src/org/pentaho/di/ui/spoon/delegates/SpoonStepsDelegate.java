@@ -220,8 +220,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
     spoon.refreshGraph();
   }
 
-  public StepDialogInterface getStepDialog( StepMetaInterface stepMeta, TransMeta transMeta, String stepName )
-    throws KettleException {
+  public StepDialogInterface getStepDialog( StepMetaInterface stepMeta, TransMeta transMeta, String stepName ) throws KettleException {
     String dialogClassName = stepMeta.getDialogClassName();
 
     Class<?> dialogClass;

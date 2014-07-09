@@ -22,6 +22,7 @@
 
 package org.pentaho.di.repository.kdr.delegates;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,6 +37,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
@@ -56,8 +58,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
   /**
    * Retrieve the ID for a namespace
    *
-   * @param namespace
-   *          The namespace to look up
+   * @param namespace The namespace to look up
    * @return the ID of the namespace
    * @throws KettleException
    */
@@ -80,8 +81,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     }
   }
 
-  public synchronized LongObjectId getElementTypeId( LongObjectId namespaceId, String elementTypeName )
-    throws KettleException {
+  public synchronized LongObjectId getElementTypeId( LongObjectId namespaceId, String elementTypeName ) throws KettleException {
     return repository.connectionDelegate.getIDWithValue(
       quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT_TYPE ),
       quote( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE ),
@@ -90,8 +90,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
       new ObjectId[] { namespaceId, } );
   }
 
-  public synchronized LongObjectId getElementId( LongObjectId elementTypeId, String elementName )
-    throws KettleException {
+  public synchronized LongObjectId getElementId( LongObjectId elementTypeId, String elementName ) throws KettleException {
     return repository.connectionDelegate.getIDWithValue(
       quoteTable( KettleDatabaseRepository.TABLE_R_ELEMENT ),
       quote( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT ),
@@ -174,8 +173,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     return attrs;
   }
 
-  public Collection<RowMetaAndData> getElementAttributes( ObjectId elementId, ObjectId parentAttributeId )
-    throws KettleDatabaseException, KettleValueException {
+  public Collection<RowMetaAndData> getElementAttributes( ObjectId elementId, ObjectId parentAttributeId ) throws KettleDatabaseException, KettleValueException {
     List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
 
     String sql =
@@ -260,8 +258,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     return idType;
   }
 
-  public ObjectId updateElementType( ObjectId namespaceId, ObjectId elementTypeId, IMetaStoreElementType type )
-    throws KettleException {
+  public ObjectId updateElementType( ObjectId namespaceId, ObjectId elementTypeId, IMetaStoreElementType type ) throws KettleException {
 
     RowMetaAndData table = new RowMetaAndData();
 
@@ -313,8 +310,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
       + quote( KettleDatabaseRepository.FIELD_NAMESPACE_ID_NAMESPACE ) + " = ? ", namespaceId );
   }
 
-  public KDBRMetaStoreElement parseElement( IMetaStoreElementType elementType, RowMetaAndData elementRow )
-    throws KettleException {
+  public KDBRMetaStoreElement parseElement( IMetaStoreElementType elementType, RowMetaAndData elementRow ) throws KettleException {
 
     Long elementId = elementRow.getInteger( KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT );
     String name = elementRow.getString( KettleDatabaseRepository.FIELD_ELEMENT_NAME, null );
@@ -342,8 +338,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     }
   }
 
-  private KDBRMetaStoreAttribute parseAttribute( ObjectId elementId, RowMetaAndData attributeRow )
-    throws KettleException {
+  private KDBRMetaStoreAttribute parseAttribute( ObjectId elementId, RowMetaAndData attributeRow ) throws KettleException {
     try {
       Long attributeId =
         attributeRow.getInteger( KettleDatabaseRepository.FIELD_ELEMENT_ATTRIBUTE_ID_ELEMENT_ATTRIBUTE );
@@ -363,7 +358,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
 
   /**
    * supported types:
-   *
+   * <p/>
    * <pre>
    * S : String (java.lang.String)
    * D : Date (java.util.Date)
@@ -381,8 +376,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
    *
    * @param value
    * @return The native value
-   * @throws Exception
-   *           in case of conversion trouble
+   * @throws Exception in case of conversion trouble
    */
   public Object parseAttributeValue( String value ) throws Exception {
     if ( Const.isEmpty( value ) || value.length() < 3 ) {
@@ -393,6 +387,8 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     switch ( type ) {
       case 'S':
         return valueString;
+      case 'T':
+        return new SimpleTimestampFormat( ValueMetaBase.DEFAULT_TIMESTAMP_FORMAT_MASK ).parse( valueString );
       case 'D':
         return new SimpleDateFormat( ValueMetaBase.DEFAULT_DATE_FORMAT_MASK ).parse( valueString );
       case 'N':
@@ -413,6 +409,10 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     if ( object instanceof String ) {
       return "S:" + object.toString();
     }
+    if ( object instanceof Timestamp ) {
+      return "T:" + new SimpleTimestampFormat(
+        ValueMetaBase.DEFAULT_TIMESTAMP_FORMAT_MASK ).format( (Timestamp) object );
+    }
     if ( object instanceof Date ) {
       return "D:" + new SimpleDateFormat( ValueMetaBase.DEFAULT_DATE_FORMAT_MASK ).format( (Date) object );
     }
@@ -429,8 +429,7 @@ public class KettleDatabaseRepositoryMetaStoreDelegate extends KettleDatabaseRep
     throw new KettleException( "Can't encode object of class : " + object.getClass().getName() );
   }
 
-  public ObjectId insertElement( IMetaStoreElementType elementType, IMetaStoreElement element )
-    throws MetaStoreException {
+  public ObjectId insertElement( IMetaStoreElementType elementType, IMetaStoreElement element ) throws MetaStoreException {
     try {
 
       LongObjectId elementId =

@@ -111,6 +111,7 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
   @Override
   protected void writeRowToMonetDB( RowMetaInterface rowMeta, Object[] r ) throws KettleException {
     if ( rowsWritten >= rowLimit ) {
+      writeBufferToMonetDB();
       // we are done, ignore any new rows
       AgileMartUtil util = new AgileMartUtil();
       util.updateMetadata( getMeta(), rowsWritten );

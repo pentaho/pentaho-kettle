@@ -36,7 +36,9 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -108,6 +110,11 @@ public class RestTest {
 
   private StepMockHelper<RestMeta, RestData> stepMockHelper;
   private HttpServer server;
+
+  @BeforeClass
+  public static void setupBeforeClass() throws KettleException {
+    KettleClientEnvironment.init();
+  }
 
   @Before
   public void setUp() throws Exception {

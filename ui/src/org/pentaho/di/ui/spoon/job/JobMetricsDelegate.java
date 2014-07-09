@@ -52,6 +52,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingRegistry;
@@ -247,7 +248,7 @@ public class JobMetricsDelegate extends SpoonDelegate {
 
             System.out.println( duration.toString() );
             LoggingObjectInterface loggingObject =
-              LoggingRegistry.getInstance().getLoggingObject( duration.getLogChannelId() );
+                LoggingRegistry.getInstance().getLoggingObject( duration.getLogChannelId() );
             if ( loggingObject == null ) {
               return;
             }
@@ -287,9 +288,8 @@ public class JobMetricsDelegate extends SpoonDelegate {
 
     jobGraph.getDisplay().asyncExec( new Runnable() {
       public void run() {
-        if ( metricsComposite != null
-          && !metricsComposite.isDisposed() && canvas != null && !canvas.isDisposed() && jobMetricsTab != null
-          && !jobMetricsTab.isDisposed() ) {
+        if ( metricsComposite != null && !metricsComposite.isDisposed() && canvas != null && !canvas.isDisposed()
+            && jobMetricsTab != null && !jobMetricsTab.isDisposed() ) {
           if ( jobMetricsTab.isShowing() ) {
             canvas.redraw();
           }
@@ -305,6 +305,20 @@ public class JobMetricsDelegate extends SpoonDelegate {
   }
 
   private void refreshImage( GC canvasGc ) {
+    List<MetricsDuration> durations = MetricsUtil.getAllDurations( jobGraph.job.getLogChannelId() );
+    if ( Const.isEmpty( durations ) ) {
+      // In case of an empty durations or null there is nothing to draw
+      return;
+    }
+
+    // Sort the metrics.
+    Collections.sort( durations, new Comparator<MetricsDuration>() {
+      @Override
+      public int compare( MetricsDuration o1, MetricsDuration o2 ) {
+        return o1.getDate().compareTo( o2.getDate() );
+      }
+    } );
+
     Rectangle bounds = canvas.getBounds();
     if ( bounds.width <= 0 || bounds.height <= 0 ) {
       return;
@@ -327,16 +341,6 @@ public class JobMetricsDelegate extends SpoonDelegate {
       image = null;
     }
 
-    List<MetricsDuration> durations = MetricsUtil.getAllDurations( jobGraph.job.getLogChannelId() );
-
-    // Sort the metrics.
-    Collections.sort( durations, new Comparator<MetricsDuration>() {
-      @Override
-      public int compare( MetricsDuration o1, MetricsDuration o2 ) {
-        return o1.getDate().compareTo( o2.getDate() );
-      }
-    } );
-
     // Correct size of canvas.
     //
 
@@ -349,9 +353,9 @@ public class JobMetricsDelegate extends SpoonDelegate {
     canvas.setSize( bounds.width, bounds.height );
 
     SWTGC gc =
-      new SWTGC( Display.getCurrent(), new Point( bounds.width, bounds.height ), PropsUI
-        .getInstance().getIconSize() );
+        new SWTGC( Display.getCurrent(), new Point( bounds.width, bounds.height ), PropsUI.getInstance().getIconSize() );
     MetricsPainter painter = new MetricsPainter( gc, barHeight );
+    // checking according to method's contract
     drawAreas = painter.paint( durations );
     image = (Image) gc.getImage();
 

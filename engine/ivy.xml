@@ -50,7 +50,7 @@
     <dependency org="com.google.gdata"                 name="gdata-analytics"      rev="2.3.0"           transitive="false"/>
     <dependency org="com.google.gdata"                 name="gdata-analytics-meta" rev="2.1"             transitive="false"/>
     <dependency org="com.google.gdata"                 name="gdata-core"           rev="1.41.4"          transitive="false"/>
-    <dependency org="com.google.collections"           name="google-collections"   rev="1.0"             transitive="false"/>
+    <dependency org="com.google.guava"                 name="guava"                rev="17.0"            transitive="false"/>
     <dependency org="infobright"                       name="infobright-core"      rev="3.4"             transitive="false"/>
     <dependency org="org.ini4j"                        name="ini4j"                rev="0.5.1"           transitive="false"/>
     <dependency org="janino"                           name="janino"               rev="2.5.16"          transitive="false"/>

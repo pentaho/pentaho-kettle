@@ -66,7 +66,7 @@ import org.pentaho.ui.xul.swt.tags.SwtButton;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
-public class XulDatabaseExplorerController extends AbstractXulEventHandler {
+public class XulDatabaseExplorerController extends AbstractXulEventHandler implements IUiActionStatus {
 
   private static final Class<?> PKG = XulDatabaseExplorerController.class;
 
@@ -83,6 +83,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
   private List<DatabaseMeta> databases;
   private boolean isExpanded;
   private boolean isJustLook;
+
+  private UiPostActionStatus status = UiPostActionStatus.NONE;
 
   private static final String DATABASE_IMAGE = "ui/images/folder_connection.png";
   private static final String FOLDER_IMAGE = "ui/images/BOL.png";
@@ -126,6 +128,11 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
     this.dbExplorerDialog = (SwtDialog) this.document.getElementById( "databaseExplorerDialog" );
 
     createDatabaseNodes();
+    if ( this.status != UiPostActionStatus.OK ) {
+      // something goes dramatically wrong!
+      return;
+    }
+
     this.bf.setDocument( super.document );
     this.bf.setBindingType( Type.ONE_WAY );
 
@@ -188,7 +195,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
     fireBindings();
   }
 
-  public void setSelectedSchemaAndTable( String aSchema, String aTable ) {
+  public void setSelectedSchemaAndTable( String aSchema, String aTable ) throws KettleDatabaseException {
     this.model.setSelectedNode( model.findBy( aSchema, aTable ) );
   }
 
@@ -354,14 +361,23 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
     collapse();
     this.model.getDatabase().clear();
     createDatabaseNodes();
+    if ( this.status != UiPostActionStatus.OK ) {
+      // something goes dramatically wrong!
+      return;
+    }
     fireBindings();
   }
 
-  private void createDatabaseNodes() {
+  /**
+   * 
+   * @return true if all goes fine, false otherwise. This will signal to caller
+   * that it may not attempt to show broken dialog
+   */
+  void createDatabaseNodes() {
+    this.status = UiPostActionStatus.NONE;
+    Database theDatabase = new Database( null, this.model.getDatabaseMeta() );
     try {
-      Database theDatabase = new Database( null, this.model.getDatabaseMeta() );
       theDatabase.connect();
-
       GetDatabaseInfoProgressDialog gdipd =
         new GetDatabaseInfoProgressDialog( (Shell) this.dbExplorerDialog.getRootObject(), this.model
           .getDatabaseMeta() );
@@ -477,8 +493,14 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
       }
 
     } catch ( Exception e ) {
+      // Something goes wrong?
+      this.status = UiPostActionStatus.ERROR;
+      theDatabase.disconnect();
       new ErrorDialog( shell, "Error", "Unexpected explorer error:", e );
+      this.status = UiPostActionStatus.ERROR_DIALOG_SHOWN;
+      return;
     }
+    this.status = UiPostActionStatus.OK;
   }
 
   public void close() {
@@ -659,5 +681,10 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
     } else {
       return meta.getQuotedSchemaTableCombination( null, model.getTable() );
     }
+  }
+
+  @Override
+  public UiPostActionStatus getActionStatus() {
+    return status;
   }
 }

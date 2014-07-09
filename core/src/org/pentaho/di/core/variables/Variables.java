@@ -22,10 +22,9 @@
 
 package org.pentaho.di.core.variables;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -140,11 +139,8 @@ public class Variables implements VariableSpace {
 
   @Override
   public String[] listVariables() {
-    List<String> list = new ArrayList<String>();
-    for ( String name : properties.keySet() ) {
-      list.add( name );
-    }
-    return list.toArray( new String[list.size()] );
+    Set<String> keySet = properties.keySet();
+    return keySet.toArray( new String[0] );
   }
 
   @Override
@@ -182,8 +178,7 @@ public class Variables implements VariableSpace {
    *           In case there is a String conversion error
    */
   @Override
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     if ( aString == null || aString.length() == 0 ) {
       return aString;
     }

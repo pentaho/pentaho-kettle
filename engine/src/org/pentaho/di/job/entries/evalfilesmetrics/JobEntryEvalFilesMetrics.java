@@ -153,7 +153,6 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
     ResultFieldFile = null;
     ResultFieldWildcard = null;
     ResultFieldIncludesubFolders = null;
-    setID( -1L );
   }
 
   public JobEntryEvalFilesMetrics() {

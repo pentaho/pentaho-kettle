@@ -74,8 +74,7 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
     outputFields = new ArrayList<SasInputField>();
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
       acceptingField = XMLHandler.getTagValue( stepnode, "accept_field" );
       int nrFields = XMLHandler.countNodes( stepnode, XML_TAG_FIELD );
@@ -133,8 +132,7 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId stepId, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId stepId, List<DatabaseMeta> databases ) throws KettleException {
     try {
       acceptingField = rep.getStepAttributeString( stepId, "accept_field" );
       outputFields = new ArrayList<SasInputField>();
@@ -148,8 +146,7 @@ public class SasInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "accept_field", acceptingField );
       for ( int i = 0; i < outputFields.size(); i++ ) {

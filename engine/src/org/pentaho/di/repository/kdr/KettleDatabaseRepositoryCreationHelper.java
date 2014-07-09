@@ -1,4 +1,4 @@
-//CHECKSTYLE:FileLength:OFF
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -2666,8 +2666,8 @@ public class KettleDatabaseRepositoryCreationHelper {
     table.addValueMeta( new ValueMeta(
       KettleDatabaseRepository.FIELD_NAMESPACE_NAME, ValueMetaInterface.TYPE_STRING,
       ( database.getDatabaseMeta().getDatabaseInterface().getMaxVARCHARLength() - 1 > 0
-          ? database.getDatabaseMeta().getDatabaseInterface().getMaxVARCHARLength() - 1
-              : KettleDatabaseRepository.REP_ORACLE_STRING_LENGTH ), 0 ) );
+        ? database.getDatabaseMeta().getDatabaseInterface().getMaxVARCHARLength() - 1
+        : KettleDatabaseRepository.REP_ORACLE_STRING_LENGTH ), 0 ) );
 
     sql =
       database.getDDL(
@@ -2975,8 +2975,7 @@ public class KettleDatabaseRepositoryCreationHelper {
    * @throws KettleException
    *           if the update didn't go as planned.
    */
-  public List<String> updateStepTypes( List<String> statements, boolean dryrun, boolean create )
-    throws KettleException {
+  public List<String> updateStepTypes( List<String> statements, boolean dryrun, boolean create ) throws KettleException {
     synchronized ( repository ) {
 
       // We should only do an update if something has changed...
@@ -3033,8 +3032,7 @@ public class KettleDatabaseRepositoryCreationHelper {
    * @throws KettleException
    *           if the update didn't go as planned.
    */
-  public List<String> updateDatabaseTypes( List<String> statements, boolean dryrun, boolean create )
-    throws KettleException {
+  public List<String> updateDatabaseTypes( List<String> statements, boolean dryrun, boolean create ) throws KettleException {
     synchronized ( repository ) {
 
       // We should only do an update if something has changed...
@@ -3094,8 +3092,7 @@ public class KettleDatabaseRepositoryCreationHelper {
    * @exception KettleException
    *              if something went wrong during the update.
    */
-  public void updateJobEntryTypes( List<String> statements, boolean dryrun, boolean create )
-    throws KettleException {
+  public void updateJobEntryTypes( List<String> statements, boolean dryrun, boolean create ) throws KettleException {
     synchronized ( repository ) {
 
       // We should only do an update if something has changed...

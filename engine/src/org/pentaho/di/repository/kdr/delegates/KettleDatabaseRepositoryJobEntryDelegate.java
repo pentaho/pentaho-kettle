@@ -106,8 +106,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
    *          A list with all defined databases
    */
   public JobEntryCopy loadJobEntryCopy( ObjectId jobId, ObjectId jobEntryCopyId,
-    List<JobEntryInterface> jobentries, List<DatabaseMeta> databases, List<SlaveServer> slaveServers )
-    throws KettleException {
+    List<JobEntryInterface> jobentries, List<DatabaseMeta> databases, List<SlaveServer> slaveServers ) throws KettleException {
     JobEntryCopy jobEntryCopy = new JobEntryCopy();
 
     try {
@@ -191,15 +190,13 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 
   @SuppressWarnings( "deprecation" )
   private void compatibleJobEntryLoadRep( JobEntryInterface jobEntry, KettleDatabaseRepository repository,
-    ObjectId id_jobentry_type, List<DatabaseMeta> databases, List<SlaveServer> slaveServers )
-    throws KettleException {
+    ObjectId id_jobentry_type, List<DatabaseMeta> databases, List<SlaveServer> slaveServers ) throws KettleException {
 
     jobEntry.loadRep( repository, id_jobentry_type, databases, slaveServers );
 
   }
 
-  public void saveJobEntryCopy( JobEntryCopy copy, ObjectId id_job, KettleDatabaseRepositoryMetaStore metaStore )
-    throws KettleException {
+  public void saveJobEntryCopy( JobEntryCopy copy, ObjectId id_job, KettleDatabaseRepositoryMetaStore metaStore ) throws KettleException {
     try {
       JobEntryInterface entry = copy.getEntry();
       /*
@@ -250,8 +247,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
   }
 
   @SuppressWarnings( "deprecation" )
-  private void compatibleEntrySaveRep( JobEntryInterface entry, Repository repository, ObjectId id_job )
-    throws KettleException {
+  private void compatibleEntrySaveRep( JobEntryInterface entry, Repository repository, ObjectId id_job ) throws KettleException {
     entry.saveRep( repository, id_job );
   }
 
@@ -366,8 +362,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
     }
   }
 
-  private Map<String, Map<String, String>> loadJobEntryAttributesMap( ObjectId jobId, Object jobEntryId )
-    throws KettleException {
+  private Map<String, Map<String, String>> loadJobEntryAttributesMap( ObjectId jobId, Object jobEntryId ) throws KettleException {
     Map<String, Map<String, String>> attributesMap = new HashMap<String, Map<String, String>>();
 
     List<Object[]> attributeRows =

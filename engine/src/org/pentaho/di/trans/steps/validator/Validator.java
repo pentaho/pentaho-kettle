@@ -239,8 +239,7 @@ public class Validator extends BaseStep implements StepInterface {
    * @throws KettleValidatorException
    *           in case there is a validation error, details are stored in the exception.
    */
-  private List<KettleValidatorException> validateFields( RowMetaInterface inputRowMeta, Object[] r )
-    throws KettleValidatorException, KettleValueException {
+  private List<KettleValidatorException> validateFields( RowMetaInterface inputRowMeta, Object[] r ) throws KettleValidatorException, KettleValueException {
     List<KettleValidatorException> exceptions = new ArrayList<KettleValidatorException>();
 
     for ( int i = 0; i < meta.getValidations().size(); i++ ) {
@@ -649,8 +648,7 @@ public class Validator extends BaseStep implements StepInterface {
     return ValueMetaFactory.createValueMeta( name, type );
   }
 
-  protected ValueMetaInterface cloneValueMeta( ValueMetaInterface valueMeta, int type )
-    throws KettlePluginException {
+  protected ValueMetaInterface cloneValueMeta( ValueMetaInterface valueMeta, int type ) throws KettlePluginException {
     return ValueMetaFactory.cloneValueMeta( valueMeta, type );
   }
 

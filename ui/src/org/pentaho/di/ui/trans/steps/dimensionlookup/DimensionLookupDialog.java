@@ -1219,7 +1219,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
     String[] fieldNames = entries.toArray( new String[entries.size()] );
     Const.sortStrings( fieldNames );
     ciKey[1].setComboValues( fieldNames );
-    ciKey[1].setComboValues( fieldNames );
+    ciUpIns[1].setComboValues( fieldNames );
   }
 
   public void setAutoincUse() {

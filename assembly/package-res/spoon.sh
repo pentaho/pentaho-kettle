@@ -20,6 +20,10 @@ export GDK_NATIVE_WINDOWS=1
 # Fix overlay scrollbar bug with Ubuntu 11.04
 export LIBOVERLAY_SCROLLBAR=0
 
+# Fix menus not showing up on Ubuntu 14.04's unity
+# Bug in: https://bugs.launchpad.net/ubuntu/+source/unity-gtk-module/+bug/1208019
+export UBUNTU_MENUPROXY=0
+
 # **************************************************
 # ** Init BASEDIR                                 **
 # **************************************************
@@ -38,7 +42,7 @@ setPentahoEnv
 # **************************************************
 
 LIBPATH="NONE"
-STARTUP="-jar launcher/launcher.jar"
+STARTUP="$DIR/launcher/launcher.jar"
 
 case `uname -s` in 
 	AIX)
@@ -193,4 +197,4 @@ OPT="$OPT $PENTAHO_DI_JAVA_OPTIONS -Djava.library.path=$LIBPATH -DKETTLE_HOME=$K
 # ***************
 # ** Run...    **
 # ***************
-"$_PENTAHO_JAVA" $OPT $STARTUP -lib $LIBPATH "${1+$@}"
+"$_PENTAHO_JAVA" $OPT -jar "$STARTUP" -lib $LIBPATH "${1+$@}"

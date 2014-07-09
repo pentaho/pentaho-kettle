@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
+import org.pentaho.di.core.jdbc.FoundClause;
 import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -58,7 +59,7 @@ public class SQL {
   /**
    * Create a new SQL object by parsing the supplied SQL string. This is a simple implementation with only one table
    * allows
-   *
+   * 
    * @param sqlString
    *          the SQL string to parse
    * @param serviceName
@@ -78,21 +79,42 @@ public class SQL {
     // First get the major blocks...
     /*
      * SELECT A, B, C FROM Step
-     *
+     * 
      * SELECT A, B, C FROM Step WHERE D > 6 AND E = 'abcd'
-     *
+     * 
      * SELECT A, B, C FROM Step ORDER BY B, A, C
-     *
+     * 
      * SELECT A, B, sum(C) FROM Step WHERE D > 6 AND E = 'abcd' GROUP BY A, B HAVING sum(C) > 100 ORDER BY sum(C) DESC
      */
     //
-    selectClause = ThinUtil.findClause( sql, "SELECT", "FROM" );
-    serviceClause = ThinUtil.findClause( sql, "FROM", "WHERE", "GROUP BY", "ORDER BY" );
+    FoundClause foundClause = ThinUtil.findClauseWithRest( sql, "SELECT", "FROM" );
+    selectClause = foundClause.getClause();
+    if ( foundClause.getRest() == null ) {
+      return;
+    }
+    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "FROM", "WHERE", "GROUP BY", "ORDER BY" );
+    serviceClause = foundClause.getClause();
     parseServiceClause();
-    whereClause = ThinUtil.findClause( sql, "WHERE", "GROUP BY", "ORDER BY" );
-    groupClause = ThinUtil.findClause( sql, "GROUP BY", "HAVING", "ORDER BY" );
-    havingClause = ThinUtil.findClause( sql, "HAVING", "ORDER BY" );
-    orderClause = ThinUtil.findClause( sql, "ORDER BY" );
+    if ( foundClause.getRest() == null ) {
+      return;
+    }
+    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "WHERE", "GROUP BY", "ORDER BY" );
+    whereClause = foundClause.getClause();
+    if ( foundClause.getRest() == null ) {
+      return;
+    }
+    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "GROUP BY", "HAVING", "ORDER BY" );
+    groupClause = foundClause.getClause();
+    if ( foundClause.getRest() == null ) {
+      return;
+    }
+    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "HAVING", "ORDER BY" );
+    havingClause = foundClause.getClause();
+    if ( foundClause.getRest() == null ) {
+      return;
+    }
+    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "ORDER BY" );
+    orderClause = foundClause.getClause();
   }
 
   private void parseServiceClause() throws KettleSQLException {
@@ -116,8 +138,7 @@ public class SQL {
         serviceName = ThinUtil.stripQuotes( list.get( 1 ), '"' );
       }
       if ( list.size() > 2 ) {
-        throw new KettleSQLException( "Too many parts detected in table name specification ["
-          + serviceClause + "]" );
+        throw new KettleSQLException( "Too many parts detected in table name specification [" + serviceClause + "]" );
       }
     }
 

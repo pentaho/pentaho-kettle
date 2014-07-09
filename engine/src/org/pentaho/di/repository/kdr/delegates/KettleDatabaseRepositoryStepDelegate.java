@@ -203,8 +203,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
    */
   @SuppressWarnings( "deprecation" )
   private void readRepCompatibleStepMeta( StepMetaInterface stepMetaInterface,
-    KettleDatabaseRepository repository, ObjectId objectId, List<DatabaseMeta> databases )
-    throws KettleException {
+    KettleDatabaseRepository repository, ObjectId objectId, List<DatabaseMeta> databases ) throws KettleException {
     stepMetaInterface.readRep( repository, objectId, databases, null );
   }
 
@@ -256,8 +255,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
     stepMetaInterface.saveRep( repository, id_transformation, objectId );
   }
 
-  public void saveStepErrorMeta( StepErrorMeta meta, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveStepErrorMeta( StepErrorMeta meta, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     repository.saveStepAttribute( id_transformation, id_step, "step_error_handling_source_step", meta
       .getSourceStep() != null ? meta.getSourceStep().getName() : "" );
     repository.saveStepAttribute( id_transformation, id_step, "step_error_handling_target_step", meta
@@ -279,8 +277,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
       .getMinPercentRows() );
   }
 
-  public StepErrorMeta loadStepErrorMeta( VariableSpace variables, StepMeta stepMeta, List<StepMeta> steps )
-    throws KettleException {
+  public StepErrorMeta loadStepErrorMeta( VariableSpace variables, StepMeta stepMeta, List<StepMeta> steps ) throws KettleException {
     StepErrorMeta meta = new StepErrorMeta( variables, stepMeta );
 
     meta.setTargetStep( StepMeta.findStep( steps, repository.getStepAttributeString(
@@ -333,8 +330,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
    *           In case anything goes wrong
    *
    */
-  public void saveStepPartitioningMeta( StepPartitioningMeta meta, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveStepPartitioningMeta( StepPartitioningMeta meta, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     repository.saveStepAttribute(
       id_transformation, id_step, "PARTITIONING_SCHEMA", meta.getPartitionSchema() != null ? meta
         .getPartitionSchema().getName() : "" ); // selected schema

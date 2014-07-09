@@ -86,8 +86,7 @@ public final class Assert { // NOPMD
    * @throws IllegalArgumentException
    *           if bool is false.
    */
-  public static void assertTrue( final boolean bool, final String message, final Object... args )
-    throws IllegalArgumentException {
+  public static void assertTrue( final boolean bool, final String message, final Object... args ) throws IllegalArgumentException {
     if ( bool ) {
       return;
     }
@@ -117,8 +116,7 @@ public final class Assert { // NOPMD
    * @throws IllegalArgumentException
    *           if bool is true.
    */
-  public static void assertFalse( final boolean bool, final String message, final Object... args )
-    throws IllegalArgumentException {
+  public static void assertFalse( final boolean bool, final String message, final Object... args ) throws IllegalArgumentException {
     if ( !bool ) {
       return;
     }
@@ -169,8 +167,7 @@ public final class Assert { // NOPMD
    * @throws IllegalArgumentException
    *           if collection is null or empty.
    */
-  public static void assertNotNullOrEmpty( final Collection<?> collection, final String message )
-    throws IllegalArgumentException {
+  public static void assertNotNullOrEmpty( final Collection<?> collection, final String message ) throws IllegalArgumentException {
     if ( collection == null || collection.isEmpty() ) {
       throw new IllegalArgumentException( message );
     }
@@ -196,8 +193,7 @@ public final class Assert { // NOPMD
    * @throws IllegalArgumentException
    *           if collection is null or empty.
    */
-  public static void assertNotNullOrEmpty( final Object[] array, final String message )
-    throws IllegalArgumentException {
+  public static void assertNotNullOrEmpty( final Object[] array, final String message ) throws IllegalArgumentException {
     if ( array == null || array.length == 0 ) {
       throw new IllegalArgumentException( message );
     }
@@ -223,8 +219,7 @@ public final class Assert { // NOPMD
    * @throws IllegalArgumentException
    *           if collection is null or empty.
    */
-  public static void assertNotNullOrEmpty( final Map<?, ?> map, final String message )
-    throws IllegalArgumentException {
+  public static void assertNotNullOrEmpty( final Map<?, ?> map, final String message ) throws IllegalArgumentException {
     if ( map == null || map.isEmpty() ) {
       throw new IllegalArgumentException( message );
     }
@@ -376,8 +371,7 @@ public final class Assert { // NOPMD
    * @throws IllegalArgumentException
    *           if value is null or <= 0.
    */
-  public static void assertGreaterZero( final Integer value, final String message )
-    throws IllegalArgumentException {
+  public static void assertGreaterZero( final Integer value, final String message ) throws IllegalArgumentException {
     if ( value == null || value <= 0 ) {
       throw new IllegalArgumentException( message );
     }

@@ -65,8 +65,7 @@ public interface ResourceNamingInterface {
    * @return String The file name with the path set as a variable. If pathOnly is set to true then the file name will be
    *         left out.
    */
-  public String nameResource( FileObject fileObject, VariableSpace space, boolean pathOnly )
-    throws FileSystemException;
+  public String nameResource( FileObject fileObject, VariableSpace space, boolean pathOnly ) throws FileSystemException;
 
   /**
    * @return the map of folders mapped to created parameters during the resource naming.

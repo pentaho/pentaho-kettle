@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.spoon;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -134,10 +135,12 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     String name;
     String status;
     String id;
+    String[] path;
     int length;
 
     public TreeEntry( TreeItem treeItem ) {
-      String[] path = ConstUI.getTreeStrings( treeItem );
+      TreeItem treeIt = treeItem;
+      path = ConstUI.getTreeStrings( treeIt );
       this.length = path.length;
       if ( path.length > 0 ) {
         itemType = path[0];
@@ -146,10 +149,10 @@ public class SpoonSlave extends Composite implements TabItemInterface {
         name = path[1];
       }
       if ( path.length == 3 ) {
-        treeItem = treeItem.getParentItem();
+        treeIt = treeIt.getParentItem();
       }
-      status = treeItem.getText( 9 );
-      id = treeItem.getText( 13 );
+      status = treeIt.getText( 9 );
+      id = treeIt.getText( 13 );
     }
 
     boolean isTransformation() {
@@ -178,6 +181,76 @@ public class SpoonSlave extends Composite implements TabItemInterface {
 
     boolean isWaiting() {
       return Trans.STRING_WAITING.equals( status );
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+      if ( this == o ) {
+        return true;
+      }
+      if ( !( o instanceof TreeEntry ) ) {
+        return false;
+      }
+
+      TreeEntry treeEntry = (TreeEntry) o;
+
+      if ( id != null ? !id.equals( treeEntry.id ) : treeEntry.id != null ) {
+        return false;
+      }
+      if ( itemType != null ? !itemType.equals( treeEntry.itemType ) : treeEntry.itemType != null ) {
+        return false;
+      }
+      if ( name != null ? !name.equals( treeEntry.name ) : treeEntry.name != null ) {
+        return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = itemType != null ? itemType.hashCode() : 0;
+      result = 31 * result + ( name != null ? name.hashCode() : 0 );
+      result = 31 * result + ( id != null ? id.hashCode() : 0 );
+      result = 31 * result + ( path != null ? Arrays.hashCode( path ) : 0 );
+      result = 31 * result + length;
+      return result;
+    }
+
+    public TreeItem getTreeItem( Tree tree ) {
+      TreeItem[] items = tree.getItems();
+      for ( TreeItem item : items ) {
+        TreeItem treeItem = findTreeItem( item, 0 );
+        if ( treeItem != null ) {
+          return treeItem;
+        }
+      }
+      return null;
+    }
+
+    private TreeItem findTreeItem( TreeItem treeItem, int level ) {
+      if ( treeItem.getText().equals( path[ level ] ) ) {
+        if ( level == 1 ) {
+          if ( this.equals( getTreeEntry( treeItem ) ) ) {
+            treeItemSelected( treeItem );
+            treeItem.setExpanded( true );
+          } else {
+            return null;
+          }
+        }
+        if ( level == path.length - 1 ) {
+          return treeItem;
+        }
+
+        TreeItem[] items = treeItem.getItems();
+        for ( TreeItem item : items ) {
+          TreeItem found = findTreeItem( item, level + 1 );
+          if ( found != null ) {
+            return found;
+          }
+        }
+      }
+      return null;
     }
   }
 
@@ -405,7 +478,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
         if ( logging == null ) {
           logging = ts.getLoggingString();
         } else {
-          logging = new StringBuffer( logging ).append( ts.getLoggingString() ).toString();
+          logging = logging + ts.getLoggingString();
         }
 
         String[] lines = logging.split( "\r\n|\r|\n" );
@@ -453,7 +526,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
         if ( logging == null ) {
           logging = ts.getLoggingString();
         } else {
-          logging = new StringBuffer( logging ).append( ts.getLoggingString() ).toString();
+          logging = logging + ts.getLoggingString();
         }
 
         String[] lines = logging.split( "\r\n|\r|\n" );
@@ -508,20 +581,29 @@ public class SpoonSlave extends Composite implements TabItemInterface {
 
   protected void refreshViewAndLog() {
     String[] selectionPath = null;
+    TreeItem selectedItem;
+    TreeEntry treeEntry = null;
     if ( wTree.getSelectionCount() == 1 ) {
-      selectionPath = ConstUI.getTreeStrings( wTree.getSelection()[0] );
+      selectedItem = wTree.getSelection()[ 0 ];
+      treeEntry = new TreeEntry( selectedItem );
+      selectionPath = ConstUI.getTreeStrings( selectedItem );
     }
 
     refreshView();
 
-    if ( selectionPath != null ) { // Select the same one again
+    if ( treeEntry != null ) { // Select the same one again
 
-      TreeItem treeItem = TreeUtil.findTreeItem( wTree, selectionPath );
+      TreeItem treeItem = treeEntry.getTreeItem( wTree );
+      if ( treeItem == null ) {
+        treeItem = TreeUtil.findTreeItem( wTree, selectionPath );
+      }
       if ( treeItem != null ) {
         wTree.setSelection( treeItem );
-        wTree.showItem( treeItem );
-        treeItemSelected( treeItem );
-        treeItem.setExpanded( true );
+        if ( treeEntry.length < 3 ) {
+          wTree.showItem( treeItem );
+          treeItemSelected( treeItem );
+          treeItem.setExpanded( true );
+        }
       }
     }
 
@@ -642,14 +724,18 @@ public class SpoonSlave extends Composite implements TabItemInterface {
   private TreeEntry getTreeEntry() {
     TreeItem[] ti = wTree.getSelection();
     if ( ti.length == 1 ) {
-      TreeEntry treeEntry = new TreeEntry( ti[0] );
-      if ( treeEntry.length <= 1 ) {
-        return null;
-      }
-      return treeEntry;
+      return getTreeEntry( ti[ 0 ] );
     } else {
       return null;
     }
+  }
+
+  private TreeEntry getTreeEntry( TreeItem ti ) {
+    TreeEntry treeEntry = new TreeEntry( ti );
+    if ( treeEntry.length <= 1 ) {
+      return null;
+    }
+    return treeEntry;
   }
 
   protected void stop() {

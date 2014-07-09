@@ -138,8 +138,7 @@ public class SwingDirectGC implements GCInterface {
 
   private boolean drawingPixelatedImages;
 
-  public SwingDirectGC( ImageObserver observer, Point area, int iconsize, int xOffset, int yOffset )
-    throws KettleException {
+  public SwingDirectGC( ImageObserver observer, Point area, int iconsize, int xOffset, int yOffset ) throws KettleException {
     this.image = new BufferedImage( area.x, area.y, BufferedImage.TYPE_INT_RGB );
     this.gc = image.createGraphics();
     this.observer = observer;
@@ -153,8 +152,7 @@ public class SwingDirectGC implements GCInterface {
     init();
   }
 
-  public SwingDirectGC( Graphics2D gc, Rectangle2D rect, int iconsize, int xOffset, int yOffset )
-    throws KettleException {
+  public SwingDirectGC( Graphics2D gc, Rectangle2D rect, int iconsize, int xOffset, int yOffset ) throws KettleException {
     this.image = null;
     this.gc = gc;
     this.observer = null;

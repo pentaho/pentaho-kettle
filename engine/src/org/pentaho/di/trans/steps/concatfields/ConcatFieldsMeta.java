@@ -158,8 +158,7 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
   }
 
   @Override
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     super.loadXML( stepnode, databases, metaStore );
     targetFieldName = XMLHandler.getTagValue( stepnode, ConcatFieldsNodeNameSpace, "targetFieldName" );
     targetFieldLength =
@@ -182,8 +181,7 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
   }
 
   @Override
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     super.readRep( rep, metaStore, id_step, databases );
     targetFieldName = rep.getStepAttributeString( id_step, ConcatFieldsNodeNameSpace + "targetFieldName" );
     targetFieldLength =
@@ -193,8 +191,7 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
   }
 
   @Override
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     super.saveRep( rep, metaStore, id_transformation, id_step );
     rep.saveStepAttribute(
       id_transformation, id_step, ConcatFieldsNodeNameSpace + "targetFieldName", targetFieldName );

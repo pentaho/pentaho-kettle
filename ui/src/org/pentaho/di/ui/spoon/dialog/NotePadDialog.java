@@ -581,7 +581,7 @@ public class NotePadDialog extends Dialog {
 
   public void getData() {
     if ( notePadMeta != null ) {
-      wDesc.setText( notePadMeta.getNote() );
+      wDesc.setText( Const.NVL( notePadMeta.getNote(), "" ) );
       wFontName.setText( notePadMeta.getFontName() == null ? props.getNoteFont().getName() : notePadMeta
         .getFontName() );
       wFontSize.setSelection( notePadMeta.getFontSize() == -1 ? props.getNoteFont().getHeight() : notePadMeta

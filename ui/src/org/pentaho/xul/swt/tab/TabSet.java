@@ -220,11 +220,7 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
   }
 
   public Font getUnchangedFont() {
-    return unchangedFont;
-  }
-
-  public void setUnchangedFont( Font unchangedFont ) {
-    this.unchangedFont = unchangedFont;
+    return tabfolder.getDisplay().getSystemFont();
   }
 
   public void addListener( TabListener listener ) {

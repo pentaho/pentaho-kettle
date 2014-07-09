@@ -81,8 +81,6 @@ public class JobEntryXSDValidator extends JobEntryBase implements Cloneable, Job
     super( n, "" );
     xmlfilename = null;
     xsdfilename = null;
-
-    setID( -1L );
   }
 
   public JobEntryXSDValidator() {

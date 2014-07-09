@@ -63,8 +63,7 @@ public class SocketWriterMeta extends BaseStepMeta implements StepMetaInterface 
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -97,16 +96,14 @@ public class SocketWriterMeta extends BaseStepMeta implements StepMetaInterface 
     compressed = true;
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     port = rep.getStepAttributeString( id_step, "port" );
     bufferSize = rep.getStepAttributeString( id_step, "buffer_size" );
     flushInterval = rep.getStepAttributeString( id_step, "flush_interval" );
     compressed = rep.getStepAttributeBoolean( id_step, "compressed" );
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
-    throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, "port", port );
     rep.saveStepAttribute( id_transformation, id_step, "buffer_size", bufferSize );
     rep.saveStepAttribute( id_transformation, id_step, "flush_interval", flushInterval );

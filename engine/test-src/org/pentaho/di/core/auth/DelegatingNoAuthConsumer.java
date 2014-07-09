@@ -33,8 +33,7 @@ public class DelegatingNoAuthConsumer implements AuthenticationConsumer<Object, 
   }
 
   @Override
-  public Object consume( NoAuthenticationAuthenticationProvider authenticationProvider )
-    throws AuthenticationConsumptionException {
+  public Object consume( NoAuthenticationAuthenticationProvider authenticationProvider ) throws AuthenticationConsumptionException {
     return delegate.consume( authenticationProvider );
   }
 }

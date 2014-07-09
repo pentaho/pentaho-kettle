@@ -1,4 +1,4 @@
-//CHECKSTYLE:FileLength:OFF
+// CHECKSTYLE:FileLength:OFF
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
@@ -125,6 +125,7 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -137,6 +138,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTip;
 import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.job.dialog.JobDialog;
+import org.pentaho.di.ui.repository.RepositorySecurityUI;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
 import org.pentaho.di.ui.spoon.AbstractGraph;
@@ -1689,6 +1691,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     String des = dd.open();
     if ( des != null ) {
       jobEntry.setDescription( des );
+      jobEntry.setChanged();
+      spoon.setShellText();
     }
   }
 
@@ -1740,6 +1744,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   }
 
   public void copyEntry() {
+    if ( RepositorySecurityUI.verifyOperations( shell, spoon.rep, RepositoryOperation.MODIFY_JOB, RepositoryOperation.EXECUTE_JOB ) ) {
+      return;
+    }
     List<JobEntryCopy> entries = jobMeta.getSelectedEntries();
     Iterator<JobEntryCopy> iterator = entries.iterator();
     while ( iterator.hasNext() ) {
@@ -3286,6 +3293,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     spoon.getSQL();
   }
 
+  public XulToolbar getToolbar() { return toolbar; }
+
   public void exploreDatabase() {
     spoon.exploreDatabase();
   }
@@ -3492,11 +3501,14 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     getDisplay().asyncExec( new Runnable() {
 
       public void run() {
+        boolean operationsNotAllowed = RepositorySecurityUI.verifyOperations( shell, spoon.rep, false,
+            RepositoryOperation.EXECUTE_JOB  );
+
         // Start/Run button...
         //
         boolean running = job != null && job.isActive();
         XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById( "job-run" );
-        if ( runButton != null && !controlDisposed( runButton ) ) {
+        if ( runButton != null && !controlDisposed( runButton )  && !operationsNotAllowed ) {
           if ( runButton.isDisabled() ^ running ) {
             runButton.setDisabled( running );
           }
@@ -3508,6 +3520,15 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         if ( stopButton != null && !controlDisposed( stopButton ) ) {
           if ( stopButton.isDisabled() ^ !running ) {
             stopButton.setDisabled( !running );
+          }
+        }
+
+        // Replay button...
+        //
+        XulToolbarbutton replayButton = (XulToolbarbutton) toolbar.getElementById( "job-replay" );
+        if ( replayButton != null && !controlDisposed( replayButton ) ) {
+          if ( replayButton.isDisabled() ^ !running ) {
+            replayButton.setDisabled( !running );
           }
         }
 
