@@ -78,6 +78,9 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   private static Class<?> PKG = JobEntryHTTP.class; // for i18n purposes, needed by Translator2!!
 
   private static final String URL_FIELDNAME = "URL";
+  private static final String UPLOADFILE_FIELDNAME = "UPLOAD";
+  private static final String TARGETFILE_FIELDNAME = "DESTINATION";
+
 
   // Base info
   private String url;
@@ -88,7 +91,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
   private boolean dateTimeAdded;
 
-  private String targetFilenameExtention;
+  private String targetFilenameExtension;
 
   // Send file content to server?
   private String uploadFilename;
@@ -96,6 +99,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   // The fieldname that contains the URL
   // Get it from a previous transformation with Result.
   private String urlFieldname;
+  private String uploadFieldname;
+  private String destinationFieldname;
 
   private boolean runForEveryRow;
 
@@ -154,11 +159,13 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append( "      " ).append( XMLHandler.addTagValue( "file_appended", fileAppended ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "date_time_added", dateTimeAdded ) );
     retval
-      .append( "      " ).append( XMLHandler.addTagValue( "targetfilename_extention", targetFilenameExtention ) );
+      .append( "      " ).append( XMLHandler.addTagValue( "targetfilename_extension", targetFilenameExtension ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "uploadfilename", uploadFilename ) );
 
-    retval.append( "      " ).append( XMLHandler.addTagValue( "url_fieldname", urlFieldname ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "run_every_row", runForEveryRow ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "url_fieldname", urlFieldname ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "upload_fieldname", uploadFieldname ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "dest_fieldname", destinationFieldname ) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "username", username ) );
     retval.append( "      " ).append(
@@ -191,11 +198,14 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       targetFilename = XMLHandler.getTagValue( entrynode, "targetfilename" );
       fileAppended = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "file_appended" ) );
       dateTimeAdded = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "date_time_added" ) );
-      targetFilenameExtention = XMLHandler.getTagValue( entrynode, "targetfilename_extention" );
+      targetFilenameExtension = Const.NVL( XMLHandler.getTagValue( entrynode, "targetfilename_extension" ),
+          XMLHandler.getTagValue( entrynode, "targetfilename_extention" ) );
 
       uploadFilename = XMLHandler.getTagValue( entrynode, "uploadfilename" );
 
       urlFieldname = XMLHandler.getTagValue( entrynode, "url_fieldname" );
+      uploadFieldname = XMLHandler.getTagValue( entrynode, "upload_fieldname" );
+      destinationFieldname = XMLHandler.getTagValue( entrynode, "dest_fieldname" );
       runForEveryRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "run_every_row" ) );
 
       username = XMLHandler.getTagValue( entrynode, "username" );
@@ -229,11 +239,14 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       targetFilename = rep.getJobEntryAttributeString( id_jobentry, "targetfilename" );
       fileAppended = rep.getJobEntryAttributeBoolean( id_jobentry, "file_appended" );
       dateTimeAdded = rep.getJobEntryAttributeBoolean( id_jobentry, "date_time_added" );
-      targetFilenameExtention = rep.getJobEntryAttributeString( id_jobentry, "targetfilename_extention" );
+      targetFilenameExtension = Const.NVL( rep.getJobEntryAttributeString( id_jobentry, "targetfilename_extension" ),
+          rep.getJobEntryAttributeString( id_jobentry, "targetfilename_extention" ) );
 
       uploadFilename = rep.getJobEntryAttributeString( id_jobentry, "uploadfilename" );
 
       urlFieldname = rep.getJobEntryAttributeString( id_jobentry, "url_fieldname" );
+      uploadFieldname = rep.getJobEntryAttributeString( id_jobentry, "upload_fieldname" );
+      destinationFieldname = rep.getJobEntryAttributeString( id_jobentry, "dest_fieldname" );
       runForEveryRow = rep.getJobEntryAttributeBoolean( id_jobentry, "run_every_row" );
 
       username = rep.getJobEntryAttributeString( id_jobentry, "username" );
@@ -269,11 +282,13 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute( id_job, getObjectId(), "targetfilename", targetFilename );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "file_appended", fileAppended );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "date_time_added", dateTimeAdded );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "targetfilename_extention", targetFilenameExtention );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "targetfilename_extension", targetFilenameExtension );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "uploadfilename", uploadFilename );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "url_fieldname", urlFieldname );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "upload_fieldname", uploadFieldname );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "dest_fieldname", destinationFieldname );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "run_every_row", runForEveryRow );
 
       rep.saveJobEntryAttribute( id_job, getObjectId(), "username", username );
@@ -404,12 +419,24 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
     // Get previous result rows...
     List<RowMetaAndData> resultRows;
-    String urlFieldnameToUse;
+    String urlFieldnameToUse, uploadFieldnameToUse, destinationFieldnameToUse;
 
     if ( Const.isEmpty( urlFieldname ) ) {
       urlFieldnameToUse = URL_FIELDNAME;
     } else {
       urlFieldnameToUse = urlFieldname;
+    }
+
+    if ( Const.isEmpty( uploadFieldname ) )  {
+      uploadFieldnameToUse = UPLOADFILE_FIELDNAME;
+    } else {
+      uploadFieldnameToUse = uploadFieldname;
+    }
+
+    if ( Const.isEmpty( destinationFieldname ) )  {
+      destinationFieldnameToUse = TARGETFILE_FIELDNAME;
+    } else {
+      destinationFieldnameToUse = destinationFieldname;
     }
 
     if ( runForEveryRow ) {
@@ -424,6 +451,10 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       RowMetaAndData row = new RowMetaAndData();
       row.addValue(
         new ValueMetaString( urlFieldnameToUse ), environmentSubstitute( url ) );
+      row.addValue(
+        new ValueMetaString( uploadFieldnameToUse ), environmentSubstitute( uploadFilename ) );
+      row.addValue(
+        new ValueMetaString( destinationFieldnameToUse ), environmentSubstitute( targetFilename ) );
       resultRows.add( row );
     }
 
@@ -443,6 +474,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
       try {
         String urlToUse = environmentSubstitute( row.getString( urlFieldnameToUse, "" ) );
+        String realUploadFile = environmentSubstitute( row.getString( uploadFieldnameToUse, "" ) );
+        String realTargetFile = environmentSubstitute( row.getString(  destinationFieldnameToUse,  "" ) );
 
         logBasic( BaseMessages.getString( PKG, "JobHTTP.Log.ConnectingURL", urlToUse ) );
 
@@ -465,7 +498,6 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           } );
         }
 
-        String realTargetFile = environmentSubstitute( targetFilename );
         if ( dateTimeAdded ) {
           SimpleDateFormat daf = new SimpleDateFormat();
           Date now = new Date();
@@ -475,8 +507,8 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           daf.applyPattern( "HHmmss" );
           realTargetFile += "_" + daf.format( now );
 
-          if ( !Const.isEmpty( targetFilenameExtention ) ) {
-            realTargetFile += "." + environmentSubstitute( targetFilenameExtention );
+          if ( !Const.isEmpty( targetFilenameExtension ) ) {
+            realTargetFile += "." + environmentSubstitute( targetFilenameExtension );
           }
         }
 
@@ -508,15 +540,14 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         connection.setDoOutput( true );
 
         // See if we need to send a file over?
-        String realUploadFilename = environmentSubstitute( uploadFilename );
-        if ( !Const.isEmpty( realUploadFilename ) ) {
+        if ( !Const.isEmpty( realUploadFile ) ) {
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "JobHTTP.Log.SendingFile", realUploadFilename ) );
+            logDetailed( BaseMessages.getString( PKG, "JobHTTP.Log.SendingFile", realUploadFile ) );
           }
 
           // Grab an output stream to upload data to web server
           uploadStream = connection.getOutputStream();
-          fileStream = new BufferedInputStream( new FileInputStream( new File( realUploadFilename ) ) );
+          fileStream = new BufferedInputStream( new FileInputStream( new File( realUploadFile ) ) );
           try {
             int c;
             while ( ( c = fileStream.read() ) >= 0 ) {
@@ -624,7 +655,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   /**
-   * @return Returns the getFieldname.
+   * @return Returns the Result URL Fieldname.
    */
   public String getUrlFieldname() {
     return urlFieldname;
@@ -632,10 +663,40 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
 
   /**
    * @param getFieldname
-   *          The getFieldname to set.
+   *          The Result URL Fieldname to set.
    */
   public void setUrlFieldname( String getFieldname ) {
     this.urlFieldname = getFieldname;
+  }
+
+  /*
+   * @return Returns the Upload File Fieldname
+   */
+  public String getUploadFieldname() {
+    return uploadFieldname;
+  }
+
+  /*
+   * @param uploadFieldName
+   *         The Result Upload Fieldname to use
+   */
+  public void setUploadFieldname( String uploadFieldname ) {
+    this.uploadFieldname = uploadFieldname;
+  }
+
+  /*
+   * @return Returns the Result Destination Path Fieldname
+   */
+  public String getDestinationFieldname() {
+    return destinationFieldname;
+  }
+
+  /*
+   * @param destinationFieldname
+   *           The Result Destination Fieldname to set.
+   */
+  public void setDestinationFieldname( String destinationFieldname ) {
+    this.destinationFieldname = destinationFieldname;
   }
 
   /**
@@ -684,18 +745,37 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   /**
-   * @return Returns the uploadFilenameExtention.
+   * @return Returns the uploadFilenameExtension.
    */
-  public String getTargetFilenameExtention() {
-    return targetFilenameExtention;
+  public String getTargetFilenameExtension() {
+    return targetFilenameExtension;
   }
 
   /**
-   * @param uploadFilenameExtention
-   *          The uploadFilenameExtention to set.
+   * @param uploadFilenameExtension
+   *          The uploadFilenameExtension to set.
    */
-  public void setTargetFilenameExtention( String uploadFilenameExtention ) {
-    this.targetFilenameExtention = uploadFilenameExtention;
+  public void setTargetFilenameExtension( String uploadFilenameExtension ) {
+    this.targetFilenameExtension = uploadFilenameExtension;
+  }
+
+  /**
+   * @return Returns the uploadFilenameExtension.
+   * @deprecated Use {@link JobEntryHTTP#getTargetFilenameExtension()} instead
+   */
+  @Deprecated
+  public String getTargetFilenameExtention() {
+    return targetFilenameExtension;
+  }
+
+  /**
+   * @param uploadFilenameExtension
+   *          The uploadFilenameExtension to set.
+   * @deprecated Use {@link JobEntryHTTP#setTargetFilenameExtension( String uploadFilenameExtension )} instead
+   */
+  @Deprecated
+  public void setTargetFilenameExtention( String uploadFilenameExtension ) {
+    this.targetFilenameExtension = uploadFilenameExtension;
   }
 
   @Override

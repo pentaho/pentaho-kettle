@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,4 +68,12 @@ public class JobEntryHTTPTest {
 
   }
 
+  @SuppressWarnings( "deprecation" )
+  @Test
+  public void testDeprecatedTargetFilenameExtension() {
+    jobEntryHttp.setTargetFilenameExtention( "txt" );
+    assertTrue( "txt".equals( jobEntryHttp.getTargetFilenameExtension() ) );
+    jobEntryHttp.setTargetFilenameExtension( "zip" );
+    assertTrue( "zip".equals( jobEntryHttp.getTargetFilenameExtention() ) );
+  }
 }
