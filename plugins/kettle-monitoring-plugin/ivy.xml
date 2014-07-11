@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+  <info organisation="pentaho-kettle" module="${ivy.artifact.id}" revision="${dependency.kettle.revision}" status="integration" />
+
+  <configurations>
+    <conf name="default"/>
+    <conf name="dev"/>
+    <conf name="test" visibility="private"/>
+    <conf name="source"/>
+    <conf name="zip"/>
+  </configurations>
+
+  <publications>
+    <artifact name="${ivy.artifact.id}" type="jar" conf="dev"/>
+    <artifact name="${ivy.artifact.id}" type="zip" conf="zip" />
+    <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="jar" conf="source"/>
+    <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="zip" conf="source"/>
+  </publications>
+
+  <dependencies defaultconf="default->default">
+
+    <!-- dev-lib dependencies -->
+
+    <dependency org="${pentaho.group}"  name="pentaho-platform-api"                 rev="${dependency.pentaho.revision}"          transitive="false"          changing="true"             conf="dev->default"/>
+    <dependency org="${pentaho.group}"  name="pentaho-platform-core"                rev="${dependency.pentaho.revision}"          transitive="false"          changing="true"             conf="dev->default"/>
+    <dependency org="${pentaho.group}"  name="pentaho-platform-extensions"          rev="${dependency.pentaho.revision}"          transitive="false"          changing="true"             conf="dev->default"/>
+
+    <dependency org="${kettle.group}"   name="kettle-core"                          rev="${dependency.kettle.revision}"           transitive="false"          changing="true"             conf="dev->default"/>
+    <dependency org="${kettle.group}"   name="kettle-engine"                        rev="${dependency.kettle.revision}"           transitive="false"          changing="true"             conf="dev->default"/>
+
+    <dependency org="commons-logging"   name="commons-logging"                      rev="${dependency.commons.logging.revision}"  transitive="false"          changing="false"            conf="dev->default"/>
+    <dependency org="commons-lang"      name="commons-lang"                         rev="${dependency.commons.lang.revision}"     transitive="false"          changing="false"            conf="dev->default"/> 
+    <dependency org="commons-io"        name="commons-io"                           rev="${dependency.commons.io.revision}"       transitive="false"          changing="false"            conf="dev->default"/>   
+    <dependency org="log4j"             name="log4j"                                rev="1.2.16"                                  transitive="false"          changing="false"            conf="dev->default"/>
+    <dependency org="org.slf4j"         name="slf4j-api"                            rev="1.7.3"                                   transitive="false"          changing="false"            conf="dev->default"/>
+
+    <dependency org="com.google.guava"  name="guava"                                rev="17.0"                                    transitive="false"          changing="false"            conf="dev->default"/>
+
+    <!-- lib dependencies -->
+    
+
+    <!-- unit test dependencies -->
+    <dependency org="junit"             name="junit"                                rev="4.7"                                                                                             conf="test->default"/> 
+
+  </dependencies>
+
+</ivy-module>
