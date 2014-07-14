@@ -259,6 +259,9 @@ public class SlaveServerConfig {
       RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
       repositoriesMeta.readData();
       repositoryMeta = repositoriesMeta.findRepository( repositoryId );
+      if ( repositoryMeta == null ) {
+        throw new KettleException( "Unable to find repository: " + repositoryId );
+      }
       PluginRegistry registry = PluginRegistry.getInstance();
       repository = registry.loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
       repository.init( repositoryMeta );
