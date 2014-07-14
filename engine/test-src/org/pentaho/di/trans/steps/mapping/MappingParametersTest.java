@@ -1,13 +1,16 @@
 package org.pentaho.di.trans.steps.mapping;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.StepMockUtil;
@@ -63,9 +66,45 @@ public class MappingParametersTest {
     step.setMappingParameters( trans, transMeta, param );
 
     // parameters was overridden 2 times
-    Mockito.verify( trans, Mockito.times( 1 ) )
-      .setParameterValue( Mockito.anyString(), Mockito.anyString() );
-    Mockito.verify( trans, Mockito.times( 1 ) )
-      .setVariable( Mockito.anyString(), Mockito.anyString() );
+    Mockito.verify( trans, Mockito.times( 1 ) ).setParameterValue( Mockito.anyString(), Mockito.anyString() );
+    Mockito.verify( trans, Mockito.times( 1 ) ).setVariable( Mockito.anyString(), Mockito.anyString() );
   }
+
+  /**
+   * Regression of PDI-3064 : keep correct 'inherit all variables' settings. This is a case for 'do not override'
+   * 
+   * @throws KettleException
+   */
+  @Test
+  public void testDoNotOverrideMappingParametes() throws KettleException {
+    prepareMappingParametesActions( false );
+    Mockito.verify( transMeta, never() ).copyVariablesFrom( Mockito.any( VariableSpace.class ) );
+  }
+
+  /**
+   * Regression of PDI-3064 : keep correct 'inherit all variables' settings. This is a case for 'do override'
+   * 
+   * @throws KettleException
+   */
+  @Test
+  public void testDoOverrideMappingParametes() throws KettleException {
+    prepareMappingParametesActions( true );
+    Mockito.verify( transMeta, times( 1 ) ).copyVariablesFrom( Mockito.any( VariableSpace.class ) );
+  }
+
+  private void prepareMappingParametesActions( boolean override ) throws KettleException {
+    MappingMeta meta = new MappingMeta();
+    meta.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
+    Repository rep = Mockito.mock( Repository.class );
+    Mockito.when( step.getTransMeta().getRepository() ).thenReturn( rep );
+    Mockito.when( rep.loadTransformation( Mockito.any( ObjectId.class ), Mockito.anyString() ) ).thenReturn( transMeta );
+
+    MappingParameters mapPar = new MappingParameters();
+    mapPar.setInheritingAllVariables( override );
+    meta.setMappingParameters( mapPar );
+
+    MappingData data = new MappingData();
+    step.init( meta, data );
+  }
+
 }

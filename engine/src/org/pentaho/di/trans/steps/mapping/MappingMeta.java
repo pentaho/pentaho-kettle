@@ -618,7 +618,12 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
   }
 
   public static final synchronized TransMeta loadMappingMeta( MappingMeta mappingMeta, Repository rep,
-    IMetaStore metaStore, VariableSpace space ) throws KettleException {
+      IMetaStore metaStore, VariableSpace space ) throws KettleException {
+    return loadMappingMeta( mappingMeta, rep, metaStore, space, true );
+  }
+
+  public static final synchronized TransMeta loadMappingMeta( MappingMeta mappingMeta, Repository rep,
+      IMetaStore metaStore, VariableSpace space, boolean share ) throws KettleException {
     TransMeta mappingTransMeta = null;
 
     switch ( mappingMeta.getSpecificationMethod() ) {
@@ -697,7 +702,9 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
       throw new KettleException( BaseMessages.getString(
         PKG, "MappingMeta.Exception.InternalErrorTransMetaIsNULL.Message" ) );
     }
-    mappingTransMeta.copyVariablesFrom( space );
+    if ( share ) {
+      mappingTransMeta.copyVariablesFrom( space );
+    }
     mappingTransMeta.setRepository( rep );
     mappingTransMeta.setMetaStore( metaStore );
     mappingTransMeta.setFilename( mappingTransMeta.getFilename() );
