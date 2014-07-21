@@ -81,6 +81,7 @@ public class SqlTransExecutor {
   private SimpleDateFormat sqlDateFormat;
   private SimpleDateFormat jsonDateFormat;
   private List<Object[]> serviceData;
+  private TransMetaCache transMetaCache;
 
   /**
    * Create a new SqlTransExecutor without parameters
@@ -112,11 +113,23 @@ public class SqlTransExecutor {
    */
   public SqlTransExecutor( String sqlQuery, List<TransDataService> services, Map<String, String> parameters,
     Repository repository, int rowLimit ) throws KettleException {
+    this( sqlQuery, services, parameters, null, rowLimit, null );
+  }
+
+  /**
+   * @param sqlQuery
+   * @param services
+   * @param repository
+   * @throws KettleException
+   */
+  public SqlTransExecutor( String sqlQuery, List<TransDataService> services, Map<String, String> parameters,
+    Repository repository, int rowLimit, TransMetaCache transMetaCache ) throws KettleException {
     this.sqlQuery = sqlQuery;
     this.services = services;
     this.parameters = parameters;
     this.repository = repository;
     this.rowLimit = rowLimit;
+    this.transMetaCache = transMetaCache;
 
     sqlNumericFormat = new DecimalFormat( "0.#" );
     sqlNumericFormat.setDecimalFormatSymbols( new DecimalFormatSymbols( Locale.US ) );
@@ -579,19 +592,27 @@ public class SqlTransExecutor {
 
     if ( !Const.isEmpty( service.getFileName() ) ) {
       try {
-        // OK, load the meta-data from file...
-        //
-        // Don't set internal variables: they belong to the parent thread!
-        //
-        transMeta = new TransMeta( service.getFileName(), false );
-        transMeta.getLogChannel().logDetailed(
-          "Service transformation was loaded from XML file [" + service.getFileName() + "]" );
+
+        if ( transMetaCache != null ) {
+          transMeta = transMetaCache.loadTransMeta( service.getFileName() );
+        } else {
+          // OK, load the meta-data from file...
+          //
+          // Don't set internal variables: they belong to the parent thread!
+          //
+          transMeta = new TransMeta( service.getFileName(), false );
+        }
+        transMeta.getLogChannel().logDetailed( "Service transformation was loaded from XML file [" + service.getFileName() + "]" );
       } catch ( Exception e ) {
         throw new KettleException( "Unable to load service transformation for service '" + serviceName + "'", e );
       }
     } else {
       try {
-        transMeta = repository.loadTransformation( service.getObjectId(), null );
+        if ( transMetaCache != null ) {
+          transMeta = transMetaCache.loadTransMeta( service.getObjectId() );
+        } else {
+          transMeta = repository.loadTransformation( service.getObjectId(), null );
+        }
         transMeta.getLogChannel().logDetailed(
           "Service transformation was loaded from repository for service [" + service.getName() + "]" );
       } catch ( Exception e ) {
@@ -747,5 +768,19 @@ public class SqlTransExecutor {
    */
   public String getResultStepName() {
     return resultStepName;
+  }
+
+  /**
+   * @return the transMetaCache
+   */
+  public TransMetaCache getTransMetaCache() {
+    return transMetaCache;
+  }
+
+  /**
+   * @param transMetaCache the transMetaCache to set
+   */
+  public void setTransMetaCache( TransMetaCache transMetaCache ) {
+    this.transMetaCache = transMetaCache;
   }
 }
