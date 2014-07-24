@@ -440,15 +440,29 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         if ( selectedFolder == null ) {
           selectedFolder = repositoryDirectory;
         }
+        //Do an explicit check here to see if the folder already exists in the ui
+        //This is to prevent a double message being sent in case the folder does
+        //not exist in the ui but does exist in the repo (PDI-5202)
+        boolean folderExistsInUI = selectedFolder.contains( newName );
+        if ( folderExistsInUI ) {
+          throw new Exception(
+            BaseMessages.getString(
+              PKG,
+              "BrowserController.DirAlreadyExistsInUI",
+              newName
+            )
+          );
+        }
+        //PDI-5202
         String newNameInRepo = selectedFolder.checkDirNameExistsInRepo( newName );
         if ( newNameInRepo != null ) {
           messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Warning" ) );
           messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-          messageBox.setMessage( 
-            BaseMessages.getString( 
-              PKG, 
-              "BrowserController.DirAlreadyExistsInRepository", 
-              newNameInRepo 
+          messageBox.setMessage(
+            BaseMessages.getString(
+              PKG,
+              "BrowserController.DirAlreadyExistsInRepository",
+              newNameInRepo
             )
           );
           messageBox.open();

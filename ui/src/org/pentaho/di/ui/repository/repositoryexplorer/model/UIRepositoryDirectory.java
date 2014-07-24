@@ -200,10 +200,12 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   }
 
   public void delete() throws Exception {
-    rep.deleteRepositoryDirectory( getDirectory() );
     uiParent.getChildren().remove( this );
     if ( uiParent.getRepositoryObjects().contains( this ) ) {
       uiParent.getRepositoryObjects().remove( this );
+    }
+    if ( uiParent.checkDirNameExistsInRepo( getName() ) != null ) {
+      rep.deleteRepositoryDirectory( getDirectory() );
     }
     uiParent.refresh();
   }
@@ -219,10 +221,10 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
    * @return null if the subdirectory does not exist, or the name of the subdirectory as it is known inside the repo.
    * @throws KettleException
    */
-  public String checkDirNameExistsInRepo(String name) throws KettleException {
-    String[] dirNames = rep.getDirectoryNames(getObjectId());
-    for (String dirName : dirNames){
-      if (dirName.equalsIgnoreCase(name)) {
+  public String checkDirNameExistsInRepo( String name ) throws KettleException {
+    String[] dirNames = rep.getDirectoryNames( getObjectId() );
+    for ( String dirName : dirNames ) {
+      if ( dirName.equalsIgnoreCase( name ) ) {
         return dirName;
       }
     }
@@ -233,23 +235,11 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     RepositoryDirectoryInterface thisDir = getDirectory();
     RepositoryDirectoryInterface dir;
     //PDI-5202: the directory might exist already. If so, don't create a new one.
-    String dirName = checkDirNameExistsInRepo(name);
-    if (dirName == null) {
+    String dirName = checkDirNameExistsInRepo( name );
+    if ( dirName == null ) {
       dir = rep.createRepositoryDirectory( thisDir, name );
     } else {
-      
-      String[] path = thisDir.getPathArray();
-      StringBuilder pathString = new StringBuilder();
-      for (String pathElement : path) {
-        if (pathElement.equals(java.io.File.separator) || pathElement.equals("")) {
-
-        } else {
-          pathString.append(pathElement);
-        }
-        pathString.append(java.io.File.separator);
-      }
-      pathString.append(dirName);
-      dir = rep.findDirectory(pathString.toString());
+      dir = rep.findDirectory( thisDir.getPath() + "/" + dirName );
     }
     UIRepositoryDirectory newDir = null;
     try {
@@ -378,6 +368,22 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   @Override
   public Iterator<UIRepositoryObject> iterator() {
     return getChildren().iterator();
+  }
+
+  public boolean contains( String dirName ) {
+    UIRepositoryDirectories directories = getChildren();
+    UIRepositoryObject dir;
+    for ( int i = 0; i < directories.size(); i++ ) {
+      dir = directories.get( i );
+      if ( !( dir instanceof UIRepositoryDirectory ) ) {
+        continue;
+      } else if ( dir.getName() == null && dirName == null ) {
+        return true;
+      } else if ( dir.getName().equalsIgnoreCase( dirName ) ) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private boolean contains( UIRepositoryDirectories directories, UIRepositoryDirectory searchDir ) {
