@@ -208,8 +208,49 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     uiParent.refresh();
   }
 
+  /**
+   * Check if a subdirectory already exists in the repository.
+   * This is to help fix PDI-5202
+   * Since the ui directories are case insensitive, we look for a repo directory with the same name ignoring case.
+   * If we find an existing directory, we return the name so we can use that to get hold of the directory
+   * as it is known in the repository.
+   * If we don't find such a directory, we return null
+   * @param name - the name of a subdirectory
+   * @return null if the subdirectory does not exist, or the name of the subdirectory as it is known inside the repo.
+   * @throws KettleException
+   */
+  public String checkDirNameExistsInRepo(String name) throws KettleException {
+    String[] dirNames = rep.getDirectoryNames(getObjectId());
+    for (String dirName : dirNames){
+      if (dirName.equalsIgnoreCase(name)) {
+        return dirName;
+      }
+    }
+    return null;
+  }
+
   public UIRepositoryDirectory createFolder( String name ) throws Exception {
-    RepositoryDirectoryInterface dir = getRepository().createRepositoryDirectory( getDirectory(), name );
+    RepositoryDirectoryInterface thisDir = getDirectory();
+    RepositoryDirectoryInterface dir;
+    //PDI-5202: the directory might exist already. If so, don't create a new one.
+    String dirName = checkDirNameExistsInRepo(name);
+    if (dirName == null) {
+      dir = rep.createRepositoryDirectory( thisDir, name );
+    } else {
+      
+      String[] path = thisDir.getPathArray();
+      StringBuilder pathString = new StringBuilder();
+      for (String pathElement : path) {
+        if (pathElement.equals(java.io.File.separator) || pathElement.equals("")) {
+
+        } else {
+          pathString.append(pathElement);
+        }
+        pathString.append(java.io.File.separator);
+      }
+      pathString.append(dirName);
+      dir = rep.findDirectory(pathString.toString());
+    }
     UIRepositoryDirectory newDir = null;
     try {
       newDir = UIObjectRegistry.getInstance().constructUIRepositoryDirectory( dir, this, rep );

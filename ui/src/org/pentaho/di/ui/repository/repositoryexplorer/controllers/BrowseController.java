@@ -440,6 +440,20 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         if ( selectedFolder == null ) {
           selectedFolder = repositoryDirectory;
         }
+        String newNameInRepo = selectedFolder.checkDirNameExistsInRepo( newName );
+        if ( newNameInRepo != null ) {
+          messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Warning" ) );
+          messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
+          messageBox.setMessage( 
+            BaseMessages.getString( 
+              PKG, 
+              "BrowserController.DirAlreadyExistsInRepository", 
+              newNameInRepo 
+            )
+          );
+          messageBox.open();
+          newName = newNameInRepo;
+        }
         UIRepositoryDirectory newDir = selectedFolder.createFolder( newName );
         dirMap.put( newDir.getObjectId(), newDir );
 
