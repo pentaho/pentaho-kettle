@@ -227,15 +227,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
     compressFilesVariable = null;
     onlyPassingUniqueRows = false;
 
-    int nrfields = 0;
-
-    allocate( nrfields );
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      fieldName[i] = "field" + i;
-      caseSensitive[i] = true;
-      preSortedField[i] = false;
-    }
+    allocate( 0 );
   }
 
   public String getXML() {
@@ -551,7 +543,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public boolean isGroupSortEnabled() {
-    return this.getGroupFields() != null
+    return ( this.getGroupFields() != null ) ? true : false;
   }
 
   @Override
