@@ -206,14 +206,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
     rejectDuplicateRow = false;
     errorDescription = null;
 
-    int nrfields = 0;
-
-    allocate( nrfields );
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      compareFields[i] = "field" + i;
-      caseInsensitive[i] = true;
-    }
+    allocate( 0 );
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
