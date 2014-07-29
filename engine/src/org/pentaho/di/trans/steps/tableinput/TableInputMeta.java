@@ -266,13 +266,13 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.append( "    "
       + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
-    retval.append( "    " + XMLHandler.addTagValue( "sql", sql ) );
-    retval.append( "    " + XMLHandler.addTagValue( "limit", rowLimit ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "sql", sql ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "limit", rowLimit ) );
     StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
-    retval.append( "    " + XMLHandler.addTagValue( "lookup", infoStream.getStepname() ) );
-    retval.append( "    " + XMLHandler.addTagValue( "execute_each_row", executeEachInputRow ) );
-    retval.append( "    " + XMLHandler.addTagValue( "variables_active", variableReplacementActive ) );
-    retval.append( "    " + XMLHandler.addTagValue( "lazy_conversion_active", lazyConversionActive ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "lookup", infoStream.getStepname() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "execute_each_row", executeEachInputRow ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "variables_active", variableReplacementActive ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "lazy_conversion_active", lazyConversionActive ) );
 
     return retval.toString();
   }
