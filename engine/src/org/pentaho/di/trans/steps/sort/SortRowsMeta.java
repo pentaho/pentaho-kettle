@@ -551,7 +551,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public boolean isGroupSortEnabled() {
-    return ( this.getGroupFields() != null ) ? true : false;
+    return this.getGroupFields() != null
   }
 
   @Override
