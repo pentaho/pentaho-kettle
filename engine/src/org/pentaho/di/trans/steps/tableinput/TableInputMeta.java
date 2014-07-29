@@ -464,17 +464,15 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     // TODO: this builds, but does it work in all cases.
     getFields( out, stepMeta.getName(), new RowMetaInterface[] { info }, null, transMeta, repository, metaStore );
 
-    if ( out != null ) {
-      for ( int i = 0; i < out.size(); i++ ) {
-        ValueMetaInterface outvalue = out.getValueMeta( i );
-        DatabaseImpact ii =
-          new DatabaseImpact(
-            DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
-              .getDatabaseName(), "", outvalue.getName(), outvalue.getName(), stepMeta.getName(), sql,
-            "read from one or more database tables via SQL statement" );
-        impact.add( ii );
+    for ( int i = 0; i < out.size(); i++ ) {
+      ValueMetaInterface outvalue = out.getValueMeta( i );
+      DatabaseImpact ii =
+        new DatabaseImpact(
+          DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
+            .getDatabaseName(), "", outvalue.getName(), outvalue.getName(), stepMeta.getName(), sql,
+          "read from one or more database tables via SQL statement" );
+      impact.add( ii );
 
-      }
     }
   }
 
