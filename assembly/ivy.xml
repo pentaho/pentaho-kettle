@@ -17,10 +17,10 @@
   
   <dependencies defaultconf="default->default">
     <!-- Kettle module dependencies-->
-    <dependency org="${ivy.artifact.group}" name="kettle-core"          rev="${project.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-engine"        rev="${project.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"      rev="${project.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"        rev="${project.revision}" changing="true">
+    <dependency org="${ivy.artifact.group}" name="kettle-core"          rev="${project.revision}" changing="true" force="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-engine"        rev="${project.revision}" changing="true" force="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"      rev="${project.revision}" changing="true" force="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"        rev="${project.revision}" changing="true" force="true">
       <exclude name="swt-linux-x86_64"/>
     </dependency>
     
