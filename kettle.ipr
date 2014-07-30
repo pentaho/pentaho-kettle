@@ -191,6 +191,7 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/star-modeler/Kettle Star Modeler Plugin.iml" filepath="$PROJECT_DIR$/plugins/star-modeler/Kettle Star Modeler Plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui/Kettle UI.iml" filepath="$PROJECT_DIR$/ui/Kettle UI.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/kettle5-log4j-plugin/PDI5 Log4j logging plugin.iml" filepath="$PROJECT_DIR$/plugins/kettle5-log4j-plugin/PDI5 Log4j logging plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pentaho-kettle.iml" filepath="$PROJECT_DIR$/pentaho-kettle.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.7" project-jdk-type="JavaSDK">
