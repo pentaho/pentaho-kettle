@@ -41,14 +41,14 @@ public class RepositoryExportSaxParser extends DefaultHandler2 {
   public static final String STRING_JOBS = "jobs";
   public static final String STRING_JOB = "job";
 
-  private SAXParserFactory factory;
   private SAXParser saxParser;
 
   private RepositoryElementReadListener repositoryElementReadListener;
 
-  private StringBuffer xml;
+  private final StringBuilder xml;
+  private final String filename;
+
   private boolean add;
-  private String filename;
   private boolean cdata;
 
   RepositoryImportFeedbackInterface feedback;
@@ -56,7 +56,7 @@ public class RepositoryExportSaxParser extends DefaultHandler2 {
   public RepositoryExportSaxParser( String filename, RepositoryImportFeedbackInterface feedback ) throws Exception {
     this.filename = filename;
     this.feedback = feedback;
-    this.xml = new StringBuffer( 50000 );
+    this.xml = new StringBuilder( 50000 );
     this.add = false;
     this.cdata = false;
   }
@@ -64,17 +64,14 @@ public class RepositoryExportSaxParser extends DefaultHandler2 {
   public void parse( RepositoryElementReadListener repositoryElementReadListener ) throws Exception {
     this.repositoryElementReadListener = repositoryElementReadListener;
 
-    this.factory = SAXParserFactory.newInstance();
-    this.saxParser = this.factory.newSAXParser();
+    SAXParserFactory factory = SAXParserFactory.newInstance();
+    this.saxParser = factory.newSAXParser();
     this.saxParser.parse( new File( filename ), this );
   }
 
   public void startElement( String uri, String localName, String qName, Attributes attributes ) throws SAXException {
-    if ( STRING_REPOSITORY.equals( qName ) || STRING_TRANSFORMATIONS.equals( qName ) || STRING_JOBS.equals( qName ) ) {
-      add = false;
-    } else {
-      add = true;
-    }
+    add =
+      !( STRING_REPOSITORY.equals( qName ) || STRING_TRANSFORMATIONS.equals( qName ) || STRING_JOBS.equals( qName ) );
 
     if ( add ) {
 
@@ -84,22 +81,20 @@ public class RepositoryExportSaxParser extends DefaultHandler2 {
         xml.setLength( 0 );
       }
 
-      xml.append( XMLHandler.openTag( qName ) );
+      XMLHandler.openTag( xml, qName );
     }
   }
 
   public void endElement( String uri, String localName, String qName ) throws SAXException {
     if ( add ) {
-      xml.append( XMLHandler.closeTag( qName ) );
+      XMLHandler.closeTag( xml, qName );
     }
 
     if ( STRING_TRANSFORMATION.equals( qName ) ) {
       if ( !repositoryElementReadListener.transformationElementRead( xml.toString(), feedback ) ) {
         saxParser.reset();
       }
-    }
-
-    if ( STRING_JOB.equals( qName ) ) {
+    } else if ( STRING_JOB.equals( qName ) ) {
       if ( !repositoryElementReadListener.jobElementRead( xml.toString(), feedback ) ) {
         saxParser.reset();
       }
@@ -120,7 +115,7 @@ public class RepositoryExportSaxParser extends DefaultHandler2 {
       String string = new String( ch, start, length );
 
       if ( cdata ) {
-        xml.append( XMLHandler.buildCDATA( string ) );
+        XMLHandler.buildCDATA( xml, string );
       } else {
         XMLHandler.appendReplacedChars( xml, string );
       }
