@@ -127,6 +127,7 @@ public class CalculatorMetaFunction implements Cloneable {
   public static final int CALC_ROUND_CUSTOM_1 = 85;
   public static final int CALC_ROUND_CUSTOM_2 = 86;
   public static final int CALC_ADD_SECONDS = 87;
+  public static final int CALC_REMAINDER = 88;
 
   public static final String[] calc_desc = {
     "-", "CONSTANT", "COPY_FIELD", "ADD", "SUBTRACT", "MULTIPLY", "DIVIDE", "SQUARE", "SQUARE_ROOT",
@@ -143,7 +144,7 @@ public class CalculatorMetaFunction implements Cloneable {
     "GET_FILE_ENCODING", "DAMERAU_LEVENSHTEIN", "NEEDLEMAN_WUNSH", "JARO", "JARO_WINKLER", "SOUNDEX",
     "REFINED_SOUNDEX", "ADD_HOURS", "ADD_MINUTES", "DATE_DIFF_MSEC", "DATE_DIFF_SEC", "DATE_DIFF_MN",
     "DATE_DIFF_HR", "HOUR_OF_DAY", "MINUTE_OF_HOUR", "SECOND_OF_MINUTE",
-    "ROUND_CUSTOM_1", "ROUND_CUSTOM_2", "ADD_SECONDS", };
+    "ROUND_CUSTOM_1", "ROUND_CUSTOM_2", "ADD_SECONDS", "REMAINDER" };
 
   public static final String[] calcLongDesc = {
     "-", BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.SetFieldToConstant" ),
@@ -223,7 +224,8 @@ public class CalculatorMetaFunction implements Cloneable {
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.SecondOfMinute" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom2" ),
-    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.AddSeconds" ), };
+    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.AddSeconds" ),
+    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.Remainder" ), };
 
   public static final int[] calcDefaultResultType = new int[ calc_desc.length ];
 
@@ -384,6 +386,7 @@ public class CalculatorMetaFunction implements Cloneable {
     calcDefaultResultType[ CalculatorMetaFunction.CALC_ROUND_CUSTOM_1 ] = ValueMetaInterface.TYPE_NUMBER;
     calcDefaultResultType[ CalculatorMetaFunction.CALC_ROUND_CUSTOM_2 ] = ValueMetaInterface.TYPE_NUMBER;
     calcDefaultResultType[ CalculatorMetaFunction.CALC_ADD_SECONDS] = ValueMetaInterface.TYPE_DATE;
+    calcDefaultResultType[ CalculatorMetaFunction.CALC_REMAINDER ] = ValueMetaInterface.TYPE_NUMBER;
   }
 
   private String fieldName;
@@ -461,27 +464,25 @@ public class CalculatorMetaFunction implements Cloneable {
   }
 
   public String getXML() {
-    String xml = "";
+    StringBuilder xml = new StringBuilder();
 
-    xml += "<" + XML_TAG + ">";
+    xml.append( "    " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "field_name", fieldName ) );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "calc_type", getCalcTypeDesc() ) );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "field_a", fieldA ) );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "field_b", fieldB ) );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "field_c", fieldC ) );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "value_type", ValueMetaFactory.getValueMetaName( valueType ) ) );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "value_length", valueLength ) );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "value_precision", valuePrecision ) );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "remove", removedFromResult ) );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "conversion_mask", conversionMask ) );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "decimal_symbol", decimalSymbol ) );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "grouping_symbol", groupingSymbol ) );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "currency_symbol", currencySymbol ) );
+    xml.append( "    " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
-    xml += XMLHandler.addTagValue( "field_name", fieldName );
-    xml += XMLHandler.addTagValue( "calc_type", getCalcTypeDesc() );
-    xml += XMLHandler.addTagValue( "field_a", fieldA );
-    xml += XMLHandler.addTagValue( "field_b", fieldB );
-    xml += XMLHandler.addTagValue( "field_c", fieldC );
-    xml += XMLHandler.addTagValue( "value_type", ValueMetaFactory.getValueMetaName( valueType ) );
-    xml += XMLHandler.addTagValue( "value_length", valueLength );
-    xml += XMLHandler.addTagValue( "value_precision", valuePrecision );
-    xml += XMLHandler.addTagValue( "remove", removedFromResult );
-    xml += XMLHandler.addTagValue( "conversion_mask", conversionMask );
-    xml += XMLHandler.addTagValue( "decimal_symbol", decimalSymbol );
-    xml += XMLHandler.addTagValue( "grouping_symbol", groupingSymbol );
-    xml += XMLHandler.addTagValue( "currency_symbol", currencySymbol );
-
-    xml += "</" + XML_TAG + ">";
-
-    return xml;
+    return xml.toString();
   }
 
   public CalculatorMetaFunction( Node calcnode ) {

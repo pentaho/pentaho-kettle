@@ -21,6 +21,10 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.calculator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,10 +34,10 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
@@ -43,48 +47,53 @@ public class CalculatorMetaTest implements InitializerInterface<CalculatorMeta> 
   LoadSaveTester<CalculatorMeta> loadSaveTester;
   Class<CalculatorMeta> testMetaClass = CalculatorMeta.class;
 
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettleException {
+    KettleEnvironment.init();
+  }
+
   @Before
   public void setUpLoadSave() throws Exception {
-    KettleEnvironment.init();
-    PluginRegistry.init( true );
-    List<String> attributes =
-        Arrays.asList( "calculation" );
+    List<String> attributes = Arrays.asList( "Calculation" );
 
-    Map<String, String> getterMap = new HashMap<String, String>() {
-      {
-        put( "calculation", "getCalculation" );
-      }
-    };
-    Map<String, String> setterMap = new HashMap<String, String>() {
-      {
-        put( "calculation", "setCalculation" );
-      }
-    };
+    Map<String, String> getterMap = new HashMap<String, String>();
+    Map<String, String> setterMap = new HashMap<String, String>();
     FieldLoadSaveValidator<CalculatorMetaFunction[]> calculationMetaFunctionArrayLoadSaveValidator =
       new ArrayLoadSaveValidator<CalculatorMetaFunction>( new CalculatorMetaFunctionLoadSaveValidator(), 5 );
 
-
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "calculation", calculationMetaFunctionArrayLoadSaveValidator );
+    attrValidatorMap.put( "Calculation", calculationMetaFunctionArrayLoadSaveValidator );
 
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
-      new LoadSaveTester<CalculatorMeta>( testMetaClass, attributes, new ArrayList<String>(),
+      new LoadSaveTester<>( testMetaClass, attributes, new ArrayList<String>(),
         new ArrayList<String>(), getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
   // Call the allocate method on the LoadSaveTester meta class
   @Override
   public void modify( CalculatorMeta someMeta ) {
-    if ( someMeta instanceof CalculatorMeta ) {
-      ( (CalculatorMeta) someMeta ).allocate( 5 );
-    }
+    someMeta.allocate( 5 );
   }
 
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testGetStepData() {
+    CalculatorMeta meta = new CalculatorMeta();
+    assertTrue( meta.getStepData() instanceof CalculatorData );
+  }
+
+  @Test
+  public void testSetDefault() {
+    CalculatorMeta meta = new CalculatorMeta();
+    meta.setDefault();
+    assertNotNull( meta.getCalculation() );
+    assertEquals( 0, meta.getCalculation().length );
   }
 
   public class CalculatorMetaFunctionLoadSaveValidator implements FieldLoadSaveValidator<CalculatorMetaFunction> {
