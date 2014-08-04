@@ -120,6 +120,20 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
         input.setChanged();
       }
     };
+
+    SelectionAdapter lsSelMod = new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+      }
+    };
+
+    SelectionAdapter lsLimitRows = new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+        enableFields();
+      }
+    };
+
     changed = input.hasChanged();
 
     FormLayout formLayout = new FormLayout();
@@ -168,6 +182,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
     fdLoglevel.top = new FormAttachment( wStepname, margin );
     fdLoglevel.right = new FormAttachment( 100, 0 );
     wLoglevel.setLayoutData( fdLoglevel );
+    wLoglevel.addSelectionListener( lsSelMod );
 
     // print header?
     wlPrintHeader = new Label( shell, SWT.RIGHT );
@@ -186,6 +201,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
     fdPrintHeader.top = new FormAttachment( wLoglevel, margin );
     fdPrintHeader.right = new FormAttachment( 100, 0 );
     wPrintHeader.setLayoutData( fdPrintHeader );
+    wPrintHeader.addSelectionListener( lsSelMod );
 
     // Limit output?
     // Cache?
@@ -203,12 +219,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
     fdLimitRows.left = new FormAttachment( middle, 0 );
     fdLimitRows.top = new FormAttachment( wPrintHeader, margin );
     wLimitRows.setLayoutData( fdLimitRows );
-    wLimitRows.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        input.setChanged();
-        enableFields();
-      }
-    } );
+    wLimitRows.addSelectionListener( lsLimitRows );
 
     // LimitRows size line
     wlLimitRowsNumber = new Label( shell, SWT.RIGHT );
