@@ -30,10 +30,12 @@ import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.mockito.Mockito;
 import org.pentaho.di.TestUtilities;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
@@ -47,7 +49,11 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * This class was a "copy and modification" of Kettle's JsonOutputTests.
@@ -334,5 +340,23 @@ public class JsonOutputTest extends TestCase {
   public void testCompatibilityMode() throws Exception {
     String jsonStructure = test( true );
     Assert.assertEquals( EXPECTED_COMPATIBILITY_MODE_JSON, jsonStructure );
+  }
+
+  /* PDI-7243 */
+  public void testNpeIsNotThrownOnNullInput() throws Exception {
+    StepMockHelper<JsonOutputMeta, JsonOutputData> mockHelper =
+      new StepMockHelper<JsonOutputMeta, JsonOutputData>( "jsonOutput", JsonOutputMeta.class, JsonOutputData.class );
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+      .thenReturn( mockHelper.logChannelInterface );
+    when( mockHelper.trans.isRunning() ).thenReturn( true );
+    when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( new JsonOutputMeta() );
+
+    JsonOutput step =
+      new JsonOutput( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+    step = spy( step );
+
+    doReturn( null ).when( step ).getRow();
+
+    step.processRow( mockHelper.processRowsStepMetaInterface, mockHelper.processRowsStepDataInterface );
   }
 }
