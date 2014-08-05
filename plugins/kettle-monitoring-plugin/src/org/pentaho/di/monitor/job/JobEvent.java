@@ -30,7 +30,7 @@ public class JobEvent implements IKettleMonitoringEvent {
 
   private static final String ID = "1.1.1.1.1.1.1.1"; // TODO replace with an actual oid
 
-  public static enum EventType {META_LOADED, STARTED, BEFORE_JOB_ENTRY, BEGIN_JOB_PROCESSING, AFTER_JOB_ENTRY, FINISH}
+  public static enum EventType {META_LOADED, STARTED, BEFORE_JOB_ENTRY, BEGIN_JOB_PROCESSING, AFTER_JOB_ENTRY, FINISHED}
 
   private Serializable id = ID;
   private EventType eventType;
@@ -42,6 +42,8 @@ public class JobEvent implements IKettleMonitoringEvent {
   private Date creationDate;
   private String executingServer;
   private String executingUser;
+  private long startTimeMillis;
+  private long endTimeMillis;
 
   public JobEvent( EventType eventType ) {
     this.eventType = eventType;
@@ -128,6 +130,22 @@ public class JobEvent implements IKettleMonitoringEvent {
     this.executingUser = executingUser;
   }
 
+  public long getStartTimeMillis() {
+    return startTimeMillis;
+  }
+
+  public void setStartTimeMillis( long startTimeMillis ) {
+    this.startTimeMillis = startTimeMillis;
+  }
+
+  public long getEndTimeMillis() {
+    return endTimeMillis;
+  }
+
+  public void setEndTimeMillis( long endTimeMillis ) {
+    this.endTimeMillis = endTimeMillis;
+  }
+
   public JobEvent build( Job job ) throws KettleException {
 
     if ( job == null ) {
@@ -136,6 +154,11 @@ public class JobEvent implements IKettleMonitoringEvent {
 
     setExecutingServer( job.getExecutingServer() );
     setExecutingUser( job.getExecutingUser() );
+    setStartTimeMillis( job.getCurrentDate() != null ? job.getCurrentDate().getTime() : 0 );
+
+    if( this.eventType == EventType.FINISHED ){
+      setEndTimeMillis( new Date().getTime() );
+    }
 
     return build( job.getJobMeta() );
   }
