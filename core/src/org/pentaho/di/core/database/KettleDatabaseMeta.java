@@ -22,8 +22,12 @@
 
 package org.pentaho.di.core.database;
 
+import org.pentaho.di.core.jdbc.ThinConnection;
 import org.pentaho.di.core.jdbc.ThinDriver;
 import org.pentaho.di.core.row.ValueMetaInterface;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Contains the wrapper for the Kettle Think JDBC driver database connection information through static final members
@@ -33,6 +37,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  */
 
 public class KettleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
+  public static final String DEFAULT_WEBAPPNAME = "pentaho-di";
+
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
@@ -46,7 +52,28 @@ public class KettleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
-    return ThinDriver.BASE_URL + hostname + ":" + port + "/" + databaseName;
+    return ThinDriver.BASE_URL + hostname + ":" + port + ThinDriver.SERVICE_NAME;
+  }
+
+  @Override public int getDefaultDatabasePort() {
+    return 9080;
+  }
+
+  @Override public Map<String, String> getDefaultOptions() {
+    final String prefix = getPluginId() + ".";
+    HashMap<String, String> defaults = new HashMap<String, String>();
+
+    defaults.put( prefix + ThinConnection.ARG_WEBAPPNAME, DEFAULT_WEBAPPNAME );
+
+    return defaults;
+  }
+
+  @Override public String getDatabaseName() {
+    return "kettle";
+  }
+
+  @Override public String getExtraOptionsHelpText() {
+    return "http://wiki.pentaho.com/display/EAI/JDBC+and+SQL+Reference";
   }
 
   @Override

@@ -1,7 +1,7 @@
 <database-types>
 
    <database-type id="KettleThin">                                                        
-    <description>Kettle thin JDBC driver</description>                                                
+    <description>Pentaho Data Integration</description>
     <classname>org.pentaho.di.core.database.KettleDatabaseMeta</classname>            
   </database-type>                                                                   
  
