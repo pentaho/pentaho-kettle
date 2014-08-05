@@ -28,7 +28,7 @@ public class TransformationEvent implements IKettleMonitoringEvent {
 
   private static final String ID = "1.1.1.1.1.1.1.1"; // TODO replace with an actual oid
 
-  public static enum EventType { META_LOADED, BEGIN_PREPARE_EXECUTION, BEGIN_START, STARTED, FINISHED }
+  public static enum EventType {META_LOADED, BEGIN_PREPARE_EXECUTION, BEGIN_START, STARTED, FINISHED}
 
   private Serializable id = ID;
   private EventType eventType;
@@ -40,6 +40,8 @@ public class TransformationEvent implements IKettleMonitoringEvent {
   private Date creationDate;
   private String executingServer;
   private String executingUser;
+  private long startTimeMillis;
+  private long endTimeMillis;
 
   public TransformationEvent( EventType eventType ) {
     this.eventType = eventType;
@@ -114,6 +116,22 @@ public class TransformationEvent implements IKettleMonitoringEvent {
     this.executingUser = executingUser;
   }
 
+  public long getStartTimeMillis() {
+    return startTimeMillis;
+  }
+
+  public void setStartTimeMillis( long startTimeMillis ) {
+    this.startTimeMillis = startTimeMillis;
+  }
+
+  public long getEndTimeMillis() {
+    return endTimeMillis;
+  }
+
+  public void setEndTimeMillis( long endTimeMillis ) {
+    this.endTimeMillis = endTimeMillis;
+  }
+
   public TransformationEvent build( Trans trans ) throws KettleException {
 
     if ( trans == null ) {
@@ -122,6 +140,11 @@ public class TransformationEvent implements IKettleMonitoringEvent {
 
     setExecutingServer( trans.getExecutingServer() );
     setExecutingUser( trans.getExecutingUser() );
+    setStartTimeMillis( trans.getCurrentDate() != null ? trans.getCurrentDate().getTime() : 0 );
+
+    if( this.eventType == EventType.FINISHED ){
+      setEndTimeMillis( new Date().getTime() );
+    }
 
     return build( trans.getTransMeta() );
   }
