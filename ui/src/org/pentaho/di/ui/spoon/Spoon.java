@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -5021,18 +5021,32 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               meta.setModifiedUser( rep.getUserInfo().getLogin() );
             }
 
+            boolean versioningEnabled = true;
+            boolean versionCommentsEnabled = true;
+            RepositorySecurityProvider repositorySecurityProvider =
+                rep != null && rep.getSecurityProvider() != null ? rep.getSecurityProvider() : null;
+            if ( repositorySecurityProvider != null ) {
+              versioningEnabled = repositorySecurityProvider.isVersioningEnabled();
+              versionCommentsEnabled = repositorySecurityProvider.allowsVersionComments();
+            }
+
             // Finally before saving, ask for a version comment (if
             // applicable)
             //
             String versionComment = null;
-            boolean versionOk = false;
+            boolean versionOk;
+            if ( !versioningEnabled || !versionCommentsEnabled ) {
+              versionOk = true;
+              versionComment = "";
+            } else {
+              versionOk = false;
+            }
             while ( !versionOk ) {
               versionComment = RepositorySecurityUI.getVersionComment( shell, rep, meta.getName() );
 
               // if the version comment is null, the user hit cancel, exit.
-              if ( rep != null
-                && rep.getSecurityProvider() != null && rep.getSecurityProvider().allowsVersionComments()
-                && versionComment == null ) {
+              if ( rep != null && rep.getSecurityProvider() != null
+                  && rep.getSecurityProvider().allowsVersionComments() && versionComment == null ) {
                 return false;
               }
 
@@ -5441,9 +5455,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         RepositorySecurityUI.getVersionComment( shell, rep, "Import of files into ["
           + baseDirectory.getPath() + "]" );
       // if the version comment is null, the user hit cancel, exit.
-      if ( rep != null
-        && rep.getSecurityProvider() != null && rep.getSecurityProvider().allowsVersionComments()
-        && versionComment == null ) {
+      if ( rep != null && rep.getSecurityProvider() != null && rep.getSecurityProvider().allowsVersionComments()
+          && versionComment == null ) {
         return;
       }
 
