@@ -24,7 +24,7 @@ import org.pentaho.di.monitor.MonitorAbstract;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 
 /**
- * @see http://wiki.pentaho.com/display/EAI/PDI+Extension+Point+Plugins
+ * @link http://wiki.pentaho.com/display/EAI/PDI+Extension+Point+Plugins
  */
 
 @ExtensionPoint(
@@ -41,8 +41,10 @@ public class StepFinishedMonitor extends MonitorAbstract implements ExtensionPoi
       return null;
     }
 
-    getLog().logDebug( "StepFinishedMonitor - " + ( o ).toString() );
+    StepEvent event = new StepEvent( StepEvent.EventType.FINIHED ).build( ( (StepMetaDataCombi) o ) );
 
-    return new StepEvent( StepEvent.EventType.FINIHED ).build( ( (StepMetaDataCombi) o ) );
+    logInfo( "[PDI Extension Point Plugin] Dispathing to Event Bus " + event.toString() );
+
+    return event;
   }
 }

@@ -18,8 +18,12 @@ package org.pentaho.di.monitor;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class MonitorAbstract {
+
+  private Logger logger = LoggerFactory.getLogger( getClass() );
 
   // kettle's provided log channel
   private LogChannelInterface logChannelInterface;
@@ -45,14 +49,12 @@ public abstract class MonitorAbstract {
    * @param logChannelInterface spoon's standard log interface channel
    * @param o                   one of Job/JobMeta/Transformation/TransMeta/... object
    * @throws KettleException if something goes wrong
-   * @see http://wiki.pentaho.com/display/EAI/PDI+Extension+Point+Plugins
+   * @link http://wiki.pentaho.com/display/EAI/PDI+Extension+Point+Plugins
    * <p/>
    */
   public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
 
     this.logChannelInterface = logChannelInterface; // kettle's provided log channel
-
-    getLog().logDebug( getClass().getName() + ".callExtensionPoint() triggered" );
 
     try {
 
@@ -61,16 +63,32 @@ public abstract class MonitorAbstract {
         MonitorEnvironment.getInstance().getEventBus().post( toKettleEvent( o ) ); // async event bus
 
       } else {
-        getLog().logBasic( "Monitoring event bus not available; discarding " + getClass().getSimpleName() + " event" );
+        logInfo( "Event bus not available; discarding " + getClass().getSimpleName() + " event" );
       }
 
     } catch ( Throwable t ) {
-      getLog().logError( getClass().getName(), t );
+      logError( getClass().getName(), t );
       throw new KettleException( t );
     }
   }
 
-  protected LogChannelInterface getLog() throws KettleException {
-    return logChannelInterface;
+  protected void logDebug( String message ) throws KettleException {
+    logger.debug( message );
+    logChannelInterface.logDebug( message );
+  }
+
+  protected void logInfo( String message ) throws KettleException {
+    logger.info( message );
+    logChannelInterface.logBasic( message );
+  }
+
+  protected void logWarn( String message ) throws KettleException {
+    logger.warn( message );
+    logChannelInterface.logBasic( message );
+  }
+
+  protected void logError( String message , Throwable t ) throws KettleException {
+    logger.error( message , t );
+    logChannelInterface.logError( message , t );
   }
 }
