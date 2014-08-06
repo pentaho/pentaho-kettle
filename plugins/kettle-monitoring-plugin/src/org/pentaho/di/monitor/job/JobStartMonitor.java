@@ -24,7 +24,7 @@ import org.pentaho.di.monitor.IKettleMonitoringEvent;
 import org.pentaho.di.monitor.MonitorAbstract;
 
 /**
- * @see http://wiki.pentaho.com/display/EAI/PDI+Extension+Point+Plugins
+ * @link http://wiki.pentaho.com/display/EAI/PDI+Extension+Point+Plugins
  */
 
 @ExtensionPoint(
@@ -41,8 +41,10 @@ public class JobStartMonitor extends MonitorAbstract implements ExtensionPointIn
       return null;
     }
 
-    getLog().logDebug( "JobStartMonitor - " + ( (Job) o ).getName() );
+    JobEvent event = new JobEvent( JobEvent.EventType.META_LOADED ).build( (Job) o );
 
-    return new JobEvent( JobEvent.EventType.META_LOADED ).build( (Job) o );
+    logInfo( "[PDI Extension Point Plugin] Dispathing to Event Bus " + event.toString() );
+
+    return event;
   }
 }

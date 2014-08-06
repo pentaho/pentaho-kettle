@@ -24,7 +24,7 @@ import org.pentaho.di.monitor.MonitorAbstract;
 import org.pentaho.di.www.WebServer;
 
 /**
- * @see http://wiki.pentaho.com/display/EAI/PDI+Extension+Point+Plugins
+ * @link http://wiki.pentaho.com/display/EAI/PDI+Extension+Point+Plugins
  */
 
 @ExtensionPoint(
@@ -41,8 +41,10 @@ public class CarteStartupMonitor extends MonitorAbstract implements ExtensionPoi
       return null;
     }
 
-    getLog().logDebug( "CarteStartupMonitor - " + ( (WebServer) o ).getHostname() + ":" + ( (WebServer) o ).getPort() );
+    CarteEvent event = new CarteEvent( CarteEvent.EventType.STARTUP ).build( (WebServer) o );
 
-    return new CarteEvent( CarteEvent.EventType.STARTUP ).build( (WebServer) o );
+    logInfo( "[PDI Extension Point Plugin] Dispathing to Event Bus " + event.toString() );
+
+    return event;
   }
 }

@@ -153,4 +153,20 @@ public class DatabaseEvent implements IKettleMonitoringEvent {
 
     return this;
   }
+
+  @Override
+  public String toString() {
+
+    StringBuffer sb = new StringBuffer( "[" + getClass().getSimpleName() + "]" );
+    sb.append( "[" + this.eventType.toString() + "]" );
+    sb.append( " Database name: '" + getDatabaseName() + "' " );
+    sb.append( ", hostname: '" + getHostname() + "' " );
+    sb.append( ", server: '" + getServer() + "' " );
+    sb.append( ", port: " + getPort() + " " );
+    sb.append( ", connectionUrl: '" + getConnectionUrl() + "' " );
+    sb.append( ", initial pool size: '" + getInitialPoolSize() + "' " );
+    sb.append( ", max pool size: '" + getMaxPoolSize() + "' " );
+
+    return sb.toString();
+  }
 }

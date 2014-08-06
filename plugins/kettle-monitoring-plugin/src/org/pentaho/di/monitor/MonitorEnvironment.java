@@ -29,10 +29,14 @@ import org.pentaho.di.monitor.step.StepSubscriber;
 import org.pentaho.di.monitor.trans.TransformationSubscriber;
 import org.pentaho.platform.api.monitoring.IMonitoringService;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class MonitorEnvironment {
+
+  private Logger logger = LoggerFactory.getLogger( MonitorEnvironment.class );
 
   // plugin name ( read: plugin name & plugin's folder name )
   public static final String MONITORING_PLUGIN_FOLDER_NAME = "kettle-monitoring-plugin"; //$NON-NLS-1$
@@ -44,6 +48,8 @@ public class MonitorEnvironment {
   private MonitorEnvironment() throws KettleException {
 
     initializeEnvironment();
+
+    logger.info( "Initializing MonitorEnvironment... is EventBus ready ? " + isEventBusReady() );
 
     if ( isEventBusReady() ) {
       registerEventHandlers();
@@ -76,10 +82,19 @@ public class MonitorEnvironment {
    */
   public void registerEventHandlers() throws KettleException {
 
+    logger.info( "registering CarteSubscriber to EventBus" );
     getEventBus().register( new CarteSubscriber() );
+
+    logger.info( "registering DatabaseSubscriber to EventBus" );
     getEventBus().register( new DatabaseSubscriber() );
+
+    logger.info( "registering JobSubscriber to EventBus" );
     getEventBus().register( new JobSubscriber() );
+
+    logger.info( "registering TransformationSubscriber to EventBus" );
     getEventBus().register( new TransformationSubscriber() );
+
+    logger.info( "registering StepSubscriber to EventBus" );
     getEventBus().register( new StepSubscriber() );
 
     //TODO register all kettle subscribers
@@ -126,9 +141,5 @@ public class MonitorEnvironment {
     }
 
     return null;
-  }
-
-  private void throwException( String message ) throws KettleException {
-    throw new KettleException( MONITORING_PLUGIN_FOLDER_NAME + " - Error in initialization: " + message );
   }
 }

@@ -37,7 +37,7 @@ public class DatabaseSubscriber implements IKettleMonitoringSubscriber {
       return;
     }
 
-    logger.warn( " TODO DatabaseEvent 2 SNMP task " );
+    logger.info( "[Event Bus Subscriber] just received " + event.toString() );
 
     // TODO event 2 SNMP task
   }

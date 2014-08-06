@@ -24,7 +24,7 @@ import org.pentaho.di.monitor.IKettleMonitoringEvent;
 import org.pentaho.di.monitor.MonitorAbstract;
 
 /**
- * @see http://wiki.pentaho.com/display/EAI/PDI+Extension+Point+Plugins
+ * @link http://wiki.pentaho.com/display/EAI/PDI+Extension+Point+Plugins
  */
 
 @ExtensionPoint(
@@ -40,8 +40,6 @@ public class SpoonJobMetaExecutionStartMonitor extends MonitorAbstract implement
     if ( o == null || !( o instanceof JobMeta ) ) {
       return null;
     }
-
-    getLog().logDebug( "SpoonJobMetaExecutionStartMonitor - " + ( (JobMeta) o ).getXML() );
 
     return null;
   }
