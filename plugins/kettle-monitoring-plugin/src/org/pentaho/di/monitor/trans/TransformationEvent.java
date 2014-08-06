@@ -16,6 +16,7 @@
 */
 package org.pentaho.di.monitor.trans;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.monitor.IKettleMonitoringEvent;
 import org.pentaho.di.trans.Trans;
@@ -142,7 +143,7 @@ public class TransformationEvent implements IKettleMonitoringEvent {
     setExecutingUser( trans.getExecutingUser() );
     setStartTimeMillis( trans.getCurrentDate() != null ? trans.getCurrentDate().getTime() : 0 );
 
-    if( this.eventType == EventType.FINISHED ){
+    if ( this.eventType == EventType.FINISHED ) {
       setEndTimeMillis( new Date().getTime() );
     }
 
@@ -163,5 +164,31 @@ public class TransformationEvent implements IKettleMonitoringEvent {
     setXml( meta.getXML() );
 
     return this;
+  }
+
+  @Override
+  public String toString() {
+
+    StringBuffer sb = new StringBuffer( "[" + getClass().getSimpleName() + "]" );
+    sb.append( "[" + this.eventType.toString() + "]" );
+    sb.append( " Name: '" + getName() + "' " );
+    sb.append( ", Created by: '" + getCreationUser() + "' " );
+
+    if ( !StringUtils.isEmpty( getExecutingServer() ) ) {
+      sb.append( ", executed in server: '" + getExecutingServer() + "' " );
+    }
+
+    if ( !StringUtils.isEmpty( getExecutingUser() ) ) {
+      sb.append( ", by user: '" + getExecutingUser() + "' " );
+    }
+
+    long completionTimeSecs =
+      ( getStartTimeMillis() > 0 ? ( ( ( getEndTimeMillis() - getStartTimeMillis() ) / 1000 ) % 60 ) : 0 );
+
+    if ( this.eventType == EventType.FINISHED && completionTimeSecs > 0 ) {
+      sb.append( ", executed in: " + completionTimeSecs + " seconds " );
+    }
+
+    return sb.toString();
   }
 }

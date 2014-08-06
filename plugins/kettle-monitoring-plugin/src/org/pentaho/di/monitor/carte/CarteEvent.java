@@ -83,4 +83,15 @@ public class CarteEvent implements IKettleMonitoringEvent {
 
     return this;
   }
+
+  @Override
+  public String toString() {
+
+    StringBuffer sb = new StringBuffer( "[" + getClass().getSimpleName() + "]" );
+    sb.append( "[" + this.eventType.toString() + "]" );
+    sb.append( " Hostname: '" + getHostname() + "' " );
+    sb.append( ", Port: " + getPort() + " " );
+
+    return sb.toString();
+  }
 }

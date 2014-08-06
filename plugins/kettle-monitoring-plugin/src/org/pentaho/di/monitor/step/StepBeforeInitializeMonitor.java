@@ -16,7 +16,6 @@
 */
 package org.pentaho.di.monitor.step;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -25,7 +24,7 @@ import org.pentaho.di.monitor.MonitorAbstract;
 import org.pentaho.di.trans.step.StepInitThread;
 
 /**
- * @see http://wiki.pentaho.com/display/EAI/PDI+Extension+Point+Plugins
+ * @link http://wiki.pentaho.com/display/EAI/PDI+Extension+Point+Plugins
  */
 
 @ExtensionPoint(
@@ -42,9 +41,10 @@ public class StepBeforeInitializeMonitor extends MonitorAbstract implements Exte
       return null;
     }
 
-    getLog()
-      .logDebug( "StepBeforeInitMonitor - " + ToStringBuilder.reflectionToString( ( (StepInitThread) o ).getCombi() ) );
+    StepEvent event = new StepEvent( StepEvent.EventType.BEFORE_INIT ).build( ( (StepInitThread) o ).getCombi() );
 
-    return new StepEvent( StepEvent.EventType.BEFORE_INIT ).build( ( (StepInitThread) o ).getCombi() );
+    logInfo( "[PDI Extension Point Plugin] Dispathing to Event Bus " + event.toString() );
+
+    return event;
   }
 }

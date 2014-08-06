@@ -22,6 +22,12 @@ public class StepEvent implements IKettleMonitoringEvent {
   private boolean distributed;
   private boolean doesErrorHandling;
   private boolean usesThreadPriorityManagement;
+  private long linesRead;
+  private long linesWritten;
+  private long linesUpdated;
+  private long linesRejected;
+  private long linesInput;
+  private long linesOutput;
 
   public StepEvent( EventType eventType ) {
     this.eventType = eventType;
@@ -92,6 +98,54 @@ public class StepEvent implements IKettleMonitoringEvent {
     this.usesThreadPriorityManagement = usesThreadPriorityManagement;
   }
 
+  public long getLinesRead() {
+    return linesRead;
+  }
+
+  public void setLinesRead( long linesRead ) {
+    this.linesRead = linesRead;
+  }
+
+  public long getLinesWritten() {
+    return linesWritten;
+  }
+
+  public void setLinesWritten( long linesWritten ) {
+    this.linesWritten = linesWritten;
+  }
+
+  public long getLinesUpdated() {
+    return linesUpdated;
+  }
+
+  public void setLinesUpdated( long linesUpdated ) {
+    this.linesUpdated = linesUpdated;
+  }
+
+  public long getLinesRejected() {
+    return linesRejected;
+  }
+
+  public void setLinesRejected( long linesRejected ) {
+    this.linesRejected = linesRejected;
+  }
+
+  public long getLinesInput() {
+    return linesInput;
+  }
+
+  public void setLinesInput( long linesInput ) {
+    this.linesInput = linesInput;
+  }
+
+  public long getLinesOutput() {
+    return linesOutput;
+  }
+
+  public void setLinesOutput( long linesOutput ) {
+    this.linesOutput = linesOutput;
+  }
+
   public StepEvent build( StepMetaDataCombi combi ) throws KettleException {
 
     if ( combi == null ) {
@@ -110,10 +164,31 @@ public class StepEvent implements IKettleMonitoringEvent {
 
     if ( combi.step != null ) {
 
+      setLinesInput( combi.step.getLinesInput() );
+      setLinesOutput( combi.step.getLinesOutput() );
+      setLinesRead( combi.step.getLinesRead() );
+      setLinesWritten( combi.step.getLinesWritten() );
+      setLinesUpdated( combi.step.getLinesUpdated() );
+      setLinesRejected( combi.step.getLinesRejected() );
       setUsesThreadPriorityManagement( combi.step.isUsingThreadPriorityManagment() );
     }
 
     return this;
   }
 
+  @Override
+  public String toString() {
+
+    StringBuffer sb = new StringBuffer( "[" + getClass().getSimpleName() + "]" );
+    sb.append( "[" + this.eventType.toString() + "]" );
+    sb.append( " Name: '" + getName() + "' " );
+    sb.append( ", lines read: " + getLinesRead() + " " );
+    sb.append( ", lines written: " + getLinesWritten() + " " );
+    sb.append( ", lines updated: " + getLinesUpdated() + " " );
+    sb.append( ", lines rejected: " + getLinesRejected() + " " );
+    sb.append( ", is clustered: '" + isClustered() + "' " );
+    sb.append( ", is distributed: '" + isDistributed() + "' " );
+
+    return sb.toString();
+  }
 }
