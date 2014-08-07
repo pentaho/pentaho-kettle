@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.tableinput;
 
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -52,6 +50,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
+import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -61,6 +60,8 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.List;
 
 /*
  * Created on 2-jun-2003
@@ -555,5 +556,14 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public StepMeta getLookupFromStep() {
     return getStepIOMeta().getInfoStreams().get( 0 ).getStepMeta();
+  }
+
+  @Override
+  public TableInputMetaInjection getStepMetaInjectionInterface() {
+    return new TableInputMetaInjection( this );
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return getStepMetaInjectionInterface().extractStepMetadataEntries();
   }
 }
