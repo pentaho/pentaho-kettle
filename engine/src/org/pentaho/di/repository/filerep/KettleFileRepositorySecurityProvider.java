@@ -150,4 +150,9 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
   public String[] getUserLogins() throws KettleException {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public boolean isVersioningEnabled() {
+    return false;
+  }
 }
