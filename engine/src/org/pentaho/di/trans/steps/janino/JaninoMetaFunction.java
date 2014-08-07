@@ -45,10 +45,7 @@ public class JaninoMetaFunction implements Cloneable {
 
   /**
    * @param fieldName
-   * @param calcType
-   * @param fieldA
-   * @param fieldB
-   * @param fieldC
+   * @param formula
    * @param valueType
    * @param valueLength
    * @param valuePrecision
