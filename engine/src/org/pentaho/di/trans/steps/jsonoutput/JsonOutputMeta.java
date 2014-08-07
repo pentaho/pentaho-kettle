@@ -48,6 +48,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -689,7 +690,7 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param jsonBloc
+   * @param nrRowsInBloc
    *          The nrRowsInBloc.
    */
   public void setNrRowsInBloc( String nrRowsInBloc ) {
@@ -718,5 +719,9 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void setCompatibilityMode( boolean compatibilityMode ) {
     this.compatibilityMode = compatibilityMode;
+  }
+
+  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+    return new JsonOutputMetaInjection( this );
   }
 }
