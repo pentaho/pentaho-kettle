@@ -218,7 +218,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       url = rep.getJobEntryAttributeString( id_jobentry, "url" );
       targetFilename = rep.getJobEntryAttributeString( id_jobentry, "targetfilename" );
       fileAppended = rep.getJobEntryAttributeBoolean( id_jobentry, "file_appended" );
-      dateTimeAdded = "Y".equalsIgnoreCase( rep.getJobEntryAttributeString( id_jobentry, "date_time_added" ) );
+      dateTimeAdded = rep.getJobEntryAttributeBoolean( id_jobentry, "date_time_added" );
       targetFilenameExtention = rep.getJobEntryAttributeString( id_jobentry, "targetfilename_extention" );
 
       uploadFilename = rep.getJobEntryAttributeString( id_jobentry, "uploadfilename" );
