@@ -57,7 +57,6 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
   private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!
 
   private StepPartitioningMeta partitioningMeta;
-  private StepMeta stepMeta;
   private ModPartitioner partitioner;
   private String fieldName;
 
