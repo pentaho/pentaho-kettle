@@ -2,7 +2,12 @@ package org.pentaho.di.core.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -11,6 +16,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
+import org.pentaho.di.core.plugins.DatabasePluginType;
 
 public class DatabaseMetaTest {
   @Test
@@ -48,5 +54,30 @@ public class DatabaseMetaTest {
     String expectedJndi = "JNDI";
     String access = DatabaseMeta.getAccessTypeDesc( DatabaseMeta.getAccessType( expectedJndi ) );
     assertEquals( expectedJndi, access );
+  }
+
+  @Test
+  public void testApplyingDefaultOptions() throws Exception {
+    HashMap<String, String> existingOptions = new HashMap<String, String>();
+    existingOptions.put( "type1.extra", "extraValue" );
+    existingOptions.put( "type1.existing", "existingValue" );
+    existingOptions.put( "type2.extra", "extraValue2" );
+
+    HashMap<String, String> newOptions = new HashMap<String, String>();
+    newOptions.put( "type1.new", "newValue" );
+    newOptions.put( "type1.existing", "existingDefault" );
+
+    // Register Natives to create a default DatabaseMeta
+    DatabasePluginType.getInstance().searchPlugins();
+    DatabaseMeta meta = new DatabaseMeta();
+    DatabaseInterface type = mock( DatabaseInterface.class );
+    meta.setDatabaseInterface( type );
+
+    when( type.getExtraOptions() ).thenReturn( existingOptions );
+    when( type.getDefaultOptions() ).thenReturn( newOptions );
+
+    meta.applyDefaultOptions( type );
+    verify( type ).addExtraOption( "type1", "new", "newValue" );
+    verify( type, never() ).addExtraOption( "type1", "existing", "existingDefault" );
   }
 }
