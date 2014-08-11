@@ -135,6 +135,9 @@ public class SqlCommentScrubber {
                 if ( !blkComment ) {
                   queryWithoutComments.append( '/' );
                   queryWithoutComments.append( (char) ch );
+                  if ( inString && ( currentStringChar == (char) ch ) ) {
+                    inString = false;
+                  }
                 }
               }
             }
