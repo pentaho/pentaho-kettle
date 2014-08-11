@@ -96,17 +96,17 @@ public class JobExecutorParameters implements Cloneable {
   public String getXML() {
     StringBuffer xml = new StringBuffer( 200 );
 
-    xml.append( "    " ).append( XMLHandler.openTag( XML_TAG ) );
+    xml.append( "    " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
 
     for ( int i = 0; i < variable.length; i++ ) {
-      xml.append( "       " ).append( XMLHandler.openTag( XML_VARIABLES_TAG ) );
+      xml.append( "      " ).append( XMLHandler.openTag( XML_VARIABLES_TAG ) );
       xml.append( XMLHandler.addTagValue( "variable", variable[i], false ) );
       xml.append( XMLHandler.addTagValue( "field", field[i], false ) );
       xml.append( XMLHandler.addTagValue( "input", input[i], false ) );
       xml.append( XMLHandler.closeTag( XML_VARIABLES_TAG ) ).append( Const.CR );
     }
-    xml.append( "    " ).append( XMLHandler.addTagValue( "inherit_all_vars", inheritingAllVariables ) );
-    xml.append( "    " ).append( XMLHandler.closeTag( XML_TAG ) );
+    xml.append( "      " ).append( XMLHandler.addTagValue( "inherit_all_vars", inheritingAllVariables ) );
+    xml.append( "    " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
     return xml.toString();
   }
