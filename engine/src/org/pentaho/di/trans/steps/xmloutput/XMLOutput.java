@@ -33,6 +33,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -176,23 +177,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
         // Write a new row to the XML file:
         data.writer.write( ( " <" + meta.getRepeatElement() ).toCharArray() );
 
-        // First do the attributes...
-        //
-        for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
-          XMLField xmlField = meta.getOutputFields()[i];
-          if ( xmlField.getContentType() == ContentType.Attribute ) {
-            ValueMetaInterface valueMeta = data.formatRowMeta.getValueMeta( data.fieldnrs[i] );
-            Object valueData = r[data.fieldnrs[i]];
-
-            String elementName = xmlField.getElementName();
-            if ( Const.isEmpty( elementName ) ) {
-              elementName = xmlField.getFieldName();
-            }
-            data.writer.write( ( " " + elementName + "=\"" + valueMeta.getString( valueData ) + "\"" )
-              .toCharArray() );
-          }
-        }
-
+        // First do the attributes and write them...
+        data.writer.write( buildRowAttributes( r ).toCharArray() );
         data.writer.write( ">".toCharArray() );
 
         // Now write the elements
@@ -228,6 +214,28 @@ public class XMLOutput extends BaseStep implements StepInterface {
     }
 
     incrementLinesOutput();
+  }
+
+  String buildRowAttributes( Object[] r ) throws KettleValueException {
+    StringBuffer rowAttributes = new StringBuffer();
+
+    for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
+      XMLField xmlField = meta.getOutputFields()[i];
+      if ( xmlField.getContentType() == ContentType.Attribute ) {
+        ValueMetaInterface valueMeta = data.formatRowMeta.getValueMeta( data.fieldnrs[i] );
+        Object valueData = r[data.fieldnrs[i]];
+
+        String elementName = xmlField.getElementName();
+        if ( Const.isEmpty( elementName ) ) {
+          elementName = xmlField.getFieldName();
+        }
+
+        rowAttributes.append( ' ' ).append( elementName ).append( "=\"" );
+        XMLHandler.appendReplacedChars( rowAttributes, valueMeta.getString( valueData ) );
+        rowAttributes.append( "\"" );
+      }
+    }
+    return rowAttributes.toString();
   }
 
   private void writeField( ValueMetaInterface valueMeta, Object valueData, String element ) throws KettleStepException {
