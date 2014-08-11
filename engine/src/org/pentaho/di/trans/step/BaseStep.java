@@ -2438,6 +2438,16 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   /**
    * This method finds the surrounding steps and rowsets for this base step. This steps keeps it's own list of rowsets
    * (etc.) to prevent it from having to search every time.
+   * 
+   * Note that all rowsets input and output is already created by transformation itself. So
+   * in this place we will look and choose which rowsets will be used by this particular step.
+   * 
+   * We will collect all input rowsets and output rowsets so step will be able to read input data,
+   * and write to the output.
+   * 
+   * Steps can run in multiple copies, on in partitioned fashion. For this case we should take 
+   * in account that in different cases we should take in account one to one, one to many and other cases
+   * properly.
    */
   public void dispatch() {
     if ( transMeta == null ) { // for preview reasons, no dispatching is done!
@@ -2470,7 +2480,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.StepInfo", String.valueOf( nrInput ), String
         .valueOf( nrOutput ) ) );
     }
-
+    // populate input rowsets.
     for ( int i = 0; i < previousSteps.size(); i++ ) {
       prevSteps[i] = previousSteps.get( i );
       if ( log.isDetailed() ) {
@@ -2488,33 +2498,33 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
       int nrCopies;
       int dispatchType;
+      boolean repartitioning;
+      if ( prevSteps[i].isPartitioned() ) {
+        repartitioning = !prevSteps[i].getStepPartitioningMeta()
+            .equals( stepMeta.getStepPartitioningMeta() );
+      } else {
+        repartitioning = stepMeta.isPartitioned();
+      }
 
       if ( prevCopies == 1 && nextCopies == 1 ) {
+        // normal hop
         dispatchType = Trans.TYPE_DISP_1_1;
         nrCopies = 1;
-      } else {
-        if ( prevCopies == 1 && nextCopies > 1 ) {
-          dispatchType = Trans.TYPE_DISP_1_N;
-          nrCopies = 1;
-        } else {
-          if ( prevCopies > 1 && nextCopies == 1 ) {
-            dispatchType = Trans.TYPE_DISP_N_1;
-            nrCopies = prevCopies;
-          } else {
-            if ( prevCopies == nextCopies ) {
-              if ( stepMeta.isPartitioned() && !prevSteps[i].isPartitioned() ) {
-                dispatchType = Trans.TYPE_DISP_N_M;
-                nrCopies = nextCopies;
-              } else {
-                dispatchType = Trans.TYPE_DISP_N_N;
-                nrCopies = 1;
-              }
-            } else { // > 1!
-              dispatchType = Trans.TYPE_DISP_N_M;
-              nrCopies = prevCopies;
-            }
-          }
-        }
+      } else if ( prevCopies == 1 && nextCopies > 1 ) {
+        // one to many hop
+        dispatchType = Trans.TYPE_DISP_1_N;
+        nrCopies = 1;
+      } else if ( prevCopies > 1 && nextCopies == 1 ) {
+        // from many to one hop
+        dispatchType = Trans.TYPE_DISP_N_1;
+        nrCopies = prevCopies;
+      } else if ( prevCopies == nextCopies && !repartitioning ) {
+        // this may be many-to-many or swim-lanes hop
+        dispatchType = Trans.TYPE_DISP_N_N;
+        nrCopies = 1;
+      } else { // > 1!
+        dispatchType = Trans.TYPE_DISP_N_M;
+        nrCopies = prevCopies;
       }
 
       for ( int c = 0; c < nrCopies; c++ ) {
@@ -2567,33 +2577,29 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
       int nrCopies;
       int dispatchType;
+      boolean repartitioning;
+      if ( stepMeta.isPartitioned() ) {
+        repartitioning = !stepMeta.getStepPartitioningMeta()
+            .equals( nextSteps[i].getStepPartitioningMeta() );
+      } else {
+        repartitioning = nextSteps[i].isPartitioned();
+      }
 
       if ( prevCopies == 1 && nextCopies == 1 ) {
         dispatchType = Trans.TYPE_DISP_1_1;
         nrCopies = 1;
-      } else {
-        if ( prevCopies == 1 && nextCopies > 1 ) {
-          dispatchType = Trans.TYPE_DISP_1_N;
-          nrCopies = nextCopies;
-        } else {
-          if ( prevCopies > 1 && nextCopies == 1 ) {
-            dispatchType = Trans.TYPE_DISP_N_1;
-            nrCopies = 1;
-          } else {
-            if ( prevCopies == nextCopies ) {
-              if ( !stepMeta.isPartitioned() && nextSteps[i].isPartitioned() ) {
-                dispatchType = Trans.TYPE_DISP_N_M;
-                nrCopies = nextCopies;
-              } else {
-                dispatchType = Trans.TYPE_DISP_N_N;
-                nrCopies = 1;
-              }
-            } else { // > 1!
-              dispatchType = Trans.TYPE_DISP_N_M;
-              nrCopies = nextCopies;
-            }
-          }
-        }
+      } else if ( prevCopies == 1 && nextCopies > 1 ) {
+        dispatchType = Trans.TYPE_DISP_1_N;
+        nrCopies = nextCopies;
+      } else if ( prevCopies > 1 && nextCopies == 1 ) {
+        dispatchType = Trans.TYPE_DISP_N_1;
+        nrCopies = 1;
+      } else if ( prevCopies == nextCopies && !repartitioning ) {
+        dispatchType = Trans.TYPE_DISP_N_N;
+        nrCopies = 1;
+      } else { // > 1!
+        dispatchType = Trans.TYPE_DISP_N_M;
+        nrCopies = nextCopies;
       }
 
       for ( int c = 0; c < nrCopies; c++ ) {
