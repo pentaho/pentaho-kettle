@@ -267,12 +267,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       directory = rep.getStepAttributeString( id_step, "directory" );
       prefix = rep.getStepAttributeString( id_step, "prefix" );
-      int sortSizeInt = (int) rep.getStepAttributeInteger( id_step, "sort_size" );
-      if ( sortSizeInt > 0 ) {
-        sortSize = Integer.toString( sortSizeInt ); // For backward compatibility
-      } else {
-        sortSize = rep.getStepAttributeString( id_step, "sort_size" );
-      }
+      sortSize = rep.getStepAttributeString( id_step, "sort_size" );
       freeMemoryLimit = rep.getStepAttributeString( id_step, "free_memory" );
 
       compressFiles = rep.getStepAttributeBoolean( id_step, "compress" );
