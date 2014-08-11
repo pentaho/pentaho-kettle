@@ -225,7 +225,7 @@ public class JsonOutput extends BaseStep implements StepInterface {
     data.jg.put( data.realBlocName, data.ja );
     String value = data.jg.toJSONString();
 
-    if ( data.outputValue ) {
+    if ( data.outputValue && data.outputRowMeta != null ) {
       Object[] outputRowData = RowDataUtil.addValueData( rowData, data.inputRowMetaSize, value );
       incrementLinesOutput();
       putRow( data.outputRowMeta, outputRowData );
