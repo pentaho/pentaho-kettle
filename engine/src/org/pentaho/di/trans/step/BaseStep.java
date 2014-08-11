@@ -68,6 +68,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.trans.BasePartitioner;
 import org.pentaho.di.trans.SlaveStepCopyPartitionDistribution;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -529,7 +530,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       this.clusterSize = Integer.parseInt( clusterSize );
 
       if ( log.isDetailed() ) {
-        logDetailed( "Running on slave server #" + slaveNr + "/" + clusterSize + "." );
+        logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.ReleasedServerSocketOnPort", slaveNr, clusterSize ) );
       }
     } else {
       this.slaveNr = 0;
@@ -595,8 +596,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           String partitionID = partitionIDList.get( partitionNr );
           setVariable( Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID );
         } else {
-          logError( "Unable to retrieve a partition id from the partition schema: "
-            + stepMeta.getStepPartitioningMeta().getPartitionSchema().getName() );
+          logError( BaseMessages.getString( PKG, "BaseStep.Log.UnableToRetrievePartitionId",
+              stepMeta.getStepPartitioningMeta().getPartitionSchema().getName() ) );
           return false;
         }
       }
@@ -639,13 +640,12 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           RemoteStep copy = (RemoteStep) remoteStep.clone();
           try {
             if ( log.isDetailed() ) {
-              logDetailed( "Selected remote output step ["
-                + copy + "] to open a server socket to remote step [" + copy.getTargetStep() + "]."
-                + copy.getTargetStepCopyNr() + " on port " + copy.getPort() );
+              logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.SelectedRemoteOutputStepToServer",
+                  copy, copy.getTargetStep(), copy.getTargetStepCopyNr(), copy.getPort() ) );
             }
             copy.openServerSocket( this );
             if ( log.isDetailed() ) {
-              logDetailed( "Opened a server socket connection to " + copy );
+              logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.OpenedServerSocketConnectionTo", copy ) );
             }
           } catch ( Exception e ) {
             logError( "Unable to open server socket during step initialisation: " + copy.toString(), e );
@@ -772,8 +772,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       try {
 
         socketRepository.releaseSocket( serverSocket.getLocalPort() );
-
-        logDetailed( "Released server socket on port " + serverSocket.getLocalPort() );
+        logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.ReleasedServerSocketOnPort", serverSocket.getLocalPort() ) );
       } catch ( IOException e ) {
         logError( "Cleanup: Unable to release server socket (" + serverSocket.getLocalPort() + ")", e );
       }
@@ -1374,32 +1373,59 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           + partitionNr + "' is higher than the maximum of '" + ( partitionNrRowSetList.length - 1 )
           + ".  The available row sets are: {" + rowsets + "}" );
       }
+
+      if ( selectedRowSet == null ) {
+        logBasic( BaseMessages.getString( PKG, "BaseStep.TargetRowsetIsNotAvailable", partitionNr ) );
+      } else {
+        // Wait
+        while ( !selectedRowSet.putRow( rowMeta, row ) ) {
+          if ( isStopped() ) {
+            break;
+          }
+        }
+        incrementLinesWritten();
+
+        if ( log.isRowLevel() ) {
+          try {
+            logRowlevel( "Partitioned #" + partitionNr + " to " + selectedRowSet + ", row=" + rowMeta.getString( row ) );
+          } catch ( KettleValueException e ) {
+            throw new KettleStepException( e );
+          }
+        }
+      }
     } else {
       // Local partitioning...
       // Put the row forward to the next step according to the partition rule.
       //
-      selectedRowSet = outputRowSets.get( partitionNr );
-    }
 
-    if ( selectedRowSet == null ) {
-      logBasic( "Target rowset is not available for target partition, partitionNr=" + partitionNr );
-    }
+      // Count of partitioned row at one step
+      int partCount = ( (BasePartitioner) nextStepPartitioningMeta.getPartitioner() ).getNrPartitions();
 
-    // logBasic("Putting row to partition #"+partitionNr);
+      for ( int i = 0; i < nextSteps.length; i++ ) {
 
-    // Wait
-    while ( !selectedRowSet.putRow( rowMeta, row ) ) {
-      if ( isStopped() ) {
-        break;
-      }
-    }
-    incrementLinesWritten();
+        selectedRowSet = outputRowSets.get( partitionNr + i * partCount );
 
-    if ( log.isRowLevel() ) {
-      try {
-        logRowlevel( "Partitioned #" + partitionNr + " to " + selectedRowSet + ", row=" + rowMeta.getString( row ) );
-      } catch ( KettleValueException e ) {
-        throw new KettleStepException( e );
+        if ( selectedRowSet == null ) {
+          logBasic( BaseMessages.getString( PKG, "BaseStep.TargetRowsetIsNotAvailable", partitionNr ) );
+        } else {
+
+          // Wait
+          while ( !selectedRowSet.putRow( rowMeta, row ) ) {
+            if ( isStopped() ) {
+              break;
+            }
+          }
+          incrementLinesWritten();
+
+          if ( log.isRowLevel() ) {
+            try {
+              logRowlevel( BaseMessages.getString( PKG, "BaseStep.PartitionedToRow", partitionNr,
+                  selectedRowSet, rowMeta.getString( row ) ) );
+            } catch ( KettleValueException e ) {
+              throw new KettleStepException( e );
+            }
+          }
+        }
       }
     }
   }
@@ -1938,7 +1964,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
             }
             BlockingRowSet rowSet = remoteStep.openWriterSocket();
             if ( log.isDetailed() ) {
-              logDetailed( "Opened a writer socket to remote step: " + remoteStep );
+              logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.OpenedWriterSocketToRemoteStep", remoteStep ) );
             }
             outputRowSets.add( rowSet );
           } catch ( IOException e ) {
