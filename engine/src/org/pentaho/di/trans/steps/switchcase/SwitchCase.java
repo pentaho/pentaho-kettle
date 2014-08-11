@@ -55,7 +55,7 @@ public class SwitchCase extends BaseStep implements StepInterface {
   private SwitchCaseData data;
 
   public SwitchCase( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                     Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -84,8 +84,7 @@ public class SwitchCase extends BaseStep implements StepInterface {
     Object lookupData = data.valueMeta.convertData( data.inputValueMeta, r[data.fieldIndex] );
 
     // Determine the output set of rowset to use...
-    Set<RowSet> rowSetSet = null;
-    rowSetSet = ( data.valueMeta.isNull( lookupData ) ) ? data.nullRowSetSet : data.outputMap.get( lookupData );
+    Set<RowSet> rowSetSet = ( data.valueMeta.isNull( lookupData ) ) ? data.nullRowSetSet : data.outputMap.get( lookupData );
 
     // If the rowset is still not found (unspecified key value, we drop down to the default option
     // For now: send it to the default step...
@@ -207,6 +206,9 @@ public class SwitchCase extends BaseStep implements StepInterface {
         RowSet rowSet = findOutputRowSet( meta.getDefaultTargetStep().getName() );
         if ( rowSet != null ) {
           data.defaultRowSetSet.add( rowSet );
+          if ( data.nullRowSetSet.isEmpty() ) {
+            data.nullRowSetSet.add( rowSet );
+          }
         }
       }
     } catch ( Exception e ) {
