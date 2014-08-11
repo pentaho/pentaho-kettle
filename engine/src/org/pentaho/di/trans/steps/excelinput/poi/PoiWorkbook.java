@@ -97,7 +97,8 @@ public class PoiWorkbook implements KWorkbook {
         npoifs.close();
       }
       if ( opcpkg != null ) {
-        opcpkg.close();
+        //We should not save change in xls because it is input step.
+        opcpkg.revert();
       }
     } catch ( IOException ex ) {
       // Ignore errors
