@@ -23,7 +23,8 @@
 package org.pentaho.di.trans.steps.blockingstep;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +34,7 @@ import junit.framework.TestCase;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
@@ -48,6 +50,12 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * Test class for the BlockingStep step.
@@ -55,7 +63,8 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
  * @author Sven Boden
  */
 public class BlockingStepTest extends TestCase {
-  public RowMetaInterface createRowMetaInterface() {
+
+  private RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
@@ -66,36 +75,35 @@ public class BlockingStepTest extends TestCase {
       new ValueMeta( "field6", ValueMeta.TYPE_BIGNUMBER ),
       new ValueMeta( "field7", ValueMeta.TYPE_BIGNUMBER ) };
 
-    for ( int i = 0; i < valuesMeta.length; i++ ) {
-      rm.addValueMeta( valuesMeta[i] );
+    for ( ValueMetaInterface aValuesMeta : valuesMeta ) {
+      rm.addValueMeta( aValuesMeta );
     }
 
     return rm;
   }
 
-  public List<RowMetaAndData> createData() {
-    List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+  private List<RowMetaAndData> createData() {
 
     RowMetaInterface rm = createRowMetaInterface();
 
     Object[] r1 =
       new Object[] {
-        "KETTLE1", new Long( 123L ), new Double( 10.5D ), new Date(), Boolean.TRUE,
+        "KETTLE1", 123L, 10.5D, new Date(), Boolean.TRUE,
         BigDecimal.valueOf( 123.45 ), BigDecimal.valueOf( 123.60 ) };
     Object[] r2 =
       new Object[] {
-        "KETTLE2", new Long( 500L ), new Double( 20.0D ), new Date(), Boolean.FALSE,
+        "KETTLE2", 500L, 20.0D, new Date(), Boolean.FALSE,
         BigDecimal.valueOf( 123.45 ), BigDecimal.valueOf( 123.60 ) };
     Object[] r3 =
       new Object[] {
-        "KETTLE3", new Long( 501L ), new Double( 21.0D ), new Date(), Boolean.FALSE,
+        "KETTLE3", 501L, 21.0D, new Date(), Boolean.FALSE,
         BigDecimal.valueOf( 123.45 ), BigDecimal.valueOf( 123.70 ) };
 
-    list.add( new RowMetaAndData( rm, r1 ) );
-    list.add( new RowMetaAndData( rm, r2 ) );
-    list.add( new RowMetaAndData( rm, r3 ) );
-
-    return list;
+    return Arrays.asList(
+      new RowMetaAndData( rm, r1 ),
+      new RowMetaAndData( rm, r2 ),
+      new RowMetaAndData( rm, r3 )
+    );
   }
 
   /**
@@ -222,9 +230,7 @@ public class BlockingStepTest extends TestCase {
 
     // add rows
     List<RowMetaAndData> inputList = createData();
-    Iterator<RowMetaAndData> it = inputList.iterator();
-    while ( it.hasNext() ) {
-      RowMetaAndData rm = it.next();
+    for ( RowMetaAndData rm : inputList ) {
       rp.putRow( rm.getRowMeta(), rm.getData() );
     }
     rp.finished();
@@ -242,8 +248,7 @@ public class BlockingStepTest extends TestCase {
     checkRows( resultRows2, inputList );
 
     List<RowMetaAndData> resultRows3 = dummyRc2.getRowsRead();
-    List<RowMetaAndData> lastList = new ArrayList<RowMetaAndData>();
-    lastList.add( inputList.get( inputList.size() - 1 ) );
+    List<RowMetaAndData> lastList = Collections.singletonList( inputList.get( inputList.size() - 1 ) );
     checkRows( resultRows3, lastList );
   }
 
@@ -335,9 +340,7 @@ public class BlockingStepTest extends TestCase {
 
     // add rows
     List<RowMetaAndData> inputList = createData();
-    Iterator<RowMetaAndData> it = inputList.iterator();
-    while ( it.hasNext() ) {
-      RowMetaAndData rm = it.next();
+    for ( RowMetaAndData rm : inputList ) {
       rp.putRow( rm.getRowMeta(), rm.getData() );
     }
     rp.finished();
@@ -356,5 +359,33 @@ public class BlockingStepTest extends TestCase {
 
     List<RowMetaAndData> resultRows3 = dummyRc2.getRowsWritten();
     checkRows( resultRows3, inputList );
+  }
+
+  public void testOutputRowMetaIsCreateOnce() throws Exception {
+    StepMockHelper<BlockingStepMeta, BlockingStepData> mockHelper =
+      new StepMockHelper<BlockingStepMeta, BlockingStepData>( "BlockingStep", BlockingStepMeta.class,
+        BlockingStepData.class );
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+      .thenReturn( mockHelper.logChannelInterface );
+    when( mockHelper.trans.isRunning() ).thenReturn( true );
+
+    BlockingStep step =
+      new BlockingStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
+        mockHelper.trans );
+    step = spy( step );
+
+    BlockingStepData data = new BlockingStepData();
+    step.init( mockHelper.processRowsStepMetaInterface, data );
+    step.setInputRowMeta( createRowMetaInterface() );
+
+    doReturn( new Object[ 0 ] ).when( step ).getRow();
+    step.processRow( mockHelper.processRowsStepMetaInterface, data );
+
+    RowMetaInterface outputRowMeta = data.outputRowMeta;
+    assertNotNull( outputRowMeta );
+
+    doReturn( new Object[ 0 ] ).when( step ).getRow();
+    step.processRow( mockHelper.processRowsStepMetaInterface, data );
+    assertTrue( data.outputRowMeta == outputRowMeta );
   }
 }

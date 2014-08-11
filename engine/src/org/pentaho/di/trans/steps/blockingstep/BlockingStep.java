@@ -259,6 +259,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 
     // initialize
     if ( first && r != null ) {
+      first = false;
       data.outputRowMeta = getInputRowMeta().clone();
     }
 
