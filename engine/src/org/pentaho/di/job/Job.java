@@ -30,8 +30,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -774,8 +776,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     // Keep track of the results of these executions too.
     //
     final List<Thread> threads = new ArrayList<Thread>();
-    final List<Result> threadResults = new ArrayList<Result>();
-    final List<KettleException> threadExceptions = new ArrayList<KettleException>();
+    // next 2 lists is being modified concurrently so must be synchronized for this case.
+    final Queue<Result> threadResults = new ConcurrentLinkedQueue<Result>();
+    final Queue<KettleException> threadExceptions = new ConcurrentLinkedQueue<KettleException>();
     final List<JobEntryCopy> threadEntries = new ArrayList<JobEntryCopy>();
 
     // Launch only those where the hop indicates true or false
@@ -907,7 +910,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
       // Now throw the first Exception for good measure...
       //
-      throw threadExceptions.get( 0 );
+      throw threadExceptions.poll();
     }
 
     // In parallel execution, we aggregate all the results, simply add them to
