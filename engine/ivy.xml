@@ -72,7 +72,7 @@
     <dependency org="org.apache.poi"                   name="poi-ooxml"            rev="3.9"             transitive="false"/>
     <dependency org="org.apache.poi"                   name="poi-ooxml-schemas"    rev="3.9"             transitive="false"/>
     <dependency org="org.apache.xmlbeans"              name="xmlbeans"             rev="2.5.0"           transitive="false"/>
-    <dependency org="org.postgresql"                   name="postgresql"           rev="9.3-1101-jdbc4"   transitive="false"/>
+    <dependency org="org.postgresql"                   name="postgresql"           rev="9.3-1102-jdbc4"   transitive="false"/>
     <dependency org="rome"                             name="rome"                 rev="1.0"             transitive="false"/>
     <dependency org="org.eobjects.sassyreader"         name="SassyReader"          rev="0.5"             transitive="false"/>
     <dependency org="net.sf.saxon"                     name="saxon"                rev="9.1.0.8"         transitive="false"/>
