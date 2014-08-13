@@ -1202,6 +1202,19 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     databaseInterface.addExtraOption( databaseTypeCode, option, value );
   }
 
+  public void applyDefaultOptions( DatabaseInterface databaseInterface ) {
+    final Map<String, String> extraOptions = getExtraOptions();
+
+    final Map<String, String> defaultOptions = databaseInterface.getDefaultOptions();
+    for ( String option : defaultOptions.keySet() ) {
+      String value = defaultOptions.get( option );
+      String[] split = option.split( "[.]", 2 );
+      if ( !extraOptions.containsKey( option ) && split.length == 2 ) {
+        addExtraOption( split[0], split[1], value );
+      }
+    }
+  }
+
   /**
    * @deprecated because the same database can support transactions or not. It all depends on the database setup.
    *             Therefor, we look at the database metadata DatabaseMetaData.supportsTransactions() in stead of this.

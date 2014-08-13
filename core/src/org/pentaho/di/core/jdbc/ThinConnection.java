@@ -443,8 +443,8 @@ public class ThinConnection implements Connection {
    * @param password
    *          the password to set
    */
-  public void setPassword( String passsword ) {
-    this.password = passsword;
+  public void setPassword( String password ) {
+    this.password = password;
   }
 
   /**

@@ -323,7 +323,13 @@ public class DataHandler extends AbstractXulEventHandler {
 
     Map<String, String> options = null;
     if ( this.databaseMeta != null ) {
+      // Apply defaults to meta if set (only current db type will be displayed)
+      this.databaseMeta.applyDefaultOptions( database );
       options = this.databaseMeta.getExtraOptions();
+    } else {
+      // Otherwise clear and display defaults directly
+      clearOptionsData();
+      options = database.getDefaultOptions();
     }
     setOptionsData( options );
     PartitionDatabaseMeta[] clusterInfo = null;
@@ -350,6 +356,11 @@ public class DataHandler extends AbstractXulEventHandler {
         newRow.addCellText( 1, "" );
       }
     }
+  }
+
+  public void clearOptionsData() {
+    getControls();
+    optionsParameterTree.getRootChildren().removeAll();
   }
 
   public void getOptionHelp() {
@@ -1037,9 +1048,12 @@ public class DataHandler extends AbstractXulEventHandler {
       }
 
     }
-    // Add 5 blank rows if none are already there, otherwise, just add one.
+    // Have at least 5 option rows, with at least one blank
     int numToAdd = 5;
-    if ( extraOptions != null && extraOptions.keySet().size() > 0 ) {
+    int numSet = optionsParameterTree.getRootChildren().getItemCount();
+    if ( numSet < numToAdd ) {
+      numToAdd -= numSet;
+    } else {
       numToAdd = 1;
     }
     while ( numToAdd-- > 0 ) {
