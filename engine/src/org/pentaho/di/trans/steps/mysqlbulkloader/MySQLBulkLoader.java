@@ -342,6 +342,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
                 String string = valueMeta.getString( valueData );
                 if ( string != null ) {
                   if ( meta.getFieldFormatType()[i] == MySQLBulkLoaderMeta.FIELD_FORMAT_TYPE_STRING_ESCAPE ) {
+                    string = Const.replace( string, meta.getEscapeChar(), meta.getEscapeChar() + meta.getEscapeChar() );
                     string = Const.replace( string, meta.getEnclosure(), meta.getEscapeChar() + meta.getEnclosure() );
                   }
                   data.fifoStream.write( string.getBytes() );
