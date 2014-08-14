@@ -455,10 +455,6 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
     IMetaStore metaStore ) throws KettleStepException {
 
-    if ( stepMeta.getName().equalsIgnoreCase( "cdc_cust" ) ) {
-      System.out.println( "HERE!" );
-    }
-
     // Find the lookupfields...
     RowMetaInterface out = new RowMeta();
     // TODO: this builds, but does it work in all cases.
