@@ -238,6 +238,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 
       usehttpproxy = rep.getJobEntryAttributeBoolean( id_jobentry, "usehttpproxy" );
       httpProxyHost = rep.getJobEntryAttributeString( id_jobentry, "httpproxyhost" );
+      httpproxyport = rep.getJobEntryAttributeString( id_jobentry, "httpproxyport" );
       httpproxyusername = rep.getJobEntryAttributeString( id_jobentry, "httpproxyusername" );
       httpProxyPassword = rep.getJobEntryAttributeString( id_jobentry, "httpproxypassword" );
 
@@ -807,7 +808,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
             }
           }
 
-          if ( realDestinationFolder != null ) {
+          if ( !Const.isEmpty( realDestinationFolder ) ) {
             // Check now destination folder
             if ( !sshDirectoryExists( client, realDestinationFolder ) ) {
               if ( createdestinationfolder ) {
