@@ -1,5 +1,5 @@
 <!--===========================================================================
-  This is the build file for the Pentaho Data Integration (Kettle) PALO plugin.
+  This is the build file for the Pentaho Data Integration (Kettle) Monitoring plugin.
   
   This build file will use the subfloor.xml file as the default build
   process and should only override the tasks that need to differ from
@@ -7,11 +7,11 @@
   
   See common_build.xml for more details
 ============================================================================-->
-<project name="kettle-palo-plugin" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="kettle-monitoring-plugin" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
 
 
   <description>
-    This build file is used to create the PALO core Kettle plugin
+    This build file is used to create the monitoring plugin
     and works with the subfloor.xml file.
   </description>
 
