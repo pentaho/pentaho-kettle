@@ -164,6 +164,8 @@
           <then>
             <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
               <target name="resolve"/>
+              <target name="test"/>	
+              <target name="cobertura"/> 	
               <target name="package"/>
               <target name="publish-local"/>
             </ant>
@@ -171,6 +173,8 @@
           <else>
             <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
               <target name="resolve"/>
+              <target name="test"/>	
+              <target name="cobertura"/> 	
               <target name="package"/>
               <target name="publish"/>
             </ant>
