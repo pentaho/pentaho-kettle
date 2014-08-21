@@ -44,6 +44,9 @@
     <dependency org="org.mockito"                   name="mockito-all"                          rev="1.9.5"                                                                                           conf="test->default"/>
     <dependency org="commons-vfs"                   name="commons-vfs"                          rev="20100924-pentaho"                                                                                conf="test->default"/>
     <dependency org="com.googlecode.json-simple"    name="json-simple"                          rev="1.1.1"                                                                                           conf="test->default"/>
+    <dependency org="javax.servlet"                 name="servlet-api"                          rev="2.5"                                                                                             conf="test->default"/>
+    <dependency org="org.mortbay.jetty"             name="jetty-servlet-tester"                 rev="6.1.21"                                                                                          conf="test->default"/>
+    <dependency org="${pentaho.group}"              name="metastore"                            rev="${dependency.metastore.revision}"                                                                conf="test->default"/>
 
   </dependencies>
 

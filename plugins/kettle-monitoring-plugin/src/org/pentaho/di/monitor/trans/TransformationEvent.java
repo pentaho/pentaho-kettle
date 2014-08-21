@@ -133,6 +133,14 @@ public class TransformationEvent implements IKettleMonitoringEvent {
     this.endTimeMillis = endTimeMillis;
   }
 
+  public EventType getEventType() {
+    return eventType;
+  }
+
+  public void setEventType( EventType eventType ) {
+    this.eventType = eventType;
+  }
+
   public TransformationEvent build( Trans trans ) throws KettleException {
 
     if ( trans == null ) {
