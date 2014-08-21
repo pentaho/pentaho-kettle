@@ -41,7 +41,7 @@ public class JobStartMonitor extends MonitorAbstract implements ExtensionPointIn
       return null;
     }
 
-    JobEvent event = new JobEvent( JobEvent.EventType.META_LOADED ).build( (Job) o );
+    JobEvent event = new JobEvent( JobEvent.EventType.STARTED ).build( (Job) o );
 
     logInfo( "[PDI Extension Point Plugin] Dispathing to Event Bus " + event.toString() );
 
