@@ -74,21 +74,25 @@ public abstract class MonitorAbstract {
 
   protected void logDebug( String message ) throws KettleException {
     logger.debug( message );
-    logChannelInterface.logDebug( message );
+    getLogChannelInterface().logDebug( message );
   }
 
   protected void logInfo( String message ) throws KettleException {
     logger.info( message );
-    logChannelInterface.logBasic( message );
+    getLogChannelInterface().logBasic( message );
   }
 
   protected void logWarn( String message ) throws KettleException {
     logger.warn( message );
-    logChannelInterface.logBasic( message );
+    getLogChannelInterface().logBasic( message );
   }
 
   protected void logError( String message , Throwable t ) throws KettleException {
     logger.error( message , t );
-    logChannelInterface.logError( message , t );
+    getLogChannelInterface().logError( message , t );
+  }
+
+  protected LogChannelInterface getLogChannelInterface() {
+    return logChannelInterface;
   }
 }
