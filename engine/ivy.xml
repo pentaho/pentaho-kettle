@@ -47,9 +47,7 @@
     <dependency org="feed4j"                           name="feed4j"               rev="1.0"             transitive="false"/>
     <dependency org="ftp4che"                          name="ftp4che"              rev="0.7.1"           transitive="false"/>
     <dependency org="georss-rome"                      name="georss-rome"          rev="0.9.8"           transitive="false"/>
-    <dependency org="com.google.gdata"                 name="gdata-analytics"      rev="2.3.0"           transitive="false"/>
-    <dependency org="com.google.gdata"                 name="gdata-analytics-meta" rev="2.1"             transitive="false"/>
-    <dependency org="com.google.gdata"                 name="gdata-core"           rev="1.41.4"          transitive="false"/>
+    <dependency org="com.google.gdata"                 name="core"                 rev="1.47.1"          transitive="false"/>
     <dependency org="com.google.guava"                 name="guava"                rev="17.0"            transitive="false"/>
     <dependency org="infobright"                       name="infobright-core"      rev="3.4"             transitive="false"/>
     <dependency org="org.ini4j"                        name="ini4j"                rev="0.5.1"           transitive="false"/>
