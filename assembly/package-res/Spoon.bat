@@ -99,8 +99,9 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
+if %STARTTITLE%!==! SET STARTTITLE="Spoon"
 REM Eventually call java instead of javaw and do not run in a separate window
-if not "%SPOON_CONSOLE%"=="1" set SPOON_START_OPTION=start "Spoon"
+if not "%SPOON_CONSOLE%"=="1" set SPOON_START_OPTION=start %STARTTITLE%
 
 @echo on
 %SPOON_START_OPTION% "%_PENTAHO_JAVA%" %OPT% -jar launcher\launcher.jar -lib ..\%LIBSPATH% %_cmdline%
