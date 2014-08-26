@@ -51,7 +51,7 @@ goto USEJAVAFROMPATH
 FOR /F %%a IN ('.\java.exe -version 2^>^&1^|%windir%\system32\find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
 GOTO CHECK32VS64BITJAVA
 :USEJAVAFROMPATH
-FOR /F %%a IN ('java -version 2^>^&1^|find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
+FOR /F %%a IN ('java -version 2^>^&1^|%windir%\system32\find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
 GOTO CHECK32VS64BITJAVA
 :CHECK32VS64BITJAVA
 
