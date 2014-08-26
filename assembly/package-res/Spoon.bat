@@ -19,8 +19,8 @@ if %KETTLE_DIR:~-1%==\ set KETTLE_DIR=%KETTLE_DIR:~0,-1%
 cd %KETTLE_DIR%
 
 REM Special console/debug options when called from SpoonConsole.bat or SpoonDebug.bat
-if "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=java
-if not "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=javaw
+if "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=java.exe
+if not "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=javaw.exe
 set IS64BITJAVA=0
 
 call "%~dp0set-pentaho-env.bat"
