@@ -262,6 +262,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   /** Constant indicating a transformation status of Finished. */
   public static final String STRING_FINISHED = "Finished";
 
+  /** Constant indicating a transformation status of Finished (with errors). */
+  public static final String STRING_FINISHED_WITH_ERRORS = "Finished (with errors)";
+
   /** Constant indicating a transformation status of Running. */
   public static final String STRING_RUNNING = "Running";
 
