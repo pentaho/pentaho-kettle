@@ -1402,8 +1402,8 @@ public class TableView extends Composite {
   }
 
   private void checkChanged( String[][] before, String[][] after, int[] index ) {
-    if ( fieldChanged ) // Did we change anything: if so, add undo information
-    {
+    // Did we change anything: if so, add undo information
+    if ( fieldChanged ) {
       TransAction ta = new TransAction();
       ta.setChanged( before, after, index );
       addUndo( ta );
