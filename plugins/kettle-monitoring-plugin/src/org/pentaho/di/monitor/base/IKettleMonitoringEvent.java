@@ -14,7 +14,7 @@
 *
 * Copyright (c) 2002-2014 Pentaho Corporation..  All rights reserved.
 */
-package org.pentaho.di.monitor;
+package org.pentaho.di.monitor.base;
 
 import org.pentaho.platform.api.monitoring.IMonitoringEvent;
 

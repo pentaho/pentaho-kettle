@@ -20,8 +20,8 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
-import org.pentaho.di.monitor.IKettleMonitoringEvent;
 import org.pentaho.di.monitor.MonitorAbstract;
+import org.pentaho.di.monitor.base.IKettleMonitoringEvent;
 
 /**
  * @link http://wiki.pentaho.com/display/EAI/PDI+Extension+Point+Plugins
@@ -41,10 +41,9 @@ public class DatabaseDisconnectedMonitor extends MonitorAbstract implements Exte
       return null;
     }
 
-    DatabaseEvent event =
-      new DatabaseEvent( DatabaseEvent.EventType.DISCONNECTED ).build( ( (Database) o ).getDatabaseMeta() );
+    DatabaseEvent event = new DatabaseEvent( DatabaseEvent.EventType.DISCONNECTED ).build( ( (Database) o ) );
 
-    logInfo( "[PDI Extension Point Plugin] Dispathing to Event Bus " + event.toString() );
+    //logInfo( "[PDI Extension Point Plugin] Dispathing to Event Bus " + event.toString() );
 
     return event;
   }

@@ -16,13 +16,14 @@
 */
 package org.pentaho.di.monitor.database;
 
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.monitor.IKettleMonitoringEvent;
+import org.pentaho.di.monitor.base.BaseEvent;
 
 import java.io.Serializable;
 
-public class DatabaseEvent implements IKettleMonitoringEvent {
+public class DatabaseEvent extends BaseEvent {
 
   private static final long serialVersionUID = 5995750699747792833L;
 
@@ -133,6 +134,18 @@ public class DatabaseEvent implements IKettleMonitoringEvent {
 
   public void setUsername( String username ) {
     this.username = username;
+  }
+
+  public DatabaseEvent build( Database db ) throws KettleException {
+
+    if ( db == null ) {
+      return this;
+    }
+
+    setLogChannelId( db.getLogChannelId() );
+    setEventLogs( filterEventLogging( getLogChannelId() ) );
+
+    return build( db.getDatabaseMeta() );
   }
 
   public DatabaseEvent build( DatabaseMeta dbm ) throws KettleException {

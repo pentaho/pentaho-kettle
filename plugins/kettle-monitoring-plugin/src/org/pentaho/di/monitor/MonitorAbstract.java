@@ -18,6 +18,7 @@ package org.pentaho.di.monitor;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.monitor.base.IKettleMonitoringEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

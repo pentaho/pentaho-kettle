@@ -18,146 +18,168 @@ package org.pentaho.di.monitor.trans;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.monitor.IKettleMonitoringEvent;
+import org.pentaho.di.monitor.base.BaseEvent;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class TransformationEvent implements IKettleMonitoringEvent {
+public class TransformationEvent extends BaseEvent {
 
-  private static final String ID = "1.1.1.1.1.1.1.1"; // TODO replace with an actual oid
+  private static final long serialVersionUID = -7141225896990220465L;
 
   public static enum EventType {META_LOADED, BEGIN_PREPARE_EXECUTION, BEGIN_START, STARTED, FINISHED}
 
-  private Serializable id = ID;
+  private Serializable id = serialVersionUID;
+
+  // Triggered Event Type
   private EventType eventType;
+
+  // Tranformation name
   private String name;
+
+  // Transformation Filename (when file system and not repository)
   private String filename;
-  private String filetype;
+
+  // Transformation Directory (when repository)
+  private String directory;
+
+  // Transformation XML string content
   private String xml;
+
+  // User who created this transformation
   private String creationUser;
+
+  // Transformation creation date
   private Date creationDate;
+
+  // Executing Server (when executed on a server)
   private String executingServer;
+
+  // Executing User
   private String executingUser;
+
+  // Transformation start time ( milliseconds )
   private long startTimeMillis;
+
+  // Transformation end time ( milliseconds )
   private long endTimeMillis;
+
+  // Repository ID (when repository)
+  private String repositoryId;
+
+  // Repository name (when repository)
+  private String repositoryName;
+
+  // Parent Job Name (when part of a job)
+  private String parentJobName;
+
+  // Parent Transformation Name (when this is a sub-transformation)
+  private String parentTransformationName;
+
+  // Batch ID (when database logging is activated)
+  private long batchId;
+
+  // Parent Batch ID (when database logging is activated and a sub-transformation)
+  private long parentBatchId;
+
+  //Parent Channel ID
+  private String parentLogChannelId;
+
+  // status
+  private String status;
+
+  // error count
+  private int errors;
+
+  // runtime
+  private long runtimeInMillis;
+
+  // Transformation end result: Lines Read
+  private long linesRead;
+
+  // Transformation end result: Lines Written
+  private long linesWritten;
+
+  // Transformation end result: Lines Updated
+  private long linesUpdated;
+
+  // Transformation end result: Lines Rejected
+  private long linesRejected;
+
+  // Transformation end result: Lines Input
+  private long linesInput;
+
+  // Transformation end result: Lines Output
+  private long linesOutput;
 
   public TransformationEvent( EventType eventType ) {
     this.eventType = eventType;
   }
 
-  @Override
-  public Serializable getId() {
-    return id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName( String name ) {
-    this.name = name;
-  }
-
-  public String getFilename() {
-    return filename;
-  }
-
-  public void setFilename( String filename ) {
-    this.filename = filename;
-  }
-
-  public String getFiletype() {
-    return filetype;
-  }
-
-  public void setFiletype( String filetype ) {
-    this.filetype = filetype;
-  }
-
-  public String getXml() {
-    return xml;
-  }
-
-  public void setXml( String xml ) {
-    this.xml = xml;
-  }
-
-  public String getCreationUser() {
-    return creationUser;
-  }
-
-  public void setCreationUser( String creationUser ) {
-    this.creationUser = creationUser;
-  }
-
-  public Date getCreationDate() {
-    return creationDate;
-  }
-
-  public void setCreationDate( Date creationDate ) {
-    this.creationDate = creationDate;
-  }
-
-  public String getExecutingServer() {
-    return executingServer;
-  }
-
-  public void setExecutingServer( String executingServer ) {
-    this.executingServer = executingServer;
-  }
-
-  public String getExecutingUser() {
-    return executingUser;
-  }
-
-  public void setExecutingUser( String executingUser ) {
-    this.executingUser = executingUser;
-  }
-
-  public long getStartTimeMillis() {
-    return startTimeMillis;
-  }
-
-  public void setStartTimeMillis( long startTimeMillis ) {
-    this.startTimeMillis = startTimeMillis;
-  }
-
-  public long getEndTimeMillis() {
-    return endTimeMillis;
-  }
-
-  public void setEndTimeMillis( long endTimeMillis ) {
-    this.endTimeMillis = endTimeMillis;
-  }
-
-  public EventType getEventType() {
-    return eventType;
-  }
-
-  public void setEventType( EventType eventType ) {
-    this.eventType = eventType;
-  }
-
+  /**
+   * Populates this TransformationEvent instance with information contained in Trans object; also calls this.build(
+   * TransMeta meta )
+   *
+   * @param trans transformation object
+   * @return this TransformationEvent instance
+   * @throws org.pentaho.di.core.exception.KettleException should something go horribly wrong
+   */
   public TransformationEvent build( Trans trans ) throws KettleException {
 
     if ( trans == null ) {
       return this;
     }
 
+    setLogChannelId( trans.getLogChannelId() );
+    setBatchId( trans.getBatchId() );
     setExecutingServer( trans.getExecutingServer() );
     setExecutingUser( trans.getExecutingUser() );
     setStartTimeMillis( trans.getCurrentDate() != null ? trans.getCurrentDate().getTime() : 0 );
+    setStatus( trans.getStatus() );
+    setErrors( trans.getErrors() );
+
+    if ( trans.getParentJob() != null ) {
+      setParentJobName( trans.getParentJob().getJobMeta() != null ?
+        trans.getParentJob().getJobMeta().getName() : null );
+      setParentBatchId( trans.getParentJob().getBatchId() );
+      setParentLogChannelId( trans.getParentJob().getLogChannelId() );
+    }
+
+    if ( trans.getParentTrans() != null ) {
+      setParentJobName( trans.getParentTrans().getTransMeta() != null ?
+        trans.getParentTrans().getTransMeta().getName() : null );
+      setParentBatchId( trans.getParentTrans().getBatchId() );
+      setParentLogChannelId( trans.getParentTrans().getLogChannelId() );
+    }
 
     if ( this.eventType == EventType.FINISHED ) {
       setEndTimeMillis( new Date().getTime() );
+      setRuntimeInMillis( getEndTimeMillis() - getStartTimeMillis() );
+
+      if ( trans.getResult() != null ) {
+        setLinesInput( trans.getResult().getNrLinesInput() );
+        setLinesOutput( trans.getResult().getNrLinesOutput() );
+        setLinesRead( trans.getResult().getNrLinesRead() );
+        setLinesWritten( trans.getResult().getNrLinesWritten() );
+        setLinesUpdated( trans.getResult().getNrLinesUpdated() );
+        setLinesRejected( trans.getResult().getNrLinesRejected() );
+      }
     }
+
+    setEventLogs( filterEventLogging( getLogChannelId() ) );
 
     return build( trans.getTransMeta() );
   }
 
+  /**
+   * Populates this TransformationEvent instance with information contained in TransMeta object
+   *
+   * @param meta transformationMeta object
+   * @return this TransformationEvent instance
+   * @throws KettleException should something go horribly wrong
+   */
   public TransformationEvent build( TransMeta meta ) throws KettleException {
 
     if ( meta == null ) {
@@ -166,12 +188,508 @@ public class TransformationEvent implements IKettleMonitoringEvent {
 
     setName( meta.getName() );
     setFilename( meta.getFilename() );
-    setFiletype( meta.getFileType() );
+    setDirectory( meta.getRepositoryDirectory() != null ? meta.getRepositoryDirectory().getPath() : null );
     setCreationUser( meta.getCreatedUser() );
     setCreationDate( meta.getCreatedDate() );
     setXml( meta.getXML() );
 
+    if ( meta.getRepository() != null && meta.getRepository().getRepositoryMeta() != null ) {
+      setRepositoryId( meta.getRepository().getRepositoryMeta().getId() );
+      setRepositoryName( meta.getRepository().getRepositoryMeta().getName() );
+    }
+
     return this;
+  }
+
+  @Override
+  public Serializable getId() {
+    return getName();
+  }
+
+  /**
+   * Tranformation name
+   *
+   * @return Tranformation name
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Tranformation name
+   *
+   * @param name Tranformation name
+   */
+  public void setName( String name ) {
+    this.name = name;
+  }
+
+  /**
+   * Transformation Filename (when file system and not repository)
+   *
+   * @return transformation filename
+   */
+  public String getFilename() {
+    return filename;
+  }
+
+  /**
+   * Transformation Filename (when file system and not repository)
+   *
+   * @param filename Transformation Filename
+   */
+  public void setFilename( String filename ) {
+    this.filename = filename;
+  }
+
+  /**
+   * Transformation Directory (when repository)
+   *
+   * @return transformation directory
+   */
+  public String getDirectory() {
+    return directory;
+  }
+
+  /**
+   * Transformation Directory (when repository)
+   *
+   * @param directory transformation directory
+   */
+  public void setDirectory( String directory ) {
+    this.directory = directory;
+  }
+
+  /**
+   * Transformation XML string content
+   *
+   * @return XML string content
+   */
+  public String getXml() {
+    return xml;
+  }
+
+  /**
+   * Transformation XML string content
+   *
+   * @param xml XML string content
+   */
+  public void setXml( String xml ) {
+    this.xml = xml;
+  }
+
+  /**
+   * User who created this transformation
+   *
+   * @return user who created this transformation
+   */
+  public String getCreationUser() {
+    return creationUser;
+  }
+
+  /**
+   * User who created this transformation
+   *
+   * @param creationUser user who created this transformation
+   */
+  public void setCreationUser( String creationUser ) {
+    this.creationUser = creationUser;
+  }
+
+  /**
+   * Transformation creation date
+   *
+   * @return transformation creation date
+   */
+  public Date getCreationDate() {
+    return creationDate;
+  }
+
+  /**
+   * Transformation creation date
+   *
+   * @param creationDate transformation creation date
+   */
+  public void setCreationDate( Date creationDate ) {
+    this.creationDate = creationDate;
+  }
+
+  /**
+   * Executing Server (when executed on a server)
+   *
+   * @return executing Server (when executed on a server)
+   */
+  public String getExecutingServer() {
+    return executingServer;
+  }
+
+  /**
+   * Executing Server (when executed on a server)
+   *
+   * @param executingServer executing Server (when executed on a server)
+   */
+  public void setExecutingServer( String executingServer ) {
+    this.executingServer = executingServer;
+  }
+
+  /**
+   * Executing User
+   *
+   * @return executing User
+   */
+  public String getExecutingUser() {
+    return executingUser;
+  }
+
+  /**
+   * Executing User
+   *
+   * @param executingUser executing User
+   */
+  public void setExecutingUser( String executingUser ) {
+    this.executingUser = executingUser;
+  }
+
+  /**
+   * Transformation start time ( milliseconds )
+   *
+   * @return transformation start time ( milliseconds )
+   */
+  public long getStartTimeMillis() {
+    return startTimeMillis;
+  }
+
+  /**
+   * Transformation start time ( milliseconds )
+   *
+   * @param startTimeMillis transformation start time ( milliseconds )
+   */
+  public void setStartTimeMillis( long startTimeMillis ) {
+    this.startTimeMillis = startTimeMillis;
+  }
+
+  /**
+   * Transformation end time ( milliseconds )
+   *
+   * @return transformation start time ( milliseconds )
+   */
+  public long getEndTimeMillis() {
+    return endTimeMillis;
+  }
+
+  /**
+   * Transformation end time ( milliseconds )
+   *
+   * @param endTimeMillis transformation start time ( milliseconds )
+   */
+  public void setEndTimeMillis( long endTimeMillis ) {
+    this.endTimeMillis = endTimeMillis;
+  }
+
+  /**
+   * Triggered Event Type
+   *
+   * @return triggered Event Type
+   */
+  public EventType getEventType() {
+    return eventType;
+  }
+
+  /**
+   * Triggered Event Type
+   *
+   * @param eventType triggered Event Type
+   */
+  public void setEventType( EventType eventType ) {
+    this.eventType = eventType;
+  }
+
+  /**
+   * Repository ID (when repository)
+   *
+   * @return repository ID (when repository)
+   */
+  public String getRepositoryId() {
+    return repositoryId;
+  }
+
+  /**
+   * Repository ID (when repository)
+   *
+   * @param repositoryId repository ID (when repository)
+   */
+  public void setRepositoryId( String repositoryId ) {
+    this.repositoryId = repositoryId;
+  }
+
+  /**
+   * Repository Name (when repository)
+   *
+   * @return repository Name (when repository)
+   */
+  public String getRepositoryName() {
+    return repositoryName;
+  }
+
+  /**
+   * Repository Name (when repository)
+   *
+   * @param repositoryName repository Name (when repository)
+   */
+  public void setRepositoryName( String repositoryName ) {
+    this.repositoryName = repositoryName;
+  }
+
+  /**
+   * Parent Job Name (when part of a job)
+   *
+   * @return parent Job Name (when part of a job)
+   */
+  public String getParentJobName() {
+    return parentJobName;
+  }
+
+  /**
+   * Parent Job Name (when part of a job)
+   *
+   * @param parentJobName parent Job Name (when part of a job)
+   */
+  public void setParentJobName( String parentJobName ) {
+    this.parentJobName = parentJobName;
+  }
+
+  /**
+   * Parent Transformation Name (when this is a sub-transformation)
+   *
+   * @return parent Transformation Name (when this is a sub-transformation)
+   */
+  public String getParentTransformationName() {
+    return parentTransformationName;
+  }
+
+  /**
+   * Parent Transformation Name (when this is a sub-transformation)
+   *
+   * @param parentTransformationName parent Transformation Name (when this is a sub-transformation)
+   */
+  public void setParentTransformationName( String parentTransformationName ) {
+    this.parentTransformationName = parentTransformationName;
+  }
+
+  /**
+   * Batch ID (when database logging is activated)
+   *
+   * @return batch ID (when database logging is activated)
+   */
+  public long getBatchId() {
+    return batchId;
+  }
+
+  /**
+   * Batch ID (when database logging is activated)
+   *
+   * @param batchId batch ID (when database logging is activated)
+   */
+  public void setBatchId( long batchId ) {
+    this.batchId = batchId;
+  }
+
+  /**
+   * Parent Batch ID (when database logging is activated and a sub-transformation)
+   *
+   * @return parent Batch ID (when database logging is activated and a sub-transformation)
+   */
+  public long getParentBatchId() {
+    return parentBatchId;
+  }
+
+  /**
+   * Parent Batch ID (when database logging is activated and a sub-transformation)
+   *
+   * @param parentBatchId parent Batch ID (when database logging is activated and a sub-transformation)
+   */
+  public void setParentBatchId( long parentBatchId ) {
+    this.parentBatchId = parentBatchId;
+  }
+
+  /**
+   * Parent Channel ID
+   *
+   * @return parent Channel ID
+   */
+  public String getParentLogChannelId() {
+    return parentLogChannelId;
+  }
+
+  /**
+   * Parent Channel ID
+   *
+   * @param parentLogChannelId parent Channel ID
+   */
+  public void setParentLogChannelId( String parentLogChannelId ) {
+    this.parentLogChannelId = parentLogChannelId;
+  }
+
+  /**
+   * Status
+   *
+   * @return status
+   */
+  public String getStatus() {
+    return status;
+  }
+
+  /**
+   * Status
+   *
+   * @param status status
+   */
+  public void setStatus( String status ) {
+    this.status = status;
+  }
+
+  /**
+   * Error count
+   *
+   * @return error count
+   */
+  public int getErrors() {
+    return errors;
+  }
+
+  /**
+   * Error count
+   *
+   * @param errors error count
+   */
+  public void setErrors( int errors ) {
+    this.errors = errors;
+  }
+
+  /**
+   * Runtime
+   *
+   * @return runtime
+   */
+  public long getRuntimeInMillis() {
+    return runtimeInMillis;
+  }
+
+  /**
+   * Runtime
+   *
+   * @param runtimeInMillis runtime
+   */
+  public void setRuntimeInMillis( long runtimeInMillis ) {
+    this.runtimeInMillis = runtimeInMillis;
+  }
+
+  /**
+   * Transformation end result: Lines read
+   *
+   * @return lines read
+   */
+  public long getLinesRead() {
+    return linesRead;
+  }
+
+  /**
+   * Transformation end result: Lines read
+   *
+   * @param linesRead lines read
+   */
+  public void setLinesRead( long linesRead ) {
+    this.linesRead = linesRead;
+  }
+
+  /**
+   * Transformation end result: Lines Written
+   *
+   * @return lines written
+   */
+  public long getLinesWritten() {
+    return linesWritten;
+  }
+
+  /**
+   * Transformation end result: Lines Written
+   *
+   * @param linesWritten lines written
+   */
+  public void setLinesWritten( long linesWritten ) {
+    this.linesWritten = linesWritten;
+  }
+
+  /**
+   * Transformation end result: Lines Updated
+   *
+   * @return lines updated
+   */
+  public long getLinesUpdated() {
+    return linesUpdated;
+  }
+
+  /**
+   * Transformation end result: Lines Updated
+   *
+   * @param linesUpdated lines updated
+   */
+  public void setLinesUpdated( long linesUpdated ) {
+    this.linesUpdated = linesUpdated;
+  }
+
+  /**
+   * Transformation end result: Lines read
+   *
+   * @return lines rejected
+   */
+  public long getLinesRejected() {
+    return linesRejected;
+  }
+
+  /**
+   * Transformation end result: Lines rejected
+   *
+   * @param linesRejected lines rejected
+   */
+  public void setLinesRejected( long linesRejected ) {
+    this.linesRejected = linesRejected;
+  }
+
+  /**
+   * Transformation end result: Lines Input
+   *
+   * @return lines Input
+   */
+  public long getLinesInput() {
+    return linesInput;
+  }
+
+  /**
+   * Transformation end result: Lines Input
+   *
+   * @param linesInput lines Input
+   */
+  public void setLinesInput( long linesInput ) {
+    this.linesInput = linesInput;
+  }
+
+  /**
+   * Transformation end result: Lines output
+   *
+   * @return lines output
+   */
+  public long getLinesOutput() {
+    return linesOutput;
+  }
+
+  /**
+   * Transformation end result: Lines output
+   *
+   * @param linesOutput lines output
+   */
+  public void setLinesOutput( long linesOutput ) {
+    this.linesOutput = linesOutput;
   }
 
   @Override
@@ -190,11 +708,19 @@ public class TransformationEvent implements IKettleMonitoringEvent {
       sb.append( ", by user: '" + getExecutingUser() + "' " );
     }
 
-    long completionTimeSecs =
-      ( getStartTimeMillis() > 0 ? ( ( ( getEndTimeMillis() - getStartTimeMillis() ) / 1000 ) % 60 ) : 0 );
+    sb.append( " ( " );
+    sb.append( " I= " ).append( getLinesInput() ).append( ", " );
+    sb.append( " O= " ).append( getLinesOutput() ).append( ", " );
+    sb.append( " R= " ).append( getLinesRead() ).append( ", " );
+    sb.append( " W= " ).append( getLinesWritten() ).append( ", " );
+    sb.append( " U= " ).append( getLinesUpdated() ).append( ", " );
+    sb.append( " R= " ).append( getLinesRejected() ).append( ", " );
+    sb.append( " ) " );
 
-    if ( this.eventType == EventType.FINISHED && completionTimeSecs > 0 ) {
-      sb.append( ", executed in: " + completionTimeSecs + " seconds " );
+    long runtimeSecs = ( getRuntimeInMillis() > 0 ? ( ( getRuntimeInMillis() / 1000 ) % 60 ) : 0 );
+
+    if ( this.eventType == EventType.FINISHED && runtimeSecs > 0 ) {
+      sb.append( ", executed in: " + runtimeSecs + " seconds " );
     }
 
     return sb.toString();

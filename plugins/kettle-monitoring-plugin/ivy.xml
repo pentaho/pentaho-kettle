@@ -21,33 +21,38 @@
 
     <!-- dev-lib dependencies -->
 
-    <dependency org="${pentaho.group}"  name="pentaho-platform-api"                 rev="${dependency.pentaho.revision}"          transitive="false"          changing="true"             conf="dev->default"/>
-    <dependency org="${pentaho.group}"  name="pentaho-platform-core"                rev="${dependency.pentaho.revision}"          transitive="false"          changing="true"             conf="dev->default"/>
-    <dependency org="${pentaho.group}"  name="pentaho-platform-extensions"          rev="${dependency.pentaho.revision}"          transitive="false"          changing="true"             conf="dev->default"/>
+    <dependency org="org.safehaus.jug" name="jug-lgpl" rev="2.0.0"/>
+    <dependency org="log4j" name="log4j"    rev="1.2.16"    transitive="false"  changing="false"    conf="dev->default"/>
+    <dependency org="org.slf4j" name="slf4j-api"    rev="1.7.3" transitive="false"  changing="false"    conf="dev->default"/>
+    <dependency org="com.google.guava"  name="guava"    rev="17.0"  transitive="false"  changing="false"    conf="dev->default"/>
 
-    <dependency org="${kettle.group}"   name="kettle-core"                          rev="${dependency.kettle.revision}"           transitive="false"          changing="true"             conf="dev->default"/>
-    <dependency org="${kettle.group}"   name="kettle-engine"                        rev="${dependency.kettle.revision}"           transitive="false"          changing="true"             conf="dev->default"/>
+    <dependency org="${pentaho.group}"  name="pentaho-platform-api" rev="${dependency.pentaho.revision}"    transitive="false"  changing="true" conf="dev->default"/>
+    <dependency org="${pentaho.group}"  name="pentaho-platform-core"    rev="${dependency.pentaho.revision}"    transitive="false"  changing="true" conf="dev->default"/>
+    <dependency org="${pentaho.group}"  name="pentaho-platform-extensions"  rev="${dependency.pentaho.revision}"    transitive="false"  changing="true" conf="dev->default"/>
 
-    <dependency org="commons-logging"   name="commons-logging"                      rev="${dependency.commons.logging.revision}"  transitive="false"          changing="false"            conf="dev->default"/>
-    <dependency org="commons-lang"      name="commons-lang"                         rev="${dependency.commons.lang.revision}"     transitive="false"          changing="false"            conf="dev->default"/> 
-    <dependency org="commons-io"        name="commons-io"                           rev="${dependency.commons.io.revision}"       transitive="false"          changing="false"            conf="dev->default"/>   
-    <dependency org="log4j"             name="log4j"                                rev="1.2.16"                                  transitive="false"          changing="false"            conf="dev->default"/>
-    <dependency org="org.slf4j"         name="slf4j-api"                            rev="1.7.3"                                   transitive="false"          changing="false"            conf="dev->default"/>
+    <dependency org="${kettle.group}"   name="kettle-core"  rev="${dependency.kettle.revision}" transitive="false"  changing="true" conf="dev->default"/>
+    <dependency org="${kettle.group}"   name="kettle-engine"    rev="${dependency.kettle.revision}" transitive="false"  changing="true" conf="dev->default"/>
 
-    <dependency org="com.google.guava"  name="guava"                                rev="17.0"                                    transitive="false"          changing="false"            conf="dev->default"/>
+    <dependency org="commons-logging"   name="commons-logging"  rev="${dependency.commons.logging.revision}"  transitive="false"    changing="false"    conf="dev->default"/>
+    <dependency org="commons-lang"  name="commons-lang" rev="${dependency.commons.lang.revision}"   transitive="false"  changing="false"    conf="dev->default"/> 
+    <dependency org="commons-io"    name="commons-io"   rev="${dependency.commons.io.revision}" transitive="false"  changing="false"    conf="dev->default"/>   
+    
 
     <!-- lib dependencies -->
     
 
     <!-- unit test dependencies -->
-    <dependency org="junit"                         name="junit"                                rev="4.7"                                                                                             conf="test->default"/> 
-    <dependency org="org.mockito"                   name="mockito-all"                          rev="1.9.5"                                                                                           conf="test->default"/>
-    <dependency org="commons-vfs"                   name="commons-vfs"                          rev="20100924-pentaho"                                                                                conf="test->default"/>
-    <dependency org="com.googlecode.json-simple"    name="json-simple"                          rev="1.1.1"                                                                                           conf="test->default"/>
-    <dependency org="javax.servlet"                 name="servlet-api"                          rev="2.5"                                                                                             conf="test->default"/>
-    <dependency org="org.mortbay.jetty"             name="jetty-servlet-tester"                 rev="6.1.21"                                                                                          conf="test->default"/>
-    <dependency org="${pentaho.group}"              name="metastore"                            rev="${dependency.metastore.revision}"                                                                conf="test->default"/>
-
+    <dependency org="junit" name="junit"    rev="4.7"   conf="test->default"/> 
+    <dependency org="org.owasp.esapi"   name="esapi"    rev="2.0.1" transitive="false"/>
+    <dependency org="org.mockito"   name="mockito-all"  rev="1.9.5" conf="test->default"/>
+    <dependency org="javax.servlet" name="servlet-api"  rev="2.5"   conf="test->default"/>
+    <dependency org="commons-vfs"   name="commons-vfs"  rev="20100924-pentaho"  conf="test->default"/>
+    <dependency org="com.googlecode.json-simple"    name="json-simple"  rev="1.1.1" conf="test->default"/>
+    <dependency org="org.mortbay.jetty" name="jetty-servlet-tester" rev="6.1.21"    conf="test->default"/>
+    <dependency org="commons-collections"   name="commons-collections"  rev="3.2"   conf="test->default"/>
+    <dependency org="${pentaho.group}"  name="metastore"    rev="${dependency.metastore.revision}"  conf="test->default"/>
+    <dependency org="org.springframework.security"  name="spring-security-core" rev="2.0.5.RELEASE" transitive="false"  conf="test->default"/>
+    
   </dependencies>
 
 </ivy-module>

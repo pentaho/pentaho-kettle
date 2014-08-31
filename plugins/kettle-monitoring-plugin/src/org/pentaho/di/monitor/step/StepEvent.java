@@ -1,20 +1,17 @@
 package org.pentaho.di.monitor.step;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.monitor.IKettleMonitoringEvent;
+import org.pentaho.di.monitor.base.BaseEvent;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 
 import java.io.Serializable;
 
-public class StepEvent implements IKettleMonitoringEvent {
+public class StepEvent extends BaseEvent {
 
   private static final long serialVersionUID = 3171013674678295934L;
 
-  private static final String ID = "1.1.1.1.1.1.1.1"; // TODO replace with an actual oid
-
   public static enum EventType {BEFORE_INIT, AFTER_INIT, BEFORE_START, FINIHED}
 
-  private Serializable id = ID;
   private EventType eventType;
   private String name;
   private String xmlContent;
@@ -35,11 +32,7 @@ public class StepEvent implements IKettleMonitoringEvent {
 
   @Override
   public Serializable getId() {
-    return null;
-  }
-
-  public void setId( Serializable id ) {
-    this.id = id;
+    return getName();
   }
 
   public EventType getEventType() {
@@ -164,6 +157,8 @@ public class StepEvent implements IKettleMonitoringEvent {
 
     if ( combi.step != null ) {
 
+      setLogChannelId( combi.step.getLogChannel() != null ? combi.step.getLogChannel().getLogChannelId() : null );
+      setEventLogs( filterEventLogging( getLogChannelId() ) );
       setLinesInput( combi.step.getLinesInput() );
       setLinesOutput( combi.step.getLinesOutput() );
       setLinesRead( combi.step.getLinesRead() );
@@ -182,12 +177,14 @@ public class StepEvent implements IKettleMonitoringEvent {
     StringBuffer sb = new StringBuffer( "[" + getClass().getSimpleName() + "]" );
     sb.append( "[" + this.eventType.toString() + "]" );
     sb.append( " Name: '" + getName() + "' " );
-    sb.append( ", lines read: " + getLinesRead() + " " );
-    sb.append( ", lines written: " + getLinesWritten() + " " );
-    sb.append( ", lines updated: " + getLinesUpdated() + " " );
-    sb.append( ", lines rejected: " + getLinesRejected() + " " );
-    sb.append( ", is clustered: '" + isClustered() + "' " );
-    sb.append( ", is distributed: '" + isDistributed() + "' " );
+    sb.append( " ( " );
+    sb.append( " I= " ).append( getLinesInput() ).append( ", " );
+    sb.append( " O= " ).append( getLinesOutput() ).append( ", " );
+    sb.append( " R= " ).append( getLinesRead() ).append( ", " );
+    sb.append( " W= " ).append( getLinesWritten() ).append( ", " );
+    sb.append( " U= " ).append( getLinesUpdated() ).append( ", " );
+    sb.append( " R= " ).append( getLinesRejected() ).append( ", " );
+    sb.append( " ) " );
 
     return sb.toString();
   }
