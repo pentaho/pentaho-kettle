@@ -25,6 +25,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.monitor.base.IKettleMonitoringEvent;
 import org.pentaho.di.monitor.carte.CarteEvent;
 import org.pentaho.di.monitor.carte.CarteShutdownMonitor;
 import org.pentaho.di.monitor.carte.CarteStartupMonitor;
@@ -49,7 +50,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInitThread;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.www.WebServer;
 
 import static org.mockito.Mockito.*;

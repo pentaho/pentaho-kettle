@@ -16,36 +16,19 @@
 */
 package org.pentaho.di.monitor;
 
-import junit.framework.Assert;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 
 public class JobEventsTriggeredTest extends BaseEventsTriggeredTest {
 
-  private static final String SAMPLE_JOB = "test-resources/sampleJob.ktr";
-
-  @Test
-  public void testJobBeginProcessingMonitor() throws Exception {
-
-    MockPlugin mockPlugin =
-      new MockPlugin( dummyMonitor, new String[] { KettleExtensionPoint.JobBeginProcessing.id },
-        KettleExtensionPoint.JobBeginProcessing.name() );
-
-    // register dummyMonitor as an extension point plugin for JobPrepareExecution events
-    PluginRegistry.getInstance().registerPlugin( ExtensionPointPluginType.class, mockPlugin );
-
-    executeSampleJob();
-
-    Assert.assertTrue( dummyMonitor.wasTriggered );
-
-    dummyMonitor.reset();
-    PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
-  }
+  private static final String SAMPLE_JOB_NAME = "sampleJob";
+  private static final String SAMPLE_JOB = "test-resources/sampleJob.kjb";
 
   @Test
   public void testJobStartMonitor() throws Exception {
@@ -60,6 +43,8 @@ public class JobEventsTriggeredTest extends BaseEventsTriggeredTest {
     executeSampleJob();
 
     Assert.assertTrue( dummyMonitor.wasTriggered );
+    Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof Job );
+    Assert.assertTrue( ( (Job) dummyMonitor.eventObject ).getJobMeta().getName().equals( SAMPLE_JOB_NAME ) );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
@@ -78,13 +63,15 @@ public class JobEventsTriggeredTest extends BaseEventsTriggeredTest {
     executeSampleJob();
 
     Assert.assertTrue( dummyMonitor.wasTriggered );
+    Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof Job );
+    Assert.assertTrue( ( (Job) dummyMonitor.eventObject ).getJobMeta().getName().equals( SAMPLE_JOB_NAME ) );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
   }
 
   private void executeSampleJob() throws KettleException {
-    Job job = new Job( SAMPLE_JOB, SAMPLE_JOB, null );
+    Job job = new Job( null, new JobMeta( SAMPLE_JOB , null ) );
     job.start();
     job.waitUntilFinished();
   }

@@ -17,7 +17,7 @@
 package org.pentaho.di.monitor.job;
 
 import com.google.common.eventbus.Subscribe;
-import org.pentaho.di.monitor.IKettleMonitoringSubscriber;
+import org.pentaho.di.monitor.base.IKettleMonitoringSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -28,6 +28,7 @@ import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
 import org.pentaho.di.core.plugins.Plugin;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.Assert;
+import org.pentaho.di.monitor.base.IKettleMonitoringEvent;
 
 public class BaseEventsTriggeredTest {
 
@@ -76,6 +77,7 @@ public class BaseEventsTriggeredTest {
   public class DummyMonitor extends MonitorAbstract implements ExtensionPointInterface {
 
     public boolean wasTriggered = false;
+    public Object eventObject;
 
     @Override public IKettleMonitoringEvent toKettleEvent( Object o ) throws KettleException {
       return null;
@@ -84,6 +86,7 @@ public class BaseEventsTriggeredTest {
     @Override
     public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
       wasTriggered = true;
+      eventObject = o;
     }
 
     public void reset() {

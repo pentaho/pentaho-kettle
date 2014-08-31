@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.monitor.carte.CarteSubscriber;
@@ -32,18 +33,24 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.List;
+import java.util.Properties;
 
 public class MonitorEnvironment {
 
   private Logger logger = LoggerFactory.getLogger( MonitorEnvironment.class );
 
-  // plugin name ( read: plugin name & plugin's folder name )
-  public static final String MONITORING_PLUGIN_FOLDER_NAME = "kettle-monitoring-plugin"; //$NON-NLS-1$
-
   public static MonitorEnvironment instance;
 
   private String pluginBaseDir;
+
+  private Properties props;
+
+  private LogLevel logLevelMessageTransportation;
+
+  private int maxLogEntriesTransportation;
 
   private MonitorEnvironment() throws KettleException {
 
@@ -68,6 +75,19 @@ public class MonitorEnvironment {
     try {
 
       pluginBaseDir = findPluginBaseDir();
+
+      if ( !StringUtils.isEmpty( pluginBaseDir ) ) {
+        props = new Properties();
+        props.load( new FileInputStream( new File( pluginBaseDir + "/" + Constants.MONITORING_PROPERTIES_FILE ) ) );
+
+        setLogLevelMessageTransportation( LogLevel.valueOf(
+          getProperty( Constants.LOG_MESSSAGE_TRANSPORTATION_LEVEL_KEY,
+            Constants.DEFAULT_LOG_MESSSAGE_TRANSPORTATION_LEVEL ) ) );
+
+        setMaxLogEntriesTransportation( Integer.valueOf(
+          getProperty( Constants.MAX_LOG_ENTRIES_TRANSPORTATION_KEY, Constants.DEFAULT_LOG_ENTRIES_TRANSPORTATION ) ) );
+
+      }
 
     } catch ( Exception e ) {
       throw new KettleException( e );
@@ -109,6 +129,29 @@ public class MonitorEnvironment {
       && PentahoSystem.getObjectFactory().objectDefined( IMonitoringService.class );
   }
 
+  public String getProperty( String key, String defaultValue ) {
+    if ( !StringUtils.isEmpty( key ) && props != null && props.containsKey( key ) ) {
+      return props.getProperty( key );
+    }
+    return defaultValue;
+  }
+
+  public LogLevel getLogLevelMessageTransportation() {
+    return logLevelMessageTransportation;
+  }
+
+  public void setLogLevelMessageTransportation( LogLevel logLevelMessageTransportation ) {
+    this.logLevelMessageTransportation = logLevelMessageTransportation;
+  }
+
+  public int getMaxLogEntriesTransportation() {
+    return maxLogEntriesTransportation;
+  }
+
+  public void setMaxLogEntriesTransportation( int maxLogEntriesTransportation ) {
+    this.maxLogEntriesTransportation = maxLogEntriesTransportation;
+  }
+
   public IMonitoringService getEventBus() {
     return PentahoSystem.get( IMonitoringService.class );
   }
@@ -133,7 +176,7 @@ public class MonitorEnvironment {
             path = path.substring( 0, path.length() - 1 );
           }
 
-          if ( path.endsWith( MONITORING_PLUGIN_FOLDER_NAME ) ) {
+          if ( path.endsWith( Constants.MONITORING_PLUGIN_FOLDER_NAME ) ) {
             return path;
           }
         }
