@@ -20,7 +20,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.monitor.IKettleMonitoringEvent;
+import org.pentaho.di.monitor.base.IKettleMonitoringEvent;
 import org.pentaho.di.monitor.MonitorAbstract;
 
 /**
@@ -43,7 +43,7 @@ public class JobStartMonitor extends MonitorAbstract implements ExtensionPointIn
 
     JobEvent event = new JobEvent( JobEvent.EventType.STARTED ).build( (Job) o );
 
-    logInfo( "[PDI Extension Point Plugin] Dispathing to Event Bus " + event.toString() );
+    //logInfo( "[PDI Extension Point Plugin] Dispathing to Event Bus " + event.toString() );
 
     return event;
   }

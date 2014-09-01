@@ -17,20 +17,17 @@
 package org.pentaho.di.monitor.carte;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.monitor.IKettleMonitoringEvent;
+import org.pentaho.di.monitor.base.BaseEvent;
 import org.pentaho.di.www.WebServer;
 
 import java.io.Serializable;
 
-public class CarteEvent implements IKettleMonitoringEvent {
+public class CarteEvent extends BaseEvent {
 
   private static final long serialVersionUID = -3589233687711692569L;
 
-  private static final String ID = "1.1.1.1.1.1.1.1"; // TODO replace with an actual oid
-
   public static enum EventType {STARTUP, SHUTDOWN}
 
-  private Serializable id = ID;
   private EventType eventType;
   private String hostname;
   private int port;
@@ -41,11 +38,7 @@ public class CarteEvent implements IKettleMonitoringEvent {
 
   @Override
   public Serializable getId() {
-    return id;
-  }
-
-  public void setId( Serializable id ) {
-    this.id = id;
+    return getHostname() + ":" + getPort();
   }
 
   public EventType getEventType() {
@@ -76,6 +69,11 @@ public class CarteEvent implements IKettleMonitoringEvent {
 
     if ( ws == null ) {
       return this;
+    }
+
+    if( ws.getLog() != null ){
+      setLogChannelId( ws.getLog().getLogChannelId() );
+      setEventLogs( filterEventLogging( getLogChannelId() ) );
     }
 
     setPort( ws.getPort() );

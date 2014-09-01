@@ -19,20 +19,17 @@ package org.pentaho.di.monitor.job;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.monitor.IKettleMonitoringEvent;
+import org.pentaho.di.monitor.base.BaseEvent;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class JobEvent implements IKettleMonitoringEvent {
+public class JobEvent extends BaseEvent {
 
   private static final long serialVersionUID = -2727216752120528962L;
 
-  private static final String ID = "1.1.1.1.1.1.1.1"; // TODO replace with an actual oid
-
   public static enum EventType {META_LOADED, STARTED, BEFORE_JOB_ENTRY, BEGIN_JOB_PROCESSING, AFTER_JOB_ENTRY, FINISHED}
 
-  private Serializable id = ID;
   private EventType eventType;
   private String name;
   private String filename;
@@ -51,11 +48,7 @@ public class JobEvent implements IKettleMonitoringEvent {
 
   @Override
   public Serializable getId() {
-    return id;
-  }
-
-  public void setId( Serializable id ) {
-    this.id = id;
+    return getName();
   }
 
   public EventType getEventType() {
@@ -155,10 +148,13 @@ public class JobEvent implements IKettleMonitoringEvent {
     setExecutingServer( job.getExecutingServer() );
     setExecutingUser( job.getExecutingUser() );
     setStartTimeMillis( job.getCurrentDate() != null ? job.getCurrentDate().getTime() : 0 );
+    setLogChannelId( job.getLogChannelId() );
 
-    if( this.eventType == EventType.FINISHED ){
+    if ( this.eventType == EventType.FINISHED ) {
       setEndTimeMillis( new Date().getTime() );
     }
+
+    setEventLogs( filterEventLogging( getLogChannelId() ) );
 
     return build( job.getJobMeta() );
   }

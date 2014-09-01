@@ -16,19 +16,24 @@
 */
 package org.pentaho.di.monitor;
 
-import junit.framework.Assert;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepInitThread;
 
 public class TransformationEventsTriggeredTest extends BaseEventsTriggeredTest {
 
+  private static final String SAMPLE_TRANS_NAME = "sampleTrans";
   private static final String SAMPLE_TRANS = "test-resources/sampleTrans.ktr";
+
+  private static String[] stepNames = new String[] {
+    "Generate Rows", "Get Variables", "Generate random value", "Write to log", "Json output", "Select values", "OUTPUT"
+  };
 
   @Test
   public void testTransformationPrepareExecutionMonitor() throws Exception {
@@ -45,6 +50,8 @@ public class TransformationEventsTriggeredTest extends BaseEventsTriggeredTest {
     executeSampleTransformation();
 
     Assert.assertTrue( dummyMonitor.wasTriggered );
+    Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof Trans );
+    Assert.assertTrue( ( (Trans) dummyMonitor.eventObject ).getName().equals( SAMPLE_TRANS_NAME ) );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
@@ -63,6 +70,20 @@ public class TransformationEventsTriggeredTest extends BaseEventsTriggeredTest {
     executeSampleTransformation();
 
     Assert.assertTrue( dummyMonitor.wasTriggered );
+    Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof StepInitThread );
+
+    if ( ( (StepInitThread) dummyMonitor.eventObject ).getCombi() != null ) {
+
+      String thisStepName = ( (StepInitThread) dummyMonitor.eventObject ).getCombi().stepname;
+
+      boolean containsStep = false;
+
+      for ( String stepName : stepNames ) {
+        containsStep |= thisStepName.contains( stepName );
+      }
+
+      Assert.assertTrue( containsStep );
+    }
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
@@ -81,6 +102,20 @@ public class TransformationEventsTriggeredTest extends BaseEventsTriggeredTest {
     executeSampleTransformation();
 
     Assert.assertTrue( dummyMonitor.wasTriggered );
+    Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof StepInitThread );
+
+    if ( ( (StepInitThread) dummyMonitor.eventObject ).getCombi() != null ) {
+
+      String thisStepName = ( (StepInitThread) dummyMonitor.eventObject ).getCombi().stepname;
+
+      boolean containsStep = false;
+
+      for ( String stepName : stepNames ) {
+        containsStep |= thisStepName.contains( stepName );
+      }
+
+      Assert.assertTrue( containsStep );
+    }
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
@@ -99,6 +134,8 @@ public class TransformationEventsTriggeredTest extends BaseEventsTriggeredTest {
     executeSampleTransformation();
 
     Assert.assertTrue( dummyMonitor.wasTriggered );
+    Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof TransMeta );
+    Assert.assertTrue( ( (TransMeta) dummyMonitor.eventObject ).getName().equals( SAMPLE_TRANS_NAME ) );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
@@ -117,13 +154,17 @@ public class TransformationEventsTriggeredTest extends BaseEventsTriggeredTest {
     executeSampleTransformation();
 
     Assert.assertTrue( dummyMonitor.wasTriggered );
+    Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof Trans );
+    Assert.assertTrue( ( (Trans) dummyMonitor.eventObject ).getName().equals( SAMPLE_TRANS_NAME ) );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
   }
 
   private void executeSampleTransformation() throws KettleException {
-    Trans trans = new Trans( new TransMeta( SAMPLE_TRANS ) );
+    TransMeta meta = new TransMeta( SAMPLE_TRANS );
+    meta.setTransformationType( TransMeta.TransformationType.Normal );
+    Trans trans = new Trans( meta );
     trans.execute( null );
     trans.waitUntilFinished();
   }

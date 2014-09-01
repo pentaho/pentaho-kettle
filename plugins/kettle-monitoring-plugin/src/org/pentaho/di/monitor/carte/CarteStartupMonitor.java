@@ -19,7 +19,7 @@ package org.pentaho.di.monitor.carte;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
-import org.pentaho.di.monitor.IKettleMonitoringEvent;
+import org.pentaho.di.monitor.base.IKettleMonitoringEvent;
 import org.pentaho.di.monitor.MonitorAbstract;
 import org.pentaho.di.www.WebServer;
 
@@ -43,7 +43,7 @@ public class CarteStartupMonitor extends MonitorAbstract implements ExtensionPoi
 
     CarteEvent event = new CarteEvent( CarteEvent.EventType.STARTUP ).build( (WebServer) o );
 
-    logInfo( "[PDI Extension Point Plugin] Dispathing to Event Bus " + event.toString() );
+    //logInfo( "[PDI Extension Point Plugin] Dispathing to Event Bus " + event.toString() );
 
     return event;
   }
