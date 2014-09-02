@@ -57,6 +57,7 @@ public class OraBulkLoaderTest {
       new OraBulkLoader( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
         stepMockHelper.trans );
     File tmp = File.createTempFile( "testCreateCOmmandLine", "tmp" );
+    tmp.deleteOnExit();
     OraBulkLoaderMeta meta = new OraBulkLoaderMeta();
     meta.setSqlldr( tmp.getAbsolutePath() );
     meta.setControlFile( tmp.getAbsolutePath() );
