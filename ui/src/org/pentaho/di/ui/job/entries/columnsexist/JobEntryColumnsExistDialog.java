@@ -390,7 +390,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
       }
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobEntryColumnsExist.ConnectionError2.DialogMessage" ) );
+      mb.setMessage( BaseMessages.getString( PKG, "JobEntryColumnsExist.ConnectionError.DialogMessage" ) );
       mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
       mb.open();
     }
