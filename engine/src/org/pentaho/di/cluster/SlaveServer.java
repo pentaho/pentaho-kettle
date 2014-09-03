@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -542,20 +541,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   }
 
   public void addCredentials( HttpClient client ) {
-    if ( StringUtils.isEmpty( webAppName ) ) {
-      client.getState()
-          .setCredentials(
-              new AuthScope( environmentSubstitute( hostname ), Const.toInt( environmentSubstitute( port ), 80 ),
-                  "Kettle" ),
-              new UsernamePasswordCredentials( environmentSubstitute( username ), Encr
-                  .decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) ) ) );
-    } else {
-      Credentials creds =
-          new UsernamePasswordCredentials( environmentSubstitute( username ), Encr
-              .decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) ) );
-      client.getState().setCredentials( AuthScope.ANY, creds );
-      client.getParams().setAuthenticationPreemptive( true );
-    }
+    client.getState().setCredentials(
+        new AuthScope( environmentSubstitute( hostname ), Const.toInt( environmentSubstitute( port ), 80 ) ),
+        new UsernamePasswordCredentials( environmentSubstitute( username ), Encr
+            .decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) ) ) );
+    client.getParams().setAuthenticationPreemptive( true );
   }
 
   /**
