@@ -20,12 +20,12 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
-import static org.junit.Assert.assertEquals;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.hasItem;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -47,94 +47,166 @@ import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 
 public class TransExecutorTest {
+  private static final String SAMPLE_INPUT = "abc";
+  private static final String EXPECTED_SUBTRANS_OUTPUT_PATTERN = "aa";
+  private static final int EXPECTED_SUBTRANS_OUTPUT_AMOUNT = 10;
+
+  private static final String SUBTRANS_PATH = TransExecutorTest.class.getResource( "subtrans.ktr" ).toString();
+
+
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+    KettleEnvironment.init();
+  }
+
+
+  private PluginRegistry pluginRegistry;
+
+  private StepMeta injector;
+  private StepMeta transExecutor;
+  private StepMeta dummy;
+  private TransMeta transMeta;
+
+
+  @Before
+  public void setUp() throws Exception {
+    pluginRegistry = PluginRegistry.getInstance();
+
+    injector = createInjector( "Injector" );
+    transExecutor = createExecutor( "Trans Executor" );
+    dummy = createDummy( "Dummy Output" );
+
+    TransExecutorMeta executorMeta = getExecutorMeta( transExecutor );
+    executorMeta.setFileName( SUBTRANS_PATH );
+    executorMeta.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
+
+    transMeta = new TransMeta();
+    transMeta.setName( "transformation executor" );
+
+    transMeta.addStep( injector );
+    transMeta.addStep( transExecutor );
+    transMeta.addStep( dummy );
+
+    // injector -> executor
+    transMeta.addTransHop( new TransHopMeta( injector, transExecutor ) );
+    // executor -> dummy
+    transMeta.addTransHop( new TransHopMeta( transExecutor, dummy ) );
+  }
+
+  private StepMeta createInjector( String stepname ) {
+    InjectorMeta im = new InjectorMeta();
+    String injectorPid = pluginRegistry.getPluginId( StepPluginType.class, im );
+    return new StepMeta( injectorPid, stepname, im );
+  }
+
+  private StepMeta createExecutor( String stepname ) {
+    TransExecutorMeta transExecutorMeta = new TransExecutorMeta();
+    String transExecutorPID = pluginRegistry.getPluginId( StepPluginType.class, transExecutorMeta );
+    return new StepMeta( transExecutorPID, stepname, transExecutorMeta );
+  }
+
+  private static TransExecutorMeta getExecutorMeta( StepMeta stepMeta ) {
+    return (TransExecutorMeta) stepMeta.getStepMetaInterface();
+  }
+
+  private StepMeta createDummy( String stepname ) {
+    DummyTransMeta dummyTransMeta = new DummyTransMeta();
+    String dummyStepPID = pluginRegistry.getPluginId( StepPluginType.class, dummyTransMeta );
+    return new StepMeta( dummyStepPID, stepname, dummyTransMeta );
+  }
+
 
   @Test
-  public void testSubTrans() throws Exception {
-    KettleEnvironment.init();
+  public void subTransOutputIsAccessibleOutside() throws Exception {
+    TransExecutorMeta executorMeta = getExecutorMeta( transExecutor );
+    executorMeta.setOutputRowsSourceStepMeta( dummy );
 
-    // CREATE
-    // ...transformation
-    TransMeta transMeta = new TransMeta();
-    transMeta.setName( "transformation executor" );
-    PluginRegistry registry = PluginRegistry.getInstance();
-
-    // ...injector step
-    String injectorStepname = "injector step";
-    InjectorMeta im = new InjectorMeta();
-    String injectorPid = registry.getPluginId( StepPluginType.class, im );
-    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
-    transMeta.addStep( injectorStep );
-
-    // ...Transformation Executor step
-    String transExecutorStepname = "TransExecutor";
-    TransExecutorMeta transExecutorMeta = new TransExecutorMeta();
-    String transExecutorPID = registry.getPluginId( StepPluginType.class, transExecutorMeta );
-    StepMeta transExecStep = new StepMeta( transExecutorPID, transExecutorStepname, transExecutorMeta );
-    transMeta.addStep( transExecStep );
-
-    // ..dummy output step
-    String dummyStepname = "Dummy Output";
-    DummyTransMeta dummyTransMeta = new DummyTransMeta();
-    String dummyStepPID = registry.getPluginId( StepPluginType.class, dummyTransMeta );
-    StepMeta dummyStep = new StepMeta( dummyStepPID, dummyStepname, dummyTransMeta );
-    transMeta.addStep( dummyStep );
-
-    // INIT
-    String subtrans = getClass().getResource( "subtrans.ktr" ).toString();
-    transExecutorMeta.setFileName( subtrans );
-    transExecutorMeta.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
-    transExecutorMeta.setOutputRowsSourceStepMeta( dummyStep );
-
-    // hops :
-    // injector -> trans executor
-    TransHopMeta injectorExecutorHop = new TransHopMeta( injectorStep, transExecStep );
-    transMeta.addTransHop( injectorExecutorHop );
-    // trans executor -> dummy output
-    TransHopMeta executorDummyHop = new TransHopMeta( transExecStep, dummyStep );
-    transMeta.addTransHop( executorDummyHop );
-
-    // Now execute the transformation...
-    Trans trans = new Trans( transMeta );
-
-    trans.prepareExecution( null );
-
-    StepInterface si = trans.getStepInterface( transExecutorStepname, 0 );
-    RowStepCollector endRc = new RowStepCollector();
-    si.addRowListener( endRc );
-
-    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    Trans trans = createTrans( transMeta );
+    RowStepCollector endRc = listenExecutor( trans );
+    RowProducer rp = trans.addRowProducer( injector.getName(), 0 );
 
     trans.startThreads();
 
-    // add rows
-    List<RowMetaAndData> inputList = createData();
-    Iterator<RowMetaAndData> it = inputList.iterator();
-    while ( it.hasNext() ) {
-      RowMetaAndData rm = it.next();
-      rp.putRow( rm.getRowMeta(), rm.getData() );
-    }
+    RowMetaAndData testInput = new RowMetaAndData( createRowMetaForOneField(), SAMPLE_INPUT );
+    rp.putRow( testInput.getRowMeta(), testInput.getData() );
     rp.finished();
+
     trans.waitUntilFinished();
 
-    long errors = trans.getResult().getNrErrors();
-    assertEquals( "Transformation fails", 0, errors );
+    assertEquals( EXPECTED_SUBTRANS_OUTPUT_AMOUNT, endRc.getRowsWritten().size() );
+    assertThat( asList( endRc.getRowsWritten().get( 0 ).getData() ),
+      hasItem( (Object) EXPECTED_SUBTRANS_OUTPUT_PATTERN )
+    );
   }
 
-  private List<RowMetaAndData> createData() {
-    List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
-    RowMetaInterface rm = createRowMetaInterface();
-    Object[] r1 = new Object[] { "abc" };
-    list.add( new RowMetaAndData( rm, r1 ) );
-    return list;
+  private static Trans createTrans(TransMeta transMeta) throws Exception {
+    Trans trans = new Trans( transMeta );
+    trans.prepareExecution( null );
+    return trans;
   }
 
-  private RowMetaInterface createRowMetaInterface() {
+  private RowStepCollector listenExecutor(Trans trans) {
+    StepInterface transExecutorStep = trans.getStepInterface( transExecutor.getName(), 0 );
+    RowStepCollector rc = new RowStepCollector();
+    transExecutorStep.addRowListener( rc );
+    return rc;
+  }
+
+  private static RowMetaInterface createRowMetaForOneField() {
     RowMetaInterface rm = new RowMeta();
     ValueMetaInterface[] valuesMeta = { new ValueMeta( "field1", ValueMeta.TYPE_STRING ), };
-    for ( int i = 0; i < valuesMeta.length; i++ ) {
-      rm.addValueMeta( valuesMeta[i] );
+    for ( ValueMetaInterface aValuesMeta : valuesMeta ) {
+      rm.addValueMeta( aValuesMeta );
     }
     return rm;
+  }
+
+
+  @Test
+  public void executorsInputIsStraightlyCopiedToOutput() throws Exception {
+    TransExecutorMeta executorMeta = getExecutorMeta( transExecutor );
+    executorMeta.setExecutorsOutputStepMeta( dummy );
+
+    Trans trans = createTrans( transMeta );
+    RowStepCollector endRc = listenExecutor( trans );
+    RowProducer rp = trans.addRowProducer( injector.getName(), 0 );
+
+    trans.startThreads();
+
+    RowMetaAndData testInput = new RowMetaAndData( createRowMetaForOneField(), SAMPLE_INPUT );
+    rp.putRow( testInput.getRowMeta(), testInput.getData() );
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    assertEquals( testInput.size(), endRc.getRowsWritten().size() );
+    assertThat( asList( endRc.getRowsWritten().get( 0 ).getData() ),
+      hasItem( (Object) SAMPLE_INPUT )
+    );
+  }
+
+
+  @Test
+  public void subTransExecutionStatisticsIsCollected() throws Exception {
+    TransExecutorMeta executorMeta = getExecutorMeta( transExecutor );
+    executorMeta.setExecutionTimeField( "time" );
+    executorMeta.setExecutionResultTargetStepMeta( dummy );
+
+    Trans trans = createTrans( transMeta );
+    RowStepCollector endRc = listenExecutor( trans );
+    RowProducer rp = trans.addRowProducer( injector.getName(), 0 );
+
+    trans.startThreads();
+
+    RowMetaAndData testInput = new RowMetaAndData( createRowMetaForOneField(), SAMPLE_INPUT );
+    rp.putRow( testInput.getRowMeta(), testInput.getData() );
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    assertFalse( endRc.getRowsWritten().isEmpty() );
+    // execution time field
+    assertNotNull( endRc.getRowsWritten().get( 0 ).getData()[0] );
   }
 
 }
