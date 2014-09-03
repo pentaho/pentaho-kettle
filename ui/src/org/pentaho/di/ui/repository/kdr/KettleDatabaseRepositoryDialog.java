@@ -252,7 +252,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     fdName.top = new FormAttachment( wnConnection, margin * 2 );
     fdName.right = new FormAttachment( 100, 0 );
     wName.setLayoutData( fdName );
-    
+
     // Description line
     wlId = new Label( shell, SWT.RIGHT );
     wlId.setText( BaseMessages.getString( PKG, "RepositoryDialog.Label.Description" ) );
@@ -269,7 +269,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     fdId.top = new FormAttachment( wlName, margin * 3 );
     fdId.right = new FormAttachment( 100, 0 );
     wId.setLayoutData( fdId );
-    
+
     //buttons
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );

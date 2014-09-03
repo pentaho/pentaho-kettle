@@ -317,7 +317,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
         return o1.getDate().compareTo( o2.getDate() );
       }
     } );
-    
+
     Rectangle bounds = canvas.getBounds();
     if ( bounds.width <= 0 || bounds.height <= 0 ) {
       return;
