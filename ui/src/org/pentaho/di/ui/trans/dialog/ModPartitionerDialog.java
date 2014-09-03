@@ -69,7 +69,7 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
   private FormData fdlFieldname, fdFieldname;
 
   public ModPartitionerDialog( Shell parent, StepMeta stepMeta, StepPartitioningMeta partitioningMeta,
-    TransMeta transMeta ) {
+                               TransMeta transMeta ) {
     super( parent, (BaseStepMeta) stepMeta.getStepMetaInterface(), transMeta, partitioningMeta
       .getPartitioner().getDescription() );
     this.stepMeta = stepMeta;
@@ -121,6 +121,16 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
     fdFieldname.top = new FormAttachment( 0, margin );
     fdFieldname.right = new FormAttachment( 100, 0 );
     wFieldname.setLayoutData( fdFieldname );
+    wFieldname.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        if ( wFieldname.getSelectionIndex() < 0 ) {
+          wOK.setEnabled( false );
+        } else {
+          wOK.setEnabled( true );
+        }
+      }
+    } );
 
     try {
       RowMetaInterface inputFields = transMeta.getPrevStepFields( stepMeta );
@@ -128,6 +138,7 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
         String[] fieldNames = inputFields.getFieldNames();
         Arrays.sort( fieldNames );
         wFieldname.setItems( fieldNames );
+
       }
     } catch ( Exception e ) {
       new ErrorDialog( shell, "Error", "Error obtaining list of input fields:", e );
@@ -176,7 +187,9 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
     partitioningMeta.hasChanged( changed );
 
     setSize();
-
+    if ( wFieldname.getSelectionIndex() < 0 ) {
+      wOK.setEnabled( false );
+    }
     shell.open();
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
