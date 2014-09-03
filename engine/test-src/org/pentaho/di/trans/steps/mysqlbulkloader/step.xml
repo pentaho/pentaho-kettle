@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <step>
+    <name>MySQL Bulk Loader</name>
+    <type>MySQLBulkLoader</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <connection>mysql</connection>
+    <schema>test</schema>
+    <table>r_cluster</table>
+    <encoding/>
+    <delimiter>,</delimiter>
+    <enclosure>&#x22;</enclosure>
+    <escape_char>&#x5c;</escape_char>
+    <replace>N</replace>
+    <ignore>N</ignore>
+    <local>N</local>
+    <fifo_file_name>D&#x3a;&#x2f;fifo</fifo_file_name>
+    <bulk_size/>
+      <mapping>
+        <stream_name>ID_CLUSTER</stream_name>
+        <field_name>ID_CLUSTER</field_name>
+        <field_format_ok>NUMBER</field_format_ok>
+      </mapping>
+      <mapping>
+        <stream_name>NAME</stream_name>
+        <field_name>NAME</field_name>
+        <field_format_ok>STRING_ESC</field_format_ok>
+      </mapping>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>376</xloc>
+      <yloc>101</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
