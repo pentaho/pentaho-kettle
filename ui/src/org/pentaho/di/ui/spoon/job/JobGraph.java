@@ -3526,9 +3526,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         // Replay button...
         //
         XulToolbarbutton replayButton = (XulToolbarbutton) toolbar.getElementById( "job-replay" );
-        if ( replayButton != null && !controlDisposed( replayButton ) ) {
-          if ( replayButton.isDisabled() ^ !running ) {
-            replayButton.setDisabled( !running );
+        if ( replayButton != null && !controlDisposed( replayButton ) && !operationsNotAllowed ) {
+          if ( replayButton.isDisabled() ^ running ) {
+            replayButton.setDisabled( running );
           }
         }
 
