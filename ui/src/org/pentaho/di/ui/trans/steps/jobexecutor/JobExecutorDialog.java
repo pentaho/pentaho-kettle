@@ -1506,7 +1506,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
           BaseMessages.getString( PKG, "JobExecutorDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
           false ),
         new ColumnInfo(
-          BaseMessages.getString( PKG, "JobExecutorDialog.ColumnInfo.Length" ), ColumnInfo.COLUMN_TYPE_TEXT,
+          BaseMessages.getString( PKG, "JobExecutorDialog.ColumnInfo.Precision" ), ColumnInfo.COLUMN_TYPE_TEXT,
           false ), };
 
     wResultRowsFields =
