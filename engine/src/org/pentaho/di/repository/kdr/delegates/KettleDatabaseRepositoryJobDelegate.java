@@ -1077,7 +1077,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
         final String value = attributes.get( key );
         if ( key != null && value != null ) {
           repository.connectionDelegate.insertJobAttribute( jobId, 0, JOB_ATTRIBUTE_PREFIX
-            + groupName + '\t' + value, 0, value );
+            + groupName + '\t' + key, 0, value );
         }
       }
     }
