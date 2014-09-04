@@ -54,6 +54,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.google.common.annotations.VisibleForTesting;
+
 /**
  * Based on a piece of XML, this factory will give back a list of objects. In other words, it does XML de-serialisation
  * 
@@ -284,7 +286,8 @@ public class SharedObjects {
    * @throws IOException
    * @throws KettleException
    */
-  private void writeToFile( FileObject fileObject, String backupFileName ) throws IOException, KettleException {
+  @VisibleForTesting
+  protected void writeToFile( FileObject fileObject, String backupFileName ) throws IOException, KettleException {
     OutputStream outputStream = null;
     PrintStream out = null;
     try {
@@ -327,7 +330,8 @@ public class SharedObjects {
     return KettleVFS.getFileObject( filename );
   }
 
-  private OutputStream initOutputStreamUsingKettleVFS( FileObject fileObject ) throws IOException {
+  @VisibleForTesting
+  protected OutputStream initOutputStreamUsingKettleVFS( FileObject fileObject ) throws IOException {
     return KettleVFS.getOutputStream( fileObject, false );
   }
 
@@ -337,7 +341,8 @@ public class SharedObjects {
    * @param backupFileName
    * @throws IOException
    */
-  private void restoreFileFromBackup( String backupFileName ) throws IOException {
+  @VisibleForTesting
+  protected void restoreFileFromBackup( String backupFileName ) throws IOException {
     copyFile( backupFileName, filename );
   }
 
