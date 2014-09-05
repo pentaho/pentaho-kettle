@@ -23,6 +23,7 @@
 package org.pentaho.di.repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -65,13 +66,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXParseException;
 
+import javax.xml.parsers.DocumentBuilder;
+
 public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   public static final String IMPORT_ASK_ABOUT_REPLACE_DB = "IMPORT_ASK_ABOUT_REPLACE_DB";
   public static final String IMPORT_ASK_ABOUT_REPLACE_SS = "IMPORT_ASK_ABOUT_REPLACE_SS";
   public static final String IMPORT_ASK_ABOUT_REPLACE_CS = "IMPORT_ASK_ABOUT_REPLACE_CS";
   public static final String IMPORT_ASK_ABOUT_REPLACE_PS = "IMPORT_ASK_ABOUT_REPLACE_PS";
 
-  private static Class<?> PKG = RepositoryImporter.class;
+  private static final Class<?> PKG = RepositoryImporter.class;
 
   private Repository rep;
   private LogChannelInterface log;
@@ -109,7 +112,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   }
 
   public RepositoryImporter( Repository repository, LogChannelInterface log ) {
-    this( repository, new ImportRules(), new ArrayList<String>(), log );
+    this( repository, new ImportRules(), Collections.<String>emptyList(), log );
   }
 
   public RepositoryImporter( Repository repository, ImportRules importRules, List<String> limitDirs ) {
@@ -231,8 +234,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
                 .getName() ) );
           }
           rep.save( transMeta, "import object reference specification", null );
-        }
-        if ( ro.getObjectType() == RepositoryObjectType.JOB ) {
+        } else if ( ro.getObjectType() == RepositoryObjectType.JOB ) {
           JobMeta jobMeta = rep.loadJob( ro.getObjectId(), null );
           try {
             jobMeta.lookupRepositoryReferences( rep );
@@ -270,13 +272,16 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
       validateImportedElement( importRules, databaseMeta );
       sharedObjects.storeObject( databaseMeta );
     }
-    List<SlaveServer> slaveServers = new ArrayList<SlaveServer>();
-    for ( ObjectId id : rep.getSlaveIDs( false ) ) {
+
+    ObjectId[] slaveIDs = rep.getSlaveIDs( false );
+    List<SlaveServer> slaveServers = new ArrayList<SlaveServer>( slaveIDs.length );
+    for ( ObjectId id : slaveIDs ) {
       SlaveServer slaveServer = rep.loadSlaveServer( id, null );
       validateImportedElement( importRules, slaveServer );
       sharedObjects.storeObject( slaveServer );
       slaveServers.add( slaveServer );
     }
+
     for ( ObjectId id : rep.getClusterIDs( false ) ) {
       ClusterSchema clusterSchema = rep.loadClusterSchema( id, slaveServers, null );
       validateImportedElement( importRules, clusterSchema );
@@ -292,7 +297,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   /**
    * Validates the repository element that is about to get imported against the list of import rules.
    * 
-   * @param the
+   * @param importRules
    *          import rules to validate against.
    * @param subject
    * @throws KettleException
@@ -301,8 +306,8 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
     List<ImportValidationFeedback> feedback = importRules.verifyRules( subject );
     List<ImportValidationFeedback> errors = ImportValidationFeedback.getErrors( feedback );
     if ( !errors.isEmpty() ) {
-      StringBuffer message =
-          new StringBuffer( BaseMessages.getString( PKG, "RepositoryImporter.ValidationFailed.Message", subject
+      StringBuilder message =
+          new StringBuilder( BaseMessages.getString( PKG, "RepositoryImporter.ValidationFailed.Message", subject
               .toString() ) );
       message.append( Const.CR );
       for ( ImportValidationFeedback error : errors ) {
@@ -825,15 +830,23 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   }
 
   private int transformationNumber = 1;
+  private DocumentBuilder documentBuilder;
 
   JobMeta createJobMetaForNode( Node jobnode ) throws KettleXMLException {
     return new JobMeta( jobnode, null, false, SpoonFactory.getInstance() );
   }
 
+  private DocumentBuilder getOrCreateDb() throws KettleXMLException {
+    if ( documentBuilder == null ) {
+      documentBuilder = XMLHandler.createDocumentBuilder( false, true );
+    }
+    return documentBuilder;
+  }
+
   @Override
   public boolean transformationElementRead( String xml, RepositoryImportFeedbackInterface feedback ) {
     try {
-      Document doc = XMLHandler.loadXMLString( xml );
+      Document doc = XMLHandler.loadXMLString( getOrCreateDb(), xml );
       Node transformationNode = XMLHandler.getSubNode( doc, RepositoryExportSaxParser.STRING_TRANSFORMATION );
       if ( !importTransformation( transformationNode, feedback ) ) {
         return false;
@@ -862,7 +875,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   @Override
   public boolean jobElementRead( String xml, RepositoryImportFeedbackInterface feedback ) {
     try {
-      Document doc = XMLHandler.loadXMLString( xml );
+      Document doc = XMLHandler.loadXMLString( getOrCreateDb(), xml );
       Node jobNode = XMLHandler.getSubNode( doc, RepositoryExportSaxParser.STRING_JOB );
       if ( !importJob( jobNode, feedback ) ) {
         return false;

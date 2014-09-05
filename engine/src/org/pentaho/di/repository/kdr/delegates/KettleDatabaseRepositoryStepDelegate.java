@@ -68,6 +68,18 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
       quote( KettleDatabaseRepository.FIELD_STEP_TYPE_CODE ), code );
   }
 
+  public ObjectId[] getStepTypeIDs( String[] codes, int amount ) throws KettleException {
+    if ( amount != codes.length ) {
+      String[] tmp = new String[ amount ];
+      System.arraycopy( codes, 0, tmp, 0, amount );
+      codes = tmp;
+    }
+    return repository.connectionDelegate.getIDsWithValues(
+      quoteTable( KettleDatabaseRepository.TABLE_R_STEP_TYPE ),
+      quote( KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE ),
+      quote( KettleDatabaseRepository.FIELD_STEP_TYPE_CODE ), codes );
+  }
+
   public synchronized ObjectId getStepID( String name, ObjectId id_transformation ) throws KettleException {
     return repository.connectionDelegate.getIDWithValue(
       quoteTable( KettleDatabaseRepository.TABLE_R_STEP ), quote( KettleDatabaseRepository.FIELD_STEP_ID_STEP ),

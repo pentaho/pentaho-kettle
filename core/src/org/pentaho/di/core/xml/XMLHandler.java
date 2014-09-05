@@ -45,6 +45,7 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -69,7 +70,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 /**
- * This class contains a number of (static final) methods to facilitate the retrieval of information from XML Node(s).
+ * This class contains a number of (static) methods to facilitate the retrieval of information from XML Node(s).
  *
  * @author Matt
  * @since 04-04-2003
@@ -77,14 +78,14 @@ import org.xml.sax.InputSource;
  */
 public class XMLHandler {
   private static XMLHandlerCache cache = XMLHandlerCache.getInstance();
-  private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat( ValueMeta.DEFAULT_DATE_FORMAT_MASK );
+  private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat( ValueMeta.DEFAULT_DATE_FORMAT_MASK );
 
   /**
    * The header string to specify encoding in UTF-8 for XML files
    *
    * @return The XML header.
    */
-  public static final String getXMLHeader() {
+  public static String getXMLHeader() {
     return getXMLHeader( Const.XML_ENCODING );
   }
 
@@ -95,7 +96,7 @@ public class XMLHandler {
    *          The desired encoding to use in the XML file
    * @return The XML header.
    */
-  public static final String getXMLHeader( String encoding ) {
+  public static String getXMLHeader( String encoding ) {
     return "<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>" + Const.CR;
   }
 
@@ -108,7 +109,7 @@ public class XMLHandler {
    *          The tag to look for
    * @return The value of the tag or null if nothing was found.
    */
-  public static final String getTagValue( Node n, KettleAttributeInterface code ) {
+  public static String getTagValue( Node n, KettleAttributeInterface code ) {
     return getTagValue( n, code.getXmlCode() );
   }
 
@@ -121,7 +122,7 @@ public class XMLHandler {
    *          The tag to look for
    * @return The value of the tag or null if nothing was found.
    */
-  public static final String getTagValue( Node n, String tag ) {
+  public static String getTagValue( Node n, String tag ) {
     NodeList children;
     Node childnode;
 
@@ -150,7 +151,7 @@ public class XMLHandler {
    *          The tag to look for
    * @return The value of the tag or null if nothing was found.
    */
-  public static final String getTagValueWithAttribute( Node n, String tag, String attribute ) {
+  public static String getTagValueWithAttribute( Node n, String tag, String attribute ) {
     NodeList children;
     Node childnode;
 
@@ -182,7 +183,7 @@ public class XMLHandler {
    *          The subtag to look for
    * @return The string of the subtag or null if nothing was found.
    */
-  public static final String getTagValue( Node n, String tag, String subtag ) {
+  public static String getTagValue( Node n, String tag, String subtag ) {
     NodeList children, tags;
     Node childnode, tagnode;
 
@@ -218,7 +219,7 @@ public class XMLHandler {
    *          The tags to count
    * @return The number of nodes found with a certain tag
    */
-  public static final int countNodes( Node n, String tag ) {
+  public static int countNodes( Node n, String tag ) {
     NodeList children;
     Node childnode;
 
@@ -248,7 +249,7 @@ public class XMLHandler {
    *          The tags to count
    * @return The list of nodes found with the specified tag
    */
-  public static final List<Node> getNodes( Node n, String tag ) {
+  public static List<Node> getNodes( Node n, String tag ) {
     NodeList children;
     Node childnode;
 
@@ -284,7 +285,7 @@ public class XMLHandler {
    *          The nr of occurance of the value
    * @return The node found or null if we couldn't find anything.
    */
-  public static final Node getNodeWithTagValue( Node n, String tag, String subtag, String subtagvalue, int nr ) {
+  public static Node getNodeWithTagValue( Node n, String tag, String subtag, String subtagvalue, int nr ) {
     NodeList children;
     Node childnode, tagnode;
     String value;
@@ -324,7 +325,7 @@ public class XMLHandler {
    *          The nr of occurance of the value
    * @return The node found or null if we couldn't find anything.
    */
-  public static final Node getNodeWithAttributeValue( Node n, String tag, String attributeName,
+  public static Node getNodeWithAttributeValue( Node n, String tag, String attributeName,
     String attributeValue ) {
     NodeList children;
     Node childnode;
@@ -353,7 +354,7 @@ public class XMLHandler {
    *          The tag to look for
    * @return The subnode if the tag was found, or null if nothing was found.
    */
-  public static final Node getSubNode( Node n, String tag ) {
+  public static Node getSubNode( Node n, String tag ) {
     int i;
     NodeList children;
     Node childnode;
@@ -386,7 +387,7 @@ public class XMLHandler {
    *          The tag to look for in the children of the node
    * @return The sub-node found or null if nothing was found.
    */
-  public static final Node getSubNode( Node n, String tag, String subtag ) {
+  public static Node getSubNode( Node n, String tag, String subtag ) {
     Node t = getSubNode( n, tag );
     if ( t != null ) {
       return getSubNode( t, subtag );
@@ -406,7 +407,7 @@ public class XMLHandler {
    *          The position in the node
    * @return The subnode found or null in case the position was invalid.
    */
-  public static final Node getSubNodeByNr( Node n, String tag, int nr ) {
+  public static Node getSubNodeByNr( Node n, String tag, int nr ) {
     return getSubNodeByNr( n, tag, nr, true );
   }
 
@@ -426,7 +427,7 @@ public class XMLHandler {
    *          subnodes of a certain tag in reverse or random order.
    * @return The subnode found or null in case the position was invalid.
    */
-  public static final Node getSubNodeByNr( Node n, String tag, int nr, boolean useCache ) {
+  public static Node getSubNodeByNr( Node n, String tag, int nr, boolean useCache ) {
     NodeList children;
     Node childnode;
 
@@ -476,7 +477,7 @@ public class XMLHandler {
    *          The node
    * @return The value entry as a string
    */
-  public static final String getNodeValue( Node n ) {
+  public static String getNodeValue( Node n ) {
     if ( n == null ) {
       return null;
     }
@@ -494,7 +495,7 @@ public class XMLHandler {
     return null;
   }
 
-  public static final String getTagAttribute( Node node, String attribute ) {
+  public static String getTagAttribute( Node node, String attribute ) {
     if ( node == null ) {
       return null;
     }
@@ -518,7 +519,7 @@ public class XMLHandler {
    *          The filename to load into a document
    * @return the Document if all went well, null if an error occurred!
    */
-  public static final Document loadXMLFile( String filename ) throws KettleXMLException {
+  public static Document loadXMLFile( String filename ) throws KettleXMLException {
     try {
       return loadXMLFile( KettleVFS.getFileObject( filename ) );
     } catch ( Exception e ) {
@@ -533,7 +534,7 @@ public class XMLHandler {
    *          The filename to load into a document
    * @return the Document if all went well, null if an error occured!
    */
-  public static final Document loadXMLFile( FileObject fileObject ) throws KettleXMLException {
+  public static Document loadXMLFile( FileObject fileObject ) throws KettleXMLException {
     return loadXMLFile( fileObject, null, false, false );
   }
 
@@ -550,7 +551,7 @@ public class XMLHandler {
    *          support XML namespaces.
    * @return the Document if all went well, null if an error occured!
    */
-  public static final Document loadXMLFile( FileObject fileObject, String systemID, boolean ignoreEntities,
+  public static Document loadXMLFile( FileObject fileObject, String systemID, boolean ignoreEntities,
     boolean namespaceAware ) throws KettleXMLException {
     try {
       return loadXMLFile( KettleVFS.getInputStream( fileObject ), systemID, ignoreEntities, namespaceAware );
@@ -566,7 +567,7 @@ public class XMLHandler {
    *          The filename input stream to read the document from
    * @return the Document if all went well, null if an error occurred!
    */
-  public static final Document loadXMLFile( InputStream inputStream ) throws KettleXMLException {
+  public static Document loadXMLFile( InputStream inputStream ) throws KettleXMLException {
     return loadXMLFile( inputStream, null, false, false );
   }
 
@@ -583,7 +584,7 @@ public class XMLHandler {
    *          support XML namespaces.
    * @return the Document if all went well, null if an error occured!
    */
-  public static final Document loadXMLFile( InputStream inputStream, String systemID, boolean ignoreEntities,
+  public static Document loadXMLFile( InputStream inputStream, String systemID, boolean ignoreEntities,
     boolean namespaceAware ) throws KettleXMLException {
     DocumentBuilderFactory dbf;
     DocumentBuilder db;
@@ -636,7 +637,7 @@ public class XMLHandler {
     }
   }
 
-  public static final Document loadXMLFile( File resource ) throws KettleXMLException {
+  public static Document loadXMLFile( File resource ) throws KettleXMLException {
     try {
       return loadXMLFile( resource.toURI().toURL() );
     } catch ( MalformedURLException e ) {
@@ -651,7 +652,7 @@ public class XMLHandler {
    *          The file to load into a document
    * @return the Document if all went well, null if an error occured!
    */
-  public static final Document loadXMLFile( URL resource ) throws KettleXMLException {
+  public static Document loadXMLFile( URL resource ) throws KettleXMLException {
     DocumentBuilderFactory dbf;
     DocumentBuilder db;
     Document doc;
@@ -682,7 +683,7 @@ public class XMLHandler {
    * @return
    * @throws KettleXMLException
    */
-  public static final Document loadXMLString( String string ) throws KettleXMLException {
+  public static Document loadXMLString( String string ) throws KettleXMLException {
 
     return loadXMLString( string, Boolean.FALSE, Boolean.TRUE );
 
@@ -699,7 +700,7 @@ public class XMLHandler {
    * @throws KettleXMLException
    *           in case there is a problem reading the XML
    */
-  public static final Node loadXMLString( String xml, String tag ) throws KettleXMLException {
+  public static Node loadXMLString( String xml, String tag ) throws KettleXMLException {
     Document doc = loadXMLString( xml );
     return getSubNode( doc, tag );
   }
@@ -713,19 +714,18 @@ public class XMLHandler {
    *          true to defer node expansion, false to not defer.
    * @return the Document if all went well, null if an error occurred!
    */
-  public static final Document loadXMLString( String string, Boolean namespaceAware, Boolean deferNodeExpansion ) throws KettleXMLException {
-    DocumentBuilderFactory dbf;
-    DocumentBuilder db;
-    Document doc;
+  public static Document loadXMLString( String string, Boolean namespaceAware, Boolean deferNodeExpansion ) throws KettleXMLException {
+    DocumentBuilder db = createDocumentBuilder( namespaceAware, deferNodeExpansion );
+    return loadXMLString( db, string );
+  }
+
+  public static Document loadXMLString( DocumentBuilder db, String string ) throws KettleXMLException {
 
     try {
-      // Check and open XML document
-      dbf = DocumentBuilderFactory.newInstance();
-      dbf.setFeature( "http://apache.org/xml/features/dom/defer-node-expansion", deferNodeExpansion );
-      dbf.setNamespaceAware( namespaceAware ); // parameterize this as well
-      db = dbf.newDocumentBuilder();
       StringReader stringReader = new java.io.StringReader( string );
       InputSource inputSource = new InputSource( stringReader );
+
+      Document doc;
       try {
         doc = db.parse( inputSource );
       } catch ( IOException ef ) {
@@ -740,7 +740,19 @@ public class XMLHandler {
     }
   }
 
-  public static final String getString() {
+  public static DocumentBuilder createDocumentBuilder( boolean namespaceAware, boolean deferNodeExpansion )
+    throws KettleXMLException {
+    try {
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      dbf.setFeature( "http://apache.org/xml/features/dom/defer-node-expansion", deferNodeExpansion );
+      dbf.setNamespaceAware( namespaceAware );
+      return dbf.newDocumentBuilder();
+    } catch ( ParserConfigurationException e ) {
+      throw new KettleXMLException( e );
+    }
+  }
+
+  public static String getString() {
     return XMLHandler.class.getName();
   }
 
@@ -755,7 +767,7 @@ public class XMLHandler {
    *          true if a carriage return is desired after the ending tag.
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, String val, boolean cr, String... attributes ) {
+  public static String addTagValue( String tag, String val, boolean cr, String... attributes ) {
     StringBuffer value;
     Encoder encoder = ESAPI.encoder();
     value = new StringBuffer( "<" );
@@ -798,6 +810,11 @@ public class XMLHandler {
     value.append( encoder.encodeForXML( string ) );
   }
 
+  public static void appendReplacedChars( StringBuilder value, String string ) {
+    Encoder encoder = ESAPI.encoder();
+    value.append( encoder.encodeForXML( string ) );
+  }
+
   /**
    * Build an XML string (including a carriage return) for a certain tag String value
    *
@@ -807,7 +824,7 @@ public class XMLHandler {
    *          The String value of the tag
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( KettleAttributeInterface tag, String val ) {
+  public static String addTagValue( KettleAttributeInterface tag, String val ) {
     return addTagValue( tag.getXmlCode(), val );
   }
 
@@ -820,7 +837,7 @@ public class XMLHandler {
    *          The String value of the tag
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, String val ) {
+  public static String addTagValue( String tag, String val ) {
     return addTagValue( tag, val, true );
   }
 
@@ -833,7 +850,7 @@ public class XMLHandler {
    *          The boolean value of the tag
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( KettleAttributeInterface tag, boolean bool ) {
+  public static String addTagValue( KettleAttributeInterface tag, boolean bool ) {
     return addTagValue( tag.getXmlCode(), bool );
   }
 
@@ -846,7 +863,7 @@ public class XMLHandler {
    *          The boolean value of the tag
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, boolean bool ) {
+  public static String addTagValue( String tag, boolean bool ) {
     return addTagValue( tag, bool, true );
   }
 
@@ -861,7 +878,7 @@ public class XMLHandler {
    *          true if a carriage return is desired after the ending tag.
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, boolean bool, boolean cr ) {
+  public static String addTagValue( String tag, boolean bool, boolean cr ) {
     return addTagValue( tag, bool ? "Y" : "N", cr );
   }
 
@@ -874,7 +891,7 @@ public class XMLHandler {
    *          The long integer value of the tag
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, long l ) {
+  public static String addTagValue( String tag, long l ) {
     return addTagValue( tag, l, true );
   }
 
@@ -889,7 +906,7 @@ public class XMLHandler {
    *          true if a carriage return is desired after the ending tag.
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, long l, boolean cr ) {
+  public static String addTagValue( String tag, long l, boolean cr ) {
     // Tom modified this for performance
     // return addTagValue(tag, ""+l, cr);
     return addTagValue( tag, String.valueOf( l ), cr );
@@ -904,7 +921,7 @@ public class XMLHandler {
    *          The integer value of the tag
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( KettleAttributeInterface tag, int i ) {
+  public static String addTagValue( KettleAttributeInterface tag, int i ) {
     return addTagValue( tag.getXmlCode(), i );
   }
 
@@ -917,7 +934,7 @@ public class XMLHandler {
    *          The integer value of the tag
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, int i ) {
+  public static String addTagValue( String tag, int i ) {
     return addTagValue( tag, i, true );
   }
 
@@ -932,7 +949,7 @@ public class XMLHandler {
    *          true if a carriage return is desired after the ending tag.
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, int i, boolean cr ) {
+  public static String addTagValue( String tag, int i, boolean cr ) {
     return addTagValue( tag, "" + i, cr );
   }
 
@@ -945,7 +962,7 @@ public class XMLHandler {
    *          The double value of the tag
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, double d ) {
+  public static String addTagValue( String tag, double d ) {
     return addTagValue( tag, d, true );
   }
 
@@ -960,7 +977,7 @@ public class XMLHandler {
    *          true if a carriage return is desired after the ending tag.
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, double d, boolean cr ) {
+  public static String addTagValue( String tag, double d, boolean cr ) {
     return addTagValue( tag, "" + d, cr );
   }
 
@@ -973,7 +990,7 @@ public class XMLHandler {
    *          The Date value of the tag
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, Date date ) {
+  public static String addTagValue( String tag, Date date ) {
     return addTagValue( tag, date, true );
   }
 
@@ -988,7 +1005,7 @@ public class XMLHandler {
    *          true if a carriage return is desired after the ending tag.
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, Date date, boolean cr ) {
+  public static String addTagValue( String tag, Date date, boolean cr ) {
     return addTagValue( tag, date2string( date ), cr );
   }
 
@@ -1001,7 +1018,7 @@ public class XMLHandler {
    *          The BigDecimal value of the tag
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, BigDecimal val ) {
+  public static String addTagValue( String tag, BigDecimal val ) {
     return addTagValue( tag, val, true );
   }
 
@@ -1015,7 +1032,7 @@ public class XMLHandler {
    *
    * @return The XML String for the tag.
    */
-  public static final String addTagValue( String tag, BigDecimal val, boolean cr ) {
+  public static String addTagValue( String tag, BigDecimal val, boolean cr ) {
     return addTagValue( tag, val != null ? val.toString() : (String) null, true );
   }
 
@@ -1030,7 +1047,7 @@ public class XMLHandler {
    * @throws IOException
    *           in case there is an Base64 or GZip encoding problem
    */
-  public static final String addTagValue( String tag, byte[] val ) throws IOException {
+  public static String addTagValue( String tag, byte[] val ) throws IOException {
     return addTagValue( tag, val, true );
   }
 
@@ -1045,7 +1062,7 @@ public class XMLHandler {
    * @throws IOException
    *           in case there is an Base64 or GZip encoding problem
    */
-  public static final String addTagValue( String tag, byte[] val, boolean cr ) throws IOException {
+  public static String addTagValue( String tag, byte[] val, boolean cr ) throws IOException {
     String string;
     if ( val == null ) {
       string = null;
@@ -1107,7 +1124,7 @@ public class XMLHandler {
       return null;
     }
 
-    return elements.toArray( new String[elements.size()] );
+    return elements.toArray( new String[ elements.size() ] );
   }
 
   public static Date stringToDate( String dateString ) {
@@ -1185,17 +1202,27 @@ public class XMLHandler {
   }
 
   public static String buildCDATA( String string ) {
-    StringBuffer cdata = new StringBuffer( "<![CDATA[" );
-    cdata.append( Const.NVL( string, "" ) ).append( "]]>" );
-    return cdata.toString();
+    return buildCDATA( new StringBuilder(), string ).toString();
   }
 
-  public static final String openTag( String tag ) {
-    return "<" + tag + ">";
+  public static StringBuilder buildCDATA( StringBuilder builder, String string ) {
+    return builder.append( "<![CDATA[" ).append( Const.NVL( string, "" ) ).append( "]]>" );
   }
 
-  public static final String closeTag( String tag ) {
-    return "</" + tag + ">";
+  public static String openTag( String tag ) {
+    return openTag( new StringBuilder(), tag ).toString();
+  }
+
+  public static StringBuilder openTag( StringBuilder builder, String tag ) {
+    return builder.append( '<' ).append( tag ).append( '>' );
+  }
+
+  public static String closeTag( String tag ) {
+    return closeTag( new StringBuilder(), tag ).toString();
+  }
+
+  public static StringBuilder closeTag( StringBuilder builder, String tag ) {
+    return builder.append( "</" ).append( tag ).append( '>' );
   }
 
   public static String formatNode( Node node ) throws KettleXMLException {

@@ -30,6 +30,7 @@ import java.util.Properties;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -48,7 +49,7 @@ import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepositoryBaseDelegate {
 
-  private static Class<?> PKG = DatabaseMeta.class; // for i18n purposes, needed by Translator2!!
+  private static final Class<?> PKG = DatabaseMeta.class; // for i18n purposes, needed by Translator2!!
 
   public KettleDatabaseRepositoryDatabaseDelegate( KettleDatabaseRepository repository ) {
     super( repository );
@@ -197,17 +198,7 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
       delDatabaseAttributes( databaseMeta.getObjectId() );
 
       // OK, now get a list of all the attributes set on the database connection...
-      //
-      Properties attributes = databaseMeta.getAttributes();
-      Enumeration<Object> keys = databaseMeta.getAttributes().keys();
-      while ( keys.hasMoreElements() ) {
-        String code = (String) keys.nextElement();
-        String attribute = (String) attributes.get( code );
-
-        // Save this attribute
-        //
-        insertDatabaseAttribute( databaseMeta.getObjectId(), code, attribute );
-      }
+      insertDatabaseAttributes( databaseMeta.getObjectId(), databaseMeta.getAttributes() );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException(
         "Error saving database connection or one of its attributes to the repository.", dbe );
@@ -273,8 +264,8 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
     table.addValue( new ValueMeta(
       KettleDatabaseRepository.FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING ), dbname );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER ), new Long(
-        Const.toInt( port, -1 ) ) );
+      new ValueMeta( KettleDatabaseRepository.FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER ), Long.valueOf(
+        Const.toLong( port, -1 ) ) );
     table.addValue( new ValueMeta(
       KettleDatabaseRepository.FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING ), user );
     table.addValue( new ValueMeta(
@@ -319,8 +310,8 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
     table.addValue( new ValueMeta(
       KettleDatabaseRepository.FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING ), dbname );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER ), new Long(
-        Const.toInt( port, -1 ) ) );
+      new ValueMeta( KettleDatabaseRepository.FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER ), Long.valueOf(
+        Const.toLong( port, -1 ) ) );
     table.addValue( new ValueMeta(
       KettleDatabaseRepository.FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING ), user );
     table.addValue( new ValueMeta(
@@ -392,14 +383,14 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
       String message = " Database used by the following " + Const.CR;
       if ( jobList.length > 0 ) {
         message = "jobs :" + Const.CR;
-        for ( int i = 0; i < jobList.length; i++ ) {
-          message += "\t " + jobList[i] + Const.CR;
+        for ( String job : jobList ) {
+          message += "\t " + job + Const.CR;
         }
       }
 
       message += "transformations:" + Const.CR;
-      for ( int i = 0; i < transList.length; i++ ) {
-        message += "\t " + transList[i] + Const.CR;
+      for ( String trans : transList ) {
+        message += "\t " + trans + Const.CR;
       }
       KettleDependencyException e = new KettleDependencyException( message );
       throw new KettleDependencyException( "This database is still in use by "
@@ -457,7 +448,8 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
     return retval;
   }
 
-  private synchronized ObjectId insertDatabaseAttribute( ObjectId id_database, String code, String value_str ) throws KettleException {
+  private RowMetaAndData createAttributeRow( ObjectId idDatabase, String code, String strValue )
+    throws KettleException {
     ObjectId id = repository.connectionDelegate.getNextDatabaseAttributeID();
 
     RowMetaAndData table = new RowMetaAndData();
@@ -469,26 +461,33 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
     table.addValue(
       new ValueMeta(
         KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER ),
-      id_database );
+      idDatabase );
     table.addValue( new ValueMeta(
       KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
     table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING ), value_str );
+      KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING ), strValue );
 
-    /*
-     * If we have prepared the insert, we don't do it again. We assume that all the step insert statements come one
-     * after the other.
-     */
-    repository.connectionDelegate.getDatabase().prepareInsert(
-      table.getRowMeta(), KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE );
-    repository.connectionDelegate.getDatabase().setValuesInsert( table );
-    repository.connectionDelegate.getDatabase().insertRow();
-    repository.connectionDelegate.getDatabase().closeInsert();
+    return table;
+  }
 
-    if ( log.isDebug() ) {
-      log.logDebug( "saved database attribute [" + code + "]" );
+  private void insertDatabaseAttributes( ObjectId idDatabase, Properties properties ) throws KettleException {
+    if ( properties.isEmpty() ) {
+      return;
     }
 
-    return id;
+    Database db = repository.connectionDelegate.getDatabase();
+
+    Enumeration<Object> keys = properties.keys();
+    while ( keys.hasMoreElements() ) {
+      String code = (String) keys.nextElement();
+      String attribute = (String) properties.get( code );
+
+      RowMetaAndData attributeData = createAttributeRow( idDatabase, code, attribute );
+      db.prepareInsert( attributeData.getRowMeta(), KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE );
+      db.setValuesInsert( attributeData );
+      db.insertRow( db.getPrepStatementInsert(), true, false );
+    }
+    db.executeAndClearBatch( db.getPrepStatementInsert() );
+    db.closeInsert();
   }
 }

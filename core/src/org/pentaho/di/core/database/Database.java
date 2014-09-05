@@ -111,7 +111,7 @@ import org.pentaho.di.repository.RepositoryDirectory;
  */
 public class Database implements VariableSpace, LoggingObjectInterface {
   /** for i18n purposes, needed by Translator2!! */
-  private static Class<?> PKG = Database.class;
+  private static final Class<?> PKG = Database.class;
 
   private static final Map<String, Set<String>> registeredDrivers = new HashMap<String, Set<String>>();
 
@@ -1286,6 +1286,19 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   public void clearBatch( PreparedStatement preparedStatement ) throws KettleDatabaseException {
     try {
+      preparedStatement.clearBatch();
+    } catch ( SQLException e ) {
+      throw new KettleDatabaseException( "Unable to clear batch for prepared statement", e );
+    }
+  }
+
+  public void executeAndClearBatch( PreparedStatement preparedStatement ) throws KettleDatabaseException {
+    try {
+      if ( written > 0 && getDatabaseMetaData().supportsBatchUpdates() ) {
+        preparedStatement.executeBatch();
+      }
+
+      written = 0;
       preparedStatement.clearBatch();
     } catch ( SQLException e ) {
       throw new KettleDatabaseException( "Unable to clear batch for prepared statement", e );

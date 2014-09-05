@@ -52,12 +52,12 @@ import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectio
 
 public class KettleDatabaseRepositoryCreationHelper {
 
-  private KettleDatabaseRepository repository;
-  private LogChannelInterface log;
-  private DatabaseMeta databaseMeta;
-  private Database database;
+  private final KettleDatabaseRepository repository;
+  private final LogChannelInterface log;
+  private final DatabaseMeta databaseMeta;
+  private final Database database;
 
-  private PluginRegistry pluginRegistry;
+  private final PluginRegistry pluginRegistry;
 
   public KettleDatabaseRepositoryCreationHelper( KettleDatabaseRepository repository ) {
     this.repository = repository;
@@ -2981,20 +2981,20 @@ public class KettleDatabaseRepositoryCreationHelper {
       // We should only do an update if something has changed...
       //
       List<PluginInterface> plugins = pluginRegistry.getPlugins( StepPluginType.class );
-      for ( int i = 0; i < plugins.size(); i++ ) {
-        PluginInterface sp = plugins.get( i );
-        ObjectId id = null;
-        if ( !create ) {
-          id = repository.stepDelegate.getStepTypeID( sp.getIds()[0] );
-        }
+      ObjectId[] ids = loadPluginsIds( plugins, create );
+
+      for ( int i = 0, idsLength = ids.length; i < idsLength; i++ ) {
+        ObjectId id = ids[ i ];
         if ( id == null ) {
           // Not found, we need to add this one...
 
-          // We need to add this one ...
-          id = new LongObjectId( i + 1 );
           if ( !create ) {
             id = repository.connectionDelegate.getNextStepTypeID();
+          } else {
+            id = new LongObjectId( i + 1 );
           }
+
+          PluginInterface sp = plugins.get( i );
 
           RowMetaAndData table = new RowMetaAndData();
           table.addValue( new ValueMeta(
@@ -3024,6 +3024,37 @@ public class KettleDatabaseRepositoryCreationHelper {
       }
     }
     return statements;
+  }
+
+  private void getAndCopyStepTypeIds( String[] chunk, int amount, ObjectId[] ids, int idsPos ) throws KettleException {
+    ObjectId[] chunkIds = repository.stepDelegate.getStepTypeIDs( chunk, amount );
+    System.arraycopy( chunkIds, 0, ids, idsPos, amount );
+  }
+
+  private ObjectId[] loadPluginsIds( List<PluginInterface> plugins, boolean create ) throws KettleException {
+    ObjectId[] ids = new ObjectId[ plugins.size() ];
+    if ( create ) {
+      return ids;
+    }
+
+    final int CHUNK_SIZE = 10;
+    String[] tmp = new String[CHUNK_SIZE];
+
+    int internalInd = 0;
+    int externalInd = 0;
+    for ( PluginInterface sp : plugins ) {
+      if ( internalInd == CHUNK_SIZE ) {
+        getAndCopyStepTypeIds( tmp, CHUNK_SIZE, ids, externalInd );
+
+        internalInd = 0;
+        externalInd += CHUNK_SIZE;
+      }
+
+      tmp[ internalInd++ ] = sp.getIds()[ 0 ];
+    }
+    getAndCopyStepTypeIds( tmp, internalInd, ids, externalInd );
+
+    return ids;
   }
 
   /**
