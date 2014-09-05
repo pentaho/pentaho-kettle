@@ -106,7 +106,7 @@ public class RepositorySecurityUI {
       } else {
         explanation += ": ";
       }
-      String versionComment = Const.VERSION_COMMENT_EDIT_VERSION + " of [" + operationDescription + "]";
+      String versionComment = "Checked in";
 
       EnterStringDialog dialog = new EnterStringDialog( shell, versionComment, "Enter comment", explanation );
       dialog.setManditory( provider.isVersionCommentMandatory() );

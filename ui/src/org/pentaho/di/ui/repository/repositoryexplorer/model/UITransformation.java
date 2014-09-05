@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -31,6 +32,8 @@ import org.pentaho.di.repository.RepositoryElementMetaInterface;
 public class UITransformation extends UIRepositoryContent {
 
   private static final long serialVersionUID = 3826725834758429573L;
+  
+  private static final String REPOSITORY_PKG = "org.pentaho.di.ui.repository";
 
   public UITransformation() {
   }
@@ -41,14 +44,15 @@ public class UITransformation extends UIRepositoryContent {
 
   @Override
   public void setName( String name ) throws Exception {
-    super.setName( name );
     renameTransformation( this.getObjectId(), getRepositoryDirectory(), name );
+    super.setName( name );
     uiParent.fireCollectionChanged();
   }
 
   protected ObjectId renameTransformation( ObjectId objectId, RepositoryDirectory directory, String name )
     throws Exception {
-    return rep.renameTransformation( this.getObjectId(), getRepositoryDirectory(), name );
+    String comment = BaseMessages.getString( REPOSITORY_PKG, "Repository.Rename", super.getName(), name );
+    return rep.renameTransformation( this.getObjectId(), comment, getRepositoryDirectory(), name );
   }
 
   public void delete() throws Exception {
