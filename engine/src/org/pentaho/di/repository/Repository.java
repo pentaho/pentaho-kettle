@@ -217,7 +217,25 @@ public interface Repository {
    * @throws KettleException
    */
   public ObjectId renameTransformation( ObjectId id_transformation, RepositoryDirectoryInterface newDirectory,
-    String newName ) throws KettleException;
+      String newName ) throws KettleException;
+
+  /**
+   * Move / rename a transformation
+   *
+   * @param id_transformation
+   *          The ObjectId of the transformation to move
+   * @param versionComment
+   *          Version comment for rename
+   * @param newDirectory
+   *          The RepositoryDirectoryInterface that will be the new parent of the transformation (May be null if a move
+   *          is not desired)
+   * @param newName
+   *          The new name of the transformation (May be null if a rename is not desired)
+   * @return The ObjectId of the transformation that was moved
+   * @throws KettleException
+   */
+  public ObjectId renameTransformation( ObjectId id_transformation, String versionComment, RepositoryDirectoryInterface newDirectory,
+      String newName ) throws KettleException;
 
   /**
    * Delete everything related to a transformation from the repository. This does not included shared objects :
@@ -260,6 +278,23 @@ public interface Repository {
 
   public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException;
 
+  /**
+   * Move / rename a job
+   *
+   * @param id_job
+   *          The ObjectId of the job to move
+   * @param versionComment
+   *          Version comment for rename
+   * @param newDirectory
+   *          The RepositoryDirectoryInterface that will be the new parent of the job (May be null if a move is not
+   *          desired)
+   * @param newName
+   *          The new name of the job (May be null if a rename is not desired)
+   * @return The ObjectId of the job that was moved
+   * @throws KettleException
+   */
+  public ObjectId renameJob( ObjectId id_job, String versionComment, RepositoryDirectoryInterface newDirectory, String newName ) throws KettleException;
+  
   /**
    * Move / rename a job
    *
