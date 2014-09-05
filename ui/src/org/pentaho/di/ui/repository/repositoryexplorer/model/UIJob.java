@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -32,6 +33,8 @@ public class UIJob extends UIRepositoryContent {
 
   private static final long serialVersionUID = -7673439096628166542L;
 
+  private static final String REPOSITORY_PKG = "org.pentaho.di.ui.repository";
+  
   public UIJob() {
   }
 
@@ -41,13 +44,14 @@ public class UIJob extends UIRepositoryContent {
 
   @Override
   public void setName( String name ) throws Exception {
-    super.setName( name );
     renameJob( this.getObjectId(), getRepositoryDirectory(), name );
+    super.setName( name );
     uiParent.fireCollectionChanged();
   }
 
   protected ObjectId renameJob( ObjectId objectId, RepositoryDirectory directory, String name ) throws Exception {
-    return rep.renameJob( this.getObjectId(), getRepositoryDirectory(), name );
+    String comment = BaseMessages.getString( REPOSITORY_PKG, "Repository.RenameFromTo", super.getName(), name );
+    return rep.renameJob( this.getObjectId(), comment, getRepositoryDirectory(), name );
   }
 
   public void delete() throws Exception {
