@@ -2,17 +2,18 @@ package org.pentaho.di.monitor.step;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.monitor.base.BaseEvent;
+import org.pentaho.di.monitor.base.EventType;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
+import org.pentaho.platform.api.monitoring.snmp.SnmpTrapEvent;
 
 import java.io.Serializable;
 
+@SnmpTrapEvent( oid="1.1.1.1.3.1.2.5" )
 public class StepEvent extends BaseEvent {
 
   private static final long serialVersionUID = 3171013674678295934L;
 
-  public static enum EventType {BEFORE_INIT, AFTER_INIT, BEFORE_START, FINIHED}
-
-  private EventType eventType;
+  private EventType.Step eventType;
   private String name;
   private String xmlContent;
   private boolean clustered;
@@ -26,7 +27,7 @@ public class StepEvent extends BaseEvent {
   private long linesInput;
   private long linesOutput;
 
-  public StepEvent( EventType eventType ) {
+  public StepEvent( EventType.Step eventType ) {
     this.eventType = eventType;
   }
 
@@ -35,11 +36,11 @@ public class StepEvent extends BaseEvent {
     return getName();
   }
 
-  public EventType getEventType() {
+  public EventType.Step getEventType() {
     return eventType;
   }
 
-  public void setEventType( EventType eventType ) {
+  public void setEventType( EventType.Step eventType ) {
     this.eventType = eventType;
   }
 

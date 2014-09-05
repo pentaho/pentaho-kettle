@@ -25,6 +25,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.monitor.base.EventType;
 import org.pentaho.di.monitor.base.IKettleMonitoringEvent;
 import org.pentaho.di.monitor.carte.CarteEvent;
 import org.pentaho.di.monitor.carte.CarteShutdownMonitor;
@@ -194,7 +195,7 @@ public class MonitorToKettleEventTest {
 
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof CarteEvent );
-    Assert.assertTrue( CarteEvent.EventType.STARTUP == ( (CarteEvent) event ).getEventType() );
+    Assert.assertTrue( EventType.Carte.STARTUP == ( (CarteEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_HOST.equals( ( (CarteEvent) event ).getHostname() ) );
     Assert.assertTrue( DUMMY_PORT == ( (CarteEvent) event ).getPort() );
 
@@ -203,7 +204,7 @@ public class MonitorToKettleEventTest {
 
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof CarteEvent );
-    Assert.assertTrue( CarteEvent.EventType.SHUTDOWN == ( (CarteEvent) event ).getEventType() );
+    Assert.assertTrue( EventType.Carte.SHUTDOWN == ( (CarteEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_HOST.equals( ( (CarteEvent) event ).getHostname() ) );
     Assert.assertTrue( DUMMY_PORT == ( (CarteEvent) event ).getPort() );
   }
@@ -233,7 +234,7 @@ public class MonitorToKettleEventTest {
 
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof DatabaseEvent );
-    Assert.assertTrue( DatabaseEvent.EventType.CONNECTED == ( (DatabaseEvent) event ).getEventType() );
+    Assert.assertTrue( EventType.Database.CONNECTED == ( (DatabaseEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_CONNECTION_URL.equals( ( (DatabaseEvent) event ).getConnectionUrl() ) );
     Assert.assertTrue( DUMMY_DATABASE_NAME == ( (DatabaseEvent) event ).getDatabaseName() );
     Assert.assertTrue( DUMMY_DRIVER_CLASS == ( (DatabaseEvent) event ).getDriver() );
@@ -243,7 +244,7 @@ public class MonitorToKettleEventTest {
 
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof DatabaseEvent );
-    Assert.assertTrue( DatabaseEvent.EventType.DISCONNECTED == ( (DatabaseEvent) event ).getEventType() );
+    Assert.assertTrue( EventType.Database.DISCONNECTED == ( (DatabaseEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_CONNECTION_URL.equals( ( (DatabaseEvent) event ).getConnectionUrl() ) );
     Assert.assertTrue( DUMMY_DATABASE_NAME == ( (DatabaseEvent) event ).getDatabaseName() );
     Assert.assertTrue( DUMMY_DRIVER_CLASS == ( (DatabaseEvent) event ).getDriver() );
@@ -277,7 +278,7 @@ public class MonitorToKettleEventTest {
 
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof JobEvent );
-    Assert.assertTrue( JobEvent.EventType.STARTED == ( (JobEvent) event ).getEventType() );
+    Assert.assertTrue( EventType.Job.STARTED == ( (JobEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_EXECUTING_SERVER.equals( ( (JobEvent) event ).getExecutingServer() ) );
     Assert.assertTrue( DUMMY_EXECUTING_USER.equals( ( (JobEvent) event ).getExecutingUser() ) );
     Assert.assertTrue( DUMMY_JOB_NAME.equals( ( (JobEvent) event ).getName() ) );
@@ -288,7 +289,7 @@ public class MonitorToKettleEventTest {
 
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof JobEvent );
-    Assert.assertTrue( JobEvent.EventType.META_LOADED == ( (JobEvent) event ).getEventType() );
+    Assert.assertTrue( EventType.Job.META_LOADED == ( (JobEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_JOB_NAME.equals( ( (JobEvent) event ).getName() ) );
     Assert.assertTrue( DUMMY_JOB_XML_CONTENT.equals( ( (JobEvent) event ).getXml() ) );
 
@@ -297,7 +298,7 @@ public class MonitorToKettleEventTest {
 
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof JobEvent );
-    Assert.assertTrue( JobEvent.EventType.FINISHED == ( (JobEvent) event ).getEventType() );
+    Assert.assertTrue( EventType.Job.FINISHED == ( (JobEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_EXECUTING_SERVER.equals( ( (JobEvent) event ).getExecutingServer() ) );
     Assert.assertTrue( DUMMY_EXECUTING_USER.equals( ( (JobEvent) event ).getExecutingUser() ) );
     Assert.assertTrue( DUMMY_JOB_NAME.equals( ( (JobEvent) event ).getName() ) );
@@ -334,7 +335,7 @@ public class MonitorToKettleEventTest {
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof TransformationEvent );
     Assert.assertTrue(
-      TransformationEvent.EventType.BEGIN_PREPARE_EXECUTION == ( (TransformationEvent) event ).getEventType() );
+      EventType.Transformation.BEGIN_PREPARE_EXECUTION == ( (TransformationEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_EXECUTING_SERVER.equals( ( (TransformationEvent) event ).getExecutingServer() ) );
     Assert.assertTrue( DUMMY_EXECUTING_USER.equals( ( (TransformationEvent) event ).getExecutingUser() ) );
     Assert.assertTrue( DUMMY_TRANS_NAME.equals( ( (TransformationEvent) event ).getName() ) );
@@ -345,7 +346,7 @@ public class MonitorToKettleEventTest {
 
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof TransformationEvent );
-    Assert.assertTrue( TransformationEvent.EventType.STARTED == ( (TransformationEvent) event ).getEventType() );
+    Assert.assertTrue( EventType.Transformation.STARTED == ( (TransformationEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_EXECUTING_SERVER.equals( ( (TransformationEvent) event ).getExecutingServer() ) );
     Assert.assertTrue( DUMMY_EXECUTING_USER.equals( ( (TransformationEvent) event ).getExecutingUser() ) );
     Assert.assertTrue( DUMMY_TRANS_NAME.equals( ( (TransformationEvent) event ).getName() ) );
@@ -356,7 +357,7 @@ public class MonitorToKettleEventTest {
 
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof TransformationEvent );
-    Assert.assertTrue( TransformationEvent.EventType.FINISHED == ( (TransformationEvent) event ).getEventType() );
+    Assert.assertTrue( EventType.Transformation.FINISHED == ( (TransformationEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_EXECUTING_SERVER.equals( ( (TransformationEvent) event ).getExecutingServer() ) );
     Assert.assertTrue( DUMMY_EXECUTING_USER.equals( ( (TransformationEvent) event ).getExecutingUser() ) );
     Assert.assertTrue( DUMMY_TRANS_NAME.equals( ( (TransformationEvent) event ).getName() ) );
@@ -394,7 +395,7 @@ public class MonitorToKettleEventTest {
 
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof StepEvent );
-    Assert.assertTrue( StepEvent.EventType.BEFORE_INIT == ( (StepEvent) event ).getEventType() );
+    Assert.assertTrue( EventType.Step.BEFORE_INIT == ( (StepEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_STEP_NAME.equals( ( (StepEvent) event ).getName() ) );
     Assert.assertTrue( DUMMY_STEP_XML_CONTENT.equals( ( (StepEvent) event ).getXmlContent() ) );
     Assert.assertTrue( DUMMY_STEP_IS_CLUSTERED == ( (StepEvent) event ).isClustered() );
@@ -404,7 +405,7 @@ public class MonitorToKettleEventTest {
 
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof StepEvent );
-    Assert.assertTrue( StepEvent.EventType.AFTER_INIT == ( (StepEvent) event ).getEventType() );
+    Assert.assertTrue( EventType.Step.AFTER_INIT == ( (StepEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_STEP_NAME.equals( ( (StepEvent) event ).getName() ) );
     Assert.assertTrue( DUMMY_STEP_XML_CONTENT.equals( ( (StepEvent) event ).getXmlContent() ) );
     Assert.assertTrue( DUMMY_STEP_IS_CLUSTERED == ( (StepEvent) event ).isClustered() );
@@ -414,7 +415,7 @@ public class MonitorToKettleEventTest {
 
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof StepEvent );
-    Assert.assertTrue( StepEvent.EventType.BEFORE_START == ( (StepEvent) event ).getEventType() );
+    Assert.assertTrue( EventType.Step.BEFORE_START == ( (StepEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_STEP_NAME.equals( ( (StepEvent) event ).getName() ) );
     Assert.assertTrue( DUMMY_STEP_XML_CONTENT.equals( ( (StepEvent) event ).getXmlContent() ) );
     Assert.assertTrue( DUMMY_STEP_IS_CLUSTERED == ( (StepEvent) event ).isClustered() );
@@ -424,7 +425,7 @@ public class MonitorToKettleEventTest {
 
     Assert.assertNotNull( event );
     Assert.assertTrue( event instanceof StepEvent );
-    Assert.assertTrue( StepEvent.EventType.FINIHED == ( (StepEvent) event ).getEventType() );
+    Assert.assertTrue( EventType.Step.FINISHED == ( (StepEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_STEP_NAME.equals( ( (StepEvent) event ).getName() ) );
     Assert.assertTrue( DUMMY_STEP_XML_CONTENT.equals( ( (StepEvent) event ).getXmlContent() ) );
     Assert.assertTrue( DUMMY_STEP_IS_CLUSTERED == ( (StepEvent) event ).isClustered() );
