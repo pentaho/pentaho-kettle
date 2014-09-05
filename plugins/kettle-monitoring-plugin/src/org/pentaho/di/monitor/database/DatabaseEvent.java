@@ -20,19 +20,17 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.monitor.base.BaseEvent;
+import org.pentaho.di.monitor.base.EventType;
+import org.pentaho.platform.api.monitoring.snmp.SnmpTrapEvent;
 
 import java.io.Serializable;
 
+@SnmpTrapEvent( oid="1.1.1.1.3.1.2.2" )
 public class DatabaseEvent extends BaseEvent {
 
   private static final long serialVersionUID = 5995750699747792833L;
 
-  private static final String ID = "1.1.1.1.1.1.1.1"; // TODO replace with an actual oid
-
-  public static enum EventType {CONNECTED, DISCONNECTED}
-
-  private Serializable id = ID;
-  private EventType eventType;
+  private EventType.Database eventType;
   private String databaseName;
   private String driver;
   private String hostname;
@@ -43,24 +41,20 @@ public class DatabaseEvent extends BaseEvent {
   private String connectionUrl;
   private String username;
 
-  public DatabaseEvent( EventType eventType ) {
+  public DatabaseEvent( EventType.Database eventType ) {
     this.eventType = eventType;
   }
 
   @Override
   public Serializable getId() {
-    return id;
+    return getDriver() + "@" + getHostname() + ":" + getPort() + "/" + getDatabaseName();
   }
 
-  public void setId( Serializable id ) {
-    this.id = id;
-  }
-
-  public EventType getEventType() {
+  public EventType.Database getEventType() {
     return eventType;
   }
 
-  public void setEventType( EventType eventType ) {
+  public void setEventType( EventType.Database eventType ) {
     this.eventType = eventType;
   }
 

@@ -19,6 +19,7 @@ package org.pentaho.di.monitor.trans;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
+import org.pentaho.di.monitor.base.EventType;
 import org.pentaho.di.monitor.base.IKettleMonitoringEvent;
 import org.pentaho.di.monitor.MonitorAbstract;
 import org.pentaho.di.trans.Trans;
@@ -41,7 +42,7 @@ public class TransformationStartMonitor extends MonitorAbstract implements Exten
       return null;
     }
 
-    TransformationEvent event = new TransformationEvent( TransformationEvent.EventType.STARTED ).build( (Trans) o );
+    TransformationEvent event = new TransformationEvent( EventType.Transformation.STARTED ).build( (Trans) o );
 
     //logInfo( "[PDI Extension Point Plugin] Dispathing to Event Bus " + event.toString() );
 
