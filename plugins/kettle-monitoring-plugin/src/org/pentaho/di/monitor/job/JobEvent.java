@@ -20,17 +20,18 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.monitor.base.BaseEvent;
+import org.pentaho.di.monitor.base.EventType;
+import org.pentaho.platform.api.monitoring.snmp.SnmpTrapEvent;
 
 import java.io.Serializable;
 import java.util.Date;
 
+@SnmpTrapEvent( oid="1.1.1.1.3.1.2.3" )
 public class JobEvent extends BaseEvent {
 
   private static final long serialVersionUID = -2727216752120528962L;
 
-  public static enum EventType {META_LOADED, STARTED, BEFORE_JOB_ENTRY, BEGIN_JOB_PROCESSING, AFTER_JOB_ENTRY, FINISHED}
-
-  private EventType eventType;
+  private EventType.Job eventType;
   private String name;
   private String filename;
   private String filetype;
@@ -42,7 +43,7 @@ public class JobEvent extends BaseEvent {
   private long startTimeMillis;
   private long endTimeMillis;
 
-  public JobEvent( EventType eventType ) {
+  public JobEvent( EventType.Job eventType ) {
     this.eventType = eventType;
   }
 
@@ -51,11 +52,11 @@ public class JobEvent extends BaseEvent {
     return getName();
   }
 
-  public EventType getEventType() {
+  public EventType.Job getEventType() {
     return eventType;
   }
 
-  public void setEventType( EventType eventType ) {
+  public void setEventType( EventType.Job eventType ) {
     this.eventType = eventType;
   }
 
@@ -150,7 +151,7 @@ public class JobEvent extends BaseEvent {
     setStartTimeMillis( job.getCurrentDate() != null ? job.getCurrentDate().getTime() : 0 );
     setLogChannelId( job.getLogChannelId() );
 
-    if ( this.eventType == EventType.FINISHED ) {
+    if ( this.eventType == EventType.Job.FINISHED ) {
       setEndTimeMillis( new Date().getTime() );
     }
 
@@ -188,7 +189,7 @@ public class JobEvent extends BaseEvent {
     long completionTimeSecs =
       ( getStartTimeMillis() > 0 ? ( ( ( getEndTimeMillis() - getStartTimeMillis() ) / 1000 ) % 60 ) : 0 );
 
-    if ( this.eventType == EventType.FINISHED && completionTimeSecs > 0 ) {
+    if ( this.eventType == EventType.Job.FINISHED && completionTimeSecs > 0 ) {
       sb.append( ", executed in: " + completionTimeSecs + " seconds " );
     }
 

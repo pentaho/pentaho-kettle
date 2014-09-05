@@ -18,21 +18,22 @@ package org.pentaho.di.monitor.carte;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.monitor.base.BaseEvent;
+import org.pentaho.di.monitor.base.EventType;
 import org.pentaho.di.www.WebServer;
+import org.pentaho.platform.api.monitoring.snmp.SnmpTrapEvent;
 
 import java.io.Serializable;
 
+@SnmpTrapEvent( oid="1.1.1.1.3.1.2.1" )
 public class CarteEvent extends BaseEvent {
 
   private static final long serialVersionUID = -3589233687711692569L;
 
-  public static enum EventType {STARTUP, SHUTDOWN}
-
-  private EventType eventType;
+  private EventType.Carte eventType;
   private String hostname;
   private int port;
 
-  public CarteEvent( EventType eventType ) {
+  public CarteEvent( EventType.Carte eventType ) {
     this.eventType = eventType;
   }
 
@@ -41,11 +42,11 @@ public class CarteEvent extends BaseEvent {
     return getHostname() + ":" + getPort();
   }
 
-  public EventType getEventType() {
+  public EventType.Carte getEventType() {
     return eventType;
   }
 
-  public void setEventType( EventType eventType ) {
+  public void setEventType( EventType.Carte eventType ) {
     this.eventType = eventType;
   }
 
@@ -71,7 +72,7 @@ public class CarteEvent extends BaseEvent {
       return this;
     }
 
-    if( ws.getLog() != null ){
+    if ( ws.getLog() != null ) {
       setLogChannelId( ws.getLog().getLogChannelId() );
       setEventLogs( filterEventLogging( getLogChannelId() ) );
     }

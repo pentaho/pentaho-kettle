@@ -124,6 +124,29 @@ public abstract class BaseEvent implements IKettleMonitoringEvent {
   /**
    * event logs
    *
+   * @return event logs as a string in the following format
+   * <p/>
+   * "log-line"\n"log-line"\n"log-line"\n...
+   */
+  public String getEventLogsAsString(){
+
+    if( getEventLogs() != null ){
+
+      StringBuffer sb = new StringBuffer();
+
+      for( String log : getEventLogs() ){
+        sb.append( log ).append( "\n" );
+      }
+
+      return sb.toString();
+    }
+
+    return null;
+  }
+
+  /**
+   * event logs
+   *
    * @param eventLogs event logs
    */
   public void setEventLogs( String[] eventLogs ) {

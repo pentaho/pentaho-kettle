@@ -24,6 +24,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.monitor.base.EventType;
 import org.pentaho.di.monitor.job.JobEvent;
 import org.pentaho.di.monitor.trans.TransformationEvent;
 import org.pentaho.di.trans.Trans;
@@ -52,7 +53,7 @@ public class JobWithTransformationTest extends BaseEventsTriggeredTest {
     Assert.assertTrue( ( (Job) dummyMonitor.eventObject ).getJobMeta().getName().equals( SAMPLE_JOB_NAME ) );
 
     JobEvent e =
-      new JobEvent( JobEvent.EventType.STARTED ).build( ( (Job) dummyMonitor.eventObject ) );
+      new JobEvent( EventType.Job.STARTED ).build( ( (Job) dummyMonitor.eventObject ) );
 
     Assert.assertNotNull( e );
     Assert.assertTrue( SAMPLE_JOB_NAME.equals( e.getName() ) );
@@ -78,7 +79,7 @@ public class JobWithTransformationTest extends BaseEventsTriggeredTest {
     Assert.assertTrue( ( (Job) dummyMonitor.eventObject ).getJobMeta().getName().contains( SAMPLE_JOB_NAME ) );
 
     JobEvent e =
-      new JobEvent( JobEvent.EventType.STARTED ).build( ( (Job) dummyMonitor.eventObject ) );
+      new JobEvent( EventType.Job.STARTED ).build( ( (Job) dummyMonitor.eventObject ) );
 
     Assert.assertNotNull( e );
     Assert.assertTrue( SAMPLE_JOB_NAME.equals( e.getName() ) );
@@ -104,7 +105,7 @@ public class JobWithTransformationTest extends BaseEventsTriggeredTest {
     Assert.assertTrue( ( (TransMeta) dummyMonitor.eventObject ).getName().equals( SAMPLE_TRANS_NAME ) );
 
     TransformationEvent e =
-      new TransformationEvent( TransformationEvent.EventType.STARTED ).build( ( (TransMeta) dummyMonitor.eventObject ) );
+      new TransformationEvent( EventType.Transformation.STARTED ).build( ( (TransMeta) dummyMonitor.eventObject ) );
 
     Assert.assertNotNull( e );
     Assert.assertTrue( SAMPLE_TRANS_NAME.equals( e.getName() ) );
@@ -131,7 +132,7 @@ public class JobWithTransformationTest extends BaseEventsTriggeredTest {
     Assert.assertTrue( ( (Trans) dummyMonitor.eventObject ).getName().equals( SAMPLE_TRANS_NAME ) );
 
     TransformationEvent e =
-      new TransformationEvent( TransformationEvent.EventType.STARTED ).build( ( (Trans) dummyMonitor.eventObject ) );
+      new TransformationEvent( EventType.Transformation.STARTED ).build( ( (Trans) dummyMonitor.eventObject ) );
 
     Assert.assertNotNull( e );
     Assert.assertTrue( SAMPLE_TRANS_NAME.equals( e.getName() ) );
