@@ -18,6 +18,7 @@ package org.pentaho.di.monitor.trans;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.monitor.OID;
 import org.pentaho.di.monitor.base.BaseEvent;
 import org.pentaho.di.monitor.base.EventType;
 import org.pentaho.di.trans.Trans;
@@ -28,7 +29,7 @@ import org.pentaho.platform.api.monitoring.snmp.SnmpVariable;
 import java.io.Serializable;
 import java.util.Date;
 
-@SnmpTrapEvent( oid="1.1.1.1.3.1.2.4" )
+@SnmpTrapEvent( oid=OID.TRANSFORMATION )
 public class TransformationEvent extends BaseEvent {
 
   private static final long serialVersionUID = -7141225896990220465L;
@@ -215,7 +216,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return Tranformation name
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.1", type = SnmpVariable.TYPE.STRING )
+  @SnmpVariable( oid=OID.TRANSFORMATION_NAME, type = SnmpVariable.TYPE.STRING )
   public String getName() {
     return name;
   }
@@ -234,7 +235,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return transformation filename
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.2", type = SnmpVariable.TYPE.STRING )
+  @SnmpVariable( oid=OID.TRANSFORMATION_FILENAME, type = SnmpVariable.TYPE.STRING )
   public String getFilename() {
     return filename;
   }
@@ -253,7 +254,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return transformation directory
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.3", type = SnmpVariable.TYPE.STRING )
+  @SnmpVariable( oid=OID.TRANSFORMATION_DIRECTORY, type = SnmpVariable.TYPE.STRING )
   public String getDirectory() {
     return directory;
   }
@@ -326,7 +327,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return executing Server (when executed on a server)
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.8", type = SnmpVariable.TYPE.STRING )
+  @SnmpVariable( oid=OID.TRANSFORMATION_EXEC_SERVER, type = SnmpVariable.TYPE.STRING )
   public String getExecutingServer() {
     return executingServer;
   }
@@ -345,7 +346,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return executing User
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.9", type = SnmpVariable.TYPE.STRING )
+  @SnmpVariable( oid=OID.TRANSFORMATION_EXEC_USER, type = SnmpVariable.TYPE.STRING )
   public String getExecutingUser() {
     return executingUser;
   }
@@ -418,7 +419,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return repository ID (when repository)
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.4", type = SnmpVariable.TYPE.STRING )
+  @SnmpVariable( oid=OID.TRANSFORMATION_REPO_ID, type = SnmpVariable.TYPE.STRING )
   public String getRepositoryId() {
     return repositoryId;
   }
@@ -437,7 +438,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return repository Name (when repository)
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.5", type = SnmpVariable.TYPE.STRING )
+  @SnmpVariable( oid=OID.TRANSFORMATION_REPO_NAME, type = SnmpVariable.TYPE.STRING )
   public String getRepositoryName() {
     return repositoryName;
   }
@@ -456,7 +457,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return parent Job Name (when part of a job)
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.6", type = SnmpVariable.TYPE.STRING )
+  @SnmpVariable( oid=OID.TRANSFORMATION_PARENT_JOB, type = SnmpVariable.TYPE.STRING )
   public String getParentJobName() {
     return parentJobName;
   }
@@ -475,7 +476,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return parent Transformation Name (when this is a sub-transformation)
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.7", type = SnmpVariable.TYPE.STRING )
+  @SnmpVariable( oid=OID.TRANSFORMATION_PARENT_TRANS, type = SnmpVariable.TYPE.STRING )
   public String getParentTransformationName() {
     return parentTransformationName;
   }
@@ -494,7 +495,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return batch ID (when database logging is activated)
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.10", type = SnmpVariable.TYPE.INTEGER )
+  @SnmpVariable( oid=OID.TRANSFORMATION_BATCH_ID, type = SnmpVariable.TYPE.INTEGER )
   public long getBatchId() {
     return batchId;
   }
@@ -513,7 +514,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return parent Batch ID (when database logging is activated and a sub-transformation)
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.11", type = SnmpVariable.TYPE.INTEGER )
+  @SnmpVariable( oid=OID.TRANSFORMATION_PARENT_BATCH_ID, type = SnmpVariable.TYPE.INTEGER )
   public long getParentBatchId() {
     return parentBatchId;
   }
@@ -532,7 +533,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return parent Channel ID
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.13", type = SnmpVariable.TYPE.STRING )
+  @SnmpVariable( oid=OID.TRANSFORMATION_PARENT_LOG_CHANNEL_ID, type = SnmpVariable.TYPE.STRING )
   public String getParentLogChannelId() {
     return parentLogChannelId;
   }
@@ -551,7 +552,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return status
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.14", type = SnmpVariable.TYPE.INTEGER )
+  @SnmpVariable( oid=OID.TRANSFORMATION_STATUS, type = SnmpVariable.TYPE.INTEGER )
   public int getStatus() {
     return status;
   }
@@ -570,7 +571,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return error count
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.15", type = SnmpVariable.TYPE.INTEGER )
+  @SnmpVariable( oid=OID.TRANSFORMATION_ERROR_COUNT, type = SnmpVariable.TYPE.INTEGER )
   public int getErrors() {
     return errors;
   }
@@ -589,7 +590,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return runtime
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.16", type = SnmpVariable.TYPE.INTEGER )
+  @SnmpVariable( oid=OID.TRANSFORMATION_RUNTIME, type = SnmpVariable.TYPE.INTEGER )
   public long getRuntimeInMillis() {
     return runtimeInMillis;
   }
@@ -608,7 +609,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return lines read
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.17", type = SnmpVariable.TYPE.INTEGER )
+  @SnmpVariable( oid=OID.TRANSFORMATION_LINES_READ, type = SnmpVariable.TYPE.INTEGER )
   public long getLinesRead() {
     return linesRead;
   }
@@ -627,7 +628,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return lines written
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.18", type = SnmpVariable.TYPE.INTEGER )
+  @SnmpVariable( oid=OID.TRANSFORMATION_LINES_WRITTEN, type = SnmpVariable.TYPE.INTEGER )
   public long getLinesWritten() {
     return linesWritten;
   }
@@ -646,7 +647,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return lines updated
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.19", type = SnmpVariable.TYPE.INTEGER )
+  @SnmpVariable( oid=OID.TRANSFORMATION_LINES_UPDATED, type = SnmpVariable.TYPE.INTEGER )
   public long getLinesUpdated() {
     return linesUpdated;
   }
@@ -665,7 +666,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return lines rejected
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.20", type = SnmpVariable.TYPE.INTEGER )
+  @SnmpVariable( oid=OID.TRANSFORMATION_LINES_REJECTED, type = SnmpVariable.TYPE.INTEGER )
   public long getLinesRejected() {
     return linesRejected;
   }
@@ -684,7 +685,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return lines Input
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.21", type = SnmpVariable.TYPE.INTEGER )
+  @SnmpVariable( oid=OID.TRANSFORMATION_LINES_INPUT, type = SnmpVariable.TYPE.INTEGER )
   public long getLinesInput() {
     return linesInput;
   }
@@ -703,7 +704,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return lines output
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.22", type = SnmpVariable.TYPE.INTEGER )
+  @SnmpVariable( oid=OID.TRANSFORMATION_LINES_OUTPUT, type = SnmpVariable.TYPE.INTEGER )
   public long getLinesOutput() {
     return linesOutput;
   }
@@ -723,7 +724,7 @@ public class TransformationEvent extends BaseEvent {
    * @return log channel ID
    */
   @Override
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.12", type = SnmpVariable.TYPE.STRING )
+  @SnmpVariable( oid=OID.TRANSFORMATION_LOG_CHANNEL_ID, type = SnmpVariable.TYPE.STRING )
   public String getLogChannelId() {
     return super.getLogChannelId();
   }
@@ -733,7 +734,7 @@ public class TransformationEvent extends BaseEvent {
    *
    * @return event log
    */
-  @SnmpVariable( oid="1.1.1.1.3.1.2.4.23", type = SnmpVariable.TYPE.STRING )
+  @SnmpVariable( oid=OID.TRANSFORMATION_LOG, type = SnmpVariable.TYPE.STRING )
   public String getLog() {
     return log;
   }

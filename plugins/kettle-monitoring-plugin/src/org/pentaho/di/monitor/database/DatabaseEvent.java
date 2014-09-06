@@ -19,13 +19,15 @@ package org.pentaho.di.monitor.database;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.monitor.OID;
 import org.pentaho.di.monitor.base.BaseEvent;
 import org.pentaho.di.monitor.base.EventType;
 import org.pentaho.platform.api.monitoring.snmp.SnmpTrapEvent;
+import org.pentaho.platform.api.monitoring.snmp.SnmpVariable;
 
 import java.io.Serializable;
 
-@SnmpTrapEvent( oid="1.1.1.1.3.1.2.2" )
+@SnmpTrapEvent( oid=OID.DATABASE )
 public class DatabaseEvent extends BaseEvent {
 
   private static final long serialVersionUID = 5995750699747792833L;
@@ -58,6 +60,7 @@ public class DatabaseEvent extends BaseEvent {
     this.eventType = eventType;
   }
 
+  @SnmpVariable( oid=OID.DATABASE_NAME, type = SnmpVariable.TYPE.STRING )
   public String getDatabaseName() {
     return databaseName;
   }

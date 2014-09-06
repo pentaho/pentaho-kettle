@@ -1,14 +1,16 @@
 package org.pentaho.di.monitor.step;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.monitor.OID;
 import org.pentaho.di.monitor.base.BaseEvent;
 import org.pentaho.di.monitor.base.EventType;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.platform.api.monitoring.snmp.SnmpTrapEvent;
+import org.pentaho.platform.api.monitoring.snmp.SnmpVariable;
 
 import java.io.Serializable;
 
-@SnmpTrapEvent( oid="1.1.1.1.3.1.2.5" )
+@SnmpTrapEvent( oid=OID.STEP )
 public class StepEvent extends BaseEvent {
 
   private static final long serialVersionUID = 3171013674678295934L;
@@ -44,6 +46,7 @@ public class StepEvent extends BaseEvent {
     this.eventType = eventType;
   }
 
+  @SnmpVariable( oid=OID.STEP_NAME, type = SnmpVariable.TYPE.STRING )
   public String getName() {
     return name;
   }

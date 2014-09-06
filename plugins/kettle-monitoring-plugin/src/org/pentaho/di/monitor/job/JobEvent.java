@@ -19,14 +19,16 @@ package org.pentaho.di.monitor.job;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.monitor.OID;
 import org.pentaho.di.monitor.base.BaseEvent;
 import org.pentaho.di.monitor.base.EventType;
 import org.pentaho.platform.api.monitoring.snmp.SnmpTrapEvent;
+import org.pentaho.platform.api.monitoring.snmp.SnmpVariable;
 
 import java.io.Serializable;
 import java.util.Date;
 
-@SnmpTrapEvent( oid="1.1.1.1.3.1.2.3" )
+@SnmpTrapEvent( oid= OID.JOB )
 public class JobEvent extends BaseEvent {
 
   private static final long serialVersionUID = -2727216752120528962L;
@@ -60,6 +62,7 @@ public class JobEvent extends BaseEvent {
     this.eventType = eventType;
   }
 
+  @SnmpVariable( oid=OID.JOB_NAME, type = SnmpVariable.TYPE.STRING )
   public String getName() {
     return name;
   }
