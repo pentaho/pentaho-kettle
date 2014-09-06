@@ -17,14 +17,16 @@
 package org.pentaho.di.monitor.carte;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.monitor.OID;
 import org.pentaho.di.monitor.base.BaseEvent;
 import org.pentaho.di.monitor.base.EventType;
 import org.pentaho.di.www.WebServer;
 import org.pentaho.platform.api.monitoring.snmp.SnmpTrapEvent;
+import org.pentaho.platform.api.monitoring.snmp.SnmpVariable;
 
 import java.io.Serializable;
 
-@SnmpTrapEvent( oid="1.1.1.1.3.1.2.1" )
+@SnmpTrapEvent( oid=OID.CARTE )
 public class CarteEvent extends BaseEvent {
 
   private static final long serialVersionUID = -3589233687711692569L;
@@ -50,6 +52,7 @@ public class CarteEvent extends BaseEvent {
     this.eventType = eventType;
   }
 
+  @SnmpVariable( oid=OID.CARTE_HOSTNAME, type = SnmpVariable.TYPE.STRING )
   public String getHostname() {
     return hostname;
   }
@@ -58,6 +61,7 @@ public class CarteEvent extends BaseEvent {
     this.hostname = hostname;
   }
 
+  @SnmpVariable( oid=OID.CARTE_PORT, type = SnmpVariable.TYPE.STRING )
   public int getPort() {
     return port;
   }
