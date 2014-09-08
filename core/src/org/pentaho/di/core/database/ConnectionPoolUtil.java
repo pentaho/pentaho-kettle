@@ -48,7 +48,7 @@ public class ConnectionPoolUtil {
 
   private static boolean isPoolRegistered( DatabaseMeta dbMeta, String partitionId ) throws KettleDatabaseException {
     try {
-      String name = dbMeta.getName() + Const.NVL( partitionId, "" );
+      String name = buildPoolName( dbMeta, partitionId );
       return Const.indexOfString( name, pd.getPoolNames() ) >= 0;
     } catch ( Exception e ) {
       throw new KettleDatabaseException( BaseMessages.getString( PKG,
@@ -118,12 +118,13 @@ public class ConnectionPoolUtil {
       }
     }
 
-    pd.registerPool( databaseMeta.getName(), gpool );
+    pd.registerPool( buildPoolName( databaseMeta, partitionId ), gpool );
 
     log.logBasic( BaseMessages.getString( PKG, "Database.CreatedConnectionPool", databaseMeta.getName() ) );
   }
 
-  public static Connection getConnection( LogChannelInterface log, DatabaseMeta dbMeta, String partitionId ) throws Exception {
+  public static Connection getConnection( LogChannelInterface log, DatabaseMeta dbMeta,
+      String partitionId ) throws Exception {
     return getConnection( log, dbMeta, partitionId, dbMeta.getInitialPoolSize(), dbMeta.getMaximumPoolSize() );
   }
 
@@ -133,8 +134,13 @@ public class ConnectionPoolUtil {
       createPool( log, dbMeta, partitionId, initialSize, maximumSize );
     }
 
-    return DriverManager.getConnection( "jdbc:apache:commons:dbcp:" + dbMeta.getName() );
+    return DriverManager.getConnection( "jdbc:apache:commons:dbcp:" + buildPoolName( dbMeta, partitionId ) );
+  }
 
+  protected static String buildPoolName( DatabaseMeta dbMeta, String partitionId ) {
+    return dbMeta.getName() + Const.NVL( dbMeta.getDatabaseName(), "" )
+        + Const.NVL( dbMeta.getHostname(),  ""  ) + Const.NVL( dbMeta.getDatabasePortNumberString(),  ""  )
+        + Const.NVL( partitionId, "" );
   }
 
 }
