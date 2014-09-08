@@ -50,7 +50,7 @@ public class UIJob extends UIRepositoryContent {
   }
 
   protected ObjectId renameJob( ObjectId objectId, RepositoryDirectory directory, String name ) throws Exception {
-    String comment = BaseMessages.getString( REPOSITORY_PKG, "Repository.RenameFromTo", super.getName(), name );
+    String comment = BaseMessages.getString( REPOSITORY_PKG, "Repository.Rename", super.getName(), name );
     return rep.renameJob( this.getObjectId(), comment, getRepositoryDirectory(), name );
   }
 
