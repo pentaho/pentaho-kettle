@@ -9,9 +9,6 @@
     <root>engine/src</root>
     <root>ui/src</root>
 
-    <!--- <root>dbdialog/src</root>
-    <root>jdbc/src</root> -->
-
     <root>plugins/kettle-gpload-plugin/src</root>
     <root>plugins/star-modeler/src</root>
     <root>plugins/market/src</root>
@@ -23,8 +20,7 @@
   </source-directories>
   
   <scan-phrases>
-    <scan-phrase>Messages.getString(</scan-phrase>
-    <scan-phrase>BaseMessages.getString(PKG,</scan-phrase>
+    <scan-phrase>BaseMessages.getString( PKG,</scan-phrase>
   </scan-phrases>
   
   <locale-list>
@@ -64,6 +60,7 @@
     <filename>DataHandler.java</filename>
     <filename>FragmentHandler.java</filename>
     <filename>Launch.java</filename>
+    <filename>HelpUtils.java</filename>
     
   </files-to-avoid>
   
@@ -97,4 +94,3 @@
   </xml-folders-to-scan>
   
 </translator-config>
-
