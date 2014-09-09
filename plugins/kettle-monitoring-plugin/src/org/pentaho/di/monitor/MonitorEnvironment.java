@@ -23,11 +23,6 @@ import org.pentaho.di.core.extension.ExtensionPointPluginType;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.monitor.carte.CarteSubscriber;
-import org.pentaho.di.monitor.database.DatabaseSubscriber;
-import org.pentaho.di.monitor.job.JobSubscriber;
-import org.pentaho.di.monitor.step.StepSubscriber;
-import org.pentaho.di.monitor.trans.TransformationSubscriber;
 import org.pentaho.platform.api.monitoring.IMonitoringService;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.slf4j.Logger;
@@ -57,10 +52,6 @@ public class MonitorEnvironment {
     initializeEnvironment();
 
     logger.info( "Initializing MonitorEnvironment... is EventBus ready ? " + isEventBusReady() );
-
-    if ( isEventBusReady() ) {
-      registerEventHandlers();
-    }
   }
 
   public static MonitorEnvironment getInstance() throws KettleException {
@@ -93,31 +84,6 @@ public class MonitorEnvironment {
       throw new KettleException( e );
 
     }
-  }
-
-  /**
-   * if eventbus is ready, proceed with registering all subscribers
-   *
-   * @throws KettleException
-   */
-  public void registerEventHandlers() throws KettleException {
-
-    logger.info( "registering CarteSubscriber to EventBus" );
-    getEventBus().register( new CarteSubscriber() );
-
-    logger.info( "registering DatabaseSubscriber to EventBus" );
-    getEventBus().register( new DatabaseSubscriber() );
-
-    logger.info( "registering JobSubscriber to EventBus" );
-    getEventBus().register( new JobSubscriber() );
-
-    logger.info( "registering TransformationSubscriber to EventBus" );
-    getEventBus().register( new TransformationSubscriber() );
-
-    logger.info( "registering StepSubscriber to EventBus" );
-    getEventBus().register( new StepSubscriber() );
-
-    //TODO register all kettle subscribers
   }
 
   public String getPluginBaseDir() {
