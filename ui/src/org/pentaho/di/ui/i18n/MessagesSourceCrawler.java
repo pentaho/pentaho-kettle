@@ -339,8 +339,8 @@ public class MessagesSourceCrawler {
       boolean extraLine;
       do {
         extraLine = false;
-        for ( String scanPhrase : scanPhrases ) {
-          if ( line2.endsWith( scanPhrase ) ) {
+        for ( String joinPhrase : new String[] { "BaseMessages.getString(", "BaseMessages.getString( PKG," } ) {
+          if ( line2.endsWith( joinPhrase ) ) {
             extraLine = true;
             break;
           }

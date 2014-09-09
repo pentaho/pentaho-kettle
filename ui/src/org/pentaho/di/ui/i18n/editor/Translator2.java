@@ -396,7 +396,7 @@ public class Translator2 {
     addGrid();
     addListeners();
 
-    sashform.setWeights( new int[] { 20, 80 } );
+    sashform.setWeights( new int[] { 40, 60 } );
     sashform.setVisible( true );
 
     shell.pack();
@@ -486,7 +486,7 @@ public class Translator2 {
     fdLocale.left = new FormAttachment( 0, 0 );
     fdLocale.right = new FormAttachment( 100, 0 );
     fdLocale.top = new FormAttachment( 0, 0 );
-    fdLocale.bottom = new FormAttachment( 20, 0 );
+    fdLocale.bottom = new FormAttachment( 10, 0 );
     wLocale.setLayoutData( fdLocale );
 
     ColumnInfo[] colinfo =
@@ -496,10 +496,7 @@ public class Translator2 {
         new ColumnInfo(
           BaseMessages.getString( PKG, "i18nDialog.Packagename" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), };
 
-    wPackages =
-      new TableView(
-        new Variables(), composite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, true, null,
-        props );
+    wPackages = new TableView( new Variables(), composite, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, true, null, props );
     FormData fdPackages = new FormData();
     fdPackages.left = new FormAttachment( 0, 0 );
     fdPackages.right = new FormAttachment( 100, 0 );
@@ -1122,6 +1119,7 @@ public class Translator2 {
       } else {
         wPackages.setRowNums();
         wPackages.optWidth( true );
+        wPackages.getTable().getColumn( 1 ).setWidth( 100 );
       }
     }
 
