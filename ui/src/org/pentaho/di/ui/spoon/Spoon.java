@@ -8096,7 +8096,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public boolean isDefinedSchemaExist( String[] schemaNames ) {
     // Before we start, check if there are any partition schemas defined...
-    if ( (schemaNames != null) || (schemaNames.length == 0) ) {
+    if ( (schemaNames == null) || (schemaNames.length == 0) ) {
       MessageBox box = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
       box.setText( "Create a partition schema" );
       box.setMessage( "You first need to create one or more partition schemas in "
