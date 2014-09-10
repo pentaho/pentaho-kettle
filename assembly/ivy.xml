@@ -59,6 +59,9 @@
     <dependency org="pentaho" name="pdi-teradata-tpt-plugin-package" rev="${dependency.pdi-teradata-tpt-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
       <artifact name="pdi-teradata-tpt-plugin-package" type="zip"/>
     </dependency>
+    <dependency org="pentaho-kettle" name="pdi-s3-csv-input-step-plugin" rev="${dependency.pdi-s3-csv-input-step-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
+      <artifact name="pdi-s3-csv-input-step-plugin" type="zip"/>
+    </dependency>
     
     <!--  Pentaho reporting dependencies -->
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions" rev="${dependency.pentaho-reporting.revision}" changing="true">
