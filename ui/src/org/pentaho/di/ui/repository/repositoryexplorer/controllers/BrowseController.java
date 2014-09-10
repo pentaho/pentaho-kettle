@@ -481,7 +481,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     } catch ( Exception e ) {
       messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
       messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-      messageBox.setMessage( BaseMessages.getString( PKG, e.getLocalizedMessage() ) );
+      messageBox.setMessage( e.getLocalizedMessage() );
       messageBox.open();
     }
   }
