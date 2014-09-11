@@ -92,7 +92,7 @@ public interface RepositorySecurityProvider extends IRepositoryService {
   public List<String> getAllRoles() throws KettleException;
 
   public String[] getUserLogins() throws KettleException;
-  
+
   /**
    * Determines whether versioning should be enabled in the UI.  If set to false, the repository
    * may still support versioning, but the versioning will not be apparent in the UI.

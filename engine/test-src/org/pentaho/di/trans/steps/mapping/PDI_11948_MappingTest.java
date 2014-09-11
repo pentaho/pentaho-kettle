@@ -24,7 +24,7 @@ import org.pentaho.di.trans.steps.PDI_11948_StepsTestsParent;
  * @see org.pentaho.di.trans.steps.singlethreader.SingleThreader
  */
 public class PDI_11948_MappingTest extends PDI_11948_StepsTestsParent<Mapping, MappingData> {
-  
+
   @Override
   @Before
   public void init() throws Exception {
@@ -32,7 +32,7 @@ public class PDI_11948_MappingTest extends PDI_11948_StepsTestsParent<Mapping, M
     stepMock = mock( Mapping.class );
     stepDataMock = mock( MappingData.class );
   }
-    
+
   @Test
   public void testMappingStep() throws KettleException {
 

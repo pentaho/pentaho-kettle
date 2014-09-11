@@ -278,7 +278,7 @@ public class MemoryRepository extends AbstractRepository {
     // TODO Auto-generated method stub
     return null;
   }
-  
+
   @Override
   public ObjectId renameTransformation( ObjectId id_transformation, String versionComment,
     RepositoryDirectoryInterface newDirectory, String newName ) throws KettleException {
@@ -316,7 +316,7 @@ public class MemoryRepository extends AbstractRepository {
     // TODO Auto-generated method stub
     return null;
   }
-  
+
   @Override
   public ObjectId renameJob( ObjectId id_job, String versionComment, RepositoryDirectoryInterface newDirectory,
     String newName ) throws KettleException {

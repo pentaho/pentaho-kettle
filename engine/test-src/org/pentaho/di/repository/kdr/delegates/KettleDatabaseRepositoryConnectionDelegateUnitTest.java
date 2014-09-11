@@ -18,7 +18,7 @@ public class KettleDatabaseRepositoryConnectionDelegateUnitTest {
     final String lookup = "lookup";
     final String expectedTemplate = format( "select %s from %s where %s in ", id, table, lookup ) + "(%s)";
 
-    assertTrue( format( expectedTemplate, "?" ).equalsIgnoreCase( createIdsWithValuesQuery(table, id, lookup, 1) ) );
+    assertTrue( format( expectedTemplate, "?" ).equalsIgnoreCase( createIdsWithValuesQuery(table, id, lookup, 1 ) ) );
     assertTrue( format( expectedTemplate, "?,?" ).equalsIgnoreCase( createIdsWithValuesQuery( table, id, lookup, 2 ) ) );
   }
 }

@@ -44,7 +44,7 @@ public class JsonOutputMetaInjection implements StepMetaInjectionInterface {
       JSON_BLOC_NAME( ValueMetaInterface.TYPE_STRING, "The name of the Json Bloc" ),
       NR_ROWS_IN_BLOC( ValueMetaInterface.TYPE_STRING, "The number of rows in a bloc" ),
       OUTPUT_VALUE( ValueMetaInterface.TYPE_STRING, "The field to contain the output JSON" ),
-      COMPATIBILITY_MODE( ValueMetaInterface.TYPE_STRING, "Run in Compatibility Mode? (Y/N)"),
+      COMPATIBILITY_MODE( ValueMetaInterface.TYPE_STRING, "Run in Compatibility Mode? (Y/N)" ),
 
       FILE_NAME( ValueMetaInterface.TYPE_STRING, "The output file name" ),
       APPEND( ValueMetaInterface.TYPE_STRING, "Append if the file exists? (Y/N)" ),
@@ -86,13 +86,13 @@ public class JsonOutputMetaInjection implements StepMetaInjectionInterface {
     }
 
     public static Entry findEntry( String key ) {
-      return Entry.valueOf(key);
+      return Entry.valueOf(key );
     }
   }
 
   private JsonOutputMeta meta;
 
-  public JsonOutputMetaInjection(JsonOutputMeta meta) {
+  public JsonOutputMetaInjection( JsonOutputMeta meta ) {
     this.meta = meta;
   }
 
@@ -141,7 +141,7 @@ public class JsonOutputMetaInjection implements StepMetaInjectionInterface {
     // Parse the fields, inject into the meta class..
     //
     for ( StepInjectionMetaEntry lookFields : all ) {
-      Entry fieldsEntry = Entry.findEntry(lookFields.getKey());
+      Entry fieldsEntry = Entry.findEntry(lookFields.getKey() );
       if ( fieldsEntry == null ) {
         continue;
       }
@@ -150,7 +150,7 @@ public class JsonOutputMetaInjection implements StepMetaInjectionInterface {
       switch ( fieldsEntry ) {
         case JSON_FIELDS:
           for ( StepInjectionMetaEntry lookField : lookFields.getDetails() ) {
-            Entry fieldEntry = Entry.findEntry(lookField.getKey());
+            Entry fieldEntry = Entry.findEntry(lookField.getKey() );
             if ( fieldEntry == Entry.JSON_FIELD ) {
 
               String jsonFieldname = null;
@@ -158,7 +158,7 @@ public class JsonOutputMetaInjection implements StepMetaInjectionInterface {
 
               List<StepInjectionMetaEntry> entries = lookField.getDetails();
               for ( StepInjectionMetaEntry entry : entries ) {
-                Entry metaEntry = Entry.findEntry(entry.getKey());
+                Entry metaEntry = Entry.findEntry(entry.getKey() );
                 if ( metaEntry != null ) {
                   String value = (String) entry.getValue();
                   switch ( metaEntry ) {
@@ -244,7 +244,7 @@ public class JsonOutputMetaInjection implements StepMetaInjectionInterface {
         jof[i] = field;
         i++;
       }
-      meta.setOutputFields(jof);
+      meta.setOutputFields(jof );
     }
   }
 
