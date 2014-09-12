@@ -46,6 +46,7 @@ import org.pentaho.di.core.plugins.PartitionerPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.ModPartitioner;
 import org.pentaho.di.trans.TransMeta;
@@ -121,17 +122,6 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
     fdFieldname.top = new FormAttachment( 0, margin );
     fdFieldname.right = new FormAttachment( 100, 0 );
     wFieldname.setLayoutData( fdFieldname );
-    wFieldname.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        if ( wFieldname.getSelectionIndex() < 0 ) {
-          wOK.setEnabled( false );
-        } else {
-          wOK.setEnabled( true );
-        }
-      }
-    } );
-
     try {
       RowMetaInterface inputFields = transMeta.getPrevStepFields( stepMeta );
       if ( inputFields != null ) {
@@ -187,9 +177,14 @@ public class ModPartitionerDialog extends BaseStepDialog implements StepDialogIn
     partitioningMeta.hasChanged( changed );
 
     setSize();
-    if ( wFieldname.getSelectionIndex() < 0 ) {
-      wOK.setEnabled( false );
-    }
+    wOK.setEnabled( !StringUtil.isEmpty( wFieldname.getText() ) );
+    ModifyListener modifyListener = new ModifyListener() {
+      @Override public void modifyText( ModifyEvent modifyEvent ) {
+        wOK.setEnabled( !StringUtil.isEmpty( wFieldname.getText() ) );
+      }
+    };
+    wFieldname.addModifyListener( modifyListener );
+
     shell.open();
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
