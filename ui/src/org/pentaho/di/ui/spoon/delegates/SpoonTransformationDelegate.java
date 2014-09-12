@@ -980,9 +980,13 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       } catch ( Exception e ) {
         // Something happened posting the transformation to the cluster.
         // We need to make sure to de-allocate ports and so on for the next try...
-        //
-        Trans.cleanupCluster( log, transSplitter );
-
+        // We don't want to suppress original exception here.
+        try {
+          Trans.cleanupCluster( log, transSplitter );
+        } catch ( Exception ee ) {
+          throw new Exception( "Error executing transformation and error to clenaup cluster", e );
+        }
+        // we still have execution error but cleanup ok here...
         throw e;
       }
 
@@ -1009,15 +1013,15 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
           Result result = Trans.getClusteredTransformationResult( log, transSplitter, null );
           log.logBasic( "-----------------------------------------------------" );
           log.logBasic( "Got result back from clustered transformation:" );
-          log.logBasic( transMeta.toString(), "-----------------------------------------------------" );
-          log.logBasic( transMeta.toString(), "Errors : " + result.getNrErrors() );
-          log.logBasic( transMeta.toString(), "Input : " + result.getNrLinesInput() );
-          log.logBasic( transMeta.toString(), "Output : " + result.getNrLinesOutput() );
-          log.logBasic( transMeta.toString(), "Updated : " + result.getNrLinesUpdated() );
-          log.logBasic( transMeta.toString(), "Read : " + result.getNrLinesRead() );
-          log.logBasic( transMeta.toString(), "Written : " + result.getNrLinesWritten() );
-          log.logBasic( transMeta.toString(), "Rejected : " + result.getNrLinesRejected() );
-          log.logBasic( transMeta.toString(), "-----------------------------------------------------" );
+          log.logBasic( transMeta.toString() + "-----------------------------------------------------" );
+          log.logBasic( transMeta.toString() + " Errors : " + result.getNrErrors() );
+          log.logBasic( transMeta.toString() + " Input : " + result.getNrLinesInput() );
+          log.logBasic( transMeta.toString() + " Output : " + result.getNrLinesOutput() );
+          log.logBasic( transMeta.toString() + " Updated : " + result.getNrLinesUpdated() );
+          log.logBasic( transMeta.toString() + " Read : " + result.getNrLinesRead() );
+          log.logBasic( transMeta.toString() + " Written : " + result.getNrLinesWritten() );
+          log.logBasic( transMeta.toString() + " Rejected : " + result.getNrLinesRejected() );
+          log.logBasic( transMeta.toString() + "-----------------------------------------------------" );
         }
       } ).start();
 
