@@ -109,7 +109,9 @@ public class PartitionSettings {
   }
 
   public void updateSchema( PartitionSchema schema ) {
-    stepMeta.getStepPartitioningMeta().setPartitionSchema( schema );
+    if ( schema != null && schema.getName() != null ) {
+      stepMeta.getStepPartitioningMeta().setPartitionSchema( schema );
+    }
   }
 
   public void rollback( StepMeta before ) throws KettlePluginException {
