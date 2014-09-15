@@ -458,6 +458,18 @@ public abstract class KettleDatabaseRepositoryBase extends AbstractRepository {
   public static final String JOB_ATTRIBUTE_PARAM_DESCRIPTION = "PARAM_DESC";
   public static final String JOB_ATTRIBUTE_LOG_SIZE_LIMIT = "LOG_SIZE_LIMIT";
 
+  //IDX_JOB_ATTRIBUTE_LOOKUP PDI-10237
+  public static final String IDX_JOB_ATTRIBUTE_LOOKUP = "IDX_JATT";
+  public static final String IDX_TRANS_ATTRIBUTE_LOOKUP = "IDX_TATT";
+  public static final String IDX_R_DATABASE_ATTRIBUTE = "IDX_RDAT";
+  public static final String IDX_R_DIRECTORY = "IDX_RDIR";
+  public static final String IDX_R_STEP_ATTRIBUTE = "IDX_RSAT";
+  public static final String R_STEP_DATABASE_LU1 = "IDX_RSD1";
+  public static final String R_STEP_DATABASE_LU2 = "IDX_RSD2";
+  public static final String R_JOBENTRY_DATABASE_LU1 = "IDX_RJD1";
+  public static final String R_JOBENTRY_DATABASE_LU2 = "IDX_RJD2";
+  public static final String R_JOBENTRY_ATTRIBUTE = "IDX_RJEA";
+
   protected KettleDatabaseRepositoryMeta repositoryMeta;
 
   protected RepositoryDirectory importBaseDirectory;
