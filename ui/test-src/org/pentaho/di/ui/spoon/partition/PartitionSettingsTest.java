@@ -1,21 +1,19 @@
 package org.pentaho.di.ui.spoon.partition;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.PartitionerPluginType;
-import org.pentaho.di.core.plugins.Plugin;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.trans.Partitioner;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,6 +27,7 @@ public class PartitionSettingsTest {
   public static final String PARTITION_METHOD = "ModPartitioner";
   public static final String PARTITION_METHOD_DESCRIPTION = "Remainder of division";
   private static final String PARTITION_METHOD_DESCRIPTION_WRONG = "Remainder of division unrecognized";
+  public static final String PARTITION_SCHEMA_NAME = "State";
   private TransMeta transMeta;
   private StepMeta stepMeta;
   private PartitionSettings partitionSetings;
@@ -39,14 +38,15 @@ public class PartitionSettingsTest {
 
   @Before
   public void setUp() throws KettleException {
+    PartitionSchema ps1 = createPartitionSchema( PARTITION_SCHEMA_NAME, Arrays.asList( "P1", "P2" ) );
+    PartitionSchema ps2 = createPartitionSchema( "Test", Arrays.asList( "S1", "S2", "S3" ) );
+
     stepMeta = createStepMeta( "MemoryGroupBy" );
     stepMeta.setStepPartitioningMeta( createStepParititonMeta() );
     stepMeta.getStepPartitioningMeta()
-      .setPartitionSchema( createPartitionSchema( "State", Arrays.asList( "P1", "P2" ) ) );
+      .setPartitionSchema( ps1 );
 
     transMeta = createTransMeta();
-    PartitionSchema ps1 = createPartitionSchema( "State", Arrays.asList( "P1", "P2" ) );
-    PartitionSchema ps2 = createPartitionSchema( "Test", Arrays.asList( "S1", "S2", "S3" ) );
     transMeta.setPartitionSchemas( Arrays.asList( ps2, ps1 ) );
 
     KettleEnvironment.init();
@@ -144,6 +144,30 @@ public class PartitionSettingsTest {
     assertThat( StepPartitioningMeta.methodCodes[ StepPartitioningMeta.PARTITIONING_METHOD_NONE ], equalTo( method ) );
   }
 
+  @Test
+  public void updateSchema(){
+    PartitionSchema sc = createPartitionSchema( "AnotherState", Arrays.asList( "ID_1", "ID_2" ) );
+    partitionSetings = new PartitionSettings( exactSize, transMeta, stepMeta );
+    partitionSetings.updateSchema( sc );
+    assertThat( stepMeta.getStepPartitioningMeta().getPartitionSchema(), equalTo( sc ) );
+  }
+
+  @Test
+  public void updateSchemaNullSchemaName(){
+    PartitionSchema sc = createPartitionSchema( null, new ArrayList<String>(  ) );
+    partitionSetings = new PartitionSettings( exactSize, transMeta, stepMeta );
+    partitionSetings.updateSchema( sc );
+    assertThat( stepMeta.getStepPartitioningMeta().getPartitionSchema().getName(), equalTo(PARTITION_SCHEMA_NAME));
+  }
+
+  @Test
+  public void updateSchemaEmptySchemaName(){
+    PartitionSchema sc = createPartitionSchema( "", Arrays.asList( "ID_1", "ID_2" ) );
+    partitionSetings = new PartitionSettings( exactSize, transMeta, stepMeta );
+    partitionSetings.updateSchema( sc );
+    assertThat( stepMeta.getStepPartitioningMeta().getPartitionSchema(), equalTo( sc ) );
+  }
+
   private TransMeta createTransMeta() {
     TransMeta transMeta = new TransMeta();
     return transMeta;
@@ -162,10 +186,6 @@ public class PartitionSettingsTest {
 
 
     return stepPartitionMeta;
-  }
-
-  private Partitioner ctreatePatitioner() {
-    return null;
   }
 
   private PartitionSchema createPartitionSchema( String name, List<String> partitionIDs ) {
