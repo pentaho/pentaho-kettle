@@ -42,6 +42,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationE
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlave;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISlaves;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
@@ -60,6 +61,8 @@ public class SlavesController extends LazilyInitializedController implements IUI
   private Shell shell = null;
 
   private UISlaves slaveList = new UISlaves();
+
+  private MainController mainController;
 
   public SlavesController() {
   }
@@ -81,8 +84,10 @@ public class SlavesController extends LazilyInitializedController implements IUI
       bf.createBinding( slaveList, "children", slavesTable, "elements" ).fireSourceChanged();
       bf.createBinding( slavesTable, "selectedItems", this, "enableButtons" );
     } catch ( Exception e ) {
-      // convert to runtime exception so it bubbles up through the UI
-      throw new RuntimeException( e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        // convert to runtime exception so it bubbles up through the UI
+        throw new RuntimeException( e );
+      }
     }
   }
 
@@ -95,9 +100,16 @@ public class SlavesController extends LazilyInitializedController implements IUI
     bf = new SwtBindingFactory();
     bf.setDocument( this.getXulDomContainer().getDocumentRoot() );
 
+    try {
+      mainController = (MainController) this.getXulDomContainer().getEventHandler( "mainController" );
+    } catch ( XulException e ) {
+      return false;
+    }
+
     if ( bf != null ) {
       createBindings();
     }
+
     return true;
   }
 
@@ -115,8 +127,10 @@ public class SlavesController extends LazilyInitializedController implements IUI
               tmpList.add( new UISlave( slave ) );
             }
           } catch ( KettleException e ) {
-            // convert to runtime exception so it bubbles up through the UI
-            throw new RuntimeException( e );
+            if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+              // convert to runtime exception so it bubbles up through the UI
+              throw new RuntimeException( e );
+            }
           }
 
         }
@@ -159,9 +173,11 @@ public class SlavesController extends LazilyInitializedController implements IUI
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Create.Title" ), BaseMessages
-          .getString( PKG, "RepositoryExplorerDialog.Slave.Create.UnexpectedError.Message" ), e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Create.Title" ), BaseMessages
+            .getString( PKG, "RepositoryExplorerDialog.Slave.Create.UnexpectedError.Message" ), e );
+      }
     } finally {
       refreshSlaves();
     }
@@ -207,10 +223,12 @@ public class SlavesController extends LazilyInitializedController implements IUI
         mb.open();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Edit.Title" ), BaseMessages
-          .getString( PKG, "RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Message" )
-          + slaveServerName + "]", e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Edit.Title" ), BaseMessages
+            .getString( PKG, "RepositoryExplorerDialog.Slave.Edit.UnexpectedError.Message" )
+            + slaveServerName + "]", e );
+      }
     } finally {
       refreshSlaves();
     }
@@ -246,10 +264,12 @@ public class SlavesController extends LazilyInitializedController implements IUI
         mb.open();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Delete.Title" ), BaseMessages
-          .getString( PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Message" )
-          + slaveServerName + "]", e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Slave.Delete.Title" ), BaseMessages
+            .getString( PKG, "RepositoryExplorerDialog.Slave.Delete.UnexpectedError.Message" )
+            + slaveServerName + "]", e );
+      }
     } finally {
       refreshSlaves();
     }
