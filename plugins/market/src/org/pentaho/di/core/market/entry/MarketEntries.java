@@ -30,6 +30,8 @@ import org.pentaho.di.core.market.place.Marketplace;
 import org.pentaho.di.core.market.place.Marketplaces;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -44,11 +46,13 @@ public class MarketEntries extends ArrayList<MarketEntry> {
 
   public MarketEntries() {
     Marketplaces marketplaces = new Marketplaces();
+    VariableSpace defaultVariableSpace = new Variables();
+    defaultVariableSpace.initializeVariablesFrom( null );
     for ( Marketplace marketplace : marketplaces ) {
       try {
         // Read the content from the given URL...
         //
-        Document doc = XMLHandler.loadXMLFile( KettleVFS.getInputStream( marketplace.getEntriesUrl() ) );
+        Document doc = XMLHandler.loadXMLFile( KettleVFS.getInputStream( marketplace.getEntriesUrl(), defaultVariableSpace ) );
         Node marketNode = XMLHandler.getSubNode( doc, "market" );
         List<Node> entryNodes = XMLHandler.getNodes( marketNode, MarketEntry.XML_TAG );
         for ( Node entryNode : entryNodes ) {
