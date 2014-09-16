@@ -343,7 +343,7 @@ public class SelectObjectDialog extends Dialog {
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title" ),
         BaseMessages.getString( PKG, "SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message" ), e );
-    }
+    } // catch()
 
     getData();
     wTree.setFocus();

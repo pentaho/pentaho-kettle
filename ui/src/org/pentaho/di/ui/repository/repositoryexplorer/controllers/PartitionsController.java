@@ -45,6 +45,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartition;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIPartitions;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
@@ -63,6 +64,8 @@ public class PartitionsController extends LazilyInitializedController implements
   private XulTree partitionsTable = null;
 
   private UIPartitions partitionList = new UIPartitions();
+
+  private MainController mainController;
 
   private VariableSpace variableSpace = Variables.getADefaultVariableSpace();
 
@@ -83,14 +86,22 @@ public class PartitionsController extends LazilyInitializedController implements
       bf.createBinding( partitionList, "children", partitionsTable, "elements" ).fireSourceChanged();
       bf.createBinding( partitionsTable, "selectedItems", this, "enableButtons" );
     } catch ( Exception e ) {
-      // convert to runtime exception so it bubbles up through the UI
-      throw new RuntimeException( e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        // convert to runtime exception so it bubbles up through the UI
+        throw new RuntimeException( e );
+      }
     }
   }
 
   protected boolean doLazyInit() {
     // Load the SWT Shell from the explorer dialog
     shell = ( (SwtDialog) document.getElementById( "repository-explorer-dialog" ) ).getShell();
+
+    try {
+      mainController = (MainController) this.getXulDomContainer().getEventHandler( "mainController" );
+    } catch ( XulException e ) {
+      return false;
+    }
 
     enableButtons( true, false, false );
     bf = new SwtBindingFactory();
@@ -99,6 +110,7 @@ public class PartitionsController extends LazilyInitializedController implements
     if ( bf != null ) {
       createBindings();
     }
+
     return true;
   }
 
@@ -148,10 +160,12 @@ public class PartitionsController extends LazilyInitializedController implements
         mb.open();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Edit.Title" ), BaseMessages
-          .getString( PKG, "RepositoryExplorerDialog.Partition.Edit.UnexpectedError.Message" )
-          + partitionSchemaName + "]", e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        new ErrorDialog(
+          shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Edit.Title" ), BaseMessages
+            .getString( PKG, "RepositoryExplorerDialog.Partition.Edit.UnexpectedError.Message" )
+            + partitionSchemaName + "]", e );
+      }
     } finally {
       refreshPartitions();
     }
@@ -187,9 +201,11 @@ public class PartitionsController extends LazilyInitializedController implements
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title" ),
-        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Message" ), e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Title" ),
+          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Create.UnexpectedError.Message" ), e );
+      }
     } finally {
       refreshPartitions();
     }
@@ -226,11 +242,13 @@ public class PartitionsController extends LazilyInitializedController implements
         mb.open();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog(
-        shell,
-        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Delete.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Partition.Delete.UnexpectedError.Message" )
-          + partitionSchemaName + "]", e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        new ErrorDialog(
+          shell,
+          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Partition.Delete.Title" ), BaseMessages.getString(
+            PKG, "RepositoryExplorerDialog.Partition.Delete.UnexpectedError.Message" )
+            + partitionSchemaName + "]", e );
+      }
     } finally {
       refreshPartitions();
     }
@@ -250,8 +268,10 @@ public class PartitionsController extends LazilyInitializedController implements
               tmpList.add( new UIPartition( partition ) );
             }
           } catch ( KettleException e ) {
-            // convert to runtime exception so it bubbles up through the UI
-            throw new RuntimeException( e );
+            if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+              // convert to runtime exception so it bubbles up through the UI
+              throw new RuntimeException( e );
+            }
           }
 
         }
