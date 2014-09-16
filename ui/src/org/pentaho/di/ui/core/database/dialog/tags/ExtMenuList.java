@@ -66,6 +66,7 @@ public class ExtMenuList extends JfaceCMenuList {
 
     } else {
       variableSpace = new DatabaseMeta();
+      style = SWT.BORDER;
     }
 
     extCombo = new ComboVar( variableSpace, (Composite) parent.getManagedObject(), style );
