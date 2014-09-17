@@ -1,7 +1,8 @@
 package org.pentaho.di.job.entries.trans;
 
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,7 +14,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -31,24 +31,32 @@ public class JobEntryTransTest {
   private final String JOB_ENTRY_FILE_NAME = "JobEntryFileName";
   private final String JOB_ENTRY_FILE_DIRECTORY = "JobEntryFileDirectory";
   private final String JOB_ENTRY_DESCRIPTION = "JobEntryDescription";
-  private Node entrynode;
 
   //prepare xml for use
-  @Before
-  public void before() throws ParserConfigurationException, SAXException, IOException {
+  public Node getEntryNode( boolean includeTransname ) throws ParserConfigurationException, SAXException, IOException {
     JobEntryTrans jobEntryTrans = new JobEntryTrans( JOB_ENTRY_TRANS_NAME );
     jobEntryTrans.setDescription( JOB_ENTRY_DESCRIPTION );
     jobEntryTrans.setFileName( JOB_ENTRY_FILE_NAME );
     jobEntryTrans.setDirectory( JOB_ENTRY_FILE_DIRECTORY );
+    if ( includeTransname ) {
+      jobEntryTrans.setTransname( JOB_ENTRY_FILE_NAME );
+    }
     String string = "<job>" + jobEntryTrans.getXML() + "</job>";
+    System.out.println( string );
     InputStream stream = new ByteArrayInputStream( string.getBytes( StandardCharsets.UTF_8 ) );
     DocumentBuilder db;
     Document doc;
     db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
     doc = db.parse( stream );
-    entrynode = doc;
+    Node entryNode = doc.getFirstChild();
+    return entryNode;
   }
 
+  private JobEntryTrans getJobEntryTrans() {
+    JobEntryTrans jobEntryTrans = new JobEntryTrans( "testChooseSpecMethodByRepository" );
+    return jobEntryTrans;
+  }
+  
   /**
    * BACKLOG-179 - Exporting/Importing Jobs breaks Transformation specification when using "Specify by reference"
    * 
@@ -64,22 +72,28 @@ public class JobEntryTransTest {
    */
   @Test
   @SuppressWarnings( "unchecked" )
-  public void testChooseSpecMethodByRepositoryConnectionStatus() throws KettleXMLException {
-    JobEntryTrans jobEntryTrans = new JobEntryTrans( "testChooseSpecMethodByRepository" );
+  public void testChooseSpecMethodByRepositoryConnectionStatus() throws KettleXMLException, ParserConfigurationException, SAXException, IOException {
     List<DatabaseMeta> databases = mock( List.class );
     List<SlaveServer> slaveServers = mock( List.class );
     IMetaStore metaStore = mock( IMetaStore.class );
-
+    
     Repository rep = mock( Repository.class );
     when( rep.isConnected() ).thenReturn( true );
 
     //load when kettle is connected to repository
-    jobEntryTrans.loadXML( entrynode, databases, slaveServers, rep, metaStore );
+    JobEntryTrans jobEntryTrans = getJobEntryTrans();    
+    jobEntryTrans.loadXML( getEntryNode( true ), databases, slaveServers, rep, metaStore );
     assertEquals( "If we connect to repository then we use rep_name method",
         ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, jobEntryTrans.getSpecificationMethod() );
 
     //reload when kettle is not connected to repository
-    jobEntryTrans.loadXML( entrynode, databases, slaveServers, null, metaStore );
+    // still should be REPOSITORY_BY_NAME because we have a transname (from previous instance)
+    jobEntryTrans.loadXML( getEntryNode( true ), databases, slaveServers, null, metaStore );
+    assertEquals( "If we connect to repository then we use rep_name method",
+        ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, jobEntryTrans.getSpecificationMethod() );
+    
+    jobEntryTrans = getJobEntryTrans();
+    jobEntryTrans.loadXML( getEntryNode( false ), databases, slaveServers, null, metaStore );
     assertEquals( "If we connect to repository then we use rep_name method",
         ObjectLocationSpecificationMethod.FILENAME, jobEntryTrans.getSpecificationMethod() );
   }
