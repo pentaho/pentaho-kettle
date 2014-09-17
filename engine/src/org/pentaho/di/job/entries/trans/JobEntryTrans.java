@@ -324,17 +324,20 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                        Repository rep, IMetaStore metaStore ) throws KettleXMLException {
     try {
       super.loadXML( entrynode, databases, slaveServers );
-      //if we connect to repository we should use method repository by name 
-      if ( rep != null && rep.isConnected() ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-      } else {
-        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-      }
+
       String transId = XMLHandler.getTagValue( entrynode, "trans_object_id" );
       transObjectId = Const.isEmpty( transId ) ? null : new StringObjectId( transId );
       filename = XMLHandler.getTagValue( entrynode, "filename" );
       transname = XMLHandler.getTagValue( entrynode, "transname" );
       directory = XMLHandler.getTagValue( entrynode, "directory" );
+
+      //if we connect to repository we should use method repository by name
+      checkObjectLocationSpecificationMethod();
+
+      if ( rep != null && rep.isConnected() && !Const.isEmpty( transname ) ) {
+        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+      }
+
       argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "arg_from_previous" ) );
       paramsFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "params_from_previous" ) );
       execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "exec_per_row" ) );
