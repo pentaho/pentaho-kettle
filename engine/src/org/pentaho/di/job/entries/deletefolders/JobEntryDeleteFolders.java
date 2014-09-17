@@ -105,7 +105,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "arg_from_previous", argFromPrevious ) );
@@ -191,7 +191,6 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
 
   public Result execute( Result result, int nr ) throws KettleException {
     List<RowMetaAndData> rows = result.getRows();
-    RowMetaAndData resultRow = null;
 
     result.setNrErrors( 1 );
     result.setResult( false );
@@ -218,7 +217,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
           result.setNrLinesDeleted( NrSuccess );
           return result;
         }
-        resultRow = rows.get( iteration );
+        RowMetaAndData resultRow = rows.get( iteration );
         String args_previous = resultRow.getString( 0, null );
         if ( !Const.isEmpty( args_previous ) ) {
           if ( deleteFolder( args_previous ) ) {
@@ -343,7 +342,6 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
       if ( filefolder != null ) {
         try {
           filefolder.close();
-          filefolder = null;
         } catch ( IOException ex ) {
           // Ignore
         }
@@ -375,7 +373,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     Repository repository, IMetaStore metaStore ) {
     boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
 
-    if ( res == false ) {
+    if ( !res ) {
       return;
     }
 

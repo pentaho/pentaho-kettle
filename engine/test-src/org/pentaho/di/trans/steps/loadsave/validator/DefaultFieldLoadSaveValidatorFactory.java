@@ -19,8 +19,9 @@ public class DefaultFieldLoadSaveValidatorFactory implements FieldLoadSaveValida
     this.typeMap.put( String.class.getCanonicalName(), new StringLoadSaveValidator() );
     this.typeMap.put( boolean.class.getCanonicalName(), new BooleanLoadSaveValidator() );
     this.typeMap.put( Boolean.class.getCanonicalName(), new BooleanLoadSaveValidator() );
+    this.typeMap.put( int.class.getCanonicalName(), new IntLoadSaveValidator() );
     registerValidator( getName( List.class, String.class ), new ListLoadSaveValidator<String>(
-        new StringLoadSaveValidator() ) {
+      new StringLoadSaveValidator() ) {
     } );
     registerValidator( String[].class.getCanonicalName(), new ArrayLoadSaveValidator<String>(
         new StringLoadSaveValidator() ) );
