@@ -375,23 +375,24 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
   public String getXML() {
     StringBuffer retval = new StringBuffer();
 
-    retval.append( "    " + XMLHandler.addTagValue( "dynamicCommandField", dynamicCommandField ) );
-    retval.append( "    " + XMLHandler.addTagValue( "command", command ) );
-    retval.append( "    " + XMLHandler.addTagValue( "commandfieldname", commandfieldname ) );
-    retval.append( "    " + XMLHandler.addTagValue( "port", port ) );
-    retval.append( "    " + XMLHandler.addTagValue( "servername", serverName ) );
-    retval.append( "    " + XMLHandler.addTagValue( "userName", userName ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "dynamicCommandField", dynamicCommandField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "command", command ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "commandfieldname", commandfieldname ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "port", port ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "servername", serverName ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "userName", userName ) );
     retval.append( "    " ).append(
       XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
-    retval.append( "    " + XMLHandler.addTagValue( "usePrivateKey", usePrivateKey ) );
-    retval.append( "    " + XMLHandler.addTagValue( "keyFileName", keyFileName ) );
-    retval.append( "    " + XMLHandler.addTagValue( "passPhrase", passPhrase ) );
-    retval.append( "    " + XMLHandler.addTagValue( "stdOutFieldName", stdOutFieldName ) );
-    retval.append( "    " + XMLHandler.addTagValue( "stdErrFieldName", stdErrFieldName ) );
-    retval.append( "    " + XMLHandler.addTagValue( "timeOut", timeOut ) );
-    retval.append( "    " + XMLHandler.addTagValue( "proxyHost", proxyHost ) );
-    retval.append( "    " + XMLHandler.addTagValue( "proxyPort", proxyPort ) );
-    retval.append( "    " + XMLHandler.addTagValue( "proxyUsername", proxyUsername ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "usePrivateKey", usePrivateKey ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "keyFileName", keyFileName ) );
+    retval.append( "    " ).append(
+      XMLHandler.addTagValue( "passPhrase", Encr.encryptPasswordIfNotUsingVariables( passPhrase ) ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "stdOutFieldName", stdOutFieldName ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "stdErrFieldName", stdErrFieldName ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "timeOut", timeOut ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "proxyHost", proxyHost ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "proxyPort", proxyPort ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "proxyUsername", proxyUsername ) );
     retval.append( "    " ).append(
       XMLHandler.addTagValue( "proxyPassword", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
     return retval.toString();
@@ -409,7 +410,8 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
 
       usePrivateKey = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "usePrivateKey" ) );
       keyFileName = XMLHandler.getTagValue( stepnode, "keyFileName" );
-      passPhrase = XMLHandler.getTagValue( stepnode, "passPhrase" );
+      passPhrase =
+        Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "passPhrase" ) );
       stdOutFieldName = XMLHandler.getTagValue( stepnode, "stdOutFieldName" );
       stdErrFieldName = XMLHandler.getTagValue( stepnode, "stdErrFieldName" );
       timeOut = XMLHandler.getTagValue( stepnode, "timeOut" );
@@ -437,7 +439,8 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
 
       usePrivateKey = rep.getStepAttributeBoolean( id_step, "usePrivateKey" );
       keyFileName = rep.getStepAttributeString( id_step, "keyFileName" );
-      passPhrase = rep.getStepAttributeString( id_step, "passPhrase" );
+      passPhrase =
+        Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "passPhrase" ) );
       stdOutFieldName = rep.getStepAttributeString( id_step, "stdOutFieldName" );
       stdErrFieldName = rep.getStepAttributeString( id_step, "stdErrFieldName" );
       timeOut = rep.getStepAttributeString( id_step, "timeOut" );
@@ -466,7 +469,8 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface {
 
       rep.saveStepAttribute( id_transformation, id_step, "usePrivateKey", usePrivateKey );
       rep.saveStepAttribute( id_transformation, id_step, "keyFileName", keyFileName );
-      rep.saveStepAttribute( id_transformation, id_step, "passPhrase", passPhrase );
+      rep.saveStepAttribute( id_transformation, id_step, "passPhrase", Encr
+        .encryptPasswordIfNotUsingVariables( passPhrase ) );
       rep.saveStepAttribute( id_transformation, id_step, "stdOutFieldName", stdOutFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "stdErrFieldName", stdErrFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "timeOut", timeOut );
