@@ -319,10 +319,15 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
       String method = XMLHandler.getTagValue( entrynode, "specification_method" );
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
+
       String jobId = XMLHandler.getTagValue( entrynode, "job_object_id" );
       jobObjectId = Const.isEmpty( jobId ) ? null : new StringObjectId( jobId );
       filename = XMLHandler.getTagValue( entrynode, "filename" );
       jobname = XMLHandler.getTagValue( entrynode, "jobname" );
+
+      if ( rep != null && rep.isConnected() && !Const.isEmpty( jobname ) ) {
+        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+      }
 
       // Backward compatibility check for object specification
       //
