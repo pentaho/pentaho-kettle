@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.job.entries.trans;
+package org.pentaho.di.job.entries.job;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -47,26 +47,27 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-public class JobEntryTransTest {
-  private final String JOB_ENTRY_TRANS_NAME = "JobEntryTransName";
+public class JobEntryJobTest {
+
+  private final String JOB_ENTRY_JOB_NAME = "JobEntryJobName";
   private final String JOB_ENTRY_FILE_NAME = "JobEntryFileName";
   private final String JOB_ENTRY_FILE_DIRECTORY = "JobEntryFileDirectory";
   private final String JOB_ENTRY_DESCRIPTION = "JobEntryDescription";
 
   //prepare xml for use
-  public Node getEntryNode( boolean includeTransname, ObjectLocationSpecificationMethod method ) 
+  public Node getEntryNode( boolean includeJobname, ObjectLocationSpecificationMethod method ) 
       throws ParserConfigurationException, SAXException, IOException {
-    JobEntryTrans jobEntryTrans = getJobEntryTrans();
-    jobEntryTrans.setDescription( JOB_ENTRY_DESCRIPTION );
-    jobEntryTrans.setFileName( JOB_ENTRY_FILE_NAME );
-    jobEntryTrans.setDirectory( JOB_ENTRY_FILE_DIRECTORY );
-    if ( includeTransname ) {
-      jobEntryTrans.setTransname( JOB_ENTRY_FILE_NAME );
+    JobEntryJob jobEntryJob = getJobEntryJob();
+    jobEntryJob.setDescription( JOB_ENTRY_DESCRIPTION );
+    jobEntryJob.setFileName( JOB_ENTRY_FILE_NAME );
+    jobEntryJob.setDirectory( JOB_ENTRY_FILE_DIRECTORY );
+    if ( includeJobname ) {
+      jobEntryJob.setJobName( JOB_ENTRY_FILE_NAME );
     }
     if ( method != null ) {
-      jobEntryTrans.setSpecificationMethod( method );
+      jobEntryJob.setSpecificationMethod( method );
     }
-    String string = "<job>" + jobEntryTrans.getXML() + "</job>";
+    String string = "<job>" + jobEntryJob.getXML() + "</job>";
     InputStream stream = new ByteArrayInputStream( string.getBytes( StandardCharsets.UTF_8 ) );
     DocumentBuilder db;
     Document doc;
@@ -76,9 +77,9 @@ public class JobEntryTransTest {
     return entryNode;
   }
 
-  private JobEntryTrans getJobEntryTrans() {
-    JobEntryTrans jobEntryTrans = new JobEntryTrans( JOB_ENTRY_TRANS_NAME );
-    return jobEntryTrans;
+  private JobEntryJob getJobEntryJob() {
+    JobEntryJob jobEntryJob = new JobEntryJob( JOB_ENTRY_JOB_NAME );
+    return jobEntryJob;
   }
   
   @SuppressWarnings( "unchecked" )
@@ -88,10 +89,10 @@ public class JobEntryTransTest {
     List<DatabaseMeta> databases = mock( List.class );
     List<SlaveServer> slaveServers = mock( List.class );
     IMetaStore metaStore = mock( IMetaStore.class );
-    JobEntryTrans jobEntryTrans = getJobEntryTrans();
-    jobEntryTrans.loadXML( getEntryNode( includeJobName, method ), databases, slaveServers, rep, metaStore );
+    JobEntryJob jobEntryJob = getJobEntryJob();
+    jobEntryJob.loadXML( getEntryNode( includeJobName, method ), databases, slaveServers, rep, metaStore );
     assertEquals( "If we connect to repository then we use rep_name method",
-        expectedMethod, jobEntryTrans.getSpecificationMethod() );
+        expectedMethod, jobEntryJob.getSpecificationMethod() );
   }
   
   /**
