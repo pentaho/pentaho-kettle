@@ -204,6 +204,7 @@ import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.pkg.JarfileGenerator;
+import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
@@ -472,7 +473,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private static final String FILE_DOCUMENT_MAP = Const
       .safeAppendDirectory( BasePropertyHandler.getProperty( "documentationDirBase", "docs/" ),
           BaseMessages.getString( PKG, "Spoon.Title.STRING_DOCUMENT_MAP" ) );
-		  
+
   // "docs/English/getting_started_with_instaview.pdf";
   private static final String FILE_DOCUMENT_INSTAVIEW = Const
       .safeAppendDirectory( BasePropertyHandler.getProperty( "documentationDirBase", "docs/" ),
@@ -1676,7 +1677,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       log.logError( Const.getStackTracker( e1 ) );
     }
   }
-  
+
   public static final String getInstaviewURL() {
     String strURL = null;
     try {
@@ -3923,7 +3924,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( rep != null ) {
       final RepositoryExplorerCallback cb = new RepositoryExplorerCallback() {
 
-        public boolean open( UIRepositoryContent element, String revision ) {
+        @Override
+        public boolean open( UIRepositoryContent element, String revision ) throws Exception {
           String objName = element.getName();
           if ( objName != null ) {
             RepositoryObjectType objectType = element.getRepositoryElementType();
@@ -3935,6 +3937,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             }
           }
           return false; // do not close explorer
+        }
+
+        @Override
+        public boolean error( String message ) throws Exception {
+          closeRepository();
+          return true;
         }
       };
 
@@ -3957,7 +3965,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                   RepositoryExplorer explorer =
                     new RepositoryExplorer( shell, rep, cb, Variables.getADefaultVariableSpace() );
                   box.stop();
-                  explorer.show();
+
+                  if ( explorer.isInitialized() ) {
+                    explorer.show();
+                  } else {
+                    shell.getDisplay().asyncExec( new Runnable() {
+                      public void run() {
+                        new ErrorDialog( shell,
+                            BaseMessages.getString( PKG, "Spoon.Error" ),
+                            BaseMessages.getString( PKG, "Spoon.RepExplorer.Lost.Error" ), null );
+                      }
+                    } );
+                    closeRepository();
+                  }
+
                   explorer.dispose();
 
                 } catch ( final Throwable e ) {
@@ -3984,7 +4005,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  private void loadObjectFromRepository( ObjectId objectId, RepositoryObjectType objectType, String revision ) {
+  private void loadObjectFromRepository(
+      ObjectId objectId, RepositoryObjectType objectType, String revision ) throws Exception {
     // Try to open the selected transformation.
     if ( objectType.equals( RepositoryObjectType.TRANSFORMATION ) ) {
       try {
@@ -4005,8 +4027,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         refreshTree();
         refreshGraph();
       } catch ( Exception e ) {
-        new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
-          Spoon.class, "Spoon.Dialog.ErrorOpeningById.Message", objectId ), e.getMessage(), e );
+        if ( KettleRepositoryLostException.lookupStackStrace( e ) == null ) {
+          new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
+            Spoon.class, "Spoon.Dialog.ErrorOpeningById.Message", objectId ), e.getMessage(), e );
+        } else {
+          throw e;
+        }
       }
     } else if ( objectType.equals( RepositoryObjectType.JOB ) ) {
       try {
@@ -4023,14 +4049,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         refreshTree();
         refreshGraph();
       } catch ( Exception e ) {
-        new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
-          Spoon.class, "Spoon.Dialog.ErrorOpeningById.Message", objectId ), e.getMessage(), e );
+        if ( KettleRepositoryLostException.lookupStackStrace( e ) == null ) {
+          new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
+            Spoon.class, "Spoon.Dialog.ErrorOpeningById.Message", objectId ), e.getMessage(), e );
+        } else {
+          throw e;
+        }
       }
     }
   }
 
   public void loadObjectFromRepository( String objName, RepositoryObjectType objectType,
-    RepositoryDirectoryInterface repDir, String versionLabel ) {
+    RepositoryDirectoryInterface repDir, String versionLabel ) throws Exception {
     // Try to open the selected transformation.
     if ( objectType.equals( RepositoryObjectType.TRANSFORMATION ) ) {
       try {
@@ -4051,11 +4081,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         refreshTree();
         refreshGraph();
       } catch ( Exception e ) {
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Message" )
-          + objName + Const.CR + e.getMessage() ); // "Error opening : "
-        mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Title" ) );
-        mb.open();
+        if ( KettleRepositoryLostException.lookupStackStrace( e ) == null ) {
+          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+          mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Message" )
+            + objName + Const.CR + e.getMessage() ); // "Error opening : "
+          mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Title" ) );
+          mb.open();
+        } else {
+          throw e;
+        }
       }
     } else if ( objectType.equals( RepositoryObjectType.JOB ) ) {
       // Try to open the selected job.
@@ -4073,11 +4107,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         refreshTree();
         refreshGraph();
       } catch ( Exception e ) {
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Message" )
-          + objName + Const.CR + e.getMessage() ); // "Error opening : "
-        mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Title" ) );
-        mb.open();
+        if ( KettleRepositoryLostException.lookupStackStrace( e ) == null ) {
+          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+          mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Message" )
+            + objName + Const.CR + e.getMessage() ); // "Error opening : "
+          mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Title" ) );
+          mb.open();
+        } else {
+          throw e;
+        }
       }
     }
   }
@@ -4118,109 +4156,116 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void openFile( boolean importfile ) {
-    SpoonPerspective activePerspective = SpoonPerspectiveManager.getInstance().getActivePerspective();
+    try {
+      SpoonPerspective activePerspective = SpoonPerspectiveManager.getInstance().getActivePerspective();
 
-    // In case the perspective wants to handle open/save itself, let it...
-    //
-    if ( !importfile ) {
-      if ( activePerspective instanceof SpoonPerspectiveOpenSaveInterface ) {
-        ( (SpoonPerspectiveOpenSaveInterface) activePerspective ).open();
-        return;
-      }
-    }
-
-    String activePerspectiveId = activePerspective.getId();
-    boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
-
-    if ( rep == null || importfile || !etlPerspective ) { // Load from XML
-
-      FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-
-      LinkedHashSet<String> extensions = new LinkedHashSet<String>();
-      LinkedHashSet<String> extensionNames = new LinkedHashSet<String>();
-      StringBuilder allExtensions = new StringBuilder();
-      for ( FileListener l : fileListeners ) {
-        for ( String ext : l.getSupportedExtensions() ) {
-          extensions.add( "*." + ext );
-          allExtensions.append( "*." ).append( ext ).append( ";" );
+      // In case the perspective wants to handle open/save itself, let it...
+      //
+      if ( !importfile ) {
+        if ( activePerspective instanceof SpoonPerspectiveOpenSaveInterface ) {
+          ( (SpoonPerspectiveOpenSaveInterface) activePerspective ).open();
+          return;
         }
-        Collections.addAll( extensionNames, l.getFileTypeDisplayNames( Locale.getDefault() ) );
       }
-      extensions.add( "*" );
-      extensionNames.add( BaseMessages.getString( PKG, "Spoon.Dialog.OpenFile.AllFiles" ) );
 
-      String[] exts = new String[extensions.size() + 1];
-      exts[0] = allExtensions.toString();
-      System.arraycopy( extensions.toArray( new String[extensions.size()] ), 0, exts, 1, extensions.size() );
+      String activePerspectiveId = activePerspective.getId();
+      boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
 
-      String[] extNames = new String[extensionNames.size() + 1];
-      extNames[0] = BaseMessages.getString( PKG, "Spoon.Dialog.OpenFile.AllTypes" );
-      System.arraycopy(
-        extensionNames.toArray( new String[extensionNames.size()] ), 0, extNames, 1, extensionNames.size() );
+      if ( rep == null || importfile || !etlPerspective ) { // Load from XML
 
-      dialog.setFilterExtensions( exts );
+        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
 
-      setFilterPath( dialog );
-      String filename = dialog.open();
-      if ( filename != null ) {
-
-        if ( importfile ) {
-          if ( activePerspective instanceof SpoonPerspectiveOpenSaveInterface ) {
-            ( (SpoonPerspectiveOpenSaveInterface) activePerspective ).importFile( filename );
-            return;
+        LinkedHashSet<String> extensions = new LinkedHashSet<String>();
+        LinkedHashSet<String> extensionNames = new LinkedHashSet<String>();
+        StringBuilder allExtensions = new StringBuilder();
+        for ( FileListener l : fileListeners ) {
+          for ( String ext : l.getSupportedExtensions() ) {
+            extensions.add( "*." + ext );
+            allExtensions.append( "*." ).append( ext ).append( ";" );
           }
+          Collections.addAll( extensionNames, l.getFileTypeDisplayNames( Locale.getDefault() ) );
         }
+        extensions.add( "*" );
+        extensionNames.add( BaseMessages.getString( PKG, "Spoon.Dialog.OpenFile.AllFiles" ) );
 
-        lastDirOpened = dialog.getFilterPath();
-        openFile( filename, importfile );
-      }
-    } else {
-      SelectObjectDialog sod = new SelectObjectDialog( shell, rep );
-      if ( sod.open() != null ) {
-        RepositoryObjectType type = sod.getObjectType();
-        String name = sod.getObjectName();
-        RepositoryDirectoryInterface repDir = sod.getDirectory();
+        String[] exts = new String[extensions.size() + 1];
+        exts[0] = allExtensions.toString();
+        System.arraycopy( extensions.toArray( new String[extensions.size()] ), 0, exts, 1, extensions.size() );
 
-        // Load a transformation
-        if ( RepositoryObjectType.TRANSFORMATION.equals( type ) ) {
-          TransLoadProgressDialog tlpd = new TransLoadProgressDialog( shell, rep, name, repDir, null ); // Loads
-          // the
-          // last
-          // version
-          TransMeta transMeta = tlpd.open();
-          sharedObjectsFileMap.put( transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects() );
-          setTransMetaVariables( transMeta );
+        String[] extNames = new String[extensionNames.size() + 1];
+        extNames[0] = BaseMessages.getString( PKG, "Spoon.Dialog.OpenFile.AllTypes" );
+        System.arraycopy( extensionNames.toArray( new String[extensionNames.size()] ), 0, extNames, 1, extensionNames
+            .size() );
 
-          if ( transMeta != null ) {
-            if ( log.isDetailed() ) {
-              log.logDetailed( BaseMessages.getString( PKG, "Spoon.Log.LoadToTransformation", name, repDir
-                .getName() ) );
+        dialog.setFilterExtensions( exts );
+
+        setFilterPath( dialog );
+        String filename = dialog.open();
+        if ( filename != null ) {
+
+          if ( importfile ) {
+            if ( activePerspective instanceof SpoonPerspectiveOpenSaveInterface ) {
+              ( (SpoonPerspectiveOpenSaveInterface) activePerspective ).importFile( filename );
+              return;
             }
-            props.addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, name, repDir.getPath(), true, rep.getName() );
-            addMenuLast();
-            transMeta.clearChanged();
-            // transMeta.setFilename(name); // Don't do it, it's a bad idea!
-            addTransGraph( transMeta );
           }
-          refreshGraph();
-          refreshTree();
-        } else if ( RepositoryObjectType.JOB.equals( type ) ) {
-          // Load a job
-          JobLoadProgressDialog jlpd = new JobLoadProgressDialog( shell, rep, name, repDir, null ); // Loads
-          // the last version
-          JobMeta jobMeta = jlpd.open();
-          sharedObjectsFileMap.put( jobMeta.getSharedObjects().getFilename(), jobMeta.getSharedObjects() );
-          setJobMetaVariables( jobMeta );
-          if ( jobMeta != null ) {
-            props.addLastFile( LastUsedFile.FILE_TYPE_JOB, name, repDir.getPath(), true, rep.getName() );
-            saveSettings();
-            addMenuLast();
-            addJobGraph( jobMeta );
+
+          lastDirOpened = dialog.getFilterPath();
+          openFile( filename, importfile );
+        }
+      } else {
+        SelectObjectDialog sod = new SelectObjectDialog( shell, rep );
+        if ( sod.open() != null ) {
+          RepositoryObjectType type = sod.getObjectType();
+          String name = sod.getObjectName();
+          RepositoryDirectoryInterface repDir = sod.getDirectory();
+
+          // Load a transformation
+          if ( RepositoryObjectType.TRANSFORMATION.equals( type ) ) {
+            TransLoadProgressDialog tlpd = new TransLoadProgressDialog( shell, rep, name, repDir, null ); // Loads
+            // the
+            // last
+            // version
+            TransMeta transMeta = tlpd.open();
+            sharedObjectsFileMap.put( transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects() );
+            setTransMetaVariables( transMeta );
+
+            if ( transMeta != null ) {
+              if ( log.isDetailed() ) {
+                log.logDetailed( BaseMessages.getString( PKG, "Spoon.Log.LoadToTransformation", name, repDir
+                  .getName() ) );
+              }
+              props.addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, name, repDir.getPath(), true, rep.getName() );
+              addMenuLast();
+              transMeta.clearChanged();
+              // transMeta.setFilename(name); // Don't do it, it's a bad idea!
+              addTransGraph( transMeta );
+            }
+            refreshGraph();
+            refreshTree();
+          } else if ( RepositoryObjectType.JOB.equals( type ) ) {
+            // Load a job
+            JobLoadProgressDialog jlpd = new JobLoadProgressDialog( shell, rep, name, repDir, null ); // Loads
+            // the last version
+            JobMeta jobMeta = jlpd.open();
+            sharedObjectsFileMap.put( jobMeta.getSharedObjects().getFilename(), jobMeta.getSharedObjects() );
+            setJobMetaVariables( jobMeta );
+            if ( jobMeta != null ) {
+              props.addLastFile( LastUsedFile.FILE_TYPE_JOB, name, repDir.getPath(), true, rep.getName() );
+              saveSettings();
+              addMenuLast();
+              addJobGraph( jobMeta );
+            }
+            refreshGraph();
+            refreshTree();
           }
-          refreshGraph();
-          refreshTree();
         }
       }
+    } catch ( KettleRepositoryLostException krle ) {
+      new ErrorDialog(
+          getShell(), BaseMessages.getString( PKG, "Spoon.Error" ),
+          krle.getLocalizedMessage(), krle );
+      this.closeRepository();
     }
   }
 
@@ -4867,6 +4912,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } catch ( Exception e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.File.Save.Fail.Title" ), BaseMessages.getString(
         PKG, "Spoon.File.Save.Fail.Message" ), e );
+      if ( KettleRepositoryLostException.lookupStackStrace( e ) != null ) {
+        closeRepository();
+      }
     }
     return false;
   }
@@ -5155,8 +5203,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.File.Save.Fail.Title" ), BaseMessages.getString(
-        PKG, "Spoon.File.Save.Fail.Message" ), e );
+      KettleRepositoryLostException krle = KettleRepositoryLostException.lookupStackStrace( e );
+      String message = BaseMessages.getString( PKG, "Spoon.File.Save.Fail.Message" );
+      if ( krle != null ) {
+        closeRepository();
+        message = krle.getLocalizedMessage();
+      }
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.File.Save.Fail.Title" ), message, e );
     }
 
     return false;
@@ -7449,7 +7502,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return;
     }
     try {
-      if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.MODIFY_TRANSFORMATION, RepositoryOperation.EXECUTE_TRANSFORMATION ) ) {
+      if ( RepositorySecurityUI.verifyOperations(
+          shell, rep, RepositoryOperation.MODIFY_TRANSFORMATION, RepositoryOperation.EXECUTE_TRANSFORMATION ) ) {
         return;
       }
 
@@ -7463,7 +7517,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( jobMeta == null ) {
       return;
     }
-    if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.MODIFY_JOB, RepositoryOperation.EXECUTE_JOB ) ) {
+    if ( RepositorySecurityUI.verifyOperations(
+        shell, rep, RepositoryOperation.MODIFY_JOB, RepositoryOperation.EXECUTE_JOB ) ) {
       return;
     }
 
@@ -7958,7 +8013,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     loadLastUsedFile( lastUsedFile, repositoryName, true );
   }
 
-  private void loadLastUsedFile( LastUsedFile lastUsedFile, String repositoryName, boolean trackIt ) throws KettleException {
+  private void loadLastUsedFile(
+      LastUsedFile lastUsedFile, String repositoryName, boolean trackIt ) throws KettleException {
     boolean useRepository = repositoryName != null;
     // Perhaps we need to connect to the repository?
     //
@@ -8096,7 +8152,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public boolean isDefinedSchemaExist( String[] schemaNames ) {
     // Before we start, check if there are any partition schemas defined...
-    if ( (schemaNames == null) || (schemaNames.length == 0) ) {
+    if ( ( schemaNames == null ) || ( schemaNames.length == 0 ) ) {
       MessageBox box = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
       box.setText( "Create a partition schema" );
       box.setMessage( "You first need to create one or more partition schemas in "
@@ -8111,7 +8167,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     try {
       /*Check if Partition schema has already defined*/
       String[] schemaNames = transMeta.getPartitionSchemasNames();
-      if( isDefinedSchemaExist( schemaNames )) {
+      if ( isDefinedSchemaExist( schemaNames ) ) {
 
         /*Prepare settings for Method selection*/
         PluginRegistry registry = PluginRegistry.getInstance();
@@ -8123,7 +8179,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         /*Method selection*/
         PartitionMethodSelector methodSelector = new PartitionMethodSelector();
         String partitionMethodDescription =
-          methodSelector.askForPartitionMethod( shell, settings);
+          methodSelector.askForPartitionMethod( shell, settings );
         if ( !StringUtil.isEmpty( partitionMethodDescription ) ) {
           String method = settings.getMethodByMethodDescription( partitionMethodDescription );
           int methodType = StepPartitioningMeta.getMethodType( method );

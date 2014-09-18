@@ -60,6 +60,8 @@ public class ClustersController extends LazilyInitializedController implements I
 
   private UIClusters clusterList = new UIClusters();
 
+  private MainController mainController;
+
   @Override
   public String getName() {
     return "clustersController";
@@ -73,21 +75,31 @@ public class ClustersController extends LazilyInitializedController implements I
       bf.createBinding( clusterList, "children", clustersTable, "elements" ).fireSourceChanged();
       bf.createBinding( clustersTable, "selectedItems", this, "enableButtons" );
     } catch ( Exception e ) {
-      // convert to runtime exception so it bubbles up through the UI
-      throw new RuntimeException( e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        throw new RuntimeException( e );
+      }
     }
   }
 
   protected boolean doLazyInit() {
-    // Load the SWT Shell from the explorer dialog
-    shell = ( (SwtDialog) document.getElementById( "repository-explorer-dialog" ) ).getShell();
-    bf = new SwtBindingFactory();
-    bf.setDocument( this.getXulDomContainer().getDocumentRoot() );
-    enableButtons( true, false, false );
-    if ( bf != null ) {
-      createBindings();
+    try {
+      // Load the SWT Shell from the explorer dialog
+      mainController = (MainController) this.getXulDomContainer().getEventHandler( "mainController" );
+      shell = ( (SwtDialog) document.getElementById( "repository-explorer-dialog" ) ).getShell();
+      bf = new SwtBindingFactory();
+      bf.setDocument( this.getXulDomContainer().getDocumentRoot() );
+      enableButtons( true, false, false );
+      if ( bf != null ) {
+        createBindings();
+      }
+      return true;
+    } catch ( Exception e ) {
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        return false;
+      }
+
+      return false;
     }
-    return true;
   }
 
   public void editCluster() {
@@ -132,11 +144,13 @@ public class ClustersController extends LazilyInitializedController implements I
 
       refreshClusters();
     } catch ( KettleException e ) {
-      new ErrorDialog(
-        shell,
-        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Edit.Title" ), BaseMessages.getString(
-          PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Message" )
-          + clusterSchemaName + "]", e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        new ErrorDialog(
+          shell,
+          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Edit.Title" ), BaseMessages.getString(
+            PKG, "RepositoryExplorerDialog.Cluster.Edit.UnexpectedError.Message" )
+            + clusterSchemaName + "]", e );
+      }
     }
   }
 
@@ -170,9 +184,11 @@ public class ClustersController extends LazilyInitializedController implements I
         }
       }
     } catch ( KettleException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title" ),
-        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message" ), e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Title" ),
+          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Create.UnexpectedError.Message" ), e );
+      }
     } finally {
       refreshClusters();
     }
@@ -209,11 +225,13 @@ public class ClustersController extends LazilyInitializedController implements I
         mb.open();
       }
     } catch ( KettleException e ) {
-      new ErrorDialog(
-        shell,
-        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Delete.Title" ),
-        BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Message" )
-          + clusterSchemaName + "]", e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        new ErrorDialog(
+          shell,
+          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Delete.Title" ),
+          BaseMessages.getString( PKG, "RepositoryExplorerDialog.Cluster.Delete.UnexpectedError.Message" )
+            + clusterSchemaName + "]", e );
+      }
     } finally {
       refreshClusters();
     }

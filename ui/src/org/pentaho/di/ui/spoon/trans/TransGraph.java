@@ -125,6 +125,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.lineage.TransDataLineage;
+import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
@@ -702,7 +703,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     TimerTask timerTask = new TimerTask() {
 
       public void run() {
-        setControlStates();
+        try {
+          setControlStates();
+        } catch ( KettleRepositoryLostException krle ) {
+          if ( log.isBasic() ) {
+            log.logBasic( krle.getLocalizedMessage() );
+          }
+        }
       }
     };
     timer.schedule( timerTask, 2000, 1000 );
@@ -3912,8 +3919,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     getDisplay().asyncExec( new Runnable() {
 
       public void run() {
-        boolean operationsNotAllowed = RepositorySecurityUI.verifyOperations( shell, spoon.rep, false,
-            RepositoryOperation.EXECUTE_TRANSFORMATION );
+        boolean operationsNotAllowed = false;
+        try {
+          operationsNotAllowed = RepositorySecurityUI.verifyOperations( shell, spoon.rep, false,
+              RepositoryOperation.EXECUTE_TRANSFORMATION );
+        } catch ( KettleRepositoryLostException krle ) {
+          log.logError( krle.getLocalizedMessage() );
+        }
 
         // Start/Run button...
         //
