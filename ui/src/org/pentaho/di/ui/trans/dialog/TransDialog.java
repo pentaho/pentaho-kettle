@@ -70,6 +70,7 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -304,6 +305,10 @@ public class TransDialog extends Dialog {
         extraTab.addTab( transMeta, parent, wTabFolder );
         extraTabs.add( extraTab );
       } catch ( Exception e ) {
+        KettleRepositoryLostException krle = KettleRepositoryLostException.lookupStackStrace( e );
+        if ( krle != null ) {
+          throw krle;
+        }
         new ErrorDialog( shell, "Error", "Error loading transformation dialog plugin with id "
           + transDialogPlugin.getIds()[0], e );
       }
