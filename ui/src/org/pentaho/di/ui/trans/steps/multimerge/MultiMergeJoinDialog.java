@@ -130,7 +130,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
     fdlStepname.right = new FormAttachment( 15, -margin );
     fdlStepname.top = new FormAttachment( 0, margin );
     wlStepname.setLayoutData( fdlStepname );
-    wStepname = new Text( shell, SWT.READ_ONLY | SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wStepname = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wStepname.setText( stepname );
     props.setLook( wStepname );
     wStepname.addModifyListener( lsMod );

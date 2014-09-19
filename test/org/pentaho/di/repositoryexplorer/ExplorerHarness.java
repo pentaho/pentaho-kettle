@@ -62,12 +62,18 @@ public class ExplorerHarness {
     @SuppressWarnings( "unused" )
     RepositoryExplorerCallback cb = new RepositoryExplorerCallback() {
 
-      public boolean open( UIRepositoryContent element, String revision ) {
+      public boolean open( UIRepositoryContent element, String revision ) throws Exception {
         System.out.println( "Name: ".concat( element.getName() ) );
         System.out.println( "Type: ".concat( element.getRepositoryElementType().name() ) );
         System.out.println( "Directory: ".concat( element.getRepositoryDirectory().toString() ) );
         System.out.println( "Revision: ".concat( revision == null ? "null" : revision ) );
         return false; // do not close explorer
+      }
+      
+      @Override
+      public boolean error ( String message ) throws Exception {
+        System.out.println( "Error message: ".concat( message ) );
+        return true;
       }
     };
 

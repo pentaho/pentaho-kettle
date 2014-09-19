@@ -75,6 +75,8 @@ public class FileOverwriteDialogController extends AbstractXulEventHandler {
 
   private boolean overwriteFiles = false;
 
+  private MainController mainController;
+
   public static FileOverwriteDialogController getInstance( Shell shell, List<UIRepositoryObject> objects ) {
     try {
       KettleXulLoader swtLoader = new KettleXulLoader();
@@ -109,12 +111,16 @@ public class FileOverwriteDialogController extends AbstractXulEventHandler {
     try {
       bf.setDocument( container.getDocumentRoot() );
 
+      mainController = (MainController) this.getXulDomContainer().getEventHandler( "mainController" );
+
       bf.setBindingType( Binding.Type.ONE_WAY );
       bf.createBinding( objects, "children", "file-list", "elements" ).fireSourceChanged();
     } catch ( Exception e ) {
-      new ErrorDialog( (Shell) container.getOuterContext(),
-        BaseMessages.getString( PKG, "FileOverwriteDialog.ErrorDialog.Title" ),
-        BaseMessages.getString( PKG, "FileOverwriteDialog.ErrorDialog.Message" ), e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        new ErrorDialog( (Shell) container.getOuterContext(),
+          BaseMessages.getString( PKG, "FileOverwriteDialog.ErrorDialog.Title" ),
+          BaseMessages.getString( PKG, "FileOverwriteDialog.ErrorDialog.Message" ), e );
+      }
     }
   }
 

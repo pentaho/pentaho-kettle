@@ -134,17 +134,17 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
 
     List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
 
-    retval.append( XMLHandler.addTagValue( "join_type", getJoinType() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "join_type", getJoinType() ) );
     for ( int i = 0; i < infoStreams.size(); i++ ) {
-      retval.append( XMLHandler.addTagValue( "step" + i, infoStreams.get( i ).getStepname() ) );
+      retval.append( "    " ).append( XMLHandler.addTagValue( "step" + i, infoStreams.get( i ).getStepname() ) );
     }
 
-    retval.append( "    <number_input>" + infoStreams.size() + "</number_input>" + Const.CR );
-    retval.append( "    <keys>" + Const.CR );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "number_input", infoStreams.size() ) );
+    retval.append( "    " ).append( XMLHandler.openTag( "keys" ) ).append( Const.CR );
     for ( int i = 0; i < keyFields.length; i++ ) {
-      retval.append( "      " + XMLHandler.addTagValue( "key", keyFields[i] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "key", keyFields[i] ) );
     }
-    retval.append( "    </keys>" + Const.CR );
+    retval.append( "    " ).append( XMLHandler.closeTag( "keys" ) ).append( Const.CR );
 
     return retval.toString();
   }

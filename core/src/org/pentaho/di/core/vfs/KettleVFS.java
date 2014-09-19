@@ -248,7 +248,7 @@ public class KettleVFS {
   }
 
   public static InputStream getInputStream( String vfsFilename ) throws KettleFileException {
-    return getInputStream( vfsFilename, null );
+    return getInputStream( vfsFilename, defaultVariableSpace );
   }
 
   public static InputStream getInputStream( String vfsFilename, VariableSpace space ) throws KettleFileException {
@@ -291,7 +291,7 @@ public class KettleVFS {
   }
 
   public static OutputStream getOutputStream( String vfsFilename, boolean append ) throws KettleFileException {
-    return getOutputStream( vfsFilename, null, append );
+    return getOutputStream( vfsFilename, defaultVariableSpace, append );
   }
 
   public static OutputStream getOutputStream( String vfsFilename, VariableSpace space, boolean append ) throws KettleFileException {

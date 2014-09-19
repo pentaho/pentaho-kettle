@@ -35,6 +35,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurity.Mode;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UISecurityUser;
 import org.pentaho.ui.xul.XulComponent;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -78,6 +79,8 @@ public class SecurityController extends LazilyInitializedController implements I
 
   protected RepositorySecurityManager service;
 
+  protected MainController mainController;
+
   protected UISecurity security;
 
   protected BindingFactory bf;
@@ -97,18 +100,36 @@ public class SecurityController extends LazilyInitializedController implements I
 
   @Override
   protected boolean doLazyInit() {
-    boolean serviceInitialized = initService();
-    if ( !serviceInitialized ) {
+    try {
+      mainController = (MainController) this.getXulDomContainer().getEventHandler( "mainController" );
+    } catch ( XulException e ) {
       return false;
     }
+
+    try {
+      boolean serviceInitialized = initService();
+      if ( !serviceInitialized ) {
+        return false;
+      }
+    } catch ( Exception e ) {
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        throw new RuntimeException( e );
+      }
+
+      return false;
+    }
+
     try {
       managed = service.isManaged();
       createModel();
       messageBox = (XulMessageBox) document.createElement( "messagebox" );
       bf = new SwtBindingFactory();
       bf.setDocument( this.getXulDomContainer().getDocumentRoot() );
+
     } catch ( Exception e ) {
-      throw new RuntimeException( e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        throw new RuntimeException( e );
+      }
     }
     if ( bf != null ) {
       createBindings();
@@ -204,8 +225,10 @@ public class SecurityController extends LazilyInitializedController implements I
       bf.createBinding( securityUser, "mode", username, "disabled", modeBindingConverter );
 
     } catch ( Exception e ) {
-      // convert to runtime exception so it bubbles up through the UI
-      throw new RuntimeException( e );
+      if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+        // convert to runtime exception so it bubbles up through the UI
+        throw new RuntimeException( e );
+      }
     }
   }
 
@@ -236,10 +259,12 @@ public class SecurityController extends LazilyInitializedController implements I
         security.addUser( UIObjectRegistry.getInstance().constructUIRepositoryUser( securityUser.getUserInfo() ) );
         userDialog.hide();
       } catch ( Throwable th ) {
-        messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
-        messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-        messageBox.setMessage( BaseMessages.getString( PKG, "AddUser.UnableToAddUser", th.getLocalizedMessage() ) );
-        messageBox.open();
+        if ( mainController == null || !mainController.handleLostRepository( th ) ) {
+          messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
+          messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
+          messageBox.setMessage( BaseMessages.getString( PKG, "AddUser.UnableToAddUser", th.getLocalizedMessage() ) );
+          messageBox.open();
+        }
       }
     }
   }
@@ -270,11 +295,13 @@ public class SecurityController extends LazilyInitializedController implements I
         security.updateUser( uiUser );
         userDialog.hide();
       } catch ( Throwable th ) {
-        messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
-        messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-        messageBox.setMessage( BaseMessages.getString( PKG, "UpdateUser.UnableToUpdateUser", th
-          .getLocalizedMessage() ) );
-        messageBox.open();
+        if ( mainController == null || !mainController.handleLostRepository( th ) ) {
+          messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
+          messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
+          messageBox.setMessage( BaseMessages.getString( PKG, "UpdateUser.UnableToUpdateUser", th
+            .getLocalizedMessage() ) );
+          messageBox.open();
+        }
       }
     }
   }
@@ -301,11 +328,13 @@ public class SecurityController extends LazilyInitializedController implements I
                 service.delUser( security.getSelectedUser().getName() );
                 security.removeUser( security.getSelectedUser().getName() );
               } catch ( Throwable th ) {
-                messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
-                messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-                messageBox.setMessage( BaseMessages.getString( PKG, "RemoveUser.UnableToRemoveUser", th
-                  .getLocalizedMessage() ) );
-                messageBox.open();
+                if ( mainController == null || !mainController.handleLostRepository( th ) ) {
+                  messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
+                  messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
+                  messageBox.setMessage( BaseMessages.getString( PKG, "RemoveUser.UnableToRemoveUser", th
+                    .getLocalizedMessage() ) );
+                  messageBox.open();
+                }
               }
             } else {
               messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
@@ -318,11 +347,13 @@ public class SecurityController extends LazilyInitializedController implements I
       }
 
       public void onError( XulComponent sender, Throwable t ) {
-        messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
-        messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-        messageBox.setMessage( BaseMessages.getString( PKG, "RemoveUser.UnableToRemoveUser", t
-          .getLocalizedMessage() ) );
-        messageBox.open();
+        if ( mainController == null || !mainController.handleLostRepository( t ) ) {
+          messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
+          messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
+          messageBox.setMessage( BaseMessages.getString( PKG, "RemoveUser.UnableToRemoveUser", t
+            .getLocalizedMessage() ) );
+          messageBox.open();
+        }
       }
     } );
     confirmBox.open();
