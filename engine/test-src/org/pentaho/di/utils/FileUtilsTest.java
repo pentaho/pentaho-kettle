@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.util.FileUtil;
-import org.pentaho.di.job.entries.ftp.TestUtils;
 
 public class FileUtilsTest {
 

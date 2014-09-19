@@ -15,6 +15,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.utils.TestUtils;
 
 public class JobEntryFTPTest {
   private Job job;
