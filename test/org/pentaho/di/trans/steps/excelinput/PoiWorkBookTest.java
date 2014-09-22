@@ -22,6 +22,9 @@
 
 package org.pentaho.di.trans.steps.excelinput;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
 import java.util.Date;
 
 import junit.framework.TestCase;
@@ -33,6 +36,7 @@ import org.pentaho.di.core.spreadsheet.KWorkbook;
 
 public class PoiWorkBookTest extends TestCase {
   public void testRead() throws Exception {
+    File fileBeforeRead = new File( "testfiles/sample-file.xlsx" );
     KWorkbook workbook = WorkbookFactory.getWorkbook( SpreadSheetType.POI, "testfiles/sample-file.xlsx", null );
     int numberOfSheets = workbook.getNumberOfSheets();
     assertEquals( 3, numberOfSheets );
@@ -87,5 +91,7 @@ public class PoiWorkBookTest extends TestCase {
     }
 
     workbook.close();
+    File fileAfterRead = new File( "testfiles/sample-file.xlsx" );
+    assertEquals( fileBeforeRead, fileAfterRead );
   }
 }
