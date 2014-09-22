@@ -1055,7 +1055,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wUseHTML.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         SetEnabledEncoding();
-
+        input.setChanged();
       }
     } );
 
