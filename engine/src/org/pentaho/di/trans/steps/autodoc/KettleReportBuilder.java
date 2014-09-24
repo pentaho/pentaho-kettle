@@ -27,6 +27,7 @@ import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.reporting.engine.classic.core.AttributeNames;
@@ -309,5 +310,10 @@ public class KettleReportBuilder {
       default:
         break;
     }
+  }
+
+  @VisibleForTesting
+  MasterReport getReport() {
+    return report;
   }
 }
