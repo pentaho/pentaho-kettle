@@ -79,7 +79,9 @@ case `uname -s` in
 
 	Darwin)
     ARCH=`uname -m`
-	OPT="-XstartOnFirstThread $OPT"
+	if [ -z "$IS_KITCHEN" ]; then
+		OPT="-XstartOnFirstThread $OPT"
+	fi
 	case $ARCH in
 		x86_64)
 			if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null )
