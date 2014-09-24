@@ -172,7 +172,7 @@ public class FilterRows extends BaseStep implements StepInterface {
 
   protected void checkNonExistingFields() throws KettleException {
     List<String> orphanFields = meta.getOrphanFields(
-      meta.getCondition(), getTransMeta().getPrevStepFields( getStepMeta() ) );
+      meta.getCondition(), getInputRowMeta() );
     if ( orphanFields != null && orphanFields.size() > 0 ) {
       String fields = "";
       boolean first = true;
