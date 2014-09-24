@@ -1566,13 +1566,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     // Deleting all the single-line and multi-line comments from the string
     String all = SqlCommentScrubber.removeComments( script ); // scrubDoubleHyphenComments(script);
 
-    String[] statements = all.split( ";" );
-    String stat;
+    List<String> statements = SqlScriptSplitter.split(all);
     int nrstats = 0;
 
-    for ( int i = 0; i < statements.length; i++ ) {
+    for ( String stat: statements) {
 
-      stat = statements[i];
       if ( !Const.onlySpaces( stat ) ) {
         String sql = Const.trim( stat );
         if ( sql.toUpperCase().startsWith( "SELECT" ) ) {
