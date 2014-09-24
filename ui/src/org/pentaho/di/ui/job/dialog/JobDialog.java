@@ -73,6 +73,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -293,6 +294,10 @@ public class JobDialog extends Dialog {
         extraTab.addTab( jobMeta, parent, wTabFolder );
         extraTabs.add( extraTab );
       } catch ( Exception e ) {
+        KettleRepositoryLostException krle = KettleRepositoryLostException.lookupStackStrace( e );
+        if ( krle != null ) {
+          throw krle;
+        }
         new ErrorDialog(
           shell, "Error", "Error loading job dialog plugin with id " + jobDialogPlugin.getIds()[0], e );
       }
