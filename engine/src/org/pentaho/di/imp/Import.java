@@ -35,6 +35,7 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.HasOverwritePrompter;
 import org.pentaho.di.core.gui.OverwritePrompter;
@@ -323,7 +324,7 @@ public class Import {
     }
     try {
       repository.connect( optionUsername != null ? optionUsername.toString() : null, optionPassword != null
-        ? optionPassword.toString() : null );
+        ? Encr.decryptPasswordOptionallyEncrypted( optionPassword.toString() ) : null );
     } catch ( KettleException ke ) {
       log.logError( ke.getMessage() );
       exitJVM( 1 );
