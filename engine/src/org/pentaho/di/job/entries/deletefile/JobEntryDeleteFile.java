@@ -88,7 +88,7 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 50 );
+    StringBuilder retval = new StringBuilder( 50 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
@@ -188,7 +188,6 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
         if ( fileObject != null ) {
           try {
             fileObject.close();
-            fileObject = null;
           } catch ( IOException ex ) { /* Ignore */
           }
         }

@@ -83,7 +83,7 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 50 );
+    StringBuilder retval = new StringBuilder( 50 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "foldername", foldername ) );
@@ -187,7 +187,6 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
         if ( folderObject != null ) {
           try {
             folderObject.close();
-            folderObject = null;
           } catch ( IOException ex ) { /* Ignore */
           }
         }

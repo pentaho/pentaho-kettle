@@ -113,7 +113,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "copy_empty_folders", copy_empty_folders ) );
@@ -985,32 +985,64 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     this.copy_empty_folders = copy_empty_foldersin;
   }
 
+  public boolean isCopyEmptyFolders() {
+    return copy_empty_folders;
+  }
+
   public void setoverwrite_files( boolean overwrite_filesin ) {
     this.overwrite_files = overwrite_filesin;
+  }
+
+  public boolean isoverwrite_files() {
+    return overwrite_files;
   }
 
   public void setIncludeSubfolders( boolean include_subfoldersin ) {
     this.include_subfolders = include_subfoldersin;
   }
 
+  public boolean isIncludeSubfolders() {
+    return include_subfolders;
+  }
+
   public void setAddresultfilesname( boolean add_result_filesnamein ) {
     this.add_result_filesname = add_result_filesnamein;
+  }
+
+  public boolean isAddresultfilesname() {
+    return add_result_filesname;
   }
 
   public void setArgFromPrevious( boolean argfrompreviousin ) {
     this.arg_from_previous = argfrompreviousin;
   }
 
+  public boolean isArgFromPrevious() {
+    return arg_from_previous;
+  }
+
   public void setRemoveSourceFiles( boolean remove_source_filesin ) {
     this.remove_source_files = remove_source_filesin;
+  }
+
+  public boolean isRemoveSourceFiles() {
+    return remove_source_files;
   }
 
   public void setDestinationIsAFile( boolean destination_is_a_file ) {
     this.destination_is_a_file = destination_is_a_file;
   }
 
+  public boolean isDestinationIsAFile() {
+    return destination_is_a_file;
+  }
+
   public void setCreateDestinationFolder( boolean create_destination_folder ) {
     this.create_destination_folder = create_destination_folder;
+  }
+
+  public boolean isCreateDestinationFolder() {
+    return create_destination_folder;
   }
 
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
