@@ -22,11 +22,9 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.KettleRepositoryLostException;
@@ -163,8 +161,8 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
           new ErrorDialog(
                 shell,
                 BaseMessages.getString( PKG, "RepositoryExplorer.Dialog.Error.Title" ),
-                repLost.getLocalizedMessage(),
-              e );
+                repLost.getPrefaceMessage(),
+                repLost );
           if ( callback != null && callback.error( null ) ) {
             closeDialog();
           }
@@ -177,12 +175,5 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
     }
 
     return false;
-  }
-
-  private void errorBox( String title, String message ) {
-    MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
-    mb.setText( BaseMessages.getString( PKG, title ) );
-    mb.setMessage( BaseMessages.getString( PKG, message ) );
-    mb.open();
   }
 }
