@@ -132,7 +132,8 @@ public class RepositoryExplorer {
     }
 
     if ( krle != null ) {
-      return;
+      dispose();
+      throw krle;
     }
 
     try {
