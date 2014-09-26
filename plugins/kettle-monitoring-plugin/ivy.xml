@@ -52,6 +52,8 @@
     <dependency org="commons-collections"   name="commons-collections"  rev="3.2"   conf="test->default"/>
     <dependency org="${pentaho.group}"  name="metastore"    rev="${dependency.metastore.revision}"  conf="test->default"/>
     <dependency org="org.springframework.security"  name="spring-security-core" rev="2.0.5.RELEASE" transitive="false"  conf="test->default"/>
+    <dependency org="commons-httpclient"  name="commons-httpclient" rev="3.1" transitive="false" conf="test->default"/>
+    <dependency org="com.sun.jersey" name="jersey-servlet" rev="1.16" transitive="false" conf="test->default"/>
     
   </dependencies>
 

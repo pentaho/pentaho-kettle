@@ -35,12 +35,45 @@ public class OID {
   // carte event object attributes
   public static final String CARTE_HOSTNAME   = CARTE + ".1";
   public static final String CARTE_PORT       = CARTE + ".2";
+  public static final String CARTE_STARTED    = CARTE + ".3";
+  public static final String CARTE_LOG        = CARTE + ".4";
 
   // database event object attributes
-  public static final String DATABASE_NAME    = DATABASE + ".1";
+  public static final String DATABASE_NAME            = DATABASE + ".1";
+  public static final String DATABASE_HOSTNAME        = DATABASE + ".2";
+  public static final String DATABASE_PORT            = DATABASE + ".3";
+  public static final String DATABASE_USER            = DATABASE + ".4";
+  public static final String DATABASE_PARTITION_ID    = DATABASE + ".5";
+  public static final String DATABASE_CONN_NAME       = DATABASE + ".6";
+  public static final String DATABASE_CONN_TYPE       = DATABASE + ".7";
+  public static final String DATABASE_CONN_ACCESS     = DATABASE + ".8";
+  public static final String DATABASE_CONN_GROUP      = DATABASE + ".9";
+  public static final String DATABASE_NR_EXEC_COMMITS = DATABASE + ".10";
+  public static final String DATABASE_LOG             = DATABASE + ".11";
+  public static final String DATABASE_CONNECTED       = DATABASE + ".12";
 
   // job event object attributes
-  public static final String JOB_NAME         = JOB + ".1";
+  public static final String JOB_NAME                  = JOB + ".1";
+  public static final String JOB_FILENAME              = JOB + ".2";
+  public static final String JOB_DIRECTORY             = JOB + ".3";
+  public static final String JOB_REPO_ID               = JOB + ".4";
+  public static final String JOB_REPO_NAME             = JOB + ".5";
+  public static final String JOB_PARENT_JOB            = JOB + ".6";
+  public static final String JOB_PARENT_TRANS          = JOB + ".7";
+  public static final String JOB_EXEC_SERVER           = JOB + ".8";
+  public static final String JOB_EXEC_USER             = JOB + ".9";
+  public static final String JOB_BATCH_ID              = JOB + ".10";
+  public static final String JOB_PARENT_BATCH_ID       = JOB + ".11";
+  public static final String JOB_LOG_CHANNEL_ID        = JOB + ".12";
+  public static final String JOB_PARENT_LOG_CHANNEL_ID = JOB + ".13";
+  public static final String JOB_STATUS                = JOB + ".14";
+  public static final String JOB_ERROR_COUNT           = JOB + ".15";
+  public static final String JOB_RUNTIME               = JOB + ".16";
+  public static final String JOB_LOG                   = JOB + ".17";
+  public static final String JOB_SUCCESS               = JOB + ".18";
+  public static final String JOB_ENTRY_ID              = JOB + ".19";
+  public static final String JOB_ENTRY_NAME            = JOB + ".20";
+  public static final String JOB_RUN_IN_PARALLEL       = JOB + ".21";
 
   // transformation event object attributes
   public static final String TRANSFORMATION_NAME                  = TRANSFORMATION + ".1";
@@ -66,6 +99,7 @@ public class OID {
   public static final String TRANSFORMATION_LINES_INPUT           = TRANSFORMATION + ".21";
   public static final String TRANSFORMATION_LINES_OUTPUT          = TRANSFORMATION + ".22";
   public static final String TRANSFORMATION_LOG                   = TRANSFORMATION + ".23";
+  public static final String TRANSFORMATION_SUCCESS               = TRANSFORMATION + ".24";
 
   // step event object attributes
   public static final String STEP_NAME          = STEP + ".1";

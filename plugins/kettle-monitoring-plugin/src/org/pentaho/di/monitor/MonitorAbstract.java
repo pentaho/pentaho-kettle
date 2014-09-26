@@ -61,8 +61,15 @@ public abstract class MonitorAbstract {
 
       if ( MonitorEnvironment.getInstance().isEventBusReady() ) {
 
-        MonitorEnvironment.getInstance().getEventBus().post( toKettleEvent( o ) ); // async event bus
+        IKettleMonitoringEvent e = toKettleEvent( o );
 
+        if ( e != null ) {
+
+          MonitorEnvironment.getInstance().getEventBus().post( e ); // async event bus
+
+        } else {
+          logInfo( "Discarding null monitoringEvent returned from " + getClass().getSimpleName() );
+        }
       } else {
         logInfo( "Event bus not available; discarding " + getClass().getSimpleName() + " event" );
       }
