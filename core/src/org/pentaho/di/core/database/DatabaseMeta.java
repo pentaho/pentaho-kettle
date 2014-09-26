@@ -505,6 +505,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     PluginInterface mySqlPlugin = PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, "MYSQL" );
     PluginInterface infoBrightPlugin =
       PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, new InfobrightDatabaseMeta() );
+    PluginInterface impalaPlugin =
+      PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, "IMPALA" );
 
     String mySQL = mySqlPlugin.getIds()[0];
 
@@ -515,6 +517,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
     addExtraOption( infoBright, "characterEncoding", "UTF-8" );
 
+    if ( impalaPlugin != null ) {
+      String impala = impalaPlugin.getIds()[ 0 ];
+      addExtraOption( impala, "auth", "noSasl" );
+    }
     // Modern databases support this, try it by default...
     //
     setSupportsBooleanDataType( true );
