@@ -53,6 +53,8 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.www.WebServer;
 
+import java.sql.DatabaseMetaData;
+
 import static org.mockito.Mockito.*;
 
 public class MonitorToKettleEventTest {
@@ -198,6 +200,7 @@ public class MonitorToKettleEventTest {
     Assert.assertTrue( EventType.Carte.STARTUP == ( (CarteEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_HOST.equals( ( (CarteEvent) event ).getHostname() ) );
     Assert.assertTrue( DUMMY_PORT == ( (CarteEvent) event ).getPort() );
+    Assert.assertTrue( EventType.Boolean.TRUE.getValue() == ( (CarteEvent) event ).getStarted() );
 
     // call monitor.toKettleEvent()
     event = carteShutdownMonitor.toKettleEvent( mockWebServer );
@@ -207,6 +210,7 @@ public class MonitorToKettleEventTest {
     Assert.assertTrue( EventType.Carte.SHUTDOWN == ( (CarteEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_HOST.equals( ( (CarteEvent) event ).getHostname() ) );
     Assert.assertTrue( DUMMY_PORT == ( (CarteEvent) event ).getPort() );
+    Assert.assertTrue( EventType.Boolean.FALSE.getValue() == ( (CarteEvent) event ).getStarted() );
   }
 
   @Test
@@ -214,16 +218,22 @@ public class MonitorToKettleEventTest {
 
     final String DUMMY_CONNECTION_URL = "dummy.connection.url";
     final String DUMMY_DATABASE_NAME = "dummy.database.name";
-    final String DUMMY_DRIVER_CLASS = "dummy.driver.class";
+    final String DUMMY_DATABASE_HOSTNAME = "dummy.localhost";
+    final String DUMMY_DATABASE_PORT_AS_STRING = "1234";
+    final String DUMMY_DRIVER_CLASS_NAME = "dummy.driver.class.name";
 
     Database mockDatabase = mock( Database.class );
     DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
+    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
 
     when( mockDatabaseMeta.getURL() ).thenReturn( DUMMY_CONNECTION_URL );
     when( mockDatabaseMeta.getDatabaseName() ).thenReturn( DUMMY_DATABASE_NAME );
-    when( mockDatabaseMeta.getDriverClass() ).thenReturn( DUMMY_DRIVER_CLASS );
+    when( mockDatabaseMeta.getHostname() ).thenReturn( DUMMY_DATABASE_HOSTNAME );
+    when( mockDatabaseMeta.getDatabasePortNumberString() ).thenReturn( DUMMY_DATABASE_PORT_AS_STRING );
+    when( mockDatabaseMetaData.getDriverName() ).thenReturn( DUMMY_DRIVER_CLASS_NAME );
 
     when( mockDatabase.getDatabaseMeta() ).thenReturn( mockDatabaseMeta );
+    when( mockDatabase.getDatabaseMetaData() ).thenReturn( mockDatabaseMetaData );
 
     // call monitor.toKettleEvent() with event object other than Database
     Assert.assertNull( databaseConnectedMonitor.toKettleEvent( new String( "not a Database Object" ) ) );
@@ -237,7 +247,11 @@ public class MonitorToKettleEventTest {
     Assert.assertTrue( EventType.Database.CONNECTED == ( (DatabaseEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_CONNECTION_URL.equals( ( (DatabaseEvent) event ).getConnectionUrl() ) );
     Assert.assertTrue( DUMMY_DATABASE_NAME == ( (DatabaseEvent) event ).getDatabaseName() );
-    Assert.assertTrue( DUMMY_DRIVER_CLASS == ( (DatabaseEvent) event ).getDriver() );
+    Assert.assertTrue( DUMMY_DRIVER_CLASS_NAME == ( (DatabaseEvent) event ).getDriverName() );
+    Assert.assertTrue( DUMMY_DATABASE_HOSTNAME == ( (DatabaseEvent) event ).getHostname() );
+    Assert.assertTrue( Integer.parseInt( DUMMY_DATABASE_PORT_AS_STRING ) == ( (DatabaseEvent) event ).getPort() );
+    Assert.assertTrue( EventType.Boolean.TRUE.getValue() == ( (DatabaseEvent) event ).getConnected() );
+
 
     // call monitor.toKettleEvent()
     event = databaseDisconnectedMonitor.toKettleEvent( mockDatabase );
@@ -247,7 +261,10 @@ public class MonitorToKettleEventTest {
     Assert.assertTrue( EventType.Database.DISCONNECTED == ( (DatabaseEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_CONNECTION_URL.equals( ( (DatabaseEvent) event ).getConnectionUrl() ) );
     Assert.assertTrue( DUMMY_DATABASE_NAME == ( (DatabaseEvent) event ).getDatabaseName() );
-    Assert.assertTrue( DUMMY_DRIVER_CLASS == ( (DatabaseEvent) event ).getDriver() );
+    Assert.assertTrue( DUMMY_DRIVER_CLASS_NAME == ( (DatabaseEvent) event ).getDriverName() );
+    Assert.assertTrue( DUMMY_DATABASE_HOSTNAME == ( (DatabaseEvent) event ).getHostname() );
+    Assert.assertTrue( Integer.parseInt( DUMMY_DATABASE_PORT_AS_STRING ) == ( (DatabaseEvent) event ).getPort() );
+    Assert.assertTrue( EventType.Boolean.FALSE.getValue() == ( (DatabaseEvent) event ).getConnected() );
   }
 
   @Test

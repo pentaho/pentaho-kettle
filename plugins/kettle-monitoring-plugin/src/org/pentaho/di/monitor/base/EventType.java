@@ -18,88 +18,113 @@ package org.pentaho.di.monitor.base;
 
 public class EventType {
 
+  /**
+   * Boolean textual convention as defined in RFC-1514.
+   * <p/>
+   *
+   * @link http://tools.ietf.org/html/rfc1514
+   */
+  public static enum Boolean {
+    TRUE( 1 ),
+    FALSE( 2 );
+
+    int value;
+
+    Boolean( int value ) {
+      this.value = value;
+    }
+
+    public int getValue() {
+      return value;
+    }
+
+    public static int getValue( boolean b ) {
+      return b ? TRUE.getValue() : FALSE.getValue();
+    }
+  }
+
   public static enum Transformation {
 
-    BEGIN_PREPARE_EXECUTION(1),
-    META_LOADED(2),
-    BEGIN_START(3),
-    STARTED(4),
-    FINISHED(5);
+    BEGIN_PREPARE_EXECUTION( 1 ),
+    META_LOADED( 2 ),
+    BEGIN_START( 3 ),
+    STARTED( 4 ),
+    FINISHED( 5 );
 
     int snmpId;
 
-    Transformation(int snmpId){
+    Transformation( int snmpId ) {
       this.snmpId = snmpId;
     }
 
-    public int getSnmpId(){
+    public int getSnmpId() {
       return snmpId;
     }
   }
 
   public static enum Job {
 
-    META_LOADED(1),
-    STARTED(2),
-    BEFORE_JOB_ENTRY(3),
-    BEGIN_JOB_PROCESSING(4),
-    AFTER_JOB_ENTRY(5),
-    FINISHED(6);
+    META_LOADED( 1 ),
+    STARTED( 2 ),
+    BEFORE_JOB_ENTRY( 3 ),
+    BEGIN_JOB_PROCESSING( 4 ),
+    AFTER_JOB_ENTRY( 5 ),
+    FINISHED( 6 );
 
     int snmpId;
 
-    Job(int snmpId){
+    Job( int snmpId ) {
       this.snmpId = snmpId;
     }
 
-    public int getSnmpId(){
+    public int getSnmpId() {
       return snmpId;
     }
   }
 
   public static enum Step {
 
-    BEFORE_INIT(1), AFTER_INIT(2), BEFORE_START(3), FINISHED(4);
+    BEFORE_INIT( 1 ), AFTER_INIT( 2 ), BEFORE_START( 3 ), FINISHED( 4 );
 
     int snmpId;
 
-    Step(int snmpId){
+    Step( int snmpId ) {
       this.snmpId = snmpId;
     }
 
-    public int getSnmpId(){
+    public int getSnmpId() {
       return snmpId;
     }
   }
 
   public static enum Database {
 
-    DISCONNECTED(0),
-    CONNECTED(1);
+    DISCONNECTED( 0 ),
+    CONNECTED( 1 );
 
     int snmpId;
 
-    Database(int snmpId){
+    Database( int snmpId ) {
       this.snmpId = snmpId;
     }
 
-    public int getSnmpId(){
+    public int getSnmpId() {
       return snmpId;
     }
   }
 
   public static enum Carte {
 
-    SHUTDOWN(0),
-    STARTUP(1);
+    SHUTDOWN( 0 ),
+    STARTUP( 1 );
 
     int snmpId;
 
-    Carte(int snmpId){
+    Carte( int snmpId ) {
       this.snmpId = snmpId;
     }
 
-    public int getSnmpId(){
+    public int getSnmpId() {
       return snmpId;
     }
   }
