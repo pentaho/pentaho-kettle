@@ -3961,22 +3961,31 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
             shell.getDisplay().syncExec( new Runnable() {
               public void run() {
+                RepositoryExplorer explorer;
                 try {
-                  RepositoryExplorer explorer =
-                    new RepositoryExplorer( shell, rep, cb, Variables.getADefaultVariableSpace() );
-                  box.stop();
+                  try {
+                    explorer =
+                      new RepositoryExplorer( shell, rep, cb, Variables.getADefaultVariableSpace() );
+                  } catch ( final KettleRepositoryLostException krle ) {
+                    shell.getDisplay().asyncExec( new Runnable() {
+                      public void run() {
+                        new ErrorDialog(
+                            getShell(),
+                            BaseMessages.getString( PKG, "Spoon.Error" ),
+                            krle.getPrefaceMessage(),
+                            krle );
+                      }
+                    } );
+                    closeRepository();
+                    return;
+                  } finally {
+                    box.stop();
+                  }
 
                   if ( explorer.isInitialized() ) {
                     explorer.show();
                   } else {
-                    shell.getDisplay().asyncExec( new Runnable() {
-                      public void run() {
-                        new ErrorDialog( shell,
-                            BaseMessages.getString( PKG, "Spoon.Error" ),
-                            BaseMessages.getString( PKG, "Spoon.RepExplorer.Lost.Error" ), null );
-                      }
-                    } );
-                    closeRepository();
+                    return;
                   }
 
                   explorer.dispose();
@@ -4263,8 +4272,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
     } catch ( KettleRepositoryLostException krle ) {
       new ErrorDialog(
-          getShell(), BaseMessages.getString( PKG, "Spoon.Error" ),
-          krle.getLocalizedMessage(), krle );
+          getShell(),
+          BaseMessages.getString( PKG, "Spoon.Error" ),
+          krle.getPrefaceMessage(),
+          krle );
       this.closeRepository();
     }
   }
@@ -4910,10 +4921,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         return saveToFile( meta );
       }
     } catch ( Exception e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.File.Save.Fail.Title" ), BaseMessages.getString(
-        PKG, "Spoon.File.Save.Fail.Message" ), e );
-      if ( KettleRepositoryLostException.lookupStackStrace( e ) != null ) {
+      KettleRepositoryLostException krle = KettleRepositoryLostException.lookupStackStrace( e );
+      if ( krle != null ) {
+        new ErrorDialog(
+            shell,
+            BaseMessages.getString( PKG, "Spoon.File.Save.Fail.Title" ),
+            krle.getPrefaceMessage(),
+            krle );
         closeRepository();
+      } else {
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.File.Save.Fail.Title" ), BaseMessages.getString(
+            PKG, "Spoon.File.Save.Fail.Message" ), e );
       }
     }
     return false;
@@ -5204,12 +5222,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
     } catch ( Exception e ) {
       KettleRepositoryLostException krle = KettleRepositoryLostException.lookupStackStrace( e );
-      String message = BaseMessages.getString( PKG, "Spoon.File.Save.Fail.Message" );
       if ( krle != null ) {
+        new ErrorDialog( shell,
+            BaseMessages.getString( PKG, "Spoon.File.Save.Fail.Title" ),
+            krle.getPrefaceMessage(),
+            krle );
         closeRepository();
-        message = krle.getLocalizedMessage();
+      } else {
+        new ErrorDialog( shell,
+            BaseMessages.getString( PKG, "Spoon.File.Save.Fail.Title" ),
+            BaseMessages.getString( PKG, "Spoon.File.Save.Fail.Message" ), e );
       }
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.File.Save.Fail.Title" ), message, e );
     }
 
     return false;
