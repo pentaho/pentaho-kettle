@@ -20,6 +20,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Assert;
@@ -54,6 +55,7 @@ import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.www.WebServer;
 
 import java.sql.DatabaseMetaData;
+import java.util.Date;
 
 import static org.mockito.Mockito.*;
 
@@ -221,17 +223,27 @@ public class MonitorToKettleEventTest {
     final String DUMMY_DATABASE_HOSTNAME = "dummy.localhost";
     final String DUMMY_DATABASE_PORT_AS_STRING = "1234";
     final String DUMMY_DRIVER_CLASS_NAME = "dummy.driver.class.name";
+    final String DUMMY_DATABASE_TYPE = "postgres";
+    final int DUMMY_DATABASE_ACCESS_TYPE_INT = DatabaseMeta.TYPE_ACCESS_NATIVE;
+    final String DUMMY_DATABASE_ACCESS_TYPE_NAME = DatabaseMeta.getAccessTypeDesc( DUMMY_DATABASE_ACCESS_TYPE_INT );
+    final int DUMMY_POOL_SIZE = 10;
 
     Database mockDatabase = mock( Database.class );
     DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
     DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
+    DatabaseInterface mockDatabaseInterface = mock( DatabaseInterface.class );
 
     when( mockDatabaseMeta.getURL() ).thenReturn( DUMMY_CONNECTION_URL );
     when( mockDatabaseMeta.getDatabaseName() ).thenReturn( DUMMY_DATABASE_NAME );
     when( mockDatabaseMeta.getHostname() ).thenReturn( DUMMY_DATABASE_HOSTNAME );
     when( mockDatabaseMeta.getDatabasePortNumberString() ).thenReturn( DUMMY_DATABASE_PORT_AS_STRING );
+    when( mockDatabaseMeta.getInitialPoolSize() ).thenReturn( DUMMY_POOL_SIZE );
+    when( mockDatabaseMeta.getMaximumPoolSize() ).thenReturn( DUMMY_POOL_SIZE * 2 );
     when( mockDatabaseMetaData.getDriverName() ).thenReturn( DUMMY_DRIVER_CLASS_NAME );
+    when( mockDatabaseInterface.getPluginName() ).thenReturn( DUMMY_DATABASE_TYPE );
+    when( mockDatabaseInterface.getAccessType() ).thenReturn( DUMMY_DATABASE_ACCESS_TYPE_INT );
 
+    when( mockDatabaseMeta.getDatabaseInterface() ).thenReturn( mockDatabaseInterface );
     when( mockDatabase.getDatabaseMeta() ).thenReturn( mockDatabaseMeta );
     when( mockDatabase.getDatabaseMetaData() ).thenReturn( mockDatabaseMetaData );
 
@@ -251,7 +263,10 @@ public class MonitorToKettleEventTest {
     Assert.assertTrue( DUMMY_DATABASE_HOSTNAME == ( (DatabaseEvent) event ).getHostname() );
     Assert.assertTrue( Integer.parseInt( DUMMY_DATABASE_PORT_AS_STRING ) == ( (DatabaseEvent) event ).getPort() );
     Assert.assertTrue( EventType.Boolean.TRUE.getValue() == ( (DatabaseEvent) event ).getConnected() );
-
+    Assert.assertTrue( ( (DatabaseEvent) event ).getInitialPoolSize() == DUMMY_POOL_SIZE );
+    Assert.assertTrue( ( (DatabaseEvent) event ).getMaxPoolSize() == ( DUMMY_POOL_SIZE * 2 ) );
+    Assert.assertTrue( ( (DatabaseEvent) event ).getDatabaseType().equals( DUMMY_DATABASE_TYPE ) );
+    Assert.assertTrue( ( (DatabaseEvent) event ).getDatabaseAccessType().equals( DUMMY_DATABASE_ACCESS_TYPE_NAME ) );
 
     // call monitor.toKettleEvent()
     event = databaseDisconnectedMonitor.toKettleEvent( mockDatabase );
@@ -265,6 +280,10 @@ public class MonitorToKettleEventTest {
     Assert.assertTrue( DUMMY_DATABASE_HOSTNAME == ( (DatabaseEvent) event ).getHostname() );
     Assert.assertTrue( Integer.parseInt( DUMMY_DATABASE_PORT_AS_STRING ) == ( (DatabaseEvent) event ).getPort() );
     Assert.assertTrue( EventType.Boolean.FALSE.getValue() == ( (DatabaseEvent) event ).getConnected() );
+    Assert.assertTrue( ( (DatabaseEvent) event ).getInitialPoolSize() == DUMMY_POOL_SIZE );
+    Assert.assertTrue( ( (DatabaseEvent) event ).getMaxPoolSize() == ( DUMMY_POOL_SIZE * 2 ) );
+    Assert.assertTrue( ( (DatabaseEvent) event ).getDatabaseType().equals( DUMMY_DATABASE_TYPE ) );
+    Assert.assertTrue( ( (DatabaseEvent) event ).getDatabaseAccessType().equals( DUMMY_DATABASE_ACCESS_TYPE_NAME ) );
   }
 
   @Test
@@ -273,7 +292,11 @@ public class MonitorToKettleEventTest {
     final String DUMMY_EXECUTING_SERVER = "dummy.executing.server";
     final String DUMMY_EXECUTING_USER = "dummy.executing.user";
     final String DUMMY_JOB_NAME = "dummy.job.name";
+    final String DUMMY_JOB_FILENAME = "dummy.job.filename";
     final String DUMMY_JOB_XML_CONTENT = "<dummy-job>content</dummy-job>";
+    final String DUMMY_LOG_CHANNEL_ID = "dummy.log.channel.id";
+    final long DUMMY_BATCH_ID = 123;
+    final Date DUMMY_START_DATE = new Date();
 
     Job mockJob = mock( Job.class );
     JobMeta mockJobMeta = mock( JobMeta.class );
@@ -281,8 +304,11 @@ public class MonitorToKettleEventTest {
     when( mockJob.getExecutingServer() ).thenReturn( DUMMY_EXECUTING_SERVER );
     when( mockJob.getExecutingUser() ).thenReturn( DUMMY_EXECUTING_USER );
     when( mockJobMeta.getName() ).thenReturn( DUMMY_JOB_NAME );
+    when( mockJobMeta.getFilename() ).thenReturn( DUMMY_JOB_FILENAME );
     when( mockJobMeta.getXML() ).thenReturn( DUMMY_JOB_XML_CONTENT );
-
+    when( mockJob.getLogChannelId() ).thenReturn( DUMMY_LOG_CHANNEL_ID );
+    when( mockJob.getBatchId() ).thenReturn( DUMMY_BATCH_ID );
+    when( mockJob.getCurrentDate() ).thenReturn( DUMMY_START_DATE );
     when( mockJob.getJobMeta() ).thenReturn( mockJobMeta );
 
     // call monitor.toKettleEvent() with event object other than Database
@@ -300,6 +326,10 @@ public class MonitorToKettleEventTest {
     Assert.assertTrue( DUMMY_EXECUTING_USER.equals( ( (JobEvent) event ).getExecutingUser() ) );
     Assert.assertTrue( DUMMY_JOB_NAME.equals( ( (JobEvent) event ).getName() ) );
     Assert.assertTrue( DUMMY_JOB_XML_CONTENT.equals( ( (JobEvent) event ).getXml() ) );
+    Assert.assertTrue( DUMMY_LOG_CHANNEL_ID.equals( ( (JobEvent) event ).getLogChannelId()) );
+    Assert.assertTrue( DUMMY_BATCH_ID == ( (JobEvent) event ).getBatchId() );
+    Assert.assertTrue( EventType.Job.STARTED.getSnmpId() == ( (JobEvent) event ).getStatus() );
+    Assert.assertTrue( DUMMY_START_DATE.getTime() == ( (JobEvent) event ).getStartTimeMillis() );
 
     // call monitor.toKettleEvent()
     event = jobMetaLoadedMonitor.toKettleEvent( mockJobMeta );
@@ -309,6 +339,7 @@ public class MonitorToKettleEventTest {
     Assert.assertTrue( EventType.Job.META_LOADED == ( (JobEvent) event ).getEventType() );
     Assert.assertTrue( DUMMY_JOB_NAME.equals( ( (JobEvent) event ).getName() ) );
     Assert.assertTrue( DUMMY_JOB_XML_CONTENT.equals( ( (JobEvent) event ).getXml() ) );
+
 
     // call monitor.toKettleEvent()
     event = jobFinishMonitor.toKettleEvent( mockJob );
@@ -320,6 +351,12 @@ public class MonitorToKettleEventTest {
     Assert.assertTrue( DUMMY_EXECUTING_USER.equals( ( (JobEvent) event ).getExecutingUser() ) );
     Assert.assertTrue( DUMMY_JOB_NAME.equals( ( (JobEvent) event ).getName() ) );
     Assert.assertTrue( DUMMY_JOB_XML_CONTENT.equals( ( (JobEvent) event ).getXml() ) );
+    Assert.assertTrue( DUMMY_LOG_CHANNEL_ID.equals( ( (JobEvent) event ).getLogChannelId()) );
+    Assert.assertTrue( DUMMY_BATCH_ID == ( (JobEvent) event ).getBatchId() );
+    Assert.assertTrue( EventType.Job.FINISHED.getSnmpId() == ( (JobEvent) event ).getStatus() );
+    Assert.assertTrue( DUMMY_START_DATE.getTime() == ( (JobEvent) event ).getStartTimeMillis() );
+    Assert.assertTrue( ( (JobEvent) event ).getEndTimeMillis() > DUMMY_START_DATE.getTime() );
+    Assert.assertTrue( ( (JobEvent) event ).getRuntimeInMillis() > 0 );
   }
 
   @Test
@@ -329,12 +366,18 @@ public class MonitorToKettleEventTest {
     final String DUMMY_EXECUTING_USER = "dummy.executing.user";
     final String DUMMY_TRANS_NAME = "dummy.job.name";
     final String DUMMY_TRANS_XML_CONTENT = "<dummy-trans>content</dummy-trans>";
+    final String DUMMY_LOG_CHANNEL_ID = "dummy.log.channel.id";
+    final long DUMMY_BATCH_ID = 123;
+    final Date DUMMY_START_DATE = new Date();
 
     Trans mockTrans = mock( Trans.class );
     TransMeta mockTransMeta = mock( TransMeta.class );
 
     when( mockTrans.getExecutingServer() ).thenReturn( DUMMY_EXECUTING_SERVER );
     when( mockTrans.getExecutingUser() ).thenReturn( DUMMY_EXECUTING_USER );
+    when( mockTrans.getLogChannelId() ).thenReturn( DUMMY_LOG_CHANNEL_ID );
+    when( mockTrans.getBatchId() ).thenReturn( DUMMY_BATCH_ID );
+    when( mockTrans.getCurrentDate() ).thenReturn( DUMMY_START_DATE );
     when( mockTransMeta.getName() ).thenReturn( DUMMY_TRANS_NAME );
     when( mockTransMeta.getXML() ).thenReturn( DUMMY_TRANS_XML_CONTENT );
 
@@ -357,6 +400,11 @@ public class MonitorToKettleEventTest {
     Assert.assertTrue( DUMMY_EXECUTING_USER.equals( ( (TransformationEvent) event ).getExecutingUser() ) );
     Assert.assertTrue( DUMMY_TRANS_NAME.equals( ( (TransformationEvent) event ).getName() ) );
     Assert.assertTrue( DUMMY_TRANS_XML_CONTENT.equals( ( (TransformationEvent) event ).getXml() ) );
+    Assert.assertTrue( DUMMY_LOG_CHANNEL_ID.equals( ( (TransformationEvent) event ).getLogChannelId()) );
+    Assert.assertTrue( DUMMY_BATCH_ID == ( ( (TransformationEvent) event ).getBatchId() ) );
+    Assert.assertTrue(
+      EventType.Transformation.BEGIN_PREPARE_EXECUTION.getSnmpId() == ( (TransformationEvent) event ).getStatus() );
+    Assert.assertTrue( DUMMY_START_DATE.getTime() == ( (TransformationEvent) event ).getStartTimeMillis() );
 
     // call monitor.toKettleEvent()
     event = transformationStartMonitor.toKettleEvent( mockTrans );
@@ -368,6 +416,10 @@ public class MonitorToKettleEventTest {
     Assert.assertTrue( DUMMY_EXECUTING_USER.equals( ( (TransformationEvent) event ).getExecutingUser() ) );
     Assert.assertTrue( DUMMY_TRANS_NAME.equals( ( (TransformationEvent) event ).getName() ) );
     Assert.assertTrue( DUMMY_TRANS_XML_CONTENT.equals( ( (TransformationEvent) event ).getXml() ) );
+    Assert.assertTrue( DUMMY_LOG_CHANNEL_ID.equals( ( (TransformationEvent) event ).getLogChannelId()) );
+    Assert.assertTrue( DUMMY_BATCH_ID == ( ( (TransformationEvent) event ).getBatchId() ) );
+    Assert.assertTrue( EventType.Transformation.STARTED.getSnmpId() == ( (TransformationEvent) event ).getStatus() );
+    Assert.assertTrue( DUMMY_START_DATE.getTime() == ( (TransformationEvent) event ).getStartTimeMillis() );
 
     // call monitor.toKettleEvent()
     event = transformationFinishMonitor.toKettleEvent( mockTrans );
@@ -379,6 +431,12 @@ public class MonitorToKettleEventTest {
     Assert.assertTrue( DUMMY_EXECUTING_USER.equals( ( (TransformationEvent) event ).getExecutingUser() ) );
     Assert.assertTrue( DUMMY_TRANS_NAME.equals( ( (TransformationEvent) event ).getName() ) );
     Assert.assertTrue( DUMMY_TRANS_XML_CONTENT.equals( ( (TransformationEvent) event ).getXml() ) );
+    Assert.assertTrue( DUMMY_LOG_CHANNEL_ID.equals( ( (TransformationEvent) event ).getLogChannelId()) );
+    Assert.assertTrue( DUMMY_BATCH_ID == ( ( (TransformationEvent) event ).getBatchId() ) );
+    Assert.assertTrue( EventType.Transformation.FINISHED.getSnmpId() == ( (TransformationEvent) event ).getStatus() );
+    Assert.assertTrue( DUMMY_START_DATE.getTime() == ( (TransformationEvent) event ).getStartTimeMillis() );
+    Assert.assertTrue( ( (TransformationEvent) event ).getEndTimeMillis() > DUMMY_START_DATE.getTime() );
+    Assert.assertTrue( ( (TransformationEvent) event ).getRuntimeInMillis() > 0 );
   }
 
   @Test

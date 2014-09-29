@@ -23,7 +23,9 @@ import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobExecutionExtension;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.monitor.base.EventType;
 
 public class JobEventsTriggeredTest extends BaseEventsTriggeredTest {
 
@@ -44,7 +46,12 @@ public class JobEventsTriggeredTest extends BaseEventsTriggeredTest {
 
     Assert.assertTrue( dummyMonitor.wasTriggered );
     Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof Job );
-    Assert.assertTrue( ( (Job) dummyMonitor.eventObject ).getJobMeta().getName().equals( SAMPLE_JOB_NAME ) );
+
+    Job job = (Job) dummyMonitor.eventObject;
+
+    Assert.assertTrue( job != null && job.getJobMeta() != null );
+    Assert.assertTrue( SAMPLE_JOB_NAME.equals( job.getJobMeta().getName() ) );
+    Assert.assertTrue( SAMPLE_JOB.equals( job.getJobMeta().getFilename() ) );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
@@ -64,7 +71,64 @@ public class JobEventsTriggeredTest extends BaseEventsTriggeredTest {
 
     Assert.assertTrue( dummyMonitor.wasTriggered );
     Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof Job );
-    Assert.assertTrue( ( (Job) dummyMonitor.eventObject ).getJobMeta().getName().equals( SAMPLE_JOB_NAME ) );
+
+    Job job = (Job) dummyMonitor.eventObject;
+
+    Assert.assertTrue( job != null && job.getJobMeta() != null );
+    Assert.assertTrue( SAMPLE_JOB_NAME.equals( job.getJobMeta().getName() ) );
+    Assert.assertTrue( SAMPLE_JOB.equals( job.getJobMeta().getFilename() ) );
+
+    dummyMonitor.reset();
+    PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
+  }
+
+  @Test
+  public void testJobBeforeJobEntryMonitor() throws Exception {
+
+    MockPlugin mockPlugin =
+      new MockPlugin( dummyMonitor, new String[] { KettleExtensionPoint.JobBeforeJobEntryExecution.id },
+        KettleExtensionPoint.JobBeforeJobEntryExecution.name() );
+
+    // register dummyMonitor as an extension point plugin for JobPrepareExecution events
+    PluginRegistry.getInstance().registerPlugin( ExtensionPointPluginType.class, mockPlugin );
+
+    executeSampleJob();
+
+    Assert.assertTrue( dummyMonitor.wasTriggered );
+    Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof JobExecutionExtension );
+
+    JobExecutionExtension jobEvent = (JobExecutionExtension) dummyMonitor.eventObject;
+
+    Assert.assertNotNull( jobEvent.job );
+
+    Assert.assertTrue( jobEvent.job != null && jobEvent.job.getJobMeta() != null );
+    Assert.assertTrue( SAMPLE_JOB_NAME.equals( jobEvent.job.getJobMeta().getName() ) );
+    Assert.assertTrue( SAMPLE_JOB.equals( jobEvent.job.getJobMeta().getFilename() ) );
+
+    dummyMonitor.reset();
+    PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
+  }
+
+  @Test
+  public void testJobAfterJobEntryMonitor() throws Exception {
+
+    MockPlugin mockPlugin =
+      new MockPlugin( dummyMonitor, new String[] { KettleExtensionPoint.JobAfterJobEntryExecution.id },
+        KettleExtensionPoint.JobAfterJobEntryExecution.name() );
+
+    // register dummyMonitor as an extension point plugin for JobPrepareExecution events
+    PluginRegistry.getInstance().registerPlugin( ExtensionPointPluginType.class, mockPlugin );
+
+    executeSampleJob();
+
+    Assert.assertTrue( dummyMonitor.wasTriggered );
+    Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof JobExecutionExtension );
+
+    JobExecutionExtension jobEvent = (JobExecutionExtension) dummyMonitor.eventObject;
+
+    Assert.assertTrue( jobEvent.job != null && jobEvent.job.getJobMeta() != null );
+    Assert.assertTrue( SAMPLE_JOB_NAME.equals( jobEvent.job.getJobMeta().getName() ) );
+    Assert.assertTrue( SAMPLE_JOB.equals( jobEvent.job.getJobMeta().getFilename() ) );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );

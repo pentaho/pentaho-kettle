@@ -74,10 +74,9 @@ public class CarteServerTriggeredTest extends BaseEventsTriggeredTest {
 
     carteThread.start(); // start carte
 
-    while ( !carteLauncher.isUpAndRunning() ) {
-      Thread.sleep( 100 ); // wait for carte to be properly started ( usually quite fast )
-    }
+    Thread.sleep( 5000 ); // wait 5 seconds for carte to be properly initialized ( usually quite fast )
 
+    Assert.assertTrue( carteLauncher.isUpAndRunning() );
     Assert.assertTrue( monitorStartup.wasTriggered );
     Assert.assertTrue( monitorStartup.eventObject != null && monitorStartup.eventObject instanceof WebServer );
 
