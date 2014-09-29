@@ -1474,7 +1474,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     // double-dash or a multiline comment appears
     // in a single-quoted string, it will be treated as a string instead of
     // comments.
-    String sql = SqlCommentScrubber.removeComments( rawsql ).trim();
+    String sql = SqlScriptParser.getInstace().removeComments( rawsql ).trim();
     try {
       boolean resultSet;
       int count;
@@ -1563,67 +1563,66 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   public Result execStatements( String script, RowMetaInterface params, Object[] data ) throws KettleDatabaseException {
     Result result = new Result();
 
-    // Deleting all the single-line and multi-line comments from the string
-    String all = SqlCommentScrubber.removeComments( script ); // scrubDoubleHyphenComments(script);
-
-    String[] statements = all.split( ";" );
-    String stat;
+    List<String> statements = SqlScriptParser.getInstace().split(script);
     int nrstats = 0;
 
-    for ( int i = 0; i < statements.length; i++ ) {
-
-      stat = statements[i];
-      if ( !Const.onlySpaces( stat ) ) {
-        String sql = Const.trim( stat );
-        if ( sql.toUpperCase().startsWith( "SELECT" ) ) {
-          // A Query
-          if ( log.isDetailed() ) {
-            log.logDetailed( "launch SELECT statement: " + Const.CR + sql );
-          }
-
-          nrstats++;
-          ResultSet rs = null;
-          try {
-            rs = openQuery( sql, params, data );
-            if ( rs != null ) {
-              Object[] row = getRow( rs );
-              while ( row != null ) {
-                result.setNrLinesRead( result.getNrLinesRead() + 1 );
-                if ( log.isDetailed() ) {
-                  log.logDetailed( rowMeta.getString( row ) );
-                }
-                row = getRow( rs );
-              }
-
-            } else {
-              if ( log.isDebug() ) {
-                log.logDebug( "Error executing query: " + Const.CR + sql );
-              }
+    if (statements != null) {
+      for ( String stat: statements) {
+        // Deleting all the single-line and multi-line comments from the string
+        stat = SqlScriptParser.getInstace().removeComments( stat );
+  
+        if ( !Const.onlySpaces( stat ) ) {
+          String sql = Const.trim( stat );
+          if ( sql.toUpperCase().startsWith( "SELECT" ) ) {
+            // A Query
+            if ( log.isDetailed() ) {
+              log.logDetailed( "launch SELECT statement: " + Const.CR + sql );
             }
-          } catch ( KettleValueException e ) {
-            throw new KettleDatabaseException( e ); // just pass the error
-                                                    // upwards.
-          } finally {
+  
+            nrstats++;
+            ResultSet rs = null;
             try {
+              rs = openQuery( sql, params, data );
               if ( rs != null ) {
-                rs.close();
+                Object[] row = getRow( rs );
+                while ( row != null ) {
+                  result.setNrLinesRead( result.getNrLinesRead() + 1 );
+                  if ( log.isDetailed() ) {
+                    log.logDetailed( rowMeta.getString( row ) );
+                  }
+                  row = getRow( rs );
+                }
+  
+              } else {
+                if ( log.isDebug() ) {
+                  log.logDebug( "Error executing query: " + Const.CR + sql );
+                }
               }
-            } catch ( SQLException ex ) {
-              if ( log.isDebug() ) {
-                log.logDebug( "Error closing query: " + Const.CR + sql );
+            } catch ( KettleValueException e ) {
+              throw new KettleDatabaseException( e ); // just pass the error
+                                                      // upwards.
+            } finally {
+              try {
+                if ( rs != null ) {
+                  rs.close();
+                }
+              } catch ( SQLException ex ) {
+                if ( log.isDebug() ) {
+                  log.logDebug( "Error closing query: " + Const.CR + sql );
+                }
               }
             }
+          } else {
+            // any kind of statement
+            if ( log.isDetailed() ) {
+              log.logDetailed( "launch DDL statement: " + Const.CR + sql );
+            }
+  
+            // A DDL statement
+            nrstats++;
+            Result res = execStatement( sql, params, data );
+            result.add( res );
           }
-        } else {
-          // any kind of statement
-          if ( log.isDetailed() ) {
-            log.logDetailed( "launch DDL statement: " + Const.CR + sql );
-          }
-
-          // A DDL statement
-          nrstats++;
-          Result res = execStatement( sql, params, data );
-          result.add( res );
         }
       }
     }
