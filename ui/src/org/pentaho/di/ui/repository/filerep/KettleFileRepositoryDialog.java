@@ -284,8 +284,8 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    wId.setText( Const.NVL( input.getName(), "" ) );
-    wName.setText( Const.NVL( input.getDescription(), "" ) );
+    wName.setText( Const.NVL( input.getName(), "" ) );
+    wId.setText( Const.NVL( input.getDescription(), "" ) );
     wBaseDir.setText( Const.NVL( input.getBaseDirectory(), "" ) );
     wReadOnly.setSelection( input.isReadOnly() );
     wHidesHiddenFiles.setSelection( input.isHidingHiddenFiles() );
@@ -297,8 +297,8 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
   }
 
   private void getInfo( KettleFileRepositoryMeta info ) {
-    info.setName( wId.getText() );
-    info.setDescription( wName.getText() );
+    info.setName( wName.getText() );
+    info.setDescription( wId.getText() );
     info.setBaseDirectory( wBaseDir.getText() );
     info.setReadOnly( wReadOnly.getSelection() );
     info.setHidingHiddenFiles( wHidesHiddenFiles.getSelection() );
