@@ -52,6 +52,7 @@ public class TransformationEventsTriggeredTest extends BaseEventsTriggeredTest {
     Assert.assertTrue( dummyMonitor.wasTriggered );
     Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof Trans );
     Assert.assertTrue( ( (Trans) dummyMonitor.eventObject ).getName().equals( SAMPLE_TRANS_NAME ) );
+    Assert.assertTrue( ( (Trans) dummyMonitor.eventObject ).getFilename().equals( SAMPLE_TRANS ) );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
@@ -136,6 +137,7 @@ public class TransformationEventsTriggeredTest extends BaseEventsTriggeredTest {
     Assert.assertTrue( dummyMonitor.wasTriggered );
     Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof TransMeta );
     Assert.assertTrue( ( (TransMeta) dummyMonitor.eventObject ).getName().equals( SAMPLE_TRANS_NAME ) );
+    Assert.assertTrue( ( (TransMeta) dummyMonitor.eventObject ).getFilename().equals( SAMPLE_TRANS ) );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
@@ -156,6 +158,7 @@ public class TransformationEventsTriggeredTest extends BaseEventsTriggeredTest {
     Assert.assertTrue( dummyMonitor.wasTriggered );
     Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof Trans );
     Assert.assertTrue( ( (Trans) dummyMonitor.eventObject ).getName().equals( SAMPLE_TRANS_NAME ) );
+    Assert.assertTrue( ( (Trans) dummyMonitor.eventObject ).getFilename().equals( SAMPLE_TRANS ) );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );

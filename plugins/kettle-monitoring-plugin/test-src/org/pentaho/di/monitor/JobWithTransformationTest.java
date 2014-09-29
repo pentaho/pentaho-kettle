@@ -16,6 +16,7 @@
 */
 package org.pentaho.di.monitor;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
@@ -33,6 +34,7 @@ import org.pentaho.di.trans.TransMeta;
 public class JobWithTransformationTest extends BaseEventsTriggeredTest {
 
   private static final String SAMPLE_TRANS_NAME = "Delay row - Basic example";
+  private static final String SAMPLE_TRANS = "test-resources/Delay row - Basic example.ktr";
   private static final String SAMPLE_JOB_NAME = "Delay Row Job";
   private static final String SAMPLE_JOB_WITH_TRANS = "test-resources/Delay Row Job.kjb";
 
@@ -52,11 +54,12 @@ public class JobWithTransformationTest extends BaseEventsTriggeredTest {
     Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof Job );
     Assert.assertTrue( ( (Job) dummyMonitor.eventObject ).getJobMeta().getName().equals( SAMPLE_JOB_NAME ) );
 
-    JobEvent e =
-      new JobEvent( EventType.Job.STARTED ).build( ( (Job) dummyMonitor.eventObject ) );
+    JobEvent e = new JobEvent( EventType.Job.STARTED ).build( ( (Job) dummyMonitor.eventObject ) );
 
     Assert.assertNotNull( e );
     Assert.assertTrue( SAMPLE_JOB_NAME.equals( e.getName() ) );
+    Assert.assertTrue( SAMPLE_JOB_WITH_TRANS.equals( e.getFilename() ) );
+    Assert.assertTrue( EventType.Job.STARTED.getSnmpId() == e.getStatus() );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
@@ -78,11 +81,12 @@ public class JobWithTransformationTest extends BaseEventsTriggeredTest {
     Assert.assertTrue( dummyMonitor.eventObject != null && dummyMonitor.eventObject instanceof Job );
     Assert.assertTrue( ( (Job) dummyMonitor.eventObject ).getJobMeta().getName().contains( SAMPLE_JOB_NAME ) );
 
-    JobEvent e =
-      new JobEvent( EventType.Job.STARTED ).build( ( (Job) dummyMonitor.eventObject ) );
+    JobEvent e = new JobEvent( EventType.Job.FINISHED ).build( ( (Job) dummyMonitor.eventObject ) );
 
     Assert.assertNotNull( e );
     Assert.assertTrue( SAMPLE_JOB_NAME.equals( e.getName() ) );
+    Assert.assertTrue( SAMPLE_JOB_WITH_TRANS.equals( e.getFilename() ) );
+    Assert.assertTrue( EventType.Job.FINISHED.getSnmpId() == e.getStatus() );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
@@ -105,11 +109,11 @@ public class JobWithTransformationTest extends BaseEventsTriggeredTest {
     Assert.assertTrue( ( (TransMeta) dummyMonitor.eventObject ).getName().equals( SAMPLE_TRANS_NAME ) );
 
     TransformationEvent e =
-      new TransformationEvent( EventType.Transformation.STARTED ).build( ( (TransMeta) dummyMonitor.eventObject ) );
+      new TransformationEvent( EventType.Transformation.META_LOADED ).build( ( (TransMeta) dummyMonitor.eventObject ) );
 
     Assert.assertNotNull( e );
     Assert.assertTrue( SAMPLE_TRANS_NAME.equals( e.getName() ) );
-    //Assert.assertTrue( SAMPLE_JOB_NAME.equals( e.getParentJobName() ) );
+    Assert.assertTrue( SAMPLE_TRANS.equals( e.getFilename() ) );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
@@ -132,11 +136,13 @@ public class JobWithTransformationTest extends BaseEventsTriggeredTest {
     Assert.assertTrue( ( (Trans) dummyMonitor.eventObject ).getName().equals( SAMPLE_TRANS_NAME ) );
 
     TransformationEvent e =
-      new TransformationEvent( EventType.Transformation.STARTED ).build( ( (Trans) dummyMonitor.eventObject ) );
+      new TransformationEvent( EventType.Transformation.FINISHED ).build( ( (Trans) dummyMonitor.eventObject ) );
 
     Assert.assertNotNull( e );
     Assert.assertTrue( SAMPLE_TRANS_NAME.equals( e.getName() ) );
     Assert.assertTrue( SAMPLE_JOB_NAME.equals( e.getParentJobName() ) );
+    Assert.assertTrue( SAMPLE_TRANS.equals( e.getFilename() ) );
+    Assert.assertTrue( EventType.Transformation.FINISHED.getSnmpId() == e.getStatus() );
 
     dummyMonitor.reset();
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, mockPlugin );
