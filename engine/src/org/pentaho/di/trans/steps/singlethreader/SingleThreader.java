@@ -67,45 +67,42 @@ public class SingleThreader extends BaseStep implements StepInterface {
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (SingleThreaderMeta) smi;
     setData( (SingleThreaderData) sdi );
-
+    SingleThreaderData singleThreaderData = getData();
     Object[] row = getRow();
     if ( row == null ) {
-      if ( getData().batchCount > 0 ) {
-        getData().batchCount = 0;
+      if (  singleThreaderData.batchCount > 0 ) {
+        singleThreaderData.batchCount = 0;
         return execOneIteration();
       }
 
       setOutputDone();
       return false;
     }
-
     if ( first ) {
       first = false;
-
-      getData().startTime = System.currentTimeMillis();
+      singleThreaderData.startTime = System.currentTimeMillis();
     }
 
     // Add the row to the producer...
     //
-    getData().rowProducer.putRow( getInputRowMeta(), row );
-    getData().batchCount++;
+    singleThreaderData.rowProducer.putRow( getInputRowMeta(), row );
+    singleThreaderData.batchCount++;
 
     if ( getStepMeta().isDoingErrorHandling() ) {
-      getData().errorBuffer.add( row );
+      singleThreaderData.errorBuffer.add( row );
     }
 
-    boolean countWindow = getData().batchSize > 0 && getData().batchCount >= getData().batchSize;
-    boolean timeWindow = getData().batchTime > 0 && ( System.currentTimeMillis() - getData().startTime ) > getData().batchTime;
+    boolean countWindow =  singleThreaderData.batchSize > 0 &&  singleThreaderData.batchCount >=  singleThreaderData.batchSize;
+    boolean timeWindow =  singleThreaderData.batchTime > 0 && ( System.currentTimeMillis() -  singleThreaderData.startTime ) >  singleThreaderData.batchTime;
 
     if ( countWindow || timeWindow ) {
-      getData().batchCount = 0;
-
+      singleThreaderData.batchCount = 0;
       boolean more = execOneIteration();
       if ( !more ) {
         setOutputDone();
         return false;
       }
-      getData().startTime = System.currentTimeMillis();
+      singleThreaderData.startTime = System.currentTimeMillis();
     }
     return true;
   }
@@ -131,17 +128,18 @@ public class SingleThreader extends BaseStep implements StepInterface {
   }
 
   private boolean handleError() throws KettleStepException {
+    SingleThreaderData singleThreaderData = getData();
     if ( getStepMeta().isDoingErrorHandling() ) {
       int lastLogLine = KettleLogStore.getLastBufferLineNr();
       StringBuffer logText =
-        KettleLogStore.getAppender().getBuffer( getData().mappingTrans.getLogChannelId(), false, getData().lastLogLine );
-      getData().lastLogLine = lastLogLine;
+        KettleLogStore.getAppender().getBuffer(  singleThreaderData.mappingTrans.getLogChannelId(), false,  singleThreaderData.lastLogLine );
+      singleThreaderData.lastLogLine = lastLogLine;
 
-      for ( Object[] row : getData().errorBuffer ) {
+      for ( Object[] row :  singleThreaderData.errorBuffer ) {
         putError( getInputRowMeta(), row, 1L, logText.toString(), null, "STR-001" );
       }
 
-      getData().executor.clearError();
+      singleThreaderData.executor.clearError();
 
       return true; // continue
     } else {
@@ -185,13 +183,13 @@ public class SingleThreader extends BaseStep implements StepInterface {
   }
 
   public void prepareMappingExecution() throws KettleException {
+    SingleThreaderData singleThreaderData = getData();
     // Set the type to single threaded in case the user forgot...
     //
-    getData().mappingTransMeta.setTransformationType( TransformationType.SingleThreaded );
+    singleThreaderData.mappingTransMeta.setTransformationType( TransformationType.SingleThreaded );
 
     // Create the transformation from meta-data...
-    //
-    getData().mappingTrans = new Trans( getData().mappingTransMeta, getTrans() );
+    singleThreaderData.mappingTrans = new Trans( singleThreaderData.mappingTransMeta, getTrans() );
 
     // Pass the parameters down to the sub-transformation.
     //
@@ -200,44 +198,43 @@ public class SingleThreader extends BaseStep implements StepInterface {
     // Disable thread priority managment as it will slow things down needlessly.
     // The single threaded engine doesn't use threads and doesn't need row locking.
     //
-    getData().mappingTrans.getTransMeta().setUsingThreadPriorityManagment( false );
+    singleThreaderData.mappingTrans.getTransMeta().setUsingThreadPriorityManagment( false );
 
     // Leave a path up so that we can set variables in sub-transformations...
     //
-    getData().mappingTrans.setParentTrans( getTrans() );
+    singleThreaderData.mappingTrans.setParentTrans( getTrans() );
 
     // Pass down the safe mode flag to the mapping...
     //
-    getData().mappingTrans.setSafeModeEnabled( getTrans().isSafeModeEnabled() );
+    singleThreaderData.mappingTrans.setSafeModeEnabled( getTrans().isSafeModeEnabled() );
 
     // Pass down the metrics gathering flag to the mapping...
     //
-    getData().mappingTrans.setGatheringMetrics( getTrans().isGatheringMetrics() );
+    singleThreaderData.mappingTrans.setGatheringMetrics( getTrans().isGatheringMetrics() );
 
     // Also set the name of this step in the mapping transformation for logging purposes
     //
-    getData().mappingTrans.setMappingStepName( getStepname() );
+    singleThreaderData.mappingTrans.setMappingStepName( getStepname() );
 
     initServletConfig();
 
     // prepare the execution
     //
-    getData().mappingTrans.prepareExecution( null );
+    singleThreaderData.mappingTrans.prepareExecution( null );
 
     // If the inject step is a mapping input step, tell it all is OK...
     //
-    if ( getData().injectStepMeta.isMappingInput() ) {
+    if ( singleThreaderData.injectStepMeta.isMappingInput() ) {
       MappingInputData mappingInputData =
-        (MappingInputData) getData().mappingTrans.findDataInterface( getData().injectStepMeta.getName() );
+        (MappingInputData) singleThreaderData.mappingTrans.findDataInterface( singleThreaderData.injectStepMeta.getName() );
       mappingInputData.sourceSteps = new StepInterface[0];
       mappingInputData.valueRenames = new ArrayList<MappingValueRename>();
     }
 
     // Add row producer & row listener
-    //
-    getData().rowProducer = getData().mappingTrans.addRowProducer( meta.getInjectStep(), 0 );
+    singleThreaderData.rowProducer = singleThreaderData.mappingTrans.addRowProducer( meta.getInjectStep(), 0 );
 
-    StepInterface retrieveStep = getData().mappingTrans.getStepInterface( meta.getRetrieveStep(), 0 );
+    StepInterface retrieveStep = singleThreaderData.mappingTrans.getStepInterface( meta.getRetrieveStep(), 0 );
     retrieveStep.addRowListener( new RowAdapter() {
       @Override
       public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
@@ -247,18 +244,17 @@ public class SingleThreader extends BaseStep implements StepInterface {
       }
     } );
 
-    getData().mappingTrans.startThreads();
+    singleThreaderData.mappingTrans.startThreads();
 
     // Create the executor...
-    //
-    getData().executor = new SingleThreadedTransExecutor( getData().mappingTrans );
+    singleThreaderData.executor = new SingleThreadedTransExecutor( singleThreaderData.mappingTrans );
 
     // We launch the transformation in the processRow when the first row is received.
     // This will allow the correct variables to be passed.
     // Otherwise the parent is the init() thread which will be gone once the init is done.
     //
     try {
-      boolean ok = getData().executor.init();
+      boolean ok = singleThreaderData.executor.init();
       if ( !ok ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "SingleThreader.Exception.UnableToInitSingleThreadedTransformation" ) );
@@ -270,7 +266,7 @@ public class SingleThreader extends BaseStep implements StepInterface {
 
     // Add the mapping transformation to the active sub-transformations map in the parent transformation
     //
-    getTrans().getActiveSubtransformations().put( getStepname(), getData().mappingTrans );
+    getTrans().getActiveSubtransformations().put( getStepname(), singleThreaderData.mappingTrans );
   }
 
   void initServletConfig() {
@@ -280,35 +276,33 @@ public class SingleThreader extends BaseStep implements StepInterface {
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SingleThreaderMeta) smi;
     setData( (SingleThreaderData) sdi );
-
+    SingleThreaderData singleThreaderData = getData();
     if ( super.init( smi, sdi ) ) {
       // First we need to load the mapping (transformation)
       try {
         // The batch size...
-        //
-        getData().batchSize = Const.toInt( environmentSubstitute( meta.getBatchSize() ), 0 );
-        getData().batchTime = Const.toInt( environmentSubstitute( meta.getBatchTime() ), 0 );
+        singleThreaderData.batchSize = Const.toInt( environmentSubstitute( meta.getBatchSize() ), 0 );
+        singleThreaderData.batchTime = Const.toInt( environmentSubstitute( meta.getBatchTime() ), 0 );
 
         // Pass the repository down to the metadata object...
         //
         meta.setRepository( getTransMeta().getRepository() );
-
-        getData().mappingTransMeta = SingleThreaderMeta.loadSingleThreadedTransMeta( meta, meta.getRepository(), this );
-        if ( getData().mappingTransMeta != null ) { // Do we have a mapping at all?
+        singleThreaderData.mappingTransMeta = SingleThreaderMeta.loadSingleThreadedTransMeta( meta, meta.getRepository(), this );
+        if ( singleThreaderData.mappingTransMeta != null ) { // Do we have a mapping at all?
 
           // Validate the inject and retrieve step names
           //
           String injectStepName = environmentSubstitute( meta.getInjectStep() );
-          getData().injectStepMeta = getData().mappingTransMeta.findStep( injectStepName );
-          if ( getData().injectStepMeta == null ) {
+          singleThreaderData.injectStepMeta = singleThreaderData.mappingTransMeta.findStep( injectStepName );
+          if ( singleThreaderData.injectStepMeta == null ) {
             logError( "The inject step with name '"
               + injectStepName + "' couldn't be found in the sub-transformation" );
           }
 
           String retrieveStepName = environmentSubstitute( meta.getRetrieveStep() );
           if ( !Const.isEmpty( retrieveStepName ) ) {
-            getData().retrieveStepMeta = getData().mappingTransMeta.findStep( retrieveStepName );
-            if ( getData().retrieveStepMeta == null ) {
+            singleThreaderData.retrieveStepMeta = singleThreaderData.mappingTransMeta.findStep( retrieveStepName );
+            if ( singleThreaderData.retrieveStepMeta == null ) {
               logError( "The retrieve step with name '"
                 + retrieveStepName + "' couldn't be found in the sub-transformation" );
             }
@@ -321,7 +315,7 @@ public class SingleThreader extends BaseStep implements StepInterface {
           prepareMappingExecution();
 
           if ( getStepMeta().isDoingErrorHandling() ) {
-            getData().errorBuffer = new ArrayList<Object[]>();
+            singleThreaderData.errorBuffer = new ArrayList<Object[]>();
           }
 
           // That's all for now...

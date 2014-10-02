@@ -20,12 +20,12 @@ public class BlockingStep_PDI_11344_Test {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-      {
-        new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_INTEGER ),
-        new ValueMeta( "field3", ValueMeta.TYPE_NUMBER ), new ValueMeta( "field4", ValueMeta.TYPE_DATE ),
-        new ValueMeta( "field5", ValueMeta.TYPE_BOOLEAN ),
-        new ValueMeta( "field6", ValueMeta.TYPE_BIGNUMBER ),
-        new ValueMeta( "field7", ValueMeta.TYPE_BIGNUMBER ) };
+    {
+      new ValueMeta( "field1", ValueMeta.TYPE_STRING ), new ValueMeta( "field2", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "field3", ValueMeta.TYPE_NUMBER ), new ValueMeta( "field4", ValueMeta.TYPE_DATE ),
+      new ValueMeta( "field5", ValueMeta.TYPE_BOOLEAN ),
+      new ValueMeta( "field6", ValueMeta.TYPE_BIGNUMBER ),
+      new ValueMeta( "field7", ValueMeta.TYPE_BIGNUMBER ) };
 
     for ( ValueMetaInterface aValuesMeta : valuesMeta ) {
       rm.addValueMeta( aValuesMeta );

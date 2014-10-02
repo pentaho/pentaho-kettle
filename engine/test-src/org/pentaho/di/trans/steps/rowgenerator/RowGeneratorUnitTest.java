@@ -15,7 +15,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-public class RowGeneratorTest {
+public class RowGeneratorUnitTest {
 
   private RowGenerator rowGenerator;
 

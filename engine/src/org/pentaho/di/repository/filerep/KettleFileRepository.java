@@ -1187,7 +1187,7 @@ public class KettleFileRepository extends AbstractRepository {
     throws KettleException {
     return renameJob( id_job, null, newDir, newName );
   }
-  
+
   public ObjectId renameJob( ObjectId id_job, String versionComment, RepositoryDirectoryInterface newDir,
     String newName ) throws KettleException {
     ObjectId objectId = renameObject( id_job, newDir, newName, EXT_JOB );
@@ -1235,7 +1235,7 @@ public class KettleFileRepository extends AbstractRepository {
   }
 
   public ObjectId renameTransformation( ObjectId id_transformation, RepositoryDirectoryInterface newDir, String newName )
-      throws KettleException {
+    throws KettleException {
     return renameTransformation( id_transformation, null, newDir, newName );
   }
 

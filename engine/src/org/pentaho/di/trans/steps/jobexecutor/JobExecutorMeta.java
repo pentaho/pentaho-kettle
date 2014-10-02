@@ -334,8 +334,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-          throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     String method = rep.getStepAttributeString( id_step, "specification_method" );
     specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
     String jobId = rep.getStepAttributeString( id_step, "job_object_id" );

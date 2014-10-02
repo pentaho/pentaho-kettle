@@ -26,9 +26,9 @@ public class KettleDatabaseRepositoryStepDelegateUnitTest {
     when( rep.connectionDelegate.getDatabaseMeta() ).thenReturn( mock( DatabaseMeta.class ) );
 
     KettleDatabaseRepositoryStepDelegate delegate = new KettleDatabaseRepositoryStepDelegate( rep );
-    delegate.getStepTypeIDs( values, amount);
+    delegate.getStepTypeIDs( values, amount );
 
-    verify( rep.connectionDelegate)
+    verify( rep.connectionDelegate )
       .getIDsWithValues( anyString(), anyString(), anyString(), argThat( new BaseMatcher<String[]>() {
 
         @Override public boolean matches( Object item ) {

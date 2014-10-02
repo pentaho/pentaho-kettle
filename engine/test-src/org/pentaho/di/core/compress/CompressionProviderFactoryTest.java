@@ -66,13 +66,13 @@ public class CompressionProviderFactoryTest {
     assertTrue( provider.getClass().isAssignableFrom( GZIPCompressionProvider.class ) );
     assertEquals( "GZip", provider.getName() );
     assertEquals( "GZIP compression", provider.getDescription() );
-    
+
     provider = factory.createCompressionProviderInstance( "Snappy" );
     assertNotNull( provider );
     assertTrue( provider.getClass().isAssignableFrom( SnappyCompressionProvider.class ) );
     assertEquals( "Snappy", provider.getName() );
     assertEquals( "Snappy compression", provider.getDescription() );
-    
+
     provider = factory.createCompressionProviderInstance( "Hadoop-snappy" );
     assertNotNull( provider );
     assertTrue( provider.getClass().isAssignableFrom( HadoopSnappyCompressionProvider.class ) );
