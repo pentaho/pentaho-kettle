@@ -269,6 +269,13 @@
    <function>CONTAINS</function>
    <rightvalue/>
    <value><name>constant</name><type>String</type><text>Servlet</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value>   </condition>
+  <condition>
+   <negated>N</negated>
+   <operator>OR</operator>
+   <leftvalue>short_filename</leftvalue>
+   <function>CONTAINS</function>
+   <rightvalue/>
+   <value><name>constant</name><type>String</type><text>Change log processing 2</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value>   </condition>
   </conditions>
  </condition>
     </compare>
