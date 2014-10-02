@@ -72,7 +72,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
 
   private Label wlId;
 
-  private Text wId;
+  private Text wDescription;
 
   private FormData fdlId, fdId;
 
@@ -228,13 +228,13 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
     fdlId.top = new FormAttachment( wlName, margin * 3 );
     fdlId.right = new FormAttachment( middle, -margin );
     wlId.setLayoutData( fdlId );
-    wId = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wId );
+    wDescription = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wDescription );
     fdId = new FormData();
     fdId.left = new FormAttachment( middle, 0 );
     fdId.top = new FormAttachment( wlName, margin * 3 );
     fdId.right = new FormAttachment( 100, 0 );
-    wId.setLayoutData( fdId );
+    wDescription.setLayoutData( fdId );
 
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
@@ -285,7 +285,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
    */
   public void getData() {
     wName.setText( Const.NVL( input.getName(), "" ) );
-    wId.setText( Const.NVL( input.getDescription(), "" ) );
+    wDescription.setText( Const.NVL( input.getDescription(), "" ) );
     wBaseDir.setText( Const.NVL( input.getBaseDirectory(), "" ) );
     wReadOnly.setSelection( input.isReadOnly() );
     wHidesHiddenFiles.setSelection( input.isHidingHiddenFiles() );
@@ -298,7 +298,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
 
   private void getInfo( KettleFileRepositoryMeta info ) {
     info.setName( wName.getText() );
-    info.setDescription( wId.getText() );
+    info.setDescription( wDescription.getText() );
     info.setBaseDirectory( wBaseDir.getText() );
     info.setReadOnly( wReadOnly.getSelection() );
     info.setHidingHiddenFiles( wHidesHiddenFiles.getSelection() );
