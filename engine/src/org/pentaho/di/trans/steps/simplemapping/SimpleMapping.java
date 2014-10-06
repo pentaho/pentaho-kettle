@@ -69,10 +69,10 @@ public class SimpleMapping extends BaseStep implements StepInterface {
    * MappingInput and one MappingOutput step in the Mapping.
    */
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+    meta = (SimpleMappingMeta) smi;
+    setData( (SimpleMappingData) sdi );
     SimpleMappingData simpleMappingData = getData();
     try {
-      meta = (SimpleMappingMeta) smi;
-      setData( (SimpleMappingData) sdi );
       if ( first ) {
         first = false;
         simpleMappingData.wasStarted = true;
