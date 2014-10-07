@@ -3445,14 +3445,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       case TYPE_INTEGER:
         // if (isStorageBinaryString() && identicalFormat) return
         // compareBinaryStrings((byte[])data1, (byte[])data2); TODO
-        long icompare = getInteger( data1 ).longValue() - getInteger( data2 ).longValue();
-        if ( icompare < 0 ) {
-          cmp = -1;
-        } else if ( icompare > 0 ) {
-          cmp = 1;
-        } else {
-          cmp = 0;
-        }
+        cmp = getInteger( data1 ).compareTo( getInteger( data2 ) );
         break;
 
       case TYPE_NUMBER:
@@ -3460,14 +3453,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         break;
 
       case TYPE_DATE:
-        long lcompare = getDate( data1 ).getTime() - getDate( data2 ).getTime();
-        if ( lcompare < 0 ) {
-          cmp = -1;
-        } else if ( lcompare > 0 ) {
-          cmp = 1;
-        } else {
-          cmp = 0;
-        }
+        cmp = Long.valueOf(getDate( data1 ).getTime()).compareTo( Long.valueOf(getDate( data2 ).getTime() ) );
         break;
 
       case TYPE_BIGNUMBER:
