@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -98,63 +99,63 @@ public class Pan {
         "maxlogtimeout", BaseMessages.getString( PKG, "Pan.CmdLine.MaxLogTimeout" ), new StringBuffer() );
 
     CommandLineOption[] options =
-      new CommandLineOption[] {
+      new CommandLineOption[]{
         new CommandLineOption( "rep", BaseMessages.getString( PKG, "Pan.ComdLine.RepName" ), optionRepname =
           new StringBuffer() ),
         new CommandLineOption(
           "user", BaseMessages.getString( PKG, "Pan.ComdLine.RepUsername" ), optionUsername =
-            new StringBuffer() ),
+          new StringBuffer() ),
         new CommandLineOption(
           "pass", BaseMessages.getString( PKG, "Pan.ComdLine.RepPassword" ), optionPassword =
-            new StringBuffer() ),
+          new StringBuffer() ),
         new CommandLineOption(
           "trans", BaseMessages.getString( PKG, "Pan.ComdLine.TransName" ), optionTransname =
-            new StringBuffer() ),
+          new StringBuffer() ),
         new CommandLineOption( "dir", BaseMessages.getString( PKG, "Pan.ComdLine.RepDir" ), optionDirname =
           new StringBuffer() ),
         new CommandLineOption(
           "file", BaseMessages.getString( PKG, "Pan.ComdLine.XMLTransFile" ), optionFilename =
-            new StringBuffer() ),
+          new StringBuffer() ),
         new CommandLineOption(
           "level", BaseMessages.getString( PKG, "Pan.ComdLine.LogLevel" ), optionLoglevel =
-            new StringBuffer() ),
+          new StringBuffer() ),
         new CommandLineOption(
           "logfile", BaseMessages.getString( PKG, "Pan.ComdLine.LogFile" ), optionLogfile =
-            new StringBuffer() ),
+          new StringBuffer() ),
         new CommandLineOption(
           "log", BaseMessages.getString( PKG, "Pan.ComdLine.LogOldFile" ), optionLogfileOld =
-            new StringBuffer(), false, true ),
+          new StringBuffer(), false, true ),
         new CommandLineOption(
           "listdir", BaseMessages.getString( PKG, "Pan.ComdLine.ListDirRep" ), optionListdir =
-            new StringBuffer(), true, false ),
+          new StringBuffer(), true, false ),
         new CommandLineOption(
           "listtrans", BaseMessages.getString( PKG, "Pan.ComdLine.ListTransDir" ), optionListtrans =
-            new StringBuffer(), true, false ),
+          new StringBuffer(), true, false ),
         new CommandLineOption(
           "listrep", BaseMessages.getString( PKG, "Pan.ComdLine.ListReps" ), optionListrep =
-            new StringBuffer(), true, false ),
+          new StringBuffer(), true, false ),
         new CommandLineOption(
           "exprep", BaseMessages.getString( PKG, "Pan.ComdLine.ExpObjectsXML" ), optionExprep =
-            new StringBuffer(), true, false ),
+          new StringBuffer(), true, false ),
         new CommandLineOption( "norep", BaseMessages.getString( PKG, "Pan.ComdLine.NoRep" ), optionNorep =
           new StringBuffer(), true, false ),
         new CommandLineOption(
           "safemode", BaseMessages.getString( PKG, "Pan.ComdLine.SafeMode" ), optionSafemode =
-            new StringBuffer(), true, false ),
+          new StringBuffer(), true, false ),
         new CommandLineOption(
           "version", BaseMessages.getString( PKG, "Pan.ComdLine.Version" ), optionVersion =
-            new StringBuffer(), true, false ),
+          new StringBuffer(), true, false ),
         new CommandLineOption(
           "jarfile", BaseMessages.getString( PKG, "Pan.ComdLine.JarFile" ), optionJarFilename =
-            new StringBuffer(), false, true ),
+          new StringBuffer(), false, true ),
         new CommandLineOption(
           "param", BaseMessages.getString( PKG, "Pan.ComdLine.Param" ), optionParams, false ),
         new CommandLineOption(
           "listparam", BaseMessages.getString( PKG, "Pan.ComdLine.ListParam" ), optionListParam =
-            new StringBuffer(), true, false ),
+          new StringBuffer(), true, false ),
         new CommandLineOption(
           "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
-            new StringBuffer(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
+          new StringBuffer(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
 
     if ( args.size() == 0 ) {
       CommandLineOption.printUsage( options );
@@ -458,24 +459,8 @@ public class Pan {
     }
 
     try {
-      trans.initializeVariablesFrom( null );
-      trans.getTransMeta().setInternalKettleVariables( trans );
       trans.setLogLevel( log.getLogLevel() );
-
-      // Map the command line named parameters to the actual named parameters.
-      // Skip for
-      // the moment any extra command line parameter not known in the
-      // transformation.
-      String[] transParams = trans.listParameters();
-      for ( String param : transParams ) {
-        String value = optionParams.getParameterValue( param );
-        if ( value != null ) {
-          trans.setParameterValue( param, value );
-        }
-      }
-      // Put the parameters over the already defined variable space. Parameters
-      // get priority.
-      trans.activateParameters();
+      configureParameters( trans, optionParams, transMeta );
 
       // See if we want to run in safe mode:
       if ( "Y".equalsIgnoreCase( optionSafemode.toString() ) ) {
@@ -614,6 +599,36 @@ public class Pan {
       }
     }
 
+  }
+
+  /**
+   * Configures the transformation with the given parameters and their values
+   *
+   * @param trans        the executable transformation object
+   * @param optionParams the list of parameters to set for the transformation
+   * @param transMeta    the transformation metadata
+   * @throws UnknownParamException
+   */
+  protected static void configureParameters( Trans trans, NamedParams optionParams,
+                                             TransMeta transMeta ) throws UnknownParamException {
+    trans.initializeVariablesFrom( null );
+    trans.getTransMeta().setInternalKettleVariables( trans );
+
+    // Map the command line named parameters to the actual named parameters.
+    // Skip for
+    // the moment any extra command line parameter not known in the
+    // transformation.
+    String[] transParams = trans.listParameters();
+    for ( String param : transParams ) {
+      String value = optionParams.getParameterValue( param );
+      if ( value != null ) {
+        trans.setParameterValue( param, value );
+        transMeta.setParameterValue( param, value );
+      }
+    }
+    // Put the parameters over the already defined variable space. Parameters
+    // get priority.
+    trans.activateParameters();
   }
 
   private static final void exitJVM( int status ) {
