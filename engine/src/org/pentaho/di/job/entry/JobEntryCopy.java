@@ -104,7 +104,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
     retval.append( AttributesUtil.getAttributesXml( attributesMap ) );
 
-    retval.append( "      " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     return retval.toString();
   }
 
