@@ -72,7 +72,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryZipFile.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String[] FILETYPES = new String[] {
+  private static final String[] FILETYPES = new String[]{
     BaseMessages.getString( PKG, "JobZipFiles.Filetype.Zip" ),
     BaseMessages.getString( PKG, "JobZipFiles.Filetype.All" ) };
 
@@ -502,7 +502,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
       public void widgetSelected( SelectionEvent e ) {
         FileDialog dialog = new FileDialog( shell, SWT.SAVE );
         // dialog.setFilterExtensions(new String[] {"*"});
-        dialog.setFilterExtensions( new String[] { "*.zip;*.ZIP", "*" } );
+        dialog.setFilterExtensions( new String[]{ "*.zip;*.ZIP", "*" } );
         if ( wZipFilename.getText() != null ) {
           dialog.setFileName( jobMeta.environmentSubstitute( wZipFilename.getText() ) );
         }
@@ -861,7 +861,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
     fdStoredSourcePathDepth.top = new FormAttachment( wCreateMoveToDirectory, margin );
     fdStoredSourcePathDepth.right = new FormAttachment( 100, 0 );
     wStoredSourcePathDepth.setLayoutData( fdStoredSourcePathDepth );
-    wStoredSourcePathDepth.setItems( new String[] {
+    wStoredSourcePathDepth.setItems( new String[]{
       "0 : /pentaho/work/transfer/input/project/file.txt", "1 : file.txt", "2 : project/file.txt",
       "3 : input/project/file.txt", "4 : transfer/input/project/file.txt",
       "5 : work/transfer/input/project/file.txt", "6 : pentaho/work/transfer/input/project/file.txt",
@@ -949,7 +949,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
     wCancel = new Button( shell, SWT.PUSH );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-    BaseStepDialog.positionBottomButtons( shell, new Button[] { wOK, wCancel }, margin, wTabFolder );
+    BaseStepDialog.positionBottomButtons( shell, new Button[]{ wOK, wCancel }, margin, wTabFolder );
 
     // Add listeners
     lsCancel = new Listener() {
@@ -1013,7 +1013,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
     wbSourceFile.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*" } );
+        dialog.setFilterExtensions( new String[]{ "*" } );
         if ( wSourceDirectory.getText() != null ) {
           dialog.setFileName( jobMeta.environmentSubstitute( wSourceDirectory.getText() ) );
         }
@@ -1150,7 +1150,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
     wCreateMoveToDirectory.setSelection( jobEntry.isCreateMoveToDirectory() );
     wIncludeSubfolders.setSelection( jobEntry.isIncludingSubFolders() );
 
-    wStoredSourcePathDepth.setText( jobEntry.getStoredSourcePathDepth() );
+    wStoredSourcePathDepth.setText( Const.NVL( jobEntry.getStoredSourcePathDepth(), "" ) );
 
     wName.selectAll();
     wName.setFocus();
