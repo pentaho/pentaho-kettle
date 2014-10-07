@@ -24,6 +24,7 @@ package org.pentaho.di.trans;
 
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
@@ -188,11 +189,11 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable<TransHo
     StringBuilder retval = new StringBuilder( 200 );
 
     if ( from_step != null && to_step != null ) {
-      retval.append( "  <hop> " );
-      retval.append( XMLHandler.addTagValue( "from", from_step.getName(), false ) );
-      retval.append( XMLHandler.addTagValue( "to", to_step.getName(), false ) );
-      retval.append( XMLHandler.addTagValue( "enabled", enabled, false ) );
-      retval.append( " </hop>" );
+      retval.append( "    " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "from", from_step.getName() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "to", to_step.getName() ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "enabled", enabled ) );
+      retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     }
 
     return retval.toString();
