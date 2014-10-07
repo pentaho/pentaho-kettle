@@ -32,7 +32,10 @@ import java.io.StringReader;
  * literals are supported, including nested quotes (whether the SQL dialect supports them or not).
  *
  * @author Matt Burgess
+ * 
+ * @deprecated Use SqlScriptParser instead.
  */
+@Deprecated
 public class SqlCommentScrubber {
 
   /** End-of-File (EOF) indicator **/
