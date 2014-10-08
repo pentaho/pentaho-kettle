@@ -19,61 +19,47 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.job.entries.simpleeval;
+package org.pentaho.di.job.entries.pgpverify;
 
-import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+import static java.util.Arrays.asList;
 
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
+import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
 
-public class JobEntrySimpleEvalLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntrySimpleEval> {
+public class JobEntryPGPVerifyTest extends JobEntryLoadSaveTestSupport<JobEntryPGPVerify> {
 
   @Override
-  protected Class<JobEntrySimpleEval> getJobEntryClass() {
-    return JobEntrySimpleEval.class;
+  protected Class<JobEntryPGPVerify> getJobEntryClass() {
+    return JobEntryPGPVerify.class;
   }
 
   @Override
   protected List<String> listCommonAttributes() {
     return asList(
-      "fieldname",
-      "variablename",
-      "mask",
-      "comparevalue",
-      "minvalue",
-      "maxvalue",
-      "successwhenvarset"
-    );
-  }
-
-  @Override
-  protected List<String> listXmlAttributes() {
-    return asList( "name", "description" );
+        "gpglocation",
+        "filename",
+        "detachedfilename",
+        "useDetachedSignature" );
   }
 
   @Override
   protected Map<String, String> createGettersMap() {
     return toMap(
-      "fieldname", "getFieldName",
-      "variablename", "getVariableName",
-      "comparevalue", "getCompareValue",
-      "minvalue", "getMinValue",
-      "maxvalue", "getMaxValue",
-      "successwhenvarset", "isSuccessWhenVarSet"
-    );
+        "gpglocation", "getGPGLocation",
+        "filename", "getFilename",
+        "detachedfilename", "getDetachedfilename",
+        "useDetachedSignature", "useDetachedfilename" );
   }
 
   @Override
   protected Map<String, String> createSettersMap() {
     return toMap(
-      "fieldname", "setFieldName",
-      "variablename", "setVariableName",
-      "comparevalue", "setCompareValue",
-      "minvalue", "setMinValue",
-      "maxvalue", "setMaxValue",
-      "successwhenvarset", "setSuccessWhenVarSet"
-    );
+        "gpglocation", "setGPGLocation",
+        "filename", "setFilename",
+        "detachedfilename", "setDetachedfilename",
+        "useDetachedSignature", "setUseDetachedfilename" );
   }
+
 }

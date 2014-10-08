@@ -19,61 +19,46 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.job.entries.simpleeval;
+package org.pentaho.di.job.entries.deleteresultfilenames;
 
-import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+import static java.util.Arrays.asList;
 
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
+import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
 
-public class JobEntrySimpleEvalLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntrySimpleEval> {
+public class JobEntryDeleteResultFilenamesTest extends JobEntryLoadSaveTestSupport<JobEntryDeleteResultFilenames> {
 
   @Override
-  protected Class<JobEntrySimpleEval> getJobEntryClass() {
-    return JobEntrySimpleEval.class;
+  protected Class<JobEntryDeleteResultFilenames> getJobEntryClass() {
+    return JobEntryDeleteResultFilenames.class;
   }
 
   @Override
   protected List<String> listCommonAttributes() {
     return asList(
-      "fieldname",
-      "variablename",
-      "mask",
-      "comparevalue",
-      "minvalue",
-      "maxvalue",
-      "successwhenvarset"
-    );
-  }
-
-  @Override
-  protected List<String> listXmlAttributes() {
-    return asList( "name", "description" );
+        "foldername",
+        "specifywildcard",
+        "wildcard",
+        "wildcardexclude" );
   }
 
   @Override
   protected Map<String, String> createGettersMap() {
     return toMap(
-      "fieldname", "getFieldName",
-      "variablename", "getVariableName",
-      "comparevalue", "getCompareValue",
-      "minvalue", "getMinValue",
-      "maxvalue", "getMaxValue",
-      "successwhenvarset", "isSuccessWhenVarSet"
-    );
+        "foldername", "getFoldername",
+        "specifywildcard", "isSpecifyWildcard",
+        "wildcard", "getWildcard",
+        "wildcardexclude", "getWildcardExclude" );
   }
 
   @Override
   protected Map<String, String> createSettersMap() {
     return toMap(
-      "fieldname", "setFieldName",
-      "variablename", "setVariableName",
-      "comparevalue", "setCompareValue",
-      "minvalue", "setMinValue",
-      "maxvalue", "setMaxValue",
-      "successwhenvarset", "setSuccessWhenVarSet"
-    );
+        "foldername", "setFoldername",
+        "specifywildcard", "setSpecifyWildcard",
+        "wildcard", "setWildcard",
+        "wildcardexclude", "setWildcardExclude" );
   }
 }

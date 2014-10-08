@@ -19,35 +19,41 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.job.entries.deletefolders;
+package org.pentaho.di.job.entries.xsdvalidator;
 
-import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+import static java.util.Arrays.asList;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class JobEntryDeleteFoldersLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntryDeleteFolders> {
-  @Override protected Class<JobEntryDeleteFolders> getJobEntryClass() {
-    return JobEntryDeleteFolders.class;
+import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+
+public class JobEntryXSDValidatorTest extends JobEntryLoadSaveTestSupport<JobEntryXSDValidator> {
+
+  @Override
+  protected Class<JobEntryXSDValidator> getJobEntryClass() {
+    return JobEntryXSDValidator.class;
   }
 
-  @Override protected List<String> listCommonAttributes() {
-    return Arrays.asList( "argFromPrevious", "success_condition", "limit_folders" );
+  @Override
+  protected List<String> listCommonAttributes() {
+    return asList(
+        "xmlfilename",
+        "xsdfilename" );
   }
 
-  @Override protected Map<String, String> createGettersMap() {
+  @Override
+  protected Map<String, String> createGettersMap() {
     return toMap(
-      "success_condition", "getSuccessCondition",
-      "limit_folders", "getLimitFolders"
-    );
+        "xmlfilename", "getxmlFilename",
+        "xsdfilename", "getxsdFilename" );
   }
 
-  @Override protected Map<String, String> createSettersMap() {
+  @Override
+  protected Map<String, String> createSettersMap() {
     return toMap(
-      "argFromPrevious", "setPrevious",
-      "success_condition", "setSuccessCondition",
-      "limit_folders", "setLimitFolders"
-    );
+        "xmlfilename", "setxmlFilename",
+        "xsdfilename", "setxsdFilename" );
   }
+
 }

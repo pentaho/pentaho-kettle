@@ -19,61 +19,57 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.job.entries.simpleeval;
+package org.pentaho.di.job.entries.folderscompare;
 
-import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+import static java.util.Arrays.asList;
 
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
+import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
 
-public class JobEntrySimpleEvalLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntrySimpleEval> {
+public class JobEntryFoldersCompareTest extends JobEntryLoadSaveTestSupport<JobEntryFoldersCompare> {
 
   @Override
-  protected Class<JobEntrySimpleEval> getJobEntryClass() {
-    return JobEntrySimpleEval.class;
+  protected Class<JobEntryFoldersCompare> getJobEntryClass() {
+    return JobEntryFoldersCompare.class;
   }
 
   @Override
   protected List<String> listCommonAttributes() {
     return asList(
-      "fieldname",
-      "variablename",
-      "mask",
-      "comparevalue",
-      "minvalue",
-      "maxvalue",
-      "successwhenvarset"
-    );
-  }
-
-  @Override
-  protected List<String> listXmlAttributes() {
-    return asList( "name", "description" );
+        "filename1",
+        "filename2",
+        "wildcard",
+        "compareonly",
+        "includesubfolders",
+        "comparefilecontent",
+        "comparefilesize" );
   }
 
   @Override
   protected Map<String, String> createGettersMap() {
     return toMap(
-      "fieldname", "getFieldName",
-      "variablename", "getVariableName",
-      "comparevalue", "getCompareValue",
-      "minvalue", "getMinValue",
-      "maxvalue", "getMaxValue",
-      "successwhenvarset", "isSuccessWhenVarSet"
-    );
+        "filename1", "getFilename1",
+        "filename2", "getFilename2",
+        "wildcard", "getWildcard",
+        "compareonly", "getCompareOnly",
+        "includesubfolders", "isIncludeSubfolders",
+        "comparefilecontent", "isCompareFileContent",
+        "comparefilesize", "isCompareFileSize" );
   }
 
   @Override
   protected Map<String, String> createSettersMap() {
     return toMap(
-      "fieldname", "setFieldName",
-      "variablename", "setVariableName",
-      "comparevalue", "setCompareValue",
-      "minvalue", "setMinValue",
-      "maxvalue", "setMaxValue",
-      "successwhenvarset", "setSuccessWhenVarSet"
-    );
+        "filename1", "setFilename1",
+        "filename2", "setFilename2",
+        "wildcard", "setWildcard",
+        "compareonly", "setCompareOnly",
+        "includesubfolders", "setIncludeSubfolders",
+        "comparefilecontent", "setCompareFileContent",
+        "comparefilesize", "setCompareFileSize" );
   }
+
+
 }
