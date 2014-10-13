@@ -1,0 +1,71 @@
+* OK [CAPABILITY IMAP4rev1 ID NAMESPACE X-ID-ACLID UIDPLUS LITERAL+ CHILDREN XAPPLEPUSHSERVICE XYMHIGHESTMODSEQ AUTH=PLAIN AUTH=LOGIN AUTH=OAUTH2 AUTH=XYMCOOKIE AUTH=XYMECOOKIE AUTH=XYMCOOKIEB64 AUTH=XYMPKI] IMAP4rev1 imapgate-1.7.2_01.594742 imap501.mail.ir2.yahoo.com
+DELIMITER
++ 
+A0 OK AUTHENTICATE completed - Mailbox size in bytes is 19210
+DELIMITER
+* CAPABILITY IMAP4rev1 ID NAMESPACE X-ID-ACLID UIDPLUS LITERAL+ XAPPLEPUSHSERVICE XYMHIGHESTMODSEQ
+A1 OK CAPABILITY completed
+DELIMITER
+* LIST (\HasNoChildren) "/" "Sent"
+A2 OK LIST completed
+DELIMITER
+* 1 EXISTS
+* 0 RECENT
+* OK [UIDVALIDITY 1412940187] UIDs valid
+* OK [UIDNEXT 4] Predicted next UID
+* FLAGS (\Answered \Deleted \Draft \Flagged \Seen $Forwarded $Junk $NotJunk)
+* OK [PERMANENTFLAGS (\Answered \Deleted \Draft \Flagged \Seen $Forwarded $Junk $NotJunk)] Permanent flags
+* OK [HIGHESTMODSEQ 6068532478869082608]
+A3 OK [READ-WRITE] SELECT completed; now in selected state
+DELIMITER
+* 1 FETCH (FLAGS (\Seen) BODY[]<0> {2142}
+X-YMail-OSG: QFCsfMMVM1nwoAYjnUdmqgpH4Fom7EvVT4aiBzEwEim_KZ3
+ oGOntO4pnDnDcTLX7mZF0ZhjO191Ene9gwmjPKrDx3LgYIFfkwPtBD8iLUNG
+ uddnllEgSDXe3TclZtETpkfAgoAzvnVIbHcuOQfaVO.qlPuFZpG0QFI8SIcs
+ dlk0ab6hDTD0yFEYI0vKgvrbBVvfSMt_b_0LwpCYENmkCA6gLyJ4WIvvL3gq
+ E0C6C2fm.UfBbD2_2h_dCxLuxqfWm4CpN2mLgwofkSP6XVMG2at4XAKa6kwR
+ p8O.o7HSFMPui1wd66Lz4aTfzTKGQGKK5YnaShquDDqIcNsBXYil2nACiopw
+ r_D4MO3kLkkkqyZVvxZ_Qdc4Spmv_hWJcve3qQz5vez16vJuCk9jfnHz_DeQ
+ 4cmE_yXOjqlCag.PnCtkYhM9jK_swxarHInZNp7aKMXKXOqixFoEp0AulJ.f
+ 4PLtUMfMwy8PRRodzh3rzwFs_08rFKUFtNjk39o.CjFiMQHJQvUU.AEz0qBW
+ mOy.bFE9c.Ss1
+Received: from [87.226.233.158] by web160202.mail.bf1.yahoo.com via HTTP; Fri, 10 Oct 2014 04:25:23 PDT
+X-Mailer: YahooMailWebService/0.8.203.696
+Message-ID: <1412940323.17199.YahooMailNeo@web160202.mail.bf1.yahoo.com>
+Date: Fri, 10 Oct 2014 04:25:23 -0700
+From: Test Test <pent_qa@yahoo.com>
+Reply-To: Test Test <pent_qa@yahoo.com>
+Subject: TEst
+To: "misha_666@mail.ru" <misha_666@mail.ru>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="-125618876-1263822397-1412940323=:17199"
+Content-Length: 1015
+
+---125618876-1263822397-1412940323=:17199
+Content-Type: multipart/alternative; boundary="-125618876-267290076-1412940323=:17199"
+
+---125618876-267290076-1412940323=:17199
+Content-Type: text/plain; charset=us-ascii
+
+Test
+---125618876-267290076-1412940323=:17199
+Content-Type: text/html; charset=us-ascii
+
+<html><body><div style="color:#000; background-color:#fff; font-family:HelveticaNeue, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:16px"><div>Test</div></div></body></html>
+---125618876-267290076-1412940323=:17199--
+---125618876-1263822397-1412940323=:17199
+Content-Type: application/vnd.ms-excel; name="=?utf-8?B?0J/RgNC40LzQtdGAINCS0K3QlCDQmtC40YLQsNGPIDQyINC/0L7Qu9GPXzI3?= =?utf-8?B?MTMyMDAwXzIwMTAwMS0yMDExMDlpbXBleHAuY3N2?="
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="=?utf-8?B?0J/RgNC40LzQtdGAINCS0K3QlCDQmtC40YLQsNGPIDQyINC/0L7Qu9GPXzI3?= =?utf-8?B?MTMyMDAwXzIwMTAwMS0yMDExMDlpbXBleHAuY3N2?="
+
+DQo=
+
+---125618876-1263822397-1412940323=:17199--
+)
+A4 OK FETCH completed
+DELIMITER
+A5 OK CLOSE completed
+DELIMITER
+* BYE IMAP4rev1 Server logging out
+A6 OK LOGOUT completed
+DELIMITER
