@@ -2768,17 +2768,16 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public DatabaseMetaData getDatabaseMetaData() throws KettleDatabaseException {
-    try {
-      log.snap( Metrics.METRIC_DATABASE_GET_DBMETA_START, databaseMeta.getName() );
-      if ( dbmd == null ) {
+    if ( dbmd == null ) {
+      try {
+        log.snap( Metrics.METRIC_DATABASE_GET_DBMETA_START, databaseMeta.getName() );
         dbmd = connection.getMetaData(); // Only get the metadata once!
+      } catch ( Exception e ) {
+        throw new KettleDatabaseException( "Unable to get database metadata from this database connection", e );
+      } finally {
+        log.snap( Metrics.METRIC_DATABASE_GET_DBMETA_STOP, databaseMeta.getName() );
       }
-    } catch ( Exception e ) {
-      throw new KettleDatabaseException( "Unable to get database metadata from this database connection", e );
-    } finally {
-      log.snap( Metrics.METRIC_DATABASE_GET_DBMETA_STOP, databaseMeta.getName() );
     }
-
     return dbmd;
   }
 
