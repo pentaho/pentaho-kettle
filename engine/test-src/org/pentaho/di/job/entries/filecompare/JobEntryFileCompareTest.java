@@ -19,35 +19,44 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.job.entries.deletefolders;
+package org.pentaho.di.job.entries.filecompare;
 
-import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+import static java.util.Arrays.asList;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class JobEntryDeleteFoldersLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntryDeleteFolders> {
-  @Override protected Class<JobEntryDeleteFolders> getJobEntryClass() {
-    return JobEntryDeleteFolders.class;
+import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+
+public class JobEntryFileCompareTest extends JobEntryLoadSaveTestSupport<JobEntryFileCompare> {
+
+  @Override
+  protected Class<JobEntryFileCompare> getJobEntryClass() {
+    return JobEntryFileCompare.class;
   }
 
-  @Override protected List<String> listCommonAttributes() {
-    return Arrays.asList( "argFromPrevious", "success_condition", "limit_folders" );
+  @Override
+  protected List<String> listCommonAttributes() {
+    return asList(
+        "filename1",
+        "filename2",
+        "addFilenameToResult" );
   }
 
-  @Override protected Map<String, String> createGettersMap() {
+  @Override
+  protected Map<String, String> createGettersMap() {
     return toMap(
-      "success_condition", "getSuccessCondition",
-      "limit_folders", "getLimitFolders"
-    );
+        "filename1", "getFilename1",
+        "filename2", "getFilename2",
+        "addFilenameToResult", "isAddFilenameToResult" );
   }
 
-  @Override protected Map<String, String> createSettersMap() {
+  @Override
+  protected Map<String, String> createSettersMap() {
     return toMap(
-      "argFromPrevious", "setPrevious",
-      "success_condition", "setSuccessCondition",
-      "limit_folders", "setLimitFolders"
-    );
+        "filename1", "setFilename1",
+        "filename2", "setFilename2",
+        "addFilenameToResult", "setAddFilenameToResult" );
   }
+
 }

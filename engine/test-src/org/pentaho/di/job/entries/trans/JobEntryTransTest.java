@@ -54,8 +54,8 @@ public class JobEntryTransTest {
   private final String JOB_ENTRY_DESCRIPTION = "JobEntryDescription";
 
   //prepare xml for use
-  public Node getEntryNode( boolean includeTransname, ObjectLocationSpecificationMethod method ) 
-      throws ParserConfigurationException, SAXException, IOException {
+  public Node getEntryNode( boolean includeTransname, ObjectLocationSpecificationMethod method )
+    throws ParserConfigurationException, SAXException, IOException {
     JobEntryTrans jobEntryTrans = getJobEntryTrans();
     jobEntryTrans.setDescription( JOB_ENTRY_DESCRIPTION );
     jobEntryTrans.setFileName( JOB_ENTRY_FILE_NAME );
@@ -80,11 +80,11 @@ public class JobEntryTransTest {
     JobEntryTrans jobEntryTrans = new JobEntryTrans( JOB_ENTRY_TRANS_NAME );
     return jobEntryTrans;
   }
-  
+
   @SuppressWarnings( "unchecked" )
   private void testJobEntry( Repository rep, boolean includeJobName, ObjectLocationSpecificationMethod method,
-      ObjectLocationSpecificationMethod expectedMethod ) 
-      throws KettleXMLException, ParserConfigurationException, SAXException, IOException {
+      ObjectLocationSpecificationMethod expectedMethod )
+    throws KettleXMLException, ParserConfigurationException, SAXException, IOException {
     List<DatabaseMeta> databases = mock( List.class );
     List<SlaveServer> slaveServers = mock( List.class );
     IMetaStore metaStore = mock( IMetaStore.class );
@@ -93,7 +93,7 @@ public class JobEntryTransTest {
     assertEquals( "If we connect to repository then we use rep_name method",
         expectedMethod, jobEntryTrans.getSpecificationMethod() );
   }
-  
+
   /**
    * BACKLOG-179 - Exporting/Importing Jobs breaks Transformation specification when using "Specify by reference"
    * 
@@ -108,15 +108,15 @@ public class JobEntryTransTest {
    * @throws ParserConfigurationException
    */
   @Test
-  public void testChooseSpecMethodByRepositoryConnectionStatus() 
-      throws KettleXMLException, ParserConfigurationException, SAXException, IOException {
+  public void testChooseSpecMethodByRepositoryConnectionStatus()
+    throws KettleXMLException, ParserConfigurationException, SAXException, IOException {
     Repository rep = mock( Repository.class );
     when( rep.isConnected() ).thenReturn( true );
 
     // 000
     // not connected, no jobname, no method
     testJobEntry( null, false, null, ObjectLocationSpecificationMethod.FILENAME );
-    
+
     // 001
     // not connected, no jobname, REPOSITORY_BY_REFERENCE method
     testJobEntry( null, false, ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE, ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
@@ -148,7 +148,7 @@ public class JobEntryTransTest {
     testJobEntry( rep, false, ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
     // connected, no jobname, FILENAME method
     testJobEntry( rep, false, ObjectLocationSpecificationMethod.FILENAME, ObjectLocationSpecificationMethod.FILENAME );
-  
+
     // 110  
     // connected, jobname, no method
     testJobEntry( rep, true, null, ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );

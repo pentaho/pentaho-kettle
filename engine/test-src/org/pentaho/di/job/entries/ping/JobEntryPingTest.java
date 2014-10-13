@@ -19,35 +19,45 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.job.entries.deletefolders;
+package org.pentaho.di.job.entries.ping;
 
-import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+import static java.util.Arrays.asList;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class JobEntryDeleteFoldersLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntryDeleteFolders> {
-  @Override protected Class<JobEntryDeleteFolders> getJobEntryClass() {
-    return JobEntryDeleteFolders.class;
+import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+
+public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> {
+
+  @Override
+  protected Class<JobEntryPing> getJobEntryClass() {
+    return JobEntryPing.class;
   }
 
-  @Override protected List<String> listCommonAttributes() {
-    return Arrays.asList( "argFromPrevious", "success_condition", "limit_folders" );
+  @Override
+  protected List<String> listCommonAttributes() {
+    return asList(
+        "hostname",
+        "nbrPackets",
+        "timeout",
+        "pingtype" );
   }
 
-  @Override protected Map<String, String> createGettersMap() {
+  @Override
+  protected Map<String, String> createGettersMap() {
     return toMap(
-      "success_condition", "getSuccessCondition",
-      "limit_folders", "getLimitFolders"
-    );
+        "hostname", "getHostname",
+        "nbrPackets", "getNbrPackets",
+        "timeout", "getTimeOut" );
   }
 
-  @Override protected Map<String, String> createSettersMap() {
+  @Override
+  protected Map<String, String> createSettersMap() {
     return toMap(
-      "argFromPrevious", "setPrevious",
-      "success_condition", "setSuccessCondition",
-      "limit_folders", "setLimitFolders"
-    );
+        "hostname", "setHostname",
+        "nbrPackets", "setNbrPackets",
+        "timeout", "setTimeOut" );
   }
+
 }

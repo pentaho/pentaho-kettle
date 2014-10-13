@@ -19,61 +19,50 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.job.entries.simpleeval;
+package org.pentaho.di.job.entries.sql;
 
-import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+import static java.util.Arrays.asList;
 
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
+import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
 
-public class JobEntrySimpleEvalLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntrySimpleEval> {
+public class JobEntrySQLTest extends JobEntryLoadSaveTestSupport<JobEntrySQL> {
 
   @Override
-  protected Class<JobEntrySimpleEval> getJobEntryClass() {
-    return JobEntrySimpleEval.class;
+  protected Class<JobEntrySQL> getJobEntryClass() {
+    return JobEntrySQL.class;
   }
 
   @Override
   protected List<String> listCommonAttributes() {
     return asList(
-      "fieldname",
-      "variablename",
-      "mask",
-      "comparevalue",
-      "minvalue",
-      "maxvalue",
-      "successwhenvarset"
-    );
-  }
-
-  @Override
-  protected List<String> listXmlAttributes() {
-    return asList( "name", "description" );
+        "sql",
+        "useVariableSubstitution",
+        "sqlfromfile",
+        "sqlfilename",
+        "sendOneStatement" );
   }
 
   @Override
   protected Map<String, String> createGettersMap() {
     return toMap(
-      "fieldname", "getFieldName",
-      "variablename", "getVariableName",
-      "comparevalue", "getCompareValue",
-      "minvalue", "getMinValue",
-      "maxvalue", "getMaxValue",
-      "successwhenvarset", "isSuccessWhenVarSet"
-    );
+        "sql", "getSQL",
+        "useVariableSubstitution", "getUseVariableSubstitution",
+        "sqlfromfile", "getSQLFromFile",
+        "sqlfilename", "getSQLFilename",
+        "sendOneStatement", "isSendOneStatement" );
   }
 
   @Override
   protected Map<String, String> createSettersMap() {
     return toMap(
-      "fieldname", "setFieldName",
-      "variablename", "setVariableName",
-      "comparevalue", "setCompareValue",
-      "minvalue", "setMinValue",
-      "maxvalue", "setMaxValue",
-      "successwhenvarset", "setSuccessWhenVarSet"
-    );
+        "sql", "setSQL",
+        "useVariableSubstitution", "setUseVariableSubstitution",
+        "sqlfromfile", "setSQLFromFile",
+        "sqlfilename", "setSQLFilename",
+        "sendOneStatement", "setSendOneStatement" );
   }
+
 }

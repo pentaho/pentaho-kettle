@@ -193,7 +193,7 @@ public class SwitchCaseTest {
 
     // load step info value-case mapping from xml.
     List<DatabaseMeta> emptyList = new ArrayList<DatabaseMeta>();
-    krasavez.meta.loadXML( loadStepXmlMetadata("SwitchCaseTest.xml"), emptyList, mock( IMetaStore.class ) );
+    krasavez.meta.loadXML( loadStepXmlMetadata( "SwitchCaseTest.xml" ), emptyList, mock( IMetaStore.class ) );
 
     KeyToRowSetMap expectedNN = new KeyToRowSetMap();
     Set<RowSet> nulls = new HashSet<RowSet>();
@@ -263,7 +263,7 @@ public class SwitchCaseTest {
    * @throws SAXException
    * @throws IOException
    */
-  private static Node loadStepXmlMetadata(String fileName) throws URISyntaxException, ParserConfigurationException, SAXException, IOException {
+  private static Node loadStepXmlMetadata( String fileName ) throws URISyntaxException, ParserConfigurationException, SAXException, IOException {
     String PKG = SwitchCaseTest.class.getPackage().getName().replace( ".", "/" );
     PKG = PKG + "/";
     URL url = SwitchCaseTest.class.getClassLoader().getResource( PKG + fileName );
@@ -279,7 +279,7 @@ public class SwitchCaseTest {
   @Test
   public void processRow_NullsArePutIntoDefaultWhenNotSpecified() throws Exception {
     SwitchCaseCustom step = new SwitchCaseCustom( mockHelper );
-    step.meta.loadXML( loadStepXmlMetadata("SwitchCaseTest_PDI-12671.xml"), Collections.<DatabaseMeta>emptyList(), mock( IMetaStore.class ) );
+    step.meta.loadXML( loadStepXmlMetadata( "SwitchCaseTest_PDI-12671.xml" ), Collections.<DatabaseMeta>emptyList(), mock( IMetaStore.class ) );
 
     List<RowSet> outputRowSets = new LinkedList<RowSet>();
     for ( SwitchCaseTarget item : step.meta.getCaseTargets() ) {
