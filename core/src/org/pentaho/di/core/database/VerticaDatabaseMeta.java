@@ -124,7 +124,8 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
     String pk, boolean semicolon ) {
     return "--NOTE: Table cannot be altered unless all projections are dropped.\nALTER TABLE "
-      + tablename + " MODIFY " + getFieldDefinition( v, tk, pk, use_autoinc, true, false );
+      + tablename + " ALTER COLUMN "
+      + v.getName() + " SET DATA TYPE " + getFieldDefinition( v, tk, pk, use_autoinc, false, false );
   }
 
   @Override
