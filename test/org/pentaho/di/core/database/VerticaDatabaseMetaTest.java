@@ -121,7 +121,7 @@ public class VerticaDatabaseMetaTest {
    */
   @Test
   public void testModifyColumn() {
-    ValueMetaInterface valueMeta = new ValueMetaBase( "field1", ValueMetaInterface.TYPE_STRING, 9, -1);
+    ValueMetaInterface valueMeta = new ValueMetaBase( "field1", ValueMetaInterface.TYPE_STRING, 9, -1 );
     DatabaseInterface databaseInterface = new VerticaDatabaseMeta();
     String alterColumn =
       databaseInterface.getModifyColumnStatement( "table1", valueMeta, null, false, null, false );
