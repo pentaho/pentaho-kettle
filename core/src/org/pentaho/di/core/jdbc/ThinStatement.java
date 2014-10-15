@@ -171,9 +171,9 @@ public class ThinStatement implements Statement {
 
   @Override
   public boolean getMoreResults() throws SQLException {
-    if( resultSet == null ) {
+    if ( resultSet == null ) {
       throw new SQLException( "Statement is closed." );
-    } else if( resultSet.isLast() || resultSet.isClosed() ) {
+    } else if ( resultSet.isLast() || resultSet.isClosed() ) {
       resultSet.close();
       return false;
     } else {
@@ -183,7 +183,7 @@ public class ThinStatement implements Statement {
 
   @Override
   public boolean getMoreResults( int current ) throws SQLException {
-    if( current != Statement.CLOSE_CURRENT_RESULT ){
+    if ( current != Statement.CLOSE_CURRENT_RESULT ) {
       throw new SQLFeatureNotSupportedException( "Multiple open result sets not supported" );
     }
     return getMoreResults();

@@ -34,7 +34,7 @@ public class UIJob extends UIRepositoryContent {
   private static final long serialVersionUID = -7673439096628166542L;
 
   private static final String REPOSITORY_PKG = "org.pentaho.di.ui.repository";
-  
+
   public UIJob() {
   }
 

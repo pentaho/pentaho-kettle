@@ -145,7 +145,7 @@ public class PartitionSettingsTest {
   }
 
   @Test
-  public void updateSchema(){
+  public void updateSchema() {
     PartitionSchema sc = createPartitionSchema( "AnotherState", Arrays.asList( "ID_1", "ID_2" ) );
     partitionSetings = new PartitionSettings( exactSize, transMeta, stepMeta );
     partitionSetings.updateSchema( sc );
@@ -153,15 +153,15 @@ public class PartitionSettingsTest {
   }
 
   @Test
-  public void updateSchemaNullSchemaName(){
+  public void updateSchemaNullSchemaName() {
     PartitionSchema sc = createPartitionSchema( null, new ArrayList<String>(  ) );
     partitionSetings = new PartitionSettings( exactSize, transMeta, stepMeta );
     partitionSetings.updateSchema( sc );
-    assertThat( stepMeta.getStepPartitioningMeta().getPartitionSchema().getName(), equalTo(PARTITION_SCHEMA_NAME));
+    assertThat( stepMeta.getStepPartitioningMeta().getPartitionSchema().getName(), equalTo( PARTITION_SCHEMA_NAME ) );
   }
 
   @Test
-  public void updateSchemaEmptySchemaName(){
+  public void updateSchemaEmptySchemaName() {
     PartitionSchema sc = createPartitionSchema( "", Arrays.asList( "ID_1", "ID_2" ) );
     partitionSetings = new PartitionSettings( exactSize, transMeta, stepMeta );
     partitionSetings.updateSchema( sc );

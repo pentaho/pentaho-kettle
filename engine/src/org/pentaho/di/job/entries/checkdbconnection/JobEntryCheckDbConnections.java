@@ -19,7 +19,6 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
 package org.pentaho.di.job.entries.checkdbconnection;
 
 import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;

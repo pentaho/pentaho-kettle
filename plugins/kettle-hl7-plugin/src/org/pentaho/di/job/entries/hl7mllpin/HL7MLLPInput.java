@@ -202,10 +202,12 @@ public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInt
               + structure.getClass().getName() );
         }
 
-        if ( !Const.isEmpty( messageTypeVariable ) )
+        if ( !Const.isEmpty( messageTypeVariable ) ) {
           parentJob.setVariable( messageTypeVariable, messageType );
-        if ( !Const.isEmpty( versionVariable ) )
+        }
+        if ( !Const.isEmpty( versionVariable ) ) {
           parentJob.setVariable( versionVariable, version );
+        }
       }
 
       // All went well..

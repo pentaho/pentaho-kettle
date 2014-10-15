@@ -34,9 +34,6 @@ public class HL7InputData extends BaseStepData implements StepDataInterface {
   public Parser parser;
   public RowMetaInterface outputRowMeta;
 
-  /**
-	 *
-	 */
   public HL7InputData() {
     super();
   }

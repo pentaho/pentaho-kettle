@@ -255,7 +255,7 @@ public class DatabaseUnitTest {
 
     PreparedStatement ps = mock( PreparedStatement.class );
 
-    db.insertRow(ps, true, false);
+    db.insertRow( ps, true, false );
     verify( ps ).addBatch();
 
     db.executeAndClearBatch( ps );
@@ -277,7 +277,7 @@ public class DatabaseUnitTest {
 
     PreparedStatement ps = mock( PreparedStatement.class );
 
-    db.insertRow(ps, true, false);
+    db.insertRow( ps, true, false );
     verify( ps, never() ).addBatch();
     verify( ps ).executeUpdate();
   }
@@ -289,7 +289,7 @@ public class DatabaseUnitTest {
     return logger;
   }
 
-  private static Connection mockConnection(DatabaseMetaData dbMetaData) throws SQLException {
+  private static Connection mockConnection( DatabaseMetaData dbMetaData ) throws SQLException {
     Connection connection = mock( Connection.class );
     when( connection.getMetaData() ).thenReturn( dbMetaData );
     return connection;
