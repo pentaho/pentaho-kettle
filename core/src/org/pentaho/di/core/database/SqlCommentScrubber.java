@@ -92,6 +92,7 @@ public class SqlCommentScrubber {
     boolean inString = false;
     StringReader buffer = new StringReader( text );
     int ch;
+    int ch2;
     char currentStringChar = (char) QUOTE_CHARS[0];
     boolean done = false;
 
@@ -129,7 +130,15 @@ public class SqlCommentScrubber {
               // If we see a multi-line comment starter (/*) and we're not in a string or
               // multi-line comment, then we have started a multi-line comment.
               if ( ( ch == '*' ) && ( !blkComment ) && ( !inString ) ) {
-                blkComment = true;
+                // Make sure that the next character isn't a + which identifies a hint in Oracle (PDI-13054)
+                ch2 = buffer.read();
+                if (ch2 == '+') {
+                  queryWithoutComments.append( '/' );
+                  queryWithoutComments.append( (char) ch );
+                  queryWithoutComments.append( (char) ch2 );
+                } else {
+                  blkComment = true;
+                }
               } else {
                 // Otherwise if we aren't already in a block comment, pass the chars through
                 if ( !blkComment ) {
