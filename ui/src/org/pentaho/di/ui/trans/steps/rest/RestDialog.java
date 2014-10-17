@@ -1244,7 +1244,8 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
 
     int nrheaders = wFields.nrNonEmpty();
     int nrparams = wParameters.nrNonEmpty();
-    input.allocate( nrheaders, nrparams );
+    int nrmatrixparams = 0; // TODO: it has to be added extra matrix parameters panel
+    input.allocate( nrheaders, nrparams, nrmatrixparams );
 
     if ( isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "RestDialog.Log.FoundArguments", String.valueOf( nrheaders ) ) );
