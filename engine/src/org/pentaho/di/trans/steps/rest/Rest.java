@@ -124,21 +124,21 @@ public class Rest extends BaseStep implements StepInterface {
           if ( isDebug() ) {
             logDebug( BaseMessages.getString( PKG, "Rest.Log.matrixParameterValue", data.matrixParamNames[i], value ) );
           }
-          builder = builder.matrixParam(data.matrixParamNames[i], value);
+          builder = builder.matrixParam( data.matrixParamNames[i], value );
         }
-        webResource = client.resource(builder.build());
+        webResource = client.resource( builder.build() );
       }
 
       if ( data.useParams ) {
         // Add query parameters
-        for (int i = 0; i < data.nrParams; i++) {
+        for ( int i = 0; i < data.nrParams; i++ ) {
           MultivaluedMapImpl queryParams = new MultivaluedMapImpl();
-          String value = data.inputRowMeta.getString(rowData, data.indexOfParamFields[i]);
-          queryParams.add(data.paramNames[i], value);
-          if (isDebug()) {
-            logDebug(BaseMessages.getString(PKG, "Rest.Log.queryParameterValue", data.paramNames[i], value));
+          String value = data.inputRowMeta.getString( rowData, data.indexOfParamFields[i] );
+          queryParams.add( data.paramNames[i], value );
+          if ( isDebug() ) {
+            logDebug( BaseMessages.getString(PKG, "Rest.Log.queryParameterValue", data.paramNames[i], value ) );
           }
-          webResource = webResource.queryParams(queryParams);
+          webResource = webResource.queryParams( queryParams );
         }
       }
 
@@ -393,19 +393,19 @@ public class Rest extends BaseStep implements StepInterface {
       if ( RestMeta.isActiveParameters( meta.getMethod() ) ) {
         // Parameters
         int nrparams = meta.getParameterField() == null ? 0 : meta.getParameterField().length;
-        if (nrparams > 0) {
+        if ( nrparams > 0 ) {
           data.nrParams = nrparams;
           data.paramNames = new String[nrparams];
           data.indexOfParamFields = new int[nrparams];
           for (int i = 0; i < nrparams; i++) {
-            data.paramNames[i] = environmentSubstitute(meta.getParameterName()[i]);
-            String field = environmentSubstitute(meta.getParameterField()[i]);
-            if (Const.isEmpty(field)) {
+            data.paramNames[i] = environmentSubstitute( meta.getParameterName()[i] );
+            String field = environmentSubstitute( meta.getParameterField()[i] );
+            if ( Const.isEmpty( field ) ) {
               throw new KettleException(BaseMessages.getString(PKG, "Rest.Exception.ParamFieldEmpty"));
             }
-            data.indexOfParamFields[i] = data.inputRowMeta.indexOfValue(field);
-            if (data.indexOfParamFields[i] < 0) {
-              throw new KettleException(BaseMessages.getString(PKG, "Rest.Exception.ErrorFindingField", field));
+            data.indexOfParamFields[i] = data.inputRowMeta.indexOfValue( field );
+            if ( data.indexOfParamFields[i] < 0 ) {
+              throw new KettleException( BaseMessages.getString(PKG, "Rest.Exception.ErrorFindingField", field ) );
             }
           }
           data.useParams = true;
