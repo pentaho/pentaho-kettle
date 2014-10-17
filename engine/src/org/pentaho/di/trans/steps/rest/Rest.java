@@ -390,26 +390,24 @@ public class Rest extends BaseStep implements StepInterface {
         data.useHeaders = true;
       }
 
-      if ( RestMeta.isActiveParameters( meta.getMethod() ) ) {
-        // Parameters
-        int nrparams = meta.getParameterField() == null ? 0 : meta.getParameterField().length;
-        if ( nrparams > 0 ) {
-          data.nrParams = nrparams;
-          data.paramNames = new String[nrparams];
-          data.indexOfParamFields = new int[nrparams];
-          for (int i = 0; i < nrparams; i++) {
-            data.paramNames[i] = environmentSubstitute( meta.getParameterName()[i] );
-            String field = environmentSubstitute( meta.getParameterField()[i] );
-            if ( Const.isEmpty( field ) ) {
-              throw new KettleException(BaseMessages.getString(PKG, "Rest.Exception.ParamFieldEmpty"));
-            }
-            data.indexOfParamFields[i] = data.inputRowMeta.indexOfValue( field );
-            if ( data.indexOfParamFields[i] < 0 ) {
-              throw new KettleException( BaseMessages.getString(PKG, "Rest.Exception.ErrorFindingField", field ) );
-            }
+      // Parameters
+      int nrparams = meta.getParameterField() == null ? 0 : meta.getParameterField().length;
+      if ( nrparams > 0 ) {
+        data.nrParams = nrparams;
+        data.paramNames = new String[nrparams];
+        data.indexOfParamFields = new int[nrparams];
+        for (int i = 0; i < nrparams; i++) {
+          data.paramNames[i] = environmentSubstitute( meta.getParameterName()[i] );
+          String field = environmentSubstitute( meta.getParameterField()[i] );
+          if ( Const.isEmpty( field ) ) {
+            throw new KettleException(BaseMessages.getString(PKG, "Rest.Exception.ParamFieldEmpty"));
           }
-          data.useParams = true;
+          data.indexOfParamFields[i] = data.inputRowMeta.indexOfValue( field );
+          if ( data.indexOfParamFields[i] < 0 ) {
+            throw new KettleException( BaseMessages.getString(PKG, "Rest.Exception.ErrorFindingField", field ) );
+          }
         }
+        data.useParams = true;
       }
 
       int nrmatrixmatrixparams = meta.getMatrixParameterField() == null ? 0 : meta.getMatrixParameterField().length;
