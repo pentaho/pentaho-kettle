@@ -24,7 +24,6 @@ package org.pentaho.di.trans.steps.rest;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -57,7 +56,7 @@ public class RestInputTest {
   private static ServletTester tester;
 
   @BeforeClass
-  public static void init() throws Exception {
+  public static void setUp() throws Exception {
     KettleEnvironment.init();
 
     tester = new ServletTester();
@@ -70,19 +69,13 @@ public class RestInputTest {
   }
 
   @AfterClass
-  public static void destroy() throws Exception {
+  public static void tearDown() throws Exception {
     tester.stop();
   }
 
-  @Before
-  public void setUp(){
-    SimpleRestService.counter = 0;
-  }
-
-
   protected Trans createAndTestTrans( PluginRegistry registry, TransMeta transMeta,
                                       StepMeta inputStep, RowStepCollector rowStepCollector,
-                                      String name, int limit ) throws Exception {
+                                      String name, int limit ) throws KettleException {
     //
     // Create a dummy step
     //
@@ -107,10 +100,9 @@ public class RestInputTest {
     RowProducer rp = trans.addRowProducer( inputStep.getName(), 0 );
 
     RowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMeta( "url", ValueMeta.TYPE_STRING ) );
     rowMeta.addValueMeta( new ValueMeta( "pageSize", ValueMeta.TYPE_STRING ) );
     rowMeta.addValueMeta( new ValueMeta( "name", ValueMeta.TYPE_STRING ) );
-    rp.putRow( rowMeta, new Object[] { tester.createSocketConnector( true ) + "/context/simple/join" , Integer.valueOf( limit ), name } );
+    rp.putRow( rowMeta, new Object[] { Integer.valueOf( limit ), name } );
 
     rp.finished();
     return trans;
@@ -125,8 +117,7 @@ public class RestInputTest {
     transMeta.addStep( inputStep );
 
     meta.setDefault();
-    meta.setUrlField( "url" );
-    meta.setUrlInField( true );
+    meta.setUrl( tester.createSocketConnector( true ) + "/context/simple/join" );
     meta.setMatrixParameterField( new String[] { "pageSize" } );
     meta.setMatrixParameterName( new String[] { "limit" } );
 
@@ -140,7 +131,7 @@ public class RestInputTest {
   }
 
   @Test
-  public void testRESTInputMatrixParameters() throws Exception {
+  public void testRESTInput() throws Exception {
     //
     // Create a new transformation...
     //
@@ -152,13 +143,10 @@ public class RestInputTest {
     StepMeta inputStep = createRestInputStep( transMeta, registry );
 
     RowStepCollector rowStepCollector = new RowStepCollector();
-
-    Trans trans = createAndTestTrans( registry, transMeta, inputStep, rowStepCollector, "limit", 5 );
-
-    assertEquals( "no any interaction so far", 0, SimpleRestService.counter );
+    final Trans trans = createAndTestTrans( registry, transMeta, inputStep, rowStepCollector, "limit", 5 );
     trans.startThreads();
+
     trans.waitUntilFinished();
-    assertEquals( "the only interaction is made", 1, SimpleRestService.counter );
 
     // Compare the results
     List<RowMetaAndData> resultRows = rowStepCollector.getRowsWritten();
@@ -166,87 +154,19 @@ public class RestInputTest {
     assertTrue( rowStepCollector.getRowsError().isEmpty() );
     assertEquals(1, rowStepCollector.getRowsWritten().size());
 
-    RowMetaAndData rowMetaAndData = resultRows.get( 0 );
-    RowMetaInterface rowMeta = rowMetaAndData.getRowMeta();
+    final RowMetaAndData rowMetaAndData = resultRows.get( 0 );
+    final RowMetaInterface rowMeta = rowMetaAndData.getRowMeta();
 
-    String[] fieldNames = rowMeta.getFieldNames();
-    Object[] data = rowMetaAndData.getData();
+    final String[] fieldNames = rowMeta.getFieldNames();
+    final Object[] data = rowMetaAndData.getData();
 
-    assertEquals( "url", fieldNames[0] );
-    assertEquals( "pageSize", fieldNames[1] );
-    assertEquals( "name", fieldNames[2] );
-    assertEquals( "result", fieldNames[3] );
+    assertEquals( "pageSize", fieldNames[0] );
+    assertEquals( "name", fieldNames[1] );
+    assertEquals( "result", fieldNames[2] );
 
-    assertEquals( Integer.valueOf( 5 ), data[1] );
-    assertEquals( "limit", data[2] );
-    assertEquals( "limit:5", data[3] );
-  }
-
-  @Test
-  public void testRESTInputWORowInjection() throws Exception {
-    //
-    // Create a new transformation...
-    //
-    TransMeta transMeta = new TransMeta();
-    transMeta.setName( "restinput" );
-
-    PluginRegistry registry = PluginRegistry.getInstance();
-
-    String inputName = "rest input step";
-    RestMeta restMeta = new RestMeta();
-
-    String inputPid = registry.getPluginId( StepPluginType.class, restMeta );
-    StepMeta inputStep = new StepMeta( inputPid, inputName, restMeta );
-    transMeta.addStep( inputStep );
-
-    restMeta.setDefault();
-    restMeta.setUrl( tester.createSocketConnector( true ) + "/context/simple/join" );
-    restMeta.setApplicationType( RestMeta.APPLICATION_TYPE_TEXT_PLAIN );
-    restMeta.setFieldName( "result" );
-
-    RowStepCollector rowStepCollector = new RowStepCollector();
-    //final Trans trans = createAndTestTrans( registry, transMeta, inputStep, rowStepCollector, "limit", 5 );
-    //
-    // Create a dummy step
-    //
-    String dummyStepname = "dummy step";
-    DummyTransMeta dm1 = new DummyTransMeta();
-
-    String dummyPid1 = registry.getPluginId( StepPluginType.class, dm1 );
-    StepMeta dummyStep1 = new StepMeta( dummyPid1, dummyStepname, dm1 );
-    transMeta.addStep( dummyStep1 );
-
-    TransHopMeta hi3 = new TransHopMeta( inputStep, dummyStep1 );
-    transMeta.addTransHop( hi3 );
-
-    // Now execute the transformation...
-    Trans trans = new Trans( transMeta );
-
-    trans.prepareExecution( null );
-
-    StepInterface si = trans.getStepInterface( dummyStepname, 0 );
-    si.addRowListener( rowStepCollector );
-
-    assertEquals( "no any interaction so far", 0, SimpleRestService.counter );
-    trans.startThreads();
-    trans.waitUntilFinished();
-    assertEquals( "the only interaction is made", 1, SimpleRestService.counter );
-
-    // Compare the results
-    List<RowMetaAndData> resultRows = rowStepCollector.getRowsWritten();
-
-    assertTrue( rowStepCollector.getRowsError().isEmpty() );
-    assertEquals(1, rowStepCollector.getRowsWritten().size());
-
-    RowMetaAndData rowMetaAndData = resultRows.get( 0 );
-    RowMetaInterface rowMeta = rowMetaAndData.getRowMeta();
-
-    String[] fieldNames = rowMeta.getFieldNames();
-    Object[] data = rowMetaAndData.getData();
-
-    assertEquals( "result", fieldNames[0] );
-
-    assertEquals( "null:null", data[0] );
+    assertEquals( Integer.valueOf( 5 ), data[0] );
+    assertEquals( "limit", data[1] );
+    assertEquals( "limit:5", data[2] );
   }
 
 }
