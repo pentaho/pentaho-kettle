@@ -9,31 +9,9 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/../lib" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/../lib" />
-        </SOURCES>
-        <jarDirectory url="file://$MODULE_DIR$/../lib" recursive="false" />
-        <jarDirectory url="file://$MODULE_DIR$/../lib" recursive="false" type="SOURCES" />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" name="Kettle Libs" level="project" />
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../dist/libswt/osx64/swt.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module" module-name="Kettle Engine" exported="" />
     <orderEntry type="module" module-name="Kettle Core" exported="" />
+    <orderEntry type="module" module-name="Kettle DB Dialog" exported="" />
+    <orderEntry type="library" exported="" name="Kettle Libs" level="project" />
   </component>
 </module>
-

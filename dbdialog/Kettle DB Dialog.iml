@@ -10,6 +10,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="library" name="Kettle Libs" level="project" />
+    <orderEntry type="module" module-name="Kettle Core" />
   </component>
 </module>
-
