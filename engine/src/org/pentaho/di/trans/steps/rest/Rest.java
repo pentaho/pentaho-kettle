@@ -44,6 +44,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -320,7 +321,7 @@ public class Rest extends BaseStep implements StepInterface {
     Object[] r = getRow(); // Get row from input rowset & set row busy!
 
     logBasic(Arrays.toString(r));
-    if ( r == null ) {
+    if ( r == null && !first ) {
       // no more input to be expected...
       setOutputDone();
       return false;
@@ -329,6 +330,9 @@ public class Rest extends BaseStep implements StepInterface {
       first = false;
 
       data.inputRowMeta = getInputRowMeta();
+      if (data.inputRowMeta == null) {
+        data.inputRowMeta = new RowMeta();
+      }
       data.outputRowMeta = data.inputRowMeta.clone();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
@@ -476,6 +480,11 @@ public class Rest extends BaseStep implements StepInterface {
 
     }
 
+    if ( r == null ) {
+      // no more input to be expected...
+      setOutputDone();
+      return false;
+    }
     return true;
   }
 
