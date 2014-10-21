@@ -41,22 +41,22 @@ public class MarketEntryTest extends TestCase {
   private static final String entriesUrl = "https://raw.github.com/pentaho/marketplace-metadata/master/marketplace.xml";
 
   public void testMarketplaceCreation() throws Exception {
-    Marketplace place = new Marketplace(name, entriesUrl);
+    Marketplace place = new Marketplace( name, entriesUrl );
 
-    assertEquals(name, place.getName());
-    assertEquals(entriesUrl, place.getEntriesUrl());
+    assertEquals(name, place.getName() );
+    assertEquals(entriesUrl, place.getEntriesUrl() );
   }
 
   public void testMarketplaceSerialization() throws Exception {
-    Marketplace originalPlace= new Marketplace(name, entriesUrl);
+    Marketplace originalPlace = new Marketplace( name, entriesUrl );
 
     // Serialize & de-serialize and then see if we still have the same content.
     //
     String xml = originalPlace.getXML();
-    System.out.println(xml);
-    Marketplace place = new Marketplace(XMLHandler.loadXMLString(xml, Marketplace.XML_TAG));
+    System.out.println(xml );
+    Marketplace place = new Marketplace( XMLHandler.loadXMLString( xml, Marketplace.XML_TAG ) );
 
-    assertEquals(name, place.getName());
-    assertEquals(entriesUrl, place.getEntriesUrl());
+    assertEquals(name, place.getName() );
+    assertEquals(entriesUrl, place.getEntriesUrl() );
   }
 }

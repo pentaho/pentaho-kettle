@@ -133,7 +133,7 @@ public class RepositoryExplorerDialog extends Dialog {
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!
 
   private static final String REPOSITORY_PKG = "org.pentaho.di.ui.repository";
-  
+
   public interface RepositoryExplorerCallback {
     /**
      * request that specified object be opened in 'Spoon' display

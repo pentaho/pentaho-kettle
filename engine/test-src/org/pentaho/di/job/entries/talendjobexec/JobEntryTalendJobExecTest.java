@@ -19,18 +19,26 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package org.pentaho.di.job.entries.talendjobexec;
 
-package org.pentaho.di.core.plugins;
+import static java.util.Arrays.asList;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.List;
 
-@Documented
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.TYPE )
-public @interface ParentFirst {
-  String[] patterns() default { };
+import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+
+public class JobEntryTalendJobExecTest extends JobEntryLoadSaveTestSupport<JobEntryTalendJobExec> {
+
+  @Override
+  protected Class<JobEntryTalendJobExec> getJobEntryClass() {
+    return JobEntryTalendJobExec.class;
+  }
+
+  @Override
+  protected List<String> listCommonAttributes() {
+    return asList(
+        "filename",
+        "className" );
+  }
+
 }

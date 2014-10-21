@@ -182,7 +182,7 @@ public class GlobalMessages extends AbstractMessageHandler {
         // Now get the bundle from the messages files input stream
         //
         if ( inputStream != null ) {
-          bundle = new PropertyResourceBundle(new InputStreamReader(inputStream, "UTF-8"));
+          bundle = new PropertyResourceBundle( new InputStreamReader( inputStream, "UTF-8" ) );
           locales.put( filename, bundle );
         } else {
           throw new MissingResourceException( "Unable to find properties file [" + filename + "]", locale

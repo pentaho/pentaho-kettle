@@ -73,7 +73,7 @@ public class PluginRegistry {
   private Map<String, URLClassLoader> classLoaderGroupsMap;
 
   private Map<Class<? extends PluginTypeInterface>, List<String>> categoryMap;
-  
+
   private Map<PluginInterface, String[]> parentClassloaderPatternMap = new HashMap<PluginInterface, String[]>();
 
   private static List<PluginTypeInterface> pluginTypes = new ArrayList<PluginTypeInterface>();
@@ -137,7 +137,7 @@ public class PluginRegistry {
       }
     }
   }
-  
+
   public void addParentClassLoaderPatterns( PluginInterface plugin, String[] patterns ) {
     parentClassloaderPatternMap.put( plugin, patterns );
   }
@@ -375,7 +375,7 @@ public class PluginRegistry {
     }
     return loadClass( plugin, classType );
   }
-  
+
   private KettleURLClassLoader createClassLoader( PluginInterface plugin ) throws MalformedURLException,
     UnsupportedEncodingException {
     List<String> jarfiles = plugin.getLibraries();

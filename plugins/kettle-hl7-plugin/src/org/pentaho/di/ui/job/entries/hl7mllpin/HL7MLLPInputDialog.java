@@ -79,8 +79,9 @@ public class HL7MLLPInputDialog extends JobEntryDialog implements JobEntryDialog
     super( parent, jobEntry, rep, jobMeta );
     this.jobEntry = (HL7MLLPInput) jobEntry;
 
-    if ( this.jobEntry.getName() == null )
+    if ( this.jobEntry.getName() == null ) {
       this.jobEntry.setName( BaseMessages.getString( PKG, "HL7MLLPInputDialog.Name.Default" ) );
+    }
   }
 
   public JobEntryInterface open() {
@@ -222,8 +223,9 @@ public class HL7MLLPInputDialog extends JobEntryDialog implements JobEntryDialog
     shell.open();
     props.setDialogSize( shell, "HL7MLLPInputDialog.DialogSize" );
     while ( !shell.isDisposed() ) {
-      if ( !display.readAndDispatch() )
+      if ( !display.readAndDispatch() ) {
         display.sleep();
+      }
     }
     return jobEntry;
   }

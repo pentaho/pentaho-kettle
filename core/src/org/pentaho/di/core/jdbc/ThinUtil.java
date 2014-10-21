@@ -580,8 +580,8 @@ public class ThinUtil {
     }
 
     // Translate LIKE operators to REGEX
-    pattern = pattern.replace( "_", "." ).replace("%", ".*?");
+    pattern = pattern.replace( "_", "." ).replace("%", ".*?" );
 
-    return Pattern.compile( pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    return Pattern.compile( pattern, Pattern.CASE_INSENSITIVE | Pattern.DOTALL );
   }
 }

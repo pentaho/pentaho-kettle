@@ -55,8 +55,7 @@ public class HL7Input extends BaseStep implements StepInterface {
     data = (HL7InputData) sdi;
 
     Object[] r = getRow(); // get row, set busy!
-    if ( r == null ) // no more input to be expected...
-    {
+    if ( r == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }
@@ -102,8 +101,9 @@ public class HL7Input extends BaseStep implements StepInterface {
     }
 
     if ( checkFeedback( getLinesWritten() ) ) {
-      if ( log.isBasic() )
+      if ( log.isBasic() ) {
         logBasic( BaseMessages.getString( PKG, "HL7Input.Log.LineNumber" ) + getLinesWritten() );
+      }
     }
 
     return true;

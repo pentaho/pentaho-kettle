@@ -32,7 +32,7 @@ import org.pentaho.di.repository.RepositoryElementMetaInterface;
 public class UITransformation extends UIRepositoryContent {
 
   private static final long serialVersionUID = 3826725834758429573L;
-  
+
   private static final String REPOSITORY_PKG = "org.pentaho.di.ui.repository";
 
   public UITransformation() {
