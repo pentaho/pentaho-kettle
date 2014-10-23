@@ -2707,9 +2707,8 @@ public class KettleDatabaseRepositoryCreationHelper {
       KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_ELEMENT_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0 ) );
     table.addValueMeta( new ValueMeta(
       KettleDatabaseRepository.FIELD_ELEMENT_TYPE_ID_NAMESPACE, ValueMetaInterface.TYPE_INTEGER, KEY, 0 ) );
-    table.addValueMeta( new ValueMeta(
-      KettleDatabaseRepository.FIELD_ELEMENT_TYPE_NAME, ValueMetaInterface.TYPE_STRING,
-      KettleDatabaseRepository.REP_STRING_LENGTH, 0 ) );
+    table.addValueMeta( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_TYPE_NAME,
+        ValueMetaInterface.TYPE_STRING, getRepoStringLength(), 0 ) );
     table.addValueMeta( new ValueMeta(
       KettleDatabaseRepository.FIELD_ELEMENT_TYPE_DESCRIPTION, ValueMetaInterface.TYPE_STRING,
       KettleDatabaseRepository.REP_STRING_LENGTH, 0 ) );
@@ -2751,9 +2750,8 @@ public class KettleDatabaseRepositoryCreationHelper {
       KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT, ValueMetaInterface.TYPE_INTEGER, KEY, 0 ) );
     table.addValueMeta( new ValueMeta(
       KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT_TYPE, ValueMetaInterface.TYPE_INTEGER, KEY, 0 ) );
-    table.addValueMeta( new ValueMeta(
-      KettleDatabaseRepository.FIELD_ELEMENT_NAME, ValueMetaInterface.TYPE_STRING,
-      KettleDatabaseRepository.REP_STRING_LENGTH, 0 ) );
+    table.addValueMeta( new ValueMeta( KettleDatabaseRepository.FIELD_ELEMENT_NAME, ValueMetaInterface.TYPE_STRING,
+        getRepoStringLength(), 0 ) );
     sql =
       database
         .getDDL( schemaTable, table, null, false, KettleDatabaseRepository.FIELD_ELEMENT_ID_ELEMENT, false );
@@ -2967,6 +2965,14 @@ public class KettleDatabaseRepositoryCreationHelper {
     log.logBasic( ( upgrade ? "Upgraded" : "Created" )
       + " " + KettleDatabaseRepository.repositoryTableNames.length + " repository tables." );
 
+  }
+
+  /**
+   * Returns max VARCHAR length depending on db interface
+   */
+  protected int getRepoStringLength() {
+    return database.getDatabaseMeta().getDatabaseInterface().getMaxVARCHARLength() - 1 > 0 ? database.getDatabaseMeta()
+        .getDatabaseInterface().getMaxVARCHARLength() - 1 : KettleDatabaseRepository.REP_ORACLE_STRING_LENGTH;
   }
 
   /**
