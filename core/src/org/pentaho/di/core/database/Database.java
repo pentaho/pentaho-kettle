@@ -1474,7 +1474,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     // double-dash or a multiline comment appears
     // in a single-quoted string, it will be treated as a string instead of
     // comments.
-    String sql = SqlCommentScrubber.removeComments( rawsql ).trim();
+    String sql = databaseMeta.getDatabaseInterface().getSqlScriptParser().removeComments(rawsql).trim();
     try {
       boolean resultSet;
       int count;
@@ -1563,16 +1563,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   public Result execStatements( String script, RowMetaInterface params, Object[] data ) throws KettleDatabaseException {
     Result result = new Result();
 
-    // Deleting all the single-line and multi-line comments from the string
-    String all = SqlCommentScrubber.removeComments( script ); // scrubDoubleHyphenComments(script);
+    List<String> statements = databaseMeta.getDatabaseInterface().getSqlScriptParser().split(script);
 
-    String[] statements = all.split( ";" );
-    String stat;
     int nrstats = 0;
 
-    for ( int i = 0; i < statements.length; i++ ) {
-
-      stat = statements[i];
+    for (String stat : statements) {
+      // Deleting all the single-line and multi-line comments from the string
+      stat = databaseMeta.getDatabaseInterface().getSqlScriptParser().removeComments(stat);
       if ( !Const.onlySpaces( stat ) ) {
         String sql = Const.trim( stat );
         if ( sql.toUpperCase().startsWith( "SELECT" ) ) {

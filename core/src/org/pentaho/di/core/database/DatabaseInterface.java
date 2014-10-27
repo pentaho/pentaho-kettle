@@ -993,15 +993,6 @@ public interface DatabaseInterface extends Cloneable {
   public String generateColumnAlias( int columnIndex, String suggestedName );
 
   /**
-   * Parse all possible statements from the provided SQL script.
-   *
-   * @param sqlScript
-   *          Raw SQL Script to be parsed into executable statements.
-   * @return List of parsed SQL statements to be executed separately.
-   */
-  public List<String> parseStatements( String sqlScript );
-
-  /**
    * Parse the statements in the provided SQL script, provide more information about where each was found in the script.
    *
    * @param sqlScript
@@ -1136,4 +1127,11 @@ public interface DatabaseInterface extends Cloneable {
    * @return a String safe for usage as a column name without the need for quoting
    */
   public String getSafeFieldname( String fieldname );
+
+  /**
+   * Returns database-specific SQL parser.
+   * 
+   * @return parser instance
+   */
+  ISqlScriptParser getSqlScriptParser();
 }

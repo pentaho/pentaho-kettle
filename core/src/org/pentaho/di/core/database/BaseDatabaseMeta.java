@@ -1774,24 +1774,6 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   }
 
   /**
-   * Parse all possible statements from the provided SQL script.
-   *
-   * @param sqlScript
-   *          Raw SQL Script to be parsed into executable statements.
-   * @return List of parsed SQL statements to be executed separately.
-   */
-  @Override
-  public List<String> parseStatements( String sqlScript ) {
-
-    List<SqlScriptStatement> scriptStatements = getSqlScriptStatements( sqlScript );
-    List<String> statements = new ArrayList<String>();
-    for ( SqlScriptStatement scriptStatement : scriptStatements ) {
-      statements.add( scriptStatement.getStatement() );
-    }
-    return statements;
-  }
-
-  /**
    * Parse the statements in the provided SQL script, provide more information about where each was found in the script.
    *
    * @param sqlScript
@@ -1799,121 +1781,14 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    * @return List of SQL script statements to be executed separately.
    */
   @Override
-  public List<SqlScriptStatement> getSqlScriptStatements( String sqlScript ) {
+  public List<SqlScriptStatement> getSqlScriptStatements(String sqlScript) {
+    List<String> sqls = getSqlScriptParser().split(sqlScript);
     List<SqlScriptStatement> statements = new ArrayList<SqlScriptStatement>();
-    String all = sqlScript;
-    int from = 0;
-    int to = 0;
-    int length = all.length();
-
-    while ( to < length ) {
-      char c = all.charAt( to );
-
-      // Skip comment lines...
-      //
-      while ( all.substring( from ).startsWith( "--" ) ) {
-        int nextLineIndex = all.indexOf( Const.CR, from );
-        from = nextLineIndex + Const.CR.length();
-        if ( to >= length ) {
-          break;
-        }
-        c = all.charAt( c );
-      }
-      if ( to >= length ) {
-        break;
-      }
-
-      // Skip over double quotes...
-      //
-      if ( c == '"' ) {
-        int nextDQuoteIndex = all.indexOf( '"', to + 1 );
-        if ( nextDQuoteIndex >= 0 ) {
-          to = nextDQuoteIndex + 1;
-        }
-      }
-
-      // Skip over back-ticks
-      if ( c == '`' ) {
-        int nextBacktickIndex = all.indexOf( '`', to + 1 );
-        if ( nextBacktickIndex >= 0 ) {
-          to = nextBacktickIndex + 1;
-        }
-      }
-
-      c = all.charAt( to );
-      if ( c == '\'' ) {
-        boolean skip = true;
-
-        // Don't skip over \' or ''
-        //
-        if ( to > 0 ) {
-          char prevChar = all.charAt( to - 1 );
-          if ( prevChar == '\\' || prevChar == '\'' ) {
-            skip = false;
-          }
-        }
-
-        // Jump to the next quote and continue from there.
-        //
-        while ( skip ) {
-          int nextQuoteIndex = all.indexOf( '\'', to + 1 );
-          if ( nextQuoteIndex >= 0 ) {
-            to = nextQuoteIndex + 1;
-
-            skip = false;
-
-            if ( to < all.length() ) {
-              char nextChar = all.charAt( to );
-              if ( nextChar == '\'' ) {
-                skip = true;
-                to++;
-              }
-            }
-            if ( to > 0 ) {
-              char prevChar = all.charAt( to - 2 );
-              if ( prevChar == '\\' ) {
-                skip = true;
-                to++;
-              }
-            }
-          }
-        }
-      }
-
-      c = all.charAt( to );
-
-      // end of statement
-      if ( c == ';' || to >= length - 1 ) {
-        if ( to >= length - 1 ) {
-          to++; // grab last char also!
-        }
-
-        String stat = all.substring( from, to );
-        if ( !onlySpaces( stat ) ) {
-          String s = Const.trim( stat );
-          statements.add( new SqlScriptStatement( s, from, to, s.toUpperCase().startsWith( "SELECT" ) ) );
-        }
-        to++;
-        from = to;
-      } else {
-        to++;
-      }
+    for (String sql : sqls) {
+      sql = sql.trim();
+      statements.add(new SqlScriptStatement(sql, 0, sql.length(), sql.toUpperCase().startsWith("SELECT")));
     }
     return statements;
-  }
-
-  /**
-   * @param str
-   * @return True if {@code str} contains only spaces.
-   */
-  protected boolean onlySpaces( String str ) {
-    for ( int i = 0; i < str.length(); i++ ) {
-      int c = str.charAt( i );
-      if ( c != ' ' && c != '\t' && c != '\n' && c != '\r' ) {
-        return false;
-      }
-    }
-    return true;
   }
 
   /**
@@ -2205,5 +2080,10 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
       fieldname = getFieldnameProtector() + fieldname;
     }
     return fieldname;
+  }
+  
+  @Override
+  public ISqlScriptParser getSqlScriptParser() {
+    return new SimpleSqlScriptParser();
   }
 }

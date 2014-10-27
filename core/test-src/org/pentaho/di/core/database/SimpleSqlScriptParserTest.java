@@ -1,33 +1,42 @@
-/*! ******************************************************************************
- *
- * Pentaho Data Integration
- *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
- *
- *******************************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
-
 package org.pentaho.di.core.database;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 
-public class SqlCommentScrubberTest {
+public class SimpleSqlScriptParserTest {
+  @Test
+  public void testSplits() {
+    testSplit("SELECT 1;SELECT 2", "SELECT 1", "SELECT 2");
+    testSplit("SELECT '1;2'", "SELECT '1;2'");
+    testSplit("SELECT \"1;2\"", "SELECT \"1;2\"");
+    testSplit("SELECT -- 1;2", "SELECT -- 1;2");
+    testSplit("SELECT /*1;2*/", "SELECT /*1;2*/");
+    testSplit("SELECT /1;2", "SELECT /1", "2");
+    testSplit("SELECT ;\t\t\n \r  ;2", "SELECT ", "2");
+  }
 
+  @Test
+  public void testRemove() {
+    testRemoveComments("SELECT /*123;\nzz*/", "SELECT ");
+    testRemoveComments("SELECT '/*123;\nzz*/'", "SELECT '/*123;\nzz*/'");
+    testRemoveComments("SELECT --123;\nzz", "SELECT \nzz");
+    testRemoveComments("SELECT '--123;\n--zz'", "SELECT '--123;\n--zz'");
+  }
+
+  void testSplit(String sql, String... expectedResult) {
+    List<String> real = new SimpleSqlScriptParser().split(sql);
+    assertEquals(Arrays.asList(expectedResult), real);
+  }
+
+  void testRemoveComments(String sql, String expectedResult) {
+    String real = new SimpleSqlScriptParser().removeComments(sql);
+    assertEquals(expectedResult, real);
+  }
+  
   String[][] testAndResultString =
   {
 
@@ -35,7 +44,7 @@ public class SqlCommentScrubberTest {
     { "SELECT * FROM MYTABLE", "SELECT * FROM MYTABLE" },
 
     // SQL with a one-line comment
-    { "SELECT * FROM\n-- Test 1\n MYTABLE;", "SELECT * FROM\n MYTABLE;" },
+    { "SELECT * FROM\n-- Test 1\n MYTABLE;", "SELECT * FROM\n\n MYTABLE;" },
 
     // SQL with multi-line comment at the top
     { "/* This \n is \n a multiline \n comment \n*/\nSELECT 1 FROM DUAL", "\nSELECT 1 FROM DUAL" },
@@ -83,12 +92,25 @@ public class SqlCommentScrubberTest {
     { null, null },
 
     // Empty input
-    { "", "" }, };
+    { "", "" },
+
+    { "SELECT col1 FROM test", "SELECT col1 FROM test" },
+    { "SELECT col1 FROM test --end comment", "SELECT col1 FROM test " },
+    { "SELECT \n col1, col2\n FROM \n test", "SELECT \n col1, col2\n FROM \n test" },
+    { "SELECT \n \"col1\", col2\n FROM --test\n test", "SELECT \n \"col1\", col2\n FROM \n test" },
+    { "SELECT /* \"my_column'\" */ col1 FROM /* 'my_table' */ account", "SELECT  col1 FROM  account" },
+    { "SELECT '/' as col1, '*/*' as regex ", "SELECT '/' as col1, '*/*' as regex " },
+    { "SELECT INSTR('/loader/*/*.txt', '/') - INSTR('/loader/*/*.txt', '/') ",
+      "SELECT INSTR('/loader/*/*.txt', '/') - INSTR('/loader/*/*.txt', '/') " },
+    { "SELECT /* my data*/ col1, col2, col3 FROM account WHERE name = 'Pentaho'",
+      "SELECT  col1, col2, col3 FROM account WHERE name = 'Pentaho'" }
+  
+  };
 
   @Test
   public void testRemoveComments() {
     for ( String[] testSet : testAndResultString ) {
-      assertEquals( SqlCommentScrubber.removeComments( testSet[0] ), testSet[1] );
+      assertEquals( new SimpleSqlScriptParser().removeComments( testSet[0] ), testSet[1] );
     }
   }
 }
