@@ -327,11 +327,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
       String method = XMLHandler.getTagValue( entrynode, "specification_method" );
       specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode( method );
+
       String transId = XMLHandler.getTagValue( entrynode, "trans_object_id" );
       transObjectId = Const.isEmpty( transId ) ? null : new StringObjectId( transId );
       filename = XMLHandler.getTagValue( entrynode, "filename" );
       transname = XMLHandler.getTagValue( entrynode, "transname" );
       directory = XMLHandler.getTagValue( entrynode, "directory" );
+
+      if ( rep != null && rep.isConnected() && !Const.isEmpty( transname ) ) {
+        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+      }
 
       // Backward compatibility check for object specification
       //

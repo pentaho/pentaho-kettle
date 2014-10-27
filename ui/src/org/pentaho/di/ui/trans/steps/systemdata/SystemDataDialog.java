@@ -163,6 +163,7 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
           TableView tv = (TableView) e.widget;
           tv.setText( string, e.x, e.y );
         }
+        input.setChanged();
       }
     } );
 

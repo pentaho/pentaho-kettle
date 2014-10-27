@@ -252,7 +252,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     fdName.top = new FormAttachment( wnConnection, margin * 2 );
     fdName.right = new FormAttachment( 100, 0 );
     wName.setLayoutData( fdName );
-    
+
     // Description line
     wlId = new Label( shell, SWT.RIGHT );
     wlId.setText( BaseMessages.getString( PKG, "RepositoryDialog.Label.Description" ) );
@@ -269,7 +269,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     fdId.top = new FormAttachment( wlName, margin * 3 );
     fdId.right = new FormAttachment( 100, 0 );
     wId.setLayoutData( fdId );
-    
+
     //buttons
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
@@ -346,10 +346,10 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
    */
   public void getData() {
     if ( input.getName() != null ) {
-      wId.setText( input.getName() );
+      wName.setText( input.getName() );
     }
     if ( input.getDescription() != null ) {
-      wName.setText( input.getDescription() );
+      wId.setText( input.getDescription() );
     }
     if ( input.getConnection() != null ) {
       wConnection.setText( input.getConnection().getName() );
@@ -362,8 +362,8 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
   }
 
   private void getInfo( KettleDatabaseRepositoryMeta info ) {
-    info.setName( wId.getText() );
-    info.setDescription( wName.getText() );
+    info.setName( wName.getText() );
+    info.setDescription( wId.getText() );
 
     int idx = wConnection.getSelectionIndex();
     if ( idx >= 0 ) {

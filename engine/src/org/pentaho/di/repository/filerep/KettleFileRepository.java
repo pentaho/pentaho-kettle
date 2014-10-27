@@ -1183,9 +1183,18 @@ public class KettleFileRepository extends AbstractRepository {
     return id.getId().substring( slashIndex + 1, dotIndex );
   }
 
-  public ObjectId renameJob( ObjectId id_job, RepositoryDirectoryInterface newDir, String newName ) throws KettleException {
-    return renameObject( id_job, newDir, newName, EXT_JOB );
+  public ObjectId renameJob( ObjectId id_job, RepositoryDirectoryInterface newDir, String newName )
+    throws KettleException {
+    return renameJob( id_job, null, newDir, newName );
+  }
 
+  public ObjectId renameJob( ObjectId id_job, String versionComment, RepositoryDirectoryInterface newDir,
+    String newName ) throws KettleException {
+    ObjectId objectId = renameObject( id_job, newDir, newName, EXT_JOB );
+    if ( !Const.isEmpty( versionComment ) ) {
+      insertLogEntry( "Rename job : " + versionComment );
+    }
+    return objectId;
   }
 
   public ObjectId renameRepositoryDirectory( ObjectId id, RepositoryDirectoryInterface newParentDir, String newName ) throws KettleException {
@@ -1225,9 +1234,18 @@ public class KettleFileRepository extends AbstractRepository {
     return ( id );
   }
 
-  public ObjectId renameTransformation( ObjectId id_transformation, RepositoryDirectoryInterface newDir,
-    String newName ) throws KettleException {
-    return renameObject( id_transformation, newDir, newName, EXT_TRANSFORMATION );
+  public ObjectId renameTransformation( ObjectId id_transformation, RepositoryDirectoryInterface newDir, String newName )
+    throws KettleException {
+    return renameTransformation( id_transformation, null, newDir, newName );
+  }
+
+  public ObjectId renameTransformation( ObjectId id_transformation, String versionComment,
+      RepositoryDirectoryInterface newDir, String newName ) throws KettleException {
+    ObjectId objectId = renameObject( id_transformation, newDir, newName, EXT_TRANSFORMATION );
+    if ( !Const.isEmpty( versionComment ) ) {
+      insertLogEntry( "Rename transformation : " + versionComment );
+    }
+    return objectId;
   }
 
   public ObjectId saveCondition( Condition condition ) throws KettleException {

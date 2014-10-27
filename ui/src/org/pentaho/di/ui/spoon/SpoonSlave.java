@@ -172,6 +172,9 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     }
 
     boolean isFinished() {
+      if ( Trans.STRING_FINISHED_WITH_ERRORS.equals( status ) ) {
+        return true;
+      }
       return Trans.STRING_FINISHED.equals( status );
     }
 

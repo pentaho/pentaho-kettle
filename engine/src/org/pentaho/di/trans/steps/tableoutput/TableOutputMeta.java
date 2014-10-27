@@ -502,11 +502,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       schemaName = rep.getStepAttributeString( id_step, "schema" );
       tableName = rep.getStepAttributeString( id_step, "table" );
-      long commitSizeInt = rep.getStepAttributeInteger( id_step, "commit" );
       commitSize = rep.getStepAttributeString( id_step, "commit" );
-      if ( Const.isEmpty( commitSize ) ) {
-        commitSize = Long.toString( commitSizeInt );
-      }
       truncateTable = rep.getStepAttributeBoolean( id_step, "truncate" );
       ignoreErrors = rep.getStepAttributeBoolean( id_step, "ignore_errors" );
       useBatchUpdate = rep.getStepAttributeBoolean( id_step, "use_batch" );

@@ -57,10 +57,11 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface {
     for ( FieldMapping map : mappings ) {
       Object value = row.get( map.source_field );
 
-      if ( map.source_index >= 0 && value != null && value instanceof Object[] )
+      if ( map.source_index >= 0 && value != null && value instanceof Object[] ) {
         copyRow[i] = ( ( (Object[]) value ).length == 0 ? null : ( (Object[]) value )[map.source_index] );
-      else
+      } else {
         copyRow[i] = value;
+      }
 
       copyRow[i] = fixType( map, copyRow[i] );
 
@@ -72,21 +73,22 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface {
 
   private Object fixType( FieldMapping map, Object value ) {
     // Nothing to fix
-    if ( value == null )
+    if ( value == null ) {
       return null;
+    }
 
     Object fixedValue = value;
 
-    if ( map.target_field_type == ValueMetaInterface.TYPE_INTEGER )
+    if ( map.target_field_type == ValueMetaInterface.TYPE_INTEGER ) {
       fixedValue = Long.parseLong( value.toString() );
-    else if ( map.target_field_type == ValueMetaInterface.TYPE_NUMBER )
+    } else if ( map.target_field_type == ValueMetaInterface.TYPE_NUMBER ) {
       fixedValue = Double.parseDouble( value.toString() );
     // ONE2MANY and MANY2MANY fields
-    else if ( map.target_field_type == ValueMetaInterface.TYPE_STRING && value instanceof Object[] ) {
+    } else if ( map.target_field_type == ValueMetaInterface.TYPE_STRING && value instanceof Object[] ) {
       String stringValue = "";
-      for ( Object singleValue : (Object[]) value )
+      for ( Object singleValue : (Object[]) value ) {
         stringValue += "," + singleValue.toString();
-
+      }
       fixedValue = stringValue.substring( 1 );
     }
 
@@ -108,11 +110,11 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface {
           ReadFilter filterItem = meta.getFilterList().get( i );
 
           // Handle logical operators
-          if ( filterItem.getOperator().equalsIgnoreCase( "not" ) )
+          if ( filterItem.getOperator().equalsIgnoreCase( "not" ) ) {
             filter.add( FilterOperator.NOT );
-          else if ( filterItem.getOperator().equalsIgnoreCase( "or" ) )
+          } else if ( filterItem.getOperator().equalsIgnoreCase( "or" ) ) {
             filter.add( FilterOperator.OR );
-
+          }
           filter.add( filterItem.getFieldName(), filterItem.getComparator(), filterItem.getValue() );
 
           this.logBasic( "Setting filter: [" + filterItem.getFieldName() + "," + filterItem.getComparator() + ","
@@ -124,9 +126,9 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface {
         int limit = meta.getReadBatchSize();
 
         while ( offset < rowCount ) {
-          if ( isStopped() )
+          if ( isStopped() ) {
             break;
-
+          }
           RowCollection rows =
               data.helper.getModelData( meta.getModelName(), filter, meta.getMappings(), offset, limit );
           for ( Row row : rows ) {

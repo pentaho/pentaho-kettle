@@ -1384,13 +1384,14 @@ public class BaseStepDialog extends Dialog {
   }
 
   private void setShellImage( Shell shell ) {
-    PluginInterface plugin =
-  PluginRegistry.getInstance().getPlugin( StepPluginType.class, stepMeta.getStepMetaInterface() );
-    createHelpButton( shell, stepMeta, plugin );
-
-    String id = plugin.getIds()[0];
-    if ( id != null ) {
-      shell.setImage( GUIResource.getInstance().getImagesSteps().get( id ) );
+    if ( stepMeta != null ) {
+      PluginInterface plugin =
+        PluginRegistry.getInstance().getPlugin( StepPluginType.class, stepMeta.getStepMetaInterface() );
+      createHelpButton( shell, stepMeta, plugin );
+      String id = plugin.getIds()[ 0 ];
+      if ( id != null ) {
+        shell.setImage( GUIResource.getInstance().getImagesSteps().get( id ) );
+      }
     }
   }
 

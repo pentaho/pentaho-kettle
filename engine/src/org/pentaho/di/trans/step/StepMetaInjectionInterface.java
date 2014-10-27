@@ -46,4 +46,12 @@ public interface StepMetaInjectionInterface {
    */
   public void injectStepMetadataEntries( List<StepInjectionMetaEntry> metadata ) throws KettleException;
 
+  /**
+   * Extracts the step metadata in a standard fashion.  Enables unit testing more easily by extracting the step
+   * metadata and then doing the re-injection into an empty step.
+   * @return A list of step injection metadata entries in a standard fashion.  Includes both the entry and the value
+   *         for the entry.
+   * @throws KettleException
+   */
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException;
 }

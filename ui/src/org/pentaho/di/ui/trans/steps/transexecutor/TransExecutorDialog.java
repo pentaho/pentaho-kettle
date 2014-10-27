@@ -168,6 +168,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   private TextVar wExecutionLogTextField;
   private TextVar wExecutionLogChannelIdField;
 
+  private String executorOutputStep;
+
   private ObjectId referenceObjectId;
   private ObjectLocationSpecificationMethod specificationMethod;
 
@@ -782,6 +784,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     wExecutionExitStatusField.setText( Const.NVL( transExecutorMeta.getExecutionExitStatusField(), "" ) );
     wExecutionLogTextField.setText( Const.NVL( transExecutorMeta.getExecutionLogTextField(), "" ) );
     wExecutionLogChannelIdField.setText( Const.NVL( transExecutorMeta.getExecutionLogChannelIdField(), "" ) );
+
+    executorOutputStep = transExecutorMeta.getExecutorsOutputStep();
 
     // result files
     //
@@ -1472,7 +1476,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
           ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
         new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Length" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ),
-        new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Length" ),
+        new ColumnInfo( BaseMessages.getString( PKG, "TransExecutorDialog.ColumnInfo.Precision" ),
           ColumnInfo.COLUMN_TYPE_TEXT, false ), };
 
     wOutputFields =
@@ -1622,6 +1626,11 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     transExecutorMeta.setResultFilesTargetStep( wResultFilesTarget.getText() );
     transExecutorMeta.setResultFilesTargetStepMeta( transMeta.findStep( wResultFilesTarget.getText() ) );
     transExecutorMeta.setResultFilesFileNameField( wResultFileNameField.getText() );
+
+    if ( !Const.isEmpty( executorOutputStep ) ) {
+      transExecutorMeta.setExecutorsOutputStep( executorOutputStep );
+      transExecutorMeta.setExecutorsOutputStepMeta( transMeta.findStep( executorOutputStep ) );
+    }
 
     // Result row info
     //

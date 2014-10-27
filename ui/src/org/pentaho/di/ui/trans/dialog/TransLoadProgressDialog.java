@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -103,6 +104,10 @@ public class TransLoadProgressDialog {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
       pmd.run( false, false, op );
     } catch ( InvocationTargetException e ) {
+      KettleRepositoryLostException krle = KettleRepositoryLostException.lookupStackStrace( e );
+      if ( krle != null ) {
+        throw krle;
+      }
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle" ),
         BaseMessages.getString( PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );

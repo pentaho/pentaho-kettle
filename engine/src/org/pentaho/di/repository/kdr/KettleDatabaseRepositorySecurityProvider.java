@@ -166,4 +166,9 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
   public boolean isManaged() throws KettleException {
     return true;
   }
+
+  @Override
+  public boolean isVersioningEnabled() {
+    return false;
+  }
 }

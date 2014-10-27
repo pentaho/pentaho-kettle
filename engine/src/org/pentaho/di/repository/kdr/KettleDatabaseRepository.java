@@ -291,10 +291,18 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     }
   }
 
-  public synchronized ObjectId renameTransformation( ObjectId id_transformation,
-    RepositoryDirectoryInterface newDir, String newName ) throws KettleException {
+  public ObjectId renameTransformation( ObjectId id_transformation, RepositoryDirectoryInterface newDir,
+      String newName ) throws KettleException {
+    return renameTransformation(id_transformation, null, newDir, newName );
+  }
+
+  public synchronized ObjectId renameTransformation( ObjectId id_transformation, String versionComment,
+      RepositoryDirectoryInterface newDir, String newName ) throws KettleException {
     securityProvider.validateAction( RepositoryOperation.MODIFY_TRANSFORMATION );
     transDelegate.renameTransformation( id_transformation, newDir, newName );
+    if ( !Const.isEmpty( versionComment ) ) {
+      insertLogEntry( versionComment );
+    }
     return id_transformation; // The same in our case.
   }
 
@@ -331,9 +339,18 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
     }
   }
 
-  public synchronized ObjectId renameJob( ObjectId id_job, RepositoryDirectoryInterface dir, String newname ) throws KettleException {
+  public ObjectId renameJob( ObjectId id_job, RepositoryDirectoryInterface dir, String newname )
+    throws KettleException {
+    return renameJob(id_job, null, dir, newname );
+  }
+
+  public synchronized ObjectId renameJob( ObjectId id_job, String versionComment, RepositoryDirectoryInterface dir,
+    String newname ) throws KettleException {
     securityProvider.validateAction( RepositoryOperation.MODIFY_TRANSFORMATION );
     jobDelegate.renameJob( id_job, dir, newname );
+    if ( !Const.isEmpty( versionComment ) ) {
+      insertLogEntry( versionComment );
+    }
     return id_job; // Same in this case
   }
 

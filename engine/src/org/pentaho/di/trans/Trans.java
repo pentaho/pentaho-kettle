@@ -262,6 +262,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   /** Constant indicating a transformation status of Finished. */
   public static final String STRING_FINISHED = "Finished";
 
+  /** Constant indicating a transformation status of Finished (with errors). */
+  public static final String STRING_FINISHED_WITH_ERRORS = "Finished (with errors)";
+
   /** Constant indicating a transformation status of Running. */
   public static final String STRING_RUNNING = "Running";
 
@@ -730,14 +733,20 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           // This can only happen if a variable is used that didn't resolve to a positive integer value
           //
           throw new KettleException( BaseMessages.getString(
-            PKG, "Trans.Log.StepCopiesNotCorrectlyDefined", thisStep.getCopiesString(), thisStep.getName() ) );
+            PKG, "Trans.Log.StepCopiesNotCorrectlyDefined", thisStep.getName() ) );
         }
 
         // How many times do we start the target step?
         int nextCopies = nextStep.getCopies();
 
         // Are we re-partitioning?
-        boolean repartitioning = !thisStep.isPartitioned() && nextStep.isPartitioned();
+        boolean repartitioning;
+        if ( thisStep.isPartitioned() ) {
+          repartitioning = !thisStep.getStepPartitioningMeta()
+              .equals( nextStep.getStepPartitioningMeta() );
+        } else {
+          repartitioning = nextStep.isPartitioned();
+        }
 
         int nrCopies;
         if ( log.isDetailed() ) {

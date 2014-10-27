@@ -132,6 +132,8 @@ import org.w3c.dom.Document;
 public class RepositoryExplorerDialog extends Dialog {
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!
 
+  private static final String REPOSITORY_PKG = "org.pentaho.di.ui.repository";
+
   public interface RepositoryExplorerCallback {
     /**
      * request that specified object be opened in 'Spoon' display
@@ -1761,7 +1763,8 @@ public class RepositoryExplorerDialog extends Dialog {
         ObjectId id = rep.getTransformationID( name, repdir );
         if ( id != null ) {
           // System.out.println("Renaming transformation ["+name+"] with ID = "+id);
-          rep.renameTransformation( id, repdir, newname );
+          String comment = BaseMessages.getString( REPOSITORY_PKG, "Repository.Rename", name, newname );
+          rep.renameTransformation( id, comment, repdir, newname );
           retval = true;
         }
       } else {
@@ -1950,7 +1953,8 @@ public class RepositoryExplorerDialog extends Dialog {
         ObjectId id = rep.getJobId( name, repdir );
         if ( id != null ) {
           System.out.println( "Renaming job [" + name + "] with ID = " + id );
-          rep.renameJob( id, repdir, newname );
+          String comment = BaseMessages.getString( REPOSITORY_PKG, "Repository.Rename", name, newname );
+          rep.renameJob( id, comment, repdir, newname );
           retval = true;
         }
       } else {
@@ -2034,7 +2038,8 @@ public class RepositoryExplorerDialog extends Dialog {
         ObjectId id = rep.getJobId( name, repdir );
         if ( id != null ) {
           // System.out.println("Renaming transformation ["+name+"] with ID = "+id);
-          rep.renameJob( id, repdir, newname );
+          String comment = BaseMessages.getString( REPOSITORY_PKG, "Repository.Rename", name, newname );
+          rep.renameJob( id, comment, repdir, newname );
           retval = true;
         } else {
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );

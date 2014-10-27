@@ -216,7 +216,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
     // Add the mapping parameters too
     //
-    retval.append( "      " ).append( parameters.getXML() ).append( Const.CR );
+    retval.append( parameters.getXML() );
 
     // The output side...
     //
@@ -252,12 +252,13 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
       XMLHandler.addTagValue( "result_rows_target_step", resultRowsTargetStepMeta == null
         ? null : resultRowsTargetStepMeta.getName() ) );
     for ( int i = 0; i < resultRowsField.length; i++ ) {
-      retval.append( "      " ).append( XMLHandler.openTag( "result_rows_field" ) );
-      retval.append( XMLHandler.addTagValue( "name", resultRowsField[i], false ) );
-      retval.append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( resultRowsType[i] ), false ) );
-      retval.append( XMLHandler.addTagValue( "length", resultRowsLength[i], false ) );
-      retval.append( XMLHandler.addTagValue( "precision", resultRowsPrecision[i], false ) );
-      retval.append( XMLHandler.closeTag( "result_rows_field" ) ).append( Const.CR );
+      retval.append( "    " ).append( XMLHandler.openTag( "result_rows_field" ) ).append( Const.CR );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "name", resultRowsField[i] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "type",
+              ValueMeta.getTypeDesc( resultRowsType[i] ) ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "length", resultRowsLength[i] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "precision", resultRowsPrecision[i] ) );
+      retval.append( "    " ).append( XMLHandler.closeTag( "result_rows_field" ) ).append( Const.CR );
     }
 
     retval.append( "    " ).append(
@@ -365,17 +366,17 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     executionLogChannelIdField = rep.getStepAttributeString( id_step, "execution_log_channelid_field" );
 
     resultRowsTargetStep = rep.getStepAttributeString( id_step, "result_rows_target_step" );
-    int nrFields = rep.countNrStepAttributes( id_step, "result_rows_field" );
+    int nrFields = rep.countNrStepAttributes( id_step, "result_rows_field_name" );
     resultRowsField = new String[nrFields];
     resultRowsType = new int[nrFields];
     resultRowsLength = new int[nrFields];
     resultRowsPrecision = new int[nrFields];
 
     for ( int i = 0; i < nrFields; i++ ) {
-      resultRowsField[i] = rep.getStepAttributeString( id_step, i, "result_rows_field" );
-      resultRowsType[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "result_rows_type" ) );
-      resultRowsLength[i] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_length" );
-      resultRowsPrecision[i] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_precision" );
+      resultRowsField[i] = rep.getStepAttributeString( id_step, i, "result_rows_field_name" );
+      resultRowsType[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "result_rows_field_type" ) );
+      resultRowsLength[i] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_field_length" );
+      resultRowsPrecision[i] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_field_precision" );
     }
 
     resultFilesTargetStep = rep.getStepAttributeString( id_step, "result_files_target_step" );

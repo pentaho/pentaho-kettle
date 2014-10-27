@@ -3,9 +3,7 @@ package org.pentaho.di.core.database;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.sql.BatchUpdateException;
 import java.sql.Connection;
@@ -123,19 +121,17 @@ public class DatabaseUnitTest {
 
   @Test( expected = KettleDatabaseBatchException.class )
   public void testInsertRowWithBatchAlwaysThrowsKettleBatchException() throws KettleDatabaseException, SQLException {
-    LoggingObjectInterface mockLoggingObjectInterface = mock( LoggingObjectInterface.class );
     DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    Connection mockConnection = mock( Connection.class );
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    PreparedStatement ps = mock( PreparedStatement.class );
-
-    when( mockLoggingObjectInterface.getLogLevel() ).thenReturn( LogLevel.NOTHING );
     when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
-    when( mockConnection.getMetaData() ).thenReturn( mockDatabaseMetaData );
+
+    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
     when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
+    Connection mockConnection = mockConnection( mockDatabaseMetaData );
+
+    PreparedStatement ps = mock( PreparedStatement.class );
     when( ps.executeBatch() ).thenThrow( new SQLException() );
 
-    Database database = new Database( mockLoggingObjectInterface, mockDatabaseMeta );
+    Database database = new Database( mockLogger(), mockDatabaseMeta );
     database.setCommit( 1 );
     database.setConnection( mockConnection );
     database.insertRow( ps, true, true );
@@ -143,19 +139,17 @@ public class DatabaseUnitTest {
 
   @Test( expected = KettleDatabaseException.class )
   public void testInsertRowWithoutBatchDoesntThrowKettleBatchException() throws KettleDatabaseException, SQLException {
-    LoggingObjectInterface mockLoggingObjectInterface = mock( LoggingObjectInterface.class );
     DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    Connection mockConnection = mock( Connection.class );
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    PreparedStatement ps = mock( PreparedStatement.class );
-
-    when( mockLoggingObjectInterface.getLogLevel() ).thenReturn( LogLevel.NOTHING );
     when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
-    when( mockConnection.getMetaData() ).thenReturn( mockDatabaseMetaData );
+
+    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
     when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
+    Connection mockConnection = mockConnection( mockDatabaseMetaData );
+
+    PreparedStatement ps = mock( PreparedStatement.class );
     when( ps.executeUpdate() ).thenThrow( new SQLException() );
 
-    Database database = new Database( mockLoggingObjectInterface, mockDatabaseMeta );
+    Database database = new Database( mockLogger(), mockDatabaseMeta );
     database.setConnection( mockConnection );
     try {
       database.insertRow( ps, true, true );
@@ -167,19 +161,17 @@ public class DatabaseUnitTest {
   @Test( expected = KettleDatabaseBatchException.class )
   public void testEmptyAndCommitWithBatchAlwaysThrowsKettleBatchException() throws KettleDatabaseException,
     SQLException {
-    LoggingObjectInterface mockLoggingObjectInterface = mock( LoggingObjectInterface.class );
     DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    Connection mockConnection = mock( Connection.class );
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    PreparedStatement ps = mock( PreparedStatement.class );
-
-    when( mockLoggingObjectInterface.getLogLevel() ).thenReturn( LogLevel.NOTHING );
     when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
-    when( mockConnection.getMetaData() ).thenReturn( mockDatabaseMetaData );
+
+    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
     when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
+    Connection mockConnection = mockConnection( mockDatabaseMetaData );
+
+    PreparedStatement ps = mock( PreparedStatement.class );
     when( ps.executeBatch() ).thenThrow( new SQLException() );
 
-    Database database = new Database( mockLoggingObjectInterface, mockDatabaseMeta );
+    Database database = new Database( mockLogger(), mockDatabaseMeta );
     database.setCommit( 1 );
     database.setConnection( mockConnection );
     database.emptyAndCommit( ps, true, 1 );
@@ -187,19 +179,17 @@ public class DatabaseUnitTest {
 
   @Test( expected = KettleDatabaseException.class )
   public void testEmptyAndCommitWithoutBatchDoesntThrowKettleBatchException() throws KettleDatabaseException, SQLException {
-    LoggingObjectInterface mockLoggingObjectInterface = mock( LoggingObjectInterface.class );
     DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    Connection mockConnection = mock( Connection.class );
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    PreparedStatement ps = mock( PreparedStatement.class );
-
-    when( mockLoggingObjectInterface.getLogLevel() ).thenReturn( LogLevel.NOTHING );
     when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
-    when( mockConnection.getMetaData() ).thenReturn( mockDatabaseMetaData );
+
+    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
     when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
+    Connection mockConnection = mockConnection( mockDatabaseMetaData );
+
+    PreparedStatement ps = mock( PreparedStatement.class );
     doThrow( new SQLException() ).when( ps ).close();
 
-    Database database = new Database( mockLoggingObjectInterface, mockDatabaseMeta );
+    Database database = new Database( mockLogger(), mockDatabaseMeta );
     database.setConnection( mockConnection );
     try {
       database.emptyAndCommit( ps, true, 1 );
@@ -212,19 +202,17 @@ public class DatabaseUnitTest {
   @Test( expected = KettleDatabaseBatchException.class )
   public void testInsertFinishedWithBatchAlwaysThrowsKettleBatchException() throws KettleDatabaseException,
     SQLException {
-    LoggingObjectInterface mockLoggingObjectInterface = mock( LoggingObjectInterface.class );
     DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    Connection mockConnection = mock( Connection.class );
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    PreparedStatement ps = mock( PreparedStatement.class );
-
-    when( mockLoggingObjectInterface.getLogLevel() ).thenReturn( LogLevel.NOTHING );
     when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
-    when( mockConnection.getMetaData() ).thenReturn( mockDatabaseMetaData );
+
+    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
     when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
+    Connection mockConnection = mockConnection( mockDatabaseMetaData );
+
+    PreparedStatement ps = mock( PreparedStatement.class );
     when( ps.executeBatch() ).thenThrow( new SQLException() );
 
-    Database database = new Database( mockLoggingObjectInterface, mockDatabaseMeta );
+    Database database = new Database( mockLogger(), mockDatabaseMeta );
     database.setCommit( 1 );
     database.setConnection( mockConnection );
     database.insertFinished( ps, true );
@@ -232,25 +220,78 @@ public class DatabaseUnitTest {
 
   @SuppressWarnings( "deprecation" )
   @Test( expected = KettleDatabaseException.class )
-  public void testInsertFinishedWithoutBatchDoesntThrowKettleBatchException() throws KettleDatabaseException, SQLException {
-    LoggingObjectInterface mockLoggingObjectInterface = mock( LoggingObjectInterface.class );
+  public void testInsertFinishedWithoutBatchDoesntThrowKettleBatchException()
+    throws KettleDatabaseException, SQLException {
     DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    Connection mockConnection = mock( Connection.class );
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    PreparedStatement ps = mock( PreparedStatement.class );
-
-    when( mockLoggingObjectInterface.getLogLevel() ).thenReturn( LogLevel.NOTHING );
     when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
-    when( mockConnection.getMetaData() ).thenReturn( mockDatabaseMetaData );
+
+    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
     when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
+    Connection mockConnection = mockConnection( mockDatabaseMetaData );
+
+    PreparedStatement ps = mock( PreparedStatement.class );
     doThrow( new SQLException() ).when( ps ).close();
 
-    Database database = new Database( mockLoggingObjectInterface, mockDatabaseMeta );
+    Database database = new Database( mockLogger(), mockDatabaseMeta );
     database.setConnection( mockConnection );
     try {
       database.insertFinished( ps, true );
     } catch ( KettleDatabaseBatchException e ) {
       // noop
     }
+  }
+
+  @Test
+  public void insertRowAndExecuteBatchCauseNoErrors() throws Exception {
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    when( dbMeta.supportsBatchUpdates() ).thenReturn( true );
+
+    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+    when( dbMetaData.supportsBatchUpdates() ).thenReturn( true );
+
+    Database db = new Database( mockLogger(), dbMeta );
+    db.setConnection( mockConnection( dbMetaData ) );
+    db.setCommit( 1 );
+
+    PreparedStatement ps = mock( PreparedStatement.class );
+
+    db.insertRow( ps, true, false );
+    verify( ps ).addBatch();
+
+    db.executeAndClearBatch( ps );
+    verify( ps ).executeBatch();
+    verify( ps ).clearBatch();
+  }
+
+  @Test
+  public void insertRowWhenDbDoNotSupportBatchLeadsToCommit() throws Exception {
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    when( dbMeta.supportsBatchUpdates() ).thenReturn( false );
+
+    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+    when( dbMetaData.supportsBatchUpdates() ).thenReturn( false );
+
+    Database db = new Database( mockLogger(), dbMeta );
+    db.setConnection( mockConnection( dbMetaData ) );
+    db.setCommit( 1 );
+
+    PreparedStatement ps = mock( PreparedStatement.class );
+
+    db.insertRow( ps, true, false );
+    verify( ps, never() ).addBatch();
+    verify( ps ).executeUpdate();
+  }
+
+
+  private static LoggingObjectInterface mockLogger() {
+    LoggingObjectInterface logger = mock( LoggingObjectInterface.class );
+    when( logger.getLogLevel() ).thenReturn( LogLevel.NOTHING );
+    return logger;
+  }
+
+  private static Connection mockConnection( DatabaseMetaData dbMetaData ) throws SQLException {
+    Connection connection = mock( Connection.class );
+    when( connection.getMetaData() ).thenReturn( dbMetaData );
+    return connection;
   }
 }

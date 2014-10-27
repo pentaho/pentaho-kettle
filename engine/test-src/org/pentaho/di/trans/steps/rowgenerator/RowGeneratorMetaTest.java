@@ -22,7 +22,7 @@ public class RowGeneratorMetaTest {
   private final String launchVariable = "${ROW_LIMIT}";
 
   private final String rowGeneratorRowLimitCode = "limit";
-  
+
   @Before
   public void setUp() throws KettleException {
     rep = new MemoryRepository();

@@ -182,8 +182,9 @@ public class HL7InputDialog extends BaseStepDialog implements StepDialogInterfac
 
     shell.open();
     while ( !shell.isDisposed() ) {
-      if ( !display.readAndDispatch() )
+      if ( !display.readAndDispatch() ) {
         display.sleep();
+      }
     }
     return stepname;
   }
@@ -204,8 +205,9 @@ public class HL7InputDialog extends BaseStepDialog implements StepDialogInterfac
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) )
+    if ( Const.isEmpty( wStepname.getText() ) ) {
       return;
+    }
 
     stepname = wStepname.getText(); // return value
     input.setMessageField( wMessageField.getText() );

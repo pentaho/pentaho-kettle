@@ -32,5 +32,5 @@ import java.lang.annotation.Target;
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.TYPE )
 public @interface ParentFirst {
-  String[] patterns() default {};
+  String[] patterns() default { };
 }

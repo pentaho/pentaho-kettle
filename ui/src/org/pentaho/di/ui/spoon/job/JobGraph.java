@@ -122,6 +122,7 @@ import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -584,7 +585,13 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     final Timer timer = new Timer( "JobGraph.setControlStates Timer: " + getMeta().getName() );
     TimerTask timerTask = new TimerTask() {
       public void run() {
-        setControlStates();
+        try {
+          setControlStates();
+        } catch ( KettleRepositoryLostException krle ) {
+          if ( log.isBasic() ) {
+            log.logBasic( krle.getLocalizedMessage() );
+          }
+        }
       }
     };
     timer.schedule( timerTask, 2000, 1000 );
@@ -1744,7 +1751,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   }
 
   public void copyEntry() {
-    if ( RepositorySecurityUI.verifyOperations( shell, spoon.rep, RepositoryOperation.MODIFY_JOB, RepositoryOperation.EXECUTE_JOB ) ) {
+    if ( RepositorySecurityUI.verifyOperations(
+        shell, spoon.rep, RepositoryOperation.MODIFY_JOB, RepositoryOperation.EXECUTE_JOB ) ) {
       return;
     }
     List<JobEntryCopy> entries = jobMeta.getSelectedEntries();
@@ -3501,8 +3509,13 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     getDisplay().asyncExec( new Runnable() {
 
       public void run() {
-        boolean operationsNotAllowed = RepositorySecurityUI.verifyOperations( shell, spoon.rep, false,
-            RepositoryOperation.EXECUTE_JOB  );
+        boolean operationsNotAllowed = false;
+        try {
+          operationsNotAllowed = RepositorySecurityUI.verifyOperations( shell, spoon.rep, false,
+              RepositoryOperation.EXECUTE_JOB  );
+        } catch ( KettleRepositoryLostException krle ) {
+          log.logError( krle.getLocalizedMessage() );
+        }
 
         // Start/Run button...
         //
@@ -3526,9 +3539,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         // Replay button...
         //
         XulToolbarbutton replayButton = (XulToolbarbutton) toolbar.getElementById( "job-replay" );
-        if ( replayButton != null && !controlDisposed( replayButton ) ) {
-          if ( replayButton.isDisabled() ^ !running ) {
-            replayButton.setDisabled( !running );
+        if ( replayButton != null && !controlDisposed( replayButton ) && !operationsNotAllowed ) {
+          if ( replayButton.isDisabled() ^ running ) {
+            replayButton.setDisabled( running );
           }
         }
 

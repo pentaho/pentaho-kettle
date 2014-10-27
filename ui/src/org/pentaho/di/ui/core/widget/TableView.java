@@ -639,13 +639,23 @@ public class TableView extends Composite {
     // Catch the keys pressed when editing a Combo field
     lsKeyCombo = new KeyAdapter() {
       public void keyPressed( KeyEvent e ) {
+        boolean ctrl = ( ( e.stateMask & SWT.MOD1 ) != 0 );
+        // CTRL-V --> Paste selected infomation...
+        if ( e.keyCode == 'v' && ctrl ) {
+          e.doit = false;
+          if ( clipboard != null ) {
+            clipboard.dispose();
+            clipboard = null;
+          }
+          clipboard = new Clipboard( getDisplay() );
+          TextTransfer tran = TextTransfer.getInstance();
+          String text = (String) clipboard.getContents( tran );
+          combo.setText( text );
+          return;
+        }
+
         boolean right = false;
         boolean left = false;
-
-        // left = e.keyCode == SWT.ARROW_LEFT && last_carret_position==0;
-        // right = e.keyCode == SWT.ARROW_RIGHT &&
-        // last_carret_position==combo.getText().length();
-        // System.out.println("keycode: "+e.keyCode+" character:"+e.character);
         // "ENTER": close the text editor and copy the data over
         if ( e.keyCode == SWT.CR || e.keyCode == SWT.TAB || left || right ) {
           if ( activeTableItem == null ) {
@@ -1402,8 +1412,8 @@ public class TableView extends Composite {
   }
 
   private void checkChanged( String[][] before, String[][] after, int[] index ) {
-    if ( fieldChanged ) // Did we change anything: if so, add undo information
-    {
+    // Did we change anything: if so, add undo information
+    if ( fieldChanged ) {
       TransAction ta = new TransAction();
       ta.setChanged( before, after, index );
       addUndo( ta );
@@ -1702,14 +1712,14 @@ public class TableView extends Composite {
     String text = (String) clipboard.getContents( tran );
 
     if ( text != null ) {
-      String[] lines = convertTextToLines( text );
+      String[] lines = text.split( Const.CR );
       if ( lines.length > 1 ) {
         // ALlocate complete paste grid!
         String[][] grid = new String[lines.length - 1][];
         int[] idx = new int[lines.length - 1];
 
         for ( int i = 1; i < lines.length; i++ ) {
-          grid[i - 1] = convertLineToStrings( lines[i] );
+          grid[i - 1] = lines[i].split( "\t" );
           idx[i - 1] = rownr + i;
           addItem( idx[i - 1], grid[i - 1] );
         }
@@ -1739,59 +1749,6 @@ public class TableView extends Composite {
       item.setText( i + 1, str[i] );
     }
     setModified();
-  }
-
-  private String[] convertTextToLines( String text ) {
-    ArrayList<String> strings = new ArrayList<String>();
-
-    int pos = 0;
-    int start = 0;
-    while ( pos < text.length() ) {
-      // Search for the end of the line: Const.CR
-      while ( pos < text.length() && !text.substring( pos ).startsWith( Const.CR ) ) {
-        pos++;
-      }
-      if ( pos < text.length() ) {
-        String line = text.substring( start, pos );
-        strings.add( line );
-
-        pos += Const.CR.length();
-        start = pos;
-      }
-    }
-
-    String[] retval = new String[strings.size()];
-    for ( int i = 0; i < retval.length; i++ ) {
-      retval[i] = strings.get( i );
-    }
-
-    return retval;
-  }
-
-  private String[] convertLineToStrings( String line ) {
-    ArrayList<String> fields = new ArrayList<String>();
-
-    int pos2 = 0;
-    int start2 = 0;
-    while ( pos2 < line.length() ) {
-      // Search for the end of the field: "\t"
-      while ( pos2 < line.length() && !line.substring( pos2 ).startsWith( "\t" ) ) {
-        pos2++;
-      }
-      String field = line.substring( start2, pos2 );
-
-      fields.add( field );
-
-      pos2++;
-      start2 = pos2;
-    }
-
-    String[] retval = new String[fields.size()];
-    for ( int i = 0; i < retval.length; i++ ) {
-      retval[i] = fields.get( i );
-    }
-
-    return retval;
   }
 
   private void cutSelected() {
@@ -2201,21 +2158,14 @@ public class TableView extends Composite {
     if ( colinfo.getComboValuesSelectionListener() != null ) {
       opt = colinfo.getComboValuesSelectionListener().getComboValues( row, rownr, colnr );
     }
-
-    for ( int i = 0; i < opt.length; i++ ) {
-      combo.add( opt[i] );
-    }
+    combo.setItems( opt );
+    combo.setVisibleItemCount( opt.length - 1 );
     combo.setText( row.getText( colnr ) );
     if ( lsMod != null ) {
       combo.addModifyListener( lsMod );
     }
     combo.addModifyListener( lsUndo );
-    String tooltip = colinfo.getToolTip();
-    if ( tooltip != null ) {
-      combo.setToolTipText( tooltip );
-    } else {
-      combo.setToolTipText( "" );
-    }
+    combo.setToolTipText( colinfo.getToolTip() == null ? "" : colinfo.getToolTip() );
     combo.setVisible( true );
     combo.addKeyListener( lsKeyCombo );
 

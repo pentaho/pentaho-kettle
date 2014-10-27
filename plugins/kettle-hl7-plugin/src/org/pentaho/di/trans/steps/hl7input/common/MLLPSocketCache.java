@@ -49,8 +49,9 @@ public class MLLPSocketCache {
   public MLLPSocketCacheEntry getServerSocketStreamSource( String server, int port ) throws Exception {
     final String key = createKey( server, port );
     MLLPSocketCacheEntry s = map.get( key );
-    if ( s != null )
+    if ( s != null ) {
       return s;
+    }
 
     // Open the socket for this server/port combination.
     //

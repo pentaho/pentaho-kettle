@@ -99,7 +99,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "arg_from_previous", argFromPrevious ) );
@@ -298,7 +298,6 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
       if ( filefolder != null ) {
         try {
           filefolder.close();
-          filefolder = null;
         } catch ( IOException ex ) {
           // Ignore
         }
@@ -327,7 +326,6 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
     public boolean includeFile( FileSelectInfo info ) {
       boolean returncode = false;
-      FileObject file_name = null;
       try {
 
         if ( !info.getFile().toString().equals( sourceFolder ) && !parentjob.isStopped() ) {
@@ -373,15 +371,6 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
               .getMessage() ) );
 
         returncode = false;
-      } finally {
-        if ( file_name != null ) {
-          try {
-            file_name.close();
-            file_name = null;
-          } catch ( IOException ex ) { /* Ignore */
-          }
-        }
-
       }
 
       return returncode;
@@ -399,11 +388,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
    * @return True if the selectedfile matches the wildcard
    **********************************************************/
   private boolean GetFileWildcard( String selectedfile, String wildcard ) {
-    Pattern pattern = null;
     boolean getIt = true;
 
     if ( !Const.isEmpty( wildcard ) ) {
-      pattern = Pattern.compile( wildcard );
+      Pattern pattern = Pattern.compile( wildcard );
       // First see if the file matches the regular expression!
       if ( pattern != null ) {
         Matcher matcher = pattern.matcher( selectedfile );
@@ -430,7 +418,7 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     Repository repository, IMetaStore metaStore ) {
     boolean res = andValidator().validate( this, "arguments", remarks, putValidators( notNullValidator() ) );
 
-    if ( res == false ) {
+    if ( !res ) {
       return;
     }
 

@@ -1,6 +1,7 @@
 package org.pentaho.di.trans;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -8,8 +9,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.concurrent.CountDownLatch;
-
-import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs.FileObject;
@@ -61,9 +60,9 @@ public class TransTest {
     meta.addDatabase( dbMeta2 );
 
     DatabaseMeta databaseMeta = meta.findDatabase( dbMeta1.getDisplayName() );
-    Assert.assertNotNull( databaseMeta );
-    Assert.assertEquals( databaseMeta.getName(), "encoded_DBConnection" );
-    Assert.assertEquals( databaseMeta.getDisplayName(), "encoded.DBConnection" );
+    assertNotNull( databaseMeta );
+    assertEquals( databaseMeta.getName(), "encoded_DBConnection" );
+    assertEquals( databaseMeta.getDisplayName(), "encoded.DBConnection" );
   }
 
   /**
@@ -74,7 +73,7 @@ public class TransTest {
     String expected = meta.log.getLogChannelId();
     meta.clear();
     String actual = meta.log.getLogChannelId();
-    Assert.assertEquals( "Use same logChannel for empty constructors, or assign General level for clear() calls",
+    assertEquals( "Use same logChannel for empty constructors, or assign General level for clear() calls",
         expected, actual );
   }
 
@@ -91,7 +90,7 @@ public class TransTest {
     Mockito.when( rep.findDirectory( Mockito.anyString() ) ).thenReturn( repInt );
 
     Trans trans = new Trans( meta, rep, "junit", "junitDir", "fileName" );
-    Assert.assertEquals( "Log channel General assigned", LogChannel.GENERAL.getLogChannelId(), trans.log
+    assertEquals( "Log channel General assigned", LogChannel.GENERAL.getLogChannelId(), trans.log
         .getLogChannelId() );
   }
 
@@ -108,8 +107,8 @@ public class TransTest {
     TransFinishListenerAdder add = new TransFinishListenerAdder( trans, start );
     TransFinishListenerFirer firer = new TransFinishListenerFirer( trans, start );
     startThreads( add, firer, start );
-    Assert.assertEquals( "All listeners are added: no ConcurrentModificationException", count, add.c );
-    Assert.assertEquals( "All Finish listeners are iterated over: no ConcurrentModificationException", count, firer.c );
+    assertEquals( "All listeners are added: no ConcurrentModificationException", count, add.c );
+    assertEquals( "All Finish listeners are iterated over: no ConcurrentModificationException", count, firer.c );
   }
 
   /**
@@ -123,8 +122,8 @@ public class TransTest {
     TransFinishListenerAdder add = new TransFinishListenerAdder( trans, start );
     TransStartListenerFirer starter = new TransStartListenerFirer( trans, start );
     startThreads( add, starter, start );
-    Assert.assertEquals( "All listeners are added: no ConcurrentModificationException", count, add.c );
-    Assert.assertEquals( "All Start listeners are iterated over: no ConcurrentModificationException", count, starter.c );
+    assertEquals( "All listeners are added: no ConcurrentModificationException", count, add.c );
+    assertEquals( "All Start listeners are iterated over: no ConcurrentModificationException", count, starter.c );
   }
 
   /**
@@ -138,8 +137,8 @@ public class TransTest {
     TransStoppedCaller stopper = new TransStoppedCaller( trans, start );
     TransStopListenerAdder adder = new TransStopListenerAdder( trans, start );
     startThreads( stopper, adder, start );
-    Assert.assertEquals( "All transformation stop listeners is added", count, adder.c );
-    Assert.assertEquals( "All stop call success", count, stopper.c );
+    assertEquals( "All transformation stop listeners is added", count, adder.c );
+    assertEquals( "All stop call success", count, stopper.c );
   }
 
   @Test

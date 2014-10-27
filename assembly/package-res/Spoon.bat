@@ -19,8 +19,8 @@ if %KETTLE_DIR:~-1%==\ set KETTLE_DIR=%KETTLE_DIR:~0,-1%
 cd %KETTLE_DIR%
 
 REM Special console/debug options when called from SpoonConsole.bat or SpoonDebug.bat
-if "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=java
-if not "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=javaw
+if "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=java.exe
+if not "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=javaw.exe
 set IS64BITJAVA=0
 
 call "%~dp0set-pentaho-env.bat"
@@ -51,7 +51,7 @@ goto USEJAVAFROMPATH
 FOR /F %%a IN ('.\java.exe -version 2^>^&1^|%windir%\system32\find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
 GOTO CHECK32VS64BITJAVA
 :USEJAVAFROMPATH
-FOR /F %%a IN ('java -version 2^>^&1^|find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
+FOR /F %%a IN ('java -version 2^>^&1^|%windir%\system32\find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
 GOTO CHECK32VS64BITJAVA
 :CHECK32VS64BITJAVA
 
@@ -99,8 +99,9 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
+if %STARTTITLE%!==! SET STARTTITLE="Spoon"
 REM Eventually call java instead of javaw and do not run in a separate window
-if not "%SPOON_CONSOLE%"=="1" set SPOON_START_OPTION=start "Spoon"
+if not "%SPOON_CONSOLE%"=="1" set SPOON_START_OPTION=start %STARTTITLE%
 
 @echo on
 %SPOON_START_OPTION% "%_PENTAHO_JAVA%" %OPT% -jar launcher\launcher.jar -lib ..\%LIBSPATH% %_cmdline%

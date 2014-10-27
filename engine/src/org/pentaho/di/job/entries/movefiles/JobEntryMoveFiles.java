@@ -802,12 +802,14 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
           retval = true;
         } else if ( iffileexists.equals( "delete_file" ) ) {
           if ( !simulate ) {
-            destinationfilename.delete();
+            sourcefilename.delete();
           }
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobMoveFiles.Log.FileDeleted", destinationfilename
               .getName().toString() ) );
           }
+          updateSuccess();
+          retval = true;
         } else if ( iffileexists.equals( "move_file" ) ) {
           String short_filename = shortfilename;
           // return destination short filename

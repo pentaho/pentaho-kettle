@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityProvider;
@@ -68,6 +69,10 @@ public class RepositorySecurityUI {
       }
       repository.getSecurityProvider().validateAction( operations );
     } catch ( KettleException e ) {
+      KettleRepositoryLostException krle = KettleRepositoryLostException.lookupStackStrace( e );
+      if ( krle != null ) {
+        throw krle;
+      }
       if ( displayError == true ) {
         new ErrorDialog( shell, "Security error",
             "There was a security error performing operations:" + Const.CR + operationsDesc, e );
@@ -106,7 +111,7 @@ public class RepositorySecurityUI {
       } else {
         explanation += ": ";
       }
-      String versionComment = Const.VERSION_COMMENT_EDIT_VERSION + " of [" + operationDescription + "]";
+      String versionComment = "Checked in";
 
       EnterStringDialog dialog = new EnterStringDialog( shell, versionComment, "Enter comment", explanation );
       dialog.setManditory( provider.isVersionCommentMandatory() );

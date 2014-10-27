@@ -22,9 +22,11 @@
 
 package org.pentaho.di.trans.steps.switchcase;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +34,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -45,7 +48,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -132,26 +134,26 @@ public class SwitchCaseTest {
     // call method under test
     krasavez.processRow();
 
-    Assert.assertEquals( "First row set collects 2 rows", 2, rowSetOne.size() );
-    Assert.assertEquals( "Second row set collects 2 rows", 2, rowSetTwo.size() );
+    assertEquals( "First row set collects 2 rows", 2, rowSetOne.size() );
+    assertEquals( "Second row set collects 2 rows", 2, rowSetTwo.size() );
 
-    Assert.assertEquals( "First null row set collects 5 rows", 6, rowSetNullOne.size() );
-    Assert.assertEquals( "Second null row set collects 5 rows", 6, rowSetNullTwo.size() );
+    assertEquals( "First null row set collects 5 rows", 6, rowSetNullOne.size() );
+    assertEquals( "Second null row set collects 5 rows", 6, rowSetNullTwo.size() );
 
-    Assert.assertEquals( "Default row set collects the rest of rows", 8, def.size() );
+    assertEquals( "Default row set collects the rest of rows", 8, def.size() );
 
     // now - check the data is correct in every row set:
-    Assert.assertEquals( "First row set contains only 3: ", true, isRowSetContainsValue(
-      rowSetOne, new Object[] { 3 }, new Object[] {} ) );
-    Assert.assertEquals( "Second row set contains only 3: ", true, isRowSetContainsValue(
-      rowSetTwo, new Object[] { 3 }, new Object[] {} ) );
+    assertEquals( "First row set contains only 3: ", true, isRowSetContainsValue(
+      rowSetOne, new Object[] { 3 }, new Object[] { } ) );
+    assertEquals( "Second row set contains only 3: ", true, isRowSetContainsValue(
+      rowSetTwo, new Object[] { 3 }, new Object[] { } ) );
 
-    Assert.assertEquals( "First null row set contains only null: ", true, isRowSetContainsValue(
-      rowSetNullOne, new Object[] { null }, new Object[] {} ) );
-    Assert.assertEquals( "Second null row set contains only null: ", true, isRowSetContainsValue(
-      rowSetNullTwo, new Object[] { null }, new Object[] {} ) );
+    assertEquals( "First null row set contains only null: ", true, isRowSetContainsValue(
+      rowSetNullOne, new Object[] { null }, new Object[] { } ) );
+    assertEquals( "Second null row set contains only null: ", true, isRowSetContainsValue(
+      rowSetNullTwo, new Object[] { null }, new Object[] { } ) );
 
-    Assert.assertEquals( "Default row set do not contains null or 3, but other", true, isRowSetContainsValue(
+    assertEquals( "Default row set do not contains null or 3, but other", true, isRowSetContainsValue(
       def, new Object[] { 1, 2, 4, 5 }, new Object[] { 3, null } ) );
   }
 
@@ -191,7 +193,7 @@ public class SwitchCaseTest {
 
     // load step info value-case mapping from xml.
     List<DatabaseMeta> emptyList = new ArrayList<DatabaseMeta>();
-    krasavez.meta.loadXML( loadStepXmlMetadata(), emptyList, mock( IMetaStore.class ) );
+    krasavez.meta.loadXML( loadStepXmlMetadata( "SwitchCaseTest.xml" ), emptyList, mock( IMetaStore.class ) );
 
     KeyToRowSetMap expectedNN = new KeyToRowSetMap();
     Set<RowSet> nulls = new HashSet<RowSet>();
@@ -226,29 +228,29 @@ public class SwitchCaseTest {
 
     // inspect step output data:
     Set<RowSet> ones = krasavez.data.outputMap.get( "1" );
-    Assert.assertEquals( "Output map for 1 values contains 2 row sets", 2, ones.size() );
+    assertEquals( "Output map for 1 values contains 2 row sets", 2, ones.size() );
 
     Set<RowSet> twos = krasavez.data.outputMap.get( "2" );
-    Assert.assertEquals( "Output map for 2 values contains 1 row sets", 1, twos.size() );
+    assertEquals( "Output map for 2 values contains 1 row sets", 1, twos.size() );
 
-    Assert.assertEquals( "Null row set contains 2 items: ", 2, krasavez.data.nullRowSetSet.size() );
-    Assert.assertEquals( "We have at least one default rowset", 1, krasavez.data.defaultRowSetSet.size() );
+    assertEquals( "Null row set contains 2 items: ", 2, krasavez.data.nullRowSetSet.size() );
+    assertEquals( "We have at least one default rowset", 1, krasavez.data.defaultRowSetSet.size() );
 
     // check that rowsets data is correct:
     Set<RowSet> rowsets = expectedNN.get( "1" );
     for ( RowSet rowset : rowsets ) {
-      Assert.assertTrue( "Output map for 1 values contains expected row set", ones.contains( rowset ) );
+      assertTrue( "Output map for 1 values contains expected row set", ones.contains( rowset ) );
     }
     rowsets = expectedNN.get( "2" );
     for ( RowSet rowset : rowsets ) {
-      Assert.assertTrue( "Output map for 2 values contains expected row set", twos.contains( rowset ) );
+      assertTrue( "Output map for 2 values contains expected row set", twos.contains( rowset ) );
     }
     for ( RowSet rowset : krasavez.data.nullRowSetSet ) {
-      Assert.assertTrue( "Output map for null values contains expected row set", nulls.contains( rowset ) );
+      assertTrue( "Output map for null values contains expected row set", nulls.contains( rowset ) );
     }
     // we have already check that there is only one item.
     for ( RowSet rowset : krasavez.data.defaultRowSetSet ) {
-      Assert.assertTrue( "Output map for default case contains expected row set", rowset.equals( rw ) );
+      assertTrue( "Output map for default case contains expected row set", rowset.equals( rw ) );
     }
   }
 
@@ -261,24 +263,59 @@ public class SwitchCaseTest {
    * @throws SAXException
    * @throws IOException
    */
-  Node loadStepXmlMetadata() throws URISyntaxException, ParserConfigurationException, SAXException, IOException {
+  private static Node loadStepXmlMetadata( String fileName ) throws URISyntaxException, ParserConfigurationException, SAXException, IOException {
     String PKG = SwitchCaseTest.class.getPackage().getName().replace( ".", "/" );
     PKG = PKG + "/";
-    URL url = SwitchCaseTest.class.getClassLoader().getResource( PKG + "SwitchCaseTest.xml" );
+    URL url = SwitchCaseTest.class.getClassLoader().getResource( PKG + fileName );
     File file = new File( url.toURI() );
     DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
     Document doc = dBuilder.parse( file );
     NodeList nList = doc.getElementsByTagName( "step" );
-    Node stepnode = nList.item( 0 );
-    return stepnode;
+    return nList.item( 0 );
   }
+
+
+  @Test
+  public void processRow_NullsArePutIntoDefaultWhenNotSpecified() throws Exception {
+    SwitchCaseCustom step = new SwitchCaseCustom( mockHelper );
+    step.meta.loadXML( loadStepXmlMetadata( "SwitchCaseTest_PDI-12671.xml" ), Collections.<DatabaseMeta>emptyList(), mock( IMetaStore.class ) );
+
+    List<RowSet> outputRowSets = new LinkedList<RowSet>();
+    for ( SwitchCaseTarget item : step.meta.getCaseTargets() ) {
+      StepMetaInterface smInt = new DummyTransMeta();
+      item.caseTargetStep = new StepMeta( item.caseTargetStepname, smInt );
+
+      RowSet rw = new QueueRowSet();
+      step.map.put( item.caseTargetStepname, rw );
+      outputRowSets.add( rw );
+    }
+
+    // create a default step
+    StepMetaInterface smInt = new DummyTransMeta();
+    StepMeta stepMeta = new StepMeta( step.meta.getDefaultTargetStepname(), smInt );
+    step.meta.setDefaultTargetStep( stepMeta );
+    RowSet defaultRowSet = new QueueRowSet();
+    step.map.put( step.meta.getDefaultTargetStepname(), defaultRowSet );
+
+    step.input.add( new Object[] { null } );
+    step.processRow();
+
+    assertEquals( 1, defaultRowSet.size() );
+    for ( RowSet rowSet : outputRowSets ) {
+      assertEquals( 0, rowSet.size() );
+    }
+
+    assertNull( defaultRowSet.getRow()[0] );
+  }
+
+
 
   /**
    * Switch case step ancestor with overridden methods to have ability to simulate normal transformation execution.
    *
    */
-  private class SwitchCaseCustom extends SwitchCase {
+  private static class SwitchCaseCustom extends SwitchCase {
 
     Queue<Object[]> input = new LinkedList<Object[]>();
     RowMetaInterface rowMetaInterface;

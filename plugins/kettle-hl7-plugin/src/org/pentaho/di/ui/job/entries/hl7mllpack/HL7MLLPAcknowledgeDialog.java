@@ -65,8 +65,9 @@ public class HL7MLLPAcknowledgeDialog extends JobEntryDialog implements JobEntry
     super( parent, jobEntry, rep, jobMeta );
     this.jobEntry = (HL7MLLPAcknowledge) jobEntry;
 
-    if ( this.jobEntry.getName() == null )
+    if ( this.jobEntry.getName() == null ) {
       this.jobEntry.setName( BaseMessages.getString( PKG, "HL7MLLPAcknowledgeDialog.Name.Default" ) );
+    }
   }
 
   public JobEntryInterface open() {
@@ -192,8 +193,9 @@ public class HL7MLLPAcknowledgeDialog extends JobEntryDialog implements JobEntry
     shell.open();
     props.setDialogSize( shell, "HL7MLLPAcknowledgeDialog.DialogSize" );
     while ( !shell.isDisposed() ) {
-      if ( !display.readAndDispatch() )
+      if ( !display.readAndDispatch() ) {
         display.sleep();
+      }
     }
     return jobEntry;
   }

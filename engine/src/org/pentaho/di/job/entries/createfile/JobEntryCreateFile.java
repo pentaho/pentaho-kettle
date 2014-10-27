@@ -88,7 +88,7 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 50 );
+    StringBuilder retval = new StringBuilder( 50 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
@@ -221,8 +221,9 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
       throw new KettleException( e );
     } finally {
       try {
-        targetFile.close();
-        targetFile = null;
+        if ( targetFile != null ) {
+          targetFile.close();
+        }
       } catch ( Exception e ) {
         // Ignore close errors
       }

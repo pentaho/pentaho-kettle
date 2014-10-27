@@ -149,7 +149,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface {
         if ( fromStreamRowMeta.isStorageBinaryString() ) {
           storeData[i] = fromStreamRowMeta.convertToNormalStorageType( rowData[data.indexOfCachedFields[i]] );
         } else {
-          storeData[i] = rowData[data.indexOfCachedFields[0]];
+          storeData[i] = rowData[data.indexOfCachedFields[i]];
         }
       }
       if ( isDebug() ) {

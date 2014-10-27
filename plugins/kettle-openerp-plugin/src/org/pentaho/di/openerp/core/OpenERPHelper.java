@@ -71,7 +71,7 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
         new Session( databaseMeta.environmentSubstitute( databaseMeta.getHostname() ), Integer.parseInt( databaseMeta
             .environmentSubstitute( databaseMeta.getDatabasePortNumberString() ) ), databaseMeta
             .environmentSubstitute( databaseMeta.getDatabaseName() ), databaseMeta.environmentSubstitute( databaseMeta
-            .getUsername() ), databaseMeta.environmentSubstitute( databaseMeta.getPassword() ) );
+              .getUsername() ), databaseMeta.environmentSubstitute( databaseMeta.getPassword() ) );
   }
 
   public void StartSession() throws Exception {
@@ -97,8 +97,10 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
       ObjectAdapter modelAdapter = new ObjectAdapter( openERPConnection, "ir.model" );
       RowCollection rows = modelAdapter.searchAndReadObject( null, new String[] { "model" } );
       modelNames = new String[rows.size()];
-      for ( int i = 0; i < modelNames.length; i++ )
+      for ( int i = 0; i < modelNames.length; i++ ) {
         modelNames[i] = rows.get( i ).get( "model" ).toString();
+      }
+    //CHECKSTYLE:EmptyBlock:OFF
     } catch ( Exception e ) {
     }
 
@@ -113,9 +115,11 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
   public RowCollection getModelData( String model, FilterCollection filter, ArrayList<FieldMapping> mappings,
       int offset, int limit ) throws XmlRpcException, OpeneERPApiException {
     ArrayList<String> fieldList = new ArrayList<String>();
-    for ( FieldMapping map : mappings )
-      if ( !fieldList.contains( map.source_field ) )
+    for ( FieldMapping map : mappings ) {
+      if ( !fieldList.contains( map.source_field ) ) {
         fieldList.add( map.source_field );
+      }
+    }
 
     String[] fieldStringList = new String[fieldList.size()];
     fieldStringList = fieldList.toArray( fieldStringList );
@@ -147,13 +151,15 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
               ( (Boolean) ( stateProperty[1] instanceof Integer ? (Integer) stateProperty[1] == 1 : stateProperty[1] ) );
           readonly = readonly && stateReadonly;
 
-          if ( readonly == false )
+          if ( readonly == false ) {
             break;
+          }
         }
       }
 
-      if ( field.getType() == FieldType.ONE2MANY || readonly == true )
+      if ( field.getType() == FieldType.ONE2MANY || readonly == true ) {
         continue;
+      }
 
       fieldArray.add( field.getName() );
     }

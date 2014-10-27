@@ -374,6 +374,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     fdPassphrase.top = new FormAttachment( wbFilename, margin );
     fdPassphrase.right = new FormAttachment( 100, 0 );
     wPassphrase.setLayoutData( fdPassphrase );
+    wPassphrase.setEchoChar( '*' );
 
     // ProxyHostline
     wProxyHost =

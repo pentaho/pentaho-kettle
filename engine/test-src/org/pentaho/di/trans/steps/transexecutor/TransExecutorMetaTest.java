@@ -8,8 +8,14 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 public class TransExecutorMetaTest {
 
@@ -46,4 +52,87 @@ public class TransExecutorMetaTest {
     loadSaveTester.testRepoRoundTrip();
   }
 
+
+  @Test
+  public void firstStreamIsExecutionStatistics() throws Exception {
+    StreamInterface stream = mockStream();
+    StepIOMetaInterface stepIo = mockStepIo( stream, 0 );
+
+    TransExecutorMeta meta = new TransExecutorMeta();
+    meta = spy( meta );
+
+    when( meta.getStepIOMeta() ).thenReturn( stepIo );
+    doCallRealMethod().when( meta ).handleStreamSelection( any( StreamInterface.class ) );
+
+    meta.handleStreamSelection( stream );
+
+    assertEquals( stream.getStepMeta(), meta.getExecutionResultTargetStepMeta() );
+  }
+
+  @Test
+  public void secondStreamIsInternalTransformationsOutput() throws Exception {
+    StreamInterface stream = mockStream();
+    StepIOMetaInterface stepIo = mockStepIo( stream, 1 );
+
+    TransExecutorMeta meta = new TransExecutorMeta();
+    meta = spy( meta );
+
+    when( meta.getStepIOMeta() ).thenReturn( stepIo );
+    doCallRealMethod().when( meta ).handleStreamSelection( any( StreamInterface.class ) );
+
+    meta.handleStreamSelection( stream );
+
+    assertEquals( stream.getStepMeta(), meta.getOutputRowsSourceStepMeta() );
+  }
+
+  @Test
+  public void thirdStreamIsExecutionResultFiles() throws Exception {
+    StreamInterface stream = mockStream();
+    StepIOMetaInterface stepIo = mockStepIo( stream, 2 );
+
+    TransExecutorMeta meta = new TransExecutorMeta();
+    meta = spy( meta );
+
+    when( meta.getStepIOMeta() ).thenReturn( stepIo );
+    doCallRealMethod().when( meta ).handleStreamSelection( any( StreamInterface.class ) );
+
+    meta.handleStreamSelection( stream );
+
+    assertEquals( stream.getStepMeta(), meta.getResultFilesTargetStepMeta() );
+  }
+
+  @Test
+  public void forthStreamIsExecutorsInput() throws Exception {
+    StreamInterface stream = mockStream();
+    StepIOMetaInterface stepIo = mockStepIo( stream, 3 );
+
+    TransExecutorMeta meta = new TransExecutorMeta();
+    meta = spy( meta );
+
+    when( meta.getStepIOMeta() ).thenReturn( stepIo );
+    doCallRealMethod().when( meta ).handleStreamSelection( any( StreamInterface.class ) );
+
+    meta.handleStreamSelection( stream );
+
+    assertEquals( stream.getStepMeta(), meta.getExecutorsOutputStepMeta() );
+  }
+
+
+  @SuppressWarnings( "unchecked" )
+  private static StepIOMetaInterface mockStepIo( StreamInterface stream, int desiredIndex ) {
+    List<StreamInterface> list = mock( List.class );
+    when( list.indexOf( stream ) ).thenReturn( desiredIndex );
+    when( list.get( eq( desiredIndex ) ) ).thenReturn( stream );
+
+    StepIOMetaInterface stepIo = mock( StepIOMetaInterface.class );
+    when( stepIo.getTargetStreams() ).thenReturn( list );
+    return stepIo;
+  }
+
+  private static StreamInterface mockStream() {
+    StepMeta stepMeta = mock( StepMeta.class );
+    StreamInterface stream = mock( StreamInterface.class );
+    when( stream.getStepMeta() ).thenReturn( stepMeta );
+    return stream;
+  }
 }

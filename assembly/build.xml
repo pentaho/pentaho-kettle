@@ -83,8 +83,7 @@
   	
     <unzip src="${bin.dir}/oss-licenses.zip" dest="${approot.stage.dir}">
       <patternset>
-        <include name="PentahoDataIntegrationClientEE_OSS_Licenses.html"/>
-      	<include name="PentahoDataIntegrationServerEE_OSS_Licenses.html"/>
+        <include name="${oss-license.filename}"/>
       </patternset>
     </unzip>
   	

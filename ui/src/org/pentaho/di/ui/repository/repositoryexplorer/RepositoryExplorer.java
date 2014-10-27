@@ -34,6 +34,7 @@ import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IRepositoryService;
+import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.MainController;
@@ -61,6 +62,8 @@ public class RepositoryExplorer {
   private MainController mainController = new MainController();
 
   private XulDomContainer container;
+
+  private boolean initialized = false;
 
   private ResourceBundle resourceBundle = new ResourceBundle() {
 
@@ -112,14 +115,25 @@ public class RepositoryExplorer {
         Spoon.class, "Spoon.Error" ), e.getMessage(), e );
     }
     // Call the init method for all the Active UISupportController
+    KettleRepositoryLostException krle = null;
     for ( IRepositoryExplorerUISupport uiSupport : uiSupportList ) {
       try {
         uiSupport.initControllers( rep );
       } catch ( ControllerInitializationException e ) {
         log.error( resourceBundle.getString( "RepositoryExplorer.ErrorStartingXulApplication" ), e );
-        new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
-          Spoon.class, "Spoon.Error" ), e.getMessage(), e );
+        krle = KettleRepositoryLostException.lookupStackStrace( e );
+        if ( krle == null ) {
+          new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
+            Spoon.class, "Spoon.Error" ), e.getMessage(), e );
+        } else {
+          break;
+        }
       }
+    }
+
+    if ( krle != null ) {
+      dispose();
+      throw krle;
     }
 
     try {
@@ -129,6 +143,8 @@ public class RepositoryExplorer {
       new ErrorDialog( ( (Spoon) SpoonFactory.getInstance() ).getShell(), BaseMessages.getString(
         Spoon.class, "Spoon.Error" ), e.getMessage(), e );
     }
+
+    initialized = true;
   }
 
   public void show() {
@@ -140,5 +156,11 @@ public class RepositoryExplorer {
   public void dispose() {
     SwtDialog dialog = (SwtDialog) container.getDocumentRoot().getElementById( "repository-explorer-dialog" );
     dialog.dispose();
+    initialized = false;
   }
+
+  public boolean isInitialized() {
+    return initialized;
+  }
+
 }

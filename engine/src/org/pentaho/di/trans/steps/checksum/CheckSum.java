@@ -136,7 +136,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 
       if ( checkFeedback( getLinesRead() ) ) {
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "CheckSum.Log.LineNumber", "" + getLinesRead() ) );
+          logDetailed( BaseMessages.getString( PKG, "CheckSum.Log.LineNumber", Long.toString( getLinesRead() ) ) );
         }
       }
 

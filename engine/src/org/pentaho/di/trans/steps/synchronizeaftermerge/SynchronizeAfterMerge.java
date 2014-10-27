@@ -22,10 +22,8 @@
 
 package org.pentaho.di.trans.steps.synchronizeaftermerge;
 
-import java.sql.BatchUpdateException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;

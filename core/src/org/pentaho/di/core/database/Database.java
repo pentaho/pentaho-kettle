@@ -111,7 +111,7 @@ import org.pentaho.di.repository.RepositoryDirectory;
  */
 public class Database implements VariableSpace, LoggingObjectInterface {
   /** for i18n purposes, needed by Translator2!! */
-  private static Class<?> PKG = Database.class;
+  private static final Class<?> PKG = Database.class;
 
   private static final Map<String, Set<String>> registeredDrivers = new HashMap<String, Set<String>>();
 
@@ -237,7 +237,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * This implementation is NullPointerException subject, and
    * may not follow fundamental equals contract.
-   * 
+   *
    * Databases equality is based on {@link DatabaseMeta} equality.
    */
   @Override
@@ -411,17 +411,16 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         if ( log.isDetailed() ) {
           log.logDetailed( "Connected to database." );
         }
+      }
+      // See if we need to execute extra SQL statemtent...
+      String sql = environmentSubstitute( databaseMeta.getConnectSQL() );
 
-        // See if we need to execute extra SQL statemtent...
-        String sql = environmentSubstitute( databaseMeta.getConnectSQL() );
-
-        // only execute if the SQL is not empty, null and is not just a bunch of
-        // spaces, tabs, CR etc.
-        if ( !Const.isEmpty( sql ) && !Const.onlySpaces( sql ) ) {
-          execStatements( sql );
-          if ( log.isDetailed() ) {
-            log.logDetailed( "Executed connect time SQL statements:" + Const.CR + sql );
-          }
+      // only execute if the SQL is not empty, null and is not just a bunch of
+      // spaces, tabs, CR etc.
+      if ( !Const.isEmpty( sql ) && !Const.onlySpaces( sql ) ) {
+        execStatements( sql );
+        if ( log.isDetailed() ) {
+          log.logDetailed( "Executed connect time SQL statements:" + Const.CR + sql );
         }
       }
     } catch ( Exception e ) {
@@ -800,7 +799,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * this is a copy of {@link #commit(boolean)} - but delegates exception handling to caller.
    * Can be possibly be removed in future.
-   * 
+   *
    * @param force
    * @throws KettleDatabaseException
    * @throws SQLException
@@ -1287,6 +1286,19 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   public void clearBatch( PreparedStatement preparedStatement ) throws KettleDatabaseException {
     try {
+      preparedStatement.clearBatch();
+    } catch ( SQLException e ) {
+      throw new KettleDatabaseException( "Unable to clear batch for prepared statement", e );
+    }
+  }
+
+  public void executeAndClearBatch( PreparedStatement preparedStatement ) throws KettleDatabaseException {
+    try {
+      if ( written > 0 && getDatabaseMetaData().supportsBatchUpdates() ) {
+        preparedStatement.executeBatch();
+      }
+
+      written = 0;
       preparedStatement.clearBatch();
     } catch ( SQLException e ) {
       throw new KettleDatabaseException( "Unable to clear batch for prepared statement", e );

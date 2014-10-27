@@ -75,7 +75,6 @@ import org.w3c.dom.Node;
 
 /**
  * @author jb
- *
  */
 public class ValueMetaBase implements ValueMetaInterface {
   protected static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2
@@ -201,7 +200,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     setDefaultConversionMask();
   }
 
-  public static final String[] SINGLE_BYTE_ENCODINGS = new String[] {
+  public static final String[] SINGLE_BYTE_ENCODINGS = new String[]{
     "ISO8859_1", "Cp1252", "ASCII", "Cp037", "Cp273", "Cp277", "Cp278", "Cp280", "Cp284", "Cp285", "Cp297",
     "Cp420", "Cp424", "Cp437", "Cp500", "Cp737", "Cp775", "Cp850", "Cp852", "Cp855", "Cp856", "Cp857", "Cp858",
     "Cp860", "Cp861", "Cp862", "Cp863", "Cp865", "Cp866", "Cp869", "Cp870", "Cp871", "Cp875", "Cp918", "Cp921",
@@ -302,8 +301,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param comments
-   *          the comments to set
+   * @param comments the comments to set
    */
   @Override
   public void setComments( String comments ) {
@@ -319,8 +317,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param index
-   *          the index to set
+   * @param index the index to set
    */
   @Override
   public void setIndex( Object[] index ) {
@@ -336,8 +333,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param length
-   *          the length to set
+   * @param length the length to set
    */
   @Override
   public void setLength( int length ) {
@@ -345,8 +341,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param length
-   *          the length to set
+   * @param length the length to set
    */
   @Override
   public void setLength( int length, int precision ) {
@@ -363,8 +358,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param name
-   *          the name to set
+   * @param name the name to set
    */
   @Override
   public void setName( String name ) {
@@ -380,8 +374,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param origin
-   *          the origin to set
+   * @param origin the origin to set
    */
   @Override
   public void setOrigin( String origin ) {
@@ -406,8 +399,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param precision
-   *          the precision to set
+   * @param precision the precision to set
    */
   @Override
   public void setPrecision( int precision ) {
@@ -423,8 +415,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param storageType
-   *          the storageType to set
+   * @param storageType the storageType to set
    */
   @Override
   public void setStorageType( int storageType ) {
@@ -455,8 +446,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param type
-   *          the type to set
+   * @param type the type to set
    * @deprecated
    */
   @Override
@@ -475,8 +465,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param conversionMask
-   *          the conversionMask to set
+   * @param conversionMask the conversionMask to set
    */
   @Override
   public void setConversionMask( String conversionMask ) {
@@ -495,8 +484,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param encoding
-   *          the encoding to set
+   * @param encoding the encoding to set
    */
   @Override
   public void setStringEncoding( String encoding ) {
@@ -514,8 +502,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param decimalSymbol
-   *          the decimalSymbol to set
+   * @param decimalSymbol the decimalSymbol to set
    */
   @Override
   public void setDecimalSymbol( String decimalSymbol ) {
@@ -533,8 +520,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param groupingSymbol
-   *          the groupingSymbol to set
+   * @param groupingSymbol the groupingSymbol to set
    */
   @Override
   public void setGroupingSymbol( String groupingSymbol ) {
@@ -552,8 +538,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param currencySymbol
-   *          the currencySymbol to set
+   * @param currencySymbol the currencySymbol to set
    */
   @Override
   public void setCurrencySymbol( String currencySymbol ) {
@@ -570,8 +555,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param caseInsensitive
-   *          the caseInsensitive to set
+   * @param caseInsensitive the caseInsensitive to set
    */
   @Override
   public void setCaseInsensitive( boolean caseInsensitive ) {
@@ -587,8 +571,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param sortedDescending
-   *          the sortedDescending to set
+   * @param sortedDescending the sortedDescending to set
    */
   @Override
   public void setSortedDescending( boolean sortedDescending ) {
@@ -604,8 +587,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param outputPaddingEnabled
-   *          Set to true if output padding is to be enabled (padding to specified length)
+   * @param outputPaddingEnabled Set to true if output padding is to be enabled (padding to specified length)
    */
   @Override
   public void setOutputPaddingEnabled( boolean outputPaddingEnabled ) {
@@ -621,8 +603,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param largeTextField
-   *          Set to true if this is to be a large text field (CLOB, TEXT) with arbitrary length.
+   * @param largeTextField Set to true if this is to be a large text field (CLOB, TEXT) with arbitrary length.
    */
   @Override
   public void setLargeTextField( boolean largeTextField ) {
@@ -638,8 +619,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param dateFormatLenient
-   *          the dateFormatLenient to set
+   * @param dateFormatLenient the dateFormatLenient to set
    */
   @Override
   public void setDateFormatLenient( boolean dateFormatLenient ) {
@@ -656,8 +636,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param dateFormatLocale
-   *          the dateFormatLocale to set
+   * @param dateFormatLocale the dateFormatLocale to set
    */
   @Override
   public void setDateFormatLocale( Locale dateFormatLocale ) {
@@ -686,8 +665,8 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   protected synchronized Date convertStringToDate( String string ) throws KettleValueException {
     string = Const.trimToType( string, getTrimType() ); // see if trimming needs
-                                                        // to be performed before
-                                                        // conversion
+    // to be performed before
+    // conversion
 
     if ( Const.isEmpty( string ) ) {
       return null;
@@ -779,8 +758,8 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   protected synchronized Double convertStringToNumber( String string ) throws KettleValueException {
     string = Const.trimToType( string, getTrimType() ); // see if trimming needs
-                                                        // to be performed before
-                                                        // conversion
+    // to be performed before
+    // conversion
 
     if ( Const.isEmpty( string ) ) {
       return null;
@@ -902,10 +881,10 @@ public class ValueMetaBase implements ValueMetaInterface {
           case TYPE_INTEGER:
             if ( length < 1 ) {
               decimalFormat.applyPattern( " ###############0;-###############0" ); // Same
-                                                                                   // as
-                                                                                   // before
-                                                                                   // version
-                                                                                   // 3.0
+              // as
+              // before
+              // version
+              // 3.0
             } else {
               StringBuffer integerPattern = new StringBuffer();
 
@@ -950,7 +929,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                 int pos = length - precision + 1;
                 if ( pos >= 0 && pos < numberPattern.length() ) {
                   numberPattern.setCharAt( length - precision + 1, '.' ); // one
-                                                                          // 'comma'
+                  // 'comma'
                 }
               }
 
@@ -1012,8 +991,8 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   protected synchronized Long convertStringToInteger( String string ) throws KettleValueException {
     string = Const.trimToType( string, getTrimType() ); // see if trimming needs
-                                                        // to be performed before
-                                                        // conversion
+    // to be performed before
+    // conversion
 
     if ( Const.isEmpty( string ) ) {
       return null;
@@ -1054,8 +1033,8 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   protected synchronized BigDecimal convertStringToBigNumber( String string ) throws KettleValueException {
     string = Const.trimToType( string, getTrimType() ); // see if trimming needs
-                                                        // to be performed before
-                                                        // conversion
+    // to be performed before
+    // conversion
 
     if ( Const.isEmpty( string ) ) {
       return null;
@@ -1160,8 +1139,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Converts a byte[] stored in a binary string storage type into a String;
    *
-   * @param binary
-   *          the binary string
+   * @param binary the binary string
    * @return the String in the correct encoding.
    * @throws KettleValueException
    */
@@ -1203,11 +1181,9 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Converts the specified data object to the normal storage type.
    *
-   * @param object
-   *          the data object to convert
+   * @param object the data object to convert
    * @return the data in a normal storage type
-   * @throws KettleValueException
-   *           In case there is a data conversion error.
+   * @throws KettleValueException In case there is a data conversion error.
    */
   @Override
   public Object convertToNormalStorageType( Object object ) throws KettleValueException {
@@ -1231,11 +1207,9 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Converts the specified data object to the binary string storage type.
    *
-   * @param object
-   *          the data object to convert
+   * @param object the data object to convert
    * @return the data in a binary string storage type
-   * @throws KettleValueException
-   *           In case there is a data conversion error.
+   * @throws KettleValueException In case there is a data conversion error.
    */
   @Override
   public Object convertToBinaryStringStorageType( Object object ) throws KettleValueException {
@@ -1340,7 +1314,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
         case ValueMetaInterface.TYPE_DATE:
           return new Date( ( (Date) object ).getTime() ); // just to make sure: very
-                                                          // inexpensive too.
+        // inexpensive too.
 
         case ValueMetaInterface.TYPE_BINARY:
           byte[] origin = (byte[]) object;
@@ -2328,8 +2302,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Checks whether or not the specified type is either Integer or Number
    *
-   * @param t
-   *          the type to check
+   * @param t the type to check
    * @return true if the type is Integer or Number
    */
   public static final boolean isNumeric( int t ) {
@@ -2512,7 +2485,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
         case STORAGE_TYPE_INDEXED:
           return readSmallInteger( inputStream ); // just an index: 4-bytes should
-                                                  // be enough.
+        // be enough.
 
         default:
           throw new KettleFileException( toString() + " : Unknown storage type " + getStorageType() );
@@ -2791,12 +2764,9 @@ public class ValueMetaBase implements ValueMetaInterface {
    * Load the attributes of this particular value meta object from the input stream. Loading the type is not handled
    * here, this should be read from the stream previously!
    *
-   * @param inputStream
-   *          the input stream to read from
-   * @throws KettleFileException
-   *           In case there was a IO problem
-   * @throws KettleEOFException
-   *           If we reached the end of the stream
+   * @param inputStream the input stream to read from
+   * @throws KettleFileException In case there was a IO problem
+   * @throws KettleEOFException  If we reached the end of the stream
    */
   @Override
   public void readMetaData( DataInputStream inputStream ) throws KettleFileException, KettleEOFException {
@@ -3182,11 +3152,9 @@ public class ValueMetaBase implements ValueMetaInterface {
    * Convert a data XML node to an Object that corresponds to the metadata. This is basically String to Object
    * conversion that is being done.
    *
-   * @param node
-   *          the node to retrieve the data value from
+   * @param node the node to retrieve the data value from
    * @return the converted data value
-   * @throws IOException
-   *           thrown in case there is a problem with the XML to object conversion
+   * @throws IOException thrown in case there is a problem with the XML to object conversion
    */
   @Override
   public Object getValue( Node node ) throws KettleException {
@@ -3281,8 +3249,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * TODO: change Desc to Code all over the place. Make sure we can localise this stuff later on.
    *
-   * @param type
-   *          the type
+   * @param type the type
    * @return the description (code) of the type
    */
   public static final String getTypeDesc( int type ) {
@@ -3295,8 +3262,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Convert the String description of a type to an integer type.
    *
-   * @param desc
-   *          The description of the type to convert
+   * @param desc The description of the type to convert
    * @return The integer type of the given String. (ValueMetaInterface.TYPE_...)
    */
   public static final int getType( String desc ) {
@@ -3313,10 +3279,9 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Convert the String description of a storage type to an integer type.
    *
-   * @param desc
-   *          The description of the storage type to convert
+   * @param desc The description of the storage type to convert
    * @return The integer storage type of the given String. (ValueMetaInterface.STORAGE_TYPE_...) or -1 if the storage
-   *         type code not be found.
+   * type code not be found.
    */
   public static final int getStorageType( String desc ) {
     for ( int i = 0; i < storageTypeCodes.length; i++ ) {
@@ -3338,11 +3303,9 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Determine if an object is null. This is the case if data==null or if it's an empty string.
    *
-   * @param data
-   *          the object to test
+   * @param data the object to test
    * @return true if the object is considered null.
-   * @throws KettleValueException
-   *           in case there is a conversion error (only thrown in case of lazy conversion)
+   * @throws KettleValueException in case there is a conversion error (only thrown in case of lazy conversion)
    */
   @Override
   public boolean isNull( Object data ) throws KettleValueException {
@@ -3402,13 +3365,10 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Compare 2 values of the same data type
    *
-   * @param data1
-   *          the first value
-   * @param data2
-   *          the second value
+   * @param data1 the first value
+   * @param data2 the second value
    * @return 0 if the values are equal, -1 if data1 is smaller than data2 and +1 if it's larger.
-   * @throws KettleValueException
-   *           In case we get conversion errors
+   * @throws KettleValueException In case we get conversion errors
    */
   @Override
   public int compare( Object data1, Object data2 ) throws KettleValueException {
@@ -3445,14 +3405,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       case TYPE_INTEGER:
         // if (isStorageBinaryString() && identicalFormat) return
         // compareBinaryStrings((byte[])data1, (byte[])data2); TODO
-        long icompare = getInteger( data1 ).longValue() - getInteger( data2 ).longValue();
-        if ( icompare < 0 ) {
-          cmp = -1;
-        } else if ( icompare > 0 ) {
-          cmp = 1;
-        } else {
-          cmp = 0;
-        }
+        cmp = getInteger( data1 ).compareTo( getInteger( data2 ) );
         break;
 
       case TYPE_NUMBER:
@@ -3460,14 +3413,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         break;
 
       case TYPE_DATE:
-        long lcompare = getDate( data1 ).getTime() - getDate( data2 ).getTime();
-        if ( lcompare < 0 ) {
-          cmp = -1;
-        } else if ( lcompare > 0 ) {
-          cmp = 1;
-        } else {
-          cmp = 0;
-        }
+        cmp = Long.valueOf( getDate( data1 ).getTime() ).compareTo( Long.valueOf( getDate( data2 ).getTime() ) );
         break;
 
       case TYPE_BIGNUMBER:
@@ -3516,15 +3462,11 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Compare 2 values of the same data type
    *
-   * @param data1
-   *          the first value
-   * @param meta2
-   *          the second value's metadata
-   * @param data2
-   *          the second value
+   * @param data1 the first value
+   * @param meta2 the second value's metadata
+   * @param data2 the second value
    * @return 0 if the values are equal, -1 if data1 is smaller than data2 and +1 if it's larger.
-   * @throws KettleValueException
-   *           In case we get conversion errors
+   * @throws KettleValueException In case we get conversion errors
    */
   @Override
   public int compare( Object data1, ValueMetaInterface meta2, Object data2 ) throws KettleValueException {
@@ -3582,13 +3524,10 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Convert the specified data to the data type specified in this object.
    *
-   * @param meta2
-   *          the metadata of the object to be converted
-   * @param data2
-   *          the data of the object to be converted
+   * @param meta2 the metadata of the object to be converted
+   * @param data2 the data of the object to be converted
    * @return the object in the data type of this value metadata object
-   * @throws KettleValueException
-   *           in case there is a data conversion error
+   * @throws KettleValueException in case there is a data conversion error
    */
   @Override
   public Object convertData( ValueMetaInterface meta2, Object data2 ) throws KettleValueException {
@@ -3617,13 +3556,10 @@ public class ValueMetaBase implements ValueMetaInterface {
    * Convert the specified data to the data type specified in this object. For String conversion, be compatible with
    * version 2.5.2.
    *
-   * @param meta2
-   *          the metadata of the object to be converted
-   * @param data2
-   *          the data of the object to be converted
+   * @param meta2 the metadata of the object to be converted
+   * @param data2 the data of the object to be converted
    * @return the object in the data type of this value metadata object
-   * @throws KettleValueException
-   *           in case there is a data conversion error
+   * @throws KettleValueException in case there is a data conversion error
    */
   @Override
   public Object convertDataCompatible( ValueMetaInterface meta2, Object data2 ) throws KettleValueException {
@@ -3651,11 +3587,9 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Convert an object to the data type specified in the conversion metadata
    *
-   * @param data
-   *          The data
+   * @param data The data
    * @return The data converted to the storage data type
-   * @throws KettleValueException
-   *           in case there is a conversion error.
+   * @throws KettleValueException in case there is a conversion error.
    */
   @Override
   public Object convertDataUsingConversionMetaData( Object data ) throws KettleValueException {
@@ -3696,23 +3630,17 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Convert the specified string to the data type specified in this object.
    *
-   * @param pol
-   *          the string to be converted
-   * @param convertMeta
-   *          the metadata of the object (only string type) to be converted
-   * @param nullIf
-   *          set the object to null if pos equals nullif (IgnoreCase)
-   * @param ifNull
-   *          set the object to ifNull when pol is empty or null
-   * @param trim_type
-   *          the trim type to be used (ValueMetaInterface.TRIM_TYPE_XXX)
+   * @param pol         the string to be converted
+   * @param convertMeta the metadata of the object (only string type) to be converted
+   * @param nullIf      set the object to null if pos equals nullif (IgnoreCase)
+   * @param ifNull      set the object to ifNull when pol is empty or null
+   * @param trim_type   the trim type to be used (ValueMetaInterface.TRIM_TYPE_XXX)
    * @return the object in the data type of this value metadata object
-   * @throws KettleValueException
-   *           in case there is a data conversion error
+   * @throws KettleValueException in case there is a data conversion error
    */
   @Override
   public Object convertDataFromString( String pol, ValueMetaInterface convertMeta, String nullIf, String ifNull,
-    int trim_type ) throws KettleValueException {
+                                       int trim_type ) throws KettleValueException {
     // null handling and conversion of value to null
     //
     String null_value = nullIf;
@@ -3828,8 +3756,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Calculate the hashcode of the specified data object
    *
-   * @param object
-   *          the data value to calculate a hashcode for
+   * @param object the data value to calculate a hashcode for
    * @return the calculated hashcode
    * @throws KettleValueException
    */
@@ -3895,11 +3822,9 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Create an old-style value for backward compatibility reasons
    *
-   * @param data
-   *          the data to store in the value
+   * @param data the data to store in the value
    * @return a newly created Value object
-   * @throws KettleValueException
-   *           case there is a data conversion problem
+   * @throws KettleValueException case there is a data conversion problem
    */
   @Override
   public Value createOriginalValue( Object data ) throws KettleValueException {
@@ -3942,11 +3867,9 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Extracts the primitive data from an old style Value object
    *
-   * @param value
-   *          the old style Value object
+   * @param value the old style Value object
    * @return the value's data, NOT the meta data.
-   * @throws KettleValueException
-   *           case there is a data conversion problem
+   * @throws KettleValueException case there is a data conversion problem
    */
   @Override
   public Object getValueData( Value value ) throws KettleValueException {
@@ -3991,8 +3914,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param storageMetadata
-   *          the storageMetadata to set
+   * @param storageMetadata the storageMetadata to set
    */
   @Override
   public void setStorageMetadata( ValueMetaInterface storageMetadata ) {
@@ -4081,8 +4003,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param trimType
-   *          the trimType to set
+   * @param trimType the trimType to set
    */
   @Override
   public void setTrimType( int trimType ) {
@@ -4140,8 +4061,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param conversionMetadata
-   *          the conversionMetadata to set
+   * @param conversionMetadata the conversionMetadata to set
    */
   @Override
   public void setConversionMetadata( ValueMetaInterface conversionMetadata ) {
@@ -4165,8 +4085,8 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param numberOfBinaryStringConversions
-   *          the number of binary string to native data type done with this object conversions to set
+   * @param numberOfBinaryStringConversions the number of binary string to native data type done with this object
+   *                                        conversions to set
    */
   @Override
   public void setNumberOfBinaryStringConversions( long numberOfBinaryStringConversions ) {
@@ -4324,8 +4244,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param bigNumberFormatting
-   *          the bigNumberFormatting flag to set : true if BigNumbers of formatted as well
+   * @param bigNumberFormatting the bigNumberFormatting flag to set : true if BigNumbers of formatted as well
    */
   public void setBigNumberFormatting( boolean bigNumberFormatting ) {
     this.bigNumberFormatting = bigNumberFormatting;
@@ -4359,8 +4278,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param lenientStringToNumber
-   *          the lenientStringToNumber to set
+   * @param lenientStringToNumber the lenientStringToNumber to set
    */
   @Override
   public void setLenientStringToNumber( boolean lenientStringToNumber ) {
@@ -4376,8 +4294,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
-   * @param dateFormatTimeZone
-   *          the date format time zone to set
+   * @param dateFormatTimeZone the date format time zone to set
    */
   @Override
   public void setDateFormatTimeZone( TimeZone dateFormatTimeZone ) {
@@ -4392,10 +4309,11 @@ public class ValueMetaBase implements ValueMetaInterface {
     gc.drawText( getString( value ), 0, 0 );
   }
 
-  @SuppressWarnings( "fallthrough" )
+  @SuppressWarnings("fallthrough")
   @Override
   public ValueMetaInterface getValueFromSQLType( DatabaseMeta databaseMeta, String name,
-    java.sql.ResultSetMetaData rm, int index, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException {
+                                                 java.sql.ResultSetMetaData rm, int index, boolean ignoreLength,
+                                                 boolean lazyConversion ) throws KettleDatabaseException {
     try {
       int length = -1;
       int precision = -1;
@@ -4470,7 +4388,7 @@ public class ValueMetaBase implements ValueMetaInterface {
           if ( type == java.sql.Types.DOUBLE || type == java.sql.Types.FLOAT || type == java.sql.Types.REAL ) {
             if ( precision == 0 ) {
               precision = -1; // precision is obviously incorrect if the type if
-                              // Double/Float/Real
+              // Double/Float/Real
             }
 
             // If we're dealing with PostgreSQL and double precision types
@@ -4496,9 +4414,9 @@ public class ValueMetaBase implements ValueMetaInterface {
           } else {
             if ( precision == 0 ) {
               if ( length <= 18 && length > 0 ) { // Among others Oracle is affected
-                                                  // here.
+                // here.
                 valtype = ValueMetaInterface.TYPE_INTEGER; // Long can hold up to 18
-                                                           // significant digits
+                // significant digits
               } else if ( length > 18 ) {
                 valtype = ValueMetaInterface.TYPE_BIGNUMBER;
               }
@@ -4586,7 +4504,7 @@ public class ValueMetaBase implements ValueMetaInterface {
             valtype = ValueMetaInterface.TYPE_STRING;
             // PDI-6677 - don't call 'length = rm.getColumnDisplaySize(index);'
             length = -1; // keep the length to -1, e.g. for string functions (e.g.
-                         // CONCAT see PDI-4812)
+            // CONCAT see PDI-4812)
           } else if ( databaseMeta.getDatabaseInterface() instanceof SQLiteDatabaseMeta ) {
             valtype = ValueMetaInterface.TYPE_STRING;
           } else {
@@ -4632,7 +4550,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   protected void getOriginalColumnMetadata( ValueMetaInterface v, ResultSetMetaData rm, int index,
-    boolean ignoreLength ) throws SQLException {
+                                            boolean ignoreLength ) throws SQLException {
     // Grab the comment as a description to the field as well.
     String comments = rm.getColumnLabel( index );
     v.setComments( comments );
@@ -4672,18 +4590,15 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Get a value from a result set column based on the current value metadata
    *
-   * @param databaseInterface
-   *          the database metadata to use
-   * @param resultSet
-   *          The JDBC result set to read from
-   * @param index
-   *          The column index (1-based)
+   * @param databaseInterface the database metadata to use
+   * @param resultSet         The JDBC result set to read from
+   * @param index             The column index (1-based)
    * @return The Kettle native data type based on the value metadata
-   * @throws KettleDatabaseException
-   *           in case something goes wrong.
+   * @throws KettleDatabaseException in case something goes wrong.
    */
   @Override
-  public Object getValueFromResultSet( DatabaseInterface databaseInterface, ResultSet resultSet, int index ) throws KettleDatabaseException {
+  public Object getValueFromResultSet( DatabaseInterface databaseInterface, ResultSet resultSet, int index )
+    throws KettleDatabaseException {
     try {
       Object data = null;
 
@@ -4746,8 +4661,8 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   }
 
-  // PDI-10877
-  private Object getNetezzaDateValueWorkaround( DatabaseInterface databaseInterface, ResultSet resultSet, int index ) throws SQLException, KettleDatabaseException {
+  private Object getNetezzaDateValueWorkaround( DatabaseInterface databaseInterface, ResultSet resultSet, int index )
+    throws SQLException, KettleDatabaseException {
     Object data = null;
     int type = resultSet.getMetaData().getColumnType( index );
     switch ( type ) {
@@ -4764,7 +4679,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public void setPreparedStatementValue( DatabaseMeta databaseMeta, PreparedStatement preparedStatement,
-    int index, Object data ) throws KettleDatabaseException {
+                                         int index, Object data ) throws KettleDatabaseException {
     try {
       switch ( getType() ) {
         case ValueMetaInterface.TYPE_NUMBER:
@@ -4925,7 +4840,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public String getDatabaseColumnTypeDefinition( DatabaseInterface databaseInterface, String tk, String pk,
-    boolean use_autoinc, boolean add_fieldname, boolean add_cr ) {
+                                                 boolean use_autoinc, boolean add_fieldname, boolean add_cr ) {
     return null; // No default suggestions...
   }
 

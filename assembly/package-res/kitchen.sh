@@ -12,4 +12,6 @@ if [ "$1" = "-x" ]; then
   shift
 fi
 
+export IS_KITCHEN="true"
+
 "$DIR/spoon.sh" -main org.pentaho.di.kitchen.Kitchen "$@"

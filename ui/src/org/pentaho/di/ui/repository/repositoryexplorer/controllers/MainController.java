@@ -22,11 +22,14 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
+import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -35,6 +38,7 @@ import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.swt.SwtBindingFactory;
+import org.pentaho.ui.xul.swt.tags.SwtDialog;
 import org.pentaho.ui.xul.util.DialogController;
 
 /**
@@ -59,9 +63,13 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   private XulDialog dialog;
   private List<DialogListener<Object>> listeners = new ArrayList<DialogListener<Object>>();
 
+  private Shell shell;
+
   private Repository repository = null;
 
   BindingFactory bf;
+
+  private boolean aborting = false;
 
   public MainController() {
   }
@@ -87,6 +95,7 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   private void createBindings() {
 
     dialog = (XulDialog) document.getElementById( "repository-explorer-dialog" );
+    shell = ( (SwtDialog) document.getElementById( "repository-explorer-dialog" ) ).getShell();
     // acceptButton = (XulButton) document.getElementById("repository-explorer-dialog_accept");
   }
 
@@ -133,5 +142,38 @@ public class MainController extends AbstractXulEventHandler implements DialogCon
   public void hideDialog() {
     closeDialog();
 
+  }
+
+  private synchronized boolean isAborting() {
+    if ( !aborting ) {
+      aborting = true;
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  public boolean handleLostRepository( Throwable e ) {
+    KettleRepositoryLostException repLost = KettleRepositoryLostException.lookupStackStrace( e );
+    try {
+      if ( repLost != null ) {
+        if ( !isAborting() ) {
+          new ErrorDialog(
+                shell,
+                BaseMessages.getString( PKG, "RepositoryExplorer.Dialog.Error.Title" ),
+                repLost.getPrefaceMessage(),
+                repLost );
+          if ( callback != null && callback.error( null ) ) {
+            closeDialog();
+          }
+        }
+
+        return true;
+      }
+    } catch ( Exception ex ) {
+      return true;
+    }
+
+    return false;
   }
 }

@@ -35,18 +35,17 @@ public enum AttributeType {
   ATTRIBUTE_HISTORICAL,
   FACT,
   DEGENERATE_DIMENSION,
-  OTHER,
-  ;
+  OTHER;
 
-  public static AttributeType getAttributeType(String typeString) {
+  public static AttributeType getAttributeType( String typeString ) {
     try {
-      return valueOf(typeString);
-    } catch(Exception e) {
+      return valueOf(typeString );
+    } catch ( Exception e ) {
       return OTHER;
     }
   }
 
   public boolean isAttribute() {
-    return this==ATTRIBUTE || this==ATTRIBUTE_OVERWRITE || this==ATTRIBUTE_HISTORICAL;
+    return this == ATTRIBUTE || this == ATTRIBUTE_OVERWRITE || this == ATTRIBUTE_HISTORICAL;
   }
 }
