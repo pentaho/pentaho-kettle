@@ -1585,6 +1585,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   public void waitUntilFinished() {
     try {
+      if ( transFinishedBlockingQueue == null ) {
+        return;
+      }
       boolean wait = true;
       while ( wait ) {
         wait = transFinishedBlockingQueue.poll( 1, TimeUnit.DAYS ) == null;
