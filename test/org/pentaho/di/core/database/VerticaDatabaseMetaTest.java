@@ -24,6 +24,7 @@ package org.pentaho.di.core.database;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -111,6 +112,23 @@ public class VerticaDatabaseMetaTest {
     String assertMessage = defaultBinaryField + " should be equal to expected " + expDefaultBinaryField;
 
     assertTrue( assertMessage, expDefaultBinaryField.equals( defaultBinaryField ) );
+  }
+
+  /**
+   * Test for <a href="http://jira.pentaho.com/browse/PDI-12978">
+   * PDI-12978: Vertica - execute SQL 'Alter table'
+   * </a>
+   */
+  @Test
+  public void testModifyColumn() {
+    ValueMetaInterface valueMeta = new ValueMetaBase( "field1", ValueMetaInterface.TYPE_STRING, 9, -1 );
+    DatabaseInterface databaseInterface = new VerticaDatabaseMeta();
+    String alterColumn =
+      databaseInterface.getModifyColumnStatement( "table1", valueMeta, null, false, null, false );
+    // ignore comments and case
+    alterColumn = alterColumn.replaceAll( "(?m)^\\s*--.*$", "" ).trim().toLowerCase();
+    final String expected = "alter table table1 alter column field1 set data type varchar(9)";
+    assertEquals( expected, alterColumn );
   }
 
 }
