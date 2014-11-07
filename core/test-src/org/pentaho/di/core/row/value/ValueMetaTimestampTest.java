@@ -30,6 +30,7 @@ import static org.mockito.Mockito.mock;
 
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
+import java.util.Date;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -77,22 +78,37 @@ public class ValueMetaTimestampTest {
   @Test
   public void testConvertStringToTimestamp() throws Exception {
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
-    assertEquals( Timestamp.valueOf( "2012-04-05 04:03:02.123456" ),
-      valueMetaTimestamp.convertStringToTimestamp( "2012/4/5 04:03:02.123456" ) );
-    assertEquals( Timestamp.valueOf( "2012-04-05 04:03:02.123" ),
-      valueMetaTimestamp.convertStringToTimestamp( "2012/4/5 04:03:02.123" ) );
-    assertEquals( Timestamp.valueOf( "2012-04-05 04:03:02.123456789" ),
-      valueMetaTimestamp.convertStringToTimestamp( "2012/4/5 04:03:02.123456789" ) );
+    assertEquals( Timestamp.valueOf( "2012-04-05 04:03:02.123456" ), valueMetaTimestamp
+        .convertStringToTimestamp( "2012/4/5 04:03:02.123456" ) );
+    assertEquals( Timestamp.valueOf( "2012-04-05 04:03:02.123" ), valueMetaTimestamp
+        .convertStringToTimestamp( "2012/4/5 04:03:02.123" ) );
+    assertEquals( Timestamp.valueOf( "2012-04-05 04:03:02.123456789" ), valueMetaTimestamp
+        .convertStringToTimestamp( "2012/4/5 04:03:02.123456789" ) );
   }
 
   @Test
   public void testConvertTimestampToString() throws Exception {
     ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
-    assertEquals( "2012/04/05 04:03:02.123456000",
-      valueMetaTimestamp.convertTimestampToString( Timestamp.valueOf( "2012-04-05 04:03:02.123456" ) ) );
-    assertEquals( "2012/04/05 04:03:02.123000000",
-      valueMetaTimestamp.convertTimestampToString( Timestamp.valueOf( "2012-04-05 04:03:02.123" ) ) );
-    assertEquals( "2012/04/05 04:03:02.123456789",
-      valueMetaTimestamp.convertTimestampToString( Timestamp.valueOf( "2012-04-05 04:03:02.123456789" ) ) );
+    assertEquals( "2012/04/05 04:03:02.123456000", valueMetaTimestamp.convertTimestampToString( Timestamp
+        .valueOf( "2012-04-05 04:03:02.123456" ) ) );
+    assertEquals( "2012/04/05 04:03:02.123000000", valueMetaTimestamp.convertTimestampToString( Timestamp
+        .valueOf( "2012-04-05 04:03:02.123" ) ) );
+    assertEquals( "2012/04/05 04:03:02.123456789", valueMetaTimestamp.convertTimestampToString( Timestamp
+        .valueOf( "2012-04-05 04:03:02.123456789" ) ) );
+  }
+
+  @Test
+  public void testConvertDateToTimestamp() throws Exception {
+    ValueMetaTimestamp valueMetaTimestamp = new ValueMetaTimestamp();
+    // Converting date to timestamp
+    Date date = new Date();
+    assertEquals( valueMetaTimestamp.convertDateToTimestamp( date ).getTime(), date.getTime() );
+
+    // Converting timestamp to timestamp
+    Timestamp timestamp = Timestamp.valueOf( "2014-04-05 04:03:02.123456789" );
+    Timestamp convertedTimestamp = valueMetaTimestamp.convertDateToTimestamp( timestamp );
+    assertEquals( convertedTimestamp.getTime(), timestamp.getTime() );
+    assertEquals( convertedTimestamp.getNanos(), timestamp.getNanos() );
+
   }
 }
