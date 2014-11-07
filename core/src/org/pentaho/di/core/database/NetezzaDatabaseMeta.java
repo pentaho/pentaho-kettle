@@ -155,7 +155,7 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
    */
   @Override
   public String getSQLNextSequenceValue( String sequenceName ) {
-    return "select nextval('" + sequenceName + "')";
+    return "select next value for " + sequenceName;
   }
 
   /**
