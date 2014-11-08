@@ -33,122 +33,67 @@ public class SequenceMetaTests {
   @Test
   public void testSupport() {
 
-    DatabaseInterface databaseInterface;
-
     // According to our Meta, Oracle, PostGres,
     // Greenplum and Vertica support sequences
-    databaseInterface = new OracleDatabaseMeta();
-    assertTrue( databaseInterface.supportsSequences() );
-
-    databaseInterface = new OracleRDBDatabaseMeta();
-    assertTrue( databaseInterface.supportsSequences() );
-
-    databaseInterface = new VerticaDatabaseMeta();
-    assertTrue( databaseInterface.supportsSequences() );
-
-    databaseInterface = new PostgreSQLDatabaseMeta();
-    assertTrue( databaseInterface.supportsSequences() );
-
-    databaseInterface = new GreenplumDatabaseMeta();
-    assertTrue( databaseInterface.supportsSequences() );
-
-    databaseInterface = new AS400DatabaseMeta();
-    assertTrue( databaseInterface.supportsSequences() );
-
-    databaseInterface = new DB2DatabaseMeta();
-    assertTrue( databaseInterface.supportsSequences() );
-
-    databaseInterface = new HypersonicDatabaseMeta();
-    assertTrue( databaseInterface.supportsSequences() );
-
-    databaseInterface = new KingbaseESDatabaseMeta();
-    assertTrue( databaseInterface.supportsSequences() );
-
-    databaseInterface = new NetezzaDatabaseMeta();
-    assertTrue( databaseInterface.supportsSequences() );
+    DatabaseInterface[] support = new DatabaseInterface[] {
+      new OracleDatabaseMeta(),
+      new OracleRDBDatabaseMeta(),
+      new VerticaDatabaseMeta(),
+      new PostgreSQLDatabaseMeta(),
+      new GreenplumDatabaseMeta(),
+      new AS400DatabaseMeta(),
+      new DB2DatabaseMeta(),
+      new HypersonicDatabaseMeta(),
+      new KingbaseESDatabaseMeta(),
+      new NetezzaDatabaseMeta()
+    };
 
     // the rest of the database metas say they don't support sequences
+    DatabaseInterface[] doNotSupport = new DatabaseInterface[] {
+      new MySQLDatabaseMeta(),
+      new InfiniDbDatabaseMeta(),
+      new InfobrightDatabaseMeta(),
+      new DbaseDatabaseMeta(),
+      new DerbyDatabaseMeta(),
+      new ExtenDBDatabaseMeta(),
+      new FirebirdDatabaseMeta(),
+      new GenericDatabaseMeta(),
+      new GuptaDatabaseMeta(),
+      new H2DatabaseMeta(),
+      new InformixDatabaseMeta(),
+      new IngresDatabaseMeta(),
+      new InterbaseDatabaseMeta(),
+      new LucidDBDatabaseMeta(),
+      new MonetDBDatabaseMeta(),
+      new MSAccessDatabaseMeta(),
+      new MSSQLServerDatabaseMeta(),
+      new MSSQLServerNativeDatabaseMeta(),
+      new NeoviewDatabaseMeta(),
+      new RemedyActionRequestSystemDatabaseMeta(),
+      new SAPDBDatabaseMeta(),
+      new SAPR3DatabaseMeta(),
+      new SQLiteDatabaseMeta(),
+      new SybaseDatabaseMeta(),
+      new SybaseIQDatabaseMeta(),
+      new TeradataDatabaseMeta(),
+      new UniVerseDatabaseMeta()
+    };
 
-    databaseInterface = new MySQLDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
+    for ( DatabaseInterface db : support ) {
+      assertSupports( db, true );
+    }
 
-    databaseInterface = new InfiniDbDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
+    for ( DatabaseInterface db : doNotSupport ) {
+      assertSupports( db, false );
+    }
+  }
 
-    databaseInterface = new InfobrightDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new DbaseDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new DerbyDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new ExtenDBDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new FirebirdDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new GenericDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new GuptaDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new H2DatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new InformixDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new IngresDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new InterbaseDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new LucidDBDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new MonetDBDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new MSAccessDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new MSSQLServerDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new MSSQLServerNativeDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new NeoviewDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new RemedyActionRequestSystemDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new SAPDBDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new SAPR3DatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new SQLiteDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new SybaseDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new SybaseIQDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new TeradataDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
-
-    databaseInterface = new UniVerseDatabaseMeta();
-    assertFalse( databaseInterface.supportsSequences() );
+  private static void assertSupports( DatabaseInterface db, boolean expected ) {
+    if (expected) {
+      assertTrue( db.getClass().getSimpleName(), db.supportsSequences() );
+    } else {
+      assertFalse( db.getClass().getSimpleName(), db.supportsSequences() );
+    }
   }
 
   @Test
@@ -208,7 +153,7 @@ public class SequenceMetaTests {
     assertEquals( "SELECT currval('sequence_name')", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 
     databaseInterface = new NetezzaDatabaseMeta();
-    assertEquals( "select nextval('sequence_name')", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
+    assertEquals( "select next value for sequence_name", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "select last_value from sequence_name", databaseInterface
       .getSQLCurrentSequenceValue( sequenceName ) );
 
