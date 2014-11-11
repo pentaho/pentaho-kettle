@@ -103,6 +103,8 @@ public class ThinResultSetMetaData implements ResultSetMetaData {
         return java.sql.Types.VARCHAR;
       case ValueMetaInterface.TYPE_NUMBER:
         return java.sql.Types.DOUBLE;
+      case ValueMetaInterface.TYPE_TIMESTAMP:
+        return java.sql.Types.TIMESTAMP;
       case ValueMetaInterface.TYPE_DATE:
         return java.sql.Types.TIMESTAMP;
       case ValueMetaInterface.TYPE_BIGNUMBER:
