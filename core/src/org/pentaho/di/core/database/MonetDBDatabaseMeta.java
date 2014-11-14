@@ -342,15 +342,15 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         break;
       case ValueMetaInterface.TYPE_STRING:
         if ( length > getMaxVARCHARLength() ) {
-        	retval.append( "CLOB" );
+          retval.append( "CLOB" );
         } else {
-        	if ( length > 0 ) {
-        		retval.append( "VARCHAR(" );
-        		retval.append( length );
-        		retval.append( ")" );
-        	} else {
-        		retval.append( "STRING" );
-        	}
+          if ( length > 0 ) {
+            retval.append( "VARCHAR(" );
+            retval.append( length );
+            retval.append( ")" );
+          } else {
+            retval.append( "STRING" );
+          }
         }
         break;
       default:
