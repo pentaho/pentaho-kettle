@@ -3647,9 +3647,11 @@ public class ValueMetaBase implements ValueMetaInterface {
     // null handling and conversion of value to null
     //
     String null_value = nullIf;
-    int valueType = convertMeta.getType();
+    int inValueType = convertMeta.getType();
+    int outValueType = getType();
+
     if ( null_value == null ) {
-      switch ( valueType ) {
+      switch ( inValueType ) {
         case Value.VALUE_TYPE_BOOLEAN:
           null_value = Const.NULL_BOOLEAN;
           break;
@@ -3693,11 +3695,11 @@ public class ValueMetaBase implements ValueMetaInterface {
     // See if the polled value is empty
     // In that case, we have a null value on our hands...
     //
-    Object emptyValue = ( valueType == Value.VALUE_TYPE_STRING ) ? null_value : null;
+    Object emptyValue = ( outValueType == Value.VALUE_TYPE_STRING ) ? Const.NULL_STRING : null;
 
     if ( pol == null ) {
       return null;
-    } else if ( Const.isEmpty( pol ) && valueType != Value.VALUE_TYPE_STRING ) {
+    } else if ( Const.isEmpty( pol ) && outValueType != Value.VALUE_TYPE_STRING ) {
       return null;
     } else {
       // if the null_value is specified, we try to match with that.
