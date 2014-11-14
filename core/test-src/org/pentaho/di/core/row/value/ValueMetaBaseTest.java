@@ -191,9 +191,9 @@ public class ValueMetaBaseTest {
   }
 
   @Test
-  public void testConvertDataFromStringForStringData() throws KettleValueException {
-    ValueMetaBase valueMetaBase = new ValueMetaBase();
-    ValueMetaBase valueMetaString = new ValueMetaString();
+  public void testConvertDataFromStringToString() throws KettleValueException {
+    ValueMetaBase inValueMetaString = new ValueMetaString();
+    ValueMetaBase outValueMetaString = new ValueMetaString();
     String inputValueEmptyString = StringUtils.EMPTY;
     String inputValueNullString = null;
     String nullIf = null;
@@ -201,15 +201,29 @@ public class ValueMetaBaseTest {
     int trim_type = 0;
     Object result;
 
-    result = valueMetaBase.convertDataFromString( inputValueEmptyString, valueMetaString, nullIf, ifNull, trim_type );
-    assertEquals( "Conversion from empty string must return empty string", result, StringUtils.EMPTY );
+    result = outValueMetaString.convertDataFromString( inputValueEmptyString, inValueMetaString, nullIf, ifNull, trim_type );
+    assertEquals( "Conversion from empty string to string must return empty string", result, StringUtils.EMPTY );
 
-    result = valueMetaBase.convertDataFromString( inputValueNullString, valueMetaString, nullIf, ifNull, trim_type );
+    result = outValueMetaString.convertDataFromString( inputValueNullString, inValueMetaString, nullIf, ifNull, trim_type );
     assertEquals( "Conversion from null string must return null", result, null );
   }
 
+  @Test
+  public void testConvertDataFromStringToDate() throws KettleValueException {
+    ValueMetaBase inValueMetaString = new ValueMetaString();
+    ValueMetaBase outValueMetaDate = new ValueMetaDate();
+    String inputValueEmptyString = StringUtils.EMPTY;
+    String nullIf = null;
+    String ifNull = null;
+    int trim_type = 0;
+    Object result;
+
+    result = outValueMetaDate.convertDataFromString( inputValueEmptyString, inValueMetaString, nullIf, ifNull, trim_type );
+    assertEquals( "Conversion from empty string to date must return null", result, null );
+  }
+
   @Test( expected = KettleValueException.class )
-  public void testConvertDataFromStringForNullInput() throws KettleValueException {
+  public void testConvertDataFromStringForNullMeta() throws KettleValueException {
     ValueMetaBase valueMetaBase = new ValueMetaBase();
     String inputValueEmptyString = StringUtils.EMPTY;
     ValueMetaInterface valueMetaInterface = null;
