@@ -28,7 +28,7 @@ public enum KettleExtensionPoint {
   //
     TransformationPrepareExecution( "TransformationPrepareExecution", "A transformation begins to prepare execution" ),
     TransformationStartThreads( "TransformationStartThreads", "A transformation begins to start" ),
-    TransformationStarted( "TransformationStart", "A transformation has started" ),
+    TransformationStart( "TransformationStart", "A transformation has started" ),
     TransformationFinish( "TransformationFinish", "A transformation finishes" ),
     TransformationMetaLoaded( "TransformationMetaLoaded", "Transformation metadata was loaded" ),
     TransPainterArrow( "TransPainterArrow", "Draw additional information on top of a transformation hop (arrow)" ),
