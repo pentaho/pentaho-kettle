@@ -406,16 +406,51 @@ public class ValueDataUtil {
     switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_STRING:
         return metaA.getString( dataA ) + metaB.getString( dataB );
-      case ValueMetaInterface.TYPE_NUMBER:
-        return new Double( metaA.getNumber( dataA ).doubleValue() + metaB.getNumber( dataB ).doubleValue() );
-      case ValueMetaInterface.TYPE_INTEGER:
-        return new Long( metaA.getInteger( dataA ).longValue() + metaB.getInteger( dataB ).longValue() );
-      case ValueMetaInterface.TYPE_BOOLEAN:
-        return Boolean.valueOf( metaA.getBoolean( dataA ).booleanValue()
-          || metaB.getBoolean( dataB ).booleanValue() );
-      case ValueMetaInterface.TYPE_BIGNUMBER:
-        return metaA.getBigNumber( dataA ).add( metaB.getBigNumber( dataB ) );
-
+      case ValueMetaInterface.TYPE_NUMBER: {
+        Double valueA = metaA.getNumber( dataA );
+        Double valueB = metaB.getNumber( dataB );
+        if ( valueB == null ) {
+          return valueA;
+        } else if ( valueA == null ) {
+          return valueB;
+        } else {
+          return new Double( valueA.doubleValue() + valueB.doubleValue() );
+        }
+      }
+      case ValueMetaInterface.TYPE_INTEGER: {
+        Long valueA = metaA.getInteger( dataA );
+        Long valueB = metaB.getInteger( dataB );
+        if ( valueB == null ) {
+          return valueA;
+        } else if ( valueA == null ) {
+          return valueB;
+        } else {
+          return new Long( valueA.longValue() + valueB.longValue() );
+        }
+      }
+      case ValueMetaInterface.TYPE_BOOLEAN: {
+        Boolean valueA = metaA.getBoolean( dataA );
+        Boolean valueB = metaB.getBoolean( dataB );
+        if ( valueB == null ) {
+          return valueA;
+        } else if ( valueA == null ) {
+          return valueB;
+        } else {
+          return Boolean.valueOf( valueA.booleanValue() || valueB.booleanValue() );
+        }
+        
+      }
+      case ValueMetaInterface.TYPE_BIGNUMBER: {
+        BigDecimal valueA = metaA.getBigNumber( dataA );
+        BigDecimal valueB = metaB.getBigNumber( dataB );
+        if ( valueB == null ) {
+          return valueA;
+        } else if ( valueA == null ) {
+          return valueB;
+        } else {
+          return valueA.add( valueB );
+        }
+      }
       default:
         throw new KettleValueException( "The 'plus' function only works on numeric data and Strings." );
     }
