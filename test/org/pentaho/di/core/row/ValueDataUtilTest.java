@@ -167,13 +167,13 @@ public class ValueDataUtilTest extends TestCase {
 
   @Test
   public void testPlus() throws KettleValueException {
-    
+
     long longValue = 1;
-    
+
     assertEquals( longValue, ValueDataUtil.plus( new ValueMetaInteger(), longValue, new ValueMetaString(), StringUtils.EMPTY ) );
-  
+
   }
-  
+
   public void testAdd() {
 
     // Test Kettle number types
