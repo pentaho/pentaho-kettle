@@ -49,7 +49,7 @@ public class ReportSubjectLocation {
    *          the object type to report on
    */
   public ReportSubjectLocation( String filename, RepositoryDirectoryInterface directory, String name,
-    RepositoryObjectType objectType ) {
+      RepositoryObjectType objectType ) {
     this.filename = filename;
     this.directory = directory;
     this.name = name;

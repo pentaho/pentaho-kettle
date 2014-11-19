@@ -130,7 +130,7 @@ public class JobInformation {
     GCInterface gc = new SwingGC( null, area, iconsize, 50, 20 );
     List<AreaOwner> areaOwners = new ArrayList<AreaOwner>();
     JobPainter painter =
-      new JobPainter(
+        new JobPainter(
         gc, jobMeta, area, bar, bar, null, null, null, areaOwners, new ArrayList<JobEntryCopy>(), iconsize, 1,
         0, 0, true, "FreeSans", 10 );
     painter.setMagnification( 0.25f );
@@ -140,7 +140,7 @@ public class JobInformation {
     int newHeigth = bufferedImage.getHeight() - min.y;
     BufferedImage image = new BufferedImage( newWidth, newHeigth, bufferedImage.getType() );
     image.getGraphics().drawImage(
-      bufferedImage, 0, 0, newWidth, newHeigth, min.x, min.y, min.x + newWidth, min.y + newHeigth, null );
+        bufferedImage, 0, 0, newWidth, newHeigth, min.x, min.y, min.x + newWidth, min.y + newHeigth, null );
 
     JobInformationValues values = new JobInformationValues();
     values.jobMeta = jobMeta;
@@ -151,7 +151,7 @@ public class JobInformation {
   }
 
   public void drawImage( final Graphics2D g2d, final Rectangle2D rectangle2d, ReportSubjectLocation location,
-    boolean pixelateImages ) throws KettleException {
+      boolean pixelateImages ) throws KettleException {
 
     // Load the job
     //

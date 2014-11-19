@@ -25,16 +25,22 @@ package org.pentaho.di.trans.steps.autodoc;
 import java.awt.Point;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.reporting.engine.classic.core.AttributeNames;
 import org.pentaho.reporting.engine.classic.core.Element;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
 import org.pentaho.reporting.engine.classic.core.GroupDataBody;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
+import org.pentaho.reporting.engine.classic.core.PageFooter;
 import org.pentaho.reporting.engine.classic.core.RelationalGroup;
 import org.pentaho.reporting.engine.classic.core.ReportFooter;
 import org.pentaho.reporting.engine.classic.core.ReportHeader;
@@ -50,10 +56,13 @@ import org.pentaho.reporting.engine.classic.core.modules.output.table.html.HtmlR
 import org.pentaho.reporting.engine.classic.core.modules.output.table.rtf.RTFReportUtil;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
 import org.pentaho.reporting.engine.classic.core.style.BandStyleKeys;
+import org.pentaho.reporting.engine.classic.core.style.BorderStyle;
+import org.pentaho.reporting.engine.classic.core.style.ElementStyleKeys;
 import org.pentaho.reporting.engine.classic.core.style.TextStyleKeys;
 
 public class KettleReportBuilder {
 
+  private static Class<?> PKG = KettleReportBuilder.class;
   public enum OutputType {
     PDF, HTML, DOC, XLS, CSV, METADATA
   }
@@ -77,7 +86,7 @@ public class KettleReportBuilder {
   private LoggingObjectInterface parentObject;
 
   public KettleReportBuilder( LoggingObjectInterface parentObject, List<ReportSubjectLocation> locations,
-    String targetFilename, AutoDocOptionsInterface options ) {
+      String targetFilename, AutoDocOptionsInterface options ) {
     this.parentObject = parentObject;
     this.filenames = locations;
     this.targetFilename = targetFilename;
@@ -85,10 +94,10 @@ public class KettleReportBuilder {
   }
 
   private static int createTextField( ItemBand details,
-    String labelText, String fieldName,
-    int labelWidth, int textWidth,
-    int pagePosition, float fontHeight,
-    boolean labelUnderline, boolean labelBold, boolean labelItalic ) {
+      String labelText, String fieldName,
+      int labelWidth, int textWidth,
+      int pagePosition, float fontHeight,
+      boolean labelUnderline, boolean labelBold, boolean labelItalic ) {
 
     ItemBand rowBand = new ItemBand();
     rowBand.setLayout( BandStyleKeys.LAYOUT_ROW );
@@ -148,6 +157,8 @@ public class KettleReportBuilder {
     report.setReportHeader( reportHeader );
     ReportFooter reportFooter = new ReportFooter();
     report.setReportFooter( reportFooter );
+    PageFooter pageFooter = new PageFooter();
+    report.setPageFooter( pageFooter );
 
     // Now we need to define an area on which we can draw report elements, called groups and bands...
     //
@@ -171,6 +182,20 @@ public class KettleReportBuilder {
      *
      * // Add the label to the header... // reportHeader.addElement(label);
      */
+    LabelElementFactory labelElementFactory = new LabelElementFactory();
+    labelElementFactory.setText(BaseMessages.getString(
+            PKG, "KettleReportBuilder.Label.GeneratedDate" )
+            + new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( new Date() ) );
+    labelElementFactory.setMinimumWidth( 400f );
+    labelElementFactory.setMinimumHeight( 20f );
+    labelElementFactory.setHorizontalAlignment( ElementAlignment.LEFT );
+    Element label = labelElementFactory.createElement();
+    pageFooter.addElement( label );
+
+    pageFooter.getStyle().setStyleProperty( ElementStyleKeys.BORDER_TOP_STYLE, BorderStyle.DOUBLE );
+    pageFooter.getStyle().setStyleProperty( ElementStyleKeys.BORDER_TOP_WIDTH, 1f );
+    pageFooter.getStyle().setStyleProperty( ElementStyleKeys.MAX_HEIGHT, 12f );
+
     int pagePosition = 0;
 
     // Set the header to bold...
@@ -220,15 +245,20 @@ public class KettleReportBuilder {
     // The last execution result
     //
     if ( options.isIncludingLastExecutionResult() ) {
-      pagePosition = createTextField( itemBand, "Last execution result: : ", "last_exec_result", pagePosition );
+      pagePosition = createTextField( itemBand, "Last execution result: ", "last_exec_result", pagePosition );
     }
+
+    // The variables used by the trans/job
+    if ( options.isIncludingVariables() ) {
+      pagePosition = createTextField( itemBand, "Variables: ", "variables", pagePosition );
+    }
+
 
     // Optionally include an image of the transformation...
     //
     if ( options.isIncludingImage() ) {
       String packName = KettleReportBuilder.class.getPackage().getName();
-      String bshCode =
-        "Object getValue() { "
+      String bshCode = "Object getValue() { "
           + Const.CR + "  return new " + packName + ".TransJobDrawable(dataRow, "
           + ( options.getOutputType() == OutputType.PDF ? "true" : "false" ) + ");" + Const.CR + "}";
       BSHExpression bshExpression = new BSHExpression();
@@ -266,14 +296,14 @@ public class KettleReportBuilder {
 
     /*
      * set the margins respectively the imageable area
+     * As the page is defined as LANDSCAPE the value are inverted => top = rigth, bottom=left
      */
-    double leftMargin = 0.78; /* should be about 2cm */
-    double rightMargin = 0.78;
+    double leftMargin = 0.20; /* 0.78 should be about 2cm */
+    double rightMargin = 0.39;
     double topMargin = 0.08; // this is a very small topMargin
-    double bottomMargin = 0.78;
+    double bottomMargin = 0.08; // this is a very small bottomMargin
 
-    a4Paper.setImageableArea(
-      leftMargin * 72.0, topMargin * 72.0, ( paperWidth - leftMargin - rightMargin ) * 72.0, ( paperHeight
+    a4Paper.setImageableArea( leftMargin * 72.0, topMargin * 72.0, ( paperWidth - leftMargin - rightMargin ) * 72.0, ( paperHeight
         - topMargin - bottomMargin ) * 72.0 );
 
     /*
@@ -283,7 +313,9 @@ public class KettleReportBuilder {
     pageFormat.setOrientation( PageFormat.LANDSCAPE );
     pageFormat.setPaper( a4Paper );
 
+
     SimplePageDefinition pageDefinition = new SimplePageDefinition( pageFormat );
+
     report.setPageDefinition( pageDefinition );
   }
 

@@ -180,6 +180,7 @@ public class Translator2 {
 
       store = new TranslationsStore( log, localeList, referenceLocale, crawler.getSourcePackageOccurrences() );
       store.read( rootDirectories );
+  	  log.logBasic("hello"+rootDirectories);
 
       // What are the statistics?
       //
@@ -273,6 +274,7 @@ public class Translator2 {
     xmlFolders = new ArrayList<SourceCrawlerXMLFolder>();
 
     FileObject file = KettleVFS.getFileObject( configFile );
+    log.logBasic(configFile);
     if ( file.exists() ) {
 
       try {
@@ -305,6 +307,7 @@ public class Translator2 {
         Node rootsNode = XMLHandler.getSubNode( configNode, "source-directories" );
         int nrRoots = XMLHandler.countNodes( rootsNode, "root" );
         if ( nrRoots > 0 ) {
+          log.logBasic("hello");
           rootDirectories.clear();
         }
         for ( int i = 0; i < nrRoots; i++ ) {
@@ -1147,7 +1150,7 @@ public class Translator2 {
       System.err.println( "sh translator.sh translator.xml ." );
       System.exit( 1 );
     }
-
+    System.out.println(args[1]);
     KettleClientEnvironment.init();
 
     String configFile = args[0];

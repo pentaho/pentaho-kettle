@@ -71,4 +71,9 @@ public interface AutoDocOptionsInterface {
    */
   public boolean isIncludingLastExecutionResult();
 
+  /**
+   * @return the includingLastExecutionResult
+   */
+  public boolean isIncludingVariables();
+
 }
