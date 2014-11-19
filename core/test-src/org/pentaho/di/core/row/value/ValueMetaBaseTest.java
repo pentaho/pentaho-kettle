@@ -13,6 +13,7 @@ import java.sql.Time;
 import java.sql.Types;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -187,6 +188,50 @@ public class ValueMetaBaseTest {
     assertFalse( ValueMetaBase.convertStringToBoolean( "Yeah" ) );
     assertFalse( ValueMetaBase.convertStringToBoolean( "False" ) );
     assertFalse( ValueMetaBase.convertStringToBoolean( "NOT false" ) );
+  }
+
+  @Test
+  public void testConvertDataFromStringToString() throws KettleValueException {
+    ValueMetaBase inValueMetaString = new ValueMetaString();
+    ValueMetaBase outValueMetaString = new ValueMetaString();
+    String inputValueEmptyString = StringUtils.EMPTY;
+    String inputValueNullString = null;
+    String nullIf = null;
+    String ifNull = null;
+    int trim_type = 0;
+    Object result;
+
+    result = outValueMetaString.convertDataFromString( inputValueEmptyString, inValueMetaString, nullIf, ifNull, trim_type );
+    assertEquals( "Conversion from empty string to string must return empty string", result, StringUtils.EMPTY );
+
+    result = outValueMetaString.convertDataFromString( inputValueNullString, inValueMetaString, nullIf, ifNull, trim_type );
+    assertEquals( "Conversion from null string must return null", result, null );
+  }
+
+  @Test
+  public void testConvertDataFromStringToDate() throws KettleValueException {
+    ValueMetaBase inValueMetaString = new ValueMetaString();
+    ValueMetaBase outValueMetaDate = new ValueMetaDate();
+    String inputValueEmptyString = StringUtils.EMPTY;
+    String nullIf = null;
+    String ifNull = null;
+    int trim_type = 0;
+    Object result;
+
+    result = outValueMetaDate.convertDataFromString( inputValueEmptyString, inValueMetaString, nullIf, ifNull, trim_type );
+    assertEquals( "Conversion from empty string to date must return null", result, null );
+  }
+
+  @Test( expected = KettleValueException.class )
+  public void testConvertDataFromStringForNullMeta() throws KettleValueException {
+    ValueMetaBase valueMetaBase = new ValueMetaBase();
+    String inputValueEmptyString = StringUtils.EMPTY;
+    ValueMetaInterface valueMetaInterface = null;
+    String nullIf = null;
+    String ifNull = null;
+    int trim_type = 0;
+
+    valueMetaBase.convertDataFromString( inputValueEmptyString, valueMetaInterface, nullIf, ifNull, trim_type );
   }
 
   @Test

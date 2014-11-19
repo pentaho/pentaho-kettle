@@ -29,8 +29,12 @@ import java.util.Arrays;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction;
 
 /**
@@ -159,6 +163,15 @@ public class ValueDataUtilTest extends TestCase {
         "2010-12-31", "2011-02-10", ValueMetaInterface.TYPE_DATE,
         CalculatorMetaFunction.CALC_DATE_WORKING_DIFF );
     assertEquals( new Long( -29 ), daysDiff );
+  }
+
+  @Test
+  public void testPlus() throws KettleValueException {
+
+    long longValue = 1;
+
+    assertEquals( longValue, ValueDataUtil.plus( new ValueMetaInteger(), longValue, new ValueMetaString(), StringUtils.EMPTY ) );
+
   }
 
   public void testAdd() {

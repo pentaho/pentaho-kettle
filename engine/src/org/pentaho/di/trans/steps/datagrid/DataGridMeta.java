@@ -26,6 +26,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -296,7 +297,8 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
           Node itemNode = lineNode.getFirstChild();
           while ( itemNode != null ) {
             if ( "item".equals( itemNode.getNodeName() ) ) {
-              line.add( XMLHandler.getNodeValue( itemNode ) );
+              String itemNodeValue = XMLHandler.getNodeValue( itemNode );
+              line.add( itemNodeValue != null ? itemNodeValue : StringUtils.EMPTY );
             }
             itemNode = itemNode.getNextSibling();
           }
