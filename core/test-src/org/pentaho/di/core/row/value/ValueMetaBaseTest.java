@@ -12,6 +12,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Time;
 import java.sql.Types;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -182,6 +183,36 @@ public class ValueMetaBaseTest {
     assertFalse( ValueMetaBase.convertStringToBoolean( "Yeah" ) );
     assertFalse( ValueMetaBase.convertStringToBoolean( "False" ) );
     assertFalse( ValueMetaBase.convertStringToBoolean( "NOT false" ) );
+  }
+
+  @Test
+  public void testConvertDataFromStringForStringData() throws KettleValueException {
+    ValueMetaBase valueMetaBase = new ValueMetaBase();
+    ValueMetaBase valueMetaString = new ValueMetaString();
+    String inputValueEmptyString = StringUtils.EMPTY;
+    String inputValueNullString = null;
+    String nullIf = null;
+    String ifNull = null;
+    int trim_type = 0;
+    Object result;
+
+    result = valueMetaBase.convertDataFromString( inputValueEmptyString, valueMetaString, nullIf, ifNull, trim_type );
+    assertEquals( "Conversion from empty string must return empty string", result, StringUtils.EMPTY );
+
+    result = valueMetaBase.convertDataFromString( inputValueNullString, valueMetaString, nullIf, ifNull, trim_type );
+    assertEquals( "Conversion from null string must return null", result, null );
+  }
+
+  @Test( expected = KettleValueException.class )
+  public void testConvertDataFromStringForNullInput() throws KettleValueException {
+    ValueMetaBase valueMetaBase = new ValueMetaBase();
+    String inputValueEmptyString = StringUtils.EMPTY;
+    ValueMetaInterface valueMetaInterface = null;
+    String nullIf = null;
+    String ifNull = null;
+    int trim_type = 0;
+
+    valueMetaBase.convertDataFromString( inputValueEmptyString, valueMetaInterface, nullIf, ifNull, trim_type );
   }
 
   @Test

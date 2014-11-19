@@ -3713,11 +3713,16 @@ public class ValueMetaBase implements ValueMetaInterface {
   @Override
   public Object convertDataFromString( String pol, ValueMetaInterface convertMeta, String nullIf, String ifNull,
     int trim_type ) throws KettleValueException {
+
+    if ( convertMeta == null ) {
+      throw new KettleValueException( "API coding error: convertMeta input parameter should not be equals to null" );
+    }
     // null handling and conversion of value to null
     //
     String null_value = nullIf;
+    int valueType = convertMeta.getType();
     if ( null_value == null ) {
-      switch ( convertMeta.getType() ) {
+      switch ( valueType ) {
         case Value.VALUE_TYPE_BOOLEAN:
           null_value = Const.NULL_BOOLEAN;
           break;
@@ -3761,7 +3766,11 @@ public class ValueMetaBase implements ValueMetaInterface {
     // See if the polled value is empty
     // In that case, we have a null value on our hands...
     //
-    if ( Const.isEmpty( pol ) ) {
+    Object emptyValue = ( valueType == Value.VALUE_TYPE_STRING ) ? null_value : null;
+
+    if ( pol == null ) {
+      return null;
+    } else if ( Const.isEmpty( pol ) && valueType != Value.VALUE_TYPE_STRING ) {
       return null;
     } else {
       // if the null_value is specified, we try to match with that.
@@ -3772,7 +3781,7 @@ public class ValueMetaBase implements ValueMetaInterface {
           // we have a match
           //
           if ( pol.equalsIgnoreCase( Const.rightPad( new StringBuffer( null_value ), pol.length() ) ) ) {
-            return null;
+            return emptyValue;
           }
         }
       } else {
@@ -3780,7 +3789,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         // We consider that empty as well...
         //
         if ( Const.onlySpaces( pol ) ) {
-          return null;
+          return emptyValue;
         }
       }
     }
