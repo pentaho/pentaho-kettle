@@ -1437,7 +1437,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     }
 
-    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationStarted.id, this );
+    ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationStart.id, this );
 
     if ( log.isDetailed() ) {
       log
