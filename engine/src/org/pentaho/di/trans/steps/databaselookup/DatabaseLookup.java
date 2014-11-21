@@ -35,6 +35,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.TimedRow;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -533,7 +534,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
 
   private void loadAllTableDataIntoTheCache() throws KettleException {
     DatabaseMeta dbMeta = meta.getDatabaseMeta();
-
+    
+    Database db = getDatabase( dbMeta );
+    connectDatabase( db );
+    
     try {
       // We only want to get the used table fields...
       //
@@ -565,9 +569,9 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
 
       // Now that we have the SQL constructed, let's store the rows...
       //
-      List<Object[]> rows = data.db.getRows( sql, 0 );
+      List<Object[]> rows = db.getRows( sql, 0 );
       if ( rows != null && rows.size() > 0 ) {
-        RowMetaInterface returnRowMeta = data.db.getReturnRowMeta();
+        RowMetaInterface returnRowMeta = db.getReturnRowMeta();
         // Copy the data into 2 parts: key and value...
         //
         for ( Object[] row : rows ) {
@@ -592,6 +596,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       }
     } catch ( Exception e ) {
       throw new KettleException( e );
+    } finally {
+      if ( db != null ) {
+        db.disconnect();
+      }
     }
   }
 
@@ -618,21 +626,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         return false;
       }
       data.db = getDatabase( meta.getDatabaseMeta() );
-      data.db.shareVariablesWith( this );
       try {
-        if ( getTransMeta().isUsingUniqueConnections() ) {
-          synchronized ( getTrans() ) {
-            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-          }
-        } else {
-          data.db.connect( getPartitionID() );
-        }
-
-        data.db.setCommit( 100 ); // we never get a commit, but it just turns off auto-commit.
-
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "DatabaseLookup.Log.ConnectedToDatabase" ) );
-        }
+        connectDatabase( data.db );
 
         // See if all the lookup conditions are "equal"
         // This might speed up things in the case when we load all data in the cache
@@ -678,7 +673,30 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
+  /*
+   * this method is required in order to 
+   * provide ability for unit tests to
+   * mock the main database instance for the step
+   * (@see org.pentaho.di.trans.steps.databaselookup.PDI5436Test)
+   */
   Database getDatabase( DatabaseMeta meta ) {
     return new Database( this, meta );
+  }
+
+  private void connectDatabase( Database database ) throws KettleDatabaseException {
+    database.shareVariablesWith( this );
+    if ( getTransMeta().isUsingUniqueConnections() ) {
+      synchronized ( getTrans() ) {
+        database.connect( getTrans().getTransactionId(), getPartitionID() );
+      }
+    } else {
+      database.connect( getPartitionID() );
+    }
+
+    database.setCommit( 100 ); // we never get a commit, but it just turns off auto-commit.
+
+    if ( log.isDetailed() ) {
+      logDetailed( BaseMessages.getString( PKG, "DatabaseLookup.Log.ConnectedToDatabase" ) );
+    }
   }
 }
