@@ -153,7 +153,10 @@ public class DatabaseLookupTest {
   public RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta = { new ValueMeta( "int_field", ValueMeta.TYPE_INTEGER ) };
+    ValueMetaInterface[] valuesMeta = {
+      new ValueMeta( "int_field", ValueMeta.TYPE_INTEGER ),
+      new ValueMeta( "str_field", ValueMeta.TYPE_STRING ),
+    };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rm.addValueMeta( valuesMeta[i] );
@@ -170,9 +173,9 @@ public class DatabaseLookupTest {
 
     RowMetaInterface rm = createRowMetaInterface();
 
-    Object[] r1 = new Object[] { new Long( 5L ) };
-    Object[] r2 = new Object[] { new Long( 9L ) };
-    Object[] r3 = new Object[] { new Long( 20L ) }; // non-existing one.
+    Object[] r1 = new Object[] { new Long( 5L ), "5" };
+    Object[] r2 = new Object[] { new Long( 9L ), "9" };
+    Object[] r3 = new Object[] { new Long( 20L ), "20" }; // non-existing one.
 
     list.add( new RowMetaAndData( rm, r1 ) );
     list.add( new RowMetaAndData( rm, r2 ) );
@@ -187,6 +190,7 @@ public class DatabaseLookupTest {
     ValueMetaInterface[] valuesMeta =
     {
       new ValueMeta( "int_field", ValueMeta.TYPE_INTEGER, 8, 0 ),
+      new ValueMeta( "str_field", ValueMeta.TYPE_STRING, 30, 0 ),
       new ValueMeta( "RET_CODE", ValueMeta.TYPE_INTEGER, 8, 0 ),
       new ValueMeta( "RET_STRING", ValueMeta.TYPE_STRING, 30, 0 ) };
 
@@ -205,9 +209,9 @@ public class DatabaseLookupTest {
 
     RowMetaInterface rm = createResultRowMetaInterface();
 
-    Object[] r1 = new Object[] { new Long( 5L ), new Long( 101L ), "5" };
-    Object[] r2 = new Object[] { new Long( 9L ), new Long( 102L ), "9" };
-    Object[] r3 = new Object[] { new Long( 20L ), new Long( -1L ), "UNDEF" };
+    Object[] r1 = new Object[] { new Long( 5L ), "5", new Long( 101L ), "5" };
+    Object[] r2 = new Object[] { new Long( 9L ), "9", new Long( 102L ), "9" };
+    Object[] r3 = new Object[] { new Long( 20L ), "20", new Long( -1L ), "UNDEF" };
 
     list.add( new RowMetaAndData( rm, r1 ) );
     list.add( new RowMetaAndData( rm, r2 ) );
@@ -553,4 +557,100 @@ public class DatabaseLookupTest {
     checkRows( goldRows, resultRows );
 
   }
+
+  /**
+   * Test "Load All Rows" version of BasicDatabaseLookup test with Like predicate.
+   */
+  @Test
+  public void CacheAndLoadAllRowsDatabaseLookupWithLikePredicate() throws Exception {
+    KettleEnvironment.init();
+
+    //
+    // Create a new transformation...
+    //
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "transname" );
+
+    // Add the database connections
+    for ( int i = 0; i < databasesXML.length; i++ ) {
+      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
+      transMeta.addDatabase( databaseMeta );
+    }
+
+    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
+
+    PluginRegistry registry = PluginRegistry.getInstance();
+
+    //
+    // create an injector step...
+    //
+    String injectorStepname = "injector step";
+    InjectorMeta im = new InjectorMeta();
+
+    // Set the information of the injector.
+
+    String injectorPid = registry.getPluginId( StepPluginType.class, im );
+    StepMeta injectorStep = new StepMeta( injectorPid, injectorStepname, im );
+    transMeta.addStep( injectorStep );
+
+    //
+    // create the lookup step...
+    //
+    String lookupName = "look up from [" + lookup_table + "] by 'LIKE'";
+    DatabaseLookupMeta dbl = new DatabaseLookupMeta();
+    dbl.setDatabaseMeta( transMeta.findDatabase( "db" ) );
+    dbl.setTablename( lookup_table );
+    dbl.setCached( true );
+    dbl.setLoadingAllDataInCache( true );
+    dbl.setEatingRowOnLookupFailure( false );
+    dbl.setFailingOnMultipleResults( false );
+    dbl.setOrderByClause( "" );
+
+    dbl.setTableKeyField( new String[] { "STRING" } );
+    dbl.setKeyCondition( new String[] { "LIKE" } );
+    dbl.setStreamKeyField1( new String[] { "str_field" } );
+    dbl.setStreamKeyField2( new String[] { "" } );
+
+    dbl.setReturnValueField( new String[] { "CODE", "STRING" } );
+    dbl.setReturnValueDefaultType( new int[] { ValueMeta.TYPE_INTEGER, ValueMeta.TYPE_STRING } );
+    dbl.setReturnValueDefault( new String[] { "-1", "UNDEF" } );
+    dbl.setReturnValueNewName( new String[] { "RET_CODE", "RET_STRING" } );
+
+    String lookupId = registry.getPluginId( StepPluginType.class, dbl );
+    StepMeta lookupStep = new StepMeta( lookupId, lookupName, dbl );
+    lookupStep.setDescription( "Reads information from table ["
+        + lookup_table + "] on database ["
+        + dbInfo + "] using LIKE condition" );
+    transMeta.addStep( lookupStep );
+
+    TransHopMeta hi = new TransHopMeta( injectorStep, lookupStep );
+    transMeta.addTransHop( hi );
+
+    // Now execute the transformation...
+    Trans trans = new Trans( transMeta );
+
+    trans.prepareExecution( null );
+
+    StepInterface si = trans.getStepInterface( lookupName, 0 );
+    RowStepCollector rc = new RowStepCollector();
+    si.addRowListener( rc );
+
+    RowProducer rp = trans.addRowProducer( injectorStepname, 0 );
+    trans.startThreads();
+
+    // add rows
+    List<RowMetaAndData> inputList = createDataRows();
+    for ( RowMetaAndData rm : inputList ) {
+      rp.putRow( rm.getRowMeta(), rm.getData() );
+    }
+    rp.finished();
+
+    trans.waitUntilFinished();
+
+    List<RowMetaAndData> resultRows = rc.getRowsWritten();
+    List<RowMetaAndData> goldRows = createResultDataRows();
+    checkRows( goldRows, resultRows );
+
+  }
+
 }
