@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.LinkedHashSet;
 
-import org.antlr.misc.OrderedHashSet;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.LanguageChoice;
@@ -66,8 +66,7 @@ public class SpoonPerspectiveManager {
 
   private final Map<SpoonPerspective, PerspectiveInitializer> initializerMap;
 
-  @SuppressWarnings( "rawtypes" )
-  private final OrderedHashSet orderedPerspectives;
+  private final LinkedHashSet<SpoonPerspective> orderedPerspectives;
 
   private XulDeck deck;
 
@@ -131,7 +130,7 @@ public class SpoonPerspectiveManager {
   private SpoonPerspectiveManager() {
     perspectives = new LinkedHashMap<Class<? extends SpoonPerspective>, SpoonPerspective>();
     initializerMap = new HashMap<SpoonPerspective, PerspectiveInitializer>();
-    orderedPerspectives = new OrderedHashSet();
+    orderedPerspectives = new LinkedHashSet<SpoonPerspective>();
   }
 
   /**
@@ -185,7 +184,7 @@ public class SpoonPerspectiveManager {
    */
   @SuppressWarnings( "unchecked" )
   public List<SpoonPerspective> getPerspectives() {
-    return Collections.unmodifiableList( orderedPerspectives.elements() );
+    return Collections.unmodifiableList( new ArrayList<SpoonPerspective>( orderedPerspectives ) );
   }
 
   private void unloadPerspective( SpoonPerspective per ) {
