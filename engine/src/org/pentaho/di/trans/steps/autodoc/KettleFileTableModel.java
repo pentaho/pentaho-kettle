@@ -78,6 +78,7 @@ public class KettleFileTableModel implements TableModel {
   public KettleFileTableModel() {
   }
 
+  @SuppressWarnings( "static-access" )
   public KettleFileTableModel( LoggingObjectInterface parentObject, List<ReportSubjectLocation> locations ) {
     this.parentObject = parentObject;
     this.locations = locations;
@@ -223,11 +224,21 @@ public class KettleFileTableModel implements TableModel {
   }
 
   public static String getVariables( ReportSubjectLocation filename ) throws KettleException {
+    log.logError( "call me!" );
     ArrayList<String> variables = new ArrayList<String>();
     if ( filename.isTransformation() ) {
       TransMeta transMeta = TransformationInformation.getInstance().getTransMeta( filename );
       Pattern pattern = Pattern.compile( "\\$\\{([^\\}]*)\\}", Pattern.DOTALL );
       Matcher matcher = pattern.matcher( StringEscapeUtils.unescapeXml( transMeta.getXML() ) );
+      while ( matcher.find() ) {
+        if ( !variables.contains( matcher.group( 1 ) ) ) {
+          variables.add( matcher.group( 1 ) );
+        }
+      }
+    } else {
+      JobMeta jobMeta = JobInformation.getInstance().getJobMeta( filename );
+      Pattern pattern = Pattern.compile( "\\$\\{([^\\}]*)\\}", Pattern.DOTALL );
+      Matcher matcher = pattern.matcher( StringEscapeUtils.unescapeXml( jobMeta.getXML() ) );
       while ( matcher.find() ) {
         if ( !variables.contains( matcher.group( 1 ) ) ) {
           variables.add( matcher.group( 1 ) );
