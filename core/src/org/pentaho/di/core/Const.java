@@ -928,6 +928,11 @@ public class Const {
   public static final String XML_FILE_KETTLE_EXTENSION_POINTS = "kettle-extension-points.xml";
 
   /**
+   * The XML file that contains the list of native extension points (None by default, this is mostly for OEM purposes)
+   */
+  public static final String XML_FILE_KETTLE_REGISTRY_EXTENSIONS = "kettle-registry-extensions.xml";
+
+  /**
    * the value the Pan JVM should return on exit.
    */
   public static final String KETTLE_TRANS_PAN_JVM_EXIT_CODE = "KETTLE_TRANS_PAN_JVM_EXIT_CODE";
