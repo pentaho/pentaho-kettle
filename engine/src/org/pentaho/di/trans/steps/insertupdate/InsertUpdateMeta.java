@@ -46,10 +46,12 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.utils.RowMetaUtils;
+import org.pentaho.di.trans.steps.tableinput.TableInputMetaInjection;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -884,5 +886,14 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface 
 
   public boolean supportsErrorHandling() {
     return true;
+  }
+
+  @Override
+  public InsertUpdateMetaInjection getStepMetaInjectionInterface() {
+    return new InsertUpdateMetaInjection( this );
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return getStepMetaInjectionInterface().extractStepMetadataEntries();
   }
 }
