@@ -699,7 +699,7 @@ public class Const {
    * System wide flag to ignore timezone while writing date/timestamp value to the database. See PDI-10749 for details.
    */
   public static final String KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE = "KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE";
-  
+
   /**
    * System wide flag to use the root path prefix for a directory reference. See PDI-6779 for details.
    */
@@ -996,6 +996,21 @@ public class Const {
    * A variable to configure turning on/off detailed subjects in log.
    */
   public static final String KETTLE_LOG_MARK_MAPPINGS = "KETTLE_LOG_MARK_MAPPINGS";
+
+  /**
+   * A variable to configure jetty option: acceptors for Carte
+   */
+  public static final String KETTLE_CARTE_JETTY_ACCEPTORS = "KETTLE_CARTE_JETTY_ACCEPTORS";
+
+  /**
+   * A variable to configure jetty option: acceptQueueSize for Carte
+   */
+  public static final String KETTLE_CARTE_JETTY_ACCEPT_QUEUE_SIZE = "KETTLE_CARTE_JETTY_ACCEPT_QUEUE_SIZE";
+
+  /**
+   * A variable to configure jetty option: lowResourcesMaxIdleTime for Carte
+   */
+  public static final String KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME = "KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME";
 
   /**
   * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
