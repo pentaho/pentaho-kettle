@@ -79,7 +79,7 @@ public class GetSlavesServlet extends BaseHttpServlet implements CartePluginInte
       </tr>
       <tr>
         <td align="right">media types:</td>
-        <td>application/xml</td>
+        <td>text/xml</td>
       </tr>
     </tbody>
   </table>

@@ -76,12 +76,12 @@ public class GetJobImageServlet extends BaseHttpServlet implements CartePluginIn
     </tr>
     <tr>
     <td>name</td>
-    <td>name of the job to be used for image generation.</td>
+    <td>Name of the job to be used for image generation.</td>
     <td>query</td>
     </tr>
     <tr>
     <td>id</td>
-    <td>(optional) Carte id of the job to be used for image generation.</td>
+    <td>Carte id of the job to be used for image generation.</td>
     <td>query, optional</td>
     </tr>
     </tbody>
