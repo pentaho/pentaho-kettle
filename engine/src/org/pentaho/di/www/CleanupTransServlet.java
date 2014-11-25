@@ -58,7 +58,7 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
     <h2>GET</h2>
     <p>Cleans up transformation on Carte server.
   Method is used for cleaning previously uploaded transformation by its name on Carte server. There are
-  two modes of the method -- clean just server sockets or everything including transformation itself.</p>
+  two modes for this method: 1) Clean the server sockets only or 2) Clean everything, including the transformation.</p>
     
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
@@ -76,22 +76,22 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
     </tr>
     <tr>
     <td>name</td>
-    <td>name of the transformation to be cleaned.</td>
+    <td>Name of the transformation to be cleaned.</td>
     <td>query</td>
     </tr>
     <tr>
     <td>xml</td>
-    <td>(optional) boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
+    <td>Boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
     <td>boolean, optional</td>
     </tr>
     <tr>
     <td>id</td>
-    <td>(optional) Carte transformation ID of the transformation to be cleaned.</td>
+    <td>Carte transformation ID of the transformation to be cleaned.</td>
     <td>query, optional</td>
     </tr>
     <tr>
     <td>sockets</td>
-    <td>(optional) boolean flag which indicates if full clean up or sockets only is required.
+    <td>Boolean flag which indicates if full clean up or sockets only is required.
   Use <code>Y</code> to clean just sockets.</td>
     <td>boolean, optional</td>
     </tr>

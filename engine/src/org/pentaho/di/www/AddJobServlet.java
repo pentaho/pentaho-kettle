@@ -65,7 +65,7 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
     <h1>/kettle/addJob</h1>
     <a name="POST"></a>
     <h2>POST</h2>
-    <p>Upload and execute job configuration XML file.
+    <p>Uploads and executes job configuration XML file.
   Uploads xml file containing job and job_execution_configuration (wrapped in job_configuration tag) 
   to be executed and executes it. Method relies on the input parameter to determine if xml or html 
   reply should be produced. The job_configuration xml is
@@ -92,7 +92,7 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
     </tr>
     <tr>
     <td>xml</td>
-    <td>(optional) boolean flag set to either <code>Y</code> or <code>N</code> describing if xml or html reply 
+    <td>Boolean flag set to either <code>Y</code> or <code>N</code> describing if xml or html reply 
   should be produced.</td>
     <td>boolean, optional</td>
     </tr>

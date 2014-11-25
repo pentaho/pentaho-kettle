@@ -95,32 +95,32 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     </tr>
     <tr>
     <td>rep</td>
-    <td>repository id to connect to.</td>
+    <td>Repository id to connect to.</td>
     <td>query</td>
     </tr>
     <tr>
     <td>user</td>
-    <td>user name to be used to connect to repository.</td>
+    <td>User name to be used to connect to repository.</td>
     <td>query</td>
     </tr>
     <tr>
     <td>pass</td>
-    <td>user password to be used to connect to repository.</td>
+    <td>User password to be used to connect to repository.</td>
     <td>query</td>
     </tr>
     <tr>
     <td>trans</td>
-    <td>transfromation name to be loaded and executed.</td>
+    <td>Transfromation name to be loaded and executed.</td>
     <td>query</td>
     </tr>
     <tr>
     <td>level</td>
-    <td>logging level to be used for transformation execution (i.e. Debug).</td>
+    <td>Logging level to be used for transformation execution (i.e. Debug).</td>
     <td>query</td>
     </tr>
     <tr>
     <td>*any name*</td>
-    <td>all the other parameters will be sent to the transformation for using as variables. 
+    <td>All the other parameters will be sent to the transformation for using as variables. 
   When necessary you can add custom parameters to the request. 
   They will be used to set the transformation variables values..</td>
     <td>query</td>
