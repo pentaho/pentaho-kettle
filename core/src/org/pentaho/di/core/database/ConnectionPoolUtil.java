@@ -44,7 +44,14 @@ public class ConnectionPoolUtil {
 
   private static final ReentrantLock lock = new ReentrantLock();
 
-  private static PoolingDriver pd = new PoolingDriver();
+  private static PoolingDriver pd = initPoolingDriver();
+
+  private static PoolingDriver initPoolingDriver() {
+  //for avoid lock  http://jira.pentaho.com/browse/PDI-12948
+    synchronized ( DriverManager.class ) {
+      return new PoolingDriver();
+    }
+  }
 
   public static final int defaultInitialNrOfConnections = 5;
   public static final int defaultMaximumNrOfConnections = 10;
