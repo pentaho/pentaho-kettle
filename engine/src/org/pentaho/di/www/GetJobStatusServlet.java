@@ -60,7 +60,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     <a name="GET"></a>
     <h2>GET</h2>
     <p>Retrieves status of the specified job.
-  Retrieves status of the specified job. Status is returned as HTML or XML output depending on the input parameters.
+  Status is returned as HTML or XML output depending on the input parameters.
   Status contains information about last execution of the job.</p>
     
     <p><b>Example Request:</b><br />
@@ -79,23 +79,23 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     </tr>
     <tr>
     <td>name</td>
-    <td>name of the job to be used for status generation.</td>
+    <td>Name of the job to be used for status generation.</td>
     <td>query</td>
     </tr>
     <tr>
     <td>xml</td>
-    <td>(optional) boolean flag which defines output format <code>Y</code> forces XML output to be generated. 
+    <td>Boolean flag which defines output format <code>Y</code> forces XML output to be generated. 
   HTML is returned otherwise.</td>
     <td>boolean, optional</td>
     </tr>
     <tr>
     <td>id</td>
-    <td>(optional) Carte id of the job to be used for status generation.</td>
+    <td>Carte id of the job to be used for status generation.</td>
     <td>query, optional</td>
     </tr>
     <tr>
     <td>from</td>
-    <td>(optional) start line number of the execution log to be included into response.</td>
+    <td>Start line number of the execution log to be included into response.</td>
     <td>integer, optional</td>
     </tr>
     </tbody>
