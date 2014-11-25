@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.update;
 
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -47,12 +45,15 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.utils.RowMetaUtils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.List;
 
 /*
  * Created on 26-apr-2003
@@ -899,4 +900,12 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     this.useBatchUpdate = useBatchUpdate;
   }
 
+  @Override
+  public UpdateMetaInjection getStepMetaInjectionInterface() {
+    return new UpdateMetaInjection( this );
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return getStepMetaInjectionInterface().extractStepMetadataEntries();
+  }
 }
