@@ -45,7 +45,13 @@
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-monitoring-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-monitoring-plugin" type="zip"/>
-    </dependency>    
+    </dependency>
+    
+
+    <dependency org="pentaho" name="pdi-osgi-bridge" rev="1.0-SNAPSHOT" changing="true" conf="plugins->default">
+      <artifact name="pdi-osgi-bridge" type="zip"/>
+    </dependency>
+
     <!-- Pentaho dependencies (non-Kettle), launcher, shim, etc. -->
     <dependency org="pentaho"               name="pentaho-application-launcher"  rev="${dependency.launcher.revision}" conf="launcher->default"/>
     <dependency org="pentaho"               name="pentaho-hadoop-hive-jdbc-shim" rev="${dependency.pentaho-hadoop-hive-jdbc-shim.revision}"/>
