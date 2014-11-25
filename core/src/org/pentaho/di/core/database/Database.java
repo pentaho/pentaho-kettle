@@ -468,18 +468,15 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
 
     // Install and load the jdbc Driver
-    PluginInterface plugin =
-      PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
+    PluginInterface plugin = PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
 
     try {
       synchronized ( java.sql.DriverManager.class ) {
         ClassLoader classLoader = PluginRegistry.getInstance().getClassLoader( plugin );
         Class<?> driverClass = classLoader.loadClass( classname );
-
         // Only need DelegatingDriver for drivers not from our classloader
         if ( driverClass.getClassLoader() != this.getClass().getClassLoader() ) {
-          String pluginId =
-            PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
+          String pluginId = PluginRegistry.getInstance().getPluginId( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
           Set<String> registeredDriversFromPlugin = registeredDrivers.get( pluginId );
           if ( registeredDriversFromPlugin == null ) {
             registeredDriversFromPlugin = new HashSet<String>();
@@ -490,9 +487,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             DriverManager.registerDriver( new DelegatingDriver( (Driver) driverClass.newInstance() ) );
             registeredDriversFromPlugin.add( driverClass.getCanonicalName() );
           }
-        } else {
-          // Trigger static register block in driver class
-          Class.forName( classname );
         }
       }
     } catch ( NoClassDefFoundError e ) {
