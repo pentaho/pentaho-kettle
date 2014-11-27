@@ -101,7 +101,7 @@ public class ListServerSocketServlet extends BaseHttpServlet implements CartePlu
       </tr>
     </tbody>
   </table>
-    Response is HTML document listing the ports requested.
+    <p>Response is HTML document listing the ports requested.</p>
     
     <p><b>Example Response:</b></p>
   <pre function="syntax.xml">

@@ -115,9 +115,9 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
       </tr>
     </tbody>
   </table>
-    Response XML or HTML response containing details about the job specified.
+    <p>Response XML or HTML response containing details about the job specified.
   If an error occurs during method invocation <code>result</code> field of the response 
-  will contain <code>ERROR</code> status.
+  will contain <code>ERROR</code> status.</p>
     
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">

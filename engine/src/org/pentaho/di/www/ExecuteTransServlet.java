@@ -142,8 +142,8 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
       </tr>
     </tbody>
   </table>
-    Response contains error output of the transformation executed or nothing 
-  if the execution was successful.
+    <p>Response contains error output of the transformation executed or nothing 
+  if the execution was successful.</p>
     
     <p><b>Example Error Response:</b></p>
     <pre function="syntax.xml">

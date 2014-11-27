@@ -62,10 +62,8 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
       <h1>/kettle/transStatus</h1>
       <a name="GET"></a>
       <h2>GET</h2>
-      <p>Retrieves status of the specified transformation.
-    Retrieves status of the specified transformation. Status is returned as HTML or XML output 
-    depending on the input parameters. Status contains information about last execution of the transformation.</p>
-      
+      <p>Retrieves status of the specified transformation. Status is returned as HTML or XML output 
+    depending on the input parameters. Status contains information about last execution of the transformation.</p>      
       <p><b>Example Request:</b><br />
       <pre function="syntax.xml">
       GET /kettle/transStatus/?name=dummy-trans&xml=Y
@@ -82,23 +80,23 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
       </tr>
       <tr>
       <td>name</td>
-      <td>name of the transformation to be used for status generation.</td>
+      <td>Name of the transformation to be used for status generation.</td>
       <td>query</td>
       </tr>
       <tr>
       <td>xml</td>
-      <td>(optional) boolean flag which defines output format <code>Y</code> forces XML output to be generated. 
+      <td>Boolean flag which defines output format <code>Y</code> forces XML output to be generated. 
     HTML is returned otherwise.</td>
       <td>boolean, optional</td>
       </tr>
       <tr>
       <td>id</td>
-      <td>(optional) Carte id of the transformation to be used for status generation.</td>
+      <td>Carte id of the transformation to be used for status generation.</td>
       <td>query, optional</td>
       </tr>
       <tr>
       <td>from</td>
-      <td>(optional) start line number of the execution log to be included into response.</td>
+      <td>Start line number of the execution log to be included into response.</td>
       <td>integer, optional</td>
       </tr>
       </tbody>
@@ -118,9 +116,9 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
         </tr>
       </tbody>
     </table>
-      Response XML or HTML response containing details about the transformation specified.
+    <p> Response XML or HTML response containing details about the transformation specified.
     If an error occurs during method invocation <code>result</code> field of the response 
-    will contain <code>ERROR</code> status.
+    will contain <code>ERROR</code> status.</p>
       
       <p><b>Example Response:</b></p>
       <pre function="syntax.xml">

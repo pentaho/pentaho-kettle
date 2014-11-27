@@ -101,9 +101,9 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         </tr>
       </tbody>
     </table>
-      Response XML or HTML response containing details about the transformation specified.
+      <p>Response XML or HTML response containing details about the transformation specified.
     If an error occurs during method invocation <code>result</code> field of the response 
-    will contain <code>ERROR</code> status.
+    will contain <code>ERROR</code> status.</p>
       
       <p><b>Example Response:</b></p>
       <pre function="syntax.xml">

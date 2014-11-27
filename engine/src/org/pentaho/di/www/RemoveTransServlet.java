@@ -55,7 +55,7 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
       <h1>/kettle/removeTrans</h1>
       <a name="GET"></a>
       <h2>GET</h2>
-      <p>Remove specified transformation from Carte server.</p>
+      <p>Removes specified transformation from Carte server.</p>
       
       <p><b>Example Request:</b><br />
       <pre function="syntax.xml">
@@ -73,17 +73,17 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
       </tr>
       <tr>
       <td>name</td>
-      <td>name of the transformation to be removed.</td>
+      <td>Name of the transformation to be removed.</td>
       <td>query</td>
       </tr>
       <tr>
       <td>xml</td>
-      <td>(optional) boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
+      <td>Boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
       <td>boolean, optional</td>
       </tr>
       <tr>
       <td>id</td>
-      <td>(optional) Carte transformation ID of the transformation to be removed. This parameter is optional when xml=Y is used.</td>
+      <td>Carte transformation ID of the transformation to be removed. This parameter is optional when xml=Y is used.</td>
       <td>query, optional</td>
       </tr>
       </tbody>
@@ -103,8 +103,8 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
         </tr>
       </tbody>
     </table>
-      Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
-    operation was successful (<code>OK</code>) or not (<code>ERROR</code>).
+     <p>Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
+    operation was successful (<code>OK</code>) or not (<code>ERROR</code>).</p>
           
       <p><b>Example Response:</b></p>
     <pre function="syntax.xml">

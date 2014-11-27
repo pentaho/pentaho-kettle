@@ -101,7 +101,7 @@ public class GetJobImageServlet extends BaseHttpServlet implements CartePluginIn
       </tr>
     </tbody>
   </table>
-    Binary PNG image or empty response if no job is found.
+    <p>A binary PNG image or empty response if no job is found.</p>
     
 
     <h3>Status Codes</h3>

@@ -132,8 +132,8 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
       </tr>
     </tbody>
   </table>
-    Response wraps file url of the entity that was executed or error stack trace if an error occurred.
-     Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.
+    <p>Response wraps file url of the entity that was executed or error stack trace if an error occurred.
+     Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.</p>
     
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">

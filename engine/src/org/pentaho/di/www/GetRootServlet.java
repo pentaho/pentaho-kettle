@@ -67,7 +67,7 @@ public class GetRootServlet extends BaseHttpServlet implements CartePluginInterf
       </tr>
     </tbody>
   </table>
-    HTML response containing content of initial page is returned.
+    <p>HTML response containing content of initial page is returned.</p>
 
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">
