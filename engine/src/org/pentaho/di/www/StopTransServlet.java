@@ -73,17 +73,17 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
       </tr>
       <tr>
       <td>name</td>
-      <td>name of the transformation to be stopped.</td>
+      <td>Name of the transformation to be stopped.</td>
       <td>query</td>
       </tr>
       <tr>
       <td>xml</td>
-      <td>(optional) boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
+      <td>Boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
       <td>boolean, optional</td>
       </tr>
       <tr>
       <td>id</td>
-      <td>(optional) Carte transformation ID of the transformation to be stopped. This parameter is optional when xml=Y is used.</td>
+      <td>Carte transformation ID of the transformation to be stopped. This parameter is optional when xml=Y is used.</td>
       <td>query, optional</td>
       </tr>
       </tbody>
@@ -103,10 +103,10 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
         </tr>
       </tbody>
     </table>
-      Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
-    operation was successful (<code>OK</code>) or not (<code>ERROR</code>).
+    <p>Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
+    operation was successful (<code>OK</code>) or not (<code>ERROR</code>).</p>
           
-      <p><b>Example Response:</b></p>
+     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">
     <?xml version="1.0" encoding="UTF-8"?>
     <webresult>
@@ -116,7 +116,7 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
     </webresult>
     </pre>
 
-      <h3>Status Codes</h3>
+     <h3>Status Codes</h3>
       <table class="pentaho-table">
     <tbody>
       <tr>

@@ -112,8 +112,8 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
       </tr>
     </tbody>
   </table>
-    Response contains result of the operation. It is either <code>OK</code> or <code>ERROR</code>.
-     If an error occurred during job execution, response also contains information about the error.
+    <p>Response contains result of the operation. It is either <code>OK</code> or <code>ERROR</code>.
+     If an error occurred during job execution, response also contains information about the error.</p>
     
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">

@@ -56,10 +56,9 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
     <h1>/kettle/transImage</h1>
     <a name="GET"></a>
     <h2>GET</h2>
-    <p>Generates and returns image of the specified transformation.
-  Generates PNG image of the specified transformation currently present on Carte server.
-  Transformation name and Carte transformation ID (optional) are used for specifying 
-  transformation to get information for. Response is binary of the PNG image.</p>
+    <p>Generates PNG image of the specified transformation currently present on Carte server.
+  Transformation name and Carte transformation ID (optional) are used for specifying which
+  transformation to get information for. Response is a binary of the PNG image.</p>
     
     <p><b>Example Request:</b><br />
     <pre function="syntax.xml">
@@ -77,12 +76,12 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
     </tr>
     <tr>
     <td>name</td>
-    <td>name of the transformation to be used for image generation.</td>
+    <td>Name of the transformation to be used for image generation.</td>
     <td>query</td>
     </tr>
     <tr>
     <td>id</td>
-    <td>(optional) Carte id of the transformation to be used for image generation.</td>
+    <td>Carte id of the transformation to be used for image generation.</td>
     <td>query, optional</td>
     </tr>
     </tbody>
@@ -102,9 +101,8 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
       </tr>
     </tbody>
   </table>
-    Binary PNG image or empty response if no transformation is found.
+  <p>A binary PNG image or empty response is presented if no transformation is found.</p>
     
-
     <h3>Status Codes</h3>
     <table class="pentaho-table">
   <tbody>

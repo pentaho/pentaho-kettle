@@ -73,17 +73,17 @@ public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInte
       </tr>
       <tr>
       <td>name</td>
-      <td>name of the job to be removed.</td>
+      <td>Name of the job to be removed.</td>
       <td>query</td>
       </tr>
       <tr>
       <td>xml</td>
-      <td>(optional) boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
+      <td>Boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
       <td>boolean, optional</td>
       </tr>
       <tr>
       <td>id</td>
-      <td>(optional) Carte job ID of the job to be removed. This parameter is optional when xml=Y is used.</td>
+      <td>Carte job ID of the job to be removed. This parameter is optional when xml=Y is used.</td>
       <td>query, optional</td>
       </tr>
       </tbody>
@@ -103,8 +103,8 @@ public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInte
         </tr>
       </tbody>
     </table>
-      Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
-    operation was successful (<code>OK</code>) or not (<code>ERROR</code>).
+    <p>Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
+    operation was successful (<code>OK</code>) or not (<code>ERROR</code>).</p>
           
       <p><b>Example Response:</b></p>
     <pre function="syntax.xml">

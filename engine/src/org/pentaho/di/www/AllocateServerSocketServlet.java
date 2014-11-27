@@ -173,8 +173,8 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
       </tr>
     </tbody>
   </table>
-    Response wraps port number that was allocated or error stack trace
-  if an error occurred. Response HTTP code is 200 if there were no errors. Otherwise it is 500.
+    <p>Response wraps port number that was allocated or error stack trace
+  if an error occurred. Response HTTP code is 200 if there were no errors. Otherwise it is 500.</p>
     
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">
