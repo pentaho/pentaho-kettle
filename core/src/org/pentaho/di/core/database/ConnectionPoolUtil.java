@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
@@ -40,6 +41,8 @@ import org.pentaho.di.i18n.BaseMessages;
 
 public class ConnectionPoolUtil {
   private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!
+
+  private static final ReentrantLock lock = new ReentrantLock();
 
   private static PoolingDriver pd = new PoolingDriver();
 
@@ -130,8 +133,13 @@ public class ConnectionPoolUtil {
 
   public static Connection getConnection( LogChannelInterface log, DatabaseMeta dbMeta, String partitionId,
       int initialSize, int maximumSize ) throws Exception {
-    if ( !isPoolRegistered( dbMeta, partitionId ) ) {
-      createPool( log, dbMeta, partitionId, initialSize, maximumSize );
+    lock.lock();
+    try {
+      if ( !isPoolRegistered( dbMeta, partitionId ) ) {
+        createPool( log, dbMeta, partitionId, initialSize, maximumSize );
+      }
+    } finally {
+      lock.unlock();
     }
 
     return DriverManager.getConnection( "jdbc:apache:commons:dbcp:" + buildPoolName( dbMeta, partitionId ) );
