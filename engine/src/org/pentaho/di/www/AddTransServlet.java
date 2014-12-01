@@ -78,8 +78,8 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
     <pre function="syntax.xml">
     POST /kettle/addTrans/?xml=Y
     </pre>
-    Request body should contain xml containing transformation_configuration (transformation and 
-  transformation_execution_configuration wrapped in transformation_configuration tag).
+    <p>Request body should contain xml containing transformation_configuration (transformation and 
+  transformation_execution_configuration wrapped in transformation_configuration tag).</p>
     </p>
     <h3>Parameters</h3>
     <table class="pentaho-table">
@@ -112,8 +112,8 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
       </tr>
     </tbody>
   </table>
-    Response wraps transformation name that was executed or error stack trace
-  if an error occurred. Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.
+    <p>Response wraps transformation name that was executed or error stack trace
+  if an error occurred. Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.</p>
     
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">

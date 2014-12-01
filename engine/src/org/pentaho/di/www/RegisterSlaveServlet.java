@@ -82,8 +82,8 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements CartePlugin
     </tr>
   </tbody>
 </table>
-  Response contains slave server name or error stack trace
-if an error occurred. Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.
+  <p>Response contains slave server name or error stack trace
+if an error occurred. Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.</p>
   
   <p><b>Example Response:</b></p>
   <pre function="syntax.xml">

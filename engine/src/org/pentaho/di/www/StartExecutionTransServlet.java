@@ -56,8 +56,7 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
       <h1>/kettle/startExec</h1>
       <a name="GET"></a>
       <h2>GET</h2>
-      <p>Executes transformation ready for the execution. 
-      If the transformation is not ready error will be returned.</p>
+      <p>Starts transformation. If the transformation is not ready, an error is returned.</p>
       
       <p><b>Example Request:</b><br />
       <pre function="syntax.xml">
@@ -75,17 +74,17 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
       </tr>
       <tr>
       <td>name</td>
-      <td>name of the transformation to be executed.</td>
+      <td>Name of the transformation to be executed.</td>
       <td>query</td>
       </tr>
       <tr>
       <td>xml</td>
-      <td>(optional) boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
+      <td>Boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
       <td>boolean, optional</td>
       </tr>
       <tr>
       <td>id</td>
-      <td>(optional) Carte transformation ID of the transformation to be executed. This parameter is optional when xml=Y is used.</td>
+      <td>Carte transformation ID of the transformation to be executed. This parameter is optional when xml=Y is used.</td>
       <td>query, optional</td>
       </tr>
       </tbody>
@@ -105,8 +104,8 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
         </tr>
       </tbody>
     </table>
-      Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
-    operation was successful (<code>OK</code>) or not (<code>ERROR</code>).
+    <p>Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
+    operation was successful (<code>OK</code>) or not (<code>ERROR</code>).</p>
           
       <p><b>Example Response:</b></p>
     <pre function="syntax.xml">

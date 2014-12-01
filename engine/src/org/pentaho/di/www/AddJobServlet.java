@@ -79,8 +79,8 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
     <pre function="syntax.xml">
     POST /kettle/addJob/?xml=Y
     </pre>
-    Request body should contain xml containing job_configuration (job + job_execution_configuration 
-  wrapped in job_configuration tag).
+    <p>Request body should contain xml containing job_configuration (job + job_execution_configuration 
+  wrapped in job_configuration tag).</p>
     </p>
     <h3>Parameters</h3>
     <table class="pentaho-table">
@@ -113,8 +113,8 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
       </tr>
     </tbody>
   </table>
-    Response wraps job name that was executed or error stack trace
-  if an error occurred. Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.
+    <p>Response wraps job name that was executed or error stack trace
+  if an error occurred. Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.</p>
     
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">

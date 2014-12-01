@@ -81,17 +81,17 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
       </tr>
       <tr>
       <td>name</td>
-      <td>name of the transformation to be executed.</td>
+      <td>Name of the transformation to be executed.</td>
       <td>query</td>
       </tr>
       <tr>
       <td>xml</td>
-      <td>(optional) boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
+      <td>Boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
       <td>boolean, optional</td>
       </tr>
       <tr>
       <td>id</td>
-      <td>(optional) Carte transformation ID of the transformation to be executed. This parameter is optional when xml=Y is used.</td>
+      <td>Carte transformation ID of the transformation to be executed. This parameter is optional when xml=Y is used.</td>
       <td>query, optional</td>
       </tr>
       </tbody>
@@ -111,8 +111,8 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
         </tr>
       </tbody>
     </table>
-      Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
-    operation was successful (<code>OK</code>) or not (<code>ERROR</code>).
+    <p>Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
+    operation was successful (<code>OK</code>) or not (<code>ERROR</code>).</p>
           
       <p><b>Example Response:</b></p>
     <pre function="syntax.xml">

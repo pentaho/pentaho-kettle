@@ -111,8 +111,8 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
       </tr>
     </tbody>
   </table>
-    Response contains result of the operation. It is either <code>OK</code> or <code>ERROR</code>.
-     If an error occurred during transformation execution, response also contains information about the error.
+    <p>Response contains result of the operation. It is either <code>OK</code> or <code>ERROR</code>.
+     If an error occurred during transformation execution, response also contains information about the error.</p>
     
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">

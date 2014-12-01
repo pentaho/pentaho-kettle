@@ -107,8 +107,8 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
       </tr>
     </tbody>
   </table>
-    Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
-  operation was successful (<code>OK</code>) or not (<code>ERROR</code>).
+    <p>Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
+  operation was successful (<code>OK</code>) or not (<code>ERROR</code>).</p>
         
     <p><b>Example Response:</b></p>
   <pre function="syntax.xml">
