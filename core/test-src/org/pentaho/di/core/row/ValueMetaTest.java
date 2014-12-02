@@ -23,6 +23,7 @@
 package org.pentaho.di.core.row;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -32,18 +33,15 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 
 /**
  * Test functionality in ValueMeta
- * 
+ *
  * @author sboden
  */
 public class ValueMetaTest extends TestCase {
   /**
    * Compare to byte arrays for equality.
-   * 
-   * @param b1
-   *          1st byte array
-   * @param b2
-   *          2nd byte array
-   * 
+   *
+   * @param b1 1st byte array
+   * @param b2 2nd byte array
    * @return true if equal
    */
   private boolean byteCompare( byte[] b1, byte[] b2 ) {
@@ -68,25 +66,25 @@ public class ValueMetaTest extends TestCase {
 
     // No truncating or padding!!!
     byte[] b1 = val1.getBinary( "PDI123" );
-    assertTrue( byteCompare( b1, new byte[] { 'P', 'D', 'I', '1', '2', '3' } ) );
+    assertTrue( byteCompare( b1, new byte[]{ 'P', 'D', 'I', '1', '2', '3' } ) );
 
     byte[] b2 = val1.getBinary( "PDI" );
-    assertTrue( byteCompare( b2, new byte[] { 'P', 'D', 'I' } ) );
+    assertTrue( byteCompare( b2, new byte[]{ 'P', 'D', 'I' } ) );
 
     byte[] b3 = val1.getBinary( "PDI123456" );
-    assertTrue( byteCompare( b3, new byte[] { 'P', 'D', 'I', '1', '2', '3', '4', '5', '6' } ) );
+    assertTrue( byteCompare( b3, new byte[]{ 'P', 'D', 'I', '1', '2', '3', '4', '5', '6' } ) );
 
     ValueMeta val2 = new ValueMeta( "STR2", ValueMetaInterface.TYPE_STRING );
     val2.setLength( 1 );
 
     byte[] b4 = val2.getBinary( "PDI123" );
-    assertTrue( byteCompare( b4, new byte[] { 'P', 'D', 'I', '1', '2', '3' } ) );
+    assertTrue( byteCompare( b4, new byte[]{ 'P', 'D', 'I', '1', '2', '3' } ) );
 
     byte[] b5 = val2.getBinary( "PDI" );
-    assertTrue( byteCompare( b5, new byte[] { 'P', 'D', 'I' } ) );
+    assertTrue( byteCompare( b5, new byte[]{ 'P', 'D', 'I' } ) );
 
     byte[] b6 = val2.getBinary( "PDI123456" );
-    assertTrue( byteCompare( b6, new byte[] { 'P', 'D', 'I', '1', '2', '3', '4', '5', '6' } ) );
+    assertTrue( byteCompare( b6, new byte[]{ 'P', 'D', 'I', '1', '2', '3', '4', '5', '6' } ) );
   }
 
   public void testCvtStringBinaryString() throws Exception {
@@ -189,7 +187,6 @@ public class ValueMetaTest extends TestCase {
     assertEquals( originalValue, x );
   }
 
-  @SuppressWarnings( "deprecation" )
   public void testDateStringDL8601() throws Exception {
     TimeZone.setDefault( TimeZone.getTimeZone( "America/New_York" ) );
 
@@ -198,7 +195,11 @@ public class ValueMetaTest extends TestCase {
     try {
       Date res = datValueMeta.getDate( "2008-03-09T02:34:54.000Z" );
       // make sure it's what we expect...
-      assert ( res.getMonth() == 2 && res.getDay() == 9 && res.getYear() == 2008 );
+      Calendar c = Calendar.getInstance();
+      c.setTime( res );
+      assertEquals( "Month should be 2", 2, c.get( Calendar.MONTH ) );
+      assertEquals( "Day should be 8", 8, c.get( Calendar.DAY_OF_MONTH ) );
+      assertEquals( "Year should be 2008", 2008, c.get( Calendar.YEAR ) );
     } catch ( Exception ex ) {
       fail( "Error converting date." + ex.getMessage() );
     }
@@ -208,7 +209,11 @@ public class ValueMetaTest extends TestCase {
     try {
       Date res = datValueMeta.getDate( "2008-03-09T02:34:54.000+01:00" );
       // make sure it's what we expect...
-      assert ( res.getMonth() == 2 && res.getDay() == 9 && res.getYear() == 2008 );
+      Calendar c = Calendar.getInstance();
+      c.setTime( res );
+      assertEquals( "Month should be 2", 2, c.get( Calendar.MONTH ) );
+      assertEquals( "Day should be 8", 8, c.get( Calendar.DAY_OF_MONTH ) );
+      assertEquals( "Year should be 2008", 2008, c.get( Calendar.YEAR ) );
     } catch ( Exception ex ) {
       fail( "Error converting date." + ex.getMessage() );
     }
@@ -218,13 +223,16 @@ public class ValueMetaTest extends TestCase {
     try {
       Date res = datValueMeta.getDate( "2008-03-09T02-34-54.000-01:00" );
       // make sure it's what we expect...
-      assert ( res.getMonth() == 2 && res.getDay() == 9 && res.getYear() == 2008 );
+      Calendar c = Calendar.getInstance();
+      c.setTime( res );
+      assertEquals( "Month should be 2", 2, c.get( Calendar.MONTH ) );
+      assertEquals( "Day should be 8", 8, c.get( Calendar.DAY_OF_MONTH ) );
+      assertEquals( "Year should be 2008", 2008, c.get( Calendar.YEAR ) );
     } catch ( Exception ex ) {
       fail( "Error converting date." + ex.getMessage() );
     }
   }
 
-  @SuppressWarnings( "deprecation" )
   public void testDateStringUTC() throws Exception {
     TimeZone.setDefault( TimeZone.getTimeZone( "America/New_York" ) );
 
@@ -233,13 +241,16 @@ public class ValueMetaTest extends TestCase {
     try {
       Date res = datValueMeta.getDate( "2008-03-09T02:34:54.000UTC" );
       // make sure it's what we expect...
-      assert ( res.getMonth() == 2 && res.getDay() == 9 && res.getYear() == 2008 );
+      Calendar c = Calendar.getInstance();
+      c.setTime( res );
+      assertEquals( "Month should be 2", 2, c.get( Calendar.MONTH ) );
+      assertEquals( "Day should be 8", 8, c.get( Calendar.DAY_OF_MONTH ) );
+      assertEquals( "Year should be 2008", 2008, c.get( Calendar.YEAR ) );
     } catch ( Exception ex ) {
       fail( "Error converting date." + ex.getMessage() );
     }
   }
 
-  @SuppressWarnings( "deprecation" )
   public void testDateStringOffset() throws Exception {
     TimeZone.setDefault( TimeZone.getTimeZone( "America/New_York" ) );
 
@@ -248,7 +259,11 @@ public class ValueMetaTest extends TestCase {
     try {
       Date res = datValueMeta.getDate( "2008-03-09T02:34:54.000-0100" );
       // make sure it's what we expect...
-      assert ( res.getMonth() == 2 && res.getDay() == 9 && res.getYear() == 2008 );
+      Calendar c = Calendar.getInstance();
+      c.setTime( res );
+      assertEquals( "Month should be 2", 2, c.get( Calendar.MONTH ) );
+      assertEquals( "Day should be 8", 8, c.get( Calendar.DAY_OF_MONTH ) );
+      assertEquals( "Year should be 2008", 2008, c.get( Calendar.YEAR ) );
     } catch ( Exception ex ) {
       fail( "Error converting date." + ex.getMessage() );
     }
@@ -257,13 +272,16 @@ public class ValueMetaTest extends TestCase {
     try {
       Date res = datValueMeta.getDate( "2008-03-09T02:34:54.000+0100" );
       // make sure it's what we expect...
-      assert ( res.getMonth() == 2 && res.getDay() == 9 && res.getYear() == 2008 );
+      Calendar c = Calendar.getInstance();
+      c.setTime( res );
+      assertEquals( "Month should be 2", 2, c.get( Calendar.MONTH ) );
+      assertEquals( "Day should be 8", 8, c.get( Calendar.DAY_OF_MONTH ) );
+      assertEquals( "Year should be 2008", 2008, c.get( Calendar.YEAR ) );
     } catch ( Exception ex ) {
       fail( "Error converting date." + ex.getMessage() );
     }
   }
 
-  @SuppressWarnings( "deprecation" )
   public void testDateString8601() throws Exception {
     TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Kaliningrad" ) );
 
@@ -271,7 +289,11 @@ public class ValueMetaTest extends TestCase {
     datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss'.000Z'" );
     try {
       Date res = datValueMeta.getDate( "2011-03-13T02:23:18.000Z" );
-      assert ( res.getYear() == 2011 && res.getMonth() == 3 && res.getDay() == 13 );
+      Calendar c = Calendar.getInstance();
+      c.setTime( res );
+      assertEquals( "Month should be 2", 2, c.get( Calendar.MONTH ) );
+      assertEquals( "Day should be 13", 13, c.get( Calendar.DAY_OF_MONTH ) );
+      assertEquals( "Year should be 2011", 2011, c.get( Calendar.YEAR ) );
     } catch ( Exception ex ) {
       fail( "Error converting date." + ex.getMessage() );
     }
@@ -345,9 +367,9 @@ public class ValueMetaTest extends TestCase {
   /**
    * Lazy conversion is used to read data from disk in a binary format. The data itself is not converted from the byte[]
    * to Integer, rather left untouched until it's needed.
-   * 
+   * <p/>
    * However at that time we do need it we should get the correct value back.
-   * 
+   *
    * @throws Exception
    */
   public void testLazyConversionInteger() throws Exception {
@@ -374,9 +396,9 @@ public class ValueMetaTest extends TestCase {
   /**
    * Lazy conversion is used to read data from disk in a binary format. The data itself is not converted from the byte[]
    * to Integer, rather left untouched until it's needed.
-   * 
+   * <p/>
    * However at that time we do need it we should get the correct value back.
-   * 
+   *
    * @throws Exception
    */
   public void testLazyConversionNumber() throws Exception {
@@ -420,9 +442,9 @@ public class ValueMetaTest extends TestCase {
   /**
    * Lazy conversion is used to read data from disk in a binary format. The data itself is not converted from the byte[]
    * to Integer, rather left untouched until it's needed.
-   * 
+   * <p/>
    * However at that time we do need it we should get the correct value back.
-   * 
+   *
    * @throws Exception
    */
   public void testLazyConversionBigNumber() throws Exception {
