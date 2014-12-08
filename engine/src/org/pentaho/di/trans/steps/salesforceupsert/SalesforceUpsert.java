@@ -147,6 +147,8 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
         		upsertModuleFieldName = upsertFieldNameTemp[upsertFieldNameTemp.length-1];
         		if (upsertModuleFieldName.endsWith("__r")) {
         			upsertModuleFieldName = upsertModuleFieldName.substring(0,upsertModuleFieldName.length()-3) + "__c";
+			} else { //If the fieldName does not end with __r it must be standard
+				upsertModuleFieldName = upsertModuleFieldName + "Id";
         		}
                 fieldsToNull.add( upsertModuleFieldName);
         	}
