@@ -38,6 +38,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -125,6 +126,9 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               if ( path[2].equals( Spoon.STRING_CLUSTERS ) ) {
                 object = new TreeSelection( path[2], ClusterSchema.class, transMeta );
               }
+              if ( path[2].equals( Spoon.STRING_NAMED_CONFIGS ) ) {
+                object = new TreeSelection( path[2], NamedConfiguration.class, transMeta );
+              }
             }
             if ( path[0].equals( Spoon.STRING_JOBS ) ) { // Jobs title
 
@@ -137,6 +141,9 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               }
               if ( path[2].equals( Spoon.STRING_SLAVES ) ) {
                 object = new TreeSelection( path[2], SlaveServer.class, jobMeta );
+              }
+              if ( path[2].equals( Spoon.STRING_NAMED_CONFIGS ) ) {
+                object = new TreeSelection( path[2], NamedConfiguration.class, jobMeta );
               }
             }
             break;
@@ -170,6 +177,9 @@ public class SpoonTreeDelegate extends SpoonDelegate {
                 if ( path[2].equals( Spoon.STRING_CLUSTERS ) ) {
                   object = new TreeSelection( path[3], transMeta.findClusterSchema( path[3] ), transMeta );
                 }
+                if ( path[2].equals( Spoon.STRING_NAMED_CONFIGS ) ) {
+                  object = new TreeSelection( path[3], transMeta.findNamedConfiguration( path[3] ), transMeta );
+                }
               }
             }
             if ( path[0].equals( Spoon.STRING_JOBS ) ) { // The name of a job
@@ -188,6 +198,9 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               }
               if ( jobMeta != null && path[2].equals( Spoon.STRING_SLAVES ) ) {
                 object = new TreeSelection( path[3], jobMeta.findSlaveServer( path[3] ), jobMeta );
+              }
+              if ( jobMeta != null && path[2].equals( Spoon.STRING_NAMED_CONFIGS ) ) {
+                object = new TreeSelection( path[3], jobMeta.findNamedConfiguration( path[3] ), jobMeta );
               }
             }
             break;

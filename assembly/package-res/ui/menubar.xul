@@ -208,6 +208,10 @@
       command="spoon.clearDBCache('database-class-clear-cache')" />
   </menupopup>
 
+  <menupopup id="named-configuration-class">
+    <menuitem id="named-configuration-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newNamedConfiguration()" />
+  </menupopup>
+
   <menupopup id="partition-schema-class">
     <menuitem id="partition-schema-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newDatabasePartitioningSchema()" />
   </menupopup>
@@ -249,6 +253,18 @@
     <menuitem id="database-inst-explore" label="${Spoon.Menu.Popup.CONNECTIONS.Explore}" command="spoon.exploreDB()" />
     <menuseparator />
   	<menuitem id="database-inst-dependancy" label="${Spoon.Menu.Popup.CONNECTIONS.ShowDependancies}" command="spoon.displayDbDependancies()" />
+  </menupopup>
+
+  <menupopup id="named-configuration-inst">
+    <menuitem id="named-configuration-inst-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newNamedConfiguration()" />
+    <menuitem id="named-configuration-inst-edit" label="${Spoon.Menu.Popup.NAMEDCONFIGURATIONS.Edit}" command="spoon.editNamedConfiguration()" />
+    <menuitem id="named-configuration-inst-duplicate" label="${Spoon.Menu.Popup.NAMEDCONFIGURATIONS.Duplicate}" command="spoon.dupeNamedConfiguration()" />
+    <menuitem id="named-configuration-inst-copy" label="${Spoon.Menu.Popup.NAMEDCONFIGURATIONS.CopyToClipboard}" command="spoon.clipNamedConfiguration()" />
+    <menuitem id="named-configuration-inst-delete" label="${Spoon.Menu.Popup.NAMEDCONFIGURATIONS.Delete}" command="spoon.delNamedConfiguration()" />
+    <menuseparator />
+    <menuitem id="named-configuration-inst-share" label="${Spoon.Menu.Popup.NAMEDCONFIGURATIONS.Share}" command="spoon.shareObject('named-configuration-inst-share')" />
+    <menuseparator />
+  	<menuitem id="named-configuration-inst-dependancy" label="${Spoon.Menu.Popup.NAMEDCONFIGURATIONS.ShowDependancies}" command="spoon.displayNamedConfigurationDependancies()" />
   </menupopup>
 
   <menupopup id="step-inst">
