@@ -124,7 +124,7 @@ public class Variables implements VariableSpace {
 
     // Add all the system properties...
     for ( Object key : System.getProperties().keySet() ) {
-      properties.put( (String) key, System.getProperties().getProperty( (String) key ) );
+      getProperties().put( (String) key, System.getProperties().getProperty( (String) key ) );
     }
 
     if ( parent != null ) {
@@ -239,4 +239,10 @@ public class Variables implements VariableSpace {
 
     return space;
   }
+
+  // Method is defined as package-protected in order to be accessible by unit tests
+  Map<String, String> getProperties() {
+    return properties;
+  }
+
 }
