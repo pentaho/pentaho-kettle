@@ -404,7 +404,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             setAutoCommit( isAutoCommit() );
           }
         } catch ( Exception e ) {
-          throw new KettleDatabaseException( "Error occured while trying to connect to the database", e );
+          throw new KettleDatabaseException( "Error occurred while trying to connect to the database", e );
         }
       } else {
         connectUsingClass( databaseMeta.getDriverClass(), partitionId );
@@ -424,7 +424,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         }
       }
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( "Error occured while trying to connect to the database", e );
+      throw new KettleDatabaseException( "Error occurred while trying to connect to the database", e );
     }
   }
 
