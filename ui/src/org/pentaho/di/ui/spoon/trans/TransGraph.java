@@ -95,6 +95,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
@@ -175,6 +176,9 @@ import org.pentaho.di.ui.spoon.AbstractGraph;
 import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
+import org.pentaho.di.ui.spoon.SpoonUiExtenderPlugin;
+import org.pentaho.di.ui.spoon.SpoonUiExtenderPluginInterface;
+import org.pentaho.di.ui.spoon.SpoonUiExtenderPluginType;
 import org.pentaho.di.ui.spoon.SwtScrollBar;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
@@ -217,6 +221,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   private static final int HOP_SEL_MARGIN = 9;
 
   private static final String XUL_FILE_TRANS_TOOLBAR = "ui/trans-toolbar.xul";
+
+  private static final String LOAD_TAB = "loadTab";
 
   public static final String START_TEXT = BaseMessages.getString( PKG, "TransLog.Button.StartTransformation" );
 
@@ -338,6 +344,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public TransPreviewDelegate transPreviewDelegate;
 
+  public List<SelectedStepListener> stepListeners;
+
   /** A map that keeps track of which log line was written by which step */
   private Map<StepMeta, String> stepLogMap;
 
@@ -381,6 +389,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     this.currentStep = currentStep;
   }
 
+  public void addSelectedStepListener( SelectedStepListener selectedStepListener ) {
+    stepListeners.add( selectedStepListener );
+  }
+
   public TransGraph( Composite parent, final Spoon spoon, final TransMeta transMeta ) {
     super( parent, SWT.NONE );
     this.shell = parent.getShell();
@@ -398,6 +410,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     transPerfDelegate = new TransPerfDelegate( spoon, this );
     transMetricsDelegate = new TransMetricsDelegate( spoon, this );
     transPreviewDelegate = new TransPreviewDelegate( spoon, this );
+
+    stepListeners = new ArrayList<SelectedStepListener>(  );
 
     try {
       XulLoader loader = new KettleXulLoader();
@@ -875,6 +889,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             } else {
               if ( transPreviewDelegate.isActive() ) {
                 transPreviewDelegate.setSelectedStep( currentStep );
+
+                for ( SelectedStepListener stepListener : stepListeners ) {
+                  if ( this.extraViewComposite != null && !this.extraViewComposite.isDisposed() ) {
+                    stepListener.onSelect( currentStep );
+                  }
+                }
+
                 transPreviewDelegate.refreshView();
               }
             }
@@ -3699,6 +3720,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     transPerfDelegate.addTransPerf();
     transMetricsDelegate.addTransMetrics();
     transPreviewDelegate.addTransPreview();
+
+    List<SpoonUiExtenderPluginInterface> relevantExtenders =
+      SpoonUiExtenderPluginType.getInstance().getRelevantExtenders( TransGraph.class, LOAD_TAB );
+
+    for ( SpoonUiExtenderPluginInterface relevantExtender : relevantExtenders ) {
+      relevantExtender.uiEvent( this, LOAD_TAB );
+    }
 
     if ( tabItemSelection != null ) {
       extraViewTabFolder.setSelection( tabItemSelection );
