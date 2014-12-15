@@ -249,6 +249,7 @@ public class MetaInject extends BaseStep implements StepInterface {
       // Now we can execute this modified transformation metadata.
       //
       final Trans injectTrans = new Trans( data.transMeta, this );
+      injectTrans.setParentJob( getTrans().getParentJob() );
       getTrans().addTransStoppedListener( new TransStoppedListener() {
         public void transStopped( Trans parentTrans ) {
           injectTrans.stopAll();
