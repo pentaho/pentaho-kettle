@@ -25,7 +25,9 @@ package org.pentaho.di.www;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -36,6 +38,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -90,10 +93,12 @@ public class Carte {
     // The master might be dead or not alive yet at the time we send this message.
     // Repeating the registration over and over every few minutes might harden this sort of problems.
     //
+    Properties masterProperties = null;
     if ( config.isReportingToMasters() ) {
       final SlaveServer client =
-        new SlaveServer( "Dynamic slave [" + hostname + ":" + port + "]", hostname, "" + port, slaveServer
-          .getUsername(), slaveServer.getPassword() );
+          new SlaveServer( "Dynamic slave [" + hostname + ":" + port + "]", hostname, "" + port, slaveServer
+              .getUsername(), slaveServer.getPassword() );
+      String propertiesMaster = slaveServer.getPropertiesMasterName();
       for ( final SlaveServer master : config.getMasters() ) {
         // Here we use the username/password specified in the slave server section of the configuration.
         // This doesn't have to be the same pair as the one used on the master!
@@ -101,14 +106,32 @@ public class Carte {
         try {
           SlaveServerDetection slaveServerDetection = new SlaveServerDetection( client );
           master.sendXML( slaveServerDetection.getXML(), RegisterSlaveServlet.CONTEXT_PATH + "/" );
-          log.logBasic( "Registered this slave server to master slave server ["
-            + master.toString() + "] on address [" + master.getServerAndPort() + "]" );
+          log.logBasic( "Registered this slave server to master slave server [" + master.toString() + "] on address ["
+              + master.getServerAndPort() + "]" );
         } catch ( Exception e ) {
-          log.logError( "Unable to register to master slave server ["
-            + master.toString() + "] on address [" + master.getServerAndPort() + "]" );
+          log.logError( "Unable to register to master slave server [" + master.toString() + "] on address ["
+              + master.getServerAndPort() + "]" );
+          allOK = false;
+        }
+        try {
+          if ( !StringUtils.isBlank( propertiesMaster ) && propertiesMaster.equalsIgnoreCase( master.getName() ) ) {
+            if ( masterProperties != null ) {
+              log.logError( "More than one primary master server. Master name is " + propertiesMaster );
+            } else {
+              masterProperties = master.getKettleProperties();
+              log.logBasic( "Got properties from master server [" + master.toString() + "], address ["
+                  + master.getServerAndPort() + "]" );
+            }
+          }
+        } catch ( Exception e ) {
+          log.logError( "Unable to get properties from master server [" + master.toString() + "], address ["
+              + master.getServerAndPort() + "]" );
           allOK = false;
         }
       }
+    }
+    if ( masterProperties != null ) {
+      EnvUtil.applyKettleProperties( masterProperties, slaveServer.isOverrideExistingProperties() );
     }
 
     // If we need to time out finished or idle objects, we should create a timer in the background to clean

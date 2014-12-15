@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -45,6 +46,7 @@ import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.lang.StringUtils;
+import org.apache.tools.ant.filters.StringInputStream;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.encryption.Encr;
@@ -71,6 +73,7 @@ import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.AllocateServerSocketServlet;
 import org.pentaho.di.www.CleanupTransServlet;
 import org.pentaho.di.www.GetJobStatusServlet;
+import org.pentaho.di.www.GetPropertiesServlet;
 import org.pentaho.di.www.GetSlavesServlet;
 import org.pentaho.di.www.GetStatusServlet;
 import org.pentaho.di.www.GetTransStatusServlet;
@@ -122,6 +125,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   private String proxyPort;
 
   private String nonProxyHosts;
+  
+  private String propertiesMasterName;
+
+  private boolean overrideExistingProperties;
 
   private boolean master;
 
@@ -175,6 +182,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     this.proxyHostname = XMLHandler.getTagValue( slaveNode, "proxy_hostname" );
     this.proxyPort = XMLHandler.getTagValue( slaveNode, "proxy_port" );
     this.nonProxyHosts = XMLHandler.getTagValue( slaveNode, "non_proxy_hosts" );
+    this.propertiesMasterName = XMLHandler.getTagValue( slaveNode, "get_properties_from_master" );
+    this.overrideExistingProperties =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, "override_existing_properties" ) );
     this.master = "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, "master" ) );
     initializeVariablesFrom( null );
     this.log = new LogChannel( this );
@@ -344,6 +354,20 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   public void setProxyPort( String proxyPort ) {
     this.proxyPort = proxyPort;
   }
+  
+  /**
+   * @return the Master name for read properties
+   */
+  public String getPropertiesMasterName() {
+    return propertiesMasterName;
+  }
+
+  /**
+   * @return flag for read properties from Master
+   */
+  public boolean isOverrideExistingProperties() {
+    return overrideExistingProperties;
+  }
 
   public String getPortSpecification() {
     String realPort = environmentSubstitute( port );
@@ -356,7 +380,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   public String constructUrl( String serviceAndArguments ) throws UnsupportedEncodingException {
     String realHostname = environmentSubstitute( hostname );
-    if ( !StringUtils.isEmpty( webAppName ) ) {
+    if ( !StringUtils.isBlank( webAppName ) ) {
       serviceAndArguments = "/" + environmentSubstitute( getWebAppName() ) + serviceAndArguments;
     }
     String retval = "http://" + realHostname + getPortSpecification() + serviceAndArguments;
@@ -743,6 +767,14 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
       execService( CleanupTransServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
         + Const.NVL( clusteredRunId, "" ) + "&xml=Y&sockets=Y" );
     return WebResult.fromXMLString( xml );
+  }
+  
+  public Properties getKettleProperties() throws Exception {
+    String xml = execService( GetPropertiesServlet.CONTEXT_PATH + "/?xml=Y" );
+    StringInputStream in = new StringInputStream( xml );
+    Properties properties = new Properties();
+    properties.loadFromXML( in );
+    return properties;
   }
 
   public static SlaveServer findSlaveServer( List<SlaveServer> slaveServers, String name ) {
