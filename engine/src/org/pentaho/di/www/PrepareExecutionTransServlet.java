@@ -77,17 +77,17 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
     </tr>
     <tr>
     <td>name</td>
-    <td>name of the transformation to be prepared for execution.</td>
+    <td>Name of the transformation to be prepared for execution.</td>
     <td>query</td>
     </tr>
     <tr>
     <td>xml</td>
-    <td>boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
+    <td>Boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
     <td>boolean</td>
     </tr>
     <tr>
     <td>id</td>
-    <td>(optional) Carte transformation ID of the transformation to be prepared for execution.</td>
+    <td>Carte transformation ID of the transformation to be prepared for execution.</td>
     <td>query, optional</td>
     </tr>
     </tbody>
@@ -107,8 +107,8 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
       </tr>
     </tbody>
   </table>
-    Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
-  operation was successful (<code>OK</code>) or not (<code>ERROR</code>).
+    <p>Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
+  operation was successful (<code>OK</code>) or not (<code>ERROR</code>).</p>
         
     <p><b>Example Response:</b></p>
   <pre function="syntax.xml">

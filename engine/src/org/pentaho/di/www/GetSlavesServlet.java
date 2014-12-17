@@ -79,11 +79,11 @@ public class GetSlavesServlet extends BaseHttpServlet implements CartePluginInte
       </tr>
       <tr>
         <td align="right">media types:</td>
-        <td>application/xml</td>
+        <td>text/xml</td>
       </tr>
     </tbody>
   </table>
-    Response contains list of slave servers.
+    <p>Response contains list of slave servers.</p>
     
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">

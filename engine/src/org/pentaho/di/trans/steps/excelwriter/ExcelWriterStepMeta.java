@@ -22,11 +22,6 @@
 
 package org.pentaho.di.trans.steps.excelwriter;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -51,9 +46,15 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ExcelWriterStepMeta.class; // for i18n purposes, needed by Translator2!!
@@ -514,7 +515,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   /**
-   * @param appendLines
+   * @param append
    *          The appendLines to set.
    */
   public void setAppendLines( boolean append ) {
@@ -1070,6 +1071,11 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
+  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+    return new ExcelWriterMetaInjection( this );
+  }
+
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new ExcelWriterStep( stepMeta, stepDataInterface, cnr, transMeta, trans );
@@ -1097,4 +1103,6 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
   public void setStreamingData( boolean streamingData ) {
     this.streamingData = streamingData;
   }
+
+
 }

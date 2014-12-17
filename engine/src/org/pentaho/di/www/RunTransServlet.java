@@ -62,6 +62,86 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
     super( transformationMap );
   }
 
+  /**
+ <div id="mindtouch">
+    <h1>/kettle/runTrans</h1>
+    <a name="GET"></a>
+    <h2>GET</h2>
+    <p>Execute transformation from enterprise repository. Repository should be configured in Carte xml file. 
+  Response contains <code>ERROR</code> result if error happened during transformation execution.</p>
+    
+    <p><b>Example Request:</b><br />
+    <pre function="syntax.xml">
+    GET /kettle/runTrans?trans=home%2Fadmin%2Fdummy-trans&level=Debug
+    </pre>
+    
+    </p>
+    <h3>Parameters</h3>
+    <table class="pentaho-table">
+    <tbody>
+    <tr>
+      <th>name</th>
+      <th>description</th>
+      <th>type</th>
+    </tr>
+    <tr>
+    <td>trans</td>
+    <td>Full path to the transformation in repository.</td>
+    <td>query</td>
+    </tr>
+    <tr>
+    <td>level</td>
+    <td>Logging level to be used for transformation execution (i.e. Debug).</td>
+    <td>query</td>
+    </tr>
+    </tbody>
+    </table>
+  
+  <h3>Response Body</h3>
+
+  <table class="pentaho-table">
+    <tbody>
+      <tr>
+        <td align="right">element:</td>
+        <td>(custom)</td>
+      </tr>
+      <tr>
+        <td align="right">media types:</td>
+        <td>text/xml</td>
+      </tr>
+    </tbody>
+  </table>
+    <p>Response contains result of the operation. It is either <code>OK</code> or <code>ERROR</code>.
+     If an error occurred during transformation execution, response also contains information about the error.</p>
+    
+    <p><b>Example Response:</b></p>
+    <pre function="syntax.xml">
+    <webresult>
+      <result>OK</result>
+      <message>Transformation started</message>
+      <id>7c082e8f-b4fe-40bc-b424-e0f881a61874</id>
+    </webresult>
+    </pre>
+    
+    <h3>Status Codes</h3>
+    <table class="pentaho-table">
+  <tbody>
+    <tr>
+      <th>code</th>
+      <th>description</th>
+    </tr>
+    <tr>
+      <td>200</td>
+      <td>Request was processed.</td>
+    </tr>
+    <tr>
+      <td>500</td>
+      <td>Internal server error occurs during request processing.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  */
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
     IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {

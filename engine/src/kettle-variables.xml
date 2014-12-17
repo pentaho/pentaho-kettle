@@ -393,5 +393,20 @@
     <default-value>N</default-value>
   </kettle-variable>
   
+   <kettle-variable>
+    <description>A variable to configure jetty option: acceptors for Carte</description>
+    <variable>KETTLE_CARTE_JETTY_ACCEPTORS</variable>
+  </kettle-variable>
+  
+  <kettle-variable>
+    <description>A variable to configure jetty option: acceptQueueSize for Carte</description>
+    <variable>KETTLE_CARTE_JETTY_ACCEPT_QUEUE_SIZE</variable>
+  </kettle-variable>
+  
+  <kettle-variable>
+    <description>A variable to configure jetty option: lowResourcesMaxIdleTime for Carte</description>
+    <variable>KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME</variable>
+  </kettle-variable>
+  
 </kettle-variables>
 

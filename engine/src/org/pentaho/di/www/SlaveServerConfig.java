@@ -24,7 +24,10 @@ package org.pentaho.di.www;
 
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -63,6 +66,10 @@ public class SlaveServerConfig {
   public static final String XML_TAG_AUTO_CREATE = "autocreate";
   public static final String XML_TAG_SERVICES = "services";
   public static final String XML_TAG_SERVICE = "service";
+  public static final String XML_TAG_JETTY_OPTIONS = "jetty_options";
+  public static final String XML_TAG_ACCEPTORS = "acceptors";
+  public static final String XML_TAG_ACCEPT_QUEUE_SIZE = "acceptQueueSize";
+  public static final String XML_TAG_LOW_RES_MAX_IDLE_TIME = "lowResourcesMaxIdleTime";
 
   private List<SlaveServer> masters;
 
@@ -247,10 +254,57 @@ public class SlaveServerConfig {
       services.add( service );
     }
 
+    // Set Jetty Options
+    setUpJettyOptions( node );
+
     Node repositoryNode = XMLHandler.getSubNode( node, XML_TAG_REPOSITORY );
     repositoryId = XMLHandler.getTagValue( repositoryNode, "name" );
     repositoryUsername = XMLHandler.getTagValue( repositoryNode, "username" );
     repositoryPassword = XMLHandler.getTagValue( repositoryNode, "password" );
+  }
+
+  /** Set up jetty options to the system properties
+   * @param node
+   */
+  protected void setUpJettyOptions( Node node ) {
+    Map<String, String> jettyOptions = parseJettyOptions( node );
+
+    if ( jettyOptions != null && jettyOptions.size() > 0 ) {
+      for ( Entry<String, String> jettyOption : jettyOptions.entrySet() ) {
+        System.setProperty( jettyOption.getKey(), jettyOption.getValue() );
+      }
+    }
+  }
+
+  /**
+   * Read and parse jetty options
+   * 
+   * @param node
+   *          that contains jetty options nodes
+   * @return map of not empty jetty options
+   */
+  protected Map<String, String> parseJettyOptions( Node node ) {
+
+    Map<String, String> jettyOptions = null;
+
+    Node jettyOptionsNode = XMLHandler.getSubNode( node, XML_TAG_JETTY_OPTIONS );
+
+    if ( jettyOptionsNode != null ) {
+
+      jettyOptions = new HashMap<String, String>();
+      if ( XMLHandler.getTagValue( jettyOptionsNode, XML_TAG_ACCEPTORS ) != null ) {
+        jettyOptions.put( Const.KETTLE_CARTE_JETTY_ACCEPTORS, XMLHandler.getTagValue( jettyOptionsNode, XML_TAG_ACCEPTORS ) );
+      }
+      if ( XMLHandler.getTagValue( jettyOptionsNode, XML_TAG_ACCEPT_QUEUE_SIZE ) != null ) {
+        jettyOptions.put( Const.KETTLE_CARTE_JETTY_ACCEPT_QUEUE_SIZE, XMLHandler.getTagValue( jettyOptionsNode,
+            XML_TAG_ACCEPT_QUEUE_SIZE ) );
+      }
+      if ( XMLHandler.getTagValue( jettyOptionsNode, XML_TAG_LOW_RES_MAX_IDLE_TIME ) != null ) {
+        jettyOptions.put( Const.KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME, XMLHandler.getTagValue( jettyOptionsNode,
+            XML_TAG_LOW_RES_MAX_IDLE_TIME ) );
+      }
+    }
+    return jettyOptions;
   }
 
   private void openRepository( String repositoryId ) throws KettleException {

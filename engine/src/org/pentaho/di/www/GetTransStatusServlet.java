@@ -57,6 +57,133 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
     super( transformationMap );
   }
 
+  /**
+  <div id="mindtouch">
+      <h1>/kettle/transStatus</h1>
+      <a name="GET"></a>
+      <h2>GET</h2>
+      <p>Retrieves status of the specified transformation. Status is returned as HTML or XML output 
+    depending on the input parameters. Status contains information about last execution of the transformation.</p>      
+      <p><b>Example Request:</b><br />
+      <pre function="syntax.xml">
+      GET /kettle/transStatus/?name=dummy-trans&xml=Y
+      </pre>
+      
+      </p>
+      <h3>Parameters</h3>
+      <table class="pentaho-table">
+      <tbody>
+      <tr>
+        <th>name</th>
+        <th>description</th>
+        <th>type</th>
+      </tr>
+      <tr>
+      <td>name</td>
+      <td>Name of the transformation to be used for status generation.</td>
+      <td>query</td>
+      </tr>
+      <tr>
+      <td>xml</td>
+      <td>Boolean flag which defines output format <code>Y</code> forces XML output to be generated. 
+    HTML is returned otherwise.</td>
+      <td>boolean, optional</td>
+      </tr>
+      <tr>
+      <td>id</td>
+      <td>Carte id of the transformation to be used for status generation.</td>
+      <td>query, optional</td>
+      </tr>
+      <tr>
+      <td>from</td>
+      <td>Start line number of the execution log to be included into response.</td>
+      <td>integer, optional</td>
+      </tr>
+      </tbody>
+      </table>
+    
+    <h3>Response Body</h3>
+
+    <table class="pentaho-table">
+      <tbody>
+        <tr>
+          <td align="right">element:</td>
+          <td>(custom)</td>
+        </tr>
+        <tr>
+          <td align="right">media types:</td>
+          <td>text/xml, text/html</td>
+        </tr>
+      </tbody>
+    </table>
+    <p> Response XML or HTML response containing details about the transformation specified.
+    If an error occurs during method invocation <code>result</code> field of the response 
+    will contain <code>ERROR</code> status.</p>
+      
+      <p><b>Example Response:</b></p>
+      <pre function="syntax.xml">
+      <?xml version="1.0" encoding="UTF-8"?>
+      <transstatus>
+        <transname>dummy-trans</transname>
+        <id>c56961b2-c848-49b8-abde-76c8015e29b0</id>
+        <status_desc>Stopped</status_desc>
+        <error_desc/>
+        <paused>N</paused>
+        <stepstatuslist>
+          <stepstatus><stepname>Dummy &#x28;do nothing&#x29;</stepname>
+          <copy>0</copy><linesRead>0</linesRead>
+          <linesWritten>0</linesWritten><linesInput>0</linesInput>
+          <linesOutput>0</linesOutput><linesUpdated>0</linesUpdated>
+          <linesRejected>0</linesRejected><errors>0</errors>
+          <statusDescription>Stopped</statusDescription><seconds>0.0</seconds>
+          <speed>-</speed><priority>-</priority><stopped>Y</stopped>
+          <paused>N</paused>
+          </stepstatus>
+        </stepstatuslist>
+        <first_log_line_nr>0</first_log_line_nr>
+        <last_log_line_nr>37</last_log_line_nr>
+        <result>
+          <lines_input>0</lines_input>
+          <lines_output>0</lines_output>
+          <lines_read>0</lines_read>
+          <lines_written>0</lines_written>
+          <lines_updated>0</lines_updated>
+          <lines_rejected>0</lines_rejected>
+          <lines_deleted>0</lines_deleted>
+          <nr_errors>0</nr_errors>
+          <nr_files_retrieved>0</nr_files_retrieved>
+          <entry_nr>0</entry_nr>
+          <result>Y</result>
+          <exit_status>0</exit_status>
+          <is_stopped>Y</is_stopped>
+          <log_channel_id>10e2c832-07da-409a-a5ba-4b90a234e957</log_channel_id>
+          <log_text/>
+          <result-file></result-file>
+          <result-rows></result-rows>
+        </result>
+        <logging_string>&#x3c;&#x21;&#x5b;CDATA&#x5b;H4sIAAAAAAAAADMyMDTRNzTUNzJRMDSyMrC0MjFV0FVIKc3NrdQtKUrMKwbyXDKLCxJLkjMy89IViksSi0pSUxTS8osUwPJARm5iSWZ&#x2b;nkI0kq5YXi4AQVH5bFoAAAA&#x3d;&#x5d;&#x5d;&#x3e;</logging_string>
+       </transstatus>
+      </pre>
+      
+      <h3>Status Codes</h3>
+      <table class="pentaho-table">
+    <tbody>
+      <tr>
+        <th>code</th>
+        <th>description</th>
+      </tr>
+      <tr>
+        <td>200</td>
+        <td>Request was processed.</td>
+      </tr>
+      <tr>
+        <td>500</td>
+        <td>Internal server error occurs during request processing.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    */
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
     IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {

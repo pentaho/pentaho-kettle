@@ -64,7 +64,7 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
     <h1>/kettle/addTrans</h1>
     <a name="POST"></a>
     <h2>POST</h2>
-    <p>Upload and execute transformation configuration XML file.
+    <p>Uploads and executes transformation configuration XML file.
   Uploads xml file containing transformation and transformation_execution_configuration 
   (wrapped in transformation_configuration tag) to be executed and executes it. Method relies 
   on the input parameter to determine if xml or html reply should be produced. The transformation_configuration xml is
@@ -78,8 +78,8 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
     <pre function="syntax.xml">
     POST /kettle/addTrans/?xml=Y
     </pre>
-    Request body should contain xml containing transformation_configuration (transformation and 
-  transformation_execution_configuration wrapped in transformation_configuration tag).
+    <p>Request body should contain xml containing transformation_configuration (transformation and 
+  transformation_execution_configuration wrapped in transformation_configuration tag).</p>
     </p>
     <h3>Parameters</h3>
     <table class="pentaho-table">
@@ -91,7 +91,7 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
     </tr>
     <tr>
     <td>xml</td>
-    <td>(optional) boolean flag set to either <code>Y</code> or <code>N</code> describing if xml or html reply 
+    <td>Boolean flag set to either <code>Y</code> or <code>N</code> describing if xml or html reply 
   should be produced.</td>
     <td>boolean, optional</td>
     </tr>
@@ -112,8 +112,8 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
       </tr>
     </tbody>
   </table>
-    Response wraps transformation name that was executed or error stack trace
-  if an error occurred. Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.
+    <p>Response wraps transformation name that was executed or error stack trace
+  if an error occurred. Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.</p>
     
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">
