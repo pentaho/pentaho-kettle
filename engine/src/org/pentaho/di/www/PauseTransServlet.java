@@ -55,7 +55,7 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
     <h1>/kettle/pauseTrans</h1>
     <a name="GET"></a>
     <h2>GET</h2>
-    <p>Pause transformation to be executed.
+    <p>Pauses transformation to be executed.
   Method is used for pausing running transformation by its name.</p>
     
     <p><b>Example Request:</b><br />
@@ -74,12 +74,12 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
     </tr>
     <tr>
     <td>name</td>
-    <td>name of the transformation to be paused.</td>
+    <td>Name of the transformation to be paused.</td>
     <td>query</td>
     </tr>
     <tr>
     <td>xml</td>
-    <td>(optional) boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
+    <td>Boolean flag which sets the output format required. Use <code>Y</code> to receive XML response.</td>
     <td>boolean, optional</td>
     </tr>
     <tr>
@@ -104,8 +104,8 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
       </tr>
     </tbody>
   </table>
-    Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
-  operation was successful (<code>OK</code>) or not (<code>ERROR</code>).
+    <p>Response XML or HTML containing operation result. When using xml=Y <code>result</code> field indicates whether
+  operation was successful (<code>OK</code>) or not (<code>ERROR</code>).</p>
         
     <p><b>Example Response:</b></p>
   <pre function="syntax.xml">

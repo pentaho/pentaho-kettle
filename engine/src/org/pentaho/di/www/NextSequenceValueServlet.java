@@ -106,7 +106,7 @@ public class NextSequenceValueServlet extends BaseHttpServlet implements CartePl
       </tr>
     </tbody>
   </table>
-    Response XML containing sequence value and the increment value used.
+    <p>Response XML containing sequence value and the increment value used.</p>
         
     <p><b>Example Response:</b></p>
   <pre function="syntax.xml">

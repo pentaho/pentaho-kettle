@@ -31,8 +31,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 
 /**
- *
- *
  * @author Matt
  * @since 6-apr-2005
  */
@@ -46,8 +44,8 @@ public class JobEntryJobRunner implements Runnable {
   private boolean finished;
 
   /**
-     *
-     */
+   *
+   */
   public JobEntryJobRunner( Job job, Result result, int entryNr, LogChannelInterface log ) {
     this.job = job;
     this.result = result;
@@ -58,14 +56,14 @@ public class JobEntryJobRunner implements Runnable {
 
   public void run() {
     try {
-      if ( job.isStopped() || job.getParentJob() != null && job.getParentJob().isStopped() ) {
+      if ( job.isStopped() || ( job.getParentJob() != null && job.getParentJob().isStopped() ) ) {
         return;
       }
 
       // This JobEntryRunner is a replacement for the Job thread.
       // The job thread is never started because we simply want to wait for the result.
       //
-      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobStart.id, this );
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobStart.id, getJob() );
 
       job.fireJobStartListeners(); // Fire the start listeners
       result = job.execute( entryNr + 1, result );
@@ -76,7 +74,7 @@ public class JobEntryJobRunner implements Runnable {
       result.setNrErrors( 1 );
     } finally {
       try {
-        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobFinish.id, this );
+        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobFinish.id, getJob() );
 
         job.fireJobFinishListeners();
       } catch ( KettleException e ) {
@@ -90,8 +88,7 @@ public class JobEntryJobRunner implements Runnable {
   }
 
   /**
-   * @param result
-   *          The result to set.
+   * @param result The result to set.
    */
   public void setResult( Result result ) {
     this.result = result;
@@ -112,8 +109,7 @@ public class JobEntryJobRunner implements Runnable {
   }
 
   /**
-   * @param log
-   *          The log to set.
+   * @param log The log to set.
    */
   public void setLog( LogChannelInterface log ) {
     this.log = log;
@@ -127,8 +123,7 @@ public class JobEntryJobRunner implements Runnable {
   }
 
   /**
-   * @param job
-   *          The job to set.
+   * @param job The job to set.
    */
   public void setJob( Job job ) {
     this.job = job;
@@ -142,8 +137,7 @@ public class JobEntryJobRunner implements Runnable {
   }
 
   /**
-   * @param entryNr
-   *          The entryNr to set.
+   * @param entryNr The entryNr to set.
    */
   public void setEntryNr( int entryNr ) {
     this.entryNr = entryNr;

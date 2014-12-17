@@ -75,8 +75,8 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
     <a name="GET"></a>
     <h2>GET</h2>
     <p>Allocates port to use by client. 
-  Allows any client to ask for a port number to use. This is necessary as several slaves can be run on the same host.
-  The method ensures port number is unique for host name provided. Hence making sure all the slaves are using 
+  Allows any client to ask for a port number to use. This is necessary several slaves can be run on the same host.
+  The method ensures the port number is unique for host name provided and makes sure the slaves are using 
   valid port numbers. Data communication across a cluster of Carte servers happens through TCP/IP sockets.
   Slave transformations sometimes open (or listen to) tens to hundreds of sockets.  When you want to allocate 
   the port numbers for data communication between slave transformation in a kettle clustering run, you need 
@@ -102,18 +102,18 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
     </tr>
     <tr>
     <td>xml</td>
-    <td>(optional) boolean flag set to either <code>Y</code> or <code>N</code> describing if xml or html reply 
+    <td>Boolean flag set to either <code>Y</code> or <code>N</code> describing if xml or html reply 
   should be produced.</td>
     <td>boolean, optional</td>
     </tr>
     <tr>
     <td>rangeStart</td>
-    <td>port number to start looking from.</td>
+    <td>Port number to start looking from.</td>
     <td>integer</td>
     </tr>
     <tr>
     <td>host</td>
-    <td>host to be used for looking port for.</td>
+    <td>Port's host.</td>
     <td>query</td>
     </tr>
     <tr>
@@ -123,37 +123,37 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
     </tr>
     <tr>
     <td>trans</td>
-    <td>running transformation id.</td>
+    <td>Running transformation id.</td>
     <td>query</td>
     </tr>
     <tr>
     <td>sourceSlave</td>
-    <td>name of the source slave server.</td>
+    <td>Name of the source slave server.</td>
     <td>query</td>
     </tr>
     <tr>
     <td>sourceStep</td>
-    <td>port number step that is used on source slave server.</td>
+    <td>Port number step used on source slave server.</td>
     <td>integer</td>
     </tr>
     <tr>
     <td>sourceCopy</td>
-    <td>number of copies of the step on source server.</td>
+    <td>Number of copies of the step on source server.</td>
     <td>integer</td>
     </tr>
     <tr>
     <td>targetSlave</td>
-    <td>name of the target slave server.</td>
+    <td>Name of the target slave server.</td>
     <td>query</td>
     </tr>
     <tr>
     <td>targetStep</td>
-    <td>port number step that is used on target slave server.</td>
+    <td>Port number step used on target slave server.</td>
     <td>integer</td>
     </tr>
     <tr>
     <td>targetCopy</td>
-    <td>number of copies of the step on target server.</td>
+    <td>Number of copies of the step on target server.</td>
     <td>integer</td>
     </tr>
     </tbody>
@@ -173,8 +173,8 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
       </tr>
     </tbody>
   </table>
-    Response wraps port number that was allocated or error stack trace
-  if an error occurred. Response HTTP code is 200 if there were no errors. Otherwise it is 500.
+    <p>Response wraps port number that was allocated or error stack trace
+  if an error occurred. Response HTTP code is 200 if there were no errors. Otherwise it is 500.</p>
     
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">

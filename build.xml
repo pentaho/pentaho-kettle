@@ -608,54 +608,38 @@
 
       <formatter type="xml"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.KettleEnvironmentTest" haltonerror="false" />
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.ConnectionPoolUtilIntegrationTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.DatabaseTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SelectCountTests" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SQLStatementParserTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.ReleaseSavePointTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.TablespaceDDLFragmentTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.VerticaDatabaseMetaTest"
-            haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SQLStatementParserTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.ReleaseSavePointTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.TablespaceDDLFragmentTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.VerticaDatabaseMetaTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.row.ValueDataUtilTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.DatabaseConfigurationImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasANoteImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasANoteImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasDescriptionImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasDescriptionImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasJobLogConfiguredImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}"
-            name="org.pentaho.di.imp.rule.TransformationHasTransLogConfiguredImportRuleTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasNoDisabledHopsImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasNoDisabledHopsImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.KettleDatabaseRepositoryTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.KettleFileRepositoryTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.RepositoryImportExporterApiTest"
-            haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.DatabaseConfigurationImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasANoteImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasANoteImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasDescriptionImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasDescriptionImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasJobLogConfiguredImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasTransLogConfiguredImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasNoDisabledHopsImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasNoDisabledHopsImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.KettleDatabaseRepositoryTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.KettleFileRepositoryTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.RepositoryImportExporterApiTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.RepositoryUnitTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.sql.SqlTransMetaTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.logging.MetricsTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.parameters.ParameterSimpleTransTest"
-            haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.parameters.ParameterSimpleTransTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.plugins.PluginRegistryTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.util.StringEvaluatorTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.vfs.VfsCoreTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.resource.NameResourceTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.resource.ResourceDependencyTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.resource.ResourceExportTest" haltonerror="false"/>
-
     </junit>
+  	
     <junitreport todir="${testreports.html.dir}">
       <fileset dir="${testreports.xml.dir}">
         <include name="TEST-*.xml"/>

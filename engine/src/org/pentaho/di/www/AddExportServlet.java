@@ -81,14 +81,14 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
     <h1>/kettle/addExport</h1>
     <a name="POST"></a>
     <h2>POST</h2>
-    <p>Returns the list of users in the platform, this list is in an xml format as shown in the example response.
-    Upload and execute previously exported job or transformation.
+    <p>Returns the list of users in the platform. This list is in an xml format as shown in the example response.
+    Uploads and executes previously exported job or transformation.
     Uploads zip file containing job or transformation to be executed and executes it.
     Method relies on the input parameters to find the entity to be executed. The archive is
     transferred within request body.
     
     <code>File url of the executed entity </code> will be returned in the Response object 
-    or <code>message</code> describing error occurred. To determine if the call is successful or not you should 
+    or <code>message</code> describing error occurred. To determine if the call is successful  
     rely on <code>result</code> parameter in response.</p>
     
     <p><b>Example Request:</b><br />
@@ -132,8 +132,8 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
       </tr>
     </tbody>
   </table>
-    Response wraps file url of the entity that was executed or error stack trace if an error occurred.
-     Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.
+    <p>Response wraps file url of the entity that was executed or error stack trace if an error occurred.
+     Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.</p>
     
     <p><b>Example Response:</b></p>
     <pre function="syntax.xml">
