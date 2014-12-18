@@ -32,6 +32,7 @@ import java.math.BigDecimal;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -117,7 +118,7 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public List<ValueMetaInterface> getValueMetaList() {
-    return valueMetaList;
+    return Collections.unmodifiableList( valueMetaList );
   }
 
   /**
