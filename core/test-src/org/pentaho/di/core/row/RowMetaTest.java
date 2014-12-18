@@ -1,220 +1,293 @@
 package org.pentaho.di.core.row;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 
-public class RowMetaTest extends TestCase {
+public class RowMetaTest {
 
-  @Override
-  protected void setUp() throws Exception {
+  RowMetaInterface rowMeta = new RowMeta();
+  ValueMetaInterface string;
+  ValueMetaInterface integer;
+  ValueMetaInterface date;
+
+  ValueMetaInterface charly;
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
     KettleClientEnvironment.init();
   }
 
-  @Test
-  public void testAddRemoveValue() throws Exception {
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
+  }
 
-    RowMetaInterface rowMeta = new RowMeta();
+  @Before
+  public void setUp() throws Exception {
+    string = ValueMetaFactory.createValueMeta( "string", ValueMetaInterface.TYPE_STRING );
+    rowMeta.addValueMeta( string );
+    integer = ValueMetaFactory.createValueMeta( "integer", ValueMetaInterface.TYPE_INTEGER );
+    rowMeta.addValueMeta( integer );
+    date = ValueMetaFactory.createValueMeta( "date", ValueMetaInterface.TYPE_DATE );
+    rowMeta.addValueMeta( date );
 
-    // Add values
+    charly = ValueMetaFactory.createValueMeta( "charly", ValueMetaInterface.TYPE_SERIALIZABLE );
+  }
 
-    ValueMetaInterface a = ValueMetaFactory.createValueMeta( "a", ValueMetaInterface.TYPE_STRING );
-    rowMeta.addValueMeta( a );
-    assertEquals( 1, rowMeta.size() );
-    ValueMetaInterface b = ValueMetaFactory.createValueMeta( "b", ValueMetaInterface.TYPE_INTEGER );
-    rowMeta.addValueMeta( b );
-    assertEquals( 2, rowMeta.size() );
-    ValueMetaInterface c = ValueMetaFactory.createValueMeta( "c", ValueMetaInterface.TYPE_DATE );
-    rowMeta.addValueMeta( c );
-    assertEquals( 3, rowMeta.size() );
-
-    assertEquals( 0, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "b" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "c" ) );
-
-    ValueMetaInterface d = ValueMetaFactory.createValueMeta( "d", ValueMetaInterface.TYPE_NUMBER );
-    rowMeta.addValueMeta( 0, d );
-    assertEquals( 4, rowMeta.size() );
-
-    assertEquals( 0, rowMeta.indexOfValue( "d" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "b" ) );
-    assertEquals( 3, rowMeta.indexOfValue( "c" ) );
-
-    ValueMetaInterface e = ValueMetaFactory.createValueMeta( "e", ValueMetaInterface.TYPE_BIGNUMBER );
-    rowMeta.addValueMeta( 2, e );
-    assertEquals( 5, rowMeta.size() );
-
-    assertEquals( 0, rowMeta.indexOfValue( "d" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "e" ) );
-    assertEquals( 3, rowMeta.indexOfValue( "b" ) );
-    assertEquals( 4, rowMeta.indexOfValue( "c" ) );
-
-    // Remove values in reverse order
-    rowMeta.removeValueMeta( "e" );
-    assertEquals( 4, rowMeta.size() );
-    assertEquals( 0, rowMeta.indexOfValue( "d" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "b" ) );
-    assertEquals( 3, rowMeta.indexOfValue( "c" ) );
-
-    rowMeta.removeValueMeta( "d" );
-    assertEquals( 3, rowMeta.size() );
-    assertEquals( 0, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "b" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "c" ) );
-
-    rowMeta.removeValueMeta( "c" );
-    assertEquals( 2, rowMeta.size() );
-    assertEquals( 0, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "b" ) );
-
-    rowMeta.removeValueMeta( "b" );
-    assertEquals( 1, rowMeta.size() );
-    assertEquals( 0, rowMeta.indexOfValue( "a" ) );
-
-    rowMeta.removeValueMeta( "a" );
-    assertEquals( 0, rowMeta.size() );
-
+  private List<ValueMetaInterface> generateVList( String[] names, int[] types ) throws KettlePluginException {
+    List<ValueMetaInterface> list = new ArrayList<ValueMetaInterface>();
+    for ( int i = 0; i < names.length; i++ ) {
+      list.add( ValueMetaFactory.createValueMeta( names[i], types[i] ) );
+    }
+    return list;
   }
 
   @Test
-  public void testAddRemoveRenameValue() throws Exception {
-
-    RowMetaInterface rowMeta = new RowMeta();
-
-    // Add values
-
-    ValueMetaInterface a = ValueMetaFactory.createValueMeta( "a", ValueMetaInterface.TYPE_STRING );
-    rowMeta.addValueMeta( a );
-    assertEquals( 1, rowMeta.size() );
-    ValueMetaInterface b = ValueMetaFactory.createValueMeta( "a", ValueMetaInterface.TYPE_INTEGER );
-    rowMeta.addValueMeta( b );
-    assertEquals( 2, rowMeta.size() );
-    ValueMetaInterface c = ValueMetaFactory.createValueMeta( "a", ValueMetaInterface.TYPE_DATE );
-    rowMeta.addValueMeta( c );
-    assertEquals( 3, rowMeta.size() );
-
-    assertEquals( 0, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "a_1" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "a_2" ) );
-
-    ValueMetaInterface d = ValueMetaFactory.createValueMeta( "a", ValueMetaInterface.TYPE_NUMBER );
-    rowMeta.addValueMeta( 0, d );
-    assertEquals( 4, rowMeta.size() );
-
-    assertEquals( 0, rowMeta.indexOfValue( "a_3" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "a_1" ) );
-    assertEquals( 3, rowMeta.indexOfValue( "a_2" ) );
-
-    ValueMetaInterface e = ValueMetaFactory.createValueMeta( "a", ValueMetaInterface.TYPE_BIGNUMBER );
-    rowMeta.addValueMeta( 2, e );
-    assertEquals( 5, rowMeta.size() );
-
-    assertEquals( 0, rowMeta.indexOfValue( "a_3" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "a_4" ) );
-    assertEquals( 3, rowMeta.indexOfValue( "a_1" ) );
-    assertEquals( 4, rowMeta.indexOfValue( "a_2" ) );
-
-    // Remove values in reverse order
-    rowMeta.removeValueMeta( "a_4" );
-    assertEquals( 4, rowMeta.size() );
-    assertEquals( 0, rowMeta.indexOfValue( "a_3" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "a_1" ) );
-    assertEquals( 3, rowMeta.indexOfValue( "a_2" ) );
-
-    rowMeta.removeValueMeta( "a_3" );
-    assertEquals( 3, rowMeta.size() );
-    assertEquals( 0, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "a_1" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "a_2" ) );
-
-    rowMeta.removeValueMeta( "a_2" );
-    assertEquals( 2, rowMeta.size() );
-    assertEquals( 0, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "a_1" ) );
-
-    rowMeta.removeValueMeta( "a_1" );
-    assertEquals( 1, rowMeta.size() );
-    assertEquals( 0, rowMeta.indexOfValue( "a" ) );
-
-    rowMeta.removeValueMeta( "a" );
-    assertEquals( 0, rowMeta.size() );
-
+  public void testGetValueMetaList() {
+    List<ValueMetaInterface> list = rowMeta.getValueMetaList();
+    assertTrue( list.contains( string ) );
+    assertTrue( list.contains( integer ) );
+    assertTrue( list.contains( date ) );
   }
 
   @Test
-  public void testAddRemoveValueCaseInsensitive() throws Exception {
+  public void testSetValueMetaList() throws KettlePluginException {
+    List<ValueMetaInterface> setList = this.generateVList( new String[] { "alpha", "bravo" }, new int[] { 2, 2 } );
+    rowMeta.setValueMetaList( setList );
+    assertTrue( setList.contains( rowMeta.searchValueMeta( "alpha" ) ) );
+    assertTrue( setList.contains( rowMeta.searchValueMeta( "bravo" ) ) );
 
-    RowMetaInterface rowMeta = new RowMeta();
+    // check that it is avalable by index:
+    assertEquals( 0, rowMeta.indexOfValue( "alpha" ) );
+    assertEquals( 1, rowMeta.indexOfValue( "bravo" ) );
+  }
 
-    // Add values
+  @Test
+  public void testDeSynchronizationModifyingOriginalList() {
+    // remember 0-based arrays
+    int size = rowMeta.size();
+    // should be added at the end
+    rowMeta.getValueMetaList().add( charly );
+    assertEquals( size, rowMeta.indexOfValue( "charly" ) );
+  }
 
-    ValueMetaInterface a = ValueMetaFactory.createValueMeta( "A", ValueMetaInterface.TYPE_STRING );
-    rowMeta.addValueMeta( a );
-    assertEquals( 1, rowMeta.size() );
-    ValueMetaInterface b = ValueMetaFactory.createValueMeta( "b", ValueMetaInterface.TYPE_INTEGER );
-    rowMeta.addValueMeta( b );
+  @Test
+  public void testExists() {
+    assertTrue( rowMeta.exists( string ) );
+    assertTrue( rowMeta.exists( date ) );
+    assertTrue( rowMeta.exists( integer ) );
+  }
+
+  @Test
+  public void testAddValueMetaValueMetaInterface() throws KettlePluginException {
+    rowMeta.addValueMeta( charly );
+    assertTrue( rowMeta.getValueMetaList().contains( charly ) );
+  }
+
+  @Test
+  public void testAddValueMetaIntValueMetaInterface() throws KettlePluginException {
+    rowMeta.addValueMeta( 1, charly );
+    assertTrue( rowMeta.getValueMetaList().indexOf( charly ) == 1 );
+  }
+
+  @Test
+  public void testGetValueMeta() {
+    // see before method insertion order.
+    assertTrue( rowMeta.getValueMeta( 1 ).equals( integer ) );
+  }
+
+  @Test
+  public void testSetValueMeta() throws KettlePluginException {
+    rowMeta.setValueMeta( 1, charly );
+    assertEquals( 1, rowMeta.getValueMetaList().indexOf( charly ) );
+    assertEquals( "There is still 3 elements:", 3, rowMeta.size() );
+    assertEquals( -1, rowMeta.indexOfValue( "integer" ) );
+  }
+
+  @Test
+  public void testIndexOfValue() {
+    List<ValueMetaInterface> list = rowMeta.getValueMetaList();
+    assertEquals( 0, list.indexOf( string ) );
+    assertEquals( 1, list.indexOf( integer ) );
+    assertEquals( 2, list.indexOf( date ) );
+  }
+
+  @Test
+  public void testSearchValueMeta() {
+    ValueMetaInterface vmi = rowMeta.searchValueMeta( "integer" );
+    assertEquals( integer, vmi );
+    vmi = rowMeta.searchValueMeta( "string" );
+    assertEquals( string, vmi );
+    vmi = rowMeta.searchValueMeta( "date" );
+    assertEquals( date, vmi );
+  }
+
+  @Test
+  public void testAddRowMeta() throws KettlePluginException {
+    List<ValueMetaInterface> list =
+        this.generateVList( new String[] { "alfa", "bravo", "charly", "delta" }, new int[] { 2, 2, 3, 4 } );
+    RowMeta added = new RowMeta();
+    added.setValueMetaList( list );
+    rowMeta.addRowMeta( added );
+
+    assertEquals( 7, rowMeta.getValueMetaList().size() );
+    assertEquals( 5, rowMeta.indexOfValue( "charly" ) );
+  }
+
+  @Test
+  public void testMergeRowMeta() throws KettlePluginException {
+    List<ValueMetaInterface> list =
+        this.generateVList( new String[] { "phobos", "demos", "mars" }, new int[] { 6, 6, 6 } );
+    list.add( 1, integer );
+    RowMeta toMerge = new RowMeta();
+    toMerge.setValueMetaList( list );
+
+    rowMeta.mergeRowMeta( toMerge );
+    assertEquals( 7, rowMeta.size() );
+
+    list = rowMeta.getValueMetaList();
+    assertTrue( list.contains( integer ) );
+    ValueMetaInterface found = null;
+    for ( ValueMetaInterface vm : list ) {
+      if ( vm.getName().equals( "integer_1" ) ) {
+        found = vm;
+        break;
+      }
+    }
+    assertNotNull( found );
+  }
+
+  @Test
+  public void testRemoveValueMetaString() throws KettleValueException {
+    rowMeta.removeValueMeta( "string" );
     assertEquals( 2, rowMeta.size() );
-    ValueMetaInterface c = ValueMetaFactory.createValueMeta( "C", ValueMetaInterface.TYPE_DATE );
-    rowMeta.addValueMeta( c );
-    assertEquals( 3, rowMeta.size() );
+    assertNotNull( rowMeta.searchValueMeta( "integer" ) );
+    assertTrue( rowMeta.searchValueMeta( "integer" ).getName().equals( "integer" ) );
+    assertNull( rowMeta.searchValueMeta( "string" ) );
+  }
 
-    assertEquals( 0, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "B" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "c" ) );
-
-    ValueMetaInterface d = ValueMetaFactory.createValueMeta( "d", ValueMetaInterface.TYPE_NUMBER );
-    rowMeta.addValueMeta( 0, d );
-    assertEquals( 4, rowMeta.size() );
-
-    assertEquals( 0, rowMeta.indexOfValue( "D" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "B" ) );
-    assertEquals( 3, rowMeta.indexOfValue( "c" ) );
-
-    ValueMetaInterface e = ValueMetaFactory.createValueMeta( "E", ValueMetaInterface.TYPE_BIGNUMBER );
-    rowMeta.addValueMeta( 2, e );
-    assertEquals( 5, rowMeta.size() );
-
-    assertEquals( 0, rowMeta.indexOfValue( "D" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "e" ) );
-    assertEquals( 3, rowMeta.indexOfValue( "b" ) );
-    assertEquals( 4, rowMeta.indexOfValue( "c" ) );
-
-    // Remove values in reverse order
-    rowMeta.removeValueMeta( "e" );
-    assertEquals( 4, rowMeta.size() );
-    assertEquals( 0, rowMeta.indexOfValue( "d" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "A" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "b" ) );
-    assertEquals( 3, rowMeta.indexOfValue( "C" ) );
-
-    rowMeta.removeValueMeta( "D" );
-    assertEquals( 3, rowMeta.size() );
-    assertEquals( 0, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "B" ) );
-    assertEquals( 2, rowMeta.indexOfValue( "c" ) );
-
-    rowMeta.removeValueMeta( "c" );
+  @Test
+  public void testRemoveValueMetaInt() {
+    rowMeta.removeValueMeta( 1 );
     assertEquals( 2, rowMeta.size() );
-    assertEquals( 0, rowMeta.indexOfValue( "a" ) );
-    assertEquals( 1, rowMeta.indexOfValue( "B" ) );
+    assertNotNull( rowMeta.searchValueMeta( "date" ) );
+    assertNotNull( rowMeta.searchValueMeta( "string" ) );
+    assertNull( rowMeta.searchValueMeta( "notExists" ) );
+    assertTrue( rowMeta.searchValueMeta( "date" ).getName().equals( "date" ) );
+    assertNull( rowMeta.searchValueMeta( "integer" ) );
+  }
 
-    rowMeta.removeValueMeta( "b" );
-    assertEquals( 1, rowMeta.size() );
-    assertEquals( 0, rowMeta.indexOfValue( "a" ) );
+  @Test
+  public void testLowerCaseNamesSearch() {
+    assertNotNull( rowMeta.searchValueMeta( "Integer" ) );
+    assertNotNull( rowMeta.searchValueMeta( "string".toUpperCase() ) );
+  }
 
-    rowMeta.removeValueMeta( "a" );
-    assertEquals( 0, rowMeta.size() );
+  @Test
+  public void testMultipleSameNameInserts() {
+    for ( int i = 0; i < 13; i++ ) {
+      rowMeta.addValueMeta( integer );
+    }
+    String resultName = "integer_13";
+    assertTrue( rowMeta.searchValueMeta( resultName ).getName().equals( resultName ) );
+  }
 
+  @Test
+  public void testExternalValueMetaModification() {
+    ValueMetaInterface vmi = rowMeta.searchValueMeta( "string" );
+    vmi.setName( "string2" );
+    // index become corrupted!
+    assertNull( rowMeta.searchValueMeta( vmi.getName() ) );
+    // a hack
+    rowMeta.setValueMetaList( rowMeta.getValueMetaList() );
+    // and now it can be found again
+    assertNotNull( rowMeta.searchValueMeta( vmi.getName() ) );
+  }
+
+  // @Test
+  public void hasedRowMetaListFasterWhenSearchByName() throws KettlePluginException {
+    rowMeta.clear();
+
+    ValueMetaInterface searchFor = null;
+    for ( int i = 0; i < 100000; i++ ) {
+      ValueMetaInterface vm =
+          ValueMetaFactory.createValueMeta( UUID.randomUUID().toString(), ValueMetaInterface.TYPE_STRING );
+      rowMeta.addValueMeta( vm );
+      if ( i == 50000 ) {
+        searchFor = vm;
+      }
+    }
+    List<ValueMetaInterface> vmList = rowMeta.getValueMetaList();
+
+    // now see how fast we are.
+    long start, stop, time1, time2;
+    start = System.nanoTime();
+    vmList.indexOf( searchFor );
+    stop = System.nanoTime();
+    time1 = stop - start;
+
+    start = System.nanoTime();
+    ValueMetaInterface found = rowMeta.searchValueMeta( searchFor.getName() );
+    stop = System.nanoTime();
+    assertEquals( searchFor, found );
+    time2 = stop - start;
+
+    // System.out.println( time1 + ", " + time2 );
+
+    assertTrue( "array search is slower then current implementation : " + "for array list: " + time1
+        + ", for hashed rowMeta: " + time2, time1 > time2 );
+  }
+
+  // @Test
+  public void hashedRowMetaListNotMuchSlowerThenIndexedAccess() throws KettlePluginException {
+    rowMeta = new RowMeta();
+
+    // create pre-existed rom meta list
+    List<ValueMetaInterface> pre = new ArrayList<ValueMetaInterface>( 100000 );
+    for ( int i = 0; i < 100000; i++ ) {
+      ValueMetaInterface vm =
+          ValueMetaFactory.createValueMeta( UUID.randomUUID().toString(), ValueMetaInterface.TYPE_STRING );
+      pre.add( vm );
+    }
+
+    // now see how fast we are.
+
+    long start, stop, time1, time2;
+    start = System.nanoTime();
+    // this is when filling regular array like in prev implementation
+    List<ValueMetaInterface> prev = new ArrayList<ValueMetaInterface>();
+    for ( ValueMetaInterface item : pre ) {
+      prev.add( item );
+    }
+    stop = System.nanoTime();
+    time1 = stop - start;
+
+    start = System.nanoTime();
+    for ( ValueMetaInterface item : pre ) {
+      rowMeta.addValueMeta( item );
+    }
+    stop = System.nanoTime();
+    time2 = stop - start;
+
+    // ~6 time slower that for original implementation
+    System.out.println( time1 + ", " + time2 );
+
+    // let say finally it is not 10 times slower :(
+    assertTrue( "it is not 10 times slower than for original arrayList", time1 * 10 > time2 );
   }
 
 }
