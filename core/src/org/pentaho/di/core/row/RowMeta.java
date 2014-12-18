@@ -127,6 +127,8 @@ public class RowMeta implements RowMetaInterface {
   @Override
   public void setValueMetaList( List<ValueMetaInterface> valueMetaList ) {
     this.valueMetaList = valueMetaList;
+    // we have new list and we need re-hash
+    indexValueMap();
   }
 
   /**
@@ -233,6 +235,8 @@ public class RowMeta implements RowMetaInterface {
     if ( valueMeta != null ) {
       valueMetaList.set( index, valueMeta );
     }
+    // array list got shifted - so we can't avoid re-hash!
+    indexValueMap();
   }
 
   /**
