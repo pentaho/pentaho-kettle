@@ -59,6 +59,7 @@ public class NamedConfigurationDialog extends Dialog {
   private int margin;
 
   private NamedConfiguration namedConfiguration;
+  private String result;
 
   public NamedConfigurationDialog( Shell parent ) {
     super( parent );
@@ -99,6 +100,8 @@ public class NamedConfigurationDialog extends Dialog {
 
     shell.setText( BaseMessages.getString( PKG, "NamedConfiguarationDialog.Shell.Title" ) );
     shell.setLayout( formLayout );
+    
+    new NamedConfigurationComposite( shell, namedConfiguration, props );
 
     // First, add the buttons...
 
@@ -142,14 +145,16 @@ public class NamedConfigurationDialog extends Dialog {
         display.sleep();
       }
     }
-    return namedConfiguration.getName();
+    return result;
   }
   
   private void cancel() {
+    result = null;
     dispose();
   }
 
   public void ok() {
+    result = namedConfiguration.getName();
     dispose();
   }
   

@@ -8842,6 +8842,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     HasNamedConfigurationsInterface hasNamedConfigurationsInterface = getActiveHasNamedConfigurationsInterface();
     delegates.nc.newNamedConfiguration( hasNamedConfigurationsInterface );
   }
+  
+  public void editNamedConfiguration() {
+    HasNamedConfigurationsInterface hasNamedConfigurationsInterface = getActiveHasNamedConfigurationsInterface();
+    NamedConfiguration configuration = ( NamedConfiguration ) selectionObject;
+    delegates.nc.editNamedConfiguration( hasNamedConfigurationsInterface, configuration );
+  }
 
   public void delNamedConfiguration() {
     // TODO: need DELETE_NAMED_CONFIGURATION
@@ -8863,20 +8869,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     final HasNamedConfigurationsInterface hasNamedConfigurationsInterface = (HasNamedConfigurationsInterface) selectionObjectParent;
     delegates.nc.delNamedConfiguration(hasNamedConfigurationsInterface, configuration);
   }
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   
   public void getSQL() {
     delegates.db.getSQL();
