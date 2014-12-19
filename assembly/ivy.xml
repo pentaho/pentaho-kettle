@@ -43,7 +43,7 @@
     <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle5-log4j-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-monitoring-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="${ivy.artifact.group}" name="pdi-monitoring-plugin-package" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-monitoring-plugin" type="zip"/>
     </dependency>
     
