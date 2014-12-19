@@ -420,7 +420,6 @@ public class NamedConfiguration extends SharedObjectBase implements Cloneable, X
     this.changed = false;
   }  
   
-  
   /**
    * This method detects if this configuration can provide settings for the required set of parameters
    * that are asked for.  
@@ -478,6 +477,10 @@ public class NamedConfiguration extends SharedObjectBase implements Cloneable, X
   }
   
   
+  public List<Group> getGroups() {
+    return groups;
+  }
+
   public void replaceMeta( NamedConfiguration config ) {
     this.setName( config.getName() );
     this.setDisplayName( config.getDisplayName() );

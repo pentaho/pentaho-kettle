@@ -23,16 +23,17 @@
 package org.pentaho.di.ui.spoon.delegates;
 
 import java.util.List;
+
 import org.pentaho.di.base.HasNamedConfigurationsInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.namedconfig.ConfigurationTemplateManager;
 import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
-import org.pentaho.di.core.namedconfig.model.Property;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.cluster.dialog.NamedClusterDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 
@@ -62,31 +63,36 @@ public class SpoonNamedConfigurationDelegate extends SpoonDelegate {
     }
     
     List<NamedConfiguration> configurations = ConfigurationTemplateManager.getInstance().getConfigurationTemplates( "hadoop-cluster" );
-    NamedConfiguration configuration = configurations.get( 0 );
+    NamedConfiguration configuration = configurations.get( 0 );   
     
-    if ( hasNamedConfigurationsInterface instanceof VariableSpace ) {
-      configuration.shareVariablesWith( (VariableSpace) hasNamedConfigurationsInterface );
-    } else {
-      configuration.initializeVariablesFrom( null );
-    }
-
-    hasNamedConfigurationsInterface.addNamedConfiguration( configuration );
-    spoon.addUndoNew( (UndoInterface) hasNamedConfigurationsInterface, new NamedConfiguration[] { (NamedConfiguration) configuration.clone() }, 
-        new int[] { hasNamedConfigurationsInterface.indexOfNamedConfiguration( configuration ) } );
-    if ( spoon.rep != null ) {
-      try {
-        if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
-          spoon.rep.save( configuration, Const.VERSION_COMMENT_INITIAL_VERSION, null );
-        } else {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
-        }
-      } catch ( KettleException e ) {
-        new ErrorDialog( spoon.getShell(),
-          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingNamedConfiguration.Title" ),
-          BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingNamedConfiguration.Message", configuration.getName() ), e );
+    NamedClusterDialog namedClusterDialog = new NamedClusterDialog( spoon.getShell() , configuration);
+    boolean result = namedClusterDialog.open();
+    
+    if (result ) {
+      if ( hasNamedConfigurationsInterface instanceof VariableSpace ) {
+        configuration.shareVariablesWith( (VariableSpace) hasNamedConfigurationsInterface );
+      } else {
+        configuration.initializeVariablesFrom( null );
       }
+  
+      hasNamedConfigurationsInterface.addNamedConfiguration( configuration );
+      spoon.addUndoNew( (UndoInterface) hasNamedConfigurationsInterface, new NamedConfiguration[] { (NamedConfiguration) configuration.clone() }, 
+          new int[] { hasNamedConfigurationsInterface.indexOfNamedConfiguration( configuration ) } );
+      if ( spoon.rep != null ) {
+        try {
+          if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
+            spoon.rep.save( configuration, Const.VERSION_COMMENT_INITIAL_VERSION, null );
+          } else {
+            throw new KettleException( BaseMessages.getString(
+              PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
+          }
+        } catch ( KettleException e ) {
+          new ErrorDialog( spoon.getShell(),
+            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingNamedConfiguration.Title" ),
+            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingNamedConfiguration.Message", configuration.getName() ), e );
+        }
+      }
+      spoon.refreshTree();    
     }
-    spoon.refreshTree();    
   }
 }
