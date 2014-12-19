@@ -44,7 +44,7 @@
         <artifact name="kettle5-log4j-plugin" type="zip"/>
     </dependency>
     <dependency org="pentaho" name="pdi-monitoring-plugin-package" rev="${project.revision}" changing="true" conf="plugins->default">
-        <artifact name="kettle-monitoring-plugin" type="zip"/>
+        <artifact name="pdi-monitoring-plugin-package" type="zip"/>
     </dependency>
     
 
