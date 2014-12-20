@@ -863,7 +863,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       String chr = searchStrings[e];
       String rep = replaceStrings[e];
       int idx = builder.indexOf( chr, 0 );
-      while ( idx > 0 ) {
+      while ( idx != -1 ) {
         builder.replace( idx, idx + chr.length(), rep );
         idx = builder.indexOf( chr, idx + rep.length() );
       }
