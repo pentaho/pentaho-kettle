@@ -33,6 +33,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.shared.SharedObjects;
@@ -141,7 +142,7 @@ public interface Repository {
    *          Progress Monitor to report feedback to
    * @param overwrite
    *          Overwrite any existing objects involved in saving {@code repositoryElement}, e.g. repositoryElement,
-   *          database connections, slave servers
+   *          database connections, named configurations, slave servers
    * @throws KettleException
    *           Error saving the object to the repository
    */
@@ -239,7 +240,7 @@ public interface Repository {
 
   /**
    * Delete everything related to a transformation from the repository. This does not included shared objects :
-   * databases, slave servers, cluster and partition schema.
+   * databases, named configurations, slave servers, cluster and partition schema.
    *
    * @param id_transformation
    *          the transformation id to delete
@@ -353,6 +354,46 @@ public interface Repository {
 
   public ObjectId getDatabaseID( String name ) throws KettleException;
 
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
+  // NamedConfiguration : loading, saving, renaming, etc.
+  // ///////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Load the NamedConfiguration Metadata from the repository
+   *
+   * @param id_namedconfiguration
+   *          the id of the NamedConfiguration to load
+   * @param revision
+   *          the revision to load. Specify null to load the last version.
+   * @throws KettleException
+   *           in case something goes wrong with database, connection, etc.
+   */
+  public NamedConfiguration loadNamedConfiguration( ObjectId id_namedconfiguration, String revision ) throws KettleException;
+
+  /**
+   * Remove a NamedConfiguration from the repository
+   *
+   * @param configurationName
+   *          The name of the NamedConfiguration to remove
+   * @throws KettleException
+   *           In case something went wrong: database error, insufficient permissions, depending objects, etc.
+   */
+  public void deleteNamedConfiguration( String configurationName ) throws KettleException;
+
+  public ObjectId[] getNamedConfigurationIDs( boolean includeDeleted ) throws KettleException;
+
+  public String[] getNamedConfigurationNames( boolean includeDeleted ) throws KettleException;
+
+  /**
+   * Read all the NamedConfigurations defined in the repository
+   *
+   * @return a list of all the NamedConfiguration defined in the repository
+   * @throws KettleException
+   */
+  public List<NamedConfiguration> readNamedConfigurations() throws KettleException;
+
+  public ObjectId getNamedConfigurationID( String name ) throws KettleException;
+  
   // ///////////////////////////////////////////////////////////////////////////////////////////////
   // ClusterSchema
   // ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -502,6 +543,11 @@ public interface Repository {
 
   public void insertJobEntryDatabase( ObjectId id_job, ObjectId id_jobentry, ObjectId id_database ) throws KettleException;
 
+  public void insertStepNamedConfiguration( ObjectId id_transformation, ObjectId id_step, ObjectId id_namedconfiguration ) throws KettleException;
+
+  public void insertJobEntryNamedConfiguration( ObjectId id_job, ObjectId id_jobentry, ObjectId id_namedconfiguration ) throws KettleException;
+  
+  
   // ///////////////////////////////////////////////////////////////////////////////////////////////
   // Condition
   // ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -667,6 +713,78 @@ public interface Repository {
     String idCode, DatabaseMeta database ) throws KettleException;
 
   /**
+   * This method is introduced to avoid having to go over an integer/string/whatever in the interface and the step code.
+   *
+   * @param id_step
+   * @param code
+   * @return
+   * @throws KettleException
+   */
+  public NamedConfiguration loadNamedConfigurationFromStepAttribute( ObjectId id_step, String code,
+    List<NamedConfiguration> namedConfigurations ) throws KettleException;
+
+  /**
+   * This method saves the object ID of the NamedConfiguration object (if not null) in the step attributes
+   *
+   * @param id_transformation
+   * @param id_step
+   * @param code
+   * @param namedConfiguration
+   */
+  public void saveNamedConfigurationStepAttribute( ObjectId id_namedconfiguration, ObjectId id_step, String code,
+      NamedConfiguration namedConfiguration ) throws KettleException;
+
+  /**
+   * This method is introduced to avoid having to go over an integer/string/whatever in the interface and the job entry
+   * code.
+   *
+   * @param id_step
+   * @param code
+   * @return
+   * @throws KettleException
+   */
+  public NamedConfiguration loadNamedConfigurationFromJobEntryAttribute( ObjectId id_jobentry, String nameCode, String idCode,
+    List<NamedConfiguration> namedConfigurations ) throws KettleException;
+
+  /**
+   * This method is introduced to avoid having to go over an integer/string/whatever in the interface and the job entry
+   * code.
+   *
+   * @param id_entry
+   * @param nameCode
+   * @param nr
+   * @param idcode
+   * @param databases
+   * @return
+   * @throws KettleException
+   */
+  public NamedConfiguration loadNamedConfigurationFromJobEntryAttribute( ObjectId id_jobentry, String nameCode, int nr,
+    String idCode, List<NamedConfiguration> namedConfigurations ) throws KettleException;
+
+  /**
+   * This method saves the object ID of the database object (if not null) in the job entry attributes
+   *
+   * @param id_job
+   * @param id_jobentry
+   * @param idCode
+   * @param database
+   */
+  public void saveNamedConfigurationJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, String nameCode,
+    String idCode, NamedConfiguration namedConfiguration ) throws KettleException;
+
+  /**
+   * This method saves the object ID of the database object (if not null) in the job entry attributes
+   *
+   * @param id_job
+   * @param id_jobentry
+   * @param nr
+   * @param code
+   * @param database
+   */
+  public void saveNamedConfigurationsJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String nameCode,
+    String idCode, NamedConfiguration namedConfiguration ) throws KettleException;
+  
+  /**
    * Removes he deleted flag from a repository element in the repository. If it wasn't deleted, it remains untouched.
    *
    * @param element
@@ -736,6 +854,10 @@ public interface Repository {
   public String[] getJobsUsingDatabase( ObjectId id_database ) throws KettleException;
 
   public String[] getTransformationsUsingDatabase( ObjectId id_database ) throws KettleException;
+
+  public String[] getJobsUsingNamedConfiguration( ObjectId id_namedconfiguration ) throws KettleException;
+
+  public String[] getTransformationsUsingNamedConfiguration( ObjectId id_namedconfiguration ) throws KettleException;
 
   /**
    * @return the importer that will handle imports into this repository

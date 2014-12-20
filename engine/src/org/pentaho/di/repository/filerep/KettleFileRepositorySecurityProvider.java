@@ -104,6 +104,7 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
         case MODIFY_SLAVE_SERVER:
         case MODIFY_CLUSTER_SCHEMA:
         case MODIFY_PARTITION_SCHEMA:
+        case MODIFY_NAMED_CONFIGURATION:
           if ( capabilities.isReadOnly() ) {
             throw new KettleException( operation + " : repository is read-only" );
           }
@@ -111,6 +112,7 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
         case DELETE_SLAVE_SERVER:
         case DELETE_CLUSTER_SCHEMA:
         case DELETE_PARTITION_SCHEMA:
+        case DELETE_NAMED_CONFIGURATION:
           if ( capabilities.isReadOnly() ) {
             throw new KettleException( operation + " : repository is read-only" );
           }
