@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 
 /**
  * Implementing convenience methods that can be described in terms of other methods in the interface
@@ -131,4 +132,92 @@ public abstract class AbstractRepository implements Repository {
     String idCode, DatabaseMeta database ) throws KettleException {
     saveDatabaseMetaJobEntryAttribute( id_job, id_jobentry, 0, nameCode, idCode, database );
   }
+  
+  /////////////////////////////////////////////////////////////////
+  ////   NamedConfiguration API
+  /////////////////////////////////////////////////////////////////
+  @Override
+  public void deleteNamedConfiguration (String configurationName )
+      throws KettleException {
+  }
+  
+  @Override
+  public ObjectId getNamedConfigurationID( String name ) throws KettleException {
+    return null;
+  }
+  
+  @Override
+  public ObjectId[] getNamedConfigurationIDs( boolean includeDeleted ) throws KettleException {
+    return null;
+  }
+  
+  @Override
+  public String[] getNamedConfigurationNames( boolean includeDeleted ) throws KettleException {
+    return null;
+  }
+
+  @Override
+  public NamedConfiguration loadNamedConfiguration( ObjectId id_namedconfiguration, String revision )
+      throws KettleException {
+    return null;
+  }
+  
+  @Override
+  public List<NamedConfiguration> readNamedConfigurations() throws KettleException {
+    return null;
+  }
+  
+  @Override
+  public String[] getJobsUsingNamedConfiguration(ObjectId id_namedconfiguration) throws KettleException {
+    return null;
+  }
+
+  @Override
+  public String[] getTransformationsUsingNamedConfiguration(ObjectId id_namedconfiguration) throws KettleException {
+    return null;
+  }
+
+  @Override
+  public void insertJobEntryNamedConfiguration(ObjectId id_job, ObjectId id_jobentry, ObjectId id_namedconfiguration)
+      throws KettleException {
+  }
+
+  @Override
+  public void insertStepNamedConfiguration(ObjectId id_transformation, ObjectId id_step, ObjectId id_namedconfiguration)
+      throws KettleException {
+  }
+
+  @Override
+  public NamedConfiguration loadNamedConfigurationFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, int nr,
+      String idCode, List<NamedConfiguration> namedConfigurations) throws KettleException {
+    return null;
+  }
+
+  @Override
+  public NamedConfiguration loadNamedConfigurationFromJobEntryAttribute(ObjectId id_jobentry, String nameCode,
+      String idCode, List<NamedConfiguration> namedConfigurations) throws KettleException {
+    return null;
+  }
+
+  @Override
+  public NamedConfiguration loadNamedConfigurationFromStepAttribute(ObjectId id_step, String code,
+      List<NamedConfiguration> namedConfigurations) throws KettleException {
+    return null;
+  }
+  
+  @Override
+  public void saveNamedConfigurationJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String nameCode,
+      String idCode, NamedConfiguration namedConfiguration) throws KettleException {
+  }
+
+  @Override
+  public void saveNamedConfigurationsJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, int nr, String nameCode,
+      String idCode, NamedConfiguration namedConfiguration) throws KettleException {
+  }
+
+  @Override
+  public void saveNamedConfigurationStepAttribute(ObjectId id_namedconfiguration, ObjectId id_step, String code,
+      NamedConfiguration namedConfiguration) throws KettleException {
+  }
+  
 }

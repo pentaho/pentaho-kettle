@@ -59,10 +59,13 @@ public class NamedConfiguration extends SharedObjectBase implements Cloneable, X
   private ObjectId id;
   
   private String name;
+  private String displayName;
   private String type; // something like hadoop cluster, mongo, vfs browser
   private String subType; // extra field for being more specific, for example, to keep track of which shim
   private List<Group> groups;
 
+  private long lastModifiedDate = System.currentTimeMillis();
+  
   private boolean changed;
   
   // Comparator for sorting configurations alphabetically by name
@@ -104,9 +107,14 @@ public class NamedConfiguration extends SharedObjectBase implements Cloneable, X
 
     try {
       setName( XMLHandler.getTagValue( conf, "name" ) );
+      setDisplayName( XMLHandler.getTagValue( conf, "displayName" ) );
       setType( XMLHandler.getTagValue( conf, "type" ) );
       setSubType( XMLHandler.getTagValue( conf, "subType" ) );
-      
+      String lastModifiedDateStr = XMLHandler.getTagValue( conf, "lastModifiedDate" );
+      if ( lastModifiedDateStr != null && !"".equals( lastModifiedDateStr.trim() ) ) {
+        lastModifiedDate = Long.parseLong( lastModifiedDateStr );
+      }
+          
       // read groups
       Node groupsnode = XMLHandler.getSubNode( conf, "groups" );
       if ( groupsnode != null ) {
@@ -190,6 +198,21 @@ public class NamedConfiguration extends SharedObjectBase implements Cloneable, X
     return name;
   }
 
+  public String getDisplayName() {
+    if ( displayName == null || "".equals( displayName.trim() ) ) {
+      return getName();
+    }
+    return displayName;
+  }
+
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
+  }
+  
+  public long getLastModifiedDate() {
+    return lastModifiedDate;
+  }  
+  
   public void setType( String type ) {
     this.type = type;
   }
@@ -341,9 +364,11 @@ public class NamedConfiguration extends SharedObjectBase implements Cloneable, X
     StringBuilder xml = new StringBuilder();
     xml.append( "  <" ).append( XML_TAG ).append( '>' ).append( Const.CR );
     xml.append( "    " ).append( XMLHandler.addTagValue( "name", name, true ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "displayName", displayName, true ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "type", getType(), true ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "subType", getSubType(), true ) );
-    
+    xml.append( "    " ).append( XMLHandler.addTagValue( "lastModifiedDate", getLastModifiedDate(), true ) );
+
     // add groups
     xml.append( "    <groups>" ).append( Const.CR );
     for ( Group group : groups ) {
@@ -455,9 +480,11 @@ public class NamedConfiguration extends SharedObjectBase implements Cloneable, X
   
   public void replaceMeta( NamedConfiguration config ) {
     this.setName( config.getName() );
+    this.setDisplayName( config.getDisplayName() );
     this.setType( config.getType() );
     this.setSubType( config.getSubType() );
     this.setObjectId( config.getObjectId() );
+    this.lastModifiedDate = System.currentTimeMillis();
     this.groups = new ArrayList<Group>();
     for ( Group group : config.groups ) {
       Group myGroup = this.addGroup( group.getName() );

@@ -36,6 +36,7 @@ import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
+import org.pentaho.di.base.HasNamedConfigurationsInterface;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
@@ -47,6 +48,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -89,6 +91,7 @@ public class KettleFileRepository extends AbstractRepository {
   private static final String EXT_SLAVE_SERVER = ".ksl";
   private static final String EXT_CLUSTER_SCHEMA = ".kcs";
   private static final String EXT_PARTITION_SCHEMA = ".kps";
+  private static final String EXT_NAMED_CONFIGURATION = ".cfg";
 
   private static final String LOG_FILE = "repository.log";
 
@@ -875,6 +878,7 @@ public class KettleFileRepository extends AbstractRepository {
     jobMeta.setObjectId( new StringObjectId( calcObjectId( repdir, jobname, EXT_JOB ) ) );
 
     readDatabases( jobMeta, true );
+    readNamedConfigurations( jobMeta, true );
     jobMeta.clearChanged();
 
     return jobMeta;
@@ -1025,6 +1029,7 @@ public class KettleFileRepository extends AbstractRepository {
     transMeta.setObjectId( new StringObjectId( calcObjectId( repdir, transname, EXT_TRANSFORMATION ) ) );
 
     readDatabases( transMeta, true );
+    readNamedConfigurations( transMeta, true );
     transMeta.clearChanged();
 
     return transMeta;
@@ -1039,7 +1044,7 @@ public class KettleFileRepository extends AbstractRepository {
    *          if an object with the same name exists, overwrite
    * @throws KettleException
    */
-  public void readDatabases( HasDatabasesInterface transMeta, boolean overWriteShared ) throws KettleException {
+  private void readDatabases( HasDatabasesInterface transMeta, boolean overWriteShared ) throws KettleException {
     try {
       ObjectId[] dbids = getDatabaseIDs( false );
       for ( int i = 0; i < dbids.length; i++ ) {
@@ -1114,6 +1119,12 @@ public class KettleFileRepository extends AbstractRepository {
       jobMeta.addOrReplaceSlaveServer( slaveServer );
     }
 
+    for ( ObjectId id : getNamedConfigurationIDs( false ) ) {
+      NamedConfiguration namedConfiguration = loadNamedConfiguration( id, null ); // Load last version
+      namedConfiguration.shareVariablesWith( jobMeta );
+      jobMeta.addOrReplaceNamedConfiguration( namedConfiguration );
+    }    
+    
     return sharedObjects;
   }
 
@@ -1148,6 +1159,12 @@ public class KettleFileRepository extends AbstractRepository {
       transMeta.addOrReplacePartitionSchema( partitionSchema );
     }
 
+    for ( ObjectId id : getNamedConfigurationIDs( false ) ) {
+      NamedConfiguration namedConfiguration = loadNamedConfiguration( id, null ); // Load last version
+      namedConfiguration.shareVariablesWith( transMeta );
+      transMeta.addOrReplaceNamedConfiguration( namedConfiguration );
+    }  
+    
     return sharedObjects;
   }
 
@@ -1443,4 +1460,143 @@ public class KettleFileRepository extends AbstractRepository {
   public void setMetaStore( XmlMetaStore metaStore ) {
     this.metaStore = metaStore;
   }
+  
+  
+  
+  
+  
+  
+  
+  @Override
+  public void deleteNamedConfiguration( String configurationName ) throws KettleException {
+    deleteRootObject( configurationName, EXT_NAMED_CONFIGURATION );
+  }
+  
+  @Override
+  public String[] getJobsUsingNamedConfiguration( ObjectId id_namedconfiguration ) throws KettleException {
+    return new String[] {};
+  }
+
+  @Override
+  public ObjectId getNamedConfigurationID( String name ) throws KettleException {
+    return getObjectId( null, name, EXT_NAMED_CONFIGURATION );
+  }
+  
+  @Override
+  public ObjectId[] getNamedConfigurationIDs( boolean includeDeleted ) throws KettleException {
+    return getRootObjectIDs( EXT_NAMED_CONFIGURATION );
+  }
+  
+  @Override
+  public String[] getNamedConfigurationNames( boolean includeDeleted ) throws KettleException {
+    return convertRootIDsToNames( getNamedConfigurationIDs( false ) );
+  }
+  
+  @Override
+  public String[] getTransformationsUsingNamedConfiguration( ObjectId id_namedconfiguration ) throws KettleException {
+    return new String[] {};
+  }
+
+  @Override
+  public void insertJobEntryNamedConfiguration( ObjectId id_job, ObjectId id_jobentry, ObjectId id_namedconfiguration )
+      throws KettleException {
+    super.insertJobEntryNamedConfiguration( id_job, id_jobentry, id_namedconfiguration );
+  }
+
+  @Override
+  public void insertStepNamedConfiguration( ObjectId id_transformation, ObjectId id_step, ObjectId id_namedconfiguration )
+      throws KettleException {
+    super.insertStepNamedConfiguration( id_transformation, id_step, id_namedconfiguration );
+  }
+  
+  @Override
+  public NamedConfiguration loadNamedConfiguration( ObjectId id_namedconfiguration, String revision )
+      throws KettleException {
+    try {
+      return new NamedConfiguration( loadNodeFromXML( id_namedconfiguration, NamedConfiguration.XML_TAG ) );
+    } catch ( Exception e ) {
+      throw new KettleException( "Unable to load NamedConfiguration from the file repository", e );
+    }
+  }
+  
+  @Override
+  public NamedConfiguration loadNamedConfigurationFromJobEntryAttribute( ObjectId id_jobentry, String nameCode, int nr,
+      String idCode, List<NamedConfiguration> namedConfigurations ) throws KettleException {
+    return super.loadNamedConfigurationFromJobEntryAttribute( id_jobentry, nameCode, nr, idCode, namedConfigurations );
+  }
+
+  @Override
+  public NamedConfiguration loadNamedConfigurationFromJobEntryAttribute( ObjectId id_jobentry, String nameCode,
+      String idCode, List<NamedConfiguration> namedConfigurations ) throws KettleException {
+    return super.loadNamedConfigurationFromJobEntryAttribute( id_jobentry, nameCode, idCode, namedConfigurations );
+  }
+  
+  @Override
+  public NamedConfiguration loadNamedConfigurationFromStepAttribute( ObjectId id_step, String code,
+      List<NamedConfiguration> namedConfigurations ) throws KettleException {
+    return super.loadNamedConfigurationFromStepAttribute(id_step, code, namedConfigurations);
+  }
+  
+  @Override
+  public List<NamedConfiguration> readNamedConfigurations() throws KettleException {
+    List<NamedConfiguration> list = new ArrayList<NamedConfiguration>();
+    for ( ObjectId id : getNamedConfigurationIDs( false ) ) {
+      list.add( loadNamedConfiguration( id, null ) );
+    }
+    return list;
+  }
+
+  @Override
+  public void saveNamedConfigurationJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, String nameCode,
+      String idCode, NamedConfiguration namedConfiguration ) throws KettleException {
+    super.saveNamedConfigurationJobEntryAttribute( id_job, id_jobentry, nameCode, idCode, namedConfiguration );
+  }
+
+  @Override
+  public void saveNamedConfigurationsJobEntryAttribute( ObjectId id_job, ObjectId id_jobentry, int nr, String nameCode,
+      String idCode, NamedConfiguration namedConfiguration ) throws KettleException {
+    super.saveNamedConfigurationsJobEntryAttribute( id_job, id_jobentry, nr, nameCode, idCode, namedConfiguration );
+  }
+  
+  @Override
+  public void saveNamedConfigurationStepAttribute( ObjectId id_namedconfiguration, ObjectId id_step, String code,
+      NamedConfiguration namedConfiguration ) throws KettleException {
+    super.saveNamedConfigurationStepAttribute( id_namedconfiguration, id_step, code, namedConfiguration );
+  }
+
+  /**
+   * Read all the databases from the repository, insert into the has databases object, overwriting optionally
+   *
+   * @param TransMeta
+   *          The transformation to load into.
+   * @param overWriteShared
+   *          if an object with the same name exists, overwrite
+   * @throws KettleException
+   */
+  private void readNamedConfigurations( HasNamedConfigurationsInterface meta, boolean overWriteShared ) throws KettleException {
+    try {
+      ObjectId[] ncids = getNamedConfigurationIDs( false );
+      for ( int i = 0; i < ncids.length; i++ ) {
+        NamedConfiguration namedConfiguration = loadNamedConfiguration( ncids[i], null ); // reads last version
+        if ( meta instanceof VariableSpace ) {
+          namedConfiguration.shareVariablesWith( (VariableSpace) meta );
+        }
+
+        NamedConfiguration check = meta.findNamedConfiguration( namedConfiguration.getName() ); // Check if there already is one in the
+                                                                               // transformation
+        if ( check == null || overWriteShared ) // We only add, never overwrite database connections.
+        {
+          if ( namedConfiguration.getName() != null ) {
+            meta.addOrReplaceNamedConfiguration( namedConfiguration );
+            if ( !overWriteShared ) {
+              namedConfiguration.setChanged( false );
+            }
+          }
+        }
+      }
+    } catch ( KettleException e ) {
+      throw e;
+    }
+  }
+  
 }

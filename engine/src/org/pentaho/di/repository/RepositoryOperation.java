@@ -40,6 +40,8 @@ public enum RepositoryOperation {
 
     MODIFY_PARTITION_SCHEMA( "Modify partition schema" ), DELETE_PARTITION_SCHEMA( "Delete partition schema" ),
 
+    MODIFY_NAMED_CONFIGURATION( "Modify named configuration" ), DELETE_NAMED_CONFIGURATION( "Delete named configuration" ),
+    
     CREATE_DIRECTORY( "Create directory" ), RENAME_DIRECTORY( "Rename directory" ),
     DELETE_DIRECTORY( "Delete directory" );
 
