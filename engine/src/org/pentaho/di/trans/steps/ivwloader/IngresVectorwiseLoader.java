@@ -51,6 +51,8 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import com.google.common.annotations.VisibleForTesting;
+
 
 /**
  * Performs a streaming bulk load to a VectorWise table.
@@ -854,7 +856,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
     return true;
   }
 
-  private String replace( String string, String[] searchStrings, String[] replaceStrings ) {
+  @VisibleForTesting
+  String replace( String string, String[] searchStrings, String[] replaceStrings ) {
     StringBuilder builder = new StringBuilder( string );
     for ( int e = 0; e < Math.min( searchStrings.length, replaceStrings.length ); e++ ) {
       String chr = searchStrings[e];
