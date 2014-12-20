@@ -25,14 +25,14 @@ package org.pentaho.di.core.namedconfig;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.pentaho.di.core.namedconfig.model.Configuration;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 
 public class NamedConfigurationTest {
 
   @Test
   public void testRetrieveConfigurationTemplates() throws Exception {
-    IConfigurationTemplateManager manager = new ConfigurationTemplateManager();
-    Configuration configuration = manager.getConfigurationTemplate( "does-not-exist" );
+    IConfigurationTemplateManager manager = ConfigurationTemplateManager.getInstance();
+    NamedConfiguration configuration = manager.getConfigurationTemplate( "does-not-exist" );
     assertTrue( configuration != null );
   }
 

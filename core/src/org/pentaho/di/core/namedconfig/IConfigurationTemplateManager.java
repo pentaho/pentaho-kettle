@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,7 +28,13 @@ import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 
 public interface IConfigurationTemplateManager {
 
+  public String getActiveShimClass();
+
+  public void setActiveShimClass(String activeShimClass);
+
   public List<NamedConfiguration> getConfigurationTemplates();
+
+  public List<NamedConfiguration> getConfigurationTemplates(String type);
 
   /**
    * This method will return a copy (clone) of the requested configuration
@@ -36,8 +42,8 @@ public interface IConfigurationTemplateManager {
    * @param name the template to return
    * @return the NamedConfiguration that was found, otherwise null
    */
-  public NamedConfiguration getConfigurationTemplate( String name );
+  public NamedConfiguration getConfigurationTemplate(String name);
 
-  public void addConfigurationTemplate( NamedConfiguration configuration );
-  
+  public void addConfigurationTemplate(NamedConfiguration configuration);
+
 }

@@ -24,6 +24,7 @@ package org.pentaho.di.core.namedconfig.model;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -393,6 +394,63 @@ public class NamedConfiguration extends SharedObjectBase implements Cloneable, X
   public void clearChanged() {
     this.changed = false;
   }  
+  
+  
+  /**
+   * This method detects if this configuration can provide settings for the required set of parameters
+   * that are asked for.  
+   * 
+   * @param required The request is made with a map of String,List<String> where the keys are the required
+   * groups for which the corresponding properties belong.
+   * 
+   * @return true if all of the required properties can be provided
+   */
+  public boolean canProvide( Map<String, List<String>> required ) {
+    if ( required != null ) {
+      for ( String groupName : required.keySet() ) {
+        // every group must be found
+        Group group = getGroup( groupName );
+        if ( group == null ) {
+          // if we don't have the required group, return false
+          return false;
+        }
+        List<String> propertyList = required.get( groupName );
+        if ( propertyList != null ) {
+          for ( String property : propertyList ) {
+            // every property must be found
+            if ( !group.containsProperty( property ) ) {
+              // if the group does not contain the required property, return false
+              return false;
+            }
+          }
+        }
+      }
+    }
+    // all conditions met, return true
+    return true;
+  }
+  
+  /**
+   * This method will detect if this configuration is capable of satisfying the configuration
+   * requirements of the passed NamedConfiguration.  This method will be typically used to detect
+   * if a configuration can provide settings for another configuration.
+   * 
+   * Useful for checking if a configuration satisfies a template.
+   * 
+   * @param namedConfiguration
+   * @return
+   */
+  public boolean doesConfigurationSatisfy( NamedConfiguration namedConfiguration ) {
+    HashMap<String, List<String>> required = new HashMap<String, List<String>>();
+    for ( Group group : namedConfiguration.groups ) {
+      ArrayList<String> groupProperties = new ArrayList<String>();
+      required.put( group.getName(), groupProperties );
+      for ( Property property : group.getProperties() ) {
+        groupProperties.add( property.getName() );
+      }
+    }
+    return canProvide( required );
+  }
   
   
   public void replaceMeta( NamedConfiguration config ) {

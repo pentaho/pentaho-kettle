@@ -43,14 +43,26 @@ public class ConfigurationTemplateManager implements IConfigurationTemplateManag
     return instance;
   }
   
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.namedconfig.IConfigurationTemplateManager#getActiveShimClass()
+   */
+  @Override
   public String getActiveShimClass() {
     return activeShimClass;
   }
 
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.namedconfig.IConfigurationTemplateManager#setActiveShimClass(java.lang.String)
+   */
+  @Override
   public void setActiveShimClass(String activeShimClass) {
     this.activeShimClass = activeShimClass;
   }  
   
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.namedconfig.IConfigurationTemplateManager#getConfigurationTemplates()
+   */
+  @Override
   public List<NamedConfiguration> getConfigurationTemplates() {
     ArrayList<NamedConfiguration> configs = new ArrayList<NamedConfiguration>();
     for ( NamedConfiguration configuration : configurationTemplates ) {
@@ -59,6 +71,10 @@ public class ConfigurationTemplateManager implements IConfigurationTemplateManag
     return Collections.unmodifiableList( configs );
   }
 
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.namedconfig.IConfigurationTemplateManager#getConfigurationTemplates(java.lang.String)
+   */
+  @Override
   public List<NamedConfiguration> getConfigurationTemplates( String type ) {
     ArrayList<NamedConfiguration> matches = new ArrayList<NamedConfiguration>();
     for ( NamedConfiguration configuration : configurationTemplates ) {
@@ -73,6 +89,7 @@ public class ConfigurationTemplateManager implements IConfigurationTemplateManag
   /* (non-Javadoc)
    * @see org.pentaho.di.core.namedconfig.IConfigurationTemplateManager#getConfigurationTemplate(java.lang.String)
    */
+  @Override
   public NamedConfiguration getConfigurationTemplate( String name ) {
     for ( NamedConfiguration configuration : configurationTemplates ) {
       if ( configuration.getName().equals( name ) ) {
@@ -82,6 +99,10 @@ public class ConfigurationTemplateManager implements IConfigurationTemplateManag
     return null;
   }
 
+  /* (non-Javadoc)
+   * @see org.pentaho.di.core.namedconfig.IConfigurationTemplateManager#addConfigurationTemplate(org.pentaho.di.core.namedconfig.model.NamedConfiguration)
+   */
+  @Override
   public void addConfigurationTemplate( NamedConfiguration configuration ) {
     configurationTemplates.add( configuration );
   }
