@@ -8843,6 +8843,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     delegates.nc.newNamedConfiguration( hasNamedConfigurationsInterface );
   }
 
+  public void editNamedConfiguration() {
+    HasNamedConfigurationsInterface hasNamedConfigurationsInterface = getActiveHasNamedConfigurationsInterface();
+    NamedConfiguration configuration = ( NamedConfiguration ) selectionObject;
+    delegates.nc.editNamedConfiguration( hasNamedConfigurationsInterface, configuration );
+  }  
+  
   public void delNamedConfiguration() {
     // TODO: need DELETE_NAMED_CONFIGURATION
     if ( RepositorySecurityUI.verifyOperations( shell, rep, RepositoryOperation.DELETE_DATABASE ) ) {
