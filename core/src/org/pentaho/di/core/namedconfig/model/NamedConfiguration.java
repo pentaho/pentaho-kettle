@@ -476,7 +476,6 @@ public class NamedConfiguration extends SharedObjectBase implements Cloneable, X
     return canProvide( required );
   }
   
-  
   public List<Group> getGroups() {
     return groups;
   }
@@ -498,7 +497,7 @@ public class NamedConfiguration extends SharedObjectBase implements Cloneable, X
     }
   }  
   
-  public Object clone() {
+  public NamedConfiguration clone() {
     NamedConfiguration config = new NamedConfiguration();
     config.replaceMeta( this );
     return config;

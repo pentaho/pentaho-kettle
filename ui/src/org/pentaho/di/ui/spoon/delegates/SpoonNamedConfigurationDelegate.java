@@ -33,8 +33,8 @@ import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.cluster.dialog.NamedClusterDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.namedconfig.dialog.NamedConfigurationDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 
 public class SpoonNamedConfigurationDelegate extends SpoonDelegate {
@@ -56,6 +56,15 @@ public class SpoonNamedConfigurationDelegate extends SpoonDelegate {
     hasNamedConfigurationsInterface.getNamedConfigurations().remove( idx );
     spoon.refreshTree();
   }
+  
+  public void editNamedConfiguration( HasNamedConfigurationsInterface hasNamedConfigurationsInterface, NamedConfiguration configuration ) {
+    if ( hasNamedConfigurationsInterface == null && spoon.rep == null ) {
+      return;
+    }
+    
+    NamedConfigurationDialog namedConfigurationDialog = new NamedConfigurationDialog( spoon.getShell() , configuration);
+    String result = namedConfigurationDialog.open();
+  }
 
   public void newNamedConfiguration( HasNamedConfigurationsInterface hasNamedConfigurationsInterface ) {
     if ( hasNamedConfigurationsInterface == null && spoon.rep == null ) {
@@ -65,10 +74,10 @@ public class SpoonNamedConfigurationDelegate extends SpoonDelegate {
     List<NamedConfiguration> configurations = ConfigurationTemplateManager.getInstance().getConfigurationTemplates( "hadoop-cluster" );
     NamedConfiguration configuration = configurations.get( 0 );   
     
-    NamedClusterDialog namedClusterDialog = new NamedClusterDialog( spoon.getShell() , configuration);
-    boolean result = namedClusterDialog.open();
+    NamedConfigurationDialog namedConfigurationDialog = new NamedConfigurationDialog( spoon.getShell() , configuration);
+    String result = namedConfigurationDialog.open();
     
-    if (result ) {
+    if ( result != null ) {
       if ( hasNamedConfigurationsInterface instanceof VariableSpace ) {
         configuration.shareVariablesWith( (VariableSpace) hasNamedConfigurationsInterface );
       } else {
