@@ -61,9 +61,12 @@ public class SpoonNamedConfigurationDelegate extends SpoonDelegate {
     if ( hasNamedConfigurationsInterface == null && spoon.rep == null ) {
       return;
     }
-    
-    NamedConfigurationDialog namedConfigurationDialog = new NamedConfigurationDialog( spoon.getShell() , configuration);
+    NamedConfiguration editingConfiguration = configuration.clone();
+    NamedConfigurationDialog namedConfigurationDialog = new NamedConfigurationDialog( spoon.getShell() , editingConfiguration);
     String result = namedConfigurationDialog.open();
+    if ( result != null ) {
+      configuration.replaceMeta( editingConfiguration );
+    }    
   }
 
   public void newNamedConfiguration( HasNamedConfigurationsInterface hasNamedConfigurationsInterface ) {
