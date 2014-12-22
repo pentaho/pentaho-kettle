@@ -66,6 +66,7 @@ public class SpoonNamedConfigurationDelegate extends SpoonDelegate {
     String result = namedConfigurationDialog.open();
     if ( result != null ) {
       configuration.replaceMeta( editingConfiguration );
+      spoon.refreshTree();
     }    
   }
 
@@ -75,7 +76,7 @@ public class SpoonNamedConfigurationDelegate extends SpoonDelegate {
     }
     
     List<NamedConfiguration> configurations = ConfigurationTemplateManager.getInstance().getConfigurationTemplates( "hadoop-cluster" );
-    NamedConfiguration configuration = configurations.get( 0 );   
+    NamedConfiguration configuration = configurations.get( 0 );
     
     NamedConfigurationDialog namedConfigurationDialog = new NamedConfigurationDialog( spoon.getShell() , configuration);
     String result = namedConfigurationDialog.open();
