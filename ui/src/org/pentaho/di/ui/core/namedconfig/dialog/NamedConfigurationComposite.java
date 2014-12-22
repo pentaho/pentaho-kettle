@@ -57,7 +57,7 @@ public class NamedConfigurationComposite extends Composite {
     processConfiguration( configuration );
   }
 
-  private void processConfiguration( NamedConfiguration configuration ) {
+  private void processConfiguration( final NamedConfiguration configuration ) {
 
     Composite mainParent = new Composite( this, SWT.NONE );
     props.setLook( mainParent );
@@ -81,18 +81,34 @@ public class NamedConfigurationComposite extends Composite {
     nameLabel.setText( BaseMessages.getString( PKG, "NamedConfiguarationDialog.NamedConfiguration.Name" ) + ":" );
     nameLabel.setLayoutData( gridLabelData );
 
-    Text nameValue = new Text( mainParent, SWT.None );
+    final Text nameValue = new Text( mainParent, SWT.None );
     nameValue.setText( configuration.getName() != null ? configuration.getName() : "" );
     nameValue.setLayoutData( gridFormData );
+    nameValue.addKeyListener( new KeyListener() {
+      public void keyReleased( KeyEvent event ) {
+        configuration.setName( nameValue.getText() );
+      }
+
+      public void keyPressed( KeyEvent event ) {
+      }
+    } );
 
     Label displayName = new Label( mainParent, SWT.NONE );
     displayName.setText( BaseMessages.getString( PKG, "NamedConfiguarationDialog.NamedConfiguration.DisplayName" )
         + ":" );
     displayName.setLayoutData( gridLabelData );
 
-    Text displayValue = new Text( mainParent, SWT.None );
+    final Text displayValue = new Text( mainParent, SWT.NONE );
     displayValue.setText( configuration.getDisplayName() != null ? configuration.getDisplayName() : "" );
     displayValue.setLayoutData( gridFormData );
+    displayValue.addKeyListener( new KeyListener() {
+      public void keyReleased( KeyEvent event ) {
+        configuration.setDisplayName( displayValue.getText() );
+      }
+
+      public void keyPressed( KeyEvent event ) {
+      }
+    } );
 
     List<Group> groups = configuration.getGroups();
     for ( Group group : groups ) {
@@ -105,6 +121,7 @@ public class NamedConfigurationComposite extends Composite {
     org.eclipse.swt.widgets.Group group = new org.eclipse.swt.widgets.Group( this, SWT.NONE );
     group.setText( groupModel.getName() );
     group.setLayout( new RowLayout( SWT.VERTICAL ) );
+    props.setLook( group );
 
     List<Property> properties = groupModel.getProperties();
     for ( final Property property : properties ) {
@@ -121,11 +138,11 @@ public class NamedConfigurationComposite extends Composite {
       propertyValue.setLayoutData( gridFormData );
       propertyValue.setText( property.getValue() != null ? property.getValue().toString() : "" );
       propertyValue.addKeyListener( new KeyListener() {
-        public void keyReleased( KeyEvent arg0 ) {
+        public void keyReleased( KeyEvent event ) {
           property.setValue( propertyValue.getText() );
         }
 
-        public void keyPressed( KeyEvent arg0 ) {
+        public void keyPressed( KeyEvent event ) {
         }
       } );
     }
