@@ -33,7 +33,7 @@ import java.util.List;
 
 /**
  * Injection support for the Excel Writer step.
- *
+ * <p/>
  * Injection only supported for attributes of the output fields.
  *
  * @author Gretchen Moran
@@ -54,12 +54,12 @@ public class ExcelWriterMetaInjection implements StepMetaInjectionInterface {
 
     StepInjectionMetaEntry fieldsEntry =
       new StepInjectionMetaEntry( "FIELDS",
-          ValueMetaInterface.TYPE_NONE, BaseMessages.getString( PKG, "ExcelWriterMetaInjection.AllFields" ) );
+        ValueMetaInterface.TYPE_NONE, BaseMessages.getString( PKG, "ExcelWriterMetaInjection.AllFields" ) );
     all.add( fieldsEntry );
 
     StepInjectionMetaEntry fieldEntry =
       new StepInjectionMetaEntry( "FIELD",
-          ValueMetaInterface.TYPE_NONE, BaseMessages.getString( PKG, "ExcelWriterMetaInjection.AllFields" ) );
+        ValueMetaInterface.TYPE_NONE, BaseMessages.getString( PKG, "ExcelWriterMetaInjection.AllFields" ) );
     fieldsEntry.getDetails().add( fieldEntry );
 
     for ( Entry entry : Entry.values() ) {
@@ -95,37 +95,37 @@ public class ExcelWriterMetaInjection implements StepMetaInjectionInterface {
                 for ( StepInjectionMetaEntry entry : entries ) {
                   Entry metaEntry = Entry.findEntry( entry.getKey() );
                   if ( metaEntry != null ) {
-                    String value = (String) entry.getValue();
+                    Object value = entry.getValue();
                     switch ( metaEntry ) {
                       case NAME:
-                        excelOutputField.setName( value );
+                        excelOutputField.setName( (String) value );
                         break;
                       case TYPE:
-                        excelOutputField.setType( value );
+                        excelOutputField.setType( (String) value );
                         break;
                       case FORMAT:
-                        excelOutputField.setFormat( value );
+                        excelOutputField.setFormat( (String) value );
                         break;
                       case STYLECELL:
-                        excelOutputField.setStyleCell( value );
+                        excelOutputField.setStyleCell( (String) value );
                         break;
                       case FIELDTITLE:
-                        excelOutputField.setTitle( value );
+                        excelOutputField.setTitle( (String) value );
                         break;
                       case TITLESTYLE:
-                        excelOutputField.setTitleStyleCell( value );
+                        excelOutputField.setTitleStyleCell( (String) value );
                         break;
                       case FORMULA:
-                        excelOutputField.setFormula( Boolean.valueOf( value ) );
+                        excelOutputField.setFormula( (Boolean) value );
                         break;
                       case HYPERLINKFIELD:
-                        excelOutputField.setHyperlinkField( value );
+                        excelOutputField.setHyperlinkField( (String) value );
                         break;
                       case CELLCOMMENT:
-                        excelOutputField.setCommentField( value );
+                        excelOutputField.setCommentField( (String) value );
                         break;
                       case COMMENTAUTHOR:
-                        excelOutputField.setCommentAuthorField( value );
+                        excelOutputField.setCommentAuthorField( (String) value );
                         break;
                       default:
                         break;
@@ -141,7 +141,7 @@ public class ExcelWriterMetaInjection implements StepMetaInjectionInterface {
       }
     }
 
-    meta.setOutputFields(excelOutputFields.toArray( new ExcelWriterStepField[excelOutputFields.size()] ) );
+    meta.setOutputFields( excelOutputFields.toArray( new ExcelWriterStepField[excelOutputFields.size()] ) );
 
   }
 
@@ -156,31 +156,30 @@ public class ExcelWriterMetaInjection implements StepMetaInjectionInterface {
   private enum Entry {
 
     FIELDS( ValueMetaInterface.TYPE_NONE,
-        BaseMessages.getString( PKG, "ExcelWriterMetaInjection.AllFields" ) ),
+      BaseMessages.getString( PKG, "ExcelWriterMetaInjection.AllFields" ) ),
     FIELD( ValueMetaInterface.TYPE_NONE,
-        BaseMessages.getString( PKG, "ExcelWriterMetaInjection.AllFields" ) ),
+      BaseMessages.getString( PKG, "ExcelWriterMetaInjection.AllFields" ) ),
 
     NAME( ValueMetaInterface.TYPE_STRING,
-        BaseMessages.getString( PKG, "ExcelWriterMetaInjection.FieldName" ) ),
+      BaseMessages.getString( PKG, "ExcelWriterMetaInjection.FieldName" ) ),
     TYPE( ValueMetaInterface.TYPE_STRING,
-        BaseMessages.getString( PKG, "ExcelWriterMetaInjection.FieldType" ) ),
+      BaseMessages.getString( PKG, "ExcelWriterMetaInjection.FieldType" ) ),
     FORMAT( ValueMetaInterface.TYPE_STRING,
-        BaseMessages.getString( PKG, "ExcelWriterDialog.FormatColumn.Column" ) ),
+      BaseMessages.getString( PKG, "ExcelWriterDialog.FormatColumn.Column" ) ),
     STYLECELL( ValueMetaInterface.TYPE_STRING,
-        BaseMessages.getString( PKG, "ExcelWriterDialog.UseStyleCell.Column" ) ),
+      BaseMessages.getString( PKG, "ExcelWriterDialog.UseStyleCell.Column" ) ),
     FIELDTITLE( ValueMetaInterface.TYPE_STRING,
-        BaseMessages.getString( PKG, "ExcelWriterDialog.TitleColumn.Column" ) ),
+      BaseMessages.getString( PKG, "ExcelWriterDialog.TitleColumn.Column" ) ),
     TITLESTYLE( ValueMetaInterface.TYPE_STRING,
-        BaseMessages.getString( PKG, "ExcelWriterDialog.UseTitleStyleCell.Column" ) ),
+      BaseMessages.getString( PKG, "ExcelWriterDialog.UseTitleStyleCell.Column" ) ),
     FORMULA( ValueMetaInterface.TYPE_BOOLEAN,
-        BaseMessages.getString( PKG, "ExcelWriterDialog.FormulaField.Column" ) ),
+      BaseMessages.getString( PKG, "ExcelWriterDialog.FormulaField.Column" ) ),
     HYPERLINKFIELD( ValueMetaInterface.TYPE_STRING,
-        BaseMessages.getString( PKG, "ExcelWriterDialog.HyperLinkField.Column" ) ),
+      BaseMessages.getString( PKG, "ExcelWriterDialog.HyperLinkField.Column" ) ),
     CELLCOMMENT( ValueMetaInterface.TYPE_STRING,
-        BaseMessages.getString( PKG, "ExcelWriterDialog.CommentField.Column" ) ),
+      BaseMessages.getString( PKG, "ExcelWriterDialog.CommentField.Column" ) ),
     COMMENTAUTHOR( ValueMetaInterface.TYPE_STRING,
-        BaseMessages.getString( PKG, "ExcelWriterDialog.CommentAuthor.Column" ) );
-
+      BaseMessages.getString( PKG, "ExcelWriterDialog.CommentAuthor.Column" ) );
 
 
     private int valueType;
