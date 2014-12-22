@@ -33,6 +33,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -402,6 +403,27 @@ public interface JobEntryInterface {
    *
    * @param rep
    *          the repository object
+   * @param id_jobentry
+   *          the id of the job entry
+   * @param databases
+   *          the list of databases
+   * @param slaveServers
+   *          the list of slave servers
+   * @param namedConfigurations
+   *          the list of namedConfigurations
+   * @throws KettleException
+   *           if any errors occur during the load
+   */
+  @Deprecated
+  public void loadRep( Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases,
+    List<SlaveServer> slaveServers, List<NamedConfiguration> namedConfigurations ) throws KettleException;  
+  
+  /**
+   * This method is called by PDI whenever a job entry needs to read its configuration from a PDI repository. The job
+   * entry id given in the arguments should be used as the identifier when using the repository's serialization methods.
+   *
+   * @param rep
+   *          the repository object
    * @param metaStore
    *          the MetaStore to use
    * @param id_jobentry
@@ -413,8 +435,32 @@ public interface JobEntryInterface {
    * @throws KettleException
    *           if any errors occur during the load
    */
+  @Deprecated
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException;
+  
+  
+  /**
+   * This method is called by PDI whenever a job entry needs to read its configuration from a PDI repository. The job
+   * entry id given in the arguments should be used as the identifier when using the repository's serialization methods.
+   *
+   * @param rep
+   *          the repository object
+   * @param metaStore
+   *          the MetaStore to use
+   * @param id_jobentry
+   *          the id of the job entry
+   * @param databases
+   *          the list of databases
+   * @param slaveServers
+   *          the list of slave servers
+   * @param namedConfigurations
+   *          the list of namedConfigurations
+   * @throws KettleException
+   *           if any errors occur during the load
+   */
+  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
+    List<SlaveServer> slaveServers, List<NamedConfiguration> namedConfigurations ) throws KettleException;
 
   /**
    * Checks if the job entry has started

@@ -44,6 +44,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -1064,16 +1065,28 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     // provided for API (compile & runtime) compatibility with v4
   }
 
+  @Deprecated
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     // provided for API (compile & runtime) compatibility with v4
   }
 
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases,
+      List<NamedConfiguration> namedConfigurations ) throws KettleException {
+    // provided for API (compile & runtime) compatibility with v4
+  }
+  
   @Deprecated
   public void readRep( Repository rep, ObjectId id_step, List<DatabaseMeta> databases,
     Map<String, Counter> counters ) throws KettleException {
     // provided for API (compile & runtime) compatibility with v4
   }
 
+  @Deprecated
+  public void readRep( Repository rep, ObjectId id_step, List<DatabaseMeta> databases, 
+    List<NamedConfiguration> namedConfigurations, Map<String, Counter> counters ) throws KettleException {
+    // provided for API (compile & runtime) compatibility with v4
+  }
+  
   @Deprecated
   public void loadXML( Node stepnode, List<DatabaseMeta> databases ) throws KettleXMLException {
     // provided for API (compile & runtime) compatibility with v4

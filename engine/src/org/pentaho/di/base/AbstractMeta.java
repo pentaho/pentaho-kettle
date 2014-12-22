@@ -1288,6 +1288,18 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
   }
 
   /**
+   * Clears the flags for whether the transformation's named configurations have changed.
+   *
+   */
+  public void clearChangedNamedConfigurations() {
+    changedNamedConfigs = false;
+
+    for ( int i = 0; i < nrNamedConfigurations(); i++ ) {
+      getNamedConfiguration( i ).setChanged( false );
+    }
+  }  
+  
+  /**
    * Sets the channel log table for the job.
    * 
    * @param channelLogTable
@@ -1757,6 +1769,7 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
   @Override
   public void clearChanged() {
     clearChangedDatabases();
+    clearChangedNamedConfigurations();
     changedNotes = false;
     for ( int i = 0; i < nrNotes(); i++ ) {
       getNote( i ).setChanged( false );
