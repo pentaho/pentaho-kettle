@@ -33,6 +33,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.ObjectId;
@@ -307,6 +308,27 @@ public interface StepMetaInterface {
    *
    * @param rep
    *          The repository to read from
+   * @param id_step
+   *          The step ID
+   * @param databases
+   *          The databases to reference
+   * @param namedConfigurations
+   *          The namedConfigurations to reference
+   * @param counters
+   *          The counters to reference
+   * @throws KettleException
+   *           When an unexpected error occurred (database, network, etc)
+   * @deprecated
+   */
+  @Deprecated
+  public void readRep( Repository rep, ObjectId id_step, List<DatabaseMeta> databases,
+    List<NamedConfiguration> namedConfigurations, Map<String, Counter> counters ) throws KettleException;  
+  
+  /**
+   * Read the steps information from a Kettle repository
+   *
+   * @param rep
+   *          The repository to read from
    * @param metaStore
    *          The MetaStore to read external information from
    * @param id_step
@@ -316,8 +338,27 @@ public interface StepMetaInterface {
    * @throws KettleException
    *           When an unexpected error occurred (database, network, etc)
    */
+  @Deprecated
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException;
 
+  /**
+   * Read the steps information from a Kettle repository
+   *
+   * @param rep
+   *          The repository to read from
+   * @param metaStore
+   *          The MetaStore to read external information from
+   * @param id_step
+   *          The step ID
+   * @param databases
+   *          The databases to reference
+   * @throws KettleException
+   *           When an unexpected error occurred (database, network, etc)
+   */
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, 
+    List<DatabaseMeta> databases, List<NamedConfiguration> namedConfigurations ) throws KettleException;
+  
+  
   /**
    * Checks the settings of this step and puts the findings in a remarks List.
    *

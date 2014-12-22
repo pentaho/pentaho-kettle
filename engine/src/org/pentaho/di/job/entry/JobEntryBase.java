@@ -46,6 +46,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -476,11 +477,41 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     // Nothing by default, provided for API and runtime compatibility against v4 code
   }
 
+  @Deprecated
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException {
     // Nothing by default, provided for API and runtime compatibility against v4 code
   }
 
+  @Deprecated
+  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
+    List<SlaveServer> slaveServers, List<NamedConfiguration> namedConfiguration ) throws KettleException {
+    // Nothing by default, provided for API and runtime compatibility against v4 code
+  }
+  
+  /**
+   * This method is called by PDI whenever a job entry needs to read its configuration from a PDI repository. For
+   * JobEntryBase, this method performs no operations.
+   *
+   * @param rep
+   *          the repository object
+   * @param id_jobentry
+   *          the id of the job entry
+   * @param databases
+   *          the list of databases
+   * @param slaveServers
+   *          the list of slave servers
+   * @param namedConfigurations
+   *          the list of namedConfigurations
+   * @throws KettleException
+   *           if any errors occur during the load
+   */
+  public void loadRep( Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases,
+    List<SlaveServer> slaveServers, List<NamedConfiguration> namedConfiguration ) throws KettleException {
+    // Nothing by default, provided for API and runtime compatibility against v4 code
+  }
+  
+  
   /**
    * This method is called by PDI whenever a job entry needs to save its settings to a PDI repository. For JobEntryBase,
    * this method performs no operations.
