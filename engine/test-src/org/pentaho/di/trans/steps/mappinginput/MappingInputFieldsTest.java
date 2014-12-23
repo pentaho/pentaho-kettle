@@ -62,13 +62,13 @@ public class MappingInputFieldsTest {
     Map<Class<?>, String> classes = new HashMap<Class<?>, String>();
     classes.put( ValueMetaInterface.class, "org.pentaho.di.core.row.value.ValueMetaString" );
     Plugin p1 =
-      new Plugin( new String[] { "2" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false,
+        new Plugin( new String[] { "2" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false,
         true, classes, null, null, null );
 
     classes = new HashMap<Class<?>, String>();
     classes.put( ValueMetaInterface.class, "org.pentaho.di.core.row.value.ValueMetaInteger" );
     Plugin p2 =
-      new Plugin( new String[] { "5" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false,
+        new Plugin( new String[] { "5" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false,
         true, classes, null, null, null );
 
     PluginRegistry.getInstance().registerPlugin( ValueMetaPluginType.class, p1 );
@@ -97,13 +97,12 @@ public class MappingInputFieldsTest {
     step.getTrans().setRunning( true );
   }
 
-  @After
-  public void tearDown() throws Exception {
-  }
-
-  /*
-   * verifies: If SelectingAndSortingUnspecifiedFields checkbox is checked, then 1)all fields throw to the next step;
-   * 2)fields are resorted: mapped fields, then alphabetical sorted not mapped fields.
+  /**
+   * verifies: If SelectingAndSortingUnspecifiedFields checkbox is checked, then 
+   * <ol>
+   * <li>all fields throw to the next step;
+   * <li>fields are resorted: mapped fields, then alphabetical sorted not mapped fields.
+   * </ol>
    */
   @Test
   public void testSelectingAndSortingUnspecifiedFields() throws Exception {
@@ -130,9 +129,9 @@ public class MappingInputFieldsTest {
     rm.addValueMeta( new ValueMeta( "number5", ValueMetaInterface.TYPE_INTEGER ) );
 
     in.putRow( rm, new Object[] { "str", new Integer( 100501 ), new Integer( 100502 ), new Integer( 100503 ),
-      new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );
+        new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );
     in.putRow( rm, new Object[] { "str_1", new Integer( 200501 ), new Integer( 200502 ), new Integer( 200503 ),
-      new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
+        new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
 
     step.getInputRowSets().add( in );
     step.getOutputRowSets().add( out );
@@ -252,9 +251,9 @@ public class MappingInputFieldsTest {
     rm.addValueMeta( new ValueMeta( "number5", ValueMetaInterface.TYPE_INTEGER ) );
 
     in.putRow( rm, new Object[] { "str", new Integer( 100501 ), new Integer( 100502 ), new Integer( 100503 ),
-      new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );
+        new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );
     in.putRow( rm, new Object[] { "str_1", new Integer( 200501 ), new Integer( 200502 ), new Integer( 200503 ),
-      new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
+        new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
 
     step.getInputRowSets().add( in );
     step.getOutputRowSets().add( out );
