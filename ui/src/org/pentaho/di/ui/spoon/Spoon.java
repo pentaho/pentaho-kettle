@@ -55,7 +55,6 @@ import java.util.regex.Pattern;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
@@ -337,6 +336,8 @@ import org.pentaho.xul.swt.tab.TabListener;
 import org.pentaho.xul.swt.tab.TabSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * This class handles the main window of the Spoon graphical transformation editor.
@@ -8840,13 +8841,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void newNamedConfiguration() {
     HasNamedConfigurationsInterface hasNamedConfigurationsInterface = getActiveHasNamedConfigurationsInterface();
-    delegates.nc.newNamedConfiguration( hasNamedConfigurationsInterface );
+    delegates.nc.newNamedConfiguration( hasNamedConfigurationsInterface, getShell());
   }
 
   public void editNamedConfiguration() {
     HasNamedConfigurationsInterface hasNamedConfigurationsInterface = getActiveHasNamedConfigurationsInterface();
     NamedConfiguration configuration = ( NamedConfiguration ) selectionObject;
-    delegates.nc.editNamedConfiguration( hasNamedConfigurationsInterface, configuration );
+    delegates.nc.editNamedConfiguration( hasNamedConfigurationsInterface, configuration, getShell() );
   }  
   
   public void delNamedConfiguration() {
