@@ -25,4 +25,14 @@ public class IngresVectorwise_PDI_12555_Test {
 
     assertEquals( actual, expected );
   }
+  
+  @Test
+  public void testMasqueradPassword() {
+    String cmdUsingVwload = "this is the string without brackets";
+
+    final IngresVectorwiseLoader ingresVectorwiseLoaderMock = mock( IngresVectorwiseLoader.class );
+    doCallRealMethod().when( ingresVectorwiseLoaderMock ).masqueradPassword( anyString() );
+
+    ingresVectorwiseLoaderMock.masqueradPassword( cmdUsingVwload );
+  }
 }

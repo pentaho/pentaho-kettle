@@ -125,8 +125,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       try {
         // masquerading the password for log
         if ( meta.isUseDynamicVNode() ) {
-          logDetailed( "Executing command: " + cmd.substring( 0, cmd.indexOf( "[" ) ) + "[username,password]"
-            + cmd.substring( cmd.indexOf( "]" ) + 1 ) );
+          String logMessage = masqueradPassword(cmd);
+          logDetailed( "Executing command: " + logMessage );
         } else {
           logDetailed( "Executing command: " + cmd );
         }
@@ -871,4 +871,11 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
     return builder.toString();
   }
 
+
+  @VisibleForTesting
+  String masqueradPassword( String cmd ) {
+    String result =
+        cmd.substring( 0, cmd.indexOf( "[" ) ) + "[username,password]" + cmd.substring( cmd.indexOf( "]" ) + 1 );
+    return result;
+  }
 }
