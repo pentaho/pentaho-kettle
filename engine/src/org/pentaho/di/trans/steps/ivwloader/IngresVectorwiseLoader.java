@@ -30,6 +30,8 @@ import java.io.LineNumberReader;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -123,13 +125,13 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       String cmd = createCommandLine( meta );
 
       try {
-        // masquerading the password for log
+        String logMessage = cmd;
         if ( meta.isUseDynamicVNode() ) {
-          String logMessage = masqueradPassword(cmd);
-          logDetailed( "Executing command: " + logMessage );
-        } else {
-          logDetailed( "Executing command: " + cmd );
+          // masquerading the password for log
+          logMessage = masqueradPassword( logMessage );
         }
+        logDetailed( "Executing command: " + logMessage );
+
         data.sqlProcess = rt.exec( cmd );
 
         // any error message?
@@ -873,9 +875,30 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
 
   @VisibleForTesting
-  String masqueradPassword( String cmd ) {
-    String result =
-        cmd.substring( 0, cmd.indexOf( "[" ) ) + "[username,password]" + cmd.substring( cmd.indexOf( "]" ) + 1 );
+  String masqueradPassword( String input ) {
+    String regex = "\\[.*,.*\\]";
+    String substitution = "[username,password]";
+
+    String result = substitute( input, regex, substitution );
+
+    if ( !result.isEmpty() ) {
+      return result;
+    }
+    regex = "-u\\s.*\\s-P\\s.*?\\s";
+    substitution = "-u username, -P password ";
+
+    result = substitute( input, regex, substitution );
+
     return result;
+  }
+
+  @VisibleForTesting
+  String substitute( String input, String regex, String substitution ) {
+    Pattern replace = Pattern.compile( regex );
+    Matcher matcher = replace.matcher( input );
+    if ( matcher.find() ) {
+      return matcher.replaceAll( substitution );
+    }
+    return "";
   }
 }
