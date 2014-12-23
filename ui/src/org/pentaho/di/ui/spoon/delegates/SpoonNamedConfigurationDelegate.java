@@ -24,6 +24,7 @@ package org.pentaho.di.ui.spoon.delegates;
 
 import java.util.List;
 
+import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.base.HasNamedConfigurationsInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -57,12 +58,12 @@ public class SpoonNamedConfigurationDelegate extends SpoonDelegate {
     spoon.refreshTree();
   }
   
-  public void editNamedConfiguration( HasNamedConfigurationsInterface hasNamedConfigurationsInterface, NamedConfiguration configuration ) {
+  public void editNamedConfiguration( HasNamedConfigurationsInterface hasNamedConfigurationsInterface, NamedConfiguration configuration, Shell shell ) {
     if ( hasNamedConfigurationsInterface == null && spoon.rep == null ) {
       return;
     }
     NamedConfiguration editingConfiguration = configuration.clone();
-    NamedConfigurationDialog namedConfigurationDialog = new NamedConfigurationDialog( spoon.getShell() , editingConfiguration);
+    NamedConfigurationDialog namedConfigurationDialog = new NamedConfigurationDialog( shell , editingConfiguration);
     String result = namedConfigurationDialog.open();
     if ( result != null ) {
       configuration.replaceMeta( editingConfiguration );
@@ -70,7 +71,7 @@ public class SpoonNamedConfigurationDelegate extends SpoonDelegate {
     }    
   }
 
-  public void newNamedConfiguration( HasNamedConfigurationsInterface hasNamedConfigurationsInterface ) {
+  public void newNamedConfiguration( HasNamedConfigurationsInterface hasNamedConfigurationsInterface, Shell shell) {
     if ( hasNamedConfigurationsInterface == null && spoon.rep == null ) {
       return;
     }
@@ -78,7 +79,7 @@ public class SpoonNamedConfigurationDelegate extends SpoonDelegate {
     List<NamedConfiguration> configurations = ConfigurationTemplateManager.getInstance().getConfigurationTemplates( "hadoop-cluster" );
     NamedConfiguration configuration = configurations.get( 0 );
     
-    NamedConfigurationDialog namedConfigurationDialog = new NamedConfigurationDialog( spoon.getShell() , configuration);
+    NamedConfigurationDialog namedConfigurationDialog = new NamedConfigurationDialog( shell , configuration);
     String result = namedConfigurationDialog.open();
     
     if ( result != null ) {
