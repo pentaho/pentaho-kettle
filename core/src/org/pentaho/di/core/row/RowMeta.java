@@ -32,8 +32,11 @@ import java.math.BigDecimal;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
@@ -53,9 +56,11 @@ public class RowMeta implements RowMetaInterface {
 
   private List<ValueMetaInterface> valueMetaList;
   private List<Integer> valuesThatNeedRealClone;
+  private Map<String, Integer> valueIndexMap;
 
   public RowMeta() {
     valueMetaList = new ArrayList<ValueMetaInterface>();
+    valueIndexMap = new HashMap<String, Integer>();
   }
 
   @Override
@@ -113,7 +118,7 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public List<ValueMetaInterface> getValueMetaList() {
-    return valueMetaList;
+    return Collections.unmodifiableList( valueMetaList );
   }
 
   /**
@@ -123,6 +128,8 @@ public class RowMeta implements RowMetaInterface {
   @Override
   public void setValueMetaList( List<ValueMetaInterface> valueMetaList ) {
     this.valueMetaList = valueMetaList;
+    // we have new list and we need re-hash
+    indexValueMap();
   }
 
   /**
@@ -155,11 +162,14 @@ public class RowMeta implements RowMetaInterface {
   @Override
   public void addValueMeta( ValueMetaInterface meta ) {
     if ( meta != null ) {
+      ValueMetaInterface newMeta;
       if ( !exists( meta ) ) {
-        valueMetaList.add( meta );
+        newMeta = meta;
       } else {
-        valueMetaList.add( renameValueMetaIfInRow( meta ) );
+        newMeta = renameValueMetaIfInRow( meta );
       }
+      valueMetaList.add( newMeta );
+      valueIndexMap.put( newMeta.getName().toLowerCase(), valueMetaList.size() - 1 );
     }
   }
 
@@ -175,11 +185,25 @@ public class RowMeta implements RowMetaInterface {
   @Override
   public void addValueMeta( int index, ValueMetaInterface meta ) {
     if ( meta != null ) {
+      ValueMetaInterface newMeta;
       if ( !exists( meta ) ) {
-        valueMetaList.add( index, meta );
+        newMeta = meta;
       } else {
-        valueMetaList.add( index, renameValueMetaIfInRow( meta ) );
+        newMeta = renameValueMetaIfInRow( meta );
       }
+      valueMetaList.add( index, newMeta );
+
+      indexValueMap();
+    }
+  }
+
+  /**
+   *  re-index the map
+   */
+  private void indexValueMap() {
+    valueIndexMap.clear();
+    for ( int i = 0; i < valueMetaList.size(); i++ ) {
+      valueIndexMap.put( valueMetaList.get( i ).getName().toLowerCase(), i );
     }
   }
 
@@ -212,6 +236,8 @@ public class RowMeta implements RowMetaInterface {
     if ( valueMeta != null ) {
       valueMetaList.set( index, valueMeta );
     }
+    // array list got shifted - so we can't avoid re-hash!
+    indexValueMap();
   }
 
   /**
@@ -443,12 +469,11 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public int indexOfValue( String valueName ) {
-    for ( int i = 0; i < valueMetaList.size(); i++ ) {
-      if ( getValueMeta( i ).getName().equalsIgnoreCase( valueName ) ) {
-        return i;
-      }
+    Integer index = valueIndexMap.get( valueName.toLowerCase() );
+    if ( index == null ) {
+      return -1;
     }
-    return -1;
+    return index;
   }
 
   /**
@@ -460,13 +485,12 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public ValueMetaInterface searchValueMeta( String valueName ) {
-    for ( int i = 0; i < valueMetaList.size(); i++ ) {
-      ValueMetaInterface valueMeta = getValueMeta( i );
-      if ( valueMeta.getName().equalsIgnoreCase( valueName ) ) {
-        return valueMeta;
-      }
+
+    Integer index = valueIndexMap.get( valueName.toLowerCase() );
+    if ( index == null ) {
+      return null;
     }
-    return null;
+    return valueMetaList.get( index );
   }
 
   @Override
@@ -638,6 +662,7 @@ public class RowMeta implements RowMetaInterface {
   @Override
   public void clear() {
     valueMetaList.clear();
+    valueIndexMap.clear();
   }
 
   @Override
@@ -647,12 +672,13 @@ public class RowMeta implements RowMetaInterface {
       throw new KettleValueException( "Unable to find value metadata with name '"
         + valueName + "', so I can't delete it." );
     }
-    valueMetaList.remove( index );
+    removeValueMeta( index );
   }
 
   @Override
   public void removeValueMeta( int index ) {
     valueMetaList.remove( index );
+    indexValueMap();
   }
 
   /**
