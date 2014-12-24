@@ -131,38 +131,35 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       //
 
       String cmd = createCommandLine( meta );
+      String logMessage = masqueradPassword( cmd );
+      if ( meta.isUseDynamicVNode() ) {
+        // masquerading the password for log
+        logMessage = masqueradPassword( cmd );
+      }
+      logDetailed( "Executing command: " + logMessage );
 
       try {
-        String logMessage = masqueradPassword( cmd );
-        if ( meta.isUseDynamicVNode() ) {
-          // masquerading the password for log
-          logMessage = masqueradPassword( cmd );
-          logDetailed( "Executing command: " + logMessage );
-        } else {
-          logDetailed( "Executing command: " + cmd );
-        }
         data.sqlProcess = rt.exec( cmd );
-
-        // any error message?
-        //
-        data.errorLogger = new StreamLogger( log, data.sqlProcess.getErrorStream(), "ERR_SQL", true );
-        new Thread( data.errorLogger ).start();
-
-        // Where do we send the data to? --> To STDIN of the sql process
-        //
-        data.sqlOutputStream = data.sqlProcess.getOutputStream();
-
-        logWriter = new LogWriter( data.sqlProcess.getInputStream() );
-        logWriteThread = new Thread( logWriter, "IngresVecorWiseStepLogWriter" );
-        logWriteThread.start();
-
-        vwLoadMonitor = new VWloadMonitor( data.sqlProcess, data.outputLogger, logWriteThread );
-        vwLoadMonitorThread = new Thread( vwLoadMonitor );
-        vwLoadMonitorThread.start();
-
-      } catch ( Exception ex ) {
-        throw new KettleException( "Error while executing psql : " + cmd, ex );
+      } catch ( IOException ex ) {
+        throw new KettleException( "Error while executing psql : " + logMessage, ex );
       }
+
+      // any error message?
+      //
+      data.errorLogger = new StreamLogger( log, data.sqlProcess.getErrorStream(), "ERR_SQL", true );
+      new Thread( data.errorLogger ).start();
+
+      // Where do we send the data to? --> To STDIN of the sql process
+      //
+      data.sqlOutputStream = data.sqlProcess.getOutputStream();
+
+      logWriter = new LogWriter( data.sqlProcess.getInputStream() );
+      logWriteThread = new Thread( logWriter, "IngresVecorWiseStepLogWriter" );
+      logWriteThread.start();
+
+      vwLoadMonitor = new VWloadMonitor( data.sqlProcess, data.outputLogger, logWriteThread );
+      vwLoadMonitorThread = new Thread( vwLoadMonitor );
+      vwLoadMonitorThread.start();
 
       logDetailed( "Connected to VectorWise with the 'sql' command." );
 
