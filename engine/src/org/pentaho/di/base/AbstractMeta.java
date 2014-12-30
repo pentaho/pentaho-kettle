@@ -37,6 +37,8 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
@@ -46,8 +48,11 @@ import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.DefaultLogLevel;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.namedconfig.NamedConfigurationManager;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -57,6 +62,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
@@ -67,8 +73,13 @@ import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.api.IMetaStoreElement;
+import org.pentaho.metastore.api.IMetaStoreElementType;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.pentaho.metastore.persist.MetaStoreFactory;
+import org.pentaho.metastore.util.PentahoDefaults;
 
-public abstract class AbstractMeta extends ChangedFlag implements UndoInterface, HasDatabasesInterface, VariableSpace,
+public abstract class AbstractMeta extends ChangedFlag implements UndoInterface, HasDatabasesInterface, HasNamedConfigurationsInterface, VariableSpace,
     EngineMetaInterface, NamedParams, HasSlaveServersInterface, AttributesInterface, HasRepositoryInterface,
     LoggingObjectInterface {
 
@@ -105,6 +116,8 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
 
   protected List<DatabaseMeta> databases;
 
+  protected List<NamedConfiguration> namedConfigs;
+  
   protected List<NameChangedListener> nameChangedListeners;
 
   protected List<FilenameChangedListener> filenameChangedListeners;
@@ -117,7 +130,7 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
 
   protected ChannelLogTable channelLogTable;
 
-  protected boolean changedNotes, changedDatabases;
+  protected boolean changedNotes, changedDatabases, changedNamedConfigs;
 
   protected List<TransAction> undo;
 
@@ -387,6 +400,211 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
     return databases.get( i );
   }
 
+  
+  
+  
+  
+  
+  
+  /**
+   * Find a named configuration by it's name
+   * 
+   * @param name
+   *          The configuration name to look for
+   * @return The configuration or null if nothing was found.
+   */
+  @Override
+  public NamedConfiguration findNamedConfiguration( String name ) {
+    for ( int i = 0; i < nrNamedConfigurations(); i++ ) {
+      NamedConfiguration c = getNamedConfiguration( i );
+      if ( c != null && c.getName().equalsIgnoreCase( name ) ) {
+        return c;
+      }
+    }
+    return null;
+  }
+  
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.pentaho.di.base.HasNamedConfigurationsInterface#nrNamedConfigurations()
+   */
+  @Override
+  public int nrNamedConfigurations() {
+    return namedConfigs.size();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.pentaho.di.base.HasNamedConfigurationsInterface#getNamedConfiguration(int)
+   */
+  @Override
+  public NamedConfiguration getNamedConfiguration( int i ) {
+    return namedConfigs.get( i );
+  }  
+  
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.pentaho.di.base.HasNamedConfigurationsInterface#removeNamedConfiguration(int)
+   */
+  @Override
+  public void removeNamedConfiguration( int i ) {
+    if ( i < 0 || i >= namedConfigs.size() ) {
+      return;
+    }
+    namedConfigs.remove( i );
+    changedNamedConfigs = true;
+  }  
+  
+  /**
+   * Sets the named configurations.
+   * 
+   * @param configurations
+   *          The configurations to set.
+   */
+  @Override
+  public void setNamedConfigurations( List<NamedConfiguration> configurations ) {
+    Collections.sort( configurations, NamedConfiguration.comparator );
+    this.namedConfigs = configurations;
+  }  
+  
+  /**
+   * Add a named configuration to the meta if that didn't exist yet. Otherwise, replace it.
+   * 
+   * @param configuration
+   *          The Configuration to be added.
+   */
+  @Override
+  public void addOrReplaceNamedConfiguration( NamedConfiguration configuration ) {
+    int index = namedConfigs.indexOf( configuration );
+    if ( index < 0 ) {
+      namedConfigs.add( configuration );
+    } else {
+      NamedConfiguration previous = namedConfigs.get( index );
+      previous.replaceMeta( configuration );
+    }
+    setChanged();
+  }  
+  
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.pentaho.di.base.HasNamedConfigurationsInterface#haveNamedConfigurationsChanged()
+   */
+  @Override
+  public boolean haveNamedConfigurationsChanged() {
+    if ( changedNamedConfigs ) {
+      return true;
+    }
+
+    for ( int i = 0; i < nrNamedConfigurations(); i++ ) {
+      NamedConfiguration c = getNamedConfiguration( i );
+      if ( c.hasChanged() ) {
+        return true;
+      }
+    }
+    return false;
+  }  
+  
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.pentaho.di.trans.HasNamedConfigurationsInterface#addNamedConfiguration(org.pentaho.di.core.namedconfig.model.Configuration)
+   */
+  @Override
+  public void addNamedConfiguration( NamedConfiguration c ) {
+    namedConfigs.add( c );
+    Collections.sort( namedConfigs, NamedConfiguration.comparator );
+    changedNamedConfigs = true;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.pentaho.di.trans.HasNamedConfigurationsInterface#addNamedConfiguration(int, org.pentaho.di.core.namedconfig.model.Configuration)
+   */
+  @Override
+  public void addNamedConfiguration( int p, NamedConfiguration c ) {
+    namedConfigs.add( p, c );
+    changedNamedConfigs = true;
+  }  
+  
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.pentaho.di.trans.HasNamedConfigurationsInterface#addNamedConfiguration(int, org.pentaho.di.core.namedconfig.model.Configuration)
+   */
+  @Override
+  public int indexOfNamedConfiguration( NamedConfiguration c ) {
+    return namedConfigs.indexOf( c );
+  }  
+  
+  /**
+   * Returns a list of the named configurations.
+   * 
+   * @return Returns the configurations.
+   */
+  @Override
+  public List<NamedConfiguration> getNamedConfigurations() {
+    return namedConfigs;
+  }
+  
+  /**
+   * Returns a list of the named configuration names.
+   * 
+   * @return Returns the configuration names.
+   */
+  @Override
+  public String[] getNamedConfigurationNames() {
+    String[] names = new String[namedConfigs.size()];
+    int i=0;
+    for ( NamedConfiguration nc : namedConfigs ) {
+      names[i++] = nc.getName();
+    }
+    return names;
+  }  
+  
+  
+  public void importFromMetaStore() throws MetaStoreException, KettlePluginException {
+    // Read the databases...
+    //
+    if ( metaStore != null ) {
+      IMetaStoreElementType databaseType =
+        metaStore.getElementTypeByName(
+          PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
+      if ( databaseType != null ) {
+        List<IMetaStoreElement> databaseElements = metaStore.getElements( PentahoDefaults.NAMESPACE, databaseType );
+        for ( IMetaStoreElement databaseElement : databaseElements ) {
+          addOrReplaceDatabase( DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(
+            metaStore, databaseElement ) );
+        }
+      }
+      
+      // handle named configurations
+      for ( NamedConfiguration namedConfiguration : NamedConfigurationManager.getInstance().list( metaStore) ) {
+        namedConfiguration.shareVariablesWith( this );
+        addOrReplaceNamedConfiguration( namedConfiguration );
+      }
+      
+      // TODO: do the same for slaves, clusters, partition schemas
+    }
+  }  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   /**
    * Adds the name changed listener.
    * 
@@ -1114,6 +1332,18 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
   }
 
   /**
+   * Clears the flags for whether the transformation's named configurations have changed.
+   *
+   */
+  public void clearChangedNamedConfigurations() {
+    changedNamedConfigs = false;
+
+    for ( int i = 0; i < nrNamedConfigurations(); i++ ) {
+      getNamedConfiguration( i ).setChanged( false );
+    }
+  }  
+  
+  /**
    * Sets the channel log table for the job.
    * 
    * @param channelLogTable
@@ -1442,6 +1672,14 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
    * @return the sharedObjects
    */
   public SharedObjects getSharedObjects() {
+    if ( sharedObjects == null ) {
+      try {
+        String soFile = environmentSubstitute( sharedObjectsFile );
+        sharedObjects = new SharedObjects( soFile );	  
+      } catch ( KettleException e ) {
+        LogChannel.GENERAL.logDebug( e.getMessage(), e );
+      }
+    }
     return sharedObjects;
   }
 
@@ -1552,6 +1790,7 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
     setFilename( null );
     notes = new ArrayList<NotePadMeta>();
     databases = new ArrayList<DatabaseMeta>();
+    namedConfigs = new ArrayList<NamedConfiguration>();
     slaveServers = new ArrayList<SlaveServer>();
     channelLogTable = ChannelLogTable.getDefault( this, this );
     attributesMap = new HashMap<String, Map<String, String>>();
@@ -1574,6 +1813,7 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
   @Override
   public void clearChanged() {
     clearChangedDatabases();
+    clearChangedNamedConfigurations();
     changedNotes = false;
     for ( int i = 0; i < nrNotes(); i++ ) {
       getNote( i ).setChanged( false );

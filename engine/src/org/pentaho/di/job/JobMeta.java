@@ -65,6 +65,7 @@ import org.pentaho.di.core.logging.LogTablePluginInterface.TableType;
 import org.pentaho.di.core.logging.LogTablePluginType;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.plugins.PluginInterface;
@@ -390,6 +391,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
         jobMeta.databases = new ArrayList<DatabaseMeta>();
         jobMeta.slaveServers = new ArrayList<SlaveServer>();
         jobMeta.namedParams = new NamedParamsDefault();
+        jobMeta.namedConfigs = new ArrayList<NamedConfiguration>();
       }
 
       for ( JobEntryCopy entry : jobcopies ) {
@@ -407,6 +409,9 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
       for ( SlaveServer slave : slaveServers ) {
         jobMeta.getSlaveServers().add( (SlaveServer) slave.clone() );
       }
+      for ( NamedConfiguration nc : namedConfigs ) {
+        jobMeta.getNamedConfigurations().add( nc.clone() );
+      } 
       for ( String key : listParameters() ) {
         jobMeta.addParameterDefinition( key, getParameterDefault( key ), getParameterDescription( key ) );
       }
@@ -507,6 +512,22 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
     return getUsedDatabaseMetas().contains( databaseMeta );
   }
 
+  /**
+   * This method asks all steps in the transformation whether or not the specified named configuration is used. The
+   * configuration is used in the transformation if any of the steps uses it or if it is being used to log to.
+   *
+   * @param configuration
+   *          The configuration to check
+   * @return true if the configuration is used in this transformation.
+   */
+  public boolean isNamedConfigurationUsed( NamedConfiguration configuration ) {
+    for ( int i = 0; i < nrNamedConfigurations(); i++ ) {
+      // StepMeta stepMeta = getStep( i );
+      // figure it out..
+    }
+    return true;
+  }   
+  
   /*
    * (non-Javadoc)
    *
@@ -611,6 +632,18 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
       }
     }
 
+    // The named configs...
+    for ( int i = 0; i < nrNamedConfigurations(); i++ ) {
+      NamedConfiguration config = getNamedConfiguration( i );
+      if ( props != null && props.areOnlyUsedConnectionsSavedToXML() ) {
+        if ( isNamedConfigurationUsed( config ) ) {
+          retval.append( config.getXML() );
+        }
+      } else {
+        retval.append( config.getXML() );
+      }
+    }
+    
     // The slave servers...
     //
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
@@ -999,6 +1032,10 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
         // //
       }
 
+      // Load the database connections, slave servers, cluster schemas & partition schemas into this object.
+      //
+      importFromMetaStore();      
+      
       // Read the named parameters.
       Node paramsNode = XMLHandler.getSubNode( jobnode, XML_TAG_PARAMETERS );
       int nrParams = XMLHandler.countNodes( paramsNode, "parameter" );
@@ -1038,6 +1075,32 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
           }
         }
       }
+      
+      // handle named configurations
+      int namedConfigCount = XMLHandler.countNodes( jobnode, NamedConfiguration.XML_TAG );
+      for ( int i = 0; i < namedConfigCount; i++ ) {
+        Node nodeNamedConfig = XMLHandler.getSubNodeByNr( jobnode, NamedConfiguration.XML_TAG, i );
+
+        NamedConfiguration configuration = new NamedConfiguration( nodeNamedConfig );
+        configuration.shareVariablesWith( this );
+
+        NamedConfiguration exist = findNamedConfiguration( configuration.getName() );
+        if ( exist == null ) {
+          addNamedConfiguration( configuration );
+        } else {
+          if ( !exist.isShared() ) // otherwise, we just keep the shared named configuration.
+          {
+            if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
+                "TransMeta.Message.OverwriteNamedConfigYN", configuration.getName() ), BaseMessages.getString( PKG,
+                "TransMeta.Message.OverwriteNamedConfig.DontShowAnyMoreMessage" ) ) ) {
+              int idx = indexOfNamedConfiguration( exist );
+              removeNamedConfiguration( idx );
+              addNamedConfiguration( idx, configuration );
+            }
+          }
+        }
+      }
+      
 
       // Read the slave servers...
       //
@@ -1198,6 +1261,10 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
         SlaveServer slaveServer = (SlaveServer) object;
         slaveServer.shareVariablesWith( this );
         addOrReplaceSlaveServer( slaveServer );
+      } else if ( object instanceof NamedConfiguration ) {
+        NamedConfiguration configuration = (NamedConfiguration) object;
+        configuration.shareVariablesWith( this );
+        addOrReplaceNamedConfiguration( configuration );
       }
     }
 
@@ -1219,6 +1286,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
       List<Object> shared = new ArrayList<Object>();
       shared.addAll( databases );
       shared.addAll( slaveServers );
+      shared.addAll( namedConfigs );
 
       // The databases connections...
       for ( int i = 0; i < shared.size(); i++ ) {

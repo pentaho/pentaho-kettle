@@ -43,6 +43,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -110,6 +111,7 @@ public class SharedObjects {
         if ( sharedObjectsNode != null ) {
           List<SlaveServer> privateSlaveServers = new ArrayList<SlaveServer>();
           List<DatabaseMeta> privateDatabases = new ArrayList<DatabaseMeta>();
+          List<NamedConfiguration> privateNamedConfigurations = new ArrayList<NamedConfiguration>();
 
           NodeList childNodes = sharedObjectsNode.getChildNodes();
           // First load databases & slaves
@@ -128,6 +130,10 @@ public class SharedObjects {
               SlaveServer sharedSlaveServer = new SlaveServer( node );
               isShared = sharedSlaveServer;
               privateSlaveServers.add( sharedSlaveServer );
+            } else if ( nodeName.equals( NamedConfiguration.XML_TAG ) ) {
+              NamedConfiguration sharedConfiguration = new NamedConfiguration( node );
+                isShared = sharedConfiguration;
+                privateNamedConfigurations.add( sharedConfiguration );
             }
 
             if ( isShared != null ) {
@@ -136,7 +142,7 @@ public class SharedObjects {
             }
           }
 
-          // Then load the other objects that might reference databases & slaves
+          // Then load the other objects that might reference databases, named configs & slaves
           //
           for ( int i = 0; i < childNodes.getLength(); i++ ) {
             Node node = childNodes.item( i );

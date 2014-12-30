@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -182,7 +183,7 @@ public class LoadSaveTester {
     JobEntryInterface metaLoaded = createMeta();
     Repository rep = new MemoryRepository();
     metaToSave.saveRep( rep, null, null );
-    metaLoaded.loadRep( rep, null, null, null, null );
+    metaLoaded.loadRep( rep, null, null, null, (List<NamedConfiguration>)null );
     validateLoadedMeta( repoAttributes, validatorMap, metaToSave, metaLoaded );
   }
 }

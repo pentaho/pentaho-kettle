@@ -27,7 +27,8 @@ public enum RepositoryObjectType {
   TRANSFORMATION( "transformation", ".ktr" ), JOB( "job", ".kjb" ), DATABASE( "database", ".kdb" ), SLAVE_SERVER(
     "slave server", ".ksl" ), CLUSTER_SCHEMA( "cluster schema", ".kcs" ), PARTITION_SCHEMA(
     "partition schema", ".kps" ), STEP( "step", ".kst" ), JOB_ENTRY( "job entry", ".kje" ), TRANS_DATA_SERVICE(
-    "transformation data service", ".das" ), PLUGIN( "plugin", "" ), UNKNOWN( "unknown", "" );
+    "transformation data service", ".das" ), PLUGIN( "plugin", "" ), UNKNOWN( "unknown", "" ), 
+    NAMEDCONFIG( "named configuration", ".cfg" );
 
   // non-standard, Kettle database repository only!
   //
