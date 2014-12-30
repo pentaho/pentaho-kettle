@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -244,6 +244,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
         SlaveServerJobStatus jobStatus = new SlaveServerJobStatus( jobName, id, status );
         jobStatus.setFirstLoggingLineNr( startLineNr );
         jobStatus.setLastLoggingLineNr( lastLineNr );
+        jobStatus.setLogDate( job.getLogDate() );
 
         // The log can be quite large at times, we are going to put a base64 encoding around a compressed stream
         // of bytes to handle this one.
