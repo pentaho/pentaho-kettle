@@ -108,7 +108,7 @@ public class ExcelWriterStepTest {
 
     try {
       List<StepInjectionMetaEntry> entries =
-          stepMeta.getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
+        stepMeta.getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
 
       String masterKeys = "FIELDS";
 
@@ -132,10 +132,10 @@ public class ExcelWriterStepTest {
 
     try {
       List<StepInjectionMetaEntry> entries =
-          stepMeta.getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
+        stepMeta.getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
 
-      String childKeys = "NAME TYPE FORMAT STYLECELL FIELDTITLE TITLESTYLE " +
-          "FORMULA HYPERLINKFIELD CELLCOMMENT COMMENTAUTHOR";
+      String childKeys = "NAME TYPE FORMAT STYLECELL FIELDTITLE TITLESTYLE "
+        + "FORMULA HYPERLINKFIELD CELLCOMMENT COMMENTAUTHOR";
 
       StepInjectionMetaEntry mappingEntry = null;
 
@@ -173,7 +173,7 @@ public class ExcelWriterStepTest {
 
     try {
       List<StepInjectionMetaEntry> entries =
-          stepMeta.getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
+        stepMeta.getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
 
       for ( StepInjectionMetaEntry entry : entries ) {
         switch ( entry.getValueType() ) {
@@ -202,15 +202,13 @@ public class ExcelWriterStepTest {
                 break;
             }
           }
-
         }
-
       }
 
       stepMeta.getStepMetaInjectionInterface().injectStepMetadataEntries( entries );
 
       assertEquals( "Cell comment not properly injected... ", "new_CELLCOMMENT", stepMeta.getOutputFields()[0].getCommentField() );
-      assertEquals( "Format not properly injected... ", "new_FORMAT", stepMeta.getOutputFields()[0].getFormat());
+      assertEquals( "Format not properly injected... ", "new_FORMAT", stepMeta.getOutputFields()[0].getFormat() );
       assertEquals( "Hyperlink not properly injected... ", "new_HYPERLINKFIELD", stepMeta.getOutputFields()[0].getHyperlinkField() );
       assertEquals( "Name not properly injected... ", "new_NAME", stepMeta.getOutputFields()[0].getName() );
       assertEquals( "Style cell not properly injected... ", "new_STYLECELL", stepMeta.getOutputFields()[0].getStyleCell() );

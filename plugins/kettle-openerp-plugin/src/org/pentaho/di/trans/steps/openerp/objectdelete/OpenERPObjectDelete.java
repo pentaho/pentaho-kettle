@@ -34,7 +34,7 @@ public class OpenERPObjectDelete extends BaseStep implements StepInterface {
   private int idIndex;
 
   public OpenERPObjectDelete( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+                              Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -65,7 +65,7 @@ public class OpenERPObjectDelete extends BaseStep implements StepInterface {
       }
       if ( idIndex == -1 ) {
         throw new KettleException( "Failed to initialize step ", new Exception(
-            "Could not find ID field from input step with name: '" + meta.getIdFieldName() + "'" ) );
+          "Could not find ID field from input step with name: '" + meta.getIdFieldName() + "'" ) );
       }
       first = false;
       data.batchRows.clear();
@@ -76,7 +76,7 @@ public class OpenERPObjectDelete extends BaseStep implements StepInterface {
       // Why not use the getInteger function on the valueMeta? Because it returns a long and the
       // OpenERP XMLRPC interface doesn't support extended attributes (that includes long values).
       data.batchRows.add( Integer.parseInt( this.getInputRowMeta().getValueMeta( idIndex )
-          .getString( inputRow[idIndex] ) ) );
+        .getString( inputRow[idIndex] ) ) );
 
       if ( data.batchRows.size() == meta.getCommitBatchSize() ) {
         CommitBatch();
