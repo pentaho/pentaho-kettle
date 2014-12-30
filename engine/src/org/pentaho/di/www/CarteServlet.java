@@ -70,8 +70,6 @@ public class CarteServlet extends HttpServlet {
     if ( plugin != null ) {
       try {
         plugin.doGet( req, resp );
-      } catch ( ServletException e ) {
-        throw e;
       } catch ( Exception e ) {
         throw new ServletException( e );
       }
