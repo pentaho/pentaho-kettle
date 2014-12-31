@@ -63,7 +63,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to specify the palo cube you want to delete
- * 
+ *
  * @author Pieter van der Merwe
  * @since 03-08-2011
  */
@@ -96,8 +96,9 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
     props = PropsUI.getInstance();
     this.jobEntry = (PaloCubeDelete) jobEntryInt;
 
-    if ( this.jobEntry.getName() == null )
+    if ( this.jobEntry.getName() == null ) {
       this.jobEntry.setName( jobEntryInt.getName() );
+    }
 
     this.jobMeta = jobMeta;
   }
@@ -192,7 +193,7 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
     wCancel = new Button( shell, SWT.PUSH );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-    BaseStepDialog.positionBottomButtons( shell, new Button[] { wOK, wCancel }, margin, comboCubeName );
+    BaseStepDialog.positionBottomButtons( shell, new Button[]{ wOK, wCancel }, margin, comboCubeName );
 
     // Add listeners
     lsCancel = new Listener() {
@@ -230,8 +231,9 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
 
     shell.open();
     while ( !shell.isDisposed() ) {
-      if ( !display.readAndDispatch() )
+      if ( !display.readAndDispatch() ) {
         display.sleep();
+      }
     }
     return jobEntry;
   }
@@ -248,8 +250,9 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
         comboCubeName.removeAll();
       }
 
-      if ( comboCubeName.getItemCount() > 1 )
+      if ( comboCubeName.getItemCount() > 1 ) {
         return;
+      }
 
       if ( addConnectionLine.getText() != null ) {
         DatabaseMeta dbMeta = DatabaseMeta.findDatabase( jobMeta.getDatabases(), addConnectionLine.getText() );
@@ -259,15 +262,16 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
           List<String> cubes = helper.getCubesNames();
           Collections.sort( cubes, new PaloNameComparator() );
           for ( String cubename : cubes ) {
-            if ( comboCubeName.indexOf( cubename ) == -1 )
+            if ( comboCubeName.indexOf( cubename ) == -1 ) {
               comboCubeName.add( cubename );
+            }
           }
           helper.disconnect();
         }
       }
     } catch ( Exception ex ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "PaloDimInputFlatDialog.RetreiveDimensionsErrorTitle" ),
-          BaseMessages.getString( PKG, "PaloDimInputFlatDialog.RetreiveDimensionsError" ), ex );
+        BaseMessages.getString( PKG, "PaloDimInputFlatDialog.RetreiveDimensionsError" ), ex );
     }
   }
 
@@ -275,14 +279,16 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    if ( jobEntry.getName() != null )
+    if ( jobEntry.getName() != null ) {
       textStepName.setText( jobEntry.getName() );
+    }
     textStepName.selectAll();
 
     int index =
-        addConnectionLine.indexOf( jobEntry.getDatabaseMeta() != null ? jobEntry.getDatabaseMeta().getName() : "" );
-    if ( index >= 0 )
+      addConnectionLine.indexOf( jobEntry.getDatabaseMeta() != null ? jobEntry.getDatabaseMeta().getName() : "" );
+    if ( index >= 0 ) {
       addConnectionLine.select( index );
+    }
 
     if ( jobEntry.getCubeName() != null ) {
       comboCubeName.add( jobEntry.getCubeName() );

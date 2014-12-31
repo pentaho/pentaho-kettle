@@ -32,7 +32,7 @@ import org.apache.commons.lang.StringUtils;
  * This class represents a splitter of SQL script into separate statements. It respects the notion of a string
  * literal and comments, such that if a separator appears in a string literal or comment, it is treated as
  * part of the string or comment instead of a separator.
- * 
+ *
  * @author Alexander Buloichik
  */
 public class SqlScriptParser {
@@ -55,14 +55,12 @@ public class SqlScriptParser {
 
   /**
    * This method splits script into separate statements.
-   * 
-   * @param script
-   *          a string representing the SQL script to parse
-   * 
+   *
+   * @param script a string representing the SQL script to parse
    * @return the list of statements
    */
-  public List<String> split(String script) {
-    if (script == null) {
+  public List<String> split( String script ) {
+    if ( script == null ) {
       return Collections.emptyList();
     }
     List<String> result = new ArrayList<String>();
@@ -72,62 +70,62 @@ public class SqlScriptParser {
     char currentStringChar = 0;
     int statementStart = 0;
 
-    for (int i = 0; i < script.length(); i++) {
-      char ch = script.charAt(i);
-      char nextCh = i < script.length() - 1 ? script.charAt(i + 1) : 0;
-      switch (mode) {
-      case SQL:
-        switch (ch) {
-        case '/':
-          if (nextCh == '*') {
-            mode = MODE.BLOCK_COMMENT;
-            i++;
+    for ( int i = 0; i < script.length(); i++ ) {
+      char ch = script.charAt( i );
+      char nextCh = i < script.length() - 1 ? script.charAt( i + 1 ) : 0;
+      switch ( mode ) {
+        case SQL:
+          switch ( ch ) {
+            case '/':
+              if ( nextCh == '*' ) {
+                mode = MODE.BLOCK_COMMENT;
+                i++;
+              }
+              break;
+            case '-':
+              if ( nextCh == '-' ) {
+                mode = MODE.LINE_COMMENT;
+                i++;
+              }
+              break;
+            case '\'':
+            case '"':
+              mode = MODE.STRING;
+              currentStringChar = ch;
+              break;
+            case ';':
+              String st = script.substring( statementStart, i );
+              if ( StringUtils.isNotBlank( st ) ) {
+                result.add( st );
+              }
+              statementStart = i + 1;
+              break;
           }
           break;
-        case '-':
-          if (nextCh == '-') {
-            mode = MODE.LINE_COMMENT;
-            i++;
+        case BLOCK_COMMENT:
+          if ( ch == '*' ) {
+            if ( nextCh == '/' ) {
+              mode = MODE.SQL;
+              i++;
+            }
           }
           break;
-        case '\'':
-        case '"':
-          mode = MODE.STRING;
-          currentStringChar = ch;
-          break;
-        case ';':
-          String st = script.substring(statementStart, i);
-          if (StringUtils.isNotBlank(st)) {
-            result.add(st);
-          }
-          statementStart = i + 1;
-          break;
-        }
-        break;
-      case BLOCK_COMMENT:
-        if (ch == '*') {
-          if (nextCh == '/') {
+        case LINE_COMMENT:
+          if ( ch == '\n' || ch == '\r' ) {
             mode = MODE.SQL;
-            i++;
           }
-        }
-        break;
-      case LINE_COMMENT:
-        if (ch == '\n' || ch == '\r') {
-          mode = MODE.SQL;
-        }
-        break;
-      case STRING:
-        if (ch == currentStringChar) {
-          mode = MODE.SQL;
-        }
-        break;
+          break;
+        case STRING:
+          if ( ch == currentStringChar ) {
+            mode = MODE.SQL;
+          }
+          break;
       }
     }
-    if (statementStart < script.length()) {
-      String st = script.substring(statementStart);
-      if (StringUtils.isNotBlank(st)) {
-        result.add(st);
+    if ( statementStart < script.length() ) {
+      String st = script.substring( statementStart );
+      if ( StringUtils.isNotBlank( st ) ) {
+        result.add( st );
       }
     }
     return result;
@@ -135,14 +133,12 @@ public class SqlScriptParser {
 
   /**
    * This method removes comments from one statement.
-   * 
-   * @param script
-   *          a string representing the SQL script to parse
-   * 
+   *
+   * @param script a string representing the SQL script to parse
    * @return script without comments
    */
-  public String removeComments(String script) {
-    if (script == null) {
+  public String removeComments( String script ) {
+    if ( script == null ) {
       return null;
     }
 
@@ -152,57 +148,57 @@ public class SqlScriptParser {
 
     char currentStringChar = 0;
 
-    for (int i = 0; i < script.length(); i++) {
-      char ch = script.charAt(i);
-      char nextCh = i < script.length() - 1 ? script.charAt(i + 1) : 0;
-      switch (mode) {
-      case SQL:
-        switch (ch) {
-        case '/':
-          if (nextCh == '*') {
-            mode = MODE.BLOCK_COMMENT;
-            i++;
-            ch = 0;
+    for ( int i = 0; i < script.length(); i++ ) {
+      char ch = script.charAt( i );
+      char nextCh = i < script.length() - 1 ? script.charAt( i + 1 ) : 0;
+      switch ( mode ) {
+        case SQL:
+          switch ( ch ) {
+            case '/':
+              if ( nextCh == '*' ) {
+                mode = MODE.BLOCK_COMMENT;
+                i++;
+                ch = 0;
+              }
+              break;
+            case '-':
+              if ( nextCh == '-' ) {
+                mode = MODE.LINE_COMMENT;
+                i++;
+                ch = 0;
+              }
+              break;
+            case '\'':
+            case '"':
+              mode = MODE.STRING;
+              currentStringChar = ch;
+              break;
           }
           break;
-        case '-':
-          if (nextCh == '-') {
-            mode = MODE.LINE_COMMENT;
-            i++;
-            ch = 0;
+        case BLOCK_COMMENT:
+          if ( ch == '*' ) {
+            if ( nextCh == '/' ) {
+              mode = MODE.SQL;
+              i++;
+            }
           }
-          break;
-        case '\'':
-        case '"':
-          mode = MODE.STRING;
-          currentStringChar = ch;
-          break;
-        }
-        break;
-      case BLOCK_COMMENT:
-        if (ch == '*') {
-          if (nextCh == '/') {
-            mode = MODE.SQL;
-            i++;
-          }
-        }
-        ch = 0;
-        break;
-      case LINE_COMMENT:
-        if (ch == '\n' || ch == '\r') {
-          mode = MODE.SQL;
-        } else {
           ch = 0;
-        }
-        break;
-      case STRING:
-        if (ch == currentStringChar) {
-          mode = MODE.SQL;
-        }
-        break;
+          break;
+        case LINE_COMMENT:
+          if ( ch == '\n' || ch == '\r' ) {
+            mode = MODE.SQL;
+          } else {
+            ch = 0;
+          }
+          break;
+        case STRING:
+          if ( ch == currentStringChar ) {
+            mode = MODE.SQL;
+          }
+          break;
       }
-      if (ch != 0) {
-        result.append(ch);
+      if ( ch != 0 ) {
+        result.append( ch );
       }
     }
 
