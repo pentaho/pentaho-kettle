@@ -93,8 +93,7 @@ public class PluginRegistryPluginType extends BasePluginType implements PluginTy
         inputStream = getClass().getResourceAsStream( "/" + xmlFile );
       }
       if ( inputStream == null ) {
-        throw new KettlePluginException( "Unable to find native kettle registry extensions definition file: "
-                + xmlFile );
+        return;
       }
       Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
 
