@@ -39,6 +39,7 @@ import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.core.namedconfig.model.Property;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.widget.TextVar;
 
 public class NamedConfigurationComposite extends Composite {
 
@@ -62,7 +63,7 @@ public class NamedConfigurationComposite extends Composite {
 
     List<Group> groups = configuration.getGroups();
     for ( Group group : groups ) {
-      createGroup( group );
+      createGroup( group, configuration );
     }
   }
 
@@ -111,7 +112,7 @@ public class NamedConfigurationComposite extends Composite {
     } );
   }
   
-  private void createGroup( Group groupModel ) {
+  private void createGroup( Group groupModel, NamedConfiguration configuration ) {
 
     org.eclipse.swt.widgets.Group group = new org.eclipse.swt.widgets.Group( this, SWT.NONE );
     group.setText( groupModel.getName() );
@@ -130,7 +131,7 @@ public class NamedConfigurationComposite extends Composite {
       propertyLabel.setLayoutData( gridLabelData );
       props.setLook( propertyLabel );
 
-      final Text propertyValue = new Text( propertyParent, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+      final TextVar propertyValue = new TextVar( configuration, propertyParent, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
       propertyValue.setLayoutData( gridFormData );
       propertyValue.setText( property.getPropertyValue() != null ? property.getPropertyValue().toString() : "" );
       propertyValue.addKeyListener( new KeyListener() {
