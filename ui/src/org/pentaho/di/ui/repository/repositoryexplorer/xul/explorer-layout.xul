@@ -27,7 +27,7 @@
 
 		<menupopup id="fileContextMenu">
 			<menuitem id="folder-context-create" label="${RepositoryExplorerDialog.ContextMenu.NewFolder}" command="browseController.createFolder()"/>
-      <menuitem id="file-context-open" label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openContent()"/>
+			<menuitem id="file-context-open" label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openContent()"/>
 			<menuitem id="file-context-rename" label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameContent()"/>
 			<menuitem id="file-context-delete" label="${RepositoryExplorerDialog.ContextMenu.Delete}" command="browseController.deleteContent()"/>
 			<!--
@@ -41,6 +41,7 @@
 			<tabs id="repository-tab-set">
 				<tab id="browse-tab" label="${RepositoryExplorerDialog.Tabs.Browse}" />
 				<tab id="connections-tab" label="${RepositoryExplorerDialog.Tabs.Connections}" onclick="connectionsController.tabClicked()" />
+				<tab id="named-configurations-tab" label="${RepositoryExplorerDialog.Tabs.NamedConfigurations}" onclick="namedConfigurationsController.tabClicked()" />
 				<tab id="slaves-tab" label="${RepositoryExplorerDialog.Tabs.Slaves}" onclick="slavesController.tabClicked()" />
 				<tab id="partitions-tab" label="${RepositoryExplorerDialog.Tabs.Partitions}" onclick="partitionsController.tabClicked()" />
 				<tab id="clusters-tab" label="${RepositoryExplorerDialog.Tabs.Clusters}" onclick="clustersController.tabClicked()" />
@@ -171,6 +172,64 @@
 				<!--
 					###############################################################################
 				-->
+				
+				
+				
+				
+				
+				
+				<!--
+					###############################################################################
+				-->
+				<!--
+					START - NAMED CONFIGURATIONS TAB
+				-->
+				<!--
+					###############################################################################
+				-->
+				
+				<tabpanel id="named-configurations">
+					<hbox flex="1">
+						<vbox flex="1">
+							<splitter flex="1" orient="VERTICAL">
+								<vbox flex="4">
+									<!-- configurations list tool pane -->
+									<hbox height="20px">
+										<label value="${RepositoryExplorerDialog.NamedConfigurationsTab.Label}"/>
+										<label id="spacer-label" flex="1" />
+										<button id="named-configurations-edit" image="images/Edit.png" pen:disabledimage="images/dEdit.png" onclick="namedConfigurationsController.editNamedConfiguration()"/>
+										<button id="named-configurations-new" image="images/Add.png" pen:disabledimage="images/dAdd.png" onclick="namedConfigurationsController.createNamedConfiguration()"/>
+										<button id="named-configurations-remove" image="images/Remove.png" pen:disabledimage="images/dRemove.png" onclick="namedConfigurationsController.removeNamedConfiguration()" />
+									</hbox>
+									<!-- named configurations list -->
+									<tree id="named-configurations-table" flex="1" hidecolumnpicker="true" treeLines="false" sortable="true">
+										<treecols>
+											<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}" pen:binding="displayName" pen:childrenbinding="children" sortActive="true" sortDirection="ASCENDING"/>
+											<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}" pen:binding="type"/>
+											<treecol id="date-mod-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.DateModified}" pen:binding="dateModified"/>
+										</treecols>
+										<treechildren/>
+									</tree>
+								</vbox>
+								<vbox flex="3" id="named-configurations-addl-info-box" visible="false"/>
+							</splitter>
+						</vbox>
+					</hbox>
+				</tabpanel>
+				
+				<!--
+					###############################################################################
+				-->
+				<!--
+					END - NAMED CONFIGURATIONS TAB
+				-->
+				<!--
+					###############################################################################
+				-->				
+				
+				
+				
+				
 				
 				<!--
 					###############################################################################

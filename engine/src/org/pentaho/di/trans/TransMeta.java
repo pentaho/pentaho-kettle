@@ -60,7 +60,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
-import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettlePluginLoaderException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -80,6 +79,7 @@ import org.pentaho.di.core.logging.MetricsLogTable;
 import org.pentaho.di.core.logging.PerformanceLogTable;
 import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.logging.TransLogTable;
+import org.pentaho.di.core.namedconfig.model.NamedConfiguration;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.reflection.StringSearchResult;
@@ -94,7 +94,6 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.Repository;
@@ -118,10 +117,7 @@ import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.metastore.api.IMetaStoreElement;
-import org.pentaho.metastore.api.IMetaStoreElementType;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
-import org.pentaho.metastore.util.PentahoDefaults;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -623,6 +619,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         transMeta.slaveServers = new ArrayList<SlaveServer>();
         transMeta.clusterSchemas = new ArrayList<ClusterSchema>();
         transMeta.namedParams = new NamedParamsDefault();
+        transMeta.namedConfigs = new ArrayList<NamedConfiguration>();
       }
       for ( DatabaseMeta db : databases ) {
         transMeta.addDatabase( (DatabaseMeta) db.clone() );
@@ -648,6 +645,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       for ( PartitionSchema schema : partitionSchemas ) {
         transMeta.getPartitionSchemas().add( (PartitionSchema) schema.clone() );
       }
+      for ( NamedConfiguration nc : namedConfigs ) {
+        transMeta.getNamedConfigurations().add( nc.clone() );
+      }      
       for ( String key : listParameters() ) {
         transMeta.addParameterDefinition( key, getParameterDefault( key ), getParameterDescription( key ) );
       }
@@ -672,6 +672,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     dependencies = new ArrayList<TransDependency>();
     partitionSchemas = new ArrayList<PartitionSchema>();
     clusterSchemas = new ArrayList<ClusterSchema>();
+    namedConfigs = new ArrayList<NamedConfiguration>();
 
     slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution();
 
@@ -2280,7 +2281,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @see org.pentaho.di.core.xml.XMLInterface#getXML()
    */
   public String getXML() throws KettleException {
-    return getXML( true, true, true, true, true );
+    return getXML( true, true, true, true, true, true );
   }
 
   /**
@@ -2297,12 +2298,14 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *          whether to include cluster data
    * @param includePartitions
    *          whether to include partition data
+   * @param includeNamedConfigurations
+   *          whether to include named configuration data
    * @return the XML representation of this transformation
    * @throws KettleException
    *           if any errors occur during generation of the XML
    */
   public String getXML( boolean includeSteps, boolean includeDatabase, boolean includeSlaves,
-    boolean includeClusters, boolean includePartitions ) throws KettleException {
+    boolean includeClusters, boolean includePartitions, boolean includeNamedConfigurations ) throws KettleException {
     Props props = null;
     if ( Props.isInitialized() ) {
       props = Props.getInstance();
@@ -2453,6 +2456,20 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       }
     }
 
+    // The named configs...
+    if ( includeNamedConfigurations ) {
+      for ( int i = 0; i < nrNamedConfigurations(); i++ ) {
+        NamedConfiguration config = getNamedConfiguration( i );
+        if ( props != null && props.areOnlyUsedConnectionsSavedToXML() ) {
+          if ( isNamedConfigurationUsed( config ) ) {
+            retval.append( config.getXML() );
+          }
+        } else {
+          retval.append( config.getXML() );
+        }
+      }
+    }    
+    
     if ( includeSteps ) {
       retval.append( "  " ).append( XMLHandler.openTag( XML_TAG_ORDER ) ).append( Const.CR );
       for ( int i = 0; i < nrTransHops(); i++ ) {
@@ -2909,6 +2926,37 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           }
         }
 
+        // handle named configurations
+        int namedConfigCount = XMLHandler.countNodes( transnode, NamedConfiguration.XML_TAG );
+        if ( log.isDebug() ) {
+          log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.WeHaveNamedConfigs", String.valueOf( n ) ) );
+        }
+        for ( int i = 0; i < namedConfigCount; i++ ) {
+          if ( log.isDebug() ) {
+            log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.LookingAtNamedConfig" ) + i );
+          }
+          Node nodeNamedConfig = XMLHandler.getSubNodeByNr( transnode, NamedConfiguration.XML_TAG, i );
+
+          NamedConfiguration configuration = new NamedConfiguration( nodeNamedConfig );
+          configuration.shareVariablesWith( this );
+
+          NamedConfiguration exist = findNamedConfiguration( configuration.getName() );
+          if ( exist == null ) {
+            addNamedConfiguration( configuration );
+          } else {
+            if ( !exist.isShared() ) // otherwise, we just keep the shared named configuration.
+            {
+              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteNamedConfigYN", configuration.getName() ), BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteNamedConfig.DontShowAnyMoreMessage" ) ) ) {
+                int idx = indexOfNamedConfiguration( exist );
+                removeNamedConfiguration( idx );
+                addNamedConfiguration( idx, configuration );
+              }
+            }
+          }
+        }
+        
         // Read the notes...
         Node notepadsnode = XMLHandler.getSubNode( transnode, XML_TAG_NOTEPADS );
         int nrnotes = XMLHandler.countNodes( notepadsnode, NotePadMeta.XML_TAG );
@@ -3323,26 +3371,6 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     }
   }
 
-  public void importFromMetaStore() throws MetaStoreException, KettlePluginException {
-
-    // Read the databases...
-    //
-    if ( metaStore != null ) {
-      IMetaStoreElementType databaseType =
-        metaStore.getElementTypeByName(
-          PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
-      if ( databaseType != null ) {
-        List<IMetaStoreElement> databaseElements = metaStore.getElements( PentahoDefaults.NAMESPACE, databaseType );
-        for ( IMetaStoreElement databaseElement : databaseElements ) {
-          addOrReplaceDatabase( DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(
-            metaStore, databaseElement ) );
-        }
-      }
-    }
-
-    // TODO: do the same for slaves, clusters, partition schemas
-  }
-
   /**
    * Reads the shared objects (steps, connections, etc.).
    *
@@ -3381,6 +3409,10 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         ClusterSchema clusterSchema = (ClusterSchema) object;
         clusterSchema.shareVariablesWith( this );
         addOrReplaceClusterSchema( clusterSchema );
+      } else if ( object instanceof NamedConfiguration ) {
+        NamedConfiguration configuration = (NamedConfiguration) object;
+        configuration.shareVariablesWith( this );
+        addOrReplaceNamedConfiguration( configuration );
       }
     }
 
@@ -5006,6 +5038,22 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     return false;
   }
 
+  /**
+   * This method asks all steps in the transformation whether or not the specified named configuration is used. The
+   * configuration is used in the transformation if any of the steps uses it or if it is being used to log to.
+   *
+   * @param configuration
+   *          The configuration to check
+   * @return true if the configuration is used in this transformation.
+   */
+  public boolean isNamedConfigurationUsed( NamedConfiguration configuration ) {
+    for ( int i = 0; i < nrNamedConfigurations(); i++ ) {
+      // StepMeta stepMeta = getStep( i );
+      // figure it out..
+    }
+    return true;
+  }  
+  
   /*
    * public List getInputFiles() { return inputFiles; }
    *
@@ -5395,6 +5443,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       shared.addAll( partitionSchemas );
       shared.addAll( slaveServers );
       shared.addAll( clusterSchemas );
+      shared.addAll( namedConfigs );
 
       // The databases connections...
       for ( SharedObjectInterface sharedObject : shared ) {
