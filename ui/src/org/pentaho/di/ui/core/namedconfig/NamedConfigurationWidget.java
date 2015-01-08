@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -72,39 +73,67 @@ public class NamedConfigurationWidget extends Composite {
         newNamedConfiguration();
       }
     } );
+
+    initiate();
   }
 
   private void newNamedConfiguration() {
     Spoon spoon = Spoon.getInstance();
     AbstractMeta meta = (AbstractMeta) spoon.getActiveMeta();
-    spoon.delegates.nc.newNamedConfiguration( (HasNamedConfigurationsInterface) meta, getShell() );
-    initiate();
+    if ( meta != null ) {
+      spoon.delegates.nc.newNamedConfiguration( (HasNamedConfigurationsInterface) meta, getShell() );
+      initiate();
+    }
   }
 
   private void editNamedConfiguration() {
     Spoon spoon = Spoon.getInstance();
     AbstractMeta meta = (AbstractMeta) spoon.getActiveMeta();
-    List<NamedConfiguration> namedConfigurations = meta.getNamedConfigurations();
-    int index = nameConfigCombo.getSelectionIndex();
-    if ( index > -1 && namedConfigurations.size() > 0 ) {
-      spoon.delegates.nc.editNamedConfiguration( (HasNamedConfigurationsInterface) meta, namedConfigurations
-          .get( index ), getShell() );
-      initiate();
+    if ( meta != null ) {
+      List<NamedConfiguration> namedConfigurations = meta.getNamedConfigurations();
+      int index = nameConfigCombo.getSelectionIndex();
+      if ( index > -1 && namedConfigurations.size() > 0 ) {
+        spoon.delegates.nc.editNamedConfiguration( (HasNamedConfigurationsInterface) meta, namedConfigurations
+            .get( index ), getShell() );
+        initiate();
+      }
     }
   }
 
   private String[] getNamedConfigurations() {
     AbstractMeta meta = (AbstractMeta) Spoon.getInstance().getActiveMeta();
-    List<String> configurationNames = new ArrayList<String>();
-    List<NamedConfiguration> namedConfigurations = meta.getNamedConfigurations();
-    for ( NamedConfiguration namedConfiguration : namedConfigurations ) {
-      configurationNames.add( namedConfiguration.getName() );
+    if ( meta != null ) {
+      List<String> configurationNames = new ArrayList<String>();
+      List<NamedConfiguration> namedConfigurations = meta.getNamedConfigurations();
+      for ( NamedConfiguration namedConfiguration : namedConfigurations ) {
+        configurationNames.add( namedConfiguration.getName() );
+      }
+      return configurationNames.toArray( new String[namedConfigurations.size()] );
     }
-    return configurationNames.toArray( new String[namedConfigurations.size()] );
+    return new String[0];
   }
 
   public void initiate() {
+    int selectedIndex = nameConfigCombo.getSelectionIndex();
     nameConfigCombo.removeAll();
     nameConfigCombo.setItems( getNamedConfigurations() );
+    nameConfigCombo.select( selectedIndex );
+  }
+
+  public NamedConfiguration getSelectedNamedConfiguration() {
+    Spoon spoon = Spoon.getInstance();
+    AbstractMeta meta = (AbstractMeta) spoon.getActiveMeta();
+    if ( meta != null ) {
+      List<NamedConfiguration> namedConfigurations = meta.getNamedConfigurations();
+      int index = nameConfigCombo.getSelectionIndex();
+      if ( index > -1 && namedConfigurations.size() > 0 ) {
+        return namedConfigurations.get( index );
+      }
+    }
+    return null;
+  }
+
+  public void addSelectionListener( SelectionListener selectionListener ) {
+    nameConfigCombo.addSelectionListener( selectionListener );
   }
 }
