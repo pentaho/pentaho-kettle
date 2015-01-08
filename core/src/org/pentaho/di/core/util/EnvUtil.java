@@ -22,6 +22,12 @@
 
 package org.pentaho.di.core.util;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.version.BuildVersion;
+
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,11 +41,6 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.version.BuildVersion;
-
 public class EnvUtil {
   private static Properties env = null;
 
@@ -50,15 +51,21 @@ public class EnvUtil {
    *          the relative name of the properties file in the users kettle directory.
    * @return the map of properties.
    */
-  public static Properties readProperties( String fileName ) throws KettleException {
+  public static Properties readProperties( final String fileName ) throws KettleException {
+    if ( !new File( fileName ).exists() ) {
+      return readPropertiesByFullPath( Const.getKettleDirectory() + Const.FILE_SEPARATOR + fileName );
+    }
+    return readPropertiesByFullPath( fileName );
+  }
+
+  private static Properties readPropertiesByFullPath( final String fileName ) throws KettleException {
     Properties props = new Properties();
-    String kettlePropsFilename = Const.getKettleDirectory() + Const.FILE_SEPARATOR + fileName;
     InputStream is = null;
     try {
-      is = new FileInputStream( kettlePropsFilename );
+      is = new FileInputStream( fileName );
       props.load( is );
     } catch ( IOException ioe ) {
-      throw new KettleException( "Unable to read file '" + kettlePropsFilename + "'", ioe );
+      throw new KettleException( "Unable to read file '" + fileName + "'", ioe );
     } finally {
       if ( is != null ) {
         try {
@@ -87,12 +94,36 @@ public class EnvUtil {
     }
 
     Map<?, ?> kettleProperties = EnvUtil.readProperties( Const.KETTLE_PROPERTIES );
+    applyKettleProperties( kettleProperties );
+
+    // Also put some default values for obscure environment variables in there...
+    // Place-holders if you will.
+    //
+    System.getProperties().put( Const.INTERNAL_VARIABLE_CLUSTER_SIZE, "1" );
+    System.getProperties().put( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER, "0" );
+    System.getProperties().put( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME, "slave-trans-name" );
+
+    System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_COPYNR, "0" );
+    System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_NAME, "step-name" );
+    System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, "partition-id" );
+    System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, "0" );
+    System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_UNIQUE_COUNT, "1" );
+    System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER, "0" );
+  }
+
+  public static void applyKettleProperties( Map<?, ?> kettleProperties ) {
+    applyKettleProperties( kettleProperties, false );
+  }
+
+  public static void applyKettleProperties( Map<?, ?> kettleProperties, boolean override ) {
     Variables variables = new Variables();
     for ( Object key : kettleProperties.keySet() ) {
       String variable = (String) key;
       String value = variables.environmentSubstitute( (String) kettleProperties.get( key ) );
       variables.setVariable( variable, value );
     }
+
+    Properties systemProperties = System.getProperties();
 
     // Copy the data over to the system properties...
     //
@@ -111,23 +142,13 @@ public class EnvUtil {
             value = jvmValue;
           }
         }
+      } else {
+        if ( !override && systemProperties.containsKey( variable ) ) {
+          continue;
+        }
       }
       System.setProperty( variable, value );
     }
-
-    // Also put some default values for obscure environment variables in there...
-    // Place-holders if you will.
-    //
-    System.getProperties().put( Const.INTERNAL_VARIABLE_CLUSTER_SIZE, "1" );
-    System.getProperties().put( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER, "0" );
-    System.getProperties().put( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME, "slave-trans-name" );
-
-    System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_COPYNR, "0" );
-    System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_NAME, "step-name" );
-    System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, "partition-id" );
-    System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, "0" );
-    System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_UNIQUE_COUNT, "1" );
-    System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER, "0" );
   }
 
   /**
