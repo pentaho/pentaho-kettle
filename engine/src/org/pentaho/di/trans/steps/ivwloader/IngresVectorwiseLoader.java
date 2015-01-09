@@ -152,7 +152,6 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       // any output?
       data.outputLogger = new StreamLogger( log, data.sqlProcess.getInputStream(), "OUT_SQL" );
 
-      
       // Where do we send the data to? --> To STDIN of the sql process
       //
       data.sqlOutputStream = data.sqlProcess.getOutputStream();
@@ -161,7 +160,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       logWriteThread = new Thread( logWriter, "IngresVecorWiseStepLogWriter" );
       logWriteThread.start();
 
-      vwLoadMonitor = new VWloadMonitor( data.sqlProcess, data.outputLogger, logWriteThread );
+      vwLoadMonitor = new VWloadMonitor( data.sqlProcess, logWriter, logWriteThread );
       vwLoadMonitorThread = new Thread( vwLoadMonitor );
       vwLoadMonitorThread.start();
 
@@ -771,12 +770,12 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
   public class VWloadMonitor implements Runnable {
     private Process vwloadProcess;
-    private StreamLogger outputLogger;
+    private LogWriter logWriter;
     private Thread outputLoggerThread;
 
-    VWloadMonitor( Process loadProcess, StreamLogger outputLogger, Thread outputLoggerThread ) {
+    VWloadMonitor( Process loadProcess, LogWriter logWriter, Thread outputLoggerThread ) {
       this.vwloadProcess = loadProcess;
-      this.outputLogger = outputLogger;
+      this.logWriter = logWriter;
       this.outputLoggerThread = outputLoggerThread;
     }
 
@@ -808,7 +807,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       outputLoggerThread.join();
       Long[] result = new Long[3];
       if ( meta.isUsingVwload() ) {
-        String lastLine = outputLogger.getLastLine();
+        String lastLine = logWriter.getLastInputStreamLine();
         Scanner sc = null;
         try {
           sc = new Scanner( lastLine );
@@ -920,6 +919,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
   class LogWriter implements Runnable {
     final InputStream is;
     boolean isErrorsOccured;
+    String lastLine;
 
     public LogWriter( InputStream outStream ) {
       this.is = outStream;
@@ -937,6 +937,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         String line = null;
         String ingresErrorRegex = ".*E_[A-Z]{1,2}[0-9]{3,4}.*";
         while ( ( line = br.readLine() ) != null ) {
+          lastLine = line;
           if ( !line.matches( ingresErrorRegex ) ) {
             log.logBasic( LogLevelEnum.OUT.getPredicateMessage() + line );
           } else {
@@ -951,6 +952,10 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
     boolean isErrorsOccured() {
       return isErrorsOccured;
+    }
+
+    String getLastInputStreamLine() {
+      return lastLine;
     }
   }
 
