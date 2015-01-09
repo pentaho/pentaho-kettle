@@ -25,6 +25,7 @@ package org.pentaho.di.ui.core.namedconfig.dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
@@ -88,9 +89,11 @@ public class NamedConfigurationDialog extends Dialog {
   
   public String open() {
     Shell parent = getParent();
-    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
+    Display display = parent.getDisplay();
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.CLOSE | SWT.MAX | SWT.MIN | SWT.ICON );
+    shell.setSize( 480, 550 );
     props.setLook( shell );
-    shell.setImage( GUIResource.getInstance().getImageSlave() );
+    shell.setImage( GUIResource.getInstance().getImageSpoon() );
 
     margin = Const.MARGIN;
     
@@ -99,14 +102,12 @@ public class NamedConfigurationDialog extends Dialog {
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setText( BaseMessages.getString( PKG, "NamedConfiguarationDialog.Shell.Title" ) );
-    shell.setLayout( formLayout );
-    
-    NamedConfigurationComposite namedConfigurationComposite = new NamedConfigurationComposite( shell, namedConfiguration, props );
-    namedConfigurationComposite.pack( true );
-    namedConfigurationComposite.layout();
-    
-    // First, add the buttons...
+    shell.setLayout( new FormLayout() );
 
+    NamedConfigurationComposite namedConfigurationComposite = new NamedConfigurationComposite( shell, namedConfiguration, props );
+    FormData fd = new FormData( 470, 480 );
+    namedConfigurationComposite.setLayoutData( fd );
+    
     // Buttons
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
@@ -116,8 +117,6 @@ public class NamedConfigurationDialog extends Dialog {
 
     Button[] buttons = new Button[] { wOK, wCancel };
     BaseStepDialog.positionBottomButtons( shell, buttons, margin, null );
-
-    // The rest stays above the buttons...
 
     // Add listeners
     wOK.addListener( SWT.Selection, new Listener() {
@@ -138,9 +137,8 @@ public class NamedConfigurationDialog extends Dialog {
       }
     } );
 
-    BaseStepDialog.setSize( shell );
+    //BaseStepDialog.setSize( shell );
     shell.open();
-    Display display = parent.getDisplay();
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
         display.sleep();
