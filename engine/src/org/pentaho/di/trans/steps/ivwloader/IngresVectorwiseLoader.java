@@ -149,6 +149,10 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       data.errorLogger = new StreamLogger( log, data.sqlProcess.getErrorStream(), "ERR_SQL", true );
       new Thread( data.errorLogger ).start();
 
+      // any output?
+      data.outputLogger = new StreamLogger( log, data.sqlProcess.getInputStream(), "OUT_SQL" );
+
+      
       // Where do we send the data to? --> To STDIN of the sql process
       //
       data.sqlOutputStream = data.sqlProcess.getOutputStream();
