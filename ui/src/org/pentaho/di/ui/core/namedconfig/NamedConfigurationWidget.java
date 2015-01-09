@@ -56,7 +56,7 @@ public class NamedConfigurationWidget extends Composite {
     Label nameLabel = new Label( this, SWT.NONE );
     nameLabel.setText( BaseMessages.getString( PKG, "NamedConfiguarationDialog.Shell.Title" ) + ":" );
 
-    nameConfigCombo = new Combo( this, SWT.NONE );
+    nameConfigCombo = new Combo( this, SWT.DROP_DOWN | SWT.READ_ONLY );
 
     Button editButton = new Button( this, SWT.NONE );
     editButton.setText( BaseMessages.getString( PKG, "NamedConfiguarationWidget.NamedConfiguration.Edit" ) );
@@ -131,6 +131,21 @@ public class NamedConfigurationWidget extends Composite {
       }
     }
     return null;
+  }
+
+  public void setSelectedNamedConfiguration( String name ) {
+    Spoon spoon = Spoon.getInstance();
+    AbstractMeta meta = (AbstractMeta) spoon.getActiveMeta();
+    if ( meta != null ) {
+      List<NamedConfiguration> namedConfigurations = meta.getNamedConfigurations();
+      for ( int i = 0; i < namedConfigurations.size(); i++ ) {
+        NamedConfiguration namedConfiguration = namedConfigurations.get( i );
+        if ( namedConfiguration.getName().equals( name ) ) {
+          nameConfigCombo.select( i );
+          return;
+        }
+      }
+    }
   }
 
   public void addSelectionListener( SelectionListener selectionListener ) {
