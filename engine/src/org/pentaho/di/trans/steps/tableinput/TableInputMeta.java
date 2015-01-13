@@ -267,13 +267,13 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.append( "    "
       + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
-    retval.append( "    " + XMLHandler.addTagValue( "sql", sql ) );
-    retval.append( "    " + XMLHandler.addTagValue( "limit", rowLimit ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "sql", sql ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "limit", rowLimit ) );
     StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
-    retval.append( "    " + XMLHandler.addTagValue( "lookup", infoStream.getStepname() ) );
-    retval.append( "    " + XMLHandler.addTagValue( "execute_each_row", executeEachInputRow ) );
-    retval.append( "    " + XMLHandler.addTagValue( "variables_active", variableReplacementActive ) );
-    retval.append( "    " + XMLHandler.addTagValue( "lazy_conversion_active", lazyConversionActive ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "lookup", infoStream.getStepname() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "execute_each_row", executeEachInputRow ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "variables_active", variableReplacementActive ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "lazy_conversion_active", lazyConversionActive ) );
 
     return retval.toString();
   }
@@ -456,26 +456,20 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
     IMetaStore metaStore ) throws KettleStepException {
 
-    if ( stepMeta.getName().equalsIgnoreCase( "cdc_cust" ) ) {
-      System.out.println( "HERE!" );
-    }
-
     // Find the lookupfields...
     RowMetaInterface out = new RowMeta();
     // TODO: this builds, but does it work in all cases.
     getFields( out, stepMeta.getName(), new RowMetaInterface[] { info }, null, transMeta, repository, metaStore );
 
-    if ( out != null ) {
-      for ( int i = 0; i < out.size(); i++ ) {
-        ValueMetaInterface outvalue = out.getValueMeta( i );
-        DatabaseImpact ii =
-          new DatabaseImpact(
-            DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
-              .getDatabaseName(), "", outvalue.getName(), outvalue.getName(), stepMeta.getName(), sql,
-            "read from one or more database tables via SQL statement" );
-        impact.add( ii );
+    for ( int i = 0; i < out.size(); i++ ) {
+      ValueMetaInterface outvalue = out.getValueMeta( i );
+      DatabaseImpact ii =
+        new DatabaseImpact(
+          DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), databaseMeta
+            .getDatabaseName(), "", outvalue.getName(), outvalue.getName(), stepMeta.getName(), sql,
+          "read from one or more database tables via SQL statement" );
+      impact.add( ii );
 
-      }
     }
   }
 

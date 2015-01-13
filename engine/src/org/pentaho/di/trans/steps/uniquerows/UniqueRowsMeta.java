@@ -206,14 +206,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
     rejectDuplicateRow = false;
     errorDescription = null;
 
-    int nrfields = 0;
-
-    allocate( nrfields );
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      compareFields[i] = "field" + i;
-      caseInsensitive[i] = true;
-    }
+    allocate( 0 );
   }
 
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
@@ -236,16 +229,16 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
   public String getXML() {
     StringBuffer retval = new StringBuffer();
 
-    retval.append( "      " + XMLHandler.addTagValue( "count_rows", countRows ) );
-    retval.append( "      " + XMLHandler.addTagValue( "count_field", countField ) );
-    retval.append( "      " + XMLHandler.addTagValue( "reject_duplicate_row", rejectDuplicateRow ) );
-    retval.append( "      " + XMLHandler.addTagValue( "error_description", errorDescription ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "count_rows", countRows ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "count_field", countField ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "reject_duplicate_row", rejectDuplicateRow ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "error_description", errorDescription ) );
 
     retval.append( "    <fields>" );
     for ( int i = 0; i < compareFields.length; i++ ) {
       retval.append( "      <field>" );
-      retval.append( "        " + XMLHandler.addTagValue( "name", compareFields[i] ) );
-      retval.append( "        " + XMLHandler.addTagValue( "case_insensitive", caseInsensitive[i] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "name", compareFields[i] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "case_insensitive", caseInsensitive[i] ) );
       retval.append( "        </field>" );
     }
     retval.append( "      </fields>" );
