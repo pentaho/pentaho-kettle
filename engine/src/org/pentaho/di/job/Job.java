@@ -96,6 +96,7 @@ import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.AddJobServlet;
+import org.pentaho.di.www.RegisterJobServlet;
 import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartJobServlet;
 import org.pentaho.di.www.WebResult;
@@ -1780,7 +1781,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       } else {
         String xml = new JobConfiguration( jobMeta, executionConfiguration ).getXML();
 
-        String reply = slaveServer.sendXML( xml, AddJobServlet.CONTEXT_PATH + "/?xml=Y" );
+        String reply = slaveServer.sendXML( xml, RegisterJobServlet.CONTEXT_PATH + "/?xml=Y" );
         WebResult webResult = WebResult.fromXMLString( reply );
         if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
           throw new KettleException( "There was an error posting the job on the remote server: "

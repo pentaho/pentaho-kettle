@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,25 +19,22 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
 package org.pentaho.di.www;
 
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.EnvUtil;
+import org.apache.commons.io.IOUtils;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransConfiguration;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Properties;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class GetPropertiesServlet extends BodyHttpServlet {
+public class RegisterTransServlet extends BaseJobServlet {
 
-  private static final long serialVersionUID = 4872614637561572356L;
-
-  public static final String CONTEXT_PATH = "/kettle/properties";
+  private static final long serialVersionUID = 468054102740138751L;
+  public static final String CONTEXT_PATH = "/kettle/registerTrans";
 
   @Override
   public String getContextPath() {
@@ -45,20 +42,17 @@ public class GetPropertiesServlet extends BodyHttpServlet {
   }
 
   @Override
-  WebResult generateBody( HttpServletRequest request, HttpServletResponse response, boolean useXML ) throws Exception {
-    ServletOutputStream out = response.getOutputStream();
-    Properties kettleProperties = EnvUtil.readProperties( Const.KETTLE_PROPERTIES );
-    if ( useXML ) {
-      kettleProperties.storeToXML( out, "" );
-    } else {
-      kettleProperties.store( out, "" );
-    }
-    return null;
+  WebResult generateBody( HttpServletRequest request, HttpServletResponse response, boolean useXML ) throws IOException, KettleException  {
+
+    final String xml = IOUtils.toString( request.getInputStream() );
+
+    // Parse the XML, create a transformation configuration
+    TransConfiguration transConfiguration = TransConfiguration.fromXML( xml );
+
+    Trans trans = createTrans( transConfiguration );
+    
+    String message = "Transformation '" + trans.getName() + "' was added to Carte with id " + trans.getContainerObjectId();
+    return new WebResult( WebResult.STRING_OK, message, trans.getContainerObjectId() );
   }
 
-  @Override
-  protected void startXml( HttpServletResponse response, PrintWriter out ) throws IOException {
-    response.setContentType( "text/xml" );
-    response.setCharacterEncoding( Const.XML_ENCODING );
-  }
 }

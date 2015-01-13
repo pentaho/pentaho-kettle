@@ -23,32 +23,6 @@
 
 package org.pentaho.di.trans;
 
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -135,13 +109,39 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 import org.pentaho.di.www.AddExportServlet;
-import org.pentaho.di.www.AddTransServlet;
 import org.pentaho.di.www.PrepareExecutionTransServlet;
+import org.pentaho.di.www.RegisterTransServlet;
 import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartExecutionTransServlet;
 import org.pentaho.di.www.WebResult;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * This class represents the information and operations associated with the concept of a Transformation. It loads,
@@ -3642,7 +3642,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           }
 
           String masterReply =
-            masterServer.sendXML( transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH + "/?xml=Y" );
+            masterServer.sendXML( transConfiguration.getXML(), RegisterTransServlet.CONTEXT_PATH + "/?xml=Y" );
           WebResult webResult = WebResult.fromXMLString( masterReply );
           if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
             throw new KettleException( "An error occurred sending the master transformation: "
@@ -3689,7 +3689,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 }
 
                 String slaveReply =
-                  slaves[index].sendXML( transConfiguration.getXML(), AddTransServlet.CONTEXT_PATH + "/?xml=Y" );
+                  slaves[index].sendXML( transConfiguration.getXML(), RegisterTransServlet.CONTEXT_PATH + "/?xml=Y" );
                 WebResult webResult = WebResult.fromXMLString( slaveReply );
                 if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
                   throw new KettleException( "An error occurred sending a slave transformation: "
@@ -4248,7 +4248,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         // Now send it off to the remote server...
         //
         String xml = new TransConfiguration( transMeta, executionConfiguration ).getXML();
-        String reply = slaveServer.sendXML( xml, AddTransServlet.CONTEXT_PATH + "/?xml=Y" );
+        String reply = slaveServer.sendXML( xml, RegisterTransServlet.CONTEXT_PATH + "/?xml=Y" );
         WebResult webResult = WebResult.fromXMLString( reply );
         if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
           throw new KettleException( "There was an error posting the transformation on the remote server: "
