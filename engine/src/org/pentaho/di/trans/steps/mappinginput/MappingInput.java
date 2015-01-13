@@ -29,6 +29,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -133,6 +134,10 @@ public class MappingInput extends BaseStep implements StepInterface {
         valueMeta.setName( valueRename.getTargetValueName() );
       }
 
+      // This is typical side effect of ESR-4178
+      data.outputRowMeta.setValueMetaList( data.outputRowMeta.getValueMetaList() );
+      this.getInputRowMeta().setValueMetaList( this.getInputRowMeta().getValueMetaList() );
+
       // The input row meta has been manipulated correctly for the call to meta.getFields(), so create a blank
       // outputRowMeta
       meta.setInputRowMeta( getInputRowMeta() );
@@ -141,6 +146,7 @@ public class MappingInput extends BaseStep implements StepInterface {
       } else {
         meta.setInputRowMeta( new RowMeta() );
       }
+     
 
       // Fill the output row meta with the processed fields
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
@@ -153,8 +159,8 @@ public class MappingInput extends BaseStep implements StepInterface {
         for ( int i = 0; i < data.outputRowMeta.size(); i++ ) {
           data.fieldNrs[i] = getInputRowMeta().indexOfValue( data.outputRowMeta.getValueMeta( i ).getName() );
         }
-      }
-    }
+      }    
+    }    
 
     // Fill and send the output row
     if ( meta.isSelectingAndSortingUnspecifiedFields() ) {
