@@ -147,6 +147,8 @@ import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.GUIFactory;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
@@ -1005,8 +1007,37 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     boolean closed = true;
     EngineMetaInterface meta = getActiveMeta();
     if ( meta != null ) {
-      // If a transformation is the current active tab, close it
+
+      String beforeCloseId = null;
+      String afterCloseId = null;
+
+      if( meta instanceof TransMeta ) {
+        beforeCloseId = KettleExtensionPoint.TransBeforeClose.id;
+        afterCloseId = KettleExtensionPoint.TransAfterClose.id;
+      }
+      else if( meta instanceof JobMeta ) {
+        beforeCloseId = KettleExtensionPoint.JobBeforeClose.id;
+        afterCloseId = KettleExtensionPoint.JobAfterClose.id;
+      }
+
+      if( beforeCloseId != null ) {
+        try {
+          ExtensionPointHandler.callExtensionPoint( log, beforeCloseId, meta );
+        } catch ( KettleException e ) {
+          // fails gracefully but perhaps should return false?
+        }
+      }
+
+      // If a transformation or job is the current active tab, close it
       closed = tabCloseSelected();
+
+      if( closed && ( afterCloseId != null ) ) {
+        try {
+          ExtensionPointHandler.callExtensionPoint( log, afterCloseId, meta );
+        } catch ( KettleException e ) {
+          // fails gracefully but perhaps should return false?
+        }
+      }
     }
 
     return closed;
@@ -6937,12 +6968,32 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private void markTabsChanged() {
     boolean anyTabsChanged = false;
+
     for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
       if ( entry.getTabItem().isDisposed() ) {
         continue;
       }
 
       boolean changed = entry.getObject().hasContentChanged();
+      if( changed ) {
+        // Call extension point to alert plugins that a transformation or job has changed
+        Object tabObject = entry.getObject().getManagedObject();
+        String changedId = null;
+        if( tabObject instanceof TransMeta ) {
+          changedId = KettleExtensionPoint.TransChanged.id;
+        }
+        else if( tabObject instanceof JobMeta ) {
+          changedId = KettleExtensionPoint.JobChanged.id;
+        }
+
+        if( changedId != null ) {
+          try {
+            ExtensionPointHandler.callExtensionPoint( log, changedId, tabObject );
+          } catch ( KettleException e ) {
+            // fails gracefully
+          }
+        }
+      }
       anyTabsChanged |= changed;
       entry.getTabItem().setChanged( changed );
     }
