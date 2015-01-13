@@ -65,7 +65,8 @@ public class LoggingRegistry {
       LoggingObject loggingSource = new LoggingObject( object );
 
       LoggingObjectInterface found = findExistingLoggingSource( loggingSource );
-      if ( ( found != null ) && ( found.getParent() != null ) ) {
+      if ( ( found != null ) && ( found.getParent() != null ) && ( ( found.getParent().getLogChannelId() != null && loggingSource.getParent().getLogChannelId() != null ) 
+              ? found.getParent().getLogChannelId().equals( loggingSource.getParent().getLogChannelId() ) : true ) ) {
         return found.getLogChannelId();
       }
 
