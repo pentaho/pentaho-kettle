@@ -22,14 +22,20 @@
 
 package org.pentaho.di.trans.steps.ivwloader;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.sql.SQLException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -51,6 +57,8 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import com.google.common.annotations.VisibleForTesting;
+
 
 /**
  * Performs a streaming bulk load to a VectorWise table.
@@ -67,8 +75,12 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
   private IngresVectorwiseLoaderMeta meta;
   private IngresVectorwiseLoaderData data;
+
   public VWloadMonitor vwLoadMonitor;
   public Thread vwLoadMonitorThread;
+
+  private LogWriter logWriter;
+  private Thread logWriteThread;
 
   public IngresVectorwiseLoader( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
     TransMeta transMeta, Trans trans ) {
@@ -119,40 +131,39 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       //
 
       String cmd = createCommandLine( meta );
+      String logMessage = masqueradPassword( cmd );
+      if ( meta.isUseDynamicVNode() ) {
+        // masquerading the password for log
+        logMessage = masqueradPassword( cmd );
+      }
+      logDetailed( "Executing command: " + logMessage );
 
       try {
-        // masquerading the password for log
-        if ( meta.isUseDynamicVNode() ) {
-          logDetailed( "Executing command: " + cmd.substring( 0, cmd.indexOf( "[" ) ) + "[username,password]"
-            + cmd.substring( cmd.indexOf( "]" ) + 1 ) );
-        } else {
-          logDetailed( "Executing command: " + cmd );
-        }
         data.sqlProcess = rt.exec( cmd );
-
-        // any error message?
-        //
-        data.errorLogger = new StreamLogger( log, data.sqlProcess.getErrorStream(), "ERR_SQL", true );
-
-        // any output?
-        data.outputLogger = new StreamLogger( log, data.sqlProcess.getInputStream(), "OUT_SQL" );
-
-        // Where do we send the data to? --> To STDIN of the sql process
-        //
-        data.sqlOutputStream = data.sqlProcess.getOutputStream();
-
-        // kick them off
-        new Thread( data.errorLogger ).start();
-        Thread outputLoggerThread = new Thread( data.outputLogger );
-        outputLoggerThread.start();
-
-        vwLoadMonitor = new VWloadMonitor( data.sqlProcess, data.outputLogger, outputLoggerThread );
-        vwLoadMonitorThread = new Thread( vwLoadMonitor );
-        vwLoadMonitorThread.start();
-
-      } catch ( Exception ex ) {
-        throw new KettleException( "Error while executing psql : " + cmd, ex );
+      } catch ( IOException ex ) {
+        throw new KettleException( "Error while executing psql : " + logMessage, ex );
       }
+
+      // any error message?
+      //
+      data.errorLogger = new StreamLogger( log, data.sqlProcess.getErrorStream(), "ERR_SQL", true );
+      new Thread( data.errorLogger ).start();
+
+      // any output?
+      data.outputLogger = new StreamLogger( log, data.sqlProcess.getInputStream(), "OUT_SQL" );
+
+      
+      // Where do we send the data to? --> To STDIN of the sql process
+      //
+      data.sqlOutputStream = data.sqlProcess.getOutputStream();
+
+      logWriter = new LogWriter( data.sqlProcess.getInputStream() );
+      logWriteThread = new Thread( logWriter, "IngresVecorWiseStepLogWriter" );
+      logWriteThread.start();
+
+      vwLoadMonitor = new VWloadMonitor( data.sqlProcess, data.outputLogger, logWriteThread );
+      vwLoadMonitorThread = new Thread( vwLoadMonitor );
+      vwLoadMonitorThread.start();
 
       logDetailed( "Connected to VectorWise with the 'sql' command." );
 
@@ -396,9 +407,17 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
           closeOutput();
         }
 
+        if ( logWriter != null ) {
+          logWriteThread.join();
+          if ( logWriter.isErrorsOccured() ) {
+            throw new SQLException( "The error was gotten from ingres sql process" );
+          }
+        }
+
         if ( vwLoadMonitorThread != null ) {
           vwLoadMonitorThread.join();
         }
+
         setOutputDone();
         return false;
       }
@@ -535,8 +554,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
                 // replace " in string fields
                 //
                 if ( meta.isEscapingSpecialCharacters() && valueMeta.isString() ) {
-
                   string = replace( string, new String[] { "\"" }, new String[] { "\\\"" } );
+                  log.logRowlevel( "\' \" \' symbol was added for the future processing" );
                 }
                 write( data.doubleQuote );
                 write( data.getBytes( string ) );
@@ -854,13 +873,14 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
     return true;
   }
 
-  private String replace( String string, String[] searchStrings, String[] replaceStrings ) {
+  @VisibleForTesting
+  String replace( String string, String[] searchStrings, String[] replaceStrings ) {
     StringBuilder builder = new StringBuilder( string );
     for ( int e = 0; e < Math.min( searchStrings.length, replaceStrings.length ); e++ ) {
       String chr = searchStrings[e];
       String rep = replaceStrings[e];
       int idx = builder.indexOf( chr, 0 );
-      while ( idx > 0 ) {
+      while ( idx != -1 ) {
         builder.replace( idx, idx + chr.length(), rep );
         idx = builder.indexOf( chr, idx + rep.length() );
       }
@@ -868,4 +888,86 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
     return builder.toString();
   }
 
+
+  @VisibleForTesting
+  String masqueradPassword( String input ) {
+    String regex = "\\[.*,.*\\]";
+    String substitution = "[username,password]";
+
+    String result = substitute( input, regex, substitution );
+
+    if ( !result.isEmpty() ) {
+      return result;
+    }
+    regex = "-u\\s.*\\s-P\\s.*?\\s";
+    substitution = "-u username, -P password ";
+
+    result = substitute( input, regex, substitution );
+
+    return result;
+  }
+
+  @VisibleForTesting
+  String substitute( String input, String regex, String substitution ) {
+    Pattern replace = Pattern.compile( regex );
+    Matcher matcher = replace.matcher( input );
+    if ( matcher.find() ) {
+      return matcher.replaceAll( substitution );
+    }
+    return "";
+  }
+
+  class LogWriter implements Runnable {
+    final InputStream is;
+    boolean isErrorsOccured;
+
+    public LogWriter( InputStream outStream ) {
+      this.is = outStream;
+    }
+
+    @Override
+    public void run() {
+      printLog();
+    }
+
+    private void printLog() {
+      try {
+        InputStreamReader isr = new InputStreamReader( is );
+        BufferedReader br = new BufferedReader( isr );
+        String line = null;
+        String ingresErrorRegex = ".*E_[A-Z]{1,2}[0-9]{3,4}.*";
+        while ( ( line = br.readLine() ) != null ) {
+          if ( !line.matches( ingresErrorRegex ) ) {
+            log.logBasic( LogLevelEnum.OUT.getPredicateMessage() + line );
+          } else {
+            log.logError( LogLevelEnum.ERROR.getPredicateMessage() + line );
+            isErrorsOccured = true;
+          }
+        }
+      } catch ( IOException ioe ) {
+        log.logError( Const.getStackTracker( ioe ) );
+      }
+    }
+
+    boolean isErrorsOccured() {
+      return isErrorsOccured;
+    }
+  }
+
+   /**
+    * Log level of the current step
+    */
+  private enum LogLevelEnum {
+    ERROR {
+      public String getPredicateMessage() {
+        return "ERR_SQL ";
+      }
+    },
+    OUT {
+      public String getPredicateMessage() {
+        return "OUT_SQL ";
+      }
+    };
+    abstract String getPredicateMessage();
+  }
 }
