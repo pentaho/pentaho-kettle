@@ -22,9 +22,6 @@
 
 package org.pentaho.di.ui.trans.steps.jobexecutor;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -84,6 +81,9 @@ import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 public class JobExecutorDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = JobExecutorMeta.class; // for i18n purposes, needed by Translator2!!
@@ -172,7 +172,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 
   private ObjectId referenceObjectId;
   private ObjectLocationSpecificationMethod specificationMethod;
-
+  
   private ColumnInfo[] parameterColumns;
 
   private Label wlResultFilesTarget;
@@ -192,6 +192,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
   private TableView wResultRowsFields;
 
   private Button wGetParameters;
+  
+  private Button wCopyJob;
 
   public JobExecutorDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, (BaseStepMeta) in, tr, sname );
@@ -488,6 +490,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     addExecutionResultTab();
     addResultRowsTab();
     addResultFilesTab();
+    addAdvancedTab();
 
     // Add listeners
     lsCancel = new Listener() {
@@ -787,6 +790,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     wExecutionExitStatusField.setText( Const.NVL( jobExecutorMeta.getExecutionExitStatusField(), "" ) );
     wExecutionLogTextField.setText( Const.NVL( jobExecutorMeta.getExecutionLogTextField(), "" ) );
     wExecutionLogChannelIdField.setText( Const.NVL( jobExecutorMeta.getExecutionLogChannelIdField(), "" ) );
+    
+    wCopyJob.setSelection( jobExecutorMeta.isCopyJobToServer() );
 
     // result files
     //
@@ -1380,6 +1385,52 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     wTab.setControl( scrolledComposite );
     wTabFolder.setSelection( wTab );
   }
+  
+  private void addAdvancedTab() {
+    final CTabItem wTab = new CTabItem( wTabFolder, SWT.NONE );
+    wTab.setText( BaseMessages.getString( PKG, "JobExecutorDialog.Advanced.Group.Label" ) );
+
+    ScrolledComposite scrolledComposite = new ScrolledComposite( wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
+    scrolledComposite.setLayout( new FillLayout() );
+
+    Composite wInputComposite = new Composite( scrolledComposite, SWT.NONE );
+    props.setLook( wInputComposite );
+
+    FormLayout tabLayout = new FormLayout();
+    tabLayout.marginWidth = Const.FORM_MARGIN;
+    tabLayout.marginHeight = Const.FORM_MARGIN;
+    wInputComposite.setLayout( tabLayout );
+    
+    // Copy job to remote server
+    //
+    Label wlCopyJob = new Label( wInputComposite, SWT.RIGHT );
+    wlCopyJob.setText( BaseMessages.getString( PKG, "JobExecutorDialog.CopySubStep.Label" ) );
+    props.setLook( wlCopyJob );
+    FormData fd = new FormData();
+    fd.left = new FormAttachment( 0, 0 );
+    fd.top = new FormAttachment( 0, 0 );
+    fd.right = new FormAttachment( middle, -margin );
+    wlCopyJob.setLayoutData( fd );
+    wCopyJob = new Button( wInputComposite, SWT.CHECK );
+    props.setLook( wCopyJob );
+    fd = new FormData();
+    fd.left = new FormAttachment( middle, 0 );
+    fd.top = new FormAttachment( 0, 0 );
+    fd.right = new FormAttachment( 100, 0 );
+    wCopyJob.setLayoutData( fd );
+    
+    wInputComposite.pack();
+    Rectangle bounds = wInputComposite.getBounds();
+
+    scrolledComposite.setContent( wInputComposite );
+    scrolledComposite.setExpandHorizontal( true );
+    scrolledComposite.setExpandVertical( true );
+    scrolledComposite.setMinWidth( bounds.width );
+    scrolledComposite.setMinHeight( bounds.height );
+
+    wTab.setControl( scrolledComposite );
+    wTabFolder.setSelection( wTab );
+  }
 
   private void addResultFilesTab() {
 
@@ -1575,6 +1626,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     }
 
     jobExecutorMeta.setSpecificationMethod( specificationMethod );
+    jobExecutorMeta.setCopyJobToServer(wCopyJob.getSelection());
     switch ( specificationMethod ) {
       case FILENAME:
         jobExecutorMeta.setFileName( wFilename.getText() );
@@ -1731,5 +1783,3 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     return new SelectObjectDialog( parent, rep, showTransformations, showJobs );
   }
 }
-
-

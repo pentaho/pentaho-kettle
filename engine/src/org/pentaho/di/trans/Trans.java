@@ -23,32 +23,6 @@
 
 package org.pentaho.di.trans;
 
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -142,6 +116,32 @@ import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartExecutionTransServlet;
 import org.pentaho.di.www.WebResult;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * This class represents the information and operations associated with the concept of a Transformation. It loads,
@@ -4218,55 +4218,38 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
       slaveServer.getLogChannel().setLogLevel( executionConfiguration.getLogLevel() );
 
-      if ( executionConfiguration.isPassingExport() ) {
-
-        // First export the job...
-        //
-        FileObject tempFile =
+      // First export the job...
+      //
+      FileObject tempFile =
           KettleVFS.createTempFile( "transExport", ".zip", System.getProperty( "java.io.tmpdir" ), transMeta );
 
-        TopLevelResource topLevelResource =
-          ResourceUtil.serializeResourceExportInterface(
-            tempFile.getName().toString(), transMeta, transMeta, repository, metaStore, executionConfiguration
-              .getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
+      TopLevelResource topLevelResource =
+          ResourceUtil.serializeResourceExportInterface( tempFile.getName().toString(), transMeta, transMeta,
+              repository, metaStore, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME,
+              executionConfiguration.isPassingExport() );
 
-        // Send the zip file over to the slave server...
-        //
-        String result =
-          slaveServer.sendExport(
-            topLevelResource.getArchiveName(), AddExportServlet.TYPE_TRANS, topLevelResource
+      // Send the zip file over to the slave server...
+      //
+      String result =
+          slaveServer.sendExport( topLevelResource.getArchiveName(), AddExportServlet.TYPE_TRANS, topLevelResource
               .getBaseResourceName() );
-        WebResult webResult = WebResult.fromXMLString( result );
-        if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-          throw new KettleException(
-            "There was an error passing the exported transformation to the remote server: "
-              + Const.CR + webResult.getMessage() );
-        }
-        carteObjectId = webResult.getId();
-      } else {
-
-        // Now send it off to the remote server...
-        //
-        String xml = new TransConfiguration( transMeta, executionConfiguration ).getXML();
-        String reply = slaveServer.sendXML( xml, AddTransServlet.CONTEXT_PATH + "/?xml=Y" );
-        WebResult webResult = WebResult.fromXMLString( reply );
-        if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-          throw new KettleException( "There was an error posting the transformation on the remote server: "
+      WebResult webResult = WebResult.fromXMLString( result );
+      if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
+        throw new KettleException( "There was an error passing the exported transformation to the remote server: "
             + Const.CR + webResult.getMessage() );
-        }
-        carteObjectId = webResult.getId();
       }
+      carteObjectId = webResult.getId();
 
       // Prepare the transformation
       //
       String reply =
         slaveServer.execService( PrepareExecutionTransServlet.CONTEXT_PATH
           + "/?name=" + URLEncoder.encode( transMeta.getName(), "UTF-8" ) + "&xml=Y&id=" + carteObjectId );
-      WebResult webResult = WebResult.fromXMLString( reply );
-      if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
+      WebResult execResult = WebResult.fromXMLString( reply );
+      if ( !execResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
         throw new KettleException(
           "There was an error preparing the transformation for excution on the remote server: "
-            + Const.CR + webResult.getMessage() );
+            + Const.CR + execResult.getMessage() );
       }
 
       // Start the transformation
@@ -4274,11 +4257,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       reply =
         slaveServer.execService( StartExecutionTransServlet.CONTEXT_PATH
           + "/?name=" + URLEncoder.encode( transMeta.getName(), "UTF-8" ) + "&xml=Y&id=" + carteObjectId );
-      webResult = WebResult.fromXMLString( reply );
+      execResult = WebResult.fromXMLString( reply );
 
-      if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
+      if ( !execResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
         throw new KettleException( "There was an error starting the transformation on the remote server: "
-          + Const.CR + webResult.getMessage() );
+          + Const.CR + execResult.getMessage() );
       }
 
       return carteObjectId;

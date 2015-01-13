@@ -23,20 +23,6 @@
 
 package org.pentaho.di.job;
 
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
@@ -95,11 +81,24 @@ import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.www.AddExportServlet;
-import org.pentaho.di.www.AddJobServlet;
 import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartJobServlet;
 import org.pentaho.di.www.WebResult;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class executes a job as defined by a JobMeta object.
@@ -1755,49 +1754,37 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         executionConfiguration.getVariables().put( var, jobMeta.getVariable( var ) );
       }
 
-      if ( executionConfiguration.isPassingExport() ) {
-        // First export the job... slaveServer.getVariable("MASTER_HOST")
-        //
-        FileObject tempFile =
+      // First export the job... slaveServer.getVariable("MASTER_HOST")
+      //
+      FileObject tempFile =
           KettleVFS.createTempFile( "jobExport", ".zip", System.getProperty( "java.io.tmpdir" ), jobMeta );
 
-        TopLevelResource topLevelResource =
-          ResourceUtil.serializeResourceExportInterface(
-            tempFile.getName().toString(), jobMeta, jobMeta, repository, metaStore, executionConfiguration
-              .getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
+      TopLevelResource topLevelResource =
+          ResourceUtil.serializeResourceExportInterface( tempFile.getName().toString(), jobMeta, jobMeta, repository,
+              metaStore, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME, executionConfiguration
+                  .isPassingExport() );
 
-        // Send the zip file over to the slave server...
-        //
-        String result =
+      // Send the zip file over to the slave server...
+      //
+      String result =
           slaveServer.sendExport( topLevelResource.getArchiveName(), AddExportServlet.TYPE_JOB, topLevelResource
-            .getBaseResourceName() );
-        WebResult webResult = WebResult.fromXMLString( result );
-        if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-          throw new KettleException( "There was an error passing the exported job to the remote server: "
-            + Const.CR + webResult.getMessage() );
-        }
-        carteObjectId = webResult.getId();
-      } else {
-        String xml = new JobConfiguration( jobMeta, executionConfiguration ).getXML();
-
-        String reply = slaveServer.sendXML( xml, AddJobServlet.CONTEXT_PATH + "/?xml=Y" );
-        WebResult webResult = WebResult.fromXMLString( reply );
-        if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-          throw new KettleException( "There was an error posting the job on the remote server: "
-            + Const.CR + webResult.getMessage() );
-        }
-        carteObjectId = webResult.getId();
+              .getBaseResourceName() );
+      WebResult webResult = WebResult.fromXMLString( result );
+      if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
+        throw new KettleException( "There was an error passing the exported job to the remote server: " + Const.CR
+            + webResult.getMessage() );
       }
+      carteObjectId = webResult.getId();
 
       // Start the job
       //
       String reply =
         slaveServer.execService( StartJobServlet.CONTEXT_PATH
           + "/?name=" + URLEncoder.encode( jobMeta.getName(), "UTF-8" ) + "&xml=Y&id=" + carteObjectId );
-      WebResult webResult = WebResult.fromXMLString( reply );
-      if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
+      WebResult startResult = WebResult.fromXMLString( reply );
+      if ( !startResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
         throw new KettleException( "There was an error starting the job on the remote server: "
-          + Const.CR + webResult.getMessage() );
+          + Const.CR + startResult.getMessage() );
       }
       return carteObjectId;
     } catch ( KettleException ke ) {
