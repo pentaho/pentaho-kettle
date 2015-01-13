@@ -243,6 +243,7 @@ public class KettleLogStore {
    */
   public static void discardLines( String parentLogChannelId, boolean includeGeneralMessages ) {
     LoggingRegistry registry = LoggingRegistry.getInstance();
+    MetricsRegistry metricsRegistry = MetricsRegistry.getInstance();
     List<String> ids = registry.getLogChannelChildren( parentLogChannelId );
 
     // Remove all the rows for these ids
@@ -257,6 +258,8 @@ public class KettleLogStore {
       // Also remove the item from the registry.
       //
       registry.getMap().remove( id );
+      metricsRegistry.getSnapshotLists().remove( id );
+      metricsRegistry.getSnapshotMaps().remove( id );
     }
 
     // Now discard the general lines if this is required
