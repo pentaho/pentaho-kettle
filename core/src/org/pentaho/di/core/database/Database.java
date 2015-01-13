@@ -2133,7 +2133,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           setValues( par, data, ps );
         }
         ResultSet r = ps.executeQuery();
-        fields = getRowInfo( ps.getMetaData(), false, false );
+        ResultSetMetaData metadata = ps.getMetaData();
+        // If the PreparedStatement can't get us the metadata, try using the ResultSet's metadata
+        if( metadata == null ) {
+          metadata = r.getMetaData();
+        }
+        fields = getRowInfo( metadata, false, false );
         r.close();
         ps.close();
       }
