@@ -5896,7 +5896,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     messageBuilder.append( Const.CR );
     messageBuilder.append( Const.CR );
     messageBuilder.append( Const.CR );
-    messageBuilder.append( BaseMessages.getString( PKG, "System.CompanyInfo", Const.COPYRIGHT_YEAR ) );
+    messageBuilder.append( BaseMessages.getString( PKG, "System.CompanyInfo", 
+        ""+((new Date()).getYear()+1900) ) );
     messageBuilder.append( Const.CR );
     messageBuilder.append( BaseMessages.getString( PKG, "System.ProductWebsiteUrl" ) );
     messageBuilder.append( Const.CR );
