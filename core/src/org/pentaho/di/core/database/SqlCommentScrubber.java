@@ -129,7 +129,15 @@ public class SqlCommentScrubber {
               // If we see a multi-line comment starter (/*) and we're not in a string or
               // multi-line comment, then we have started a multi-line comment.
               if ( ( ch == '*' ) && ( !blkComment ) && ( !inString ) ) {
-                blkComment = true;
+                // Make sure that the next character isn't a + which identifies a hint in Oracle (PDI-13054)
+                ch = buffer.read();
+                if (ch == '+') {
+                  queryWithoutComments.append( '/' );
+                  queryWithoutComments.append( '*' );
+                  queryWithoutComments.append( '+' );
+                } else {
+                  blkComment = true;
+                }
               } else {
                 // Otherwise if we aren't already in a block comment, pass the chars through
                 if ( !blkComment ) {
