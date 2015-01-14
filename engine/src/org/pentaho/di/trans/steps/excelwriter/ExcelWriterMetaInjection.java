@@ -96,39 +96,41 @@ public class ExcelWriterMetaInjection implements StepMetaInjectionInterface {
                   Entry metaEntry = Entry.findEntry( entry.getKey() );
                   if ( metaEntry != null ) {
                     Object value = entry.getValue();
-                    switch ( metaEntry ) {
-                      case NAME:
-                        excelOutputField.setName( (String) value );
-                        break;
-                      case TYPE:
-                        excelOutputField.setType( (String) value );
-                        break;
-                      case FORMAT:
-                        excelOutputField.setFormat( (String) value );
-                        break;
-                      case STYLECELL:
-                        excelOutputField.setStyleCell( (String) value );
-                        break;
-                      case FIELDTITLE:
-                        excelOutputField.setTitle( (String) value );
-                        break;
-                      case TITLESTYLE:
-                        excelOutputField.setTitleStyleCell( (String) value );
-                        break;
-                      case FORMULA:
-                        excelOutputField.setFormula( (Boolean) value );
-                        break;
-                      case HYPERLINKFIELD:
-                        excelOutputField.setHyperlinkField( (String) value );
-                        break;
-                      case CELLCOMMENT:
-                        excelOutputField.setCommentField( (String) value );
-                        break;
-                      case COMMENTAUTHOR:
-                        excelOutputField.setCommentAuthorField( (String) value );
-                        break;
-                      default:
-                        break;
+                    if ( value != null ) {
+                      switch ( metaEntry ) {
+                        case NAME:
+                          excelOutputField.setName( (String) value );
+                          break;
+                        case TYPE:
+                          excelOutputField.setType( (String) value );
+                          break;
+                        case FORMAT:
+                          excelOutputField.setFormat( (String) value );
+                          break;
+                        case STYLECELL:
+                          excelOutputField.setStyleCell( (String) value );
+                          break;
+                        case FIELDTITLE:
+                          excelOutputField.setTitle( (String) value );
+                          break;
+                        case TITLESTYLE:
+                          excelOutputField.setTitleStyleCell( (String) value );
+                          break;
+                        case FORMULA:
+                          excelOutputField.setFormula( (Boolean) value );
+                          break;
+                        case HYPERLINKFIELD:
+                          excelOutputField.setHyperlinkField( (String) value );
+                          break;
+                        case CELLCOMMENT:
+                          excelOutputField.setCommentField( (String) value );
+                          break;
+                        case COMMENTAUTHOR:
+                          excelOutputField.setCommentAuthorField( (String) value );
+                          break;
+                        default:
+                          break;
+                      }
                     }
                   }
                 }
