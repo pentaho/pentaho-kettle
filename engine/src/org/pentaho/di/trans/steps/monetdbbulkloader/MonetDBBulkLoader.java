@@ -502,13 +502,13 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
       if ( error != null ) {
         throw new KettleException( "Error loading data: " + error );
       }
-      data.out.writeLine( "" );
+      // data.out.writeLine( "" );
 
       // and again, making sure we commit all the records
-      error = data.in.waitForPrompt();
-      if ( error != null ) {
-        throw new KettleException( "Error loading data: " + error );
-      }
+      // error = data.in.waitForPrompt();
+      // if ( error != null ) {
+        // throw new KettleException( "Error loading data: " + error );
+      // }
 
       if ( log.isRowLevel() ) {
         logRowlevel( Const.CR );
