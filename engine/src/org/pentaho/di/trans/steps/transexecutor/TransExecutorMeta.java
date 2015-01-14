@@ -32,6 +32,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -542,7 +543,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     resultFilesFileNameField = "FileName";
   }
 
-  void prepareExecutionResultsFields( RowMetaInterface row, StepMeta nextStep ) throws KettleException {
+  void prepareExecutionResultsFields( RowMetaInterface row, StepMeta nextStep ) throws KettleStepException {
     if ( nextStep != null && executionResultTargetStepMeta != null ) {
       if ( !Const.isEmpty( executionTimeField ) ) {
         ValueMetaInterface value = new ValueMeta( executionTimeField, ValueMeta.TYPE_INTEGER, 15, 0 );
@@ -614,7 +615,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
-  void prepareResultsRowsFields( RowMetaInterface row ) throws KettleException {
+  void prepareResultsRowsFields( RowMetaInterface row ) throws KettleStepException {
     for ( int i = 0; i < outputRowsField.length; i++ ) {
       ValueMetaInterface value =
         new ValueMeta( outputRowsField[ i ], outputRowsType[ i ], outputRowsLength[ i ], outputRowsPrecision[ i ] );
@@ -622,6 +623,21 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     }
   }
 
+  @Override
+  public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    inputRowMeta.clear();
+
+    if ( nextStep != null ) {
+      if ( nextStep.equals( executionResultTargetStepMeta ) ) {
+        prepareExecutionResultsFields( inputRowMeta, nextStep );
+      } else if ( nextStep.equals( resultFilesTargetStepMeta ) ) {
+        prepareExecutionResultsFileFields( inputRowMeta, nextStep );
+      } else if ( nextStep.equals( outputRowsSourceStepMeta ) ) {
+        prepareResultsRowsFields( inputRowMeta );
+      }
+    }
+  }
 
   public String[] getInfoSteps() {
     String[] infoSteps = getStepIOMeta().getInfoStepnames();
