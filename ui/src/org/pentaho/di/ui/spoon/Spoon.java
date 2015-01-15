@@ -345,7 +345,7 @@ import com.google.common.annotations.VisibleForTesting;
  * @since 16-may-2003, i18n at 07-Feb-2006, redesign 01-Dec-2006
  */
 public class Spoon extends ApplicationWindow implements AddUndoPositionInterface, TabListener, SpoonInterface,
-  OverwritePrompter, PDIObserver, LifeEventHandler, XulEventSource, XulEventHandler {
+  OverwritePrompter, PDIObserver, LifeEventHandler, XulEventSource, XulEventHandler, PartitionSchemasProvider {
 
   private static Class<?> PKG = Spoon.class;
 
@@ -6389,6 +6389,18 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  @Override public List<String> getPartitionSchemasNames( TransMeta transMeta ) throws KettleException {
+    return Arrays.asList( pickupPartitionSchemaNames( transMeta ) );
+  }
+
+  private String[] pickupPartitionSchemaNames( TransMeta transMeta ) throws KettleException {
+    return ( rep == null ) ? transMeta.getPartitionSchemasNames() : rep.getPartitionSchemaNames( false );
+  }
+
+
+  @Override public List<PartitionSchema> getPartitionSchemas( TransMeta transMeta ) throws KettleException {
+    return pickupPartitionSchemas( transMeta );
+  }
 
   private List<PartitionSchema> pickupPartitionSchemas( TransMeta transMeta ) throws KettleException {
     if ( rep != null ) {
@@ -8209,10 +8221,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  private String[] pickupPartitionSchemaNames( TransMeta transMeta ) throws KettleException {
-    return ( rep == null ) ? transMeta.getPartitionSchemasNames() : rep.getPartitionSchemaNames( false );
-  }
-
   public boolean isDefinedSchemaExist( String[] schemaNames ) {
     // Before we start, check if there are any partition schemas defined...
     if ( ( schemaNames == null ) || ( schemaNames.length == 0 ) ) {
@@ -8246,7 +8254,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         PluginRegistry registry = PluginRegistry.getInstance();
         List<PluginInterface> plugins = registry.getPlugins( PartitionerPluginType.class );
         int exactSize = StepPartitioningMeta.methodDescriptions.length + plugins.size();
-        PartitionSettings settings = new PartitionSettings( exactSize, transMeta, stepMeta );
+        PartitionSettings settings = new PartitionSettings( exactSize, transMeta, stepMeta, this );
         settings.fillOptionsAndCodesByPlugins( plugins );
 
         /*Method selection*/
