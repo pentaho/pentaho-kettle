@@ -208,6 +208,10 @@
       command="spoon.clearDBCache('database-class-clear-cache')" />
   </menupopup>
 
+  <menupopup id="named-cluster-class">
+    <menuitem id="named-cluster-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newNamedCluster()" />
+  </menupopup>
+
   <menupopup id="partition-schema-class">
     <menuitem id="partition-schema-class-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newDatabasePartitioningSchema()" />
   </menupopup>
@@ -249,6 +253,13 @@
     <menuitem id="database-inst-explore" label="${Spoon.Menu.Popup.CONNECTIONS.Explore}" command="spoon.exploreDB()" />
     <menuseparator />
   	<menuitem id="database-inst-dependancy" label="${Spoon.Menu.Popup.CONNECTIONS.ShowDependancies}" command="spoon.displayDbDependancies()" />
+  </menupopup>
+
+  <menupopup id="named-cluster-inst">
+    <menuitem id="named-cluster-inst-new" label="${Spoon.Menu.Popup.BASE.New}" command="spoon.newNamedCluster()" />
+    <menuitem id="named-cluster-inst-edit" label="${Spoon.Menu.Popup.NAMEDCLUSTERS.Edit}" command="spoon.editNamedCluster()" />
+    <menuitem id="named-cluster-inst-duplicate" label="${Spoon.Menu.Popup.NAMEDCLUSTERS.Duplicate}" command="spoon.dupeNamedCluster()" />
+    <menuitem id="named-cluster-inst-delete" label="${Spoon.Menu.Popup.NAMEDCLUSTERS.Delete}" command="spoon.delNamedCluster()" />
   </menupopup>
 
   <menupopup id="step-inst">

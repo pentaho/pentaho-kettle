@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -999,6 +999,10 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
         // //
       }
 
+      // Load the database connections, slave servers, cluster schemas & partition schemas into this object.
+      //
+      importFromMetaStore();      
+      
       // Read the named parameters.
       Node paramsNode = XMLHandler.getSubNode( jobnode, XML_TAG_PARAMETERS );
       int nrParams = XMLHandler.countNodes( paramsNode, "parameter" );
