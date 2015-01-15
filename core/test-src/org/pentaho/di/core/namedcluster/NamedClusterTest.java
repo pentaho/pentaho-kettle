@@ -70,10 +70,6 @@ public class NamedClusterTest {
   public void testGetClusterTemplate() {
     NamedClusterManager manager = NamedClusterManager.getInstance();
     
-    // test lookup name that does not exist
-    NamedCluster configuration = manager.getClusterTemplate();
-    assertTrue( "new cluster".equals( configuration.getName() ) );
-    
     // add config, test that we can look it up
     String name = "" + System.currentTimeMillis();
     NamedCluster nc = createNamedCluster( name );
