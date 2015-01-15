@@ -804,7 +804,6 @@
 
       <formatter type="xml"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.JobTrackerExecutionTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.SimultaneousJobsAppenderTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.tablecompare.TableCompareTest" haltonerror="false" />
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.blackbox.BlackBoxTests" haltonerror="false" />
     </junit>
