@@ -72,12 +72,14 @@ public class NamedClusterTest {
     
     // test lookup name that does not exist
     NamedCluster configuration = manager.getClusterTemplate();
-    assertTrue( configuration == null );
+    assertTrue( "new cluster".equals( configuration.getName() ) );
     
     // add config, test that we can look it up
-    NamedCluster nc = createNamedCluster( "" + System.currentTimeMillis() );
+    String name = "" + System.currentTimeMillis();
+    NamedCluster nc = createNamedCluster( name );
     manager.setClusterTemplate( nc );
     assertTrue( manager.getClusterTemplate() != null );
+    assertTrue( name.equals( manager.getClusterTemplate().getName() ) );
   }
 
   @Test
