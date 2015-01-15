@@ -42,12 +42,15 @@ public class SpoonDelegates {
 
   public SpoonDBDelegate db;
 
+  public SpoonNamedClusterDelegate nc;
+  
   public SpoonDelegates( Spoon spoon ) {
     tabs = new SpoonTabsDelegate( spoon );
     tree = new SpoonTreeDelegate( spoon );
     slaves = new SpoonSlaveDelegate( spoon );
     steps = new SpoonStepsDelegate( spoon );
     db = new SpoonDBDelegate( spoon );
+    nc = new SpoonNamedClusterDelegate( spoon );
     update( spoon );
   }
 

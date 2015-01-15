@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,7 +54,6 @@ import java.util.regex.Pattern;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
@@ -167,6 +166,8 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.namedcluster.NamedClusterManager;
+import org.pentaho.di.core.namedcluster.model.NamedCluster;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.LifecyclePluginType;
@@ -335,6 +336,8 @@ import org.pentaho.xul.swt.tab.TabSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.google.common.annotations.VisibleForTesting;
+
 /**
  * This class handles the main window of the Spoon graphical transformation editor.
  *
@@ -383,6 +386,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public static final String STRING_JOB = BaseMessages.getString( PKG, "Spoon.STRING_JOB" );
 
+  public static final String STRING_NAMED_CLUSTERS = BaseMessages.getString( PKG, "Spoon.STRING_NAMED_CLUSTERS" );
+  
   private static final String SYNC_TRANS = "sync_trans_name_to_file_name";
 
   public static final String APP_NAME = BaseMessages.getString( PKG, "Spoon.Application.Name" );
@@ -1517,10 +1522,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         "cluster-schema-class" ) );
       menuMap.put( "slave-cluster-class", mainSpoonContainer.getDocumentRoot().getElementById(
         "slave-cluster-class" ) );
+      menuMap.put( "named-cluster-class", mainSpoonContainer.getDocumentRoot().getElementById(
+          "named-cluster-class" ) );
       menuMap.put( "trans-inst", mainSpoonContainer.getDocumentRoot().getElementById( "trans-inst" ) );
       menuMap.put( "job-inst", mainSpoonContainer.getDocumentRoot().getElementById( "job-inst" ) );
       menuMap.put( "step-plugin", mainSpoonContainer.getDocumentRoot().getElementById( "step-plugin" ) );
       menuMap.put( "database-inst", mainSpoonContainer.getDocumentRoot().getElementById( "database-inst" ) );
+      menuMap.put( "named-conf-inst", mainSpoonContainer.getDocumentRoot().getElementById( "named-conf-inst" ) );
       menuMap.put( "step-inst", mainSpoonContainer.getDocumentRoot().getElementById( "step-inst" ) );
       menuMap.put( "job-entry-copy-inst", mainSpoonContainer.getDocumentRoot().getElementById(
         "job-entry-copy-inst" ) );
@@ -1531,6 +1539,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         "cluster-schema-inst" ) );
       menuMap
         .put( "slave-server-inst", mainSpoonContainer.getDocumentRoot().getElementById( "slave-server-inst" ) );
+      menuMap.put( "named-cluster-inst", mainSpoonContainer.getDocumentRoot().getElementById(
+          "named-cluster-inst" ) );
     } catch ( Throwable t ) {
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "Spoon.Exception.ErrorReadingXULFile.Title" ), BaseMessages
@@ -2950,6 +2960,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         spoonMenu = (XulMenupopup) menuMap.get( "cluster-schema-class" );
       } else if ( selection.equals( SlaveServer.class ) ) {
         spoonMenu = (XulMenupopup) menuMap.get( "slave-cluster-class" );
+      } else if ( selection.equals( NamedCluster.class ) ) {
+        spoonMenu = (XulMenupopup) menuMap.get( "named-cluster-class" );
       } else {
         spoonMenu = null;
       }
@@ -2987,6 +2999,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             item.setLabel( BaseMessages.getString( PKG, "Spoon.Menu.Popup.CONNECTIONS.Share" ) );
           }
         }
+      } else if ( selection instanceof NamedCluster ) {
+        spoonMenu = (XulMenupopup) menuMap.get( "named-cluster-inst" );
       } else if ( selection instanceof StepMeta ) {
         spoonMenu = (XulMenupopup) menuMap.get( "step-inst" );
       } else if ( selection instanceof JobEntryCopy ) {
@@ -4655,6 +4669,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         rep != null ? rep.readTransSharedObjects( transMeta ) : transMeta.readSharedObjects();
       sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
 
+      transMeta.importFromMetaStore();
+      
       transMeta.clearChanged();
     } catch ( Exception e ) {
       new ErrorDialog(
@@ -4705,7 +4721,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         SharedObjects sharedObjects =
           rep != null ? rep.readJobMetaSharedObjects( jobMeta ) : jobMeta.readSharedObjects();
         sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
-      } catch ( KettleException e ) {
+        
+        jobMeta.importFromMetaStore();
+        
+      } catch ( Exception e ) {
         new ErrorDialog(
           shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ), BaseMessages
             .getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", delegates.tabs.makeTabName(
@@ -6186,6 +6205,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             refreshSlavesSubtree( tiTransName, transMeta, guiResource );
 
             refreshClustersSubtree( tiTransName, transMeta, guiResource );
+            
+            refreshNamedClusterSubtree( tiTransName, transMeta, guiResource );
 
           }
         }
@@ -6233,6 +6254,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
             refreshJobEntriesSubtree( tiJobName, jobMeta, guiResource );
 
+            refreshNamedClusterSubtree( tiJobName, jobMeta, guiResource );
+            
             refreshSlavesSubtree( tiJobName, jobMeta, guiResource );
 
           }
@@ -6309,7 +6332,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         continue;
       }
 
-      DatabaseMeta databaseMeta = findDatabase( dbs, dbName );
+      DatabaseMeta databaseMeta = meta.findDatabase( dbName );
+      if ( databaseMeta == null ) {
+        databaseMeta = findDatabase( dbs, dbName );
+      }      
 
       TreeItem tiDb = createTreeItem( tiDbTitle, databaseMeta.getDisplayName(), guiResource.getImageConnection() );
       if ( databaseMeta.isShared() ) {
@@ -6411,8 +6437,32 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private List<SlaveServer> pickupSlaveServers( AbstractMeta transMeta ) throws KettleException {
     return ( rep == null ) ? transMeta.getSlaveServers() : rep.getSlaveServers();
   }
+  
+  @VisibleForTesting void refreshNamedClusterSubtree( TreeItem tiRootName, AbstractMeta meta, GUIResource guiResource ) {
+    TreeItem tiNcTitle = createTreeItem( tiRootName, STRING_NAMED_CLUSTERS, guiResource.getImageBol() );
 
+    List<NamedCluster> namedClusters;
+    try {
+      namedClusters = NamedClusterManager.getInstance().list( metaStore );
+    } catch ( MetaStoreException e ) {
+      new ErrorDialog( shell,
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
+        BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingFromRepo.NamedCluster" ),
+        e
+      );
 
+      return;
+    }
+
+    for ( NamedCluster namedCluster : namedClusters ) {
+      if ( !filterMatch( namedCluster.getName() ) ) {
+        continue;
+      }
+
+      createTreeItem( tiNcTitle, namedCluster.getName(), guiResource.getImageConnection() );
+    }
+  }  
+  
   @VisibleForTesting void refreshSlavesSubtree( TreeItem tiRootName, AbstractMeta meta, GUIResource guiResource ) {
     TreeItem tiSlaveTitle = createTreeItem( tiRootName, STRING_SLAVES, guiResource.getImageBol() );
 
@@ -6924,14 +6974,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private void markTabsChanged() {
-    boolean anyTabsChanged = false;
     for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
       if ( entry.getTabItem().isDisposed() ) {
         continue;
       }
 
       boolean changed = entry.getObject().hasContentChanged();
-      anyTabsChanged |= changed;
       entry.getTabItem().setChanged( changed );
     }
   }
@@ -8757,6 +8805,41 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     delegates.db.newConnection();
   }
 
+  public void newNamedCluster() {
+    VariableSpace vs = null;
+    if ( getActiveMeta() instanceof TransMeta ) {
+      vs = getActiveTransformation();
+    } else {
+      vs = getActiveJob();
+    }
+    delegates.nc.newNamedCluster( vs, metaStore, getShell() );
+  }
+
+  public void editNamedCluster() {
+    NamedCluster nc = ( NamedCluster ) selectionObject;
+    delegates.nc.editNamedCluster( metaStore, nc, getShell() );
+  }  
+  
+  public void delNamedCluster() {
+    final NamedCluster nc = (NamedCluster) selectionObject;
+    MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+    mb.setMessage( BaseMessages.getString(
+      PKG, "Spoon.Dialog.DeleteNamedClusterAsk.Message", nc.getName() ) );
+    mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.DeleteNamedClusterAsk.Title" ) );
+    int response = mb.open();
+
+    if ( response != SWT.YES ) {
+      return;
+    }
+
+    delegates.nc.delNamedCluster( metaStore, nc );
+  }
+  
+  public void dupeNamedCluster() {
+    final NamedCluster nc = (NamedCluster) selectionObject;
+    delegates.nc.dupeNamedCluster( metaStore, nc, getShell() );
+  }
+  
   public void getSQL() {
     delegates.db.getSQL();
   }
@@ -9111,13 +9194,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       } else {
         for ( String aJobList : jobList ) {
           if ( aJobList != null ) {
-            TreeItem tidep = createTreeItem( parent, aJobList, GUIResource.getInstance().getImageJobGraph() );
+            createTreeItem( parent, aJobList, GUIResource.getInstance().getImageJobGraph() );
           }
         }
 
         for ( String aTransList : transList ) {
           if ( aTransList != null ) {
-            TreeItem tidep = createTreeItem( parent, aTransList, GUIResource.getInstance().getImageTransGraph() );
+            createTreeItem( parent, aTransList, GUIResource.getInstance().getImageTransGraph() );
           }
         }
         parent.setExpanded( true );

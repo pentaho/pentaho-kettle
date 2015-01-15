@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.uisupport;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.BrowseController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ClustersController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.ConnectionsController;
+import org.pentaho.di.ui.repository.repositoryexplorer.controllers.NamedClustersController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.PartitionsController;
 import org.pentaho.di.ui.repository.repositoryexplorer.controllers.SlavesController;
 
@@ -37,6 +38,7 @@ public class BaseRepositoryExplorerUISupport extends AbstractRepositoryExplorerU
     PartitionsController partitionsController = new PartitionsController();
     SlavesController slavesController = new SlavesController();
     ClustersController clustersController = new ClustersController();
+    NamedClustersController namedClusterController = new NamedClustersController();
 
     handlers.add( browseController );
     controllerNames.add( browseController.getName() );
@@ -48,6 +50,8 @@ public class BaseRepositoryExplorerUISupport extends AbstractRepositoryExplorerU
     controllerNames.add( slavesController.getName() );
     handlers.add( clustersController );
     controllerNames.add( clustersController.getName() );
+    handlers.add( namedClusterController );
+    controllerNames.add( namedClusterController.getName() );
   }
 
 }

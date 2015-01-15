@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,7 +60,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
-import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettlePluginLoaderException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -94,7 +93,6 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.Repository;
@@ -118,10 +116,7 @@ import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.metastore.api.IMetaStoreElement;
-import org.pentaho.metastore.api.IMetaStoreElementType;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
-import org.pentaho.metastore.util.PentahoDefaults;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -3321,26 +3316,6 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         throw missingPluginsException;
       }
     }
-  }
-
-  public void importFromMetaStore() throws MetaStoreException, KettlePluginException {
-
-    // Read the databases...
-    //
-    if ( metaStore != null ) {
-      IMetaStoreElementType databaseType =
-        metaStore.getElementTypeByName(
-          PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
-      if ( databaseType != null ) {
-        List<IMetaStoreElement> databaseElements = metaStore.getElements( PentahoDefaults.NAMESPACE, databaseType );
-        for ( IMetaStoreElement databaseElement : databaseElements ) {
-          addOrReplaceDatabase( DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(
-            metaStore, databaseElement ) );
-        }
-      }
-    }
-
-    // TODO: do the same for slaves, clusters, partition schemas
   }
 
   /**
