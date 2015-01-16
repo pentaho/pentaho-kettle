@@ -471,6 +471,14 @@ public class RowMeta implements RowMetaInterface {
   public int indexOfValue( String valueName ) {
     Integer index = valueIndexMap.get( valueName.toLowerCase() );
     if ( index == null ) {
+      for ( int i = 0; i < valueMetaList.size(); i++ ) {
+        if ( valueName.equalsIgnoreCase( valueMetaList.get( i ).getName() ) ) {
+          index = i;
+          indexValueMap();
+        }
+      }
+    }
+    if ( index == null ) {
       return -1;
     }
     return index;
@@ -485,9 +493,8 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public ValueMetaInterface searchValueMeta( String valueName ) {
-
-    Integer index = valueIndexMap.get( valueName.toLowerCase() );
-    if ( index == null ) {
+    Integer index = indexOfValue( valueName );
+    if ( index < 0 ) {
       return null;
     }
     return valueMetaList.get( index );
