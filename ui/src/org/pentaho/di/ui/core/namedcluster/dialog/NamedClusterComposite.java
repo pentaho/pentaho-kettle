@@ -73,7 +73,7 @@ public class NamedClusterComposite extends Composite {
     gridData.widthHint = 300;
 
     numberGridData = new GridData();
-    numberGridData.widthHint = 80;
+    numberGridData.widthHint = 160;
     
     labelGridData = new GridData();
     labelGridData.widthHint = 300;
@@ -210,7 +210,7 @@ public class NamedClusterComposite extends Composite {
     Callback hdfsPortCB = new Callback() {
       public void invoke( NamedCluster nc, TextVar textVar, String value ) {
         try {
-          nc.setHdfsPort( Integer.parseInt( value ) );
+          nc.setHdfsPort( value );
         } catch ( NumberFormatException nfe ) {
           textVar.setText( "" + nc.getHdfsPort() );
         }
@@ -258,7 +258,7 @@ public class NamedClusterComposite extends Composite {
     Callback portCB = new Callback() {
       public void invoke( NamedCluster nc, TextVar textVar, String value ) {
         try {
-          nc.setNameNodePort( Integer.parseInt( value ) );
+          nc.setNameNodePort( value );
         } catch ( NumberFormatException nfe ) {
           textVar.setText( "" + nc.getNameNodePort() );
         }        
@@ -286,7 +286,7 @@ public class NamedClusterComposite extends Composite {
     Callback portCB = new Callback() {
       public void invoke( NamedCluster nc, TextVar textVar, String value ) {
         try {
-          nc.setJobTrackerPort( Integer.parseInt( value ) );
+          nc.setJobTrackerPort( value );
         } catch ( NumberFormatException nfe ) {
           textVar.setText( "" + nc.getJobTrackerPort() );
         }   
@@ -314,7 +314,7 @@ public class NamedClusterComposite extends Composite {
     Callback portCB = new Callback() {
       public void invoke( NamedCluster nc, TextVar textVar, String value ) {
         try {
-          nc.setZooKeeperPort( Integer.parseInt( value ) );
+          nc.setZooKeeperPort( value );
         } catch ( NumberFormatException nfe ) {
           textVar.setText( "" + nc.getZooKeeperPort() );
         }
