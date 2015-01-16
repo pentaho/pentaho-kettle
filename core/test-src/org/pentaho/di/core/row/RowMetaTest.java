@@ -210,11 +210,6 @@ public class RowMetaTest {
   public void testExternalValueMetaModification() {
     ValueMetaInterface vmi = rowMeta.searchValueMeta( "string" );
     vmi.setName( "string2" );
-    // index become corrupted!
-    assertNull( rowMeta.searchValueMeta( vmi.getName() ) );
-    // a hack
-    rowMeta.setValueMetaList( rowMeta.getValueMetaList() );
-    // and now it can be found again
     assertNotNull( rowMeta.searchValueMeta( vmi.getName() ) );
   }
 
