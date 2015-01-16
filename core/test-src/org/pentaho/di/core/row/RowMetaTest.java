@@ -3,6 +3,7 @@ package org.pentaho.di.core.row;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -210,12 +211,19 @@ public class RowMetaTest {
   public void testExternalValueMetaModification() {
     ValueMetaInterface vmi = rowMeta.searchValueMeta( "string" );
     vmi.setName( "string2" );
-    // index become corrupted!
-    assertNull( rowMeta.searchValueMeta( vmi.getName() ) );
-    // a hack
-    rowMeta.setValueMetaList( rowMeta.getValueMetaList() );
-    // and now it can be found again
     assertNotNull( rowMeta.searchValueMeta( vmi.getName() ) );
+  }
+
+  @Test
+  public void testSwapNames() throws KettlePluginException {
+    ValueMetaInterface string2 = ValueMetaFactory.createValueMeta( "string2", ValueMeta.TYPE_STRING );
+    rowMeta.addValueMeta( string2 );
+    assertSame( string, rowMeta.searchValueMeta( "string" ) );
+    assertSame( string2, rowMeta.searchValueMeta( "string2" ) );
+    string.setName( "string2" );
+    string2.setName( "string" );
+    assertSame( string2, rowMeta.searchValueMeta( "string" ) );
+    assertSame( string, rowMeta.searchValueMeta( "string2" ) );
   }
 
   // @Test
