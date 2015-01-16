@@ -45,12 +45,12 @@ public class NamedCluster implements Cloneable, VariableSpace {
   @MetaStoreAttribute
   private String nameNodeHost;
   @MetaStoreAttribute
-  private int nameNodePort;
+  private String nameNodePort;
   
   @MetaStoreAttribute
   private String hdfsHost;
   @MetaStoreAttribute
-  private int hdfsPort;
+  private String hdfsPort;
   @MetaStoreAttribute
   private String hdfsUsername;
   @MetaStoreAttribute ( password=true )
@@ -59,12 +59,12 @@ public class NamedCluster implements Cloneable, VariableSpace {
   @MetaStoreAttribute
   private String jobTrackerHost;
   @MetaStoreAttribute
-  private int jobTrackerPort;
+  private String jobTrackerPort;
 
   @MetaStoreAttribute
   private String zooKeeperHost;
   @MetaStoreAttribute
-  private int zooKeeperPort;
+  private String zooKeeperPort;
   
   @MetaStoreAttribute
   private String oozieUrl;
@@ -210,11 +210,11 @@ public class NamedCluster implements Cloneable, VariableSpace {
     this.nameNodeHost = nameNodeHost;
   }
 
-  public int getNameNodePort() {
+  public String getNameNodePort() {
     return nameNodePort;
   }
 
-  public void setNameNodePort( int nameNodePort ) {
+  public void setNameNodePort( String nameNodePort ) {
     this.nameNodePort = nameNodePort;
   }
 
@@ -226,11 +226,11 @@ public class NamedCluster implements Cloneable, VariableSpace {
     this.hdfsHost = hdfsHost;
   }
 
-  public int getHdfsPort() {
+  public String getHdfsPort() {
     return hdfsPort;
   }
 
-  public void setHdfsPort( int hdfsPort ) {
+  public void setHdfsPort( String hdfsPort ) {
     this.hdfsPort = hdfsPort;
   }
 
@@ -258,11 +258,11 @@ public class NamedCluster implements Cloneable, VariableSpace {
     this.jobTrackerHost = jobTrackerHost;
   }
 
-  public int getJobTrackerPort() {
+  public String getJobTrackerPort() {
     return jobTrackerPort;
   }
 
-  public void setJobTrackerPort( int jobTrackerPort ) {
+  public void setJobTrackerPort( String jobTrackerPort ) {
     this.jobTrackerPort = jobTrackerPort;
   }
 
@@ -274,11 +274,11 @@ public class NamedCluster implements Cloneable, VariableSpace {
     this.zooKeeperHost = zooKeeperHost;
   }  
   
-  public int getZooKeeperPort() {
+  public String getZooKeeperPort() {
     return zooKeeperPort;
   }
 
-  public void setZooKeeperPort( int zooKeeperPort ) {
+  public void setZooKeeperPort( String zooKeeperPort ) {
     this.zooKeeperPort = zooKeeperPort;
   } 
   
