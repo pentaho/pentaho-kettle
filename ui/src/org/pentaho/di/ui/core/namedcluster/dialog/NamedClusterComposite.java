@@ -158,7 +158,7 @@ public class NamedClusterComposite extends Composite {
   }
   
   private TextVar createTextVar( final NamedCluster c, Composite parent, String val, GridData gd, int flags, final Callback cb ) {
-    final TextVar textVar = new TextVar( c, parent, SWT.BORDER );
+    final TextVar textVar = new TextVar( c, parent, flags );
     textVar.setText( val );
     textVar.setLayoutData( gd );
     props.setLook( textVar );
