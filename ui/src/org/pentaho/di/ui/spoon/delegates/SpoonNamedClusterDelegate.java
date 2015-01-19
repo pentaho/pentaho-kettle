@@ -49,7 +49,8 @@ public class SpoonNamedClusterDelegate extends SpoonDelegate {
       String dupename = BaseMessages.getString( PKG, "Spoon.Various.DupeName" ) + nc.getName();
       ncCopy.setName( dupename );
 
-      NamedClusterDialog namedClusterDialog = new NamedClusterDialog( shell , ncCopy);
+      NamedClusterDialog namedClusterDialog = new NamedClusterDialog( shell , ncCopy );
+      namedClusterDialog.setNewClusterCheck( true );
       String newname = namedClusterDialog.open();
       
       if ( newname != null ) { // null: CANCEL
@@ -73,6 +74,7 @@ public class SpoonNamedClusterDelegate extends SpoonDelegate {
       metaStore = Spoon.getInstance().getMetaStore();
     }
     NamedClusterDialog namedClusterDialog = new NamedClusterDialog( shell , namedCluster.clone() );
+    namedClusterDialog.setNewClusterCheck( false );
     String result = namedClusterDialog.open();
     if ( result != null ) {
       deleteNamedCluster( metaStore, namedCluster );
@@ -89,6 +91,7 @@ public class SpoonNamedClusterDelegate extends SpoonDelegate {
     NamedCluster nc = NamedClusterManager.getInstance().getClusterTemplate();
     
     NamedClusterDialog namedClusterDialog = new NamedClusterDialog( shell , nc );
+    namedClusterDialog.setNewClusterCheck( true );
     String result = namedClusterDialog.open();
     
     if ( result != null ) {
