@@ -22,11 +22,11 @@
 
 package org.pentaho.di.ui.core.namedcluster;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -65,6 +65,7 @@ public class NamedClusterWidget extends Composite {
     }
     
     nameClusterCombo = new Combo( this, SWT.DROP_DOWN | SWT.READ_ONLY );
+    nameClusterCombo.setLayoutData( new RowData( 150, SWT.DEFAULT ) );
 
     Button editButton = new Button( this, SWT.NONE );
     editButton.setText( BaseMessages.getString( PKG, "NamedClusterWidget.NamedCluster.Edit" ) );
