@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.core.namedcluster.dialog;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.KeyEvent;
@@ -159,7 +160,8 @@ public class NamedClusterComposite extends Composite {
   
   private TextVar createTextVar( final NamedCluster c, Composite parent, String val, GridData gd, int flags, final Callback cb ) {
     final TextVar textVar = new TextVar( c, parent, flags );
-    textVar.setText( val );
+    // SWT will typically not allow a null text
+    textVar.setText( StringUtils.isEmpty( val ) ? "" : val );
     textVar.setLayoutData( gd );
     props.setLook( textVar );
     
@@ -202,21 +204,17 @@ public class NamedClusterComposite extends Composite {
         nc.setHdfsHost( value );
       }
     };
-    createTextVar( c, pp, "" + c.getHdfsHost(), gridData, TEXT_FLAGS, hdfsHostCB );
+    createTextVar( c, pp, c.getHdfsHost(), gridData, TEXT_FLAGS, hdfsHostCB );
     
     // hdfs port label
     createLabel( pp, BaseMessages.getString( PKG, "NamedClusterDialog.Port" ), SWT.NONE );
     // hdfs port input
     Callback hdfsPortCB = new Callback() {
       public void invoke( NamedCluster nc, TextVar textVar, String value ) {
-        try {
-          nc.setHdfsPort( value );
-        } catch ( NumberFormatException nfe ) {
-          textVar.setText( "" + nc.getHdfsPort() );
-        }
+        nc.setHdfsPort( value );
       }
     };
-    createTextVar( c, pp, "" + c.getHdfsPort(), numberGridData, TEXT_FLAGS, hdfsPortCB );
+    createTextVar( c, pp, c.getHdfsPort(), numberGridData, TEXT_FLAGS, hdfsPortCB );
     
     // hdfs user label
     createLabel( pp, BaseMessages.getString( PKG, "NamedClusterDialog.Username" ), SWT.NONE );
@@ -226,7 +224,7 @@ public class NamedClusterComposite extends Composite {
         nc.setHdfsUsername( value );
       }
     };
-    createTextVar( c, pp, "" + c.getHdfsUsername(), gridData, TEXT_FLAGS, hdfsUsernameCB );
+    createTextVar( c, pp, c.getHdfsUsername(), gridData, TEXT_FLAGS, hdfsUsernameCB );
     
     // hdfs password label
     createLabel( pp, BaseMessages.getString( PKG, "NamedClusterDialog.Password" ), SWT.NONE );
@@ -236,7 +234,7 @@ public class NamedClusterComposite extends Composite {
         nc.setHdfsPassword( value );
       }
     };
-    createTextVar( c, pp, "" + c.getHdfsPassword(), gridData, PASSWORD_FLAGS, hdfsPasswordCB );       
+    createTextVar( c, pp, c.getHdfsPassword(), gridData, PASSWORD_FLAGS, hdfsPasswordCB );
   }  
   
   private void createNameNodeGroup( Composite parentComposite, final NamedCluster c ) {
@@ -250,21 +248,17 @@ public class NamedClusterComposite extends Composite {
         nc.setNameNodeHost( value );
       }
     };
-    createTextVar( c, pp, "" + c.getNameNodeHost(), gridData, TEXT_FLAGS, hostCB );
+    createTextVar( c, pp, c.getNameNodeHost(), gridData, TEXT_FLAGS, hostCB );
     
     // hdfs port label
     createLabel( pp, BaseMessages.getString( PKG, "NamedClusterDialog.Port" ), SWT.NONE );
     // hdfs port input
     Callback portCB = new Callback() {
       public void invoke( NamedCluster nc, TextVar textVar, String value ) {
-        try {
-          nc.setNameNodePort( value );
-        } catch ( NumberFormatException nfe ) {
-          textVar.setText( "" + nc.getNameNodePort() );
-        }        
+        nc.setNameNodePort( value );
       }
     };
-    createTextVar( c, pp, "" + c.getNameNodePort(), numberGridData, TEXT_FLAGS, portCB );
+    createTextVar( c, pp, c.getNameNodePort(), numberGridData, TEXT_FLAGS, portCB );
   }    
   
   private void createJobTrackerGroup( Composite parentComposite, final NamedCluster c ) {
@@ -278,21 +272,17 @@ public class NamedClusterComposite extends Composite {
         nc.setJobTrackerHost( value );
       }
     };
-    createTextVar( c, pp, "" + c.getJobTrackerHost(), gridData, TEXT_FLAGS, hostCB );
+    createTextVar( c, pp, c.getJobTrackerHost(), gridData, TEXT_FLAGS, hostCB );
     
     // hdfs port label
     createLabel( pp, BaseMessages.getString( PKG, "NamedClusterDialog.Port" ), SWT.NONE );
     // hdfs port input
     Callback portCB = new Callback() {
       public void invoke( NamedCluster nc, TextVar textVar, String value ) {
-        try {
-          nc.setJobTrackerPort( value );
-        } catch ( NumberFormatException nfe ) {
-          textVar.setText( "" + nc.getJobTrackerPort() );
-        }   
+        nc.setJobTrackerPort( value );
       }
     };
-    createTextVar( c, pp, "" + c.getJobTrackerPort(), numberGridData, TEXT_FLAGS, portCB );
+    createTextVar( c, pp, c.getJobTrackerPort(), numberGridData, TEXT_FLAGS, portCB );
   }      
   
   private void createZooKeeperGroup( Composite parentComposite, final NamedCluster c ) {
@@ -306,21 +296,17 @@ public class NamedClusterComposite extends Composite {
         nc.setZooKeeperHost( value );
       }
     };
-    createTextVar( c, pp, "" + c.getZooKeeperHost(), gridData, TEXT_FLAGS, hostCB );
+    createTextVar( c, pp, c.getZooKeeperHost(), gridData, TEXT_FLAGS, hostCB );
     
     // hdfs port label
     createLabel( pp, BaseMessages.getString( PKG, "NamedClusterDialog.Port" ), SWT.NONE );
     // hdfs port input
     Callback portCB = new Callback() {
       public void invoke( NamedCluster nc, TextVar textVar, String value ) {
-        try {
-          nc.setZooKeeperPort( value );
-        } catch ( NumberFormatException nfe ) {
-          textVar.setText( "" + nc.getZooKeeperPort() );
-        }
+        nc.setZooKeeperPort( value );
       }
     };
-    createTextVar( c, pp, "" + c.getZooKeeperPort(), numberGridData, TEXT_FLAGS, portCB );
+    createTextVar( c, pp, c.getZooKeeperPort(), numberGridData, TEXT_FLAGS, portCB );
   }    
   
   private void createOozieGroup( Composite parentComposite, final NamedCluster c ) {
@@ -334,7 +320,7 @@ public class NamedClusterComposite extends Composite {
         nc.setOozieUrl( value );
       }
     };
-    createTextVar( c, pp, "" + c.getOozieUrl(), urlGridData, TEXT_FLAGS, hostCB );
+    createTextVar( c, pp, c.getOozieUrl(), urlGridData, TEXT_FLAGS, hostCB );
   }     
   
 }
