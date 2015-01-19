@@ -216,7 +216,8 @@ public class NamedClustersController extends LazilyInitializedController impleme
       NamedCluster namedCluterTemplate = NamedClusterManager.getInstance().getClusterTemplate();
       namedCluterTemplate.initializeVariablesFrom( null );
       getNamedClusterDialog().setNamedCluster( namedCluterTemplate );
-
+      getNamedClusterDialog().setNewClusterCheck( true );
+      
       String namedClusterName = getNamedClusterDialog().open();
       if ( namedClusterName != null && !namedClusterName.equals( "" ) ) {
         // See if this named cluster exists...
@@ -317,6 +318,7 @@ public class NamedClustersController extends LazilyInitializedController impleme
           mb.open();
         } else {
           getNamedClusterDialog().setNamedCluster( namedCluster );
+          getNamedClusterDialog().setNewClusterCheck( false );
           String namedClusterName = getNamedClusterDialog().open();
           if ( namedClusterName != null && !namedClusterName.equals( "" ) ) {
             // delete original
