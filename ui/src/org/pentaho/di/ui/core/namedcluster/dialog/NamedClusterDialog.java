@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.core.namedcluster.dialog;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
@@ -32,6 +33,7 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.namedcluster.model.NamedCluster;
@@ -39,7 +41,9 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.namedcluster.NamedClusterUIHelper;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 /**
  *
@@ -57,19 +61,22 @@ public class NamedClusterDialog extends Dialog {
   
   private int margin;
 
+  private NamedCluster originalNamedCluster;
   private NamedCluster namedCluster;
+  private boolean newClusterCheck = false;
   private String result;
 
   public NamedClusterDialog( Shell parent ) {
     super( parent );
     props = PropsUI.getInstance();
-    namedCluster = new NamedCluster();
   }
 
   public NamedClusterDialog( Shell parent, NamedCluster namedCluster ) {
     super( parent );
     props = PropsUI.getInstance();
+    
     this.namedCluster = namedCluster;
+    this.originalNamedCluster = namedCluster.clone();
   }
 
   public NamedCluster getNamedCluster() {
@@ -78,7 +85,16 @@ public class NamedClusterDialog extends Dialog {
 
   public void setNamedCluster( NamedCluster namedCluster ) {
     this.namedCluster = namedCluster;
+    this.originalNamedCluster = namedCluster.clone();
   }  
+  
+  public boolean isNewClusterCheck() {
+    return newClusterCheck;
+  }
+
+  public void setNewClusterCheck(boolean newClusterCheck) {
+    this.newClusterCheck = newClusterCheck;
+  }
   
   public void dispose() {
     props.setScreen( new WindowProperty( shell ) );
@@ -152,6 +168,30 @@ public class NamedClusterDialog extends Dialog {
 
   public void ok() {
     result = namedCluster.getName();
+    if ( StringUtils.isEmpty( result ) ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setText( BaseMessages.getString( PKG, "NamedClusterDialog.Error" ) );
+      mb.setMessage( BaseMessages.getString( PKG, "NamedClusterDialog.ClusterNameMissing" ) );
+      mb.open();
+      return;
+    } else if ( newClusterCheck || !originalNamedCluster.getName().equals( result ) ) {
+      // check that the name does not already exist
+      try {
+        NamedCluster fetched = NamedClusterUIHelper.getNamedCluster( result );
+        if ( fetched != null ) {
+          // there already exists a cluster with the new name, ask the user
+          MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
+          mb.setText( BaseMessages.getString( PKG, "NamedClusterDialog.Warning" ) );
+          mb.setMessage( BaseMessages.getString( PKG, "NamedClusterDialog.ClusterNameExists", result ) );
+          if ( SWT.NO == mb.open() ) {
+            // do not exist dialog
+            return;
+          }
+        }
+      } catch ( MetaStoreException ignored ) {
+        // the lookup failed, the cluster does not exist, move on to dispose
+      }
+    }
     dispose();
   }
   
