@@ -143,6 +143,11 @@ public class Const {
   public static final int SORT_SIZE = 5000;
 
   /**
+   * job/trans heartbeat scheduled executor periodic interval ( in seconds )
+   */
+  public static final int HEARTBEAT_PERIODIC_INTERVAL_IN_SECS = 10;
+
+  /**
    * What's the file systems file separator on this operating system?
    */
   public static final String FILE_SEPARATOR = System.getProperty( "file.separator" );

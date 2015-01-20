@@ -42,6 +42,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -402,6 +405,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   private HttpServletRequest servletRequest;
 
   private Map<String, Object> extensionDataMap;
+
+  private ExecutorService heartbeat = null; // this transformations's heartbeat scheduled executor
 
   /**
    * Instantiates a new transformation.
@@ -1292,6 +1297,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       public void transFinished( Trans trans ) {
 
         try {
+          shutdownHeartbeat( trans != null ? trans.heartbeat : null );
+
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationFinish.id, trans );
         } catch ( KettleException e ) {
           throw new RuntimeException( "Error calling extension point at end of transformation", e );
@@ -1438,6 +1445,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationStart.id, this );
+
+    heartbeat = startHeartbeat( Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS );
 
     if ( log.isDetailed() ) {
       log
@@ -5553,5 +5562,42 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   @Override
   public Map<String, Object> getExtensionDataMap() {
     return extensionDataMap;
+  }
+
+  protected ExecutorService startHeartbeat( long intervalInSeconds ) {
+
+    ScheduledExecutorService heartbeat = Executors.newSingleThreadScheduledExecutor();
+
+    heartbeat.scheduleAtFixedRate( new Runnable() {
+      public void run() {
+        try {
+
+          log.logDebug( "Triggering heartbeat signal for " + getName() );
+          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationHeartbeat.id, getThisInstance() );
+
+        } catch ( KettleException e ) {
+          log.logError( e.getMessage(), e );
+        }
+      }
+    }, intervalInSeconds /* initial delay */, intervalInSeconds /* interval delay */, TimeUnit.SECONDS );
+
+    return heartbeat;
+  }
+
+  protected void shutdownHeartbeat( ExecutorService heartbeat ){
+
+    if( heartbeat != null ) {
+
+      try {
+        heartbeat.shutdownNow(); // prevents waiting tasks from starting and attempts to stop currently executing ones
+
+      } catch( Throwable t ) {
+        /* do nothing */
+      }
+    }
+  }
+
+  private Trans getThisInstance(){
+    return this;
   }
 }

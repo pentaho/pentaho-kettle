@@ -29,6 +29,8 @@ public enum KettleExtensionPoint {
     TransformationPrepareExecution( "TransformationPrepareExecution", "A transformation begins to prepare execution" ),
     TransformationStartThreads( "TransformationStartThreads", "A transformation begins to start" ),
     TransformationStart( "TransformationStart", "A transformation has started" ),
+    TransformationHeartbeat( "TransformationHeartbeat",
+      "A signal sent at regular intervals to indicate that the transformation is still active" ),
     TransformationFinish( "TransformationFinish", "A transformation finishes" ),
     TransformationMetaLoaded( "TransformationMetaLoaded", "Transformation metadata was loaded" ),
     TransPainterArrow( "TransPainterArrow", "Draw additional information on top of a transformation hop (arrow)" ),
@@ -51,6 +53,7 @@ public enum KettleExtensionPoint {
       "Right before Spoon configuration of transformation to be executed takes place" ),
 
     JobStart( "JobStart", "A job starts" ),
+    JobHeartbeat( "JobHeartbeat", "A signal sent at regular intervals to indicate that the job is still active" ),
     JobFinish( "JobFinish", "A job finishes" ),
     JobBeforeJobEntryExecution( "JobBeforeJobEntryExecution", "Before a job entry executes" ),
     JobAfterJobEntryExecution( "JobAfterJobEntryExecution", "After a job entry executes" ),
