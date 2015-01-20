@@ -69,8 +69,8 @@ public class ConcatFieldsTest {
     }
 
     @Override
-    protected void putRowFastDataDump( Object[] r ) throws KettleStepException {
-
+    protected Object[] putRowFastDataDump( Object[] r ) throws KettleStepException {
+      return null;
     }
 
     @Override
@@ -79,8 +79,8 @@ public class ConcatFieldsTest {
     }
 
     @Override
-    void putRowFromStream( Object[] r ) throws KettleStepException {
-      prepareOutputRow( r );
+    Object[] putRowFromStream( Object[] r ) throws KettleStepException {
+      return prepareOutputRow( r );
     }
   }
 
