@@ -43,11 +43,6 @@ public class NamedCluster implements Cloneable, VariableSpace {
   private String name;
   
   @MetaStoreAttribute
-  private String nameNodeHost;
-  @MetaStoreAttribute
-  private String nameNodePort;
-  
-  @MetaStoreAttribute
   private String hdfsHost;
   @MetaStoreAttribute
   private String hdfsPort;
@@ -161,8 +156,6 @@ public class NamedCluster implements Cloneable, VariableSpace {
     this.setHdfsPort( nc.getHdfsPort() );
     this.setHdfsUsername( nc.getHdfsUsername() );
     this.setHdfsPassword( nc.getHdfsPassword() );
-    this.setNameNodeHost( nc.getNameNodeHost() );
-    this.setNameNodePort( nc.getNameNodePort() );
     this.setJobTrackerHost( nc.getJobTrackerHost() );
     this.setJobTrackerPort( nc.getJobTrackerPort() );
     this.setZooKeeperHost( nc.getZooKeeperHost() );
@@ -202,22 +195,6 @@ public class NamedCluster implements Cloneable, VariableSpace {
     return true;
   }  
   
-  public String getNameNodeHost() {
-    return nameNodeHost;
-  }
-
-  public void setNameNodeHost( String nameNodeHost ) {
-    this.nameNodeHost = nameNodeHost;
-  }
-
-  public String getNameNodePort() {
-    return nameNodePort;
-  }
-
-  public void setNameNodePort( String nameNodePort ) {
-    this.nameNodePort = nameNodePort;
-  }
-
   public String getHdfsHost() {
     return hdfsHost;
   }
