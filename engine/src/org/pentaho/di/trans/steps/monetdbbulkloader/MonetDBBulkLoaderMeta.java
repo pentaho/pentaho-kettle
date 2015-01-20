@@ -640,6 +640,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
       fieldTable[idx] = field.getName();
       fieldStream[idx] = field.getName();
       fieldFormatOk[idx] = true;
+      idx++;
     }
 
     data.keynrs = new int[getFieldStream().length];
