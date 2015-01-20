@@ -65,14 +65,12 @@ public class NamedClusterManager {
     if ( clusterTemplate == null ) {
       clusterTemplate = new NamedCluster();
       clusterTemplate.setName(  "new cluster" );
-      clusterTemplate.setNameNodeHost( "localhost" );
-      clusterTemplate.setNameNodePort( "50070" );
       clusterTemplate.setHdfsHost( "localhost" );
-      clusterTemplate.setHdfsPort( "50075" );
+      clusterTemplate.setHdfsPort( "8020" );
       clusterTemplate.setHdfsUsername( "user" );
       clusterTemplate.setHdfsPassword( "password" );
       clusterTemplate.setJobTrackerHost( "localhost" );
-      clusterTemplate.setJobTrackerPort( "50030" );
+      clusterTemplate.setJobTrackerPort( "8032" );
       clusterTemplate.setZooKeeperHost( "localhost" );
       clusterTemplate.setZooKeeperPort( "2888" );
       clusterTemplate.setOozieUrl( "http://localhost:8080/oozie" );
