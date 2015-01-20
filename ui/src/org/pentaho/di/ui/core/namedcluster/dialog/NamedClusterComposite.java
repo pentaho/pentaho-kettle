@@ -108,7 +108,6 @@ public class NamedClusterComposite extends Composite {
     c1.setLayout( new GridLayout( 1, false ) );
     
     createHdfsGroup( c1, cluster );
-    createNameNodeGroup( c1, cluster );
     createJobTrackerGroup( c1, cluster );
     createZooKeeperGroup( c1, cluster );
     createOozieGroup( c1, cluster );
@@ -236,30 +235,6 @@ public class NamedClusterComposite extends Composite {
     };
     createTextVar( c, pp, c.getHdfsPassword(), gridData, PASSWORD_FLAGS, hdfsPasswordCB );
   }  
-  
-  private void createNameNodeGroup( Composite parentComposite, final NamedCluster c ) {
-    Composite pp = createGroup( parentComposite, BaseMessages.getString( PKG, "NamedClusterDialog.NameNode" ) );
-    
-    // hdfs host label
-    createLabel( pp, BaseMessages.getString( PKG, "NamedClusterDialog.Hostname" ), SWT.NONE );
-    // hdfs host input
-    Callback hostCB = new Callback() {
-      public void invoke( NamedCluster nc, TextVar textVar, String value ) {
-        nc.setNameNodeHost( value );
-      }
-    };
-    createTextVar( c, pp, c.getNameNodeHost(), gridData, TEXT_FLAGS, hostCB );
-    
-    // hdfs port label
-    createLabel( pp, BaseMessages.getString( PKG, "NamedClusterDialog.Port" ), SWT.NONE );
-    // hdfs port input
-    Callback portCB = new Callback() {
-      public void invoke( NamedCluster nc, TextVar textVar, String value ) {
-        nc.setNameNodePort( value );
-      }
-    };
-    createTextVar( c, pp, c.getNameNodePort(), numberGridData, TEXT_FLAGS, portCB );
-  }    
   
   private void createJobTrackerGroup( Composite parentComposite, final NamedCluster c ) {
     Composite pp = createGroup( parentComposite, BaseMessages.getString( PKG, "NamedClusterDialog.JobTracker" ) );
