@@ -26,10 +26,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.pentaho.di.core.namedcluster.model.NamedCluster;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 
 public class UINamedCluster extends XulEventSourceAdapter {
+
+  private static final Class<?> CLZ = RepositoryExplorer.class;
 
   protected NamedCluster namedCluster;
   // inheriting classes may need access to the repository
@@ -57,7 +61,7 @@ public class UINamedCluster extends XulEventSourceAdapter {
   }
 
   public String getType() {
-    return NamedCluster.class.getSimpleName();
+    return BaseMessages.getString( CLZ, "NamedClustersController.Type" );
   }
 
   public String getDateModified() {
