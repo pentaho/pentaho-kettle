@@ -145,9 +145,9 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
       // instead of writing to file, writes it to a stream
       writeRowToFile( data.inputRowMetaModified, r );
       setLinesOutput( 0 ); // we have to tweak it, no output here
-      putRowFromStream( r );
+      r = putRowFromStream( r );
     } else { // fast data dump
-      putRowFastDataDump( r );
+      r = putRowFastDataDump( r );
     }
 
     if ( log.isRowLevel() ) {
@@ -192,11 +192,11 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
   }
 
   // reads the row from the stream, flushs, add target field and call putRow()
-  void putRowFromStream( Object[] r ) throws KettleStepException {
+  Object[] putRowFromStream( Object[] r ) throws KettleStepException {
 
     byte[] targetBinary = ( (ConcatFieldsOutputStream) data.writer ).read();
     if ( r == null && targetBinary == null ) {
-      return; // special condition of header/footer/split
+      return null; // special condition of header/footer/split
     }
 
     Object[] outputRowData = prepareOutputRow( r );
@@ -221,11 +221,12 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     }
 
     putRow( data.outputRowMeta, outputRowData );
+    return outputRowData;
   }
 
   // concat as a fast data dump (no formatting) and call putRow()
   // this method is only called from a normal line, never from header/footer/split stuff
-  void putRowFastDataDump( Object[] r ) throws KettleStepException {
+  Object[] putRowFastDataDump( Object[] r ) throws KettleStepException {
 
     Object[] outputRowData = prepareOutputRow( r );
 
@@ -251,6 +252,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     outputRowData[data.posTargetField] = new String( targetString );
 
     putRow( data.outputRowMeta, outputRowData );
+    return outputRowData;
   }
 
   private void concatFieldFastDataDump( StringBuilder targetField, Object valueData, String nullString ) {
