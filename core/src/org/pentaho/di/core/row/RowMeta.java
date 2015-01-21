@@ -453,6 +453,9 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public int indexOfValue( String valueName ) {
+    if( valueName == null ) {
+      return -1;
+    }
     String key = valueName.toLowerCase();
     Integer index = valueIndexMap.get( key );
     if( index != null ) {
