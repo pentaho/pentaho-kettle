@@ -128,6 +128,11 @@ public class RowMetaTest {
   }
 
   @Test
+  public void testIndexOfNullValue() {
+    assertEquals( -1, rowMeta.indexOfValue( null ) );
+  }
+
+  @Test
   public void testSearchValueMeta() {
     ValueMetaInterface vmi = rowMeta.searchValueMeta( "integer" );
     assertEquals( integer, vmi );
