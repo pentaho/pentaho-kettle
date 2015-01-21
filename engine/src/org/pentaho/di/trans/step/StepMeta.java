@@ -611,9 +611,25 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       this.stepErrorMeta = stepMeta.stepErrorMeta.clone();
     }
 
+    this.attributesMap = copyStringMap( stepMeta.attributesMap );
+
     // this.setShared(stepMeta.isShared());
     this.id = stepMeta.getObjectId();
     this.setChanged( true );
+  }
+
+  private static Map<String, Map<String, String>> copyStringMap( Map<String, Map<String, String>> map ) {
+    if ( map == null ) {
+      return new HashMap<String, Map<String, String>>();
+    }
+
+    Map<String, Map<String, String>> result = new HashMap<String, Map<String, String>>( map.size() );
+    for ( Map.Entry<String, Map<String, String>> entry : map.entrySet() ) {
+      Map<String, String> value = entry.getValue();
+      HashMap<String, String> copy = ( value == null ) ? null : new HashMap<String, String>( value );
+      result.put( entry.getKey(), copy );
+    }
+    return result;
   }
 
   public StepMetaInterface getStepMetaInterface() {
