@@ -132,7 +132,10 @@ public class RowMeta implements RowMetaInterface {
     // we have new list and we need re-hash
     valueIndexMap.clear();
     for ( int i = 0; i < this.valueMetaList.size(); i++ ) {
-      valueIndexMap.put( this.valueMetaList.get( i ).getName().toLowerCase(), i );
+      ValueMetaInterface valueMeta = this.valueMetaList.get( i );
+      if( !Const.isEmpty( valueMeta.getName() ) ) {
+        valueIndexMap.put( valueMeta.getName().toLowerCase(), i );
+      }
     }
   }
 
@@ -187,7 +190,9 @@ public class RowMeta implements RowMetaInterface {
         newMeta = renameValueMetaIfInRow( meta );
       }
       valueMetaList.add( index, newMeta );
-      valueIndexMap.put( newMeta.getName().toLowerCase(), index );
+      if( !Const.isEmpty( newMeta.getName()) ) {
+        valueIndexMap.put( newMeta.getName().toLowerCase(), index );
+      }
     }
   }
 
@@ -219,8 +224,10 @@ public class RowMeta implements RowMetaInterface {
   public void setValueMeta( int index, ValueMetaInterface valueMeta ) {
     if ( valueMeta != null ) {
       valueMetaList.set( index, valueMeta );
-      // add value meta to cache
-      valueIndexMap.put( valueMeta.getName().toLowerCase(), index );
+      // add value meta to cache if name is not null
+      if( !Const.isEmpty( valueMeta.getName() ) ) {
+        valueIndexMap.put( valueMeta.getName().toLowerCase(), index );
+      }
     }
   }
 
