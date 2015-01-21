@@ -1,6 +1,7 @@
 package org.pentaho.di.core.row;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -77,6 +78,18 @@ public class RowMetaTest {
     assertEquals( 1, rowMeta.indexOfValue( "bravo" ) );
   }
 
+  @Test
+  public void testSetValueMetaListNullName() throws KettlePluginException {
+    List<ValueMetaInterface> setList = this.generateVList( new String[] { "alpha", null }, new int[] { 2, 2 } );
+    rowMeta.setValueMetaList( setList );
+    assertTrue( setList.contains( rowMeta.searchValueMeta( "alpha" ) ) );
+    assertFalse( setList.contains( rowMeta.searchValueMeta( null ) ) );
+
+    // check that it is avalable by index:
+    assertEquals( 0, rowMeta.indexOfValue( "alpha" ) );
+    assertEquals( -1, rowMeta.indexOfValue( null ) );
+  }
+
   @Test(expected=UnsupportedOperationException.class)
   public void testDeSynchronizationModifyingOriginalList() {
     // remember 0-based arrays
@@ -124,6 +137,14 @@ public class RowMetaTest {
     assertEquals( 1, rowMeta.getValueMetaList().indexOf( charly ) );
     assertEquals( "There is still 3 elements:", 3, rowMeta.size() );
     assertEquals( -1, rowMeta.indexOfValue( "integer" ) );
+  }
+
+  @Test
+  public void testSetValueMetaNullName() throws KettlePluginException {
+    ValueMetaInterface vmi = new ValueMeta();
+    rowMeta.setValueMeta( 1, vmi );
+    assertEquals( 1, rowMeta.getValueMetaList().indexOf( vmi ) );
+    assertEquals( "There is still 3 elements:", 3, rowMeta.size() );
   }
 
   @Test
