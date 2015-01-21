@@ -187,7 +187,9 @@ public class RowMeta implements RowMetaInterface {
         newMeta = renameValueMetaIfInRow( meta );
       }
       valueMetaList.add( index, newMeta );
-      valueIndexMap.put( newMeta.getName().toLowerCase(), index );
+      if( !Const.isEmpty( newMeta.getName()) ) {
+        valueIndexMap.put( newMeta.getName().toLowerCase(), index );
+      }
     }
   }
 
