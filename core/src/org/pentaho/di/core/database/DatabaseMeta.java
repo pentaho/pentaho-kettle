@@ -2257,7 +2257,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public void quoteReservedWords( RowMetaInterface fields ) {
     for ( int i = 0; i < fields.size(); i++ ) {
       ValueMetaInterface v = fields.getValueMeta( i );
+      // remove-add field is for fix PDI-13369 that is caused by ESR-4178
+      fields.removeValueMeta( i );
       v.setName( quoteField( v.getName() ) );
+      fields.addValueMeta( i, v );
     }
   }
 
