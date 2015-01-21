@@ -100,6 +100,13 @@ public class RowMetaTest {
   }
 
   @Test
+  public void testAddValueMetaNullName() throws KettlePluginException {
+    ValueMetaInterface vmi = new ValueMeta();
+    rowMeta.addValueMeta( vmi );
+    assertTrue( rowMeta.getValueMetaList().contains( vmi ) );
+  }
+
+  @Test
   public void testAddValueMetaIntValueMetaInterface() throws KettlePluginException {
     rowMeta.addValueMeta( 1, charly );
     assertTrue( rowMeta.getValueMetaList().indexOf( charly ) == 1 );
