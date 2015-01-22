@@ -248,51 +248,6 @@ public class CommandLineOption {
   }
 
   /**
-   * Gets the value of a commandline option
-   *
-   * @param arg
-   *          The command line argument
-   * @return The value of the commandline option specified.
-   */
-  public String extractAndSetArgument( String arg ) {
-    String[] optionStart = new String[] { "-", "/" };
-    String[] optionDelim = new String[] { "=", ":" };
-
-    for ( int s = 0; s < optionStart.length; s++ ) {
-      int osLength = optionStart[s].length();
-      for ( int d = 0; d < optionDelim.length; d++ ) {
-        int optLength = optionDelim[d].length();
-        if ( arg != null
-          && arg.length() > osLength && arg.toUpperCase().substring( osLength ).equals( option.toUpperCase() ) ) {
-          // OK, this is it.
-          // Do we expect anything after this?
-          // after the start, the option and the delimiter?
-          //
-          String value = null;
-          int valueStart = osLength + option.length() + optLength;
-
-          // System.out.println("Arg: ["+arg+"], option: ["+option+"], valueStart: "+valueStart);
-          //
-          if ( arg.length() >= valueStart ) {
-            value = arg.substring( valueStart );
-          }
-
-          // If it's a Y/N kind of deal: set it to Y if nothing was specified
-          if ( ( value == null || value.length() == 0 ) && yesNo ) {
-            value = "Y";
-          }
-
-          // Add it to the StringBuffer
-          argument.append( value );
-
-          return value;
-        }
-      }
-    }
-    return null;
-  }
-
-  /**
    * @return Returns the hiddenOption.
    */
   public boolean isHiddenOption() {
