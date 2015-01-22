@@ -151,11 +151,12 @@ public class SqlScriptParser {
     for ( int i = 0; i < script.length(); i++ ) {
       char ch = script.charAt( i );
       char nextCh = i < script.length() - 1 ? script.charAt( i + 1 ) : 0;
+      char nextPlusOneCh = i < script.length() - 2 ? script.charAt( i + 2 ) : 0;
       switch ( mode ) {
         case SQL:
           switch ( ch ) {
             case '/':
-              if ( nextCh == '*' ) {
+              if ( nextCh == '*' && nextPlusOneCh != '+' ) {
                 mode = MODE.BLOCK_COMMENT;
                 i++;
                 ch = 0;
