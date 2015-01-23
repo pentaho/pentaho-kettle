@@ -3341,16 +3341,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
       TransHopMeta[] hops = new TransHopMeta[nr];
 
-      ArrayList<StepMeta> alSteps = new ArrayList<StepMeta>();
-      Collections.addAll( alSteps, steps );
-
       for ( int i = 0; i < nr; i++ ) {
         Node hopNode = XMLHandler.getSubNodeByNr( hopsNode, "hop", i );
-        hops[i] = new TransHopMeta( hopNode, alSteps );
+        hops[i] = new TransHopMeta( hopNode,  Arrays.asList( steps ) );
       }
 
       // This is the offset:
-      //
       Point offset = new Point( loc.x - min.x, loc.y - min.y );
 
       // Undo/redo object positions...
@@ -3415,9 +3411,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( sourceStep != null ) {
           sourceStep.setStepErrorMeta( stepErrorMeta );
         }
-        StepMeta targetStep = transMeta.findStep( steps[tgtStepPos].getName() );
-        stepErrorMeta.setSourceStep( sourceStep );
-        stepErrorMeta.setTargetStep( targetStep );
+        sourceStep.setStepErrorMeta( null );
+          if ( tgtStepPos >= 0 ) {
+            sourceStep.setStepErrorMeta( stepErrorMeta );
+            StepMeta targetStep = transMeta.findStep( steps[tgtStepPos].getName() );
+            stepErrorMeta.setSourceStep( sourceStep );
+            stepErrorMeta.setTargetStep( targetStep );
+          }
       }
 
       // Save undo information too...
