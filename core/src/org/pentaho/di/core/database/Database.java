@@ -1168,6 +1168,15 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   public boolean insertRow( PreparedStatement ps, boolean batch ) throws KettleDatabaseException {
     return insertRow( ps, batch, true );
   }
+  
+  public boolean getUseBatchInsert( boolean batch ) throws KettleDatabaseException {
+    try {
+      return batch && getDatabaseMetaData().supportsBatchUpdates() &&
+          databaseMeta.supportsBatchUpdates() && Const.isEmpty( connectionGroup );
+    } catch ( SQLException e ) {
+      throw createKettleDatabaseBatchException( "Error determining whether to use batch", e );
+    }
+  }
 
   /**
    * Insert a row into the database using a prepared statement that has all values set.
@@ -1189,10 +1198,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       // back on certain databases.
       // That's why we disable the batch insert in that case.
       //
-      boolean useBatchInsert =
-        batch
-          && getDatabaseMetaData().supportsBatchUpdates() && databaseMeta.supportsBatchUpdates()
-          && Const.isEmpty( connectionGroup );
+      boolean useBatchInsert = getUseBatchInsert( batch );
 
       //
       // Add support for batch inserts...

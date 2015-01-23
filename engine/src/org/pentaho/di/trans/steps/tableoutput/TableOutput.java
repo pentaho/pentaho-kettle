@@ -280,7 +280,7 @@ public class TableOutput extends BaseStep implements StepInterface {
       //
 
       if ( ( data.commitSize > 0 ) && ( ( commitCounter % data.commitSize ) == 0 ) ) {
-        if ( data.batchMode ) {
+        if ( data.db.getUseBatchInsert( data.batchMode ) ) {
           try {
             insertStatement.executeBatch();
             data.db.commit();
