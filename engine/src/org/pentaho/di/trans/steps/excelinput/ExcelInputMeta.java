@@ -1184,6 +1184,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
+      rep.saveStepAttribute( id_transformation, id_step, "sizeFieldName", sizeFieldName );
 
       rep.saveStepAttribute( id_transformation, id_step, "spreadsheet_type", spreadSheetType.toString() );
     } catch ( Exception e ) {
