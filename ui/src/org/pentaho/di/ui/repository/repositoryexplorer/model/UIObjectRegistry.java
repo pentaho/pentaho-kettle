@@ -25,7 +25,6 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 import java.lang.reflect.Constructor;
 
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.namedcluster.model.NamedCluster;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -38,7 +37,6 @@ public class UIObjectRegistry {
   public static final Class<?> DEFAULT_UITRANS_CLASS = UITransformation.class;
   public static final Class<?> DEFAULT_UIDIR_CLASS = UIRepositoryDirectory.class;
   public static final Class<?> DEFAULT_DBCONN_CLASS = UIDatabaseConnection.class;
-  public static final Class<?> DEFAULT_NAMED_CLUSTER_CLASS = UINamedCluster.class;
   private static UIObjectRegistry instance;
 
   private Class<?> repositoryUserClass = DEFAULT_UIREPOSITORYUSER_CLASS;
@@ -46,7 +44,6 @@ public class UIObjectRegistry {
   private Class<?> transClass = DEFAULT_UITRANS_CLASS;
   private Class<?> dirClass = DEFAULT_UIDIR_CLASS;
   private Class<?> dbConnClass = DEFAULT_DBCONN_CLASS;
-  private Class<?> namedClusterClass = DEFAULT_NAMED_CLUSTER_CLASS;
 
   private UIObjectRegistry() {
 
@@ -171,18 +168,5 @@ public class UIObjectRegistry {
       throw new UIObjectCreationException( "Unable to instantiate object for " + dbConnClass );
     }
   }
-  
-  public UINamedCluster constructUINamedCluster( NamedCluster namedCluster, Repository rep ) throws UIObjectCreationException {
-    try {
-      Constructor<?> constructor = namedClusterClass.getConstructor( NamedCluster.class, Repository.class );
-      if ( constructor != null ) {
-        return (UINamedCluster) constructor.newInstance( namedCluster, rep );
-      } else {
-        throw new UIObjectCreationException( "Unable to get the constructor for " + namedClusterClass );
-      }
-    } catch ( Exception e ) {
-      throw new UIObjectCreationException( "Unable to instantiate object for " + namedClusterClass );
-    }
-  }  
   
 }

@@ -20,26 +20,41 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.repository.repositoryexplorer.model;
+package org.pentaho.di.ui.spoon.delegates;
+
+import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.ui.spoon.TreeSelection;
 
 import java.util.List;
 
-import org.pentaho.ui.xul.util.AbstractModelList;
+public class SpoonTreeDelegateExtension {
 
-public class UINamedClusters extends AbstractModelList<UINamedCluster> {
+  private AbstractMeta transMeta = null;
+  private String[] path = null;
+  private int caseNumber = -1;
+  private List<TreeSelection> objects = null;
 
-  private static final long serialVersionUID = -5835985536358581894L;
-
-  public UINamedClusters() {
+  public SpoonTreeDelegateExtension( AbstractMeta transMeta, String[] path, int caseNumber,
+      List<TreeSelection> objects ) {
+    this.transMeta = transMeta;
+    this.path = path;
+    this.caseNumber = caseNumber;
+    this.objects = objects;
   }
 
-  public UINamedClusters( List<UINamedCluster> namedClusters ) {
-    super( namedClusters );
+  public AbstractMeta getTransMeta() {
+    return transMeta;
   }
 
-  @Override
-  protected void fireCollectionChanged() {
-    this.changeSupport.firePropertyChange( "children", null, this.getChildren() );
+  public String[] getPath() {
+    return path;
   }
 
+  public int getCaseNumber() {
+    return caseNumber;
+  }
+
+  public List<TreeSelection> getObjects() {
+    return objects;
+  }
 }
