@@ -60,7 +60,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Converts input rows to text and then writes this text to one or more files.
- * 
+ *
  * @author Matt
  * @since 4-apr-2003
  */
@@ -180,7 +180,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
     if ( r == null ) {
       // no more input to be expected...
-      if ( !bEndedLineWrote && meta.getEndedLine() != null ) {
+      if ( !bEndedLineWrote && !Const.isEmpty( meta.getEndedLine() ) ) {
         if ( data.writer == null ) {
           openNewFile( meta.getFileName() );
           data.oneFileOpened = true;
@@ -214,7 +214,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
   /**
    * This method should only be used when you have a filename in the input stream.
-   * 
+   *
    * @param filename
    *          the filename to set the data.writer field for
    * @throws KettleException
@@ -762,7 +762,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
   public boolean checkPreviouslyOpened( String filename ) {
 
-    return data.previouslyOpenedFiles.contains( filename );
+    return data.getPreviouslyOpenedFiles().contains( filename );
 
   }
 
