@@ -46,20 +46,20 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class TextFileOutputData extends BaseStepData implements StepDataInterface
 {
-	public int splitnr;
+  public int splitnr;
 
-	public int fieldnrs[];
+  public int fieldnrs[];
 
-	public NumberFormat nf;
-	public DecimalFormat df;
-	public DecimalFormatSymbols dfs;
-	
-	public SimpleDateFormat daf;
-	public DateFormatSymbols dafs;
+  public NumberFormat nf;
+  public DecimalFormat df;
+  public DecimalFormatSymbols dfs;
 
-	public ZipOutputStream zip;
-	public GZIPOutputStream gzip;
-    
+  public SimpleDateFormat daf;
+  public DateFormatSymbols dafs;
+
+  public ZipOutputStream zip;
+  public GZIPOutputStream gzip;
+
     public OutputStream writer;
 
     public DecimalFormat        defaultDecimalFormat;
@@ -74,52 +74,57 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 
     public RowMetaInterface outputRowMeta;
 
-	public byte[] binarySeparator;
-	public byte[] binaryEnclosure;
-	public byte[] binaryNewline;
+  public byte[] binarySeparator;
+  public byte[] binaryEnclosure;
+  public byte[] binaryNewline;
 
-	public boolean hasEncoding;
+  public boolean hasEncoding;
 
-	public byte[] binaryNullValue[];
-	
-	public boolean oneFileOpened;
+  public byte[] binaryNullValue[];
 
-	public List<String> previouslyOpenedFiles;
-	
-	public int  fileNameFieldIndex;
+  public boolean oneFileOpened;
 
-	public ValueMetaInterface fileNameMeta;
-	
-	public Map<String,OutputStream> fileWriterMap;
+  public List<String> previouslyOpenedFiles;
 
-	public String fileName;
+  public int  fileNameFieldIndex;
+
+  public ValueMetaInterface fileNameMeta;
+
+  public Map<String,OutputStream> fileWriterMap;
+
+  public String fileName;
 
     /**
-	 * 
-	 */
-	public TextFileOutputData()
-	{
-		super();
-		
-		nf = NumberFormat.getInstance();
-		df = (DecimalFormat)nf;
-		dfs=new DecimalFormatSymbols();
+   *
+   */
+  public TextFileOutputData()
+  {
+    super();
 
-		daf = new SimpleDateFormat();
-		dafs= new DateFormatSymbols();
-        
+    nf = NumberFormat.getInstance();
+    df = (DecimalFormat)nf;
+    dfs=new DecimalFormatSymbols();
+
+    daf = new SimpleDateFormat();
+    dafs= new DateFormatSymbols();
+
         defaultDecimalFormat = (DecimalFormat)NumberFormat.getInstance();
         defaultDecimalFormatSymbols =  new DecimalFormatSymbols();
 
         defaultDateFormat = new SimpleDateFormat();
         defaultDateFormatSymbols = new DateFormatSymbols();
-        
+
         previouslyOpenedFiles = new ArrayList<String>();
         fileNameFieldIndex = -1;
 
         cmdProc = null;
         oneFileOpened=false;
-        
+
         fileWriterMap = new HashMap<String,OutputStream>();
-	}
+  }
+
+  List<String> getPreviouslyOpenedFiles() {
+    return previouslyOpenedFiles;
+  }
+
 }
