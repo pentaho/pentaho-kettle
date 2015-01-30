@@ -445,6 +445,12 @@ public class Const {
   /** The job run attempt nr */
   public static final String INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR = INTERNAL_VARIABLE_PREFIX + ".Job.Run.AttemptNr";
 
+  /** job/trans heartbeat scheduled executor periodic interval ( in seconds ) */
+  public static final String VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS = "heartbeat.periodic.interval.seconds";
+
+  /** comma-separated list of extension point plugins for which snmp traps should be sent */
+  public static final String VARIABLE_MONITORING_SNMP_TRAPS_ENABLED = "monitoring.snmp.traps.enabled";
+
   /**
    * All the internal transformation variables
    */
