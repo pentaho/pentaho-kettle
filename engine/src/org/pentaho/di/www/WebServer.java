@@ -41,6 +41,7 @@ import org.mortbay.jetty.security.Constraint;
 import org.mortbay.jetty.security.ConstraintMapping;
 import org.mortbay.jetty.security.HashUserRealm;
 import org.mortbay.jetty.security.SecurityHandler;
+import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.pentaho.di.cluster.SlaveServer;
@@ -77,9 +78,11 @@ public class WebServer {
 
   private String passwordFile;
 
+  private SslConfiguration sslConfig;
+
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
       SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
-      boolean join, String passwordFile ) throws Exception {
+      boolean join, String passwordFile, SslConfiguration sslConfig ) throws Exception {
     this.log = log;
     this.transformationMap = transformationMap;
     this.jobMap = jobMap;
@@ -88,6 +91,7 @@ public class WebServer {
     this.hostname = hostname;
     this.port = port;
     this.passwordFile = passwordFile;
+    this.sslConfig = sslConfig;
 
     startServer();
 
@@ -117,7 +121,7 @@ public class WebServer {
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
       SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port, boolean join )
     throws Exception {
-    this( log, transformationMap, jobMap, socketRepository, detections, hostname, port, join, null );
+    this( log, transformationMap, jobMap, socketRepository, detections, hostname, port, join, null, null );
   }
 
   public Server getServer() {
@@ -260,7 +264,8 @@ public class WebServer {
   }
 
   private void createListeners() {
-    SocketConnector connector = new SocketConnector();
+
+    SocketConnector connector = getConnector();
     setupJettyOptions( connector );
     connector.setPort( port );
     connector.setHost( hostname );
@@ -268,6 +273,21 @@ public class WebServer {
     log.logBasic( BaseMessages.getString( PKG, "WebServer.Log.CreateListener", hostname, "" + port ) );
 
     server.setConnectors( new Connector[] { connector } );
+  }
+
+  private SocketConnector getConnector() {
+    if ( sslConfig != null ) {
+      log.logBasic( BaseMessages.getString( PKG, "WebServer.Log.SslModeUsing" ) );
+      SslSocketConnector connector = new SslSocketConnector();
+      connector.setKeystore( sslConfig.getKeyStore() );
+      connector.setPassword( sslConfig.getKeyStorePassword() );
+      connector.setKeyPassword( sslConfig.getKeyPassword() );
+      connector.setKeystoreType( sslConfig.getKeyStoreType() );
+      return connector;
+    } else {
+      return new SocketConnector();
+    }
+
   }
 
   /**

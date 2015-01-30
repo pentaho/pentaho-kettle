@@ -91,7 +91,7 @@ public class WebServerTest {
     when( sServer.getPassword() ).thenReturn( "cluster" );
     when( sServer.getUsername() ).thenReturn( "cluster" );
     webServer =
-        new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT, SHOULD_JOIN, null );
+        new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT, SHOULD_JOIN, null, null );
 
   }
 
@@ -138,7 +138,7 @@ public class WebServerTest {
     System.setProperty( Const.KETTLE_CARTE_JETTY_ACCEPTORS, "TEST" );
     try {
       webServerNg =
-          new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT + 1, SHOULD_JOIN, null );
+          new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT + 1, SHOULD_JOIN, null, null );
     } catch ( NumberFormatException nmbfExc ) {
       fail( "Should not have thrown any NumberFormatException but it does: " + nmbfExc );
     }
@@ -154,7 +154,7 @@ public class WebServerTest {
     System.setProperty( Const.KETTLE_CARTE_JETTY_ACCEPTORS, EMPTY_STRING );
     try {
       webServerNg =
-          new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT + 1, SHOULD_JOIN, null );
+          new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT + 1, SHOULD_JOIN, null, null );
     } catch ( NumberFormatException nmbfExc ) {
       fail( "Should not have thrown any NumberFormatException but it does: " + nmbfExc );
     }

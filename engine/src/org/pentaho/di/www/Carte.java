@@ -143,9 +143,10 @@ public class Carte {
       if ( joinOverride != null ) {
         shouldJoin = joinOverride;
       }
+
       this.webServer =
-        new WebServer( log, transformationMap, jobMap, socketRepository, detections, hostname, port, shouldJoin,
-            config.getPasswordFile() );
+          new WebServer( log, transformationMap, jobMap, socketRepository, detections, hostname, port, shouldJoin,
+              config.getPasswordFile(), slaveServer.getSslConfig() );
     }
   }
 
