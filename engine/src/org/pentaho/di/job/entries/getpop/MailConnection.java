@@ -22,10 +22,7 @@
 
 package org.pentaho.di.job.entries.getpop;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -45,6 +42,7 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.URLName;
+import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.AndTerm;
 import javax.mail.search.BodyTerm;
@@ -57,9 +55,12 @@ import javax.mail.search.RecipientStringTerm;
 import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.UUIDUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -68,10 +69,10 @@ import com.sun.mail.pop3.POP3SSLStore;
 
 /**
  * MailConnection handles the process of connecting to, reading from POP3/IMAP.
- *
+ * 
  * @author Samatar
  * @since 01-04-2009
- *
+ * 
  */
 
 public class MailConnection {
@@ -141,8 +142,13 @@ public class MailConnection {
   private LogChannelInterface log;
 
   /**
+   * Full path to saved message
+   */
+  private String fullPathToSavedMessage;
+
+  /**
    * Construct a new Database MailConnection
-   *
+   * 
    * @param protocol
    *          the protocol used : MailConnection.PROTOCOL_POP3 or MailConnection.PROTOCOL_IMAP.
    * @param server
@@ -158,7 +164,7 @@ public class MailConnection {
    *          proxy authorised user
    */
   public MailConnection( LogChannelInterface log, int protocol, String server, int port, String username,
-    String password, boolean usessl, boolean useproxy, String proxyusername ) throws KettleException {
+      String password, boolean usessl, boolean useproxy, String proxyusername ) throws KettleException {
 
     this.log = log;
 
@@ -201,12 +207,11 @@ public class MailConnection {
       }
 
       String protocolString =
-        ( protocol == MailConnectionMeta.PROTOCOL_POP3 ) ? "pop3" : protocol == MailConnectionMeta.PROTOCOL_MBOX
-          ? "mstor" : "imap";
+          ( protocol == MailConnectionMeta.PROTOCOL_POP3 ) ? "pop3" : protocol == MailConnectionMeta.PROTOCOL_MBOX
+              ? "mstor" : "imap";
       if ( usessl && protocol != MailConnectionMeta.PROTOCOL_MBOX ) {
         // Supports IMAP/POP3 connection with SSL, the connection is established via SSL.
-        this.prop
-          .setProperty( "mail." + protocolString + ".socketFactory.class", "javax.net.ssl.SSLSocketFactory" );
+        this.prop.setProperty( "mail." + protocolString + ".socketFactory.class", "javax.net.ssl.SSLSocketFactory" );
         this.prop.setProperty( "mail." + protocolString + ".socketFactory.fallback", "false" );
         this.prop.setProperty( "mail." + protocolString + ".port", "" + port );
         this.prop.setProperty( "mail." + protocolString + ".socketFactory.port", "" + port );
@@ -216,13 +221,13 @@ public class MailConnection {
         this.session.setDebug( log.isDebug() );
         if ( this.port == -1 ) {
           this.port =
-            ( ( protocol == MailConnectionMeta.PROTOCOL_POP3 )
-              ? MailConnectionMeta.DEFAULT_SSL_POP3_PORT : MailConnectionMeta.DEFAULT_SSL_IMAP_PORT );
+              ( ( protocol == MailConnectionMeta.PROTOCOL_POP3 ) ? MailConnectionMeta.DEFAULT_SSL_POP3_PORT
+                  : MailConnectionMeta.DEFAULT_SSL_IMAP_PORT );
         }
         URLName url = new URLName( protocolString, server, port, "", username, password );
         this.store =
-          ( protocol == MailConnectionMeta.PROTOCOL_POP3 )
-            ? new POP3SSLStore( this.session, url ) : new IMAPSSLStore( this.session, url );
+            ( protocol == MailConnectionMeta.PROTOCOL_POP3 ) ? new POP3SSLStore( this.session, url )
+                : new IMAPSSLStore( this.session, url );
         url = null;
       } else {
         this.session = Session.getInstance( this.prop, null );
@@ -239,7 +244,7 @@ public class MailConnection {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.NewConnection", Const.NVL(
-        this.server, "" ) ), e );
+          this.server, "" ) ), e );
     }
   }
 
@@ -273,7 +278,7 @@ public class MailConnection {
 
   /**
    * @return Returns the store
-   *
+   * 
    */
   public Store getStore() {
     return this.store;
@@ -281,7 +286,7 @@ public class MailConnection {
 
   /**
    * @return Returns the folder
-   *
+   * 
    */
   public Folder getFolder() {
     return this.folder;
@@ -289,14 +294,14 @@ public class MailConnection {
 
   /**
    * Open the connection.
-   *
+   * 
    * @throws KettleException
    *           if something went wrong.
    */
   public void connect() throws KettleException {
     if ( log.isDetailed() ) {
-      log.logDetailed( BaseMessages.getString(
-        PKG, "JobGetMailsFromPOP.Connecting", this.server, this.username, "" + this.port ) );
+      log.logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Connecting", this.server, this.username, ""
+          + this.port ) );
     }
     try {
       if ( this.usessl || this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
@@ -311,19 +316,18 @@ public class MailConnection {
         }
       }
       if ( log.isDetailed() ) {
-        log.logDetailed( BaseMessages.getString(
-          PKG, "JobGetMailsFromPOP.Connected", this.server, this.username, "" + this.port ) );
+        log.logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Connected", this.server, this.username, ""
+            + this.port ) );
       }
     } catch ( Exception e ) {
-      throw new KettleException(
-        BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.Connecting", this.server, this.username, Const
-          .NVL( "" + this.port, "" ) ), e );
+      throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.Connecting", this.server,
+          this.username, Const.NVL( "" + this.port, "" ) ), e );
     }
   }
 
   /**
    * Open the default folder (INBOX)
-   *
+   * 
    * @param write
    *          open the folder in write mode
    * @throws KettleException
@@ -335,7 +339,7 @@ public class MailConnection {
 
   /**
    * Open the folder.
-   *
+   * 
    * @param foldername
    *          the name of the folder to open
    * @param write
@@ -349,7 +353,7 @@ public class MailConnection {
 
   /**
    * Open the folder.
-   *
+   * 
    * @param foldername
    *          the name of the folder to open
    * @param defaultFolder
@@ -385,8 +389,7 @@ public class MailConnection {
         }
       } else {
         // Open specified Folder (for IMAP/MBOX)
-        if ( this.protocol == MailConnectionMeta.PROTOCOL_IMAP
-          || this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+        if ( this.protocol == MailConnectionMeta.PROTOCOL_IMAP || this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
           this.folder = getRecursiveFolder( foldername );
         }
         if ( this.folder == null || !this.folder.exists() ) {
@@ -395,14 +398,12 @@ public class MailConnection {
       }
       if ( this.write ) {
         if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString(
-            PKG, "MailConnection.OpeningFolderInWriteMode.Label", getFolderName() ) );
+          log.logDebug( BaseMessages.getString( PKG, "MailConnection.OpeningFolderInWriteMode.Label", getFolderName() ) );
         }
         this.folder.open( Folder.READ_WRITE );
       } else {
         if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString(
-            PKG, "MailConnection.OpeningFolderInReadMode.Label", getFolderName() ) );
+          log.logDebug( BaseMessages.getString( PKG, "MailConnection.OpeningFolderInReadMode.Label", getFolderName() ) );
         }
         this.folder.open( Folder.READ_ONLY );
       }
@@ -412,17 +413,21 @@ public class MailConnection {
       }
       if ( log.isDebug() ) {
         // display some infos on folder
-        //CHECKSTYLE:LineLength:OFF
+        // CHECKSTYLE:LineLength:OFF
         log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Name", getFolderName() ) );
-        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.FullName", this.folder.getFullName() ) );
-        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Url", this.folder.getURLName().toString() ) );
-        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Subscribed", "" + this.folder.isSubscribed() ) );
+        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.FullName", this.folder
+            .getFullName() ) );
+        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Url", this.folder.getURLName()
+            .toString() ) );
+        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Subscribed", ""
+            + this.folder.isSubscribed() ) );
       }
 
     } catch ( Exception e ) {
-      throw new KettleException( defaultFolder
-        ? BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningDefaultFolder" )
-        : BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningFolder", foldername ), e );
+      String message =
+          defaultFolder ? BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningDefaultFolder" ) : BaseMessages
+              .getString( PKG, "JobGetMailsFromPOP.Error.OpeningFolder", foldername );
+      throw new KettleException( message, e );
     }
   }
 
@@ -452,7 +457,7 @@ public class MailConnection {
 
   /**
    * Disconnect from the server and close folder, connection.
-   *
+   * 
    * @throws KettleException
    */
   public void disconnect() throws KettleException {
@@ -461,7 +466,7 @@ public class MailConnection {
 
   /**
    * Close folder.
-   *
+   * 
    * @param expunge
    *          expunge folder
    * @throws KettleException
@@ -482,14 +487,14 @@ public class MailConnection {
         }
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString(
-        PKG, "JobGetMailsFromPOP.Error.ClosingFolder", getFolderName() ), e );
+      throw new KettleException( BaseMessages
+          .getString( PKG, "JobGetMailsFromPOP.Error.ClosingFolder", getFolderName() ), e );
     }
   }
 
   /**
    * Add search term.
-   *
+   * 
    * @param term
    *          search term to add
    */
@@ -507,7 +512,7 @@ public class MailConnection {
 
   /**
    * Set filter on subject.
-   *
+   * 
    * @param subject
    *          messages will be filtered on subject
    * @param notTerm
@@ -525,7 +530,7 @@ public class MailConnection {
 
   /**
    * Search all messages with body containing the word bodyfilter
-   *
+   * 
    * @param bodyfilter
    * @param notTerm
    *          negate condition
@@ -542,7 +547,7 @@ public class MailConnection {
 
   /**
    * Set filter on message sender.
-   *
+   * 
    * @param sender
    *          messages will be filtered on sender
    * @param notTerm
@@ -560,7 +565,7 @@ public class MailConnection {
 
   /**
    * Set filter on receipient.
-   *
+   * 
    * @param receipient
    *          messages will be filtered on receipient
    * @param notTerm
@@ -574,7 +579,7 @@ public class MailConnection {
 
   /**
    * Set filter on message received date.
-   *
+   * 
    * @param receiveddate
    *          messages will be filtered on receiveddate
    * @param notTerm
@@ -590,7 +595,7 @@ public class MailConnection {
 
   /**
    * Set filter on message received date.
-   *
+   * 
    * @param futureDate
    *          messages will be filtered on futureDate
    * @param notTerm
@@ -606,7 +611,7 @@ public class MailConnection {
 
   /**
    * Set filter on message received date.
-   *
+   * 
    * @param pastDate
    *          messages will be filtered on pastDate
    * @param notTerm
@@ -625,7 +630,7 @@ public class MailConnection {
       log.logError( BaseMessages.getString( PKG, "MailConnection.Error.ReceivedDatePOP3Unsupported" ) );
     } else {
       addSearchTerm( new AndTerm( new ReceivedDateTerm( ComparisonTerm.LT, endDate ), new ReceivedDateTerm(
-        ComparisonTerm.GT, beginDate ) ) );
+          ComparisonTerm.GT, beginDate ) ) );
     }
   }
 
@@ -663,7 +668,7 @@ public class MailConnection {
 
   /**
    * Retrieve all messages from server
-   *
+   * 
    * @throws KettleException
    */
   public void retrieveMessages() throws KettleException {
@@ -676,8 +681,8 @@ public class MailConnection {
       }
     } catch ( Exception e ) {
       this.messages = null;
-      throw new KettleException( BaseMessages.getString(
-        PKG, "MailConnection.Error.RetrieveMessages", getFolderName() ), e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "MailConnection.Error.RetrieveMessages", getFolderName() ), e );
     }
   }
 
@@ -686,14 +691,14 @@ public class MailConnection {
    * KettleException("Cette fonction est uniquement accessible pour le protocol POP3!"); try { Message msgsAll[]; //
    * search term? if(this.searchTerm!=null) { msgsAll = this.folder.search(this.searchTerm); }else { msgsAll =
    * this.folder.getMessages(); } int unreadMsgs = this.folder.getUnreadMessageCount(); int msgCount = msgsAll.length;
-   *
+   * 
    * this.messages = this.folder.getMessages(msgCount - unreadMsgs + 1, msgCount); } catch (Exception e) {
    * this.messages= null; } }
    */
 
   /**
    * Disconnect from the server and close folder, connection.
-   *
+   * 
    * @param expunge
    *          expunge folder
    * @throws KettleException
@@ -727,7 +732,7 @@ public class MailConnection {
 
   /**
    * Export message content to a filename.
-   *
+   * 
    * @param filename
    *          the target filename
    * @param foldername
@@ -738,26 +743,22 @@ public class MailConnection {
   public void saveMessageContentToFile( String filename, String foldername ) throws KettleException {
     OutputStream os = null;
     try {
-      os = KettleVFS.getOutputStream( foldername + ( foldername.endsWith( "/" ) ? "" : "/" ) + filename, false );
+      String fullPath = foldername + ( foldername.endsWith( "/" ) ? "" : "/" ) + filename;
+      os = KettleVFS.getOutputStream( fullPath, false );
       getMessage().writeTo( os );
       updateSavedMessagesCounter();
+      setFullPathToSavedMessage( fullPath );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.SavingMessageContent", ""
-        + this.message.getMessageNumber(), filename, foldername ), e );
+          + this.message.getMessageNumber(), filename, foldername ), e );
     } finally {
-      if ( os != null ) {
-        try {
-          os.close();
-          os = null;
-        } catch ( Exception e ) { /* Ignore */
-        }
-      }
+      IOUtils.closeQuietly( os );
     }
   }
 
   /**
    * Save attached files to a folder.
-   *
+   * 
    * @param foldername
    *          the target foldername
    * @throws KettleException.
@@ -768,7 +769,7 @@ public class MailConnection {
 
   /**
    * Save attached files to a folder.
-   *
+   * 
    * @param foldername
    *          the target foldername
    * @param pattern
@@ -777,15 +778,27 @@ public class MailConnection {
    */
   public void saveAttachedFiles( String foldername, Pattern pattern ) throws KettleException {
     Object content = null;
+    InputStream inputStream = null;
     try {
-      content = getMessage().getContent();
+      // PDI-11884 - when imap server sends attribute CHARSET without quotes error occurs. Java mail library cannot
+      // process this case and throws exception. As workaround was invented approach with getting attachment from saved
+      // file
+      String fullPath = getFullPathToSavedMessage();
+      if ( fullPath == null || fullPath.isEmpty() ) {
+        throw new RuntimeException( BaseMessages
+            .getString( PKG, "MailConnection.Error.SavingAttachedFiles.SaveContent" ) );
+      }
+      inputStream = KettleVFS.getInputStream( fullPath );
+      MimeMessage mimMessage = new MimeMessage( session, inputStream );
+      content = mimMessage.getContent();
       if ( content instanceof Multipart ) {
         handleMultipart( foldername, (Multipart) content, pattern );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.SavingAttachedFiles", ""
-        + this.message.getMessageNumber(), foldername ), e );
+          + this.message.getMessageNumber(), foldername ), e );
     } finally {
+      IOUtils.closeQuietly( inputStream );
       if ( content != null ) {
         content = null;
       }
@@ -827,7 +840,7 @@ public class MailConnection {
             updateSavedAttachedFilesCounter();
             if ( log.isDetailed() ) {
               log.logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.AttachedFileSaved", filename, ""
-                + getMessage().getMessageNumber(), foldername ) );
+                  + getMessage().getMessageNumber(), foldername ) );
             }
           }
         }
@@ -838,41 +851,29 @@ public class MailConnection {
   }
 
   private static void saveFile( String foldername, String filename, InputStream input ) throws KettleException {
-    FileOutputStream fos = null;
     BufferedOutputStream bos = null;
-    File file = null;
-    BufferedInputStream bis = null;
+    FileObject fileObj;
     try {
       if ( filename == null ) {
-        filename = File.createTempFile( "xx", ".out" ).getName();
+        filename =
+            new StringBuffer( 50 ).append( "xx" ).append( '_' ).append( UUIDUtil.getUUIDAsString() ).append( ".out" )
+                .toString();
       }
       // Do no overwrite existing file
-      file = new File( foldername, filename );
-      for ( int i = 0; file.exists(); i++ ) {
-        file = new File( foldername, filename + i );
+      String fullPath = foldername + ( foldername.endsWith( "/" ) ? "" : "/" ) + filename;
+      fileObj = KettleVFS.getFileObject( fullPath );
+
+      for ( int i = 0; fileObj.exists(); i++ ) {
+        fileObj = KettleVFS.getFileObject( fullPath + i );
       }
-      fos = new FileOutputStream( file );
-      bos = new BufferedOutputStream( fos );
-      bis = new BufferedInputStream( input );
-      int aByte;
-      while ( ( aByte = bis.read() ) != -1 ) {
-        bos.write( aByte );
-      }
+
+      bos = new BufferedOutputStream( KettleVFS.getOutputStream( fileObj, false ) );
+      IOUtils.copy( input, bos );
     } catch ( Exception e ) {
       throw new KettleException( e );
     } finally {
-      try {
-        if ( bos != null ) {
-          bos.flush();
-          bos.close();
-        }
-        if ( bis != null ) {
-          bis.close();
-          bis = null;
-        }
-        file = null;
-      } catch ( Exception e ) { /* Ignore */
-      }
+      IOUtils.closeQuietly( bos );
+      IOUtils.closeQuietly( input );
     }
   }
 
@@ -887,7 +888,7 @@ public class MailConnection {
 
   /**
    * Delete current fetched message
-   *
+   * 
    * @throws KettleException
    */
   public void deleteMessage() throws KettleException {
@@ -896,13 +897,13 @@ public class MailConnection {
       updateDeletedMessagesCounter();
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.DeletingMessage", ""
-        + getMessage().getMessageNumber() ), e );
+          + getMessage().getMessageNumber() ), e );
     }
   }
 
   /**
    * Set destination folder
-   *
+   * 
    * @param foldername
    *          destination foldername
    * @param createFolder
@@ -921,7 +922,7 @@ public class MailConnection {
             // Create folder
             f.create( Folder.HOLDS_MESSAGES );
           } else {
-            throw new KettleException( BaseMessages.getString(PKG, "MailConnection.Error.FolderNotFound", foldername ) );
+            throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.FolderNotFound", foldername ) );
           }
         }
       }
@@ -933,7 +934,7 @@ public class MailConnection {
 
   /**
    * Move current message to a target folder. (IMAP) You must call setDestinationFolder before calling this method
-   *
+   * 
    * @throws KettleException
    */
   public void moveMessage() throws KettleException {
@@ -945,14 +946,14 @@ public class MailConnection {
       deleteMessage();
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.MovingMessage", ""
-        + getMessage().getMessageNumber(), this.destinationIMAPFolder.getName() ), e );
+          + getMessage().getMessageNumber(), this.destinationIMAPFolder.getName() ), e );
 
     }
   }
 
   /**
    * Returns the foldername.
-   *
+   * 
    * @return foldername
    */
   public String getFolderName() {
@@ -964,7 +965,7 @@ public class MailConnection {
 
   /**
    * Returns the server name/Ip.
-   *
+   * 
    * @return server
    */
   public String getServer() {
@@ -973,7 +974,7 @@ public class MailConnection {
 
   /**
    * Returns the protocol.
-   *
+   * 
    * @return protocol
    */
   public int getProtocol() {
@@ -982,7 +983,7 @@ public class MailConnection {
 
   /**
    * Returns all messages.
-   *
+   * 
    * @return all messages
    */
   public Message[] getMessages() {
@@ -999,7 +1000,7 @@ public class MailConnection {
 
   /**
    * Get next message.
-   *
+   * 
    * @throws KettleException
    */
   public void fetchNext() throws KettleException {
@@ -1013,7 +1014,7 @@ public class MailConnection {
 
   /**
    * Returns the current message.
-   *
+   * 
    * @return current message
    */
   public Message getMessage() {
@@ -1022,7 +1023,7 @@ public class MailConnection {
 
   /**
    * Returns the number of messages.
-   *
+   * 
    * @return messages count
    */
   public int getMessagesCount() {
@@ -1059,7 +1060,7 @@ public class MailConnection {
 
   /**
    * Returns count of moved messages.
-   *
+   * 
    * @return count of moved messages
    */
   public int getMovedMessagesCounter() {
@@ -1074,6 +1075,22 @@ public class MailConnection {
   }
 
   /**
+   * Returns full path for current saved message
+   * 
+   * @return full path for current saved message
+   */
+  public String getFullPathToSavedMessage() {
+    return fullPathToSavedMessage;
+  }
+
+  /**
+   * Sets full path for current saved message
+   */
+  private void setFullPathToSavedMessage( String fullPath ) {
+    this.fullPathToSavedMessage = fullPath;
+  }
+
+  /**
    * Set count of moved messages.
    */
   private void setMovedMessagesCounter() {
@@ -1082,7 +1099,7 @@ public class MailConnection {
 
   /**
    * Delete messages.
-   *
+   * 
    * @throws KettleException
    */
   public void deleteMessages( boolean setCounter ) throws KettleException {
@@ -1098,7 +1115,7 @@ public class MailConnection {
 
   /**
    * Move messages to a folder. You must call setDestinationFolder before calling this method
-   *
+   * 
    * @throws KettleException
    */
   public void moveMessages() throws KettleException {
@@ -1107,14 +1124,14 @@ public class MailConnection {
       deleteMessages( false );
       setMovedMessagesCounter();
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString(
-        PKG, "MailConnection.Error.MovingMessages", this.destinationIMAPFolder.getName() ), e );
+      throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.MovingMessages",
+          this.destinationIMAPFolder.getName() ), e );
     }
   }
 
   /**
    * Check if a folder exists on server (only IMAP).
-   *
+   * 
    * @param foldername
    *          the name of the folder
    * @return true is folder exists
@@ -1162,7 +1179,7 @@ public class MailConnection {
 
   /**
    * Returns all subfolders of the specified folder
-   *
+   * 
    * @param taget
    *          parent folder
    * @return sub folders
@@ -1175,7 +1192,7 @@ public class MailConnection {
 
   /**
    * Returns all subfolders of the current folder
-   *
+   * 
    * @return sub folders
    */
   public String[] returnAllFolders() throws KettleException {
@@ -1184,7 +1201,7 @@ public class MailConnection {
 
   /**
    * Returns all subfolders of the folder folder
-   *
+   * 
    * @param folder
    *          target folder
    * @return sub folders
@@ -1264,7 +1281,7 @@ public class MailConnection {
 
   /**
    * Returns if message is new
-   *
+   * 
    * @return true if new message
    */
   public boolean isMessageNew() {
@@ -1281,7 +1298,7 @@ public class MailConnection {
 
   /**
    * Returns if message is read
-   *
+   * 
    * @return true if message is read
    */
   public boolean isMessageRead() {
@@ -1298,7 +1315,7 @@ public class MailConnection {
 
   /**
    * Returns if message is read
-   *
+   * 
    * @return true if message is flagged
    */
   public boolean isMessageFlagged() {
@@ -1315,7 +1332,7 @@ public class MailConnection {
 
   /**
    * Returns if message is deleted
-   *
+   * 
    * @return true if message is deleted
    */
   public boolean isMessageDeleted() {
@@ -1332,7 +1349,7 @@ public class MailConnection {
 
   /**
    * Returns if message is Draft
-   *
+   * 
    * @return true if message is Draft
    */
   public boolean isMessageDraft() {
@@ -1357,7 +1374,7 @@ public class MailConnection {
 
   /**
    * Returns attached files count for the current message
-   *
+   * 
    * @return true if message is Draft
    * @param pattern
    *          (optional)
@@ -1378,7 +1395,7 @@ public class MailConnection {
           String disposition = part.getDisposition();
 
           if ( ( disposition != null )
-            && ( disposition.equalsIgnoreCase( Part.ATTACHMENT ) || disposition.equalsIgnoreCase( Part.INLINE ) ) ) {
+              && ( disposition.equalsIgnoreCase( Part.ATTACHMENT ) || disposition.equalsIgnoreCase( Part.INLINE ) ) ) {
             String MimeText = null;
             try {
               MimeText = MimeUtility.decodeText( part.getFileName() );
@@ -1396,7 +1413,7 @@ public class MailConnection {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.CountingAttachedFiles", ""
-        + this.message.getMessageNumber() ), e );
+          + this.message.getMessageNumber() ), e );
     } finally {
       if ( content != null ) {
         content = null;
@@ -1404,4 +1421,5 @@ public class MailConnection {
     }
     return retval;
   }
+
 }

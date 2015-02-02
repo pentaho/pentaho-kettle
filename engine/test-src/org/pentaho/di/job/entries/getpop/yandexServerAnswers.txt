@@ -1,0 +1,87 @@
+* OK Yandex IMAP4rev1 at imap20j.mail.yandex.net:993 ready to talk with 188.128.94.254:54620, 2014-Oct-13 10:29:28, RTWbMS04Ra6q
+DELIMITER
+* CAPABILITY IMAP4rev1 CHILDREN UNSELECT LITERAL+ NAMESPACE XLIST BINARY UIDPLUS ENABLE ID AUTH=PLAIN IDLE MOVE
+A0 OK CAPABILITY completed
+DELIMITER
++
+A1 OK AUTHENTICATE completed
+DELIMITER
+* CAPABILITY IMAP4rev1 CHILDREN UNSELECT LITERAL+ NAMESPACE XLIST BINARY UIDPLUS ENABLE ID IDLE MOVE
+A2 OK CAPABILITY completed
+DELIMITER
+* LIST (\Unmarked \HasNoChildren \Sent) "|" "&BB4EQgQ,BEAEMAQyBDsENQQ9BD0ESwQ1-"
+A3 OK LIST completed
+DELIMITER
+* FLAGS (\Answered \Seen \Draft \Deleted $Forwarded)
+* 1 EXISTS
+* 0 RECENT
+* OK [PERMANENTFLAGS (\Answered \Seen \Draft \Flagged \Deleted $Forwarded \*)] Limited
+* OK [UIDNEXT 16] Ok
+* OK [UIDVALIDITY 1395849090] Ok
+A4 OK [READ-WRITE] SELECT completed
+DELIMITER
+* 1 FETCH (BODY[]<0> {2332}
+Received: from mxback3m.mail.yandex.net ([127.0.0.1])
+	by mxback3m.mail.yandex.net with LMTP id UiieVKpm
+	for <pent-qa@yandex.com>; Mon, 7 Jul 2014 12:30:44 +0400
+Received: from web22m.yandex.ru (web22m.yandex.ru [37.140.138.113])
+	by mxback3m.mail.yandex.net (nwsmtp/Yandex) with ESMTP id dPQ0rowSNa-UioWomuK;
+	Mon,  7 Jul 2014 12:30:44 +0400
+X-Yandex-Front: mxback3m.mail.yandex.net
+X-Yandex-TimeMark: 1404721844
+X-Yandex-Uniq: 8b3e7adc-d841-4bbc-b884-720fbf749292
+Authentication-Results: mxback3m.mail.yandex.net; dkim=pass header.i=@yandex.com
+Received: from 127.0.0.1 (localhost [127.0.0.1])
+	by web22m.yandex.ru (Yandex) with ESMTP id 413D3760095;
+	Mon,  7 Jul 2014 12:30:44 +0400 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.com; s=mail;
+	t=1404721844; bh=nul/cRWU8Sb77yJAZcD5ezokgqlAjzdv+vfmxFittV8=;
+	h=From:To:Subject:Date;
+	b=I3t+dUqQNhqThReT3s3afxMPpafnnW5mXF7u6ZR2YK1aijGd8vPqQonyjUlUeJarB
+	 M8YvRIe/geccxWXB1QGA4oCEoGiCTJGQYYGC8k3qMNIYPmZm8QxwdiOnEiPEFdRqFk
+	 d+nC8mfd1l9QdD/nnCze1U7urtxTOugTQeqnBcIY=
+X-Yandex-Spam: 1
+X-Yandex-Front: web22m.yandex.ru
+X-Yandex-TimeMark: 1404721844
+Received: from customer.ae-0.885.smra-rgr3.pv.ip.rostelecom.ru (customer.ae-0.885.smra-rgr3.pv.ip.rostelecom.ru [188.128.94.254]) by web22m.yandex.ru with HTTP;
+	Mon, 07 Jul 2014 12:30:44 +0400
+From: test test <pent.qa@yandex.com>
+Envelope-From: pent-qa@yandex.com
+To: Mikhail Gorbachev <mikhail_gorbachev@epam.com>
+Subject: Test
+MIME-Version: 1.0
+Message-Id: <1160471404721844@web22m.yandex.ru>
+X-Mailer: Yamail [ http://yandex.ru ] 5.0
+Date: Mon, 07 Jul 2014 12:30:44 +0400
+Content-Type: multipart/mixed;
+	boundary="----==--bound.116048.web22m.yandex.ru"
+Return-Path: pent.qa@yandex.com
+
+
+------==--bound.116048.web22m.yandex.ru
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+
+test with attach
+------==--bound.116048.web22m.yandex.ru
+Content-Disposition: attachment;
+	filename="=?UTF-8?B?0J/RgNC40LzQtdGAINCS0K3QlCDQmtC40YLQsNGPIDQyINC/0L7Qu9GPXzI3MTMyMDAwXzIwMTAwMS0y?=
+	=?UTF-8?B?MDExMDlpbXBleHAuY3N2?="
+Content-Transfer-Encoding: base64
+Content-Type: text/csv;
+	name="=?UTF-8?B?0J/RgNC40LzQtdGAINCS0K3QlCDQmtC40YLQsNGPIDQyINC/0L7Qu9GPXzI3MTMyMDAwXzIwMTAwMS0y?=
+	=?UTF-8?B?MDExMDlpbXBleHAuY3N2?="
+
+DQo=
+------==--bound.116048.web22m.yandex.ru--
+)
+A5 OK FETCH completed
+DELIMITER
+* 1 FETCH (FLAGS (\Seen))
+A6 OK FETCH completed
+DELIMITER
+A7 OK CLOSE complete
+DELIMITER
+* BYE IMAP4rev1 Server logging out
+A8 OK LOGOUT completed
+DELIMITER

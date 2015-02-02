@@ -1,0 +1,74 @@
+* OK Gimap ready for requests from 188.128.94.254 mi9mb76227993lbb
+DELIMITER
+* CAPABILITY IMAP4rev1 UNSELECT IDLE NAMESPACE QUOTA ID XLIST CHILDREN X-GM-EXT-1 XYZZY SASL-IR AUTH=XOAUTH AUTH=XOAUTH2 AUTH=PLAIN AUTH=PLAIN-CLIENTTOKEN
+A0 OK Thats all she wrote! mi9mb76227993lbb
+DELIMITER
++ 
+* CAPABILITY IMAP4rev1 UNSELECT IDLE NAMESPACE QUOTA ID XLIST CHILDREN X-GM-EXT-1 UIDPLUS COMPRESS=DEFLATE ENABLE MOVE CONDSTORE ESEARCH UTF8=ACCEPT
+A1 OK pent.qa@gmail.com authenticated (Success)
+DELIMITER
+* CAPABILITY IMAP4rev1 UNSELECT IDLE NAMESPACE QUOTA ID XLIST CHILDREN X-GM-EXT-1 UIDPLUS COMPRESS=DEFLATE ENABLE MOVE CONDSTORE ESEARCH UTF8=ACCEPT
+A2 OK Success
+DELIMITER
+* LIST (\Noselect) "/" "/"
+A3 OK Success
+DELIMITER
+* LIST (\HasNoChildren \Sent) "/" "[Gmail]/&BB4EQgQ,BEAEMAQyBDsENQQ9BD0ESwQ1-"
+A4 OK Success
+DELIMITER
+* FLAGS (\Answered \Flagged \Draft \Deleted \Seen $Phishing $NotPhishing)
+* OK [PERMANENTFLAGS (\Answered \Flagged \Draft \Deleted \Seen $Phishing $NotPhishing \*)] Flags permitted.
+* OK [UIDVALIDITY 5] UIDs valid.
+* 1 EXISTS
+* 0 RECENT
+* OK [UIDNEXT 2] Predicted next UID.
+* OK [HIGHESTMODSEQ 970]
+A5 OK [READ-WRITE] [Gmail]/&BB4EQgQ,BEAEMAQyBDsENQQ9BD0ESwQ1- selected. (Success)
+DELIMITER
+* 1 FETCH (BODY[]<0> {1227}
+MIME-Version: 1.0
+Received: by 10.76.18.84 with HTTP; Fri, 10 Oct 2014 02:29:59 -0700 (PDT)
+Date: Fri, 10 Oct 2014 13:29:59 +0400
+Delivered-To: pent.qa@gmail.com
+Message-ID: <CAGDVE6N2BFMfMEbwokTw-WWsAR0sxzK_NCe56YF6gkFxV_d0pg@mail.gmail.com>
+Subject: Test
+From: Test Test <pent.qa@gmail.com>
+To: misha_666@mail.ru
+Content-Type: multipart/mixed; boundary=089e012954ee5bdda505050e3186
+
+--089e012954ee5bdda505050e3186
+Content-Type: multipart/alternative; boundary=089e012954ee5bdd9b05050e3184
+
+--089e012954ee5bdd9b05050e3184
+Content-Type: text/plain; charset=UTF-8
+
+Test
+
+--089e012954ee5bdd9b05050e3184
+Content-Type: text/html; charset=UTF-8
+
+<div dir="ltr">Test</div>
+
+--089e012954ee5bdd9b05050e3184--
+--089e012954ee5bdda505050e3186
+Content-Type: text/csv; charset=US-ASCII; 
+	name="=?UTF-8?B?0J/RgNC40LzQtdGAINCS0K3QlCDQmtC40YLQsNGPIDQyINC/0L7Qu9GPXzI3MTMyMDAwXzIwMTAwMQ==?=
+	=?UTF-8?B?LTIwMTEwOWltcGV4cC5jc3Y=?="
+Content-Disposition: attachment; 
+	filename="=?UTF-8?B?0J/RgNC40LzQtdGAINCS0K3QlCDQmtC40YLQsNGPIDQyINC/0L7Qu9GPXzI3MTMyMDAwXzIwMTAwMQ==?=
+	=?UTF-8?B?LTIwMTEwOWltcGV4cC5jc3Y=?="
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_i13c25cu0
+
+DQo=
+--089e012954ee5bdda505050e3186--)
+A6 OK Success
+DELIMITER
+* 1 FETCH (FLAGS (\Seen))
+A7 OK Success
+DELIMITER
+A8 OK Returned to authenticated state. (Success)
+DELIMITER
+* BYE LOGOUT Requested
+A9 OK 73 good day (Success)
+DELIMITER

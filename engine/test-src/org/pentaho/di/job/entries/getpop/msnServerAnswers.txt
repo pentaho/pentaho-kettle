@@ -1,0 +1,88 @@
+* OK Outlook.com IMAP4rev1 server version 17.4.0.0 ready (BAY451-IMAP89)
+DELIMITER
+* CAPABILITY IMAP4rev1 CHILDREN ID NAMESPACE UIDPLUS UNSELECT AUTH=PLAIN AUTH=XOAUTH2 SASL-IR
+A0 OK CAPABILITY completed
+DELIMITER
++ 
+* CAPABILITY IMAP4rev1 CHILDREN ID NAMESPACE UIDPLUS UNSELECT
+A1 OK pent.qa@hotmail.com authenticated successfully
+DELIMITER
+* CAPABILITY IMAP4rev1 CHILDREN ID NAMESPACE UIDPLUS UNSELECT
+A2 OK CAPABILITY completed
+DELIMITER
+* LIST (\HasNoChildren \Sent) "/" "Sent"
+A3 OK LIST completed
+DELIMITER
+* FLAGS (\Answered \Flagged \Deleted \Seen \Draft)
+* 1 EXISTS
+* 0 RECENT
+* OK [UIDVALIDITY 55948397] UIDs valid
+* OK [UIDNEXT 100002] Predicted next UID
+* OK [PERMANENTFLAGS (\Answered \Flagged \Deleted \Seen \Draft)] Limited
+A4 OK [READ-WRITE] SELECT completed.
+DELIMITER
+* 1 FETCH (FLAGS (\Seen) BODY[]<0> {1491}
+X-TMN: [rCoqp7BNb7PTxCLjcXILixQzTjiThb+X]
+X-Originating-Email: [pent.qa@hotmail.com]
+Message-ID: <SNT149-W50DCDED8F673CDD272A759FEA10@phx.gbl>
+Return-Path: pent.qa@hotmail.com
+Content-Type: multipart/mixed;
+	boundary="_071f459d-07c0-4835-812f-346fbb20a59e_"
+From: Test Test <pent.qa@hotmail.com>
+To: "misha_666@mail.ru" <misha_666@mail.ru>
+Subject: Test
+Date: Fri, 10 Oct 2014 17:03:31 +0400
+Importance: Normal
+MIME-Version: 1.0
+
+--_071f459d-07c0-4835-812f-346fbb20a59e_
+Content-Type: multipart/alternative;
+	boundary="_1bcb2642-167a-4f45-ac5f-f585d4eeac9c_"
+
+--_1bcb2642-167a-4f45-ac5f-f585d4eeac9c_
+Content-Type: text/plain; charset="iso-8859-5"
+Content-Transfer-Encoding: quoted-printable
+
+test 		 	   		  =
+
+--_1bcb2642-167a-4f45-ac5f-f585d4eeac9c_
+Content-Type: text/html; charset="iso-8859-5"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<style><!--
+.hmmessage P
+{
+margin:0px=3B
+padding:0px
+}
+body.hmmessage
+{
+font-size: 12pt=3B
+font-family:Calibri
+}
+--></style></head>
+<body class=3D'hmmessage'><div dir=3D'ltr'>test 		 	   		  </div></body>
+</html>=
+
+--_1bcb2642-167a-4f45-ac5f-f585d4eeac9c_--
+
+--_071f459d-07c0-4835-812f-346fbb20a59e_
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=
+	"=?iso-8859-5?B?v+DY3NXgILLNtCC62OLQ7yA0MiDf3tvvXzI3MTMyMDAwXzIwMTAwMS0y?=
+ =?iso-8859-5?Q?01109impexp.csv?="
+
+DQo=
+
+--_071f459d-07c0-4835-812f-346fbb20a59e_--
+)
+A5 OK FETCH Completed
+DELIMITER
+A6 OK CLOSE completed
+DELIMITER
+* BYE Logout requested
+A7 OK LOGOUT completed
+DELIMITER
