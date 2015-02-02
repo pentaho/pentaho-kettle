@@ -76,6 +76,7 @@ public class WebServer {
   private Timer slaveMonitoringTimer;
 
   private String passwordFile;
+  private WebServerShutdownHook webServerShutdownHook;
 
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
     SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
@@ -88,12 +89,15 @@ public class WebServer {
     this.hostname = hostname;
     this.port = port;
     this.passwordFile = passwordFile;
-
+    
     startServer();
 
     // Start the monitoring of the registered slave servers...
     //
     startSlaveMonitoring();
+
+    webServerShutdownHook = new WebServerShutdownHook( this );
+    Runtime.getRuntime().addShutdownHook( webServerShutdownHook );
 
     try {
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.CarteStartup.id, this );
@@ -225,7 +229,9 @@ public class WebServer {
   }
 
   public void stopServer() {
-
+    
+    webServerShutdownHook.setShuttingDown(true);
+    
     try {
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.CarteShutdown.id, this );
     } catch ( KettleException e ) {
