@@ -1447,7 +1447,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationStart.id, this );
 
-    heartbeat = startHeartbeat( Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS );
+    heartbeat = startHeartbeat( getHeartbeatIntervalInSeconds() );
 
     if ( log.isDetailed() ) {
       log
@@ -5565,7 +5565,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     return extensionDataMap;
   }
 
-  protected ExecutorService startHeartbeat( long intervalInSeconds ) {
+  protected ExecutorService startHeartbeat( final long intervalInSeconds ) {
 
     ScheduledExecutorService heartbeat = Executors.newSingleThreadScheduledExecutor( new ThreadFactory() {
 
@@ -5581,7 +5581,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       public void run() {
         try {
 
-          log.logDebug( "Triggering heartbeat signal for " + getName() );
+          log.logDebug( "Triggering heartbeat signal for " + getName() + " at every " + intervalInSeconds + " seconds" );
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationHeartbeat.id, getThisInstance() );
 
         } catch ( KettleException e ) {
@@ -5608,5 +5608,29 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
   private Trans getThisInstance(){
     return this;
+  }
+
+  private int getHeartbeatIntervalInSeconds() {
+
+    TransMeta meta = this.getTransMeta();
+
+    // 1 - check if there's a user defined value ( transformation-specific ) heartbeat periodic interval;
+    // 2 - check if there's a default defined value ( transformation-specific ) heartbeat periodic interval;
+    // 3 - use default Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS if none of the above have been set
+
+    try {
+
+      if ( meta != null ) {
+
+        return Const.toInt( meta.getParameterValue( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
+            Const.toInt(  meta.getParameterDefault( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
+                Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS ) );
+      }
+
+    } catch( Exception e ){
+      /* do nothing, return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS */
+    }
+
+    return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS;
   }
 }
