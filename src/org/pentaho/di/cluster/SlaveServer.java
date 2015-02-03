@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.Header;
@@ -92,15 +93,37 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class SlaveServer  extends ChangedFlag 
-	implements Cloneable, SharedObjectInterface, VariableSpace, RepositoryElementInterface, XMLInterface
+  implements Cloneable, SharedObjectInterface, VariableSpace, RepositoryElementInterface, XMLInterface
 {
-	private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final String STRING_SLAVESERVER = "Slave Server"; //$NON-NLS-1$
-	
+  public static final String STRING_SLAVESERVER = "Slave Server"; //$NON-NLS-1$
+  
+  private static final Random RANDOM = new Random();
+
     public static final String XML_TAG = "slaveserver"; //$NON-NLS-1$
 
     public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.SLAVE_SERVER;
+
+  public static final int KETTLE_CARTE_RETRIES = getNumberOfSlaveServerRetries();
+  
+  public static final int KETTLE_CARTE_RETRY_BACKOFF_INCREMENTS = getBackoffIncrements();
+  
+  private static int getNumberOfSlaveServerRetries() {
+    try {
+      return Integer.parseInt(Const.NVL(System.getProperty( "KETTLE_CARTE_RETRIES" ), "0" ) );
+    } catch ( Exception e ) {
+      return 0;
+    }
+  }
+  
+  public static int getBackoffIncrements() {
+    try {
+      return Integer.parseInt(Const.NVL(System.getProperty( "KETTLE_CARTE_RETRY_BACKOFF_INCREMENTS" ), "1000" ) );
+    } catch ( Exception e ) {
+      return 1000;
+    }
+  }
 
     private LogChannelInterface log;    
     
@@ -122,13 +145,13 @@ public class SlaveServer  extends ChangedFlag
     
     private VariableSpace variables = new Variables();
 
-	private ObjectRevision objectRevision;
-	
-	private Date changedDate;
+  private ObjectRevision objectRevision;
+  
+  private Date changedDate;
     
     public SlaveServer()
     {
-    	initializeVariablesFrom(null);
+      initializeVariablesFrom(null);
         id=null;
         this.log = new LogChannel(STRING_SLAVESERVER);
         this.changedDate = new Date();
@@ -176,8 +199,8 @@ public class SlaveServer  extends ChangedFlag
     }
     
     public LogChannelInterface getLogChannel() {
-		return log;
-	}
+    return log;
+  }
 
     public String getXML()
     {
@@ -235,7 +258,9 @@ public class SlaveServer  extends ChangedFlag
     public String getServerAndPort()
     {
         String realHostname = environmentSubstitute(hostname);
-        if (!Const.isEmpty(realHostname)) return realHostname+getPortSpecification();
+    if ( !Const.isEmpty( realHostname ) ) {
+      return realHostname + getPortSpecification();
+    }
         return "Slave Server"; //$NON-NLS-1$
     }
     
@@ -401,7 +426,9 @@ public class SlaveServer  extends ChangedFlag
         // Prepare HTTP put
         // 
         String urlString = constructUrl(service);
-        if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
+        if(log.isDebug()) {
+          log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
+        }
         PostMethod postMethod = new PostMethod(urlString);
         
         // Request content will be retrieved directly from the input stream
@@ -417,9 +444,9 @@ public class SlaveServer  extends ChangedFlag
 
     public synchronized String sendXML(String xml, String service) throws Exception
     {
-    	byte[] content = xml.getBytes(Const.XML_ENCODING);
-    	PostMethod post = getSendByteArrayMethod(content, service);
-    	
+      byte[] content = xml.getBytes(Const.XML_ENCODING);
+      PostMethod post = getSendByteArrayMethod(content, service);
+      
         // Get HTTP client
         // 
         HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
@@ -436,7 +463,9 @@ public class SlaveServer  extends ChangedFlag
             int result = client.executeMethod(post);
             
             // The status code
-            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+            if(log.isDebug()) {
+              log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+            }
             
             // the response
             //
@@ -445,7 +474,9 @@ public class SlaveServer  extends ChangedFlag
             
             StringBuffer bodyBuffer = new StringBuffer();
             int c;
-            while ( (c=bufferedInputStream.read())!=-1) bodyBuffer.append((char)c);
+            while ( (c=bufferedInputStream.read())!=-1) {
+              bodyBuffer.append((char)c);
+            }
 
             String bodyTmp = bodyBuffer.toString();
             
@@ -463,14 +494,15 @@ public class SlaveServer  extends ChangedFlag
             String body = bodyBuffer.toString();
 
             // String body = post.getResponseBodyAsString(); 
-            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
+            if(log.isDebug()) {
+              log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
+            }
             
             return body;
         } catch (Exception e) {
-        	log.logError(toString(), String.format("Exception sending message to service %s", service), e);
-        	throw e;
-        } finally
-        {
+          log.logError(toString(), String.format("Exception sending message to service %s", service), e);
+          throw e;
+        } finally {
           
             if (bufferedInputStream!=null) {
               bufferedInputStream.close();
@@ -481,7 +513,10 @@ public class SlaveServer  extends ChangedFlag
             
             // Release current connection to the connection pool once you are done
             post.releaseConnection();
-            if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentXmlToService", service, environmentSubstitute(hostname))); //$NON-NLS-1$
+            if(log.isDetailed()) {
+              log.logDetailed(BaseMessages.getString(PKG, 
+                  "SlaveServer.DETAILED_SentXmlToService", service, environmentSubstitute(hostname))); //$NON-NLS-1$
+            }
         }
     }
 
@@ -495,10 +530,10 @@ public class SlaveServer  extends ChangedFlag
      */
     public String sendExport(String filename, String type, String load) throws Exception
     {
-    	String serviceUrl=AddExportServlet.CONTEXT_PATH;
-    	if (type!=null && load!=null) {
-    		serviceUrl = serviceUrl+= "/?"+AddExportServlet.PARAMETER_TYPE+"="+type+"&"+AddExportServlet.PARAMETER_LOAD+"="+URLEncoder.encode(load, "UTF-8");
-    	}
+      String serviceUrl=AddExportServlet.CONTEXT_PATH;
+      if (type!=null && load!=null) {
+        serviceUrl = serviceUrl+= "/?"+AddExportServlet.PARAMETER_TYPE+"="+type+"&"+AddExportServlet.PARAMETER_LOAD+"="+URLEncoder.encode(load, "UTF-8");
+      }
 
         String urlString = constructUrl(serviceUrl);
         if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
@@ -515,7 +550,7 @@ public class SlaveServer  extends ChangedFlag
           putMethod.setRequestEntity(entity);
           putMethod.setDoAuthentication(true);
           putMethod.addRequestHeader(new Header("Content-Type", "binary/zip"));
-      	
+        
           // Get HTTP client
           // 
           HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
@@ -636,8 +671,42 @@ public class SlaveServer  extends ChangedFlag
         this.master = master;
     }
 
-    public synchronized String execService(String service) throws Exception
-    {
+  public String execService( String service, boolean retry ) throws Exception {
+    int tries = 0;
+    int maxRetries = 0;
+    if ( retry ) {
+      maxRetries = KETTLE_CARTE_RETRIES;
+    }
+    while ( true ) {
+      try {
+        return execService( service );
+      } catch ( Exception e ) {
+        if ( tries >= maxRetries ) {
+          throw e;
+        } else {
+          try {
+            Thread.sleep( getDelay( tries ) );
+          } catch ( InterruptedException e2 ) {
+            //ignore
+          }
+        }
+      }
+      tries++;
+    }
+  }
+
+  public static long getDelay( int trial ) {
+    long current = KETTLE_CARTE_RETRY_BACKOFF_INCREMENTS;
+    long previous = 0;
+    for ( int i = 0; i < trial; i++ ) {
+      long tmp = current;
+      current = current + previous;
+      previous = tmp;
+    }
+    return current + RANDOM.nextInt( (int) Math.min( Integer.MAX_VALUE, current / 4L ) );
+  }
+
+  public synchronized String execService(String service) throws Exception  {
         // Prepare HTTP get
         // 
         HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
@@ -657,20 +726,15 @@ public class SlaveServer  extends ChangedFlag
             // The status code
             if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
 
-            // the response
-            //
-            inputStream = method.getResponseBodyAsStream();
-            bufferedInputStream = new BufferedInputStream(inputStream, 1000);
+            String body = method.getResponseBodyAsString();
             
-            StringBuffer bodyBuffer = new StringBuffer();
-            int c;
-            while ( (c=bufferedInputStream.read())!=-1) bodyBuffer.append((char)c);
-
-            String body = bodyBuffer.toString();
-            
-            if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_FinishedReading", Integer.toString(body.getBytes().length))); //$NON-NLS-1$
-            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
-            
+            if ( log.isDetailed() ) {
+              log.logDetailed( BaseMessages.getString( PKG,
+                "SlaveServer.DETAILED_FinishedReading", Integer.toString( body.getBytes().length ) ) ); //$NON-NLS-1$
+            }
+            if ( log.isDebug() ) {
+              log.logDebug( BaseMessages.getString( PKG, "SlaveServer.DEBUG_ResponseBody", body ) ); //$NON-NLS-1$
+            }
             return body;
         }
         finally
@@ -704,22 +768,22 @@ public class SlaveServer  extends ChangedFlag
         
         List<SlaveServerDetection> detections = new ArrayList<SlaveServerDetection>();
         for (int i=0;i<nrDetections;i++) {
-        	Node detectionNode = XMLHandler.getSubNodeByNr(detectionsNode, SlaveServerDetection.XML_TAG, i);
-        	SlaveServerDetection detection = new SlaveServerDetection(detectionNode);
-        	detections.add(detection);
+          Node detectionNode = XMLHandler.getSubNodeByNr(detectionsNode, SlaveServerDetection.XML_TAG, i);
+          SlaveServerDetection detection = new SlaveServerDetection(detectionNode);
+          detections.add(detection);
         }
         return detections;
     }
 
     public SlaveServerTransStatus getTransStatus(String transName, String carteObjectId, int startLogLineNr) throws Exception
     {
-        String xml = execService(GetTransStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y&from="+startLogLineNr); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(GetTransStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y&from="+startLogLineNr, true); //$NON-NLS-1$  //$NON-NLS-2$
         return SlaveServerTransStatus.fromXML(xml);
     }
     
     public SlaveServerJobStatus getJobStatus(String jobName, String carteObjectId, int startLogLineNr) throws Exception
     {
-        String xml = execService(GetJobStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y&from="+startLogLineNr); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(GetJobStatusServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(jobName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y&from="+startLogLineNr, true); //$NON-NLS-1$  //$NON-NLS-2$
         return SlaveServerJobStatus.fromXML(xml);
     }
     
@@ -808,34 +872,34 @@ public class SlaveServer  extends ChangedFlag
     
     public synchronized int allocateServerSocket(String runId, int portRangeStart, String hostname, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) throws Exception {
 
-    	// Look up the IP address of the given hostname
-    	// Only this way we'll be to allocate on the correct host.
-    	//
-    	InetAddress inetAddress = InetAddress.getByName(hostname);
-    	String address = inetAddress.getHostAddress();
-    	
-    	String service=AllocateServerSocketServlet.CONTEXT_PATH+"/?";
-    	service += AllocateServerSocketServlet.PARAM_RANGE_START+"="+Integer.toString(portRangeStart);
+      // Look up the IP address of the given hostname
+      // Only this way we'll be to allocate on the correct host.
+      //
+      InetAddress inetAddress = InetAddress.getByName(hostname);
+      String address = inetAddress.getHostAddress();
+      
+      String service=AllocateServerSocketServlet.CONTEXT_PATH+"/?";
+      service += AllocateServerSocketServlet.PARAM_RANGE_START+"="+Integer.toString(portRangeStart);
       service += "&" + AllocateServerSocketServlet.PARAM_ID+"="+URLEncoder.encode(runId, "UTF-8");
-    	service += "&" + AllocateServerSocketServlet.PARAM_HOSTNAME+"="+address;
-    	service += "&" + AllocateServerSocketServlet.PARAM_TRANSFORMATION_NAME+"="+URLEncoder.encode(transformationName, "UTF-8");
-    	service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_SLAVE+"="+URLEncoder.encode(sourceSlaveName, "UTF-8");
-    	service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_STEPNAME+"="+URLEncoder.encode(sourceStepName, "UTF-8");
-    	service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_STEPCOPY+"="+URLEncoder.encode(sourceStepCopy, "UTF-8");
-    	service += "&" + AllocateServerSocketServlet.PARAM_TARGET_SLAVE+"="+URLEncoder.encode(targetSlaveName, "UTF-8");
-    	service += "&" + AllocateServerSocketServlet.PARAM_TARGET_STEPNAME+"="+URLEncoder.encode(targetStepName, "UTF-8");
-    	service += "&" + AllocateServerSocketServlet.PARAM_TARGET_STEPCOPY+"="+URLEncoder.encode(targetStepCopy, "UTF-8");
-    	service += "&xml=Y";
-    	String xml = execService(service);
-    	Document doc = XMLHandler.loadXMLString(xml);
-    	String portString = XMLHandler.getTagValue(doc, AllocateServerSocketServlet.XML_TAG_PORT);
-    	
-    	int port = Const.toInt(portString, -1);
-    	if (port<0) {
-    		throw new Exception("Unable to retrieve port from service : "+service+", received : \n"+xml);
-    	}
+      service += "&" + AllocateServerSocketServlet.PARAM_HOSTNAME+"="+address;
+      service += "&" + AllocateServerSocketServlet.PARAM_TRANSFORMATION_NAME+"="+URLEncoder.encode(transformationName, "UTF-8");
+      service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_SLAVE+"="+URLEncoder.encode(sourceSlaveName, "UTF-8");
+      service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_STEPNAME+"="+URLEncoder.encode(sourceStepName, "UTF-8");
+      service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_STEPCOPY+"="+URLEncoder.encode(sourceStepCopy, "UTF-8");
+      service += "&" + AllocateServerSocketServlet.PARAM_TARGET_SLAVE+"="+URLEncoder.encode(targetSlaveName, "UTF-8");
+      service += "&" + AllocateServerSocketServlet.PARAM_TARGET_STEPNAME+"="+URLEncoder.encode(targetStepName, "UTF-8");
+      service += "&" + AllocateServerSocketServlet.PARAM_TARGET_STEPCOPY+"="+URLEncoder.encode(targetStepCopy, "UTF-8");
+      service += "&xml=Y";
+      String xml = execService(service);
+      Document doc = XMLHandler.loadXMLString(xml);
+      String portString = XMLHandler.getTagValue(doc, AllocateServerSocketServlet.XML_TAG_PORT);
+      
+      int port = Const.toInt(portString, -1);
+      if (port<0) {
+        throw new Exception("Unable to retrieve port from service : "+service+", received : \n"+xml);
+      }
 
-    	return port;
+      return port;
     }
 
     public String getName()
@@ -858,178 +922,178 @@ public class SlaveServer  extends ChangedFlag
         this.shared = shared;
     }
 
-	public void copyVariablesFrom(VariableSpace space) 
-	{
-		variables.copyVariablesFrom(space);		
-	}
+  public void copyVariablesFrom(VariableSpace space) 
+  {
+    variables.copyVariablesFrom(space);   
+  }
 
-	public String environmentSubstitute(String aString) 
-	{
-		return variables.environmentSubstitute(aString);
-	}
+  public String environmentSubstitute(String aString) 
+  {
+    return variables.environmentSubstitute(aString);
+  }
 
-	public String[] environmentSubstitute(String aString[]) 
-	{
-		return variables.environmentSubstitute(aString);
-	}		
+  public String[] environmentSubstitute(String aString[]) 
+  {
+    return variables.environmentSubstitute(aString);
+  }   
 
-	public VariableSpace getParentVariableSpace() 
-	{
-		return variables.getParentVariableSpace();
-	}
+  public VariableSpace getParentVariableSpace() 
+  {
+    return variables.getParentVariableSpace();
+  }
 
-	public void setParentVariableSpace(VariableSpace parent) 
-	{
-		variables.setParentVariableSpace(parent);
-	}
+  public void setParentVariableSpace(VariableSpace parent) 
+  {
+    variables.setParentVariableSpace(parent);
+  }
 
-	public String getVariable(String variableName, String defaultValue) 
-	{
-		return variables.getVariable(variableName, defaultValue);
-	}
+  public String getVariable(String variableName, String defaultValue) 
+  {
+    return variables.getVariable(variableName, defaultValue);
+  }
 
-	public String getVariable(String variableName) 
-	{
-		return variables.getVariable(variableName);
-	}
-	
-	public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
-		if (!Const.isEmpty(variableName))
-		{
-			String value = environmentSubstitute(variableName);
-			if (!Const.isEmpty(value))
-			{
-				return ValueMeta.convertStringToBoolean(value);
-			}
-		}
-		return defaultValue;
-	}
+  public String getVariable(String variableName) 
+  {
+    return variables.getVariable(variableName);
+  }
+  
+  public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
+    if (!Const.isEmpty(variableName))
+    {
+      String value = environmentSubstitute(variableName);
+      if (!Const.isEmpty(value))
+      {
+        return ValueMeta.convertStringToBoolean(value);
+      }
+    }
+    return defaultValue;
+  }
 
-	public void initializeVariablesFrom(VariableSpace parent) 
-	{
-		variables.initializeVariablesFrom(parent);	
-	}
+  public void initializeVariablesFrom(VariableSpace parent) 
+  {
+    variables.initializeVariablesFrom(parent);  
+  }
 
-	public String[] listVariables() 
-	{
-		return variables.listVariables();
-	}
+  public String[] listVariables() 
+  {
+    return variables.listVariables();
+  }
 
-	public void setVariable(String variableName, String variableValue) 
-	{
-		variables.setVariable(variableName, variableValue);		
-	}
+  public void setVariable(String variableName, String variableValue) 
+  {
+    variables.setVariable(variableName, variableValue);   
+  }
 
-	public void shareVariablesWith(VariableSpace space) 
-	{
-		variables = space;		
-	}
+  public void shareVariablesWith(VariableSpace space) 
+  {
+    variables = space;    
+  }
 
-	public void injectVariables(Map<String,String> prop) 
-	{
-		variables.injectVariables(prop);		
-	}
+  public void injectVariables(Map<String,String> prop) 
+  {
+    variables.injectVariables(prop);    
+  }
 
-	public ObjectId getObjectId() {
-		return id;
-	}
-	
-	public void setObjectId(ObjectId id) {
-		this.id = id;
-	}
+  public ObjectId getObjectId() {
+    return id;
+  }
+  
+  public void setObjectId(ObjectId id) {
+    this.id = id;
+  }
 
-	/**
-	 * Not used in this case, simply return root /
-	 */
-	public RepositoryDirectoryInterface getRepositoryDirectory() {
-		return new RepositoryDirectory();
-	}
-	
-	public void setRepositoryDirectory(RepositoryDirectoryInterface repositoryDirectory) {
-		throw new RuntimeException("Setting a directory on a database connection is not supported");
-	}
-	
-	public RepositoryObjectType getRepositoryElementType() {
-		return REPOSITORY_ELEMENT_TYPE;
-	}
-	
-	public ObjectRevision getObjectRevision() {
-		return objectRevision;
-	}
+  /**
+   * Not used in this case, simply return root /
+   */
+  public RepositoryDirectoryInterface getRepositoryDirectory() {
+    return new RepositoryDirectory();
+  }
+  
+  public void setRepositoryDirectory(RepositoryDirectoryInterface repositoryDirectory) {
+    throw new RuntimeException("Setting a directory on a database connection is not supported");
+  }
+  
+  public RepositoryObjectType getRepositoryElementType() {
+    return REPOSITORY_ELEMENT_TYPE;
+  }
+  
+  public ObjectRevision getObjectRevision() {
+    return objectRevision;
+  }
 
-	public void setObjectRevision(ObjectRevision objectRevision) {
-		this.objectRevision = objectRevision;
-	}
-	public String getDescription() {
-		// NOT USED
-		return null;
-	}
-	
-	public void setDescription(String description) {
-		// NOT USED
-	}
+  public void setObjectRevision(ObjectRevision objectRevision) {
+    this.objectRevision = objectRevision;
+  }
+  public String getDescription() {
+    // NOT USED
+    return null;
+  }
+  
+  public void setDescription(String description) {
+    // NOT USED
+  }
 
-	/**
-	 * Sniff rows on a the slave server, return xml containing the row metadata and data.
-	 * 
-	 * @param transName
-	 * @param stepName
-	 * @param copyNr
-	 * @param lines
-	 * @return
-	 * @throws Exception
-	 */
-	public String sniffStep(String transName, String stepName, String copyNr, int lines, String type) throws Exception {
-		String xml = execService(
-				SniffStepServlet.CONTEXT_PATH+"/?trans="+URLEncoder.encode(transName, "UTF-8")+
-				"&step="+URLEncoder.encode(stepName, "UTF-8")+
-				"&copynr="+copyNr+
-				"&type="+type+
-				"&lines="+lines+
-				"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
-		return xml;
-	}
+  /**
+   * Sniff rows on a the slave server, return xml containing the row metadata and data.
+   * 
+   * @param transName
+   * @param stepName
+   * @param copyNr
+   * @param lines
+   * @return
+   * @throws Exception
+   */
+  public String sniffStep(String transName, String stepName, String copyNr, int lines, String type) throws Exception {
+    String xml = execService(
+        SniffStepServlet.CONTEXT_PATH+"/?trans="+URLEncoder.encode(transName, "UTF-8")+
+        "&step="+URLEncoder.encode(stepName, "UTF-8")+
+        "&copynr="+copyNr+
+        "&type="+type+
+        "&lines="+lines+
+        "&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+    return xml;
+  }
 
-	 public long getNextSlaveSequenceValue(String slaveSequenceName, long incrementValue) throws KettleException {
-	   try {
-	    String xml = execService(NextSequenceValueServlet.CONTEXT_PATH+"/"+
-	     "?"+NextSequenceValueServlet.PARAM_NAME+"="+URLEncoder.encode(slaveSequenceName, "UTF-8")+
-	     "&"+NextSequenceValueServlet.PARAM_INCREMENT+"="+Long.toString(incrementValue)   
-	    ); //$NON-NLS-1$  //$NON-NLS-2$
-	    
-	    Document doc = XMLHandler.loadXMLString(xml);
-	    Node seqNode = XMLHandler.getSubNode(doc, NextSequenceValueServlet.XML_TAG);
-	    String nextValueString = XMLHandler.getTagValue(seqNode, NextSequenceValueServlet.XML_TAG_VALUE);
+   public long getNextSlaveSequenceValue(String slaveSequenceName, long incrementValue) throws KettleException {
+     try {
+      String xml = execService(NextSequenceValueServlet.CONTEXT_PATH+"/"+
+       "?"+NextSequenceValueServlet.PARAM_NAME+"="+URLEncoder.encode(slaveSequenceName, "UTF-8")+
+       "&"+NextSequenceValueServlet.PARAM_INCREMENT+"="+Long.toString(incrementValue)   
+      ); //$NON-NLS-1$  //$NON-NLS-2$
+      
+      Document doc = XMLHandler.loadXMLString(xml);
+      Node seqNode = XMLHandler.getSubNode(doc, NextSequenceValueServlet.XML_TAG);
+      String nextValueString = XMLHandler.getTagValue(seqNode, NextSequenceValueServlet.XML_TAG_VALUE);
       String errorString = XMLHandler.getTagValue(seqNode, NextSequenceValueServlet.XML_TAG_ERROR);
       
-	    if (!Const.isEmpty(errorString)) {
-	      throw new KettleException(errorString);
-	    }
-	    if (Const.isEmpty(nextValueString)) {
-	      throw new KettleException("No value retrieved from slave sequence '"+slaveSequenceName+"' on slave "+toString());
-	    }
-	    long nextValue = Const.toLong(nextValueString, Long.MIN_VALUE);
-	    if (nextValue==Long.MIN_VALUE) {
-	      throw new KettleException("Incorrect value '"+nextValueString+"' retrieved from slave sequence '"+slaveSequenceName+"' on slave "+toString());
-	    }
-	    
-	    return nextValue;
-	   } catch(Exception e) {
+      if (!Const.isEmpty(errorString)) {
+        throw new KettleException(errorString);
+      }
+      if (Const.isEmpty(nextValueString)) {
+        throw new KettleException("No value retrieved from slave sequence '"+slaveSequenceName+"' on slave "+toString());
+      }
+      long nextValue = Const.toLong(nextValueString, Long.MIN_VALUE);
+      if (nextValue==Long.MIN_VALUE) {
+        throw new KettleException("Incorrect value '"+nextValueString+"' retrieved from slave sequence '"+slaveSequenceName+"' on slave "+toString());
+      }
+      
+      return nextValue;
+     } catch(Exception e) {
        throw new KettleException("There was a problem retrieving a next sequence value from slave sequence '"+slaveSequenceName+"' on slave "+toString(), e);
-	   }
-	  }
+     }
+    }
 
-	/**
-	 * @return the changedDate
-	 */
-	public Date getChangedDate() {
-		return changedDate;
-	}
+  /**
+   * @return the changedDate
+   */
+  public Date getChangedDate() {
+    return changedDate;
+  }
 
-	/**
-	 * @param changedDate the changedDate to set
-	 */
-	public void setChangedDate(Date changedDate) {
-		this.changedDate = changedDate;
-	}
+  /**
+   * @param changedDate the changedDate to set
+   */
+  public void setChangedDate(Date changedDate) {
+    this.changedDate = changedDate;
+  }
 }
