@@ -72,12 +72,12 @@ public class Const
   /**
    * Version number
    */
-  public static final String VERSION = "4.4.2-GA";
+  public static final String VERSION = "4.4.2-C-188";
   
   /**
    * Copyright year 
    */
-  public static final String COPYRIGHT_YEAR = "2013";
+  public static final String COPYRIGHT_YEAR = "2014";
 
   /**
    * Release Type
