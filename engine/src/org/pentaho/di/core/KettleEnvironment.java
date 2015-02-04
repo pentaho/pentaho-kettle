@@ -55,6 +55,7 @@ public class KettleEnvironment {
 
   /** Indicates whether the Kettle environment has been initialized. */
   private static Boolean initialized;
+  private static KettleLifecycleSupport kettleLifecycleSupport;
 
   /**
    * Initializes the Kettle environment. This method will attempt to configure Simple JNDI, by simply calling
@@ -133,22 +134,32 @@ public class KettleEnvironment {
    *           when a lifecycle listener throws an exception
    */
   private static void initLifecycleListeners() throws KettleException {
-    final KettleLifecycleSupport s = new KettleLifecycleSupport();
-    s.onEnvironmentInit();
+    kettleLifecycleSupport = new KettleLifecycleSupport();
+    kettleLifecycleSupport.onEnvironmentInit();
+    final KettleLifecycleSupport s = kettleLifecycleSupport;
 
     // Register a shutdown hook to invoke the listener's onExit() methods
     Runtime.getRuntime().addShutdownHook( new Thread() {
       public void run() {
-        try {
-          s.onEnvironmentShutdown();
-        } catch ( Throwable t ) {
-          System.err.println( BaseMessages.getString(
-            PKG, "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners" ) );
-          t.printStackTrace();
-        }
+        shutdown( s );
       }
     } );
 
+  }
+  
+  // Shutdown the Kettle environment programmatically
+  public static void shutdown() {
+    shutdown( kettleLifecycleSupport );
+  }
+
+  private static void shutdown( KettleLifecycleSupport kettleLifecycleSupport ) {
+    try {
+      kettleLifecycleSupport.onEnvironmentShutdown();
+    } catch ( Throwable t ) {
+      System.err.println( BaseMessages.getString( PKG,
+          "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners" ) );
+      t.printStackTrace();
+    }
   }
 
   /**

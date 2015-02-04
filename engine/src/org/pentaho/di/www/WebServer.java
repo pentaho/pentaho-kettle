@@ -45,6 +45,7 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
@@ -257,6 +258,15 @@ public class WebServer {
         // Stop the server...
         //
         server.stop();
+        KettleEnvironment.shutdown();
+        try {
+          Thread.sleep( 30000 ); // Wait for karaf and kettle to shutdown, then do System.exit to take care of some
+                                 // straggler timer threads
+        } catch ( InterruptedException e ) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        System.exit( 0 );
       }
     } catch ( Exception e ) {
       log.logError( BaseMessages.getString( PKG, "WebServer.Error.FailedToStop.Title" ), BaseMessages.getString(
