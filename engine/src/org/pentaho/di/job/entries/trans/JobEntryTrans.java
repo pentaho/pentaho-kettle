@@ -22,6 +22,11 @@
 
 package org.pentaho.di.job.entries.trans;
 
+import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
+
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -75,9 +80,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.*;
 
 /**
  * This is the job entry that defines a transformation to be run.
@@ -141,6 +143,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   private boolean passingAllParameters = true;
 
   private boolean loggingRemoteWork;
+  
+  private boolean copyTransToServer;
 
   private Trans trans;
 
@@ -272,6 +276,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     retval.append( "      " ).append( XMLHandler.addTagValue( "follow_abort_remote", followingAbortRemotely ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "create_parent_folder", createParentFolder ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "logging_remote_work", loggingRemoteWork ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "copy_trans_to_server", copyTransToServer ) );
 
     if ( arguments != null ) {
       for ( int i = 0; i < arguments.length; i++ ) {
@@ -356,6 +361,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       clustering = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "cluster" ) );
       createParentFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "create_parent_folder" ) );
       loggingRemoteWork = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "logging_remote_work" ) );
+      copyTransToServer = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "copy_trans_to_server" ) );
 
       remoteSlaveServerName = XMLHandler.getTagValue( entrynode, "slave_server_name" );
 
@@ -440,6 +446,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       waitingToFinish = rep.getJobEntryAttributeBoolean( id_jobentry, "wait_until_finished", true );
       followingAbortRemotely = rep.getJobEntryAttributeBoolean( id_jobentry, "follow_abort_remote" );
       loggingRemoteWork = rep.getJobEntryAttributeBoolean( id_jobentry, "logging_remote_work" );
+      
+      copyTransToServer = rep.getJobEntryAttributeBoolean( id_jobentry, "copy_trans_to_server", false );
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "argument" );
@@ -501,6 +509,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       rep.saveJobEntryAttribute( id_job, getObjectId(), "follow_abort_remote", followingAbortRemotely );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "create_parent_folder", createParentFolder );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logging_remote_work", loggingRemoteWork );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "copy_trans_to_server", copyTransToServer );
 
       // Save the arguments...
       if ( arguments != null ) {
@@ -1307,7 +1316,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     // Also go down into the transformation and export the files there. (mapping recursively down)
     //
     String proposedNewFilename =
-      transMeta.exportResources( transMeta, definitions, namingInterface, repository, metaStore );
+      transMeta.exportResources( transMeta, definitions, namingInterface, repository, metaStore, copyTransToServer );
 
     // To get a relative path to it, we inject ${Internal.Job.Filename.Directory}
     //
@@ -1384,6 +1393,14 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
   public void setLoggingRemoteWork( boolean loggingRemoteWork ) {
     this.loggingRemoteWork = loggingRemoteWork;
+  }
+  
+  public void setCopyTransToServer( boolean copyTransToServer ) {
+    this.copyTransToServer = copyTransToServer;
+  }
+  
+  public boolean isCopyTransToServer() {
+    return copyTransToServer;
   }
 
   /**

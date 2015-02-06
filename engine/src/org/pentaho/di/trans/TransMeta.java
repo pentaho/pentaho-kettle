@@ -23,17 +23,6 @@
 
 package org.pentaho.di.trans;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
@@ -119,6 +108,17 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class defines information about a transformation and offers methods to save and load it from XML or a PDI
@@ -5603,7 +5603,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
     return resourceReferences;
   }
-
+  
   /**
    * Exports the specified objects to a flat-file system, adding content with filename keys to a set of definitions. The
    * supplied resource naming interface allows the object to name appropriately without worrying about those parts of
@@ -5621,8 +5621,30 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore) throws KettleException {
+    return exportResources( space, definitions, resourceNamingInterface, repository, metaStore, false );
+  }
 
+  /**
+   * Exports the specified objects to a flat-file system, adding content with filename keys to a set of definitions. The
+   * supplied resource naming interface allows the object to name appropriately without worrying about those parts of
+   * the implementation specific details.
+   *
+   * @param space
+   *          the variable space to use
+   * @param definitions
+   * @param resourceNamingInterface
+   * @param repository
+   *          The repository to optionally load other resources from (to be converted to XML)
+   * @param metaStore
+   *          the metaStore in which non-kettle metadata could reside.
+   * @param exportRequired
+   *          export is required
+   *
+   * @return the filename of the exported resource
+   */
+  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore, boolean exportRequired) throws KettleException {
     try {
       // Handle naming for both repository and XML bases resources...
       //
@@ -5691,9 +5713,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
         // At the end, add ourselves to the map...
         //
-        String transMetaContent = transMeta.getXML();
-
-        definition = new ResourceDefinition( exportFileName, transMetaContent );
+        definition = new ResourceDefinition( exportFileName, this );
 
         // Also remember the original filename (if any), including variables etc.
         //
@@ -5702,6 +5722,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         } else {
           definition.setOrigin( this.getFilename() );
         }
+        
+        definition.setExportRequired( exportRequired );
 
         definitions.put( fullname, definition );
       }

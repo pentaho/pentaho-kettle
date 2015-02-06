@@ -27,13 +27,6 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -80,6 +73,13 @@ import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 /**
  * Recursive definition of a Job. This step means that an entire Job has to be executed. It can be the same Job, but
  * just make sure that you don't get an endless loop. Provide an escape routine using JobEval.
@@ -89,6 +89,9 @@ import org.w3c.dom.Node;
  *
  */
 public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface {
+  
+  public static final LogLevel DEFAULT_LOG_LEVEL = LogLevel.NOTHING;
+  
   private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
@@ -127,8 +130,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   private boolean passingExport;
 
   private boolean forcingSeparateLogging;
-
-  public static final LogLevel DEFAULT_LOG_LEVEL = LogLevel.NOTHING;
+  
+  private boolean copyJobToServer;
 
   private Job job;
 
@@ -263,6 +266,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     retval.append( "      " ).append( XMLHandler.addTagValue( "create_parent_folder", createParentFolder ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "pass_export", passingExport ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "force_separate_logging", forcingSeparateLogging ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "copy_job_to_server", copyJobToServer ) );
 
     if ( arguments != null ) {
       for ( int i = 0; i < arguments.length; i++ ) {
@@ -359,6 +363,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
       followingAbortRemotely = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "follow_abort_remote" ) );
       expandingRemoteJob = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "expand_remote_job" ) );
+      
+      copyJobToServer = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "copy_job_to_server" ) );
 
       // How many arguments?
       int argnr = 0;
@@ -455,7 +461,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       }
 
       passingAllParameters = rep.getJobEntryAttributeBoolean( id_jobentry, "pass_all_parameters", true );
-
+      
+      copyJobToServer = rep.getJobEntryAttributeBoolean( id_jobentry, "copy_job_to_server", false );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to load job entry of type 'job' from the repository with id_jobentry="
         + id_jobentry, dbe );
@@ -491,6 +498,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       rep.saveJobEntryAttribute( id_job, getObjectId(), "expand_remote_job", expandingRemoteJob );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "create_parent_folder", createParentFolder );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "force_separate_logging", forcingSeparateLogging );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "copy_job_to_server", copyJobToServer );
 
       // save the arguments...
       if ( arguments != null ) {
@@ -1306,7 +1314,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     // recursively)
     //
     String proposedNewFilename =
-      jobMeta.exportResources( jobMeta, definitions, namingInterface, repository, metaStore );
+      jobMeta.exportResources( jobMeta, definitions, namingInterface, repository, metaStore, copyJobToServer );
 
     // To get a relative path to it, we inject
     // ${Internal.Job.Filename.Directory}
@@ -1528,5 +1536,19 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
   public void setExpandingRemoteJob( boolean expandingRemoteJob ) {
     this.expandingRemoteJob = expandingRemoteJob;
+  }
+  
+  /**
+   * @param copyJobToServer
+   */
+  public void setCopyJobToServer( boolean copyJobToServer ) {
+    this.copyJobToServer = copyJobToServer;
+  }
+  
+  /**
+   * @return
+   */
+  public boolean isCopyJobToServer() {
+    return copyJobToServer;
   }
 }

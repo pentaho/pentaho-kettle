@@ -22,10 +22,6 @@
 
 package org.pentaho.di.trans.steps.jobexecutor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -73,6 +69,10 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Meta-data for the Job executor step.
  *
@@ -88,6 +88,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   private String directoryPath;
   private ObjectId jobObjectId;
   private ObjectLocationSpecificationMethod specificationMethod;
+  private boolean copyJobToServer;
 
   /** The number of input rows that are sent as result rows to the job in one go, defaults to "1" */
   private String groupSize;
@@ -266,6 +267,8 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
         ? null : resultFilesTargetStepMeta.getName() ) );
     retval.append( "    " ).append(
       XMLHandler.addTagValue( "result_files_file_name_field", resultFilesFileNameField ) );
+    
+    retval.append( "      " ).append( XMLHandler.addTagValue( "copy_job_to_server", copyJobToServer ) );
 
     return retval.toString();
   }
@@ -328,6 +331,8 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
       resultFilesTargetStep = XMLHandler.getTagValue( stepnode, "result_files_target_step" );
       resultFilesFileNameField = XMLHandler.getTagValue( stepnode, "result_files_file_name_field" );
+      
+      copyJobToServer = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "copy_job_to_server" ));
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
         PKG, "JobExecutorMeta.Exception.ErrorLoadingJobExecutorDetailsFromXML" ), e );
@@ -381,6 +386,8 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
     resultFilesTargetStep = rep.getStepAttributeString( id_step, "result_files_target_step" );
     resultFilesFileNameField = rep.getStepAttributeString( id_step, "result_files_file_name_field" );
+    
+    copyJobToServer = rep.getJobEntryAttributeBoolean( id_step, "copy_job_to_server", false );  
   }
 
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
@@ -445,6 +452,8 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
       id_transformation, id_step, "result_files_target_step", resultFilesTargetStepMeta == null
         ? null : resultFilesTargetStepMeta.getName() );
     rep.saveStepAttribute( id_transformation, id_step, "result_files_file_name_field", resultFilesFileNameField );
+    
+    rep.saveStepAttribute( id_transformation, id_step, "copy_job_to_server", copyJobToServer ); 
   }
 
   public void setDefault() {
@@ -723,7 +732,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
       //
       String proposedNewFilename =
         executorJobMeta.exportResources(
-          executorJobMeta, definitions, resourceNamingInterface, repository, metaStore );
+          executorJobMeta, definitions, resourceNamingInterface, repository, metaStore, copyJobToServer );
 
       // To get a relative path to it, we inject
       // ${Internal.Transformation.Filename.Directory}
@@ -1391,7 +1400,21 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   public boolean[] isReferencedObjectEnabled() {
     return new boolean[] { isJobDefined(), };
   }
+  
+  /**
+   * @param copyJobToServer
+   */
+  public void setCopyJobToServer( boolean copyJobToServer ) {
+    this.copyJobToServer = copyJobToServer;
+  }
 
+  /**
+   * @return
+   */
+  public boolean isCopyJobToServer() {
+    return copyJobToServer;
+  }
+  
   /**
    * Load the referenced object
    *

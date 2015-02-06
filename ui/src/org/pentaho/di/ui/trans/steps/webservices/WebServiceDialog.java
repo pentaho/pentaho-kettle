@@ -22,18 +22,6 @@
 
 package org.pentaho.di.ui.trans.steps.webservices;
 
-import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
-import javax.xml.namespace.QName;
-
 import org.apache.commons.httpclient.auth.AuthenticationException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -91,6 +79,18 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
+import javax.xml.namespace.QName;
 
 public class WebServiceDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = WebServiceMeta.class; // for i18n purposes, needed by Translator2!!
@@ -208,7 +208,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         systemProperties.setProperty( "http.proxyHost", transMeta.environmentSubstitute( wProxyHost.getText() ) );
         systemProperties.setProperty( "http.proxyPort", transMeta.environmentSubstitute( wProxyPort.getText() ) );
       }
-      wsdl = new Wsdl( new URI( anURI ), null, null, wHttpLogin.getText(), wHttpPassword.getText() );
+      wsdl = new Wsdl( new URI( anURI ), null, null, wHttpLogin.getText(), wHttpPassword.getText() ); 
     } catch ( AuthenticationException ae ) {
       wsdl = null;
       ShowMessageDialog smd =
