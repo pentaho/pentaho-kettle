@@ -22,7 +22,11 @@
 
 package org.pentaho.di.www;
 
-import java.io.BufferedReader;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -30,11 +34,6 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 public class RegisterSlaveServlet extends BaseHttpServlet implements CartePluginInterface {
   private static final long serialVersionUID = 8513820270964866132L;
@@ -125,7 +124,6 @@ if an error occurred. Response has <code>result</code> OK if there were no error
     }
 
     PrintWriter out = response.getWriter();
-    BufferedReader in = request.getReader();
     if ( log.isDetailed() ) {
       logDetailed( "Encoding: " + request.getCharacterEncoding() );
     }
@@ -138,16 +136,9 @@ if an error occurred. Response has <code>result</code> OK if there were no error
 
     try {
       // First read the slave server information in memory from the request
-      //
-      StringBuilder xml = new StringBuilder( request.getContentLength() );
-      int c;
-      while ( ( c = in.read() ) != -1 ) {
-        xml.append( (char) c );
-      }
-
       // Parse the XML, create a transformation configuration
       //
-      Document document = XMLHandler.loadXMLString( xml.toString() );
+      Document document = XMLHandler.loadXMLFile( request.getInputStream() );
       Node node = XMLHandler.getSubNode( document, SlaveServerDetection.XML_TAG );
       SlaveServerDetection slaveServerDetection = new SlaveServerDetection( node );
 

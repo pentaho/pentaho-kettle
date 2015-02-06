@@ -22,13 +22,6 @@
 
 package org.pentaho.di.www;
 
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
@@ -55,6 +48,13 @@ import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import org.pentaho.metastore.stores.xml.XmlMetaStore;
 import org.w3c.dom.Node;
+
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class SlaveServerConfig {
   public static final String XML_TAG = "slave_config";
@@ -208,20 +208,24 @@ public class SlaveServerConfig {
 
   public SlaveServerConfig( LogChannelInterface log, Node node ) throws KettleXMLException {
     this();
+    Node slaveNode = XMLHandler.getSubNode( node, SlaveServer.XML_TAG );
+    if ( slaveNode != null ) {
+      slaveServer = new SlaveServer( slaveNode );
+      checkNetworkInterfaceSetting( log, slaveNode, slaveServer );
+    }
+    
     Node mastersNode = XMLHandler.getSubNode( node, XML_TAG_MASTERS );
     int nrMasters = XMLHandler.countNodes( mastersNode, SlaveServer.XML_TAG );
     for ( int i = 0; i < nrMasters; i++ ) {
       Node masterSlaveNode = XMLHandler.getSubNodeByNr( mastersNode, SlaveServer.XML_TAG, i );
       SlaveServer masterSlaveServer = new SlaveServer( masterSlaveNode );
       checkNetworkInterfaceSetting( log, masterSlaveNode, masterSlaveServer );
+      masterSlaveServer.setSslMode( slaveServer.isSslMode() );
       masters.add( masterSlaveServer );
     }
+    
     reportingToMasters = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "report_to_masters" ) );
-    Node slaveNode = XMLHandler.getSubNode( node, SlaveServer.XML_TAG );
-    if ( slaveNode != null ) {
-      slaveServer = new SlaveServer( slaveNode );
-      checkNetworkInterfaceSetting( log, slaveNode, slaveServer );
-    }
+
     joining = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "joining" ) );
     maxLogLines = Const.toInt( XMLHandler.getTagValue( node, "max_log_lines" ), 0 );
     maxLogTimeoutMinutes = Const.toInt( XMLHandler.getTagValue( node, "max_log_timeout_minutes" ), 0 );

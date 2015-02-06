@@ -89,6 +89,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLEncoder;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -105,6 +106,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   public static final String XML_TAG = "slaveserver";
 
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.SLAVE_SERVER;
+  
+  private final static String HTTP = "http";
+  private final static String HTTPS = "https";  
+  
+  public final static String SSL_MODE_TAG = "sslMode";
 
   private static final int NOT_FOUND_ERROR = 404;
 
@@ -133,7 +139,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   private boolean overrideExistingProperties;
 
   private boolean master;
-
+  
   private boolean shared;
 
   private ObjectId id;
@@ -156,11 +162,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   }
 
   public SlaveServer( String name, String hostname, String port, String username, String password ) {
-    this( name, hostname, port, username, password, null, null, null, false );
+    this( name, hostname, port, username, password, null, null, null, false, false );
   }
 
   public SlaveServer( String name, String hostname, String port, String username, String password,
-                      String proxyHostname, String proxyPort, String nonProxyHosts, boolean master ) {
+                      String proxyHostname, String proxyPort, String nonProxyHosts, boolean master, boolean ssl ) {
     this();
     this.name = name;
     this.hostname = hostname;
@@ -172,10 +178,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     this.proxyPort = proxyPort;
     this.nonProxyHosts = nonProxyHosts;
 
-    this.master = master;
+    this.master = master;       
     initializeVariablesFrom( null );
     this.log = new LogChannel( this );
-  }
+}
 
   public SlaveServer( Node slaveNode ) {
     this();
@@ -194,12 +200,14 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     this.master = "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, "master" ) );
     initializeVariablesFrom( null );
     this.log = new LogChannel( this );
-
-    this.sslMode = XMLHandler.getSubNode( slaveNode, "sslConfig" ) != null ? true : false;
-    if ( this.sslMode ) {
-      this.sslConfig = new SslConfiguration( XMLHandler.getSubNode( slaveNode, SslConfiguration.XML_TAG ) );
+    
+    setSslMode( "Y".equalsIgnoreCase( XMLHandler.getTagValue( slaveNode, SSL_MODE_TAG ) ) );
+    Node sslConfig = XMLHandler.getSubNode( slaveNode, SslConfiguration.XML_TAG );
+    if( sslConfig != null )
+    {
+      setSslMode(true);
+      this.sslConfig = new SslConfiguration( sslConfig );
     }
-
   }
 
   public LogChannelInterface getLogChannel() {
@@ -221,7 +229,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     xml.append( XMLHandler.addTagValue( "proxy_port", proxyPort, false ) );
     xml.append( XMLHandler.addTagValue( "non_proxy_hosts", nonProxyHosts, false ) );
     xml.append( XMLHandler.addTagValue( "master", master, false ) );
-    if ( this.sslMode ) {
+    xml.append( XMLHandler.addTagValue( SSL_MODE_TAG, isSslMode(), false ) );
+    if ( sslConfig != null ) {
       xml.append( sslConfig.getXML() );
     }
 
@@ -382,6 +391,21 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
    */
   public boolean isOverrideExistingProperties() {
     return overrideExistingProperties;
+  }  
+  
+ 
+  /**
+   * @return the port
+   */
+  public String getPort() {
+    return port;
+  }
+
+  /**
+   * @param port the port to set
+   */
+  public void setPort( String port ) {
+    this.port = port;
   }
 
   public String getPortSpecification() {
@@ -398,25 +422,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     if ( !StringUtils.isBlank( webAppName ) ) {
       serviceAndArguments = "/" + environmentSubstitute( getWebAppName() ) + serviceAndArguments;
     }
-    String retval = "http://" + realHostname + getPortSpecification() + serviceAndArguments;
+    String retval = ( isSslMode() ? HTTPS : HTTP ) + "://" + realHostname + getPortSpecification() + serviceAndArguments;
     retval = Const.replace( retval, " ", "%20" );
     return retval;
   }
-
-  /**
-   * @return the port
-   */
-  public String getPort() {
-    return port;
-  }
-
-  /**
-   * @param port the port to set
-   */
-  public void setPort( String port ) {
-    this.port = port;
-  }
-
+  
   // Method is defined as package-protected in order to be accessible by unit tests
   PostMethod buildSendXMLMethod( byte[] content, String service ) throws Exception {
     // Prepare HTTP put
@@ -518,7 +528,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
    * @throws Exception in case something goes awry
    */
   public String sendExport( String filename, String type, String load ) throws Exception {
-
+    
     // Request content will be retrieved directly from the input stream
     //
     InputStream is = null;
@@ -676,7 +686,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
       }
     }
   }
-
+  
   // Method is defined as package-protected in order to be accessible by unit tests
   HttpClient getHttpClient() {
     HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
@@ -1029,12 +1039,29 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         + slaveSequenceName + "' on slave " + toString(), e );
     }
   }
+  
+  public SlaveServer getClient()
+  {
+    String pHostName = getHostname();
+    String pPort = getPort();
+    String name = MessageFormat.format( "Dynamic slave [{0}:{1}]", pHostName, pPort );
+    SlaveServer client = new SlaveServer( name, pHostName, "" + pPort, getUsername(), getPassword() );
+    client.setSslMode( isSslMode() );
+    return client;
+  }
 
   /**
    * @return the changedDate
    */
   public Date getChangedDate() {
     return changedDate;
+  }
+  
+  /**
+   * @param sslMode
+   */
+  public void setSslMode( boolean sslMode ) {
+    this.sslMode = sslMode;
   }
 
   /**

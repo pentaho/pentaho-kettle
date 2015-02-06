@@ -26,9 +26,6 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +34,9 @@ import org.mortbay.jetty.bio.SocketConnector;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Tatsiana_Kasiankova
@@ -91,7 +91,7 @@ public class WebServerTest {
     when( sServer.getPassword() ).thenReturn( "cluster" );
     when( sServer.getUsername() ).thenReturn( "cluster" );
     webServer =
-        new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT, SHOULD_JOIN, null, null );
+        new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT, SHOULD_JOIN, null);
 
   }
 
@@ -138,7 +138,7 @@ public class WebServerTest {
     System.setProperty( Const.KETTLE_CARTE_JETTY_ACCEPTORS, "TEST" );
     try {
       webServerNg =
-          new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT + 1, SHOULD_JOIN, null, null );
+          new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT + 1, SHOULD_JOIN, null );
     } catch ( NumberFormatException nmbfExc ) {
       fail( "Should not have thrown any NumberFormatException but it does: " + nmbfExc );
     }
@@ -154,7 +154,7 @@ public class WebServerTest {
     System.setProperty( Const.KETTLE_CARTE_JETTY_ACCEPTORS, EMPTY_STRING );
     try {
       webServerNg =
-          new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT + 1, SHOULD_JOIN, null, null );
+          new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT + 1, SHOULD_JOIN, null );
     } catch ( NumberFormatException nmbfExc ) {
       fail( "Should not have thrown any NumberFormatException but it does: " + nmbfExc );
     }

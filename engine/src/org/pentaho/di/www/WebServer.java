@@ -22,14 +22,6 @@
 
 package org.pentaho.di.www;
 
-import java.io.File;
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.servlet.Servlet;
-
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
@@ -55,6 +47,14 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 
+import java.io.File;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.servlet.Servlet;
+
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 public class WebServer {
@@ -79,6 +79,12 @@ public class WebServer {
   private String passwordFile;
 
   private SslConfiguration sslConfig;
+  
+  public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
+      SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
+      boolean join, String passwordFile ) throws Exception {
+    this( log, transformationMap, jobMap, socketRepository, detections, hostname, port, join, passwordFile, null );
+  }
 
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
       SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
