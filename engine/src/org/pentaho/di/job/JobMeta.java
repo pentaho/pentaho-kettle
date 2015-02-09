@@ -23,6 +23,14 @@
 
 package org.pentaho.di.job;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
@@ -88,14 +96,6 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * The definition of a PDI job is represented by a JobMeta object. It is typically loaded from a .kjb file, a PDI
@@ -2528,14 +2528,9 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
 
     return resourceReferences;
   }
-  
+
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-      ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
-    return exportResources( space, definitions, namingInterface, repository, metaStore, false );
-  }
-  
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore, boolean exportRequired ) throws KettleException {
+    ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     String resourceName = null;
     try {
       // Handle naming for both repository and XML bases resources...
@@ -2599,7 +2594,11 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
           }
         }
 
-        definition = new ResourceDefinition( resourceName, this );
+        // At the end, add ourselves to the map...
+        //
+        String jobMetaContent = jobMeta.getXML();
+
+        definition = new ResourceDefinition( resourceName, jobMetaContent );
 
         // Also remember the original filename (if any), including variables etc.
         //
@@ -2608,8 +2607,6 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
         } else {
           definition.setOrigin( this.getFilename() );
         }
-        
-        definition.setExportRequired( exportRequired );
 
         definitions.put( fullname, definition );
       }

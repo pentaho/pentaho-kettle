@@ -22,6 +22,10 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -68,10 +72,6 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Meta-data for the Trans Executor step.
  *
@@ -95,8 +95,6 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
   private ObjectId transObjectId;
 
   private ObjectLocationSpecificationMethod specificationMethod;
-  
-  private  boolean copyTransToServer;
 
   /**
    * The number of input rows that are sent as result rows to the job in one go, defaults to "1"
@@ -329,8 +327,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
       XMLHandler.addTagValue( "result_files_file_name_field", resultFilesFileNameField ) );
 
     retval.append( "    " ).append(
-      XMLHandler.addTagValue( F_EXECUTOR_OUTPUT_STEP, executorsOutputStepMeta == null ? null : executorsOutputStepMeta.getName() ) );    
-    retval.append( "    " ).append( XMLHandler.addTagValue( "copy_trans_to_server", copyTransToServer ) );
+      XMLHandler.addTagValue( F_EXECUTOR_OUTPUT_STEP, executorsOutputStepMeta == null ? null : executorsOutputStepMeta.getName() ) );
 
     return retval.toString();
   }
@@ -394,8 +391,6 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
       resultFilesTargetStep = XMLHandler.getTagValue( stepnode, F_RESULT_FILE_TARGET_STEP );
       resultFilesFileNameField = XMLHandler.getTagValue( stepnode, "result_files_file_name_field" );
       executorsOutputStep = XMLHandler.getTagValue( stepnode, F_EXECUTOR_OUTPUT_STEP );
-      
-      copyTransToServer = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "copy_trans_to_server" ) );
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
         PKG, "TransExecutorMeta.Exception.ErrorLoadingTransExecutorDetailsFromXML" ), e );
@@ -433,8 +428,6 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     executionExitStatusField = rep.getStepAttributeString( id_step, "execution_exit_status_field" );
     executionLogTextField = rep.getStepAttributeString( id_step, "execution_log_text_field" );
     executionLogChannelIdField = rep.getStepAttributeString( id_step, "execution_log_channelid_field" );
-    
-    copyTransToServer = rep.getJobEntryAttributeBoolean( id_step, "copy_trans_to_server", false );
 
     outputRowsSourceStep = rep.getStepAttributeString( id_step, "result_rows_target_step" );
     int nrFields = rep.countNrStepAttributes( id_step, "result_rows_field" );
@@ -521,8 +514,6 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
     rep.saveStepAttribute(
       id_transformation, id_step, F_EXECUTOR_OUTPUT_STEP, executorsOutputStepMeta == null ? null : executorsOutputStepMeta.getName() );
-    
-    rep.saveJobEntryAttribute( id_transformation, id_step, "copy_trans_to_server", copyTransToServer );
   }
 
   public void setDefault() {
@@ -807,7 +798,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
       //
       String proposedNewFilename =
         executorTransMeta.exportResources(
-          executorTransMeta, definitions, resourceNamingInterface, repository, metaStore, copyTransToServer );
+          executorTransMeta, definitions, resourceNamingInterface, repository, metaStore );
 
       // To get a relative path to it, we inject
       // ${Internal.Transformation.Filename.Directory}
@@ -1431,19 +1422,5 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
   public void setExecutorsOutputStepMeta( StepMeta executorsOutputStepMeta ) {
     this.executorsOutputStepMeta = executorsOutputStepMeta;
-  }
-  
-  /**
-   * @param copyTransToServer
-   */
-  public void setCopyTransToServer( boolean copyTransToServer ) {
-    this.copyTransToServer = copyTransToServer;
-  }
-  
-  /**
-   * @return
-   */
-  public boolean isCopyTransToServer() {
-    return copyTransToServer;
   }
 }

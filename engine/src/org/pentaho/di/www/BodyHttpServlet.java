@@ -21,7 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.www;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
@@ -45,11 +44,6 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
   public BodyHttpServlet() {
     messages = new PackageMessages( this.getClass() );
   }
-  
-  protected boolean useXML(HttpServletRequest request)
-  {
-    return "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
-  }
 
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( getContextPath() ) ) {
@@ -60,21 +54,18 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
       logDebug( messages.getString( "Log.Execute" ) );
     }
 
-    boolean useXML = useXML( request );
+    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
     PrintWriter out = new PrintWriter( response.getOutputStream() );
 
     try {
-      
+
       if ( useXML ) {
         startXml( response, out );
       } else {
         beginHtml( response, out );
       }
 
-      WebResult result = generateBody( request, response, useXML );
-      if(result!=null){
-        out.println( result.getXML() );
-      }      
+      generateBody( request, response, useXML );
 
     } catch ( Exception e ) {
       String st = ExceptionUtils.getFullStackTrace( e );
@@ -90,7 +81,7 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
         endHtml( out );
       }
       out.flush();
-      IOUtils.closeQuietly( out );
+      out.close();
     }
   }
 
@@ -118,7 +109,7 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
     out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
   }
 
-  abstract WebResult generateBody( HttpServletRequest request, HttpServletResponse response, boolean useXML )
+  abstract void generateBody( HttpServletRequest request, HttpServletResponse response, boolean useXML )
     throws Exception;
 
   @Override

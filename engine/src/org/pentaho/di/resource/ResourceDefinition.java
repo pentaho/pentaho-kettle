@@ -22,22 +22,20 @@
 
 package org.pentaho.di.resource;
 
-import org.pentaho.di.core.EngineMetaInterface;
-
 public class ResourceDefinition {
   private String filename;
-  private EngineMetaInterface meta;
+  private String content;
+
   private String origin;
-  private boolean exportRequired;
 
   /**
    * @param filename
-   * @param meta
+   * @param content
    */
-  public ResourceDefinition( String filename, EngineMetaInterface meta ) {
+  public ResourceDefinition( String filename, String content ) {
     super();
     this.filename = filename;
-    this.meta = meta;
+    this.content = content;
   }
 
   /**
@@ -56,18 +54,18 @@ public class ResourceDefinition {
   }
 
   /**
-   * @param meta
-   *          the meta to set
+   * @return the content
    */
-  public void setMeta( EngineMetaInterface meta ) {
-    this.meta = meta;
+  public String getContent() {
+    return content;
   }
 
   /**
-   * @return the meta
+   * @param content
+   *          the content to set
    */
-  public EngineMetaInterface getMeta() {
-    return meta;
+  public void setContent( String content ) {
+    this.content = content;
   }
 
   /**
@@ -83,20 +81,5 @@ public class ResourceDefinition {
    */
   public void setOrigin( String origin ) {
     this.origin = origin;
-  }
-  
-  
-  /**
-   * @param exportRequired
-   */
-  public void setExportRequired( boolean exportRequired ) {
-    this.exportRequired = exportRequired;
-  }
-  
-  /**
-   * @return
-   */
-  public boolean isExportRequired() {
-    return exportRequired;
   }
 }
