@@ -72,6 +72,7 @@ import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.di.www.SlaveServerStatus;
 import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.di.www.SniffStepServlet;
+import org.pentaho.di.www.SslConfiguration;
 import org.pentaho.di.www.StartJobServlet;
 import org.pentaho.di.www.StartTransServlet;
 import org.pentaho.di.www.StopJobServlet;
@@ -143,6 +144,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   private Date changedDate;
 
+  private boolean sslMode;
+
+  private SslConfiguration sslConfig;
+
   public SlaveServer() {
     initializeVariablesFrom( null );
     id = null;
@@ -190,6 +195,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     initializeVariablesFrom( null );
     this.log = new LogChannel( this );
 
+    this.sslMode = XMLHandler.getSubNode( slaveNode, "sslConfig" ) != null ? true : false;
+    if ( this.sslMode ) {
+      this.sslConfig = new SslConfiguration( XMLHandler.getSubNode( slaveNode, SslConfiguration.XML_TAG ) );
+    }
+
   }
 
   public LogChannelInterface getLogChannel() {
@@ -211,6 +221,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     xml.append( XMLHandler.addTagValue( "proxy_port", proxyPort, false ) );
     xml.append( XMLHandler.addTagValue( "non_proxy_hosts", nonProxyHosts, false ) );
     xml.append( XMLHandler.addTagValue( "master", master, false ) );
+    if ( this.sslMode ) {
+      xml.append( sslConfig.getXML() );
+    }
 
     xml.append( "</" ).append( XML_TAG ).append( ">" );
 
@@ -238,6 +251,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     this.id = slaveServer.id;
     this.shared = slaveServer.shared;
     this.setChanged( true );
+    this.sslMode = slaveServer.sslMode;
   }
 
   public String toString() {
@@ -1022,4 +1036,19 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   public Date getChangedDate() {
     return changedDate;
   }
+
+  /**
+   * @return the sslMode
+   */
+  public boolean isSslMode() {
+    return sslMode;
+  }
+
+  /**
+   * @return the sslConfig
+   */
+  public SslConfiguration getSslConfig() {
+    return sslConfig;
+  }
+
 }
