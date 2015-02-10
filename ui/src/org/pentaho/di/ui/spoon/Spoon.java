@@ -3339,16 +3339,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
       TransHopMeta[] hops = new TransHopMeta[nr];
 
-      ArrayList<StepMeta> alSteps = new ArrayList<StepMeta>();
-      Collections.addAll( alSteps, steps );
-
       for ( int i = 0; i < nr; i++ ) {
         Node hopNode = XMLHandler.getSubNodeByNr( hopsNode, "hop", i );
-        hops[i] = new TransHopMeta( hopNode, alSteps );
+        hops[i] = new TransHopMeta( hopNode,  Arrays.asList( steps ) );
       }
 
       // This is the offset:
-      //
       Point offset = new Point( loc.x - min.x, loc.y - min.y );
 
       // Undo/redo object positions...
@@ -3413,9 +3409,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( sourceStep != null ) {
           sourceStep.setStepErrorMeta( stepErrorMeta );
         }
-        StepMeta targetStep = transMeta.findStep( steps[tgtStepPos].getName() );
-        stepErrorMeta.setSourceStep( sourceStep );
-        stepErrorMeta.setTargetStep( targetStep );
+        sourceStep.setStepErrorMeta( null );
+        if ( tgtStepPos >= 0 ) {
+          sourceStep.setStepErrorMeta( stepErrorMeta );
+          StepMeta targetStep = transMeta.findStep( steps[tgtStepPos].getName() );
+          stepErrorMeta.setSourceStep( sourceStep );
+          stepErrorMeta.setTargetStep( targetStep );
+        }
       }
 
       // Save undo information too...
@@ -4666,9 +4666,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       SharedObjects sharedObjects =
         rep != null ? rep.readTransSharedObjects( transMeta ) : transMeta.readSharedObjects();
       sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
-
       transMeta.importFromMetaStore();
-      
       transMeta.clearChanged();
     } catch ( Exception e ) {
       new ErrorDialog(
@@ -4719,9 +4717,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         SharedObjects sharedObjects =
           rep != null ? rep.readJobMetaSharedObjects( jobMeta ) : jobMeta.readSharedObjects();
         sharedObjectsFileMap.put( sharedObjects.getFilename(), sharedObjects );
-        
         jobMeta.importFromMetaStore();
-        
       } catch ( Exception e ) {
         new ErrorDialog(
           shell, BaseMessages.getString( PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title" ), BaseMessages
@@ -5913,8 +5909,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     messageBuilder.append( Const.CR );
     messageBuilder.append( Const.CR );
     messageBuilder.append( Const.CR );
-    messageBuilder.append( BaseMessages.getString( PKG, "System.CompanyInfo", 
-        ""+((new Date()).getYear()+1900) ) );
+    messageBuilder.append( BaseMessages.getString( PKG, "System.CompanyInfo", "" + ( ( new Date() ).getYear() + 1900 ) ) );
     messageBuilder.append( Const.CR );
     messageBuilder.append( BaseMessages.getString( PKG, "System.ProductWebsiteUrl" ) );
     messageBuilder.append( Const.CR );
@@ -6203,7 +6198,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             refreshSlavesSubtree( tiTransName, transMeta, guiResource );
 
             refreshClustersSubtree( tiTransName, transMeta, guiResource );
-            
+
             refreshSelectionTreeExtension( tiTransName, transMeta, guiResource );
 
           }
@@ -6333,7 +6328,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       DatabaseMeta databaseMeta = meta.findDatabase( dbName );
       if ( databaseMeta == null ) {
         databaseMeta = findDatabase( dbs, dbName );
-      }      
+      }
 
       TreeItem tiDb = createTreeItem( tiDbTitle, databaseMeta.getDisplayName(), guiResource.getImageConnection() );
       if ( databaseMeta.isShared() ) {
@@ -8246,7 +8241,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       );
       return;
     }
-    try {      
+    try {
       /*Check if Partition schema has already defined*/
       if ( isDefinedSchemaExist( schemaNames ) ) {
 
