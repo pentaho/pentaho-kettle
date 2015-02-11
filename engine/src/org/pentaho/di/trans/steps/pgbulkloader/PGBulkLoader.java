@@ -52,6 +52,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
 import org.postgresql.copy.PGCopyOutputStream;
 import org.postgresql.core.BaseConnection;
 import org.postgresql.PGConnection;
@@ -87,7 +88,6 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
   public String getCopyCommand( ) throws KettleException {
     DatabaseMeta dm = meta.getDatabaseMeta();
 
-    String loadAction = environmentSubstitute( meta.getLoadAction() );
 
     StringBuilder contents = new StringBuilder( 500 );
 
@@ -101,11 +101,6 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     // contents.append(Const.CR);
 
     // Create a Postgres / Greenplum COPY string for use with a psql client
-    if ( loadAction.equalsIgnoreCase( "truncate" ) ) {
-      contents.append( "TRUNCATE TABLE " );
-      contents.append( tableName + ";" );
-      contents.append( Const.CR );
-    }
     contents.append( "COPY " );
     // Table name
 
@@ -146,19 +141,42 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
   private void do_copy ( PGBulkLoaderMeta meta, boolean wait ) throws KettleException {
     Runtime rt = Runtime.getRuntime();
 
+    // Retrieve bits of meta information we will need
+    DatabaseMeta dm = meta.getDatabaseMeta();
+    String loadAction = environmentSubstitute( meta.getLoadAction() );
+    String tableName =
+       dm.getQuotedSchemaTableCombination(
+       environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
+
     data.db = new Database( this, meta.getDatabaseMeta() );
-    String copyCmd = getCopyCommand( );
+    String copyCmd = null;
     try {
           if ( getTransMeta().isUsingUniqueConnections() ) {
             synchronized ( getTrans() ) {
-            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
+              data.db.connect( getTrans().getTransactionId(), getPartitionID() );
+            }
+          } else {
+            data.db.connect( getPartitionID() );
           }
-        } else {
-          data.db.connect( getPartitionID() );
+        Connection connection = data.db.getConnection();
+
+        // Do the truncate if necessary. FIXME: it will do this on all threads, which seems wrong
+        // this was already the case, so I keep it as is for now
+        // FIXME: there is another possible optimization: BEGIN;TRUNCATE TABLE; COPY INTO…
+        // generates no PG journal if in one single transaction
+        if ( loadAction.equalsIgnoreCase( "truncate" ) ) {
+          try {
+                Statement statement  = connection.createStatement();
+                logDetailed("Truncating TABLE " + tableName);
+                int result = statement.executeUpdate("TRUNCATE TABLE " + tableName);
+              } catch (Exception ex ) {
+                throw new KettleException( "Error while Truncating " + tableName, ex );
+              }
         }
 
-      logBasic( "Launching command: " + copyCmd );
-      pgCopyOut = new PGCopyOutputStream((PGConnection) data.db.getConnection(), copyCmd);
+        copyCmd = getCopyCommand( );
+        logBasic( "Launching command: " + copyCmd );
+        pgCopyOut = new PGCopyOutputStream((PGConnection) connection, copyCmd);
 
     } catch ( Exception ex ) {
       throw new KettleException( "Error while preparing the COPY " + copyCmd, ex );
