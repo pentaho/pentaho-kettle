@@ -41,6 +41,29 @@ public class HelpUtils {
   private static final Class<?> PKG = HelpUtils.class;
 
   public static Button createHelpButton( final Composite parent, final String title, final PluginInterface plugin ) {
+    Button button = newButton( parent );
+    button.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent arg0 ) {
+        openHelpDialog( parent.getShell(), plugin );
+      }
+    } );
+    return button;
+  }
+
+  public static Button createHelpButton( final Composite parent, final String title, final String url,
+      final String header ) {
+    Button button = newButton( parent );
+    button.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent arg0 ) {
+        openHelpDialog( parent.getShell(), title, url, header );
+      }
+    } );
+    return button;
+  }
+
+  private static Button newButton( final Composite parent ) {
     Button button = new Button( parent, SWT.PUSH );
     button.setImage( GUIResource.getInstance().getImageHelpWeb() );
     button.setText( BaseMessages.getString( PKG, "System.Button.Help" ) );
@@ -49,13 +72,6 @@ public class HelpUtils {
     fdButton.left = new FormAttachment( 0, 0 );
     fdButton.bottom = new FormAttachment( 100, 0 );
     button.setLayoutData( fdButton );
-
-    button.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent arg0 ) {
-        openHelpDialog( parent.getShell(), plugin );
-      }
-    } );
     return button;
   }
 
@@ -85,10 +101,8 @@ public class HelpUtils {
       return null;
     }
     if ( isPluginDocumented( plugin ) ) {
-      ShowHelpDialog helpDlg = new ShowHelpDialog( shell, getHelpDialogTitle( plugin ),
-        plugin.getDocumentationUrl(), plugin.getName() );
-      helpDlg.open();
-      return helpDlg;
+      return openHelpDialog( shell, getHelpDialogTitle( plugin ), plugin.getDocumentationUrl(),
+          plugin.getName()  );
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       String msgKey = "";
@@ -105,4 +119,9 @@ public class HelpUtils {
     return null;
   }
 
+  private static ShowHelpDialog openHelpDialog( Shell shell, String dialogTitle, String url, String header ) {
+    ShowHelpDialog helpDlg = new ShowHelpDialog( shell, dialogTitle, url, header );
+    helpDlg.open();
+    return helpDlg;
+  }
 }
