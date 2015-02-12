@@ -45,7 +45,7 @@ public class GetPropertiesServlet extends BodyHttpServlet {
   }
 
   @Override
-  WebResult generateBody( HttpServletRequest request, HttpServletResponse response, boolean useXML ) throws Exception {
+  void generateBody( HttpServletRequest request, HttpServletResponse response, boolean useXML ) throws Exception {
     ServletOutputStream out = response.getOutputStream();
     Properties kettleProperties = EnvUtil.readProperties( Const.KETTLE_PROPERTIES );
     if ( useXML ) {
@@ -53,7 +53,6 @@ public class GetPropertiesServlet extends BodyHttpServlet {
     } else {
       kettleProperties.store( out, "" );
     }
-    return null;
   }
 
   @Override

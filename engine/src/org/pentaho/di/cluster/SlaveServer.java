@@ -22,6 +22,21 @@
 
 package org.pentaho.di.cluster;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -64,7 +79,6 @@ import org.pentaho.di.www.GetStatusServlet;
 import org.pentaho.di.www.GetTransStatusServlet;
 import org.pentaho.di.www.NextSequenceValueServlet;
 import org.pentaho.di.www.PauseTransServlet;
-import org.pentaho.di.www.RegisterPackageServlet;
 import org.pentaho.di.www.RemoveJobServlet;
 import org.pentaho.di.www.RemoveTransServlet;
 import org.pentaho.di.www.SlaveServerDetection;
@@ -80,21 +94,6 @@ import org.pentaho.di.www.StopTransServlet;
 import org.pentaho.di.www.WebResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace,
   RepositoryElementInterface, XMLInterface {
@@ -488,7 +487,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   // Method is defined as package-protected in order to be accessible by unit tests
   PostMethod buildSendExportMethod( String type, String load, InputStream is ) throws UnsupportedEncodingException {
-    String serviceUrl = RegisterPackageServlet.CONTEXT_PATH;
+    String serviceUrl = AddExportServlet.CONTEXT_PATH;
     if ( type != null && load != null ) {
       serviceUrl +=
         "/?" + AddExportServlet.PARAMETER_TYPE + "=" + type + "&" + AddExportServlet.PARAMETER_LOAD + "="
@@ -554,7 +553,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         method.releaseConnection();
         if ( log.isDetailed() ) {
           log.logDetailed( BaseMessages.getString( PKG, "SlaveServer.DETAILED_SentExportToService",
-              RegisterPackageServlet.CONTEXT_PATH, environmentSubstitute( hostname ) ) );
+            AddExportServlet.CONTEXT_PATH, environmentSubstitute( hostname ) ) );
         }
       }
     } finally {

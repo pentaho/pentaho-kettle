@@ -22,6 +22,9 @@
 
 package org.pentaho.di.ui.job.entries.job;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -80,9 +83,6 @@ import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * This dialog allows you to edit the job job entry (JobEntryJob)
@@ -183,8 +183,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
   private Label wlPassParams;
   private Button wPassParams;
   private FormData fdlPassParams, fdPassParams;
-  
-  private Button wCopyJob;
 
   private Button wbGetParams;
 
@@ -669,24 +667,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     fdExpandRemote.top = new FormAttachment( wFollowingAbortRemotely, margin );
     fdExpandRemote.right = new FormAttachment( 100, 0 );
     wExpandRemote.setLayoutData( fdExpandRemote );
-    
-    // Copy job to remote server
-    //
-    Label wlCopyJob = new Label( wAdvanced, SWT.RIGHT );
-    wlCopyJob.setText( BaseMessages.getString( PKG, "JobEntryJobDialog.CopySubStep.Label" ) );
-    props.setLook( wlCopyJob );
-    FormData fd = new FormData();
-    fd.left = new FormAttachment( 0, 0 );
-    fd.top = new FormAttachment( wExpandRemote, margin );
-    fd.right = new FormAttachment( middle, -margin );
-    wlCopyJob.setLayoutData( fd );
-    wCopyJob = new Button( wAdvanced, SWT.CHECK );
-    props.setLook( wCopyJob );
-    fd = new FormData();
-    fd.left = new FormAttachment( middle, 0 );
-    fd.top = new FormAttachment( wExpandRemote, margin );
-    fd.right = new FormAttachment( 100, 0 );
-    wCopyJob.setLayoutData( fd );
 
     wAdvanced.pack();
     bounds = wAdvanced.getBounds();
@@ -988,7 +968,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     fdPassParams.top = new FormAttachment( 0, 0 );
     fdPassParams.right = new FormAttachment( 100, 0 );
     wPassParams.setLayoutData( fdPassParams );
-    
+
     wbGetParams = new Button( wParameterComp, SWT.PUSH );
     wbGetParams.setText( BaseMessages.getString( PKG, "JobJob.GetParameters.Button.Label" ) );
     FormData fdGetParams = new FormData();
@@ -1491,8 +1471,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     wWaitingToFinish.setSelection( jobEntry.isWaitingToFinish() );
     wFollowingAbortRemotely.setSelection( jobEntry.isFollowingAbortRemotely() );
     wExpandRemote.setSelection( jobEntry.isExpandingRemoteJob() );
-    
-    wCopyJob.setSelection( jobEntry.isCopyJobToServer() );
 
     wName.selectAll();
     wName.setFocus();
@@ -1621,8 +1599,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     jej.createParentFolder = wCreateParentFolder.getSelection();
     jej.setFollowingAbortRemotely( wFollowingAbortRemotely.getSelection() );
     jej.setExpandingRemoteJob( wExpandRemote.getSelection() );
-    jej.setCopyJobToServer( wCopyJob.getSelection() );
-    
   }
 
   private void ok() {

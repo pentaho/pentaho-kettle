@@ -178,8 +178,6 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
   private Label wlFollowingAbortRemotely;
   private Button wFollowingAbortRemotely;
-  
-  private Button wCopyTrans;
 
   private Button wOK, wCancel;
 
@@ -698,24 +696,6 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     fdFollowingAbortRemotely.top = new FormAttachment( wWaitingToFinish, margin );
     fdFollowingAbortRemotely.right = new FormAttachment( 100, 0 );
     wFollowingAbortRemotely.setLayoutData( fdFollowingAbortRemotely );
-    
-    // Copy transformation to remote server
-    //
-    Label wlCopyTrans = new Label( wAdvanced, SWT.RIGHT );
-    wlCopyTrans.setText( BaseMessages.getString( PKG, "JobTrans.CopySubStep.Label" ) );
-    props.setLook( wlCopyTrans );
-    FormData fd = new FormData();
-    fd.left = new FormAttachment( 0, 0 );
-    fd.top = new FormAttachment( wFollowingAbortRemotely, margin );
-    fd.right = new FormAttachment( middle, -margin );
-    wlCopyTrans.setLayoutData( fd );
-    wCopyTrans = new Button( wAdvanced, SWT.CHECK );
-    props.setLook( wCopyTrans );
-    fd = new FormData();
-    fd.left = new FormAttachment( middle, 0 );
-    fd.top = new FormAttachment( wFollowingAbortRemotely, margin );
-    fd.right = new FormAttachment( 100, 0 );
-    wCopyTrans.setLayoutData( fd );
 
     FormData fdAdvanced = new FormData();
     fdAdvanced.left = new FormAttachment( 0, 0 );
@@ -1018,7 +998,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
         getParameters( null ); // force reload from file specification
       }
     } );
-    
+
     final int parameterRows = jobEntry.parameters != null ? jobEntry.parameters.length : 0;
 
     colinf =
@@ -1171,7 +1151,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     }
     return jobEntry;
   }
-  
+
   /**
    * Ask the user to fill in the details...
    */
@@ -1504,7 +1484,6 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     if ( jobEntry.logFileLevel != null ) {
       wLoglevel.select( jobEntry.logFileLevel.getLevel() );
     }
-    wCopyTrans.setSelection( jobEntry.isCopyTransToServer() );
   }
 
   private void getByReferenceData( ObjectId transObjectId ) {
@@ -1657,7 +1636,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     jet.setAppendLogfile = wAppendLogfile.getSelection();
     jet.setWaitingToFinish( wWaitingToFinish.getSelection() );
     jet.setFollowingAbortRemotely( wFollowingAbortRemotely.getSelection() );
-    jet.setCopyTransToServer( wCopyTrans.getSelection() );
+
   }
 
   private void ok() {

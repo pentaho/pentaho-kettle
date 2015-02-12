@@ -192,8 +192,6 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   private TableView wOutputFields;
 
   private Button wGetParameters;
-  
-  private Button wCopyTrans;
 
   public TransExecutorDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, (BaseStepMeta) in, tr, sname );
@@ -490,7 +488,6 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     addExecutionResultTab();
     addResultRowsTab();
     addResultFilesTab();
-    addAdvancedTab();
 
     // Add listeners
     lsCancel = new Listener() {
@@ -787,8 +784,6 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     wExecutionExitStatusField.setText( Const.NVL( transExecutorMeta.getExecutionExitStatusField(), "" ) );
     wExecutionLogTextField.setText( Const.NVL( transExecutorMeta.getExecutionLogTextField(), "" ) );
     wExecutionLogChannelIdField.setText( Const.NVL( transExecutorMeta.getExecutionLogChannelIdField(), "" ) );
-    
-    wCopyTrans.setSelection( transExecutorMeta.isCopyTransToServer() );
 
     executorOutputStep = transExecutorMeta.getExecutorsOutputStep();
 
@@ -1359,52 +1354,6 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     wTab.setControl( scrolledComposite );
     wTabFolder.setSelection( wTab );
   }
-  
-  private void addAdvancedTab() {
-    final CTabItem wTab = new CTabItem( wTabFolder, SWT.NONE );
-    wTab.setText( BaseMessages.getString( PKG, "TransExecutorDialog.Advanced.Group.Label" ) );
-
-    ScrolledComposite scrolledComposite = new ScrolledComposite( wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
-    scrolledComposite.setLayout( new FillLayout() );
-
-    Composite wInputComposite = new Composite( scrolledComposite, SWT.NONE );
-    props.setLook( wInputComposite );
-
-    FormLayout tabLayout = new FormLayout();
-    tabLayout.marginWidth = Const.FORM_MARGIN;
-    tabLayout.marginHeight = Const.FORM_MARGIN;
-    wInputComposite.setLayout( tabLayout );
-    
-    // Copy trans to remote server
-    //
-    Label wlCopyTrans = new Label( wInputComposite, SWT.RIGHT );
-    wlCopyTrans.setText( BaseMessages.getString( PKG, "TransExecutorDialog.CopySubStep.Label" ) );
-    props.setLook( wlCopyTrans );
-    FormData fd = new FormData();
-    fd.left = new FormAttachment( 0, 0 );
-    fd.top = new FormAttachment( 0, 0 );
-    fd.right = new FormAttachment( middle, -margin );
-    wlCopyTrans.setLayoutData( fd );
-    wCopyTrans = new Button( wInputComposite, SWT.CHECK );
-    props.setLook( wCopyTrans );
-    fd = new FormData();
-    fd.left = new FormAttachment( middle, 0 );
-    fd.top = new FormAttachment( 0, 0 );
-    fd.right = new FormAttachment( 100, 0 );
-    wCopyTrans.setLayoutData( fd );
-    
-    wInputComposite.pack();
-    Rectangle bounds = wInputComposite.getBounds();
-
-    scrolledComposite.setContent( wInputComposite );
-    scrolledComposite.setExpandHorizontal( true );
-    scrolledComposite.setExpandVertical( true );
-    scrolledComposite.setMinWidth( bounds.width );
-    scrolledComposite.setMinHeight( bounds.height );
-
-    wTab.setControl( scrolledComposite );
-    wTabFolder.setSelection( wTab );
-  }
 
   private void addResultFilesTab() {
 
@@ -1627,8 +1576,6 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     transExecutorMeta.searchInfoAndTargetSteps( transMeta.getSteps() );
 
     transExecutorMeta.setChanged( true );
-    
-    transExecutorMeta.setCopyTransToServer(wCopyTrans.getSelection());
 
     dispose();
   }
