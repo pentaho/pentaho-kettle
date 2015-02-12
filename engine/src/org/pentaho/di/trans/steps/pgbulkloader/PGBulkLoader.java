@@ -36,6 +36,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -143,36 +144,13 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
     // Retrieve bits of meta information we will need
     DatabaseMeta dm = meta.getDatabaseMeta();
-    String loadAction = environmentSubstitute( meta.getLoadAction() );
     String tableName =
        dm.getQuotedSchemaTableCombination(
        environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
 
-    data.db = new Database( this, meta.getDatabaseMeta() );
     String copyCmd = null;
     try {
-          if ( getTransMeta().isUsingUniqueConnections() ) {
-            synchronized ( getTrans() ) {
-              data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-            }
-          } else {
-            data.db.connect( getPartitionID() );
-          }
-        Connection connection = data.db.getConnection();
-
-        // Do the truncate if necessary. FIXME: it will do this on all threads, which seems wrong
-        // this was already the case, so I keep it as is for now
-        // FIXME: there is another possible optimization: BEGIN;TRUNCATE TABLE; COPY INTO…
-        // generates no PG journal if in one single transaction
-        if ( loadAction.equalsIgnoreCase( "truncate" ) ) {
-          try {
-                Statement statement  = connection.createStatement();
-                logDetailed("Truncating TABLE " + tableName);
-                int result = statement.executeUpdate("TRUNCATE TABLE " + tableName);
-              } catch (Exception ex ) {
-                throw new KettleException( "Error while Truncating " + tableName, ex );
-              }
-        }
+       Connection connection = data.db.getConnection();
 
         copyCmd = getCopyCommand( );
         logBasic( "Launching command: " + copyCmd );
@@ -201,7 +179,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
           pgCopyOut.endCopy();
 
         } 
-
+        // Commit
+        data.db.commit();
         return false;
       }
 
@@ -403,32 +382,64 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     String separator = environmentSubstitute( meta.getDelimiter() );
 
     if ( super.init( smi, sdi ) ) {
-      if ( enclosure != null ) {
-        data.quote = enclosure.getBytes();
-      } else {
-        data.quote = new byte[] {};
-      }
-      if ( separator != null ) {
-        data.separator = separator.getBytes();
-      } else {
-        data.separator = new byte[] {};
-      }
-      data.newline = Const.CR.getBytes();
-
-      data.dateFormatChoices = new int[meta.getFieldStream().length];
-      for ( int i = 0; i < data.dateFormatChoices.length; i++ ) {
-        if ( Const.isEmpty( meta.getDateMask()[i] ) ) {
-          data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH;
-        } else if ( meta.getDateMask()[i].equalsIgnoreCase( PGBulkLoaderMeta.DATE_MASK_DATE ) ) {
-          data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_DATE;
-        } else if ( meta.getDateMask()[i].equalsIgnoreCase( PGBulkLoaderMeta.DATE_MASK_DATETIME ) ) {
-          data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_DATETIME;
-        } else { // The default : just pass it along...
-          data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH;
+      try {
+        data.db = new Database( this, meta.getDatabaseMeta() );
+        if ( enclosure != null ) {
+          data.quote = enclosure.getBytes();
+        } else {
+          data.quote = new byte[] {};
         }
-
+        if ( separator != null ) {
+          data.separator = separator.getBytes();
+        } else {
+          data.separator = new byte[] {};
+        }
+        data.newline = Const.CR.getBytes();
+  
+        data.dateFormatChoices = new int[meta.getFieldStream().length];
+        for ( int i = 0; i < data.dateFormatChoices.length; i++ ) {
+          if ( Const.isEmpty( meta.getDateMask()[i] ) ) {
+            data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH;
+          } else if ( meta.getDateMask()[i].equalsIgnoreCase( PGBulkLoaderMeta.DATE_MASK_DATE ) ) {
+            data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_DATE;
+          } else if ( meta.getDateMask()[i].equalsIgnoreCase( PGBulkLoaderMeta.DATE_MASK_DATETIME ) ) {
+            data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_DATETIME;
+          } else { // The default : just pass it along...
+            data.dateFormatChoices[i] = PGBulkLoaderMeta.NR_DATE_MASK_PASS_THROUGH;
+          }
+  
+        }
+        // Connect to the database (unless using pooled connections)
+        if ( getTransMeta().isUsingUniqueConnections() ) {
+          synchronized ( getTrans() ) {
+            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
+          }
+        } else {
+          data.db.connect( getPartitionID() );
+        }
+        // Better do the truncate and copy in the same transaction if possible, it will avoid journalling altogether in some cases
+        data.db.setAutoCommit(false);
+        // Do the truncate if necessary. Only do it on copy 0
+        // FIXME: there is another possible optimization: BEGIN;TRUNCATE TABLE; COPY INTO…
+        // generates no PG journal if in one single transaction
+        String loadAction = environmentSubstitute( meta.getLoadAction() );
+        if ( loadAction.equalsIgnoreCase( "truncate" )
+         && ( ( getCopy() == 0 && getUniqueStepNrAcrossSlaves() == 0 ) || !Const.isEmpty( getPartitionID() ) )  ) {
+            logDetailed("Truncating TABLE " + environmentSubstitute( meta.getTableName() ));
+            data.db.truncateTable( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ) );
+            // If there is only one copy, we keep the transaction open, to reduce journalling in PG if possible
+            if (getStepMeta().getCopies() > 1) {
+                // Need to start a new transaction, or our transaction will keep its exclusive lock on the table, and hang everything
+                data.db.commit();
+            }
+        }
+  
+        return true;
+      } catch ( KettleException e ) {
+        logError( "An error occurred intialising this step: " + e.getMessage() );
+        stopAll();
+        setErrors( 1 );
       }
-      return true;
     }
     return false;
   }
