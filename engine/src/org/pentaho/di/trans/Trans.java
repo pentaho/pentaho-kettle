@@ -5581,8 +5581,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       public void run() {
         try {
 
+          if( Trans.this.isFinished() ){
+            log.logBasic( "Shutting down heartbeat signal for " + getName() );
+            shutdownHeartbeat( Trans.this.heartbeat );
+            return;
+          }
+
           log.logDebug( "Triggering heartbeat signal for " + getName() + " at every " + intervalInSeconds + " seconds" );
-          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationHeartbeat.id, getThisInstance() );
+          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationHeartbeat.id, Trans.this );
 
         } catch ( KettleException e ) {
           log.logError( e.getMessage(), e );
@@ -5604,10 +5610,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         /* do nothing */
       }
     }
-  }
-
-  private Trans getThisInstance(){
-    return this;
   }
 
   private int getHeartbeatIntervalInSeconds() {
