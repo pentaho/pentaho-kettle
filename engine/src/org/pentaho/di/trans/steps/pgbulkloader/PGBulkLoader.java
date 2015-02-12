@@ -420,8 +420,6 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
         // Better do the truncate and copy in the same transaction if possible, it will avoid journalling altogether in some cases
         data.db.setAutoCommit(false);
         // Do the truncate if necessary. Only do it on copy 0
-        // FIXME: there is another possible optimization: BEGIN;TRUNCATE TABLE; COPY INTO…
-        // generates no PG journal if in one single transaction
         String loadAction = environmentSubstitute( meta.getLoadAction() );
         if ( loadAction.equalsIgnoreCase( "truncate" )
          && ( ( getCopy() == 0 && getUniqueStepNrAcrossSlaves() == 0 ) || !Const.isEmpty( getPartitionID() ) )  ) {
