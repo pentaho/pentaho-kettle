@@ -17,7 +17,7 @@
     <chain name="pentaho-chained-resolver">
       <resolver ref="local" />
       <dual name="pentaho">
-        <url name="pentaho-ivy" checkmodified="true" changingPattern="*-SNAPSHOT">
+        <url name="pentaho-ivy" checkmodified="true" changingPattern=".*-SNAPSHOT.*">
           <ivy pattern="${pentaho.resolve.repo}/[organisation]/[module]/[revision]/[module]-[revision].ivy.xml" />
         </url>
         <ibiblio name="pentaho-mvn" m2compatible="true" root="${pentaho.resolve.repo}" />
