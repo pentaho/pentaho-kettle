@@ -282,6 +282,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   /** The log channel interface. */
   protected LogChannelInterface log;
 
+  protected byte[] key;
+  boolean privateKey;
+
   /**
    * The TransformationType enum describes the various types of transformations in terms of execution, including Normal,
    * Serial Single-Threaded, and Single-Threaded.
@@ -2423,6 +2426,13 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     retval
       .append( "  " ).append( XMLHandler.addTagValue( "modified_date", XMLHandler.date2string( modifiedDate ) ) );
 
+    try {
+      retval.append( "    " ).append( XMLHandler.addTagValue( "key", key ) );
+    } catch ( Exception ex ) {
+      log.logError( "Unable to decode key", ex );
+    }
+    retval.append( "    " ).append( XMLHandler.addTagValue( "private", privateKey ) );
+
     retval.append( "  " ).append( XMLHandler.closeTag( XML_TAG_INFO ) ).append( Const.CR );
 
     retval.append( "  " ).append( XMLHandler.openTag( XML_TAG_NOTEPADS ) ).append( Const.CR );
@@ -3289,6 +3299,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         //
         attributesMap = AttributesUtil.loadAttributes( XMLHandler.getSubNode( transnode, AttributesUtil.XML_TAG ) );
 
+        key = XMLHandler.stringToBinary( XMLHandler.getTagValue( infonode, "key" ) );
+        privateKey = "Y".equals( XMLHandler.getTagValue( infonode, "private" ) );
+
       } catch ( KettleXMLException xe ) {
         throw new KettleXMLException( BaseMessages.getString(
           PKG, "TransMeta.Exception.ErrorReadingTransformation" ), xe );
@@ -3316,6 +3329,22 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         throw missingPluginsException;
       }
     }
+  }
+
+  public byte[] getKey() {
+    return key;
+  }
+
+  public void setKey( byte[] key ) {
+    this.key = key;
+  }
+
+  public boolean isPrivateKey() {
+    return privateKey;
+  }
+
+  public void setPrivateKey( boolean privateKey ) {
+    this.privateKey = privateKey;
   }
 
   /**

@@ -26,6 +26,8 @@ import java.security.KeyPair;
 import java.util.Arrays;
 
 import org.junit.Test;
+import java.security.Key;
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
@@ -97,5 +99,33 @@ public class CertificateGenEncryptUtilTest {
       assertFalse( Arrays.equals( encr, decr ) );
       fail();
     } catch ( Exception ex ) { }
+  }
+
+  @Test
+  public void testRandomSessionKeyGeneration() throws Exception {
+    Key key = CertificateGenEncryptUtil.generateSingleKey();
+    Key key1 = CertificateGenEncryptUtil.generateSingleKey();
+    assertFalse( key.equals( key1 ) );
+    assertFalse( Arrays.equals( key.getEncoded(), key1.getEncoded() ) );
+  }
+
+  @Test
+  public void testSessionKeyEncryptionDecryption() throws Exception {
+    Key key = CertificateGenEncryptUtil.generateSingleKey();
+    KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+    Key privateKey = kp.getPrivate();
+    byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( privateKey, key );
+    Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( kp.getPublic().getEncoded(), encryptedKey, false );
+    assertTrue( key.equals( key1 ) );
+  }
+
+  @Test
+  public void testSessionKeyEncryptionDecryption2() throws Exception {
+    Key key = CertificateGenEncryptUtil.generateSingleKey();
+    KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+    Key privateKey = kp.getPrivate();
+    byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( kp.getPublic(), key );
+    Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( privateKey.getEncoded(), encryptedKey, true );
+    assertTrue( key.equals( key1 ) );
   }
 }
