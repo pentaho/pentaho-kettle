@@ -2402,7 +2402,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   protected ExecutorService startHeartbeat( final long intervalInSeconds ) {
 
-    ScheduledExecutorService heartbeat = Executors.newSingleThreadScheduledExecutor( new ThreadFactory() {
+    final ScheduledExecutorService heartbeat = Executors.newSingleThreadScheduledExecutor( new ThreadFactory() {
 
       @Override
       public Thread newThread( Runnable r ) {
@@ -2414,10 +2414,17 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     heartbeat.scheduleAtFixedRate( new Runnable() {
       public void run() {
+
+        if( Job.this.isFinished() ){
+          log.logBasic( "Shutting down heartbeat signal for " + jobMeta.getName() );
+          shutdownHeartbeat( heartbeat );
+          return;
+        }
+
         try {
 
           log.logDebug( "Triggering heartbeat signal for " + jobMeta.getName() + " at every " + intervalInSeconds + " seconds" );
-          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobHeartbeat.id, getThisInstance() );
+          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobHeartbeat.id, Job.this );
 
         } catch ( KettleException e ) {
            log.logError( e.getMessage(), e );
@@ -2439,10 +2446,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         /* do nothing */
       }
     }
-  }
-
-  private Job getThisInstance(){
-    return this;
   }
 
   private int getHeartbeatIntervalInSeconds() {
