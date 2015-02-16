@@ -29,7 +29,8 @@ export UBUNTU_MENUPROXY=0
 # ** Set INITIALDIR, BASEDIR AND CURRENTDIR       **
 # **************************************************
 INITIALDIR=`pwd`
-BASEDIR=`dirname $0`
+# set absolute path to data-integration folder
+BASEDIR=$( cd "$( dirname "$0" )" && pwd )
 CURRENTDIR="."
 
 . "$BASEDIR/set-pentaho-env.sh"
