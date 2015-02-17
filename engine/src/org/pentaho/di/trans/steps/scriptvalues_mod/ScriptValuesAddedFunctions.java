@@ -674,8 +674,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         } else if ( strType.equals( "wd" ) ) {
           int iOffset = 0;
           while ( iOffset < iValue ) {
-            int day = cal.get( Calendar.DAY_OF_WEEK );
             cal.add( Calendar.DATE, 1 );
+            int day = cal.get( Calendar.DAY_OF_WEEK );
             if ( ( day != Calendar.SATURDAY ) && ( day != Calendar.SUNDAY ) ) {
               iOffset++;
             }

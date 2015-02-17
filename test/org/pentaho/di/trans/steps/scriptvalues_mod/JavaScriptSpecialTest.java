@@ -22,6 +22,9 @@
 
 package org.pentaho.di.trans.steps.scriptvalues_mod;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -37,11 +40,13 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransTestFactory;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
@@ -579,5 +584,94 @@ public class JavaScriptSpecialTest extends TestCase {
 
     List<RowMetaAndData> resultRows2 = dummyRc.getRowsRead();
     checkRows( resultRows2, goldenImageRows );
+  }
+
+  public List<RowMetaAndData> createDateAddData() throws ParseException {
+    List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+
+    //Create RowMeta
+    RowMetaInterface rm = new RowMeta();
+    rm.addValueMeta( new ValueMeta( "input", ValueMeta.TYPE_DATE ) );
+
+    //Populate Row
+    DateFormat format = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+    list.add(  new RowMetaAndData( rm, new Object[] { format.parse( "2014-01-01 00:00:00" ) } ) );
+
+    return list;
+  }
+
+  public List<RowMetaAndData> createDateAddResultData() throws ParseException {
+    List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+
+    //Create RowMeta
+    RowMetaInterface rm = new RowMeta();
+    rm.addValueMeta( new ValueMeta( "input", ValueMeta.TYPE_DATE ) );
+    rm.addValueMeta( new ValueMeta( "new_weekday", ValueMeta.TYPE_DATE ) );
+    rm.addValueMeta( new ValueMeta( "new_year", ValueMeta.TYPE_DATE ) );
+    rm.addValueMeta( new ValueMeta( "new_month", ValueMeta.TYPE_DATE ) );
+    rm.addValueMeta( new ValueMeta( "new_week", ValueMeta.TYPE_DATE ) );
+    rm.addValueMeta( new ValueMeta( "new_day", ValueMeta.TYPE_DATE ) );
+    rm.addValueMeta( new ValueMeta( "new_hour", ValueMeta.TYPE_DATE ) );
+    rm.addValueMeta( new ValueMeta( "new_minute", ValueMeta.TYPE_DATE ) );
+    rm.addValueMeta( new ValueMeta( "new_second", ValueMeta.TYPE_DATE ) );
+
+    DateFormat format = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss");
+    Object[] r1 = new Object[] {
+      format.parse( "2014-01-01 00:00:00" ), //input
+      format.parse( "2014-01-06 00:00:00" ), //weekday
+      format.parse( "2019-01-01 00:00:00" ), //year
+      format.parse( "2014-06-01 00:00:00" ), //month
+      format.parse( "2014-02-05 00:00:00" ), //week
+      format.parse( "2014-01-06 00:00:00" ), //day
+      format.parse( "2014-01-01 05:00:00" ), //hour
+      format.parse( "2014-01-01 00:05:00" ), //minute
+      format.parse( "2014-01-01 00:00:05" ), //second
+    };
+    list.add(  new RowMetaAndData( rm, r1) );
+
+    return list;
+  }
+
+  public void testDateAdd() throws Exception {
+    KettleEnvironment.init();
+
+    //
+    // Create a javascript step
+    //
+    String javaScriptStepName = "javascript step";
+    ScriptValuesMetaMod svm = new ScriptValuesMetaMod();
+
+    ScriptValuesScript[] js =
+      new ScriptValuesScript[] { new ScriptValuesScript(
+        ScriptValuesScript.TRANSFORM_SCRIPT, "script",
+          "var new_weekday = dateAdd( input, 'wd', 3 );\n" // PDI-13486
+          + "var new_year = dateAdd( input, 'y', 5 );\n"
+          + "var new_month = dateAdd( input, 'm', 5 );\n"
+          + "var new_week = dateAdd( input, 'w', 5 );\n"
+          + "var new_day = dateAdd( input, 'd', 5 );\n"
+          + "var new_hour = dateAdd( input, 'hh', 5 );\n"
+          + "var new_minute = dateAdd( input, 'mi', 5 );\n"
+          + "var new_second = dateAdd( input, 'ss', 5 );\n" )
+      };
+    svm.setJSScripts( js );
+    svm.setFieldname( new String[] {
+      "new_weekday", "new_year", "new_month", "new_week", "new_day", "new_hour", "new_minute", "new_second" } );
+    svm.setType( new int[] {
+      ValueMetaInterface.TYPE_DATE, ValueMetaInterface.TYPE_DATE, ValueMetaInterface.TYPE_DATE,
+      ValueMetaInterface.TYPE_DATE, ValueMetaInterface.TYPE_DATE, ValueMetaInterface.TYPE_DATE,
+      ValueMetaInterface.TYPE_DATE, ValueMetaInterface.TYPE_DATE } );
+    svm.setRename( new String[] { null, null, null, null, null, null, null, null } );
+    svm.setLength( new int[] { -1, -1, -1, -1, -1, -1, -1, -1 } );
+    svm.setPrecision( new int[] { -1, -1, -1, -1, -1, -1, -1, -1 } );
+    svm.setReplace( new boolean[] { false, false, false, false, false, false, false, false } );
+    svm.setCompatible( false );
+
+    TransMeta transMeta = TransTestFactory.generateTestTransformation( new Variables(), svm, javaScriptStepName );
+    List<RowMetaAndData> result =
+      TransTestFactory.executeTestTransformation(
+        transMeta, TransTestFactory.INJECTOR_STEPNAME, javaScriptStepName, TransTestFactory.DUMMY_STEPNAME,
+        createDateAddData() );
+
+    checkRows( result, createDateAddResultData() );
   }
 }
