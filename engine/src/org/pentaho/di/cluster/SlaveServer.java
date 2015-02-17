@@ -166,6 +166,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   }
 
   public SlaveServer( String name, String hostname, String port, String username, String password,
+                      String proxyHostname, String proxyPort, String nonProxyHosts, boolean master ) {
+    this( name, hostname, port, username, password, proxyHostname, proxyPort, nonProxyHosts, master, false );
+  }
+
+  public SlaveServer( String name, String hostname, String port, String username, String password,
                       String proxyHostname, String proxyPort, String nonProxyHosts, boolean master, boolean ssl ) {
     this();
     this.name = name;
