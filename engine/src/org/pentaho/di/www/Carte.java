@@ -22,11 +22,6 @@
 
 package org.pentaho.di.www;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
@@ -48,6 +43,11 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 public class Carte {
   private static Class<?> PKG = Carte.class; // for i18n purposes, needed by Translator2!!
@@ -95,16 +95,13 @@ public class Carte {
     //
     Properties masterProperties = null;
     if ( config.isReportingToMasters() ) {
-      final SlaveServer client =
-          new SlaveServer( "Dynamic slave [" + hostname + ":" + port + "]", hostname, "" + port, slaveServer
-              .getUsername(), slaveServer.getPassword() );
       String propertiesMaster = slaveServer.getPropertiesMasterName();
       for ( final SlaveServer master : config.getMasters() ) {
         // Here we use the username/password specified in the slave server section of the configuration.
         // This doesn't have to be the same pair as the one used on the master!
         //
         try {
-          SlaveServerDetection slaveServerDetection = new SlaveServerDetection( client );
+          SlaveServerDetection slaveServerDetection = new SlaveServerDetection( slaveServer.getClient() );
           master.sendXML( slaveServerDetection.getXML(), RegisterSlaveServlet.CONTEXT_PATH + "/" );
           log.logBasic( "Registered this slave server to master slave server [" + master.toString() + "] on address ["
               + master.getServerAndPort() + "]" );

@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.www;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -139,13 +140,27 @@ public class SslConfiguration {
   public String getXML() {
     StringBuilder xml = new StringBuilder();
     xml.append( "<" ).append( XML_TAG ).append( ">" );
-    xml.append( XMLHandler.addTagValue( XML_TAG_KEY_STORE, keyStore, false ) );
-    xml.append( XMLHandler.addTagValue( XML_TAG_KEY_STORE_PASSWORD, Encr
-        .encryptPasswordIfNotUsingVariables( keyStorePassword ), false ) );
-    xml.append( XMLHandler.addTagValue( XML_TAG_KEY_PASSWORD, Encr.encryptPasswordIfNotUsingVariables( keyPassword ),
-        false ) );
+    addXmlValue( xml, XML_TAG_KEY_STORE, keyStore );
+    addXmlValue( xml, XML_TAG_KEY_STORE_PASSWORD, encrypt( keyStorePassword ) );
+    addXmlValue( xml, XML_TAG_KEY_PASSWORD, encrypt( keyPassword ) );
     xml.append( "</" ).append( XML_TAG ).append( ">" );
     return xml.toString();
+  }
+  
+  private static void addXmlValue(StringBuilder xml, String key, String value)
+  {
+    if ( !StringUtils.isBlank( value ) ) {
+      xml.append( XMLHandler.addTagValue( key, value, false ) );
+    }
+  }
+  
+  private static String encrypt(String value)
+  {
+    if ( !StringUtils.isBlank( value ) ) {
+      return Encr
+          .encryptPasswordIfNotUsingVariables(value);
+    }
+    return null;
   }
 
 }
