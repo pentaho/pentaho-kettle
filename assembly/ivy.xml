@@ -63,7 +63,7 @@
       <artifact name="pdi-baserver-utils" type="zip"/>
     </dependency>
 	
-    <!--  Pentaho reporting dependencies -->
+    <!--  Pentaho reporting dependencies
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions" rev="${dependency.pentaho-reporting.revision}" changing="true">
       <exclude name="pentaho-reporting-engine-classic-core-test"/>
     </dependency>
@@ -80,7 +80,7 @@
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-legacy-charts" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-legacy-functions" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-wizard-core"  rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="true"/>
-    
+    -->    
     
  	<!-- PDF Documentation for bundling -->
 	<dependency org="pentaho-doc" name="bigdata_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
