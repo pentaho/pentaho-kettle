@@ -128,4 +128,90 @@ public class CertificateGenEncryptUtilTest {
     Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( privateKey.getEncoded(), encryptedKey, true );
     assertTrue( key.equals( key1 ) );
   }
+
+  @Test
+  public void testImproperSessionKeyEncryptionDecryption() {
+    try {
+      Key key = CertificateGenEncryptUtil.generateSingleKey();
+      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+      Key privateKey = kp.getPrivate();
+      byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( kp.getPublic(), key );
+      Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( privateKey.getEncoded(), encryptedKey, false );
+      fail();
+    } catch ( Exception ex ) {}
+  }
+
+  @Test
+  public void testImproperSessionKeyEncryptionDecryption2() throws Exception {
+    try {
+      Key key = CertificateGenEncryptUtil.generateSingleKey();
+      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+      Key privateKey = kp.getPrivate();
+      byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( privateKey, key );
+      Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( kp.getPublic().getEncoded(), encryptedKey, true );
+      fail();
+    } catch ( Exception ex ) {}
+  }
+
+  @Test
+  public void testImproperSessionKeyEncryptionDecryption3() {
+    try {
+      Key key = CertificateGenEncryptUtil.generateSingleKey();
+      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+      Key privateKey = kp.getPrivate();
+      byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( kp.getPublic(), key );
+      byte[] encryptedKey1 = new byte[encryptedKey.length];
+      System.arraycopy( encryptedKey, 0, encryptedKey1, 0, encryptedKey.length );
+      encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
+      encryptedKey = encryptedKey1;
+      Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( privateKey.getEncoded(), encryptedKey, true );
+      fail();
+    } catch ( Exception ex ) {}
+  }
+
+  @Test
+  public void testImproperSessionKeyEncryptionDecryption4() throws Exception {
+    try {
+      Key key = CertificateGenEncryptUtil.generateSingleKey();
+      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+      Key privateKey = kp.getPrivate();
+      byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( privateKey, key );
+      byte[] encryptedKey1 = new byte[encryptedKey.length];
+      System.arraycopy( encryptedKey, 0, encryptedKey1, 0, encryptedKey.length );
+      encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
+      encryptedKey = encryptedKey1;
+      Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( kp.getPublic().getEncoded(), encryptedKey, false );
+      fail();
+    } catch ( Exception ex ) {}
+  }
+
+  @Test
+  public void testImproperSessionKeyEncryptionDecryption5() {
+    try {
+      Key key = CertificateGenEncryptUtil.generateSingleKey();
+      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+      Key privateKey = kp.getPrivate();
+      byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( kp.getPublic(), key );
+      byte[] encryptedKey1 = new byte[privateKey.getEncoded().length];
+      System.arraycopy( privateKey.getEncoded(), 0, encryptedKey1, 0, privateKey.getEncoded().length );
+      encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
+      Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( encryptedKey1, encryptedKey, true );
+      fail();
+    } catch ( Exception ex ) {}
+  }
+
+  @Test
+  public void testImproperSessionKeyEncryptionDecryption6() throws Exception {
+    try {
+      Key key = CertificateGenEncryptUtil.generateSingleKey();
+      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+      Key privateKey = kp.getPrivate();
+      byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( privateKey, key );
+      byte[] encryptedKey1 = new byte[kp.getPublic().getEncoded().length];
+      System.arraycopy( kp.getPublic().getEncoded(), 0, encryptedKey1, 0, kp.getPublic().getEncoded().length );
+      encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
+      Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( encryptedKey1, encryptedKey, false );
+      fail();
+    } catch ( Exception ex ) {}
+  }
 }

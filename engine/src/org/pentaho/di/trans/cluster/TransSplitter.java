@@ -22,8 +22,10 @@
 
 package org.pentaho.di.trans.cluster;
 
+import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -36,6 +38,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
@@ -469,7 +474,15 @@ public class TransSplitter {
         PrivateKey privK = pair.getPrivate();
 
         Key key1 = CertificateGenEncryptUtil.generateSingleKey();
-        transformationKey = CertificateGenEncryptUtil.encodeKeyForTransmission( privK, key1 );
+        try {
+          transformationKey = CertificateGenEncryptUtil.encodeKeyForTransmission( privK, key1 );
+        } catch ( InvalidKeyException ex ) {
+          masterTransMeta.getLogChannel().logError( "Invalid key was used for encoding", ex );
+        } catch ( IllegalBlockSizeException ex ) {
+          masterTransMeta.getLogChannel().logError( "Error happenned during key encoding", ex );
+        } catch ( Exception ex ) {
+          masterTransMeta.getLogChannel().logError( "Error happenned during encryption initialization", ex );
+        }
       }
 
       for ( int r = 0; r < referenceSteps.length; r++ ) {

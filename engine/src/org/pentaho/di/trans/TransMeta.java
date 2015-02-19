@@ -282,8 +282,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   /** The log channel interface. */
   protected LogChannelInterface log;
 
-  protected byte[] key;
-  boolean privateKey;
+  protected byte[] keyForSessionKey;
+  boolean isKeyPrivate;
 
   /**
    * The TransformationType enum describes the various types of transformations in terms of execution, including Normal,
@@ -2427,11 +2427,11 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       .append( "  " ).append( XMLHandler.addTagValue( "modified_date", XMLHandler.date2string( modifiedDate ) ) );
 
     try {
-      retval.append( "    " ).append( XMLHandler.addTagValue( "key", key ) );
+      retval.append( "    " ).append( XMLHandler.addTagValue( "key_for_session_key", keyForSessionKey ) );
     } catch ( Exception ex ) {
       log.logError( "Unable to decode key", ex );
     }
-    retval.append( "    " ).append( XMLHandler.addTagValue( "private", privateKey ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "is_key_private", isKeyPrivate ) );
 
     retval.append( "  " ).append( XMLHandler.closeTag( XML_TAG_INFO ) ).append( Const.CR );
 
@@ -3299,8 +3299,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         //
         attributesMap = AttributesUtil.loadAttributes( XMLHandler.getSubNode( transnode, AttributesUtil.XML_TAG ) );
 
-        key = XMLHandler.stringToBinary( XMLHandler.getTagValue( infonode, "key" ) );
-        privateKey = "Y".equals( XMLHandler.getTagValue( infonode, "private" ) );
+        keyForSessionKey = XMLHandler.stringToBinary( XMLHandler.getTagValue( infonode, "key_for_session_key" ) );
+        isKeyPrivate = "Y".equals( XMLHandler.getTagValue( infonode, "is_key_private" ) );
 
       } catch ( KettleXMLException xe ) {
         throw new KettleXMLException( BaseMessages.getString(
@@ -3332,19 +3332,19 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   }
 
   public byte[] getKey() {
-    return key;
+    return keyForSessionKey;
   }
 
   public void setKey( byte[] key ) {
-    this.key = key;
+    this.keyForSessionKey = key;
   }
 
   public boolean isPrivateKey() {
-    return privateKey;
+    return isKeyPrivate;
   }
 
   public void setPrivateKey( boolean privateKey ) {
-    this.privateKey = privateKey;
+    this.isKeyPrivate = privateKey;
   }
 
   /**

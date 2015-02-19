@@ -33,7 +33,9 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.spec.InvalidKeySpecException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -358,10 +360,26 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
           socketOut = bufferedOutputStream;
           if ( encryptingStreams && key != null ) {
             byte[] transKey = baseStep.getTransMeta().getKey();
-            Key unwrappedKey = CertificateGenEncryptUtil.decodeTransmittedKey( transKey, key,
+            Key unwrappedKey = null;
+            try {
+              unwrappedKey = CertificateGenEncryptUtil.decodeTransmittedKey( transKey, key,
                 baseStep.getTransMeta().isPrivateKey() );
-            Cipher decryptionCip = CertificateGenEncryptUtil.initDecryptionCipher( unwrappedKey, key );
-            socketOut = cipherOutputStream = new CipherOutputStream( bufferedOutputStream, decryptionCip );
+            } catch ( InvalidKeyException ex ) {
+              baseStep.logError( "Invalid key was received", ex );
+            } catch ( InvalidKeySpecException ex ) {
+              baseStep.logError( "Invalid key specification was received. Most probably public key was "
+                  + "sent instead of private or vice versa", ex );
+            } catch ( Exception ex ) {
+              baseStep.logError( "Error occurred during encryption initialization", ex );
+            }
+            try {
+              Cipher decryptionCip = CertificateGenEncryptUtil.initDecryptionCipher( unwrappedKey, key );
+              socketOut = cipherOutputStream = new CipherOutputStream( bufferedOutputStream, decryptionCip );
+            } catch ( InvalidKeyException ex ) {
+              baseStep.logError( "Invalid key was received", ex );
+            } catch ( Exception ex ) {
+              baseStep.logError( "Error occurred during encryption initialization", ex );
+            }
           }
           outputStream = new DataOutputStream( socketOut );
 
@@ -570,10 +588,26 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 
         if ( encryptingStreams && key != null ) {
           byte[] transKey = baseStep.getTransMeta().getKey();
-          Key unwrappedKey = CertificateGenEncryptUtil.decodeTransmittedKey( transKey, key,
+          Key unwrappedKey = null;
+          try {
+            unwrappedKey = CertificateGenEncryptUtil.decodeTransmittedKey( transKey, key,
               baseStep.getTransMeta().isPrivateKey() );
-          Cipher decryptionCip = CertificateGenEncryptUtil.initDecryptionCipher( unwrappedKey, key );
-          socketStream = cipherInputStream = new CipherInputStream( bufferedInputStream, decryptionCip );
+          } catch ( InvalidKeyException ex ) {
+            baseStep.logError( "Invalid key was received", ex );
+          } catch ( InvalidKeySpecException ex ) {
+            baseStep.logError( "Invalid key specification was received. Most probably public key was "
+                + "sent instead of private or vice versa", ex );
+          } catch ( Exception ex ) {
+            baseStep.logError( "Error occurred during encryption initialization", ex );
+          }
+          try {
+            Cipher decryptionCip = CertificateGenEncryptUtil.initDecryptionCipher( unwrappedKey, key );
+            socketStream = cipherInputStream = new CipherInputStream( bufferedInputStream, decryptionCip );
+          } catch ( InvalidKeyException ex ) {
+            baseStep.logError( "Invalid key was received", ex );
+          } catch ( Exception ex ) {
+            baseStep.logError( "Error occurred during encryption initialization", ex );
+          }
         }
         inputStream = new DataInputStream( socketStream );
 
