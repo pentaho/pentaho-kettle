@@ -25,7 +25,6 @@ package org.pentaho.di.trans.cluster;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
