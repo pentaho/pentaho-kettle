@@ -350,6 +350,15 @@ public class GUIResource {
 
   private Image imageDropHere;
 
+  private Image imageAddAll;
+
+  private Image imageAddSingle;
+
+  private Image imageRemoveAll;
+
+  private Image imageRemoveSingle;
+
+
   /**
    * GUIResource also contains the clipboard as it has to be allocated only once! I don't want to put it in a separate
    * singleton just for this one member.
@@ -565,6 +574,10 @@ public class GUIResource {
       imageHelpWeb.dispose();
       imageHadoop.dispose();
       imageDropHere.dispose();
+      imageAddAll.dispose();
+      imageAddSingle.dispose();
+      imageRemoveAll.dispose();
+      imageRemoveSingle.dispose();
 
       disposeImage( imageNoteSmall );
       disposeImage( imageColor );
@@ -991,6 +1004,18 @@ public class GUIResource {
 
     // "ui/images/drop_here.png
     imageDropHere = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DropHere_image" ) );
+
+    // "ui/images/add_all.png
+    imageAddAll = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "AddAll_image" ) );
+
+    // "ui/images/add_single.png
+    imageAddSingle = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "AddSingle_image" ) );
+
+    // "ui/images/remove_all.png
+    imageRemoveAll = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "RemoveAll_image" ) );
+
+    // "ui/images/remove_single.png
+    imageRemoveSingle = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "RemoveSingle_image" ) );
 
     imageEmpty16x16 = new Image( display, 16, 16 );
 
@@ -2105,6 +2130,38 @@ public class GUIResource {
 
   public Image getImageDropHere() {
     return imageDropHere;
+  }
+
+  public void setImageAddAll( Image imageAddAll ) {
+    this.imageAddAll = imageAddAll;
+  }
+
+  public Image getImageAddAll() {
+    return imageAddAll;
+  }
+
+  public void setImageAddSingle( Image imageAddSingle ) {
+    this.imageAddSingle = imageAddSingle;
+  }
+
+  public Image getImageAddSingle() {
+    return imageAddSingle;
+  }
+
+  public void setImageRemoveAll( Image imageRemoveAll ) {
+    this.imageRemoveAll = imageRemoveAll;
+  }
+
+  public Image getImageRemoveAll() {
+    return imageRemoveAll;
+  }
+
+  public void setImageRemoveSingle( Image imageRemoveSingle ) {
+    this.imageRemoveSingle = imageRemoveSingle;
+  }
+
+  public Image getImageRemoveSingle() {
+    return imageRemoveSingle;
   }
 
 }
