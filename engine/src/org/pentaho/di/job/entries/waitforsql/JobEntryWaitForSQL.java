@@ -335,6 +335,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
   public Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
+    //Should remove this error in case of success
     result.setNrErrors( 1 );
     String realCustomSQL = null;
     String realTablename = environmentSubstitute( tablename );
@@ -470,7 +471,11 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
     } catch ( Exception e ) {
       logBasic( "Exception while waiting for SQL data: " + e.getMessage() );
     }
-
+    
+    if(result.getResult()){
+      //Removing error count
+      result.setNrErrors(0);
+    }
     return result;
   }
 
