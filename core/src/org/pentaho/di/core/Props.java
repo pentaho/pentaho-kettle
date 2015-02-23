@@ -85,6 +85,7 @@ public class Props implements Cloneable {
   public static final String STRING_TAB_COLOR_G = "TabColorG";
   public static final String STRING_TAB_COLOR_B = "TabColorB";
 
+  public static final String STRING_SVG_ENABLED = "EnableSVG";
   public static final String STRING_ICON_SIZE = "IconSize";
   public static final String STRING_LINE_WIDTH = "LineWidth";
   public static final String STRING_SHADOW_SIZE = "ShadowSize";

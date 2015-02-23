@@ -145,6 +145,8 @@ public class EnterOptionsDialog extends Dialog {
 
   private Text wGridSize;
 
+  private Button wEnableSVG;
+
   private Button wAntiAlias;
 
   private Button wOriginalLook;
@@ -743,6 +745,24 @@ public class EnterOptionsDialog extends Dialog {
     fdTabColor.bottom = new FormAttachment( 0, ( nr + 1 ) * h + margin );
     wTabColor.setLayoutData( fdTabColor );
 
+    // Enable SVG
+    Label wlEnableSVG = new Label( wLookComp, SWT.RIGHT );
+    wlEnableSVG.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.EnableSVG.Label" ) );
+    props.setLook( wlEnableSVG );
+    FormData fdlwlEnableSVG = new FormData();
+    fdlwlEnableSVG.left = new FormAttachment( 0, 0 );
+    fdlwlEnableSVG.top = new FormAttachment( wTabColor, margin );
+    fdlwlEnableSVG.right = new FormAttachment( middle, -margin );
+    wlEnableSVG.setLayoutData( fdlwlEnableSVG );
+    wEnableSVG = new Button( wLookComp, SWT.CHECK );
+    props.setLook( wEnableSVG );
+    wEnableSVG.setSelection( props.isSVGEnabled() );
+    FormData fdEnableSVG = new FormData();
+    fdEnableSVG.left = new FormAttachment( middle, 0 );
+    fdEnableSVG.top = new FormAttachment( wTabColor, margin );
+    fdEnableSVG.right = new FormAttachment( 100, 0 );
+    wEnableSVG.setLayoutData( fdEnableSVG );
+
     // Iconsize line
     Label wlIconsize = new Label( wLookComp, SWT.RIGHT );
     wlIconsize.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.IconSize.Label" ) );
@@ -750,7 +770,7 @@ public class EnterOptionsDialog extends Dialog {
     FormData fdlIconsize = new FormData();
     fdlIconsize.left = new FormAttachment( 0, 0 );
     fdlIconsize.right = new FormAttachment( middle, -margin );
-    fdlIconsize.top = new FormAttachment( wTabColor, margin );
+    fdlIconsize.top = new FormAttachment( wEnableSVG, margin );
     wlIconsize.setLayoutData( fdlIconsize );
     wIconsize = new Text( wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wIconsize.setText( Integer.toString( props.getIconSize() ) );
@@ -758,7 +778,7 @@ public class EnterOptionsDialog extends Dialog {
     FormData fdIconsize = new FormData();
     fdIconsize.left = new FormAttachment( middle, 0 );
     fdIconsize.right = new FormAttachment( 100, -margin );
-    fdIconsize.top = new FormAttachment( wTabColor, margin );
+    fdIconsize.top = new FormAttachment( wEnableSVG, margin );
     wIconsize.setLayoutData( fdIconsize );
 
     // LineWidth line
@@ -1607,6 +1627,7 @@ public class EnterOptionsDialog extends Dialog {
     props.setBackgroundRGB( backgroundRGB );
     props.setGraphColorRGB( graphColorRGB );
     props.setTabColorRGB( tabColorRGB );
+    props.setSVGEnabled( wEnableSVG.getSelection() );
     props.setIconSize( Const.toInt( wIconsize.getText(), props.getIconSize() ) );
     props.setLineWidth( Const.toInt( wLineWidth.getText(), props.getLineWidth() ) );
     props.setShadowSize( Const.toInt( wShadowSize.getText(), props.getShadowSize() ) );
