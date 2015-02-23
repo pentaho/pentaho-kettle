@@ -24,7 +24,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import org.pentaho.di.repository.IUser;
 
-public interface IUIUser {
+public interface IUIUser extends Comparable<IUIUser> {
 
   public void setName( String name );
 
