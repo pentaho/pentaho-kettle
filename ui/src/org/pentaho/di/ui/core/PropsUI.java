@@ -638,6 +638,15 @@ public class PropsUI extends Props {
     return new RGB( r, g, b );
   }
 
+  public boolean isSVGEnabled() {
+    String anti = properties.getProperty( STRING_SVG_ENABLED, YES );
+    return YES.equalsIgnoreCase( anti ); // Default: don't do anti-aliasing
+  }
+
+  public void setSVGEnabled( boolean svg ) {
+    properties.setProperty( STRING_SVG_ENABLED, svg ? YES : NO );
+  }
+
   public void setIconSize( int size ) {
     properties.setProperty( STRING_ICON_SIZE, "" + size );
   }
