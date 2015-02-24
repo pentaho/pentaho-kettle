@@ -24,16 +24,16 @@ export LIBOVERLAY_SCROLLBAR=0
 # Bug in: https://bugs.launchpad.net/ubuntu/+source/unity-gtk-module/+bug/1208019
 export UBUNTU_MENUPROXY=0
 
+# Supposed spoon.sh and set-env.sh files both are located in data-integration folder  
 # **************************************************
-# ** Init BASEDIR                                 **
+# ** Set INITIALDIR, BASEDIR AND CURRENTDIR       **
 # **************************************************
+INITIALDIR=`pwd`
+# set absolute path to data-integration folder
+BASEDIR=$( cd "$( dirname "$0" )" && pwd )
+CURRENTDIR="."
 
-BASEDIR=`dirname $0`
-cd $BASEDIR
-DIR=`pwd`
-cd -
-
-. "$DIR/set-pentaho-env.sh"
+. "$BASEDIR/set-pentaho-env.sh"
 
 setPentahoEnv
 
@@ -42,7 +42,10 @@ setPentahoEnv
 # **************************************************
 
 LIBPATH="NONE"
-STARTUP="$DIR/launcher/launcher.jar"
+STARTUP="$BASEDIR/launcher/launcher.jar"
+
+# Go to directory where spoon.sh located
+cd $BASEDIR
 
 case `uname -s` in 
 	AIX)
@@ -50,11 +53,11 @@ case `uname -s` in
 		case $ARCH in
 
 			ppc)
-				LIBPATH=$BASEDIR/../libswt/aix/
+				LIBPATH=$CURRENTDIR/../libswt/aix/
 				;;
 
 			ppc64)
-				LIBPATH=$BASEDIR/../libswt/aix64/
+				LIBPATH=$CURRENTDIR/../libswt/aix64/
 				;;
 
 			*)	
@@ -68,11 +71,11 @@ case `uname -s` in
 		case $ARCH in
 
 			i[3-6]86)
-				LIBPATH=$BASEDIR/../libswt/solaris-x86/
+				LIBPATH=$CURRENTDIR/../libswt/solaris-x86/
 				;;
 
 			*)	
-				LIBPATH=$BASEDIR/../libswt/solaris/
+				LIBPATH=$CURRENTDIR/../libswt/solaris/
 				;;
 		esac
 		;;
@@ -86,14 +89,14 @@ case `uname -s` in
 		x86_64)
 			if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null )
                             then
-			  LIBPATH=$BASEDIR/../libswt/osx64/
+			  LIBPATH=$CURRENTDIR/../libswt/osx64/
                             else
-			  LIBPATH=$BASEDIR/../libswt/osx/
+			  LIBPATH=$CURRENTDIR/../libswt/osx/
                             fi
 			;;
 
 		i[3-6]86)
-			LIBPATH=$BASEDIR/../libswt/osx/
+			LIBPATH=$CURRENTDIR/../libswt/osx/
 			;;
 
 		*)	
@@ -112,22 +115,22 @@ case `uname -s` in
 			x86_64)
 				if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null )
                                 then
-				  LIBPATH=$BASEDIR/../libswt/linux/x86_64/
+				  LIBPATH=$CURRENTDIR/../libswt/linux/x86_64/
                                 else
-				  LIBPATH=$BASEDIR/../libswt/linux/x86/
+				  LIBPATH=$CURRENTDIR/../libswt/linux/x86/
                                 fi
 				;;
 
 			i[3-6]86)
-				LIBPATH=$BASEDIR/../libswt/linux/x86/
+				LIBPATH=$CURRENTDIR/../libswt/linux/x86/
 				;;
 
 			ppc)
-				LIBPATH=$BASEDIR/../libswt/linux/ppc/
+				LIBPATH=$CURRENTDIR/../libswt/linux/ppc/
 				;;
 
 			ppc64)
-				LIBPATH=$BASEDIR/../libswt/linux/ppc64/
+				LIBPATH=$CURRENTDIR/../libswt/linux/ppc64/
 				;;
 
 			*)	
@@ -143,17 +146,17 @@ case `uname -s` in
 	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
-				LIBPATH=$BASEDIR/../libswt/linux/x86_64/
+				LIBPATH=$CURRENTDIR/../libswt/linux/x86_64/
 				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
 
 			i[3-6]86)
-				LIBPATH=$BASEDIR/../libswt/linux/x86/
+				LIBPATH=$CURRENTDIR/../libswt/linux/x86/
 				;;
 
 			ppc)
-				LIBPATH=$BASEDIR/../libswt/linux/ppc/
+				LIBPATH=$CURRENTDIR/../libswt/linux/ppc/
 				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
@@ -166,7 +169,7 @@ case `uname -s` in
 		;;
 
 	HP-UX) 
-		LIBPATH=$BASEDIR/../libswt/hpux/
+		LIBPATH=$CURRENTDIR/../libswt/hpux/
 		;;
 	CYGWIN*)
 		./Spoon.bat
@@ -200,3 +203,6 @@ OPT="$OPT $PENTAHO_DI_JAVA_OPTIONS -Djava.library.path=$LIBPATH -DKETTLE_HOME=$K
 # ** Run...    **
 # ***************
 "$_PENTAHO_JAVA" $OPT -jar "$STARTUP" -lib $LIBPATH "${1+$@}"
+
+# return to the catalog from which spoon.sh has been started
+cd $INITIALDIR

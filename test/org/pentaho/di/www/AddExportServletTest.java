@@ -66,7 +66,7 @@ public class AddExportServletTest {
     StringReader in = new StringReader( "" );
     BufferedReader reader = new BufferedReader( in );
 
-    String requestURI = AddExportServlet.CONTEXT_PATH;
+    String requestURI = RegisterPackageServlet.CONTEXT_PATH;
     when( mockRequest.getRequestURI() ).thenReturn( requestURI );
     when( mockRequest.getReader() ).thenReturn( reader );
     when( mockResponse.getWriter() ).thenReturn( printWriter );

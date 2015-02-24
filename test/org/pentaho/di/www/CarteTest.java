@@ -72,7 +72,7 @@ public class CarteTest {
     tester = new ServletTester();
     tester.addServlet( GetRootServlet.class, "/*" );
     tester.addServlet( GetStatusServlet.class, GetStatusServlet.CONTEXT_PATH );
-    tester.addServlet( AddTransServlet.class, AddTransServlet.CONTEXT_PATH );
+    tester.addServlet( AddTransServlet.class, RegisterTransServlet.CONTEXT_PATH );
     tester.addServlet( StartTransServlet.class, StartTransServlet.CONTEXT_PATH );
     tester.addServlet( PauseTransServlet.class, PauseTransServlet.CONTEXT_PATH );
     try {
@@ -167,7 +167,7 @@ public class CarteTest {
     HttpTester response = new HttpTester();
     request.setMethod( "GET" );
     request.setHeader( "Host", "tester" );
-    request.setURI( AddTransServlet.CONTEXT_PATH + "?xml=Y" );
+    request.setURI( RegisterTransServlet.CONTEXT_PATH + "?xml=Y" );
     request.setVersion( "HTTP/1.0" );
     try {
 

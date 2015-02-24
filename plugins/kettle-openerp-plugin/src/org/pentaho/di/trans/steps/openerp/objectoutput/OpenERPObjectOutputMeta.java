@@ -45,9 +45,9 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 @Step( id = "OpenERPObjectOutputImport", image = "OpenERPObjectOutput.png",
-    i18nPackageName = "org.pentaho.di.trans.steps.openerp.objectoutput", name = "OpenERPObjectOutput.TransName",
-    description = "OpenERPObjectOutput.TransDescription",
-    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.OpenERP" )
+  i18nPackageName = "org.pentaho.di.trans.steps.openerp.objectoutput", name = "OpenERPObjectOutput.TransName",
+  description = "OpenERPObjectOutput.TransDescription",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.OpenERP" )
 public class OpenERPObjectOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   private DatabaseMeta databaseMeta;
@@ -61,10 +61,11 @@ public class OpenERPObjectOutputMeta extends BaseStepMeta implements StepMetaInt
 
   @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( outputIDField ) {
-      if ( outputIDFieldName == null || outputIDFieldName.length() == 0 )
+      if ( outputIDFieldName == null || outputIDFieldName.length() == 0 ) {
         throw new KettleStepException( "Error while retrieving fields", new Exception( "ID field name is null" ) );
+      }
 
       ValueMetaInterface v = new ValueMeta( outputIDFieldName, ValueMetaInterface.TYPE_INTEGER );
       v.setOrigin( name );
@@ -75,7 +76,7 @@ public class OpenERPObjectOutputMeta extends BaseStepMeta implements StepMetaInt
 
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-      TransMeta transMeta, Trans trans ) {
+                                TransMeta transMeta, Trans trans ) {
     return new OpenERPObjectOutput( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -92,7 +93,7 @@ public class OpenERPObjectOutputMeta extends BaseStepMeta implements StepMetaInt
     StringBuffer retval = new StringBuffer();
 
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "connection", this.databaseMeta == null ? "" : this.databaseMeta.getName() ) );
+      XMLHandler.addTagValue( "connection", this.databaseMeta == null ? "" : this.databaseMeta.getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "modelName", this.modelName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "readBatchSize", this.commitBatchSize ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "outputIDField", this.outputIDField ) );

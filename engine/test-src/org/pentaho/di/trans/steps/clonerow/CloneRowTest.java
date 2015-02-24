@@ -48,7 +48,7 @@ public class CloneRowTest {
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     when( inputRowMeta.getInteger( any( Object[].class ), anyInt() ) ).thenReturn( null );
 
-    RowSet inputRowSet = stepMockHelper.getMockInputRowSet( new Integer[] { null } );
+    RowSet inputRowSet = stepMockHelper.getMockInputRowSet( new Integer[]{ null } );
     when( inputRowSet.getRowMeta() ).thenReturn( inputRowMeta );
     step.setInputRowSets( singletonList( inputRowSet ) );
 

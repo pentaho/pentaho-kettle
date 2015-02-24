@@ -22,17 +22,6 @@
 
 package org.pentaho.di.www;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -49,6 +38,17 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Document;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * This servlet allows you to transport an exported job or transformation over to the carte server as a zip file. It
  * ends up in a temporary file.
@@ -58,6 +58,8 @@ import org.w3c.dom.Document;
  * @author matt
  *
  */
+// has been replaced by RegisterPackageServlet
+@Deprecated
 public class AddExportServlet extends BaseHttpServlet implements CartePluginInterface {
   public static final String PARAMETER_LOAD = "load";
   public static final String PARAMETER_TYPE = "type";

@@ -38,9 +38,9 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 @Step( id = "OpenERPObjectDelete", image = "OpenERPObjectDelete.png",
-    i18nPackageName = "org.pentaho.di.trans.steps.openerp.objectdelete", name = "OpenERPObjectDelete.TransName",
-    description = "OpenERPObjectDelete.TransDescription",
-    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.OpenERP" )
+  i18nPackageName = "org.pentaho.di.trans.steps.openerp.objectdelete", name = "OpenERPObjectDelete.TransName",
+  description = "OpenERPObjectDelete.TransDescription",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.OpenERP" )
 public class OpenERPObjectDeleteMeta extends BaseStepMeta implements StepMetaInterface {
 
   private DatabaseMeta databaseMeta;
@@ -50,7 +50,7 @@ public class OpenERPObjectDeleteMeta extends BaseStepMeta implements StepMetaInt
 
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-      TransMeta transMeta, Trans trans ) {
+                                TransMeta transMeta, Trans trans ) {
     return new OpenERPObjectDelete( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -67,7 +67,7 @@ public class OpenERPObjectDeleteMeta extends BaseStepMeta implements StepMetaInt
     StringBuffer retval = new StringBuffer();
 
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "connection", this.databaseMeta == null ? "" : this.databaseMeta.getName() ) );
+      XMLHandler.addTagValue( "connection", this.databaseMeta == null ? "" : this.databaseMeta.getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "modelName", this.modelName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "readBatchSize", this.commitBatchSize ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "idFieldName", this.idFieldName ) );

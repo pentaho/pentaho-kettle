@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
@@ -1369,7 +1370,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         isaddresult = rep.getStepAttributeBoolean( id_step, "add_to_result_filenames" );
       }
 
-      rowLimit = (int) rep.getStepAttributeInteger( id_step, "limit" );
+      rowLimit = rep.getStepAttributeInteger( id_step, "limit" );
 
       int nrfiles = rep.countNrStepAttributes( id_step, "file_name" );
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
@@ -1457,6 +1458,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
       pathFieldName = rep.getStepAttributeString( id_step, "pathFieldName" );
       hiddenFieldName = rep.getStepAttributeString( id_step, "hiddenFieldName" );
       lastModificationTimeFieldName = rep.getStepAttributeString( id_step, "lastModificationTimeFieldName" );
+      uriNameFieldName = rep.getStepAttributeString( id_step, "uriNameFieldName" );
       rootUriNameFieldName = rep.getStepAttributeString( id_step, "rootUriNameFieldName" );
       extensionFieldName = rep.getStepAttributeString( id_step, "extensionFieldName" );
       sizeFieldName = rep.getStepAttributeString( id_step, "sizeFieldName" );
@@ -1567,6 +1569,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
+      rep.saveStepAttribute( id_transformation, id_step, "sizeFieldName", sizeFieldName );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
@@ -2041,5 +2044,12 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
   @Override
   public StepMetaInjectionInterface getStepMetaInjectionInterface() {
     return new TextFileInputMetaInjection( this );
+  }
+
+
+  @VisibleForTesting
+  public void setFileNameForTest(String[] fileName) {
+    allocateFiles( fileName.length );
+    setFileName( fileName );
   }
 }

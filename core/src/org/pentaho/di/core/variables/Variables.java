@@ -122,9 +122,11 @@ public class Variables implements VariableSpace {
   public void initializeVariablesFrom( VariableSpace parent ) {
     this.parent = parent;
 
-    // Add all the system properties...
-    for ( Object key : System.getProperties().keySet() ) {
-      properties.put( (String) key, System.getProperties().getProperty( (String) key ) );
+    // Clone the system properties to avoid ConcurrentModificationException while iterating
+    // and then add all of them to properties variable.
+    Set<String> systemPropertiesNames = System.getProperties().stringPropertyNames();
+    for ( String key : systemPropertiesNames ) {
+      getProperties().put( key, System.getProperties().getProperty( key ) );
     }
 
     if ( parent != null ) {
@@ -178,7 +180,8 @@ public class Variables implements VariableSpace {
    *           In case there is a String conversion error
    */
   @Override
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
+    throws KettleValueException {
     if ( aString == null || aString.length() == 0 ) {
       return aString;
     }
@@ -239,4 +242,10 @@ public class Variables implements VariableSpace {
 
     return space;
   }
+
+  // Method is defined as package-protected in order to be accessible by unit tests
+  Map<String, String> getProperties() {
+    return properties;
+  }
+
 }

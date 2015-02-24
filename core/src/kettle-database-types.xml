@@ -163,7 +163,12 @@
   <database-type id="POSTGRESQL">
     <description>PostgreSQL</description>
     <classname>org.pentaho.di.core.database.PostgreSQLDatabaseMeta</classname>
-  </database-type>                                                            
+  </database-type>
+
+  <database-type id="REDSHIFT">
+    <description>Redshift</description>
+    <classname>org.pentaho.di.core.database.RedshiftDatabaseMeta</classname>
+  </database-type>
 
   <database-type id="REMEDY-AR-SYSTEM">
     <description>Remedy Action Request System</description>
