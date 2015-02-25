@@ -68,7 +68,9 @@ public class CertificateGenEncryptUtilTest {
       byte [] decr = CertificateGenEncryptUtil.decryptUsingKey( encr, kp1.getPublic() );
       assertFalse( Arrays.equals( encr, decr ) );
       fail();
-    } catch ( Exception ex ) { }
+    } catch ( Exception ex ) {
+      ex.printStackTrace();
+    }
     byte [] decr = CertificateGenEncryptUtil.decryptUsingKey( encr, kp.getPublic() );
     assertTrue( Arrays.equals( pat, decr ) );
   }
@@ -84,7 +86,9 @@ public class CertificateGenEncryptUtilTest {
 
       assertFalse( Arrays.equals( encr, decr ) );
       fail();
-    } catch ( Exception ex ) { }
+    } catch ( Exception ex ) {
+      ex.printStackTrace();
+    }
   }
 
   @Test
@@ -98,7 +102,9 @@ public class CertificateGenEncryptUtilTest {
 
       assertFalse( Arrays.equals( encr, decr ) );
       fail();
-    } catch ( Exception ex ) { }
+    } catch ( Exception ex ) {
+      ex.printStackTrace();
+    }
   }
 
   @Test
@@ -136,9 +142,11 @@ public class CertificateGenEncryptUtilTest {
       KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
       Key privateKey = kp.getPrivate();
       byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( kp.getPublic(), key );
-      Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( privateKey.getEncoded(), encryptedKey, false );
+      CertificateGenEncryptUtil.decodeTransmittedKey( privateKey.getEncoded(), encryptedKey, false );
       fail();
-    } catch ( Exception ex ) {}
+    } catch ( Exception ex ) {
+      ex.printStackTrace();
+    }
   }
 
   @Test
@@ -148,9 +156,11 @@ public class CertificateGenEncryptUtilTest {
       KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
       Key privateKey = kp.getPrivate();
       byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( privateKey, key );
-      Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( kp.getPublic().getEncoded(), encryptedKey, true );
+      CertificateGenEncryptUtil.decodeTransmittedKey( kp.getPublic().getEncoded(), encryptedKey, true );
       fail();
-    } catch ( Exception ex ) {}
+    } catch ( Exception ex ) {
+      ex.printStackTrace();
+    }
   }
 
   @Test
@@ -164,9 +174,11 @@ public class CertificateGenEncryptUtilTest {
       System.arraycopy( encryptedKey, 0, encryptedKey1, 0, encryptedKey.length );
       encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
       encryptedKey = encryptedKey1;
-      Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( privateKey.getEncoded(), encryptedKey, true );
+      CertificateGenEncryptUtil.decodeTransmittedKey( privateKey.getEncoded(), encryptedKey, true );
       fail();
-    } catch ( Exception ex ) {}
+    } catch ( Exception ex ) {
+      ex.printStackTrace();
+    }
   }
 
   @Test
@@ -180,9 +192,11 @@ public class CertificateGenEncryptUtilTest {
       System.arraycopy( encryptedKey, 0, encryptedKey1, 0, encryptedKey.length );
       encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
       encryptedKey = encryptedKey1;
-      Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( kp.getPublic().getEncoded(), encryptedKey, false );
+      CertificateGenEncryptUtil.decodeTransmittedKey( kp.getPublic().getEncoded(), encryptedKey, false );
       fail();
-    } catch ( Exception ex ) {}
+    } catch ( Exception ex ) {
+      ex.printStackTrace();
+    }
   }
 
   @Test
@@ -195,9 +209,11 @@ public class CertificateGenEncryptUtilTest {
       byte[] encryptedKey1 = new byte[privateKey.getEncoded().length];
       System.arraycopy( privateKey.getEncoded(), 0, encryptedKey1, 0, privateKey.getEncoded().length );
       encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
-      Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( encryptedKey1, encryptedKey, true );
+      CertificateGenEncryptUtil.decodeTransmittedKey( encryptedKey1, encryptedKey, true );
       fail();
-    } catch ( Exception ex ) {}
+    } catch ( Exception ex ) {
+      ex.printStackTrace();
+    }
   }
 
   @Test
@@ -210,8 +226,10 @@ public class CertificateGenEncryptUtilTest {
       byte[] encryptedKey1 = new byte[kp.getPublic().getEncoded().length];
       System.arraycopy( kp.getPublic().getEncoded(), 0, encryptedKey1, 0, kp.getPublic().getEncoded().length );
       encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
-      Key key1 = CertificateGenEncryptUtil.decodeTransmittedKey( encryptedKey1, encryptedKey, false );
+      CertificateGenEncryptUtil.decodeTransmittedKey( encryptedKey1, encryptedKey, false );
       fail();
-    } catch ( Exception ex ) {}
+    } catch ( Exception ex ) {
+      ex.printStackTrace();
+    }
   }
 }
