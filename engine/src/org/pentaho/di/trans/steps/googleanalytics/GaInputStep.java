@@ -224,10 +224,10 @@ public class GaInputStep extends BaseStep implements StepInterface {
       query.setSort( environmentSubstitute( meta.getSort() ) );
     }
 
-    if ( !Const.isEmpty( meta.getGaApiKey() ) ) {
+    String gaapikey = environmentSubstitute(Encr.decryptPasswordOptionallyEncrypted(meta.getGaApiKey()));
+    if (!Const.isEmpty(gaapikey)){
       // allow to use optionally encrypted environment variables
-      query.setStringCustomParameter( "key", Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta
-        .getGaApiKey() ) ) );
+      query.setStringCustomParameter( "key", gaapikey );
     }
 
     return query;
