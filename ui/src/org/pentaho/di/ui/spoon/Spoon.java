@@ -5847,9 +5847,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return saved;
   }
 
-  public void helpAbout() {
-    MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION | SWT.CENTER | SWT.SHEET );
-
+  // Put here to support testing, but you cannot instance Spoon from a
+  // JUnit test case without a bunch of work. I abandoned the attempt to
+  // create a Spoon test case to test this. mb
+  public StringBuilder getHelpAboutText() {
     String releaseText = Const.RELEASE.getMessage();
     StringBuilder messageBuilder = new StringBuilder();
     BuildVersion buildVersion = BuildVersion.getInstance();
@@ -5901,7 +5902,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     messageBuilder.append( Const.CR );
     messageBuilder.append( Const.CR );
     messageBuilder.append( Const.CR );
-    messageBuilder.append( BaseMessages.getString( PKG, "System.CompanyInfo", Const.COPYRIGHT_YEAR ) );
+    messageBuilder.append(BaseMessages.getString(PKG, "System.CompanyInfo",
+        ""+((new Date()).getYear()+1900) ) );
     messageBuilder.append( Const.CR );
     messageBuilder.append( BaseMessages.getString( PKG, "System.ProductWebsiteUrl" ) );
     messageBuilder.append( Const.CR );
@@ -5947,6 +5949,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       outputStringDate = inputStringDate;
     }
     messageBuilder.append( outputStringDate );
+    return messageBuilder;
+  }
+  
+  
+  public void helpAbout() {
+    MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION | SWT.CENTER | SWT.SHEET );
+    StringBuilder messageBuilder = getHelpAboutText();
     // set the text in the message box
     mb.setMessage( messageBuilder.toString() );
     mb.setText( APP_NAME );
