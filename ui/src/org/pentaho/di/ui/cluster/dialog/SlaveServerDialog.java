@@ -36,6 +36,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -54,7 +55,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.www.AddTransServlet;
+import org.pentaho.di.www.RegisterTransServlet;
 
 /**
  *
@@ -85,6 +86,7 @@ public class SlaveServerDialog extends Dialog {
   private Text wName;
   private TextVar wHostname, wPort, wWebAppName, wUsername, wPassword;
   private Button wMaster;
+  private Button wSSL;
 
   // Proxy
   private TextVar wProxyHost, wProxyPort, wNonProxyHosts;
@@ -355,6 +357,31 @@ public class SlaveServerDialog extends Dialog {
     fdMaster.left = new FormAttachment( middle, 0 );
     fdMaster.right = new FormAttachment( 95, 0 );
     wMaster.setLayoutData( fdMaster );
+    
+    // Https
+    Control lastControl = wMaster;
+    {
+      Label wlSSL = new Label( wServiceComp, SWT.RIGHT );
+      wlSSL.setText( BaseMessages.getString( PKG, "SlaveServerDialog.UseSsl.Label" ) );
+      props.setLook( wlSSL );
+      FormData fd = new FormData();
+      fd.top = new FormAttachment( lastControl, margin );
+      fd.left = new FormAttachment( 0, 0 );
+      fd.right = new FormAttachment( middle, -margin );
+      wlSSL.setLayoutData( fd );
+      wlSSL.setVisible( false ); // future functional
+    }
+
+    {
+      wSSL = new Button( wServiceComp, SWT.CHECK );
+      props.setLook( wSSL );
+      FormData fd = new FormData();
+      fd.top = new FormAttachment( lastControl, margin );
+      fd.left = new FormAttachment( middle, 0 );
+      fd.right = new FormAttachment( 95, 0 );
+      wSSL.setLayoutData( fd );
+      wSSL.setVisible( false ); // future functional
+    }
 
     fdServiceComp = new FormData();
     fdServiceComp.left = new FormAttachment( 0, 0 );
@@ -472,6 +499,8 @@ public class SlaveServerDialog extends Dialog {
     wNonProxyHosts.setText( Const.NVL( slaveServer.getNonProxyHosts(), "" ) );
 
     wMaster.setSelection( slaveServer.isMaster() );
+    
+    wSSL.setSelection( slaveServer.isSslMode() );
 
     wName.setFocus();
   }
@@ -495,6 +524,8 @@ public class SlaveServerDialog extends Dialog {
     originalServer.setNonProxyHosts( slaveServer.getNonProxyHosts() );
 
     originalServer.setMaster( slaveServer.isMaster() );
+    
+    originalServer.setSslMode( slaveServer.isSslMode() );
 
     originalServer.setChanged();
 
@@ -517,6 +548,8 @@ public class SlaveServerDialog extends Dialog {
     slaveServer.setNonProxyHosts( wNonProxyHosts.getText() );
 
     slaveServer.setMaster( wMaster.getSelection() );
+    
+    slaveServer.setSslMode( wSSL.getSelection() );
   }
 
   public void test() {
@@ -525,11 +558,11 @@ public class SlaveServerDialog extends Dialog {
 
       String xml = "<sample/>";
 
-      String reply = slaveServer.sendXML( xml, AddTransServlet.CONTEXT_PATH );
+      String reply = slaveServer.sendXML( xml, RegisterTransServlet.CONTEXT_PATH );
 
       String message =
         BaseMessages.getString( PKG, "SlaveServer.Replay.Info1" )
-          + slaveServer.constructUrl( AddTransServlet.CONTEXT_PATH ) + Const.CR
+          + slaveServer.constructUrl( RegisterTransServlet.CONTEXT_PATH ) + Const.CR
           + BaseMessages.getString( PKG, "SlaveServer.Replay.Info2" ) + Const.CR + Const.CR;
       message += xml;
       message += Const.CR + Const.CR;

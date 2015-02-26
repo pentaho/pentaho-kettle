@@ -25,6 +25,14 @@ package org.pentaho.di.cluster;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.X509TrustManager;
+
 /**
  * Encapsulates the Apache commons HTTP connection manager with a singleton. We can use this to limit the number of open
  * connections to slave servers.
@@ -33,12 +41,21 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
  *
  */
 public class SlaveConnectionManager {
+  
+  private final static String SSL = "SSL";
 
   private static SlaveConnectionManager slaveConnectionManager;
 
   private MultiThreadedHttpConnectionManager manager;
 
   private SlaveConnectionManager() {
+    try {
+      SSLContext context = SSLContext.getInstance( SSL );
+      context.init( new KeyManager[0], new X509TrustManager[] { getDefaultTrustManager() }, new SecureRandom() );
+      SSLContext.setDefault( context );
+    } catch ( Exception e ) {
+      //log.logError( "Default SSL context hasn't been initialized", e );
+    }
     manager = new MultiThreadedHttpConnectionManager();
     manager.getParams().setDefaultMaxConnectionsPerHost( 100 );
     manager.getParams().setMaxTotalConnections( 200 );
@@ -57,5 +74,27 @@ public class SlaveConnectionManager {
 
   public void shutdown() {
     manager.shutdown();
+  }
+  
+  private static X509TrustManager getDefaultTrustManager() {
+    return new X509TrustManager() {
+      @Override
+      public void checkClientTrusted( X509Certificate[] certs, String param ) throws CertificateException {
+      }
+
+      @Override
+      public void checkServerTrusted( X509Certificate[] certs, String param ) throws CertificateException {
+        for ( X509Certificate cert : certs ) {
+          cert.checkValidity(); // validate date
+          // cert.verify( key ); // check by Public key
+          // cert.getBasicConstraints()!=-1 // check by CA
+        }
+      }
+
+      @Override
+      public X509Certificate[] getAcceptedIssuers() {
+        return null;
+      }
+    };
   }
 }

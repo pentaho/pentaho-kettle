@@ -22,7 +22,7 @@ public abstract class AbstractMethodProcessor implements MethodProcessor {
   public void processForKnownSchema( String schemaName, PartitionSettings settings ) throws KettlePluginException {
     if ( schemaName != null ) {
       int idx = Const.indexOfString( schemaName, settings.getSchemaNames() );
-      settings.updateSchema( settings.getTransMeta().getPartitionSchemas().get( idx ) );
+      settings.updateSchema( settings.getSchemas().get( idx ) );
     } else {
       settings.rollback( settings.getBefore() );
     }

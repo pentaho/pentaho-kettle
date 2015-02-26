@@ -67,9 +67,9 @@ import org.pentaho.di.ui.trans.steps.palo.cellinput.PaloCellInputDialog;
 
 public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = PaloDimInputMeta.class; // for i18n
-                                                        // purposes,
-                                                        // needed by
-                                                        // Translator2!!
+  // purposes,
+  // needed by
+  // Translator2!!
 
   private final PaloDimInputMeta meta;
   private TableView tableViewFields;
@@ -157,12 +157,12 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
       }
     };
     ColumnInfo[] colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( getLocalizedColumn( 0 ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-          new ColumnInfo( getLocalizedColumn( 1 ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-          new ColumnInfo( getLocalizedColumn( 2 ), ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
-          new ColumnInfo( getLocalizedColumn( 3 ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "String", "Number" },
-              true ) };
+      new ColumnInfo[]{
+        new ColumnInfo( getLocalizedColumn( 0 ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo( getLocalizedColumn( 1 ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo( getLocalizedColumn( 2 ), ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
+        new ColumnInfo( getLocalizedColumn( 3 ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{ "String", "Number" },
+          true ) };
 
     tableViewFields = new TableView( null, shell, SWT.FILL | SWT.BORDER, colinf, 10, true, lsMod, props );
 
@@ -197,7 +197,7 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
     buttonOk.setText( BaseMessages.getString( "System.Button.OK" ) );
     buttonPreview.setText( BaseMessages.getString( "System.Button.Preview" ) );
     buttonCancel.setText( BaseMessages.getString( "System.Button.Cancel" ) );
-    setButtonPositions( new Button[] { buttonOk, buttonPreview, buttonCancel }, margin, null );
+    setButtonPositions( new Button[]{ buttonOk, buttonPreview, buttonCancel }, margin, null );
 
     buttonCancel.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -265,8 +265,9 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
     PaloCellInputDialog.showPaloLibWarningDialog( shell );
 
     while ( !shell.isDisposed() ) {
-      if ( !display.readAndDispatch() )
+      if ( !display.readAndDispatch() ) {
         display.sleep();
+      }
     }
     return stepname;
   }
@@ -297,12 +298,14 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
 
   private void fillStoredData() {
 
-    if ( stepname != null )
+    if ( stepname != null ) {
       textStepName.setText( stepname );
+    }
 
     int index = addConnectionLine.indexOf( meta.getDatabaseMeta() != null ? meta.getDatabaseMeta().getName() : "" );
-    if ( index >= 0 )
+    if ( index >= 0 ) {
       addConnectionLine.select( index );
+    }
 
     if ( meta.getDimension() != null ) {
       comboDimension.add( meta.getDimension() );
@@ -315,7 +318,7 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
     if ( meta.getLevels().size() > 0 ) {
       for ( PaloDimensionLevel level : meta.getLevels() ) {
         tableViewFields.add( level.getLevelName(), String.valueOf( level.getLevelNumber() ), level.getFieldName(),
-            level.getFieldType() );
+          level.getFieldType() );
       }
       tableViewFields.setRowNums();
       tableViewFields.optWidth( true );
@@ -337,15 +340,16 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
           List<String> dimensions = data.helper.getDimensionsNames();
           Collections.sort( dimensions, new PaloNameComparator() );
           for ( String dimensionName : dimensions ) {
-            if ( comboDimension.indexOf( dimensionName ) == -1 )
+            if ( comboDimension.indexOf( dimensionName ) == -1 ) {
               comboDimension.add( dimensionName );
+            }
           }
           data.helper.disconnect();
         }
       }
     } catch ( Exception ex ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "PaloDimInputDialog.RetreiveDimensionsErrorTitle" ),
-          BaseMessages.getString( PKG, "PaloDimInputDialog.RetreiveDimensionsError" ), ex );
+        BaseMessages.getString( PKG, "PaloDimInputDialog.RetreiveDimensionsError" ), ex );
     }
   }
 
@@ -361,7 +365,7 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
     if ( buttonBaseElementsOnly.getSelection() ) {
       tableViewFields.table.removeAll();
       tableViewFields.add( BaseMessages.getString( PKG, "PaloDimInputDialog.BaseElementName" ), "0", comboDimension
-          .getText(), "String" );
+        .getText(), "String" );
     } else if ( comboDimension.getText() != null && comboDimension.getText() != "" ) {
       try {
         if ( addConnectionLine.getText() != null ) {
@@ -374,7 +378,7 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
             for ( int i = 0; i < levels.size(); i++ ) {
               PaloDimensionLevel level = levels.get( i );
               tableViewFields
-                  .add( level.getLevelName(), String.valueOf( level.getLevelNumber() ), level.getFieldName() );
+                .add( level.getLevelName(), String.valueOf( level.getLevelNumber() ), level.getFieldName() );
             }
             tableViewFields.setRowNums();
             tableViewFields.optWidth( true );
@@ -383,12 +387,12 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
         }
       } catch ( Exception ex ) {
         new ErrorDialog( shell, BaseMessages.getString( "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-            .getString( "System.Dialog.GetFieldsFailed.Message" ), ex );
+          .getString( "System.Dialog.GetFieldsFailed.Message" ), ex );
       }
     } else {
       new ErrorDialog( shell, BaseMessages.getString( "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( "System.Dialog.GetFieldsFailed.Message" ), new Exception( BaseMessages.getString( PKG,
-          "PaloDimInputDialog.SelectDimensionFirstError" ) ) );
+        .getString( "System.Dialog.GetFieldsFailed.Message" ), new Exception( BaseMessages.getString( PKG,
+        "PaloDimInputDialog.SelectDimensionFirstError" ) ) );
     }
 
   }
@@ -405,7 +409,7 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
       dispose();
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "PaloDimInputDialog.FailedToSaveDataErrorTitle" ),
-          BaseMessages.getString( PKG, "PaloDimInputDialog.FailedToSaveDataError" ), e );
+        BaseMessages.getString( PKG, "PaloDimInputDialog.FailedToSaveDataError" ), e );
     }
   }
 
@@ -415,9 +419,9 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
 
     for ( int i = 0; i < tableViewFields.table.getItemCount(); i++ ) {
       PaloDimensionLevel level =
-          new PaloDimensionLevel( tableViewFields.table.getItem( i ).getText( 1 ), Integer
-              .parseInt( tableViewFields.table.getItem( i ).getText( 2 ) ), tableViewFields.table.getItem( i ).getText(
-              3 ), tableViewFields.table.getItem( i ).getText( 4 ) );
+        new PaloDimensionLevel( tableViewFields.table.getItem( i ).getText( 1 ), Integer
+          .parseInt( tableViewFields.table.getItem( i ).getText( 2 ) ), tableViewFields.table.getItem( i ).getText(
+          3 ), tableViewFields.table.getItem( i ).getText( 4 ) );
       levels.add( level );
     }
     myMeta.setDatabaseMeta( transMeta.findDatabase( addConnectionLine.getText() ) );
@@ -434,21 +438,21 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
       getInfo( oneMeta );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "PaloInputDialog.Illegal.Dialog.Settings.Title" ),
-          BaseMessages.getString( PKG, "PaloInputDialog.Illegal.Dialog.Settings.Message" ), e );
+        BaseMessages.getString( PKG, "PaloInputDialog.Illegal.Dialog.Settings.Message" ), e );
       return;
     }
 
     TransMeta previewMeta =
-        TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, textStepName.getText() );
+      TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, textStepName.getText() );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, 500, BaseMessages.getString( "System.Dialog.EnterPreviewSize.Title" ),
-            BaseMessages.getString( "System.Dialog.EnterPreviewSize.Message" ) );
+      new EnterNumberDialog( shell, 500, BaseMessages.getString( "System.Dialog.EnterPreviewSize.Title" ),
+        BaseMessages.getString( "System.Dialog.EnterPreviewSize.Message" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { textStepName.getText() },
-              new int[] { previewSize } );
+        new TransPreviewProgressDialog( shell, previewMeta, new String[]{ textStepName.getText() },
+          new int[]{ previewSize } );
       progressDialog.open();
 
       Trans trans = progressDialog.getTrans();
@@ -457,17 +461,17 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
       if ( !progressDialog.isCancelled() ) {
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( "System.Dialog.PreviewError.Title" ), BaseMessages
-                  .getString( "System.Dialog.PreviewError.Message" ), loggingText, true );
+            new EnterTextDialog( shell, BaseMessages.getString( "System.Dialog.PreviewError.Title" ), BaseMessages
+              .getString( "System.Dialog.PreviewError.Message" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
       }
 
       PreviewRowsDialog prd =
-          new PreviewRowsDialog( shell, transMeta, SWT.NONE, textStepName.getText(), progressDialog
-              .getPreviewRowsMeta( textStepName.getText() ), progressDialog.getPreviewRows( textStepName.getText() ),
-              loggingText );
+        new PreviewRowsDialog( shell, transMeta, SWT.NONE, textStepName.getText(), progressDialog
+          .getPreviewRowsMeta( textStepName.getText() ), progressDialog.getPreviewRows( textStepName.getText() ),
+          loggingText );
       prd.open();
     }
   }

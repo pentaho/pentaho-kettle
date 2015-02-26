@@ -4,6 +4,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.pentaho.di.trans.steps.loadsave.getter.Getter;
@@ -20,6 +21,7 @@ public class DefaultFieldLoadSaveValidatorFactory implements FieldLoadSaveValida
     this.typeMap.put( boolean.class.getCanonicalName(), new BooleanLoadSaveValidator() );
     this.typeMap.put( Boolean.class.getCanonicalName(), new BooleanLoadSaveValidator() );
     this.typeMap.put( int.class.getCanonicalName(), new IntLoadSaveValidator() );
+    this.typeMap.put( long.class.getCanonicalName(), new LongLoadSaveValidator() );
     registerValidator( getName( List.class, String.class ), new ListLoadSaveValidator<String>(
       new StringLoadSaveValidator() ) {
     } );
@@ -29,6 +31,8 @@ public class DefaultFieldLoadSaveValidatorFactory implements FieldLoadSaveValida
         new BooleanLoadSaveValidator() ) );
     registerValidator( Boolean[].class.getCanonicalName(), new ArrayLoadSaveValidator<Boolean>(
         new BooleanLoadSaveValidator() ) );
+
+    registerValidator( Locale.class.getCanonicalName(), new LocaleLoadSaveValidator() );
   }
 
   public void registerValidator( String typeString, FieldLoadSaveValidator<?> validator ) {

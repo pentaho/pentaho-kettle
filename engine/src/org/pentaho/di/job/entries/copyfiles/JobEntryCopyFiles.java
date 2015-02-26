@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -10,7 +10,7 @@
  * you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -130,7 +130,9 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     if ( source_filefolder != null ) {
       for ( int i = 0; i < source_filefolder.length; i++ ) {
         retval.append( "        <field>" ).append( Const.CR );
+        saveSource( retval, source_filefolder[i] );
         retval.append( "          " ).append( XMLHandler.addTagValue( "source_filefolder", source_filefolder[i] ) );
+        saveDestination( retval, destination_filefolder[i] );
         retval.append( "          " ).append(
           XMLHandler.addTagValue( "destination_filefolder", destination_filefolder[i] ) );
         retval.append( "          " ).append( XMLHandler.addTagValue( "wildcard", wildcard[i] ) );
@@ -167,9 +169,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       // Read them all...
       for ( int i = 0; i < nrFields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
-
-        source_filefolder[i] = XMLHandler.getTagValue( fnode, "source_filefolder" );
-        destination_filefolder[i] = XMLHandler.getTagValue( fnode, "destination_filefolder" );
+        source_filefolder[i] = loadSource( fnode );
+        destination_filefolder[i] = loadDestination( fnode );
         wildcard[i] = XMLHandler.getTagValue( fnode, "wildcard" );
       }
     } catch ( KettleXMLException xe ) {
@@ -178,7 +179,35 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
         BaseMessages.getString( PKG, "JobCopyFiles.Error.Exception.UnableLoadXML" ), xe );
     }
   }
-
+  
+  protected String loadSource ( Node fnode ) {
+    return XMLHandler.getTagValue( fnode, "source_filefolder" );
+  }
+  
+  protected String loadDestination ( Node fnode ) {
+    return XMLHandler.getTagValue( fnode, "destination_filefolder" );
+  }
+  
+  protected void saveSource( StringBuilder retval, String source) {
+  } 
+  
+  protected void saveDestination( StringBuilder retval, String destination) {
+  }
+  
+  protected String loadSourceRep ( Repository rep, ObjectId id_jobentry, int a ) throws KettleException {
+    return rep.getJobEntryAttributeString( id_jobentry, a, "source_filefolder" );
+  }
+  
+  protected String loadDestinationRep ( Repository rep, ObjectId id_jobentry, int a ) throws KettleException {
+    return rep.getJobEntryAttributeString( id_jobentry, a, "destination_filefolder" );
+  }
+  
+  protected void saveSourceRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value ) throws KettleException {
+  } 
+  
+  protected void saveDestinationRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value ) throws KettleException {
+  }
+  
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException {
     try {
@@ -200,11 +229,12 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
       // Read them all...
       for ( int a = 0; a < argnr; a++ ) {
-        source_filefolder[a] = rep.getJobEntryAttributeString( id_jobentry, a, "source_filefolder" );
-        destination_filefolder[a] = rep.getJobEntryAttributeString( id_jobentry, a, "destination_filefolder" );
+        source_filefolder[a] = loadSourceRep( rep, id_jobentry, a );
+        destination_filefolder[a] = loadDestinationRep( rep, id_jobentry, a );
         wildcard[a] = rep.getJobEntryAttributeString( id_jobentry, a, "wildcard" );
       }
     } catch ( KettleException dbe ) {
+
 
       throw new KettleException( BaseMessages.getString( PKG, "JobCopyFiles.Error.Exception.UnableLoadRep" )
         + id_jobentry, dbe );
@@ -225,7 +255,10 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       // save the arguments...
       if ( source_filefolder != null ) {
         for ( int i = 0; i < source_filefolder.length; i++ ) {
+          
+          saveSourceRep( rep, id_job, getObjectId(), i, source_filefolder[i] );
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "source_filefolder", source_filefolder[i] );
+          saveDestinationRep( rep, id_job, getObjectId(), i, destination_filefolder[i] );
           rep
             .saveJobEntryAttribute(
               id_job, getObjectId(), i, "destination_filefolder", destination_filefolder[i] );

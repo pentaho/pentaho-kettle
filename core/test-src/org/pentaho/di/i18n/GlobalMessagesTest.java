@@ -23,8 +23,10 @@
 package org.pentaho.di.i18n;
 
 import static org.junit.Assert.assertEquals;
+
 import java.util.Locale;
 import java.util.ResourceBundle;
+
 import org.junit.Test;
 
 public class GlobalMessagesTest {
@@ -40,13 +42,13 @@ public class GlobalMessagesTest {
   @Test
   public void testGetBundleOldASCII() throws Exception {
     res = GlobalMessages.getBundle( Locale.JAPAN, "org/pentaho/di/i18n/messages/test_ascii_messages" );
-    assertEquals( "環境変数の選択", res.getString("System.Dialog.SelectEnvironmentVar.Title") );
+    assertEquals( "環境変数の選択", res.getString( "System.Dialog.SelectEnvironmentVar.Title" ) );
 
     res = GlobalMessages.getBundle( Locale.CHINA, "org/pentaho/di/i18n/messages/test_ascii_messages" );
-    assertEquals( "选择一个环境变量", res.getString("System.Dialog.SelectEnvironmentVar.Title") );
+    assertEquals( "选择一个环境变量", res.getString( "System.Dialog.SelectEnvironmentVar.Title" ) );
 
     res = GlobalMessages.getBundle( Locale.US, "org/pentaho/di/i18n/messages/test_ascii_messages" );
-    assertEquals( "Select an Environment Variable", res.getString("System.Dialog.SelectEnvironmentVar.Title") );
+    assertEquals( "Select an Environment Variable", res.getString( "System.Dialog.SelectEnvironmentVar.Title" ) );
   }
 
   /*
@@ -55,9 +57,9 @@ public class GlobalMessagesTest {
   @Test
   public void testGetBundleNewUTF8() throws Exception {
     res = GlobalMessages.getBundle( Locale.JAPAN, "org/pentaho/di/i18n/messages/test_utf8_messages" );
-    assertEquals( "環境変数の選択", res.getString("System.Dialog.SelectEnvironmentVar.Title") );
+    assertEquals( "環境変数の選択", res.getString( "System.Dialog.SelectEnvironmentVar.Title" ) );
 
     res = GlobalMessages.getBundle( Locale.CHINA, "org/pentaho/di/i18n/messages/test_utf8_messages" );
-    assertEquals( "选择一个环境变量", res.getString("System.Dialog.SelectEnvironmentVar.Title") );
+    assertEquals( "选择一个环境变量", res.getString( "System.Dialog.SelectEnvironmentVar.Title" ) );
   }
 }

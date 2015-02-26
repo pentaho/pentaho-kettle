@@ -1101,6 +1101,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       hiddenFieldName = rep.getStepAttributeString( id_step, "hiddenFieldName" );
       lastModificationTimeFieldName = rep.getStepAttributeString( id_step, "lastModificationTimeFieldName" );
       rootUriNameFieldName = rep.getStepAttributeString( id_step, "rootUriNameFieldName" );
+      uriNameFieldName = rep.getStepAttributeString( id_step, "uriNameFieldName" );
       extensionFieldName = rep.getStepAttributeString( id_step, "extensionFieldName" );
       sizeFieldName = rep.getStepAttributeString( id_step, "sizeFieldName" );
 
@@ -1183,6 +1184,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "uriNameFieldName", uriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "rootUriNameFieldName", rootUriNameFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "extensionFieldName", extensionFieldName );
+      rep.saveStepAttribute( id_transformation, id_step, "sizeFieldName", sizeFieldName );
 
       rep.saveStepAttribute( id_transformation, id_step, "spreadsheet_type", spreadSheetType.toString() );
     } catch ( Exception e ) {
