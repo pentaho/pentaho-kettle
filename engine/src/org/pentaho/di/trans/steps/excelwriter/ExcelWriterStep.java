@@ -31,6 +31,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -45,7 +46,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -406,9 +406,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           if ( !isTitle
             && excelField != null && !Const.isEmpty( excelField.getFormat() )
             && !excelField.getFormat().startsWith( "Image" ) ) {
-            DataFormat format = data.wb.createDataFormat();
-            short formatIndex = format.getFormat( excelField.getFormat() );
-            CellUtil.setCellStyleProperty( cell, data.wb, CellUtil.DATA_FORMAT, formatIndex );
+            setDataFormat( excelField.getFormat(), cell );
           }
 
           // cache it for later runs
@@ -467,7 +465,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
               // make it blue and underlined
               hlink_font.setUnderline( Font.U_SINGLE );
               hlink_font.setColor( IndexedColors.BLUE.getIndex() );
-              CellUtil.setCellStyleProperty( cell, data.wb, CellUtil.FONT, hlink_font.getIndex() );
+              CellStyle style = cell.getCellStyle();
+              style.setFont( hlink_font );
+              cell.setCellStyle( style );
               data.cacheLinkStyle( fieldNr, cell.getCellStyle() );
             }
           }
@@ -535,6 +535,27 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       throw new KettleException( e );
     }
 
+  }
+
+  /**
+   * Set specified cell format
+   * 
+   * @param excelFieldFormat
+   *          the specified format
+   * @param cell
+   *          the cell to set up format
+   */
+  private void setDataFormat( String excelFieldFormat, Cell cell ) {
+    if ( log.isDebug() ) {
+      logDebug( BaseMessages.getString( PKG, "ExcelWriterStep.Log.SetDataFormat", excelFieldFormat, CellReference
+          .convertNumToColString( cell.getColumnIndex() ), cell.getRowIndex() ) );
+    }
+
+    DataFormat format = data.wb.createDataFormat();
+    short formatIndex = format.getFormat( excelFieldFormat );
+    CellStyle style = data.wb.createCellStyle();
+    style.setDataFormat( formatIndex );
+    cell.setCellStyle( style );
   }
 
   /**
