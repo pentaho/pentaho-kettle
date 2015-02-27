@@ -139,7 +139,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
         // System.out.println("New JobEntryInterface built of type:
         // "+entry.getTypeDesc());
         entry.setPluginId( jobPlugin.getIds()[0] );
-
+        entry.setMetaStore( metaStore ); // inject metastore
         entry.loadXML( entrynode, databases, slaveServers, rep, metaStore );
         compatibleLoadXml( entrynode, databases, slaveServers, rep );
 
