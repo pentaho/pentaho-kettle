@@ -95,6 +95,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Properties;
 
 public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace,
@@ -102,6 +103,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_SLAVESERVER = "Slave Server";
+
+  private static final Random RANDOM = new Random();
 
   public static final String XML_TAG = "slaveserver";
 
@@ -113,6 +116,26 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   public final static String SSL_MODE_TAG = "sslMode";
 
   private static final int NOT_FOUND_ERROR = 404;
+
+  public static final int KETTLE_CARTE_RETRIES = getNumberOfSlaveServerRetries();
+  
+  public static final int KETTLE_CARTE_RETRY_BACKOFF_INCREMENTS = getBackoffIncrements();
+  
+  private static int getNumberOfSlaveServerRetries() {
+    try {
+      return Integer.parseInt(Const.NVL(System.getProperty( "KETTLE_CARTE_RETRIES" ), "0" ) );
+    } catch ( Exception e ) {
+      return 0;
+    }
+  }
+  
+  public static int getBackoffIncrements() {
+    try {
+      return Integer.parseInt(Const.NVL(System.getProperty( "KETTLE_CARTE_RETRY_BACKOFF_INCREMENTS" ), "1000" ) );
+    } catch ( Exception e ) {
+      return 1000;
+    }
+  }
 
   private LogChannelInterface log;
 
@@ -620,6 +643,41 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     this.master = master;
   }
 
+  public String execService( String service, boolean retry ) throws Exception {
+    int tries = 0;
+    int maxRetries = 0;
+    if ( retry ) {
+      maxRetries = KETTLE_CARTE_RETRIES;
+    }
+    while ( true ) {
+      try {
+        return execService( service );
+      } catch ( Exception e ) {
+        if ( tries >= maxRetries ) {
+          throw e;
+        } else {
+          try {
+            Thread.sleep( getDelay( tries ) );
+          } catch ( InterruptedException e2 ) {
+            //ignore
+          }
+        }
+      }
+      tries++;
+    }
+  }
+
+  public static long getDelay( int trial ) {
+    long current = KETTLE_CARTE_RETRY_BACKOFF_INCREMENTS;
+    long previous = 0;
+    for ( int i = 0; i < trial; i++ ) {
+      long tmp = current;
+      current = current + previous;
+      previous = tmp;
+    }
+    return current + RANDOM.nextInt( (int) Math.min( Integer.MAX_VALUE, current / 4L ) );
+  }
+
   public synchronized String execService( String service ) throws Exception {
     return execService( service, new HashMap<String, String>() );
   }
@@ -667,7 +725,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         log.logDebug( BaseMessages.getString( PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString( result ) ) );
       }
 
-      String responseBody = getResponseBodyAsString( method.getResponseBodyAsStream() );
+      String responseBody = method.getResponseBodyAsString();
 
       if ( log.isDetailed() ) {
         log.logDetailed( BaseMessages.getString( PKG, "SlaveServer.DETAILED_FinishedReading", Integer
@@ -724,7 +782,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     throws Exception {
     String xml =
       execService( GetTransStatusServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
-        + Const.NVL( carteObjectId, "" ) + "&xml=Y&from=" + startLogLineNr );
+        + Const.NVL( carteObjectId, "" ) + "&xml=Y&from=" + startLogLineNr, true );
     return SlaveServerTransStatus.fromXML( xml );
   }
 
@@ -732,7 +790,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     throws Exception {
     String xml =
       execService( GetJobStatusServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( jobName, "UTF-8" ) + "&id="
-        + Const.NVL( carteObjectId, "" ) + "&xml=Y&from=" + startLogLineNr );
+        + Const.NVL( carteObjectId, "" ) + "&xml=Y&from=" + startLogLineNr, true );
     return SlaveServerJobStatus.fromXML( xml );
   }
 
