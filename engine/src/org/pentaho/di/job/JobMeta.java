@@ -728,7 +728,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
         // The jobnode
         Node jobnode = XMLHandler.getSubNode( doc, XML_TAG );
 
-        loadXML( jobnode, fname, rep, prompter );
+        loadXML( jobnode, fname, rep, metaStore, false, prompter );
       } else {
         throw new KettleXMLException( BaseMessages.getString( PKG, "JobMeta.Exception.ErrorReadingFromXMLFile" )
           + fname );
