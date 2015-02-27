@@ -995,11 +995,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
         }
 
-        if ( iteration == 0 ) {
-          result.clear();
-        }
-
+        result.clear(); // clear only the numbers, NOT the files or rows.
         result.add( oneResult );
+
+        // Set the result rows too, if any ...
+        if ( !Const.isEmpty( oneResult.getRows() ) ) {
+          result.setRows( new ArrayList<RowMetaAndData>( oneResult.getRows() ) );
+        }
 
         // if one of them fails (in the loop), increase the number of errors
         //
