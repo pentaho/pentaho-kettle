@@ -160,7 +160,6 @@ import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulLoader;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.containers.XulMenu;
