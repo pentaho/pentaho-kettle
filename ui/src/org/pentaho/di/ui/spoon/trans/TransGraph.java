@@ -188,7 +188,6 @@ import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulLoader;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.containers.XulMenu;
@@ -400,7 +399,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     transPreviewDelegate = new TransPreviewDelegate( spoon, this );
 
     try {
-      XulLoader loader = new KettleXulLoader();
+      KettleXulLoader loader = new KettleXulLoader();
+      loader.setIconsSize( 16, 16 );
       loader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
       ResourceBundle bundle = new XulSpoonResourceBundle( Spoon.class );
       XulDomContainer container = loader.loadXul( XUL_FILE_TRANS_TOOLBAR, bundle );
