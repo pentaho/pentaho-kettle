@@ -1647,7 +1647,7 @@ public class JobDialog extends Dialog {
 
       String id = plugin.getIds()[0];
       if ( id != null ) {
-        shell.setImage( GUIResource.getInstance().getImagesJobentries().get( id ) );
+        shell.setImage( GUIResource.getInstance().getImagesJobentries().get( id ).getAsBitmap( shell.getDisplay() ) );
       }
     } catch ( Throwable e ) {
       // Ignore unexpected errors, not worth it

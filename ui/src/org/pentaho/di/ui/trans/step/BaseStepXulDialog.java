@@ -145,7 +145,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
     try {
       String id = PluginRegistry.getInstance().getPluginId( StepPluginType.class, stepMetaInterface );
       if ( getShell() != null && id != null ) {
-        getShell().setImage( GUIResource.getInstance().getImagesSteps().get( id ) );
+        getShell().setImage( GUIResource.getInstance().getImagesSteps().get( id ).getAsBitmap( shell.getDisplay() ) );
       }
     } catch ( Throwable e ) {
       // Ignore
