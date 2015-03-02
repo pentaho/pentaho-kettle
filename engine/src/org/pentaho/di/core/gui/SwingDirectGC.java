@@ -559,7 +559,7 @@ public class SwingDirectGC implements GCInterface {
     return new Point( maxWidth, height );
   }
 
-  public void drawStepIcon( int x, int y, StepMeta stepMeta ) {
+  public void drawStepIcon( int x, int y, StepMeta stepMeta, float magnification ) {
     // Draw a blank rectangle to prevent alpha channel problems...
     //
     gc.fillRect( x + xOffset, y + yOffset, iconsize, iconsize );
@@ -573,7 +573,7 @@ public class SwingDirectGC implements GCInterface {
     }
   }
 
-  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
+  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy, float magnification ) {
     if ( jobEntryCopy == null ) {
       return; // Don't draw anything
     }
