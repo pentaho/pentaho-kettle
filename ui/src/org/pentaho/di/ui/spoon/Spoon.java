@@ -2194,7 +2194,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           if ( tip != null ) {
             PluginInterface plugin = PluginRegistry.getInstance().findPluginWithName( StepPluginType.class, name );
             if ( plugin != null ) {
-              Image image = GUIResource.getInstance().getImagesSteps().get( plugin.getIds()[0] );
+              Image image = GUIResource.getInstance().getImagesSteps().get( plugin.getIds()[0] ).getAsBitmap( display );
               if ( image == null ) {
                 toolTip.hide();
               }
@@ -2208,7 +2208,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             PluginInterface plugin =
               PluginRegistry.getInstance().findPluginWithName( JobEntryPluginType.class, name );
             if ( plugin != null ) {
-              Image image = GUIResource.getInstance().getImagesJobentries().get( plugin.getIds()[0] );
+              Image image =
+                  GUIResource.getInstance().getImagesJobentries().get( plugin.getIds()[0] ).getAsBitmap( display );
               toolTip.setImage( image );
               toolTip.setText( name + Const.CR + Const.CR + tip );
               toolTip.show( new org.eclipse.swt.graphics.Point( move.x + 10, move.y + 10 ) );
@@ -2341,7 +2342,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         PluginInterface stepPlugin =
           PluginRegistry.getInstance().findPluginWithId( StepPluginType.class, usage.getObjectName() );
         if ( stepPlugin != null ) {
-          final Image stepImage = GUIResource.getInstance().getImagesSteps().get( stepPlugin.getIds()[0] );
+          final Image stepImage =
+              GUIResource.getInstance().getImagesSteps().get( stepPlugin.getIds()[0] ).getAsBitmap( display );
           String pluginName = Const.NVL( stepPlugin.getName(), "" );
           String pluginDescription = Const.NVL( stepPlugin.getDescription(), "" );
 
@@ -2389,7 +2391,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           if ( !baseJobEntries.get( j ).getIds()[ 0 ].equals( "SPECIAL" ) ) {
             if ( baseJobEntries.get( j ).getCategory().equalsIgnoreCase( baseCategory ) ) {
               final Image jobEntryImage =
-                GUIResource.getInstance().getImagesJobentriesSmall().get( baseJobEntries.get( j ).getIds()[ 0 ] );
+                  GUIResource.getInstance().getImagesJobentriesSmall().get( baseJobEntries.get( j ).getIds()[0] );
               String pluginName = Const.NVL( baseJobEntries.get( j ).getName(), "" );
               String pluginDescription = Const.NVL( baseJobEntries.get( j ).getDescription(), "" );
 
