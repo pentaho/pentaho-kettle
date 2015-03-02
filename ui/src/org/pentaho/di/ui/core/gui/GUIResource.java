@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
@@ -60,6 +61,7 @@ import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.util.ImageUtil;
+import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 /*
  * colors etc. are allocated once and released once at the end of the program.
@@ -145,11 +147,11 @@ public class GUIResource {
   private ManagedFont fontBold;
 
   /* * * Images * * */
-  private Map<String, Image> imagesSteps = new Hashtable<String, Image>();
+  private Map<String, SwtUniversalImage> imagesSteps = new Hashtable<String, SwtUniversalImage>();
 
   private Map<String, Image> imagesStepsSmall = new Hashtable<String, Image>();
 
-  private Map<String, Image> imagesJobentries;
+  private Map<String, SwtUniversalImage> imagesJobentries;
 
   private Map<String, Image> imagesJobentriesSmall;
 
@@ -605,7 +607,7 @@ public class GUIResource {
       disposeImage( imageShowErrorLines );
 
       // big images
-      disposeImages( imagesSteps.values() );
+      disposeUniversalImages( imagesSteps.values() );
 
       // Small images
       disposeImages( imagesStepsSmall.values() );
@@ -618,6 +620,12 @@ public class GUIResource {
   private void disposeImages( Collection<Image> c ) {
     for ( Image image : c ) {
       disposeImage( image );
+    }
+  }
+
+  private void disposeUniversalImages( Collection<SwtUniversalImage> c ) {
+    for ( SwtUniversalImage image : c ) {
+      image.dispose();
     }
   }
 
@@ -652,34 +660,30 @@ public class GUIResource {
         continue;
       }
 
-      Image image = null;
+      SwtUniversalImage image = null;
       Image small_image = null;
 
       String filename = steps.get( i ).getImageFile();
       try {
         ClassLoader classLoader = registry.getClassLoader( steps.get( i ) );
-        image = ImageUtil.getImage( display, classLoader, filename );
+        image = SwtSvgImageUtil.getUniversalImage( display, classLoader, filename );
       } catch ( Exception e ) {
         log.logError( "Unable to find required step image file or image format not supported (e.g. interlaced) ["
-          + filename + " : ", e );
-        image = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
-        GC gc = new GC( image );
+            + filename + " : ", e );
+        Image img = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
+        GC gc = new GC( img );
         gc.drawRectangle( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         gc.drawLine( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         gc.drawLine( ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE );
         gc.dispose();
+        image = new SwtUniversalImage( img );
       }
 
       // Calculate the smaller version of the image @ 16x16...
       // Perhaps we should make this configurable?
       //
       if ( image != null ) {
-        int xsize = image.getBounds().width;
-        int ysize = image.getBounds().height;
-        small_image = new Image( display, 16, 16 );
-        GC gc = new GC( small_image );
-        gc.drawImage( image, 0, 0, xsize, ysize, 0, 0, 16, 16 );
-        gc.dispose();
+        small_image = image.getAsBitmapForSize( display, 16, 16 );
       }
 
       imagesSteps.put( steps.get( i ).getIds()[0], image );
@@ -1089,7 +1093,7 @@ public class GUIResource {
    *
    */
   private void loadJobEntryImages() {
-    imagesJobentries = new Hashtable<String, Image>();
+    imagesJobentries = new Hashtable<String, SwtUniversalImage>();
     imagesJobentriesSmall = new Hashtable<String, Image>();
 
     // //
@@ -1105,34 +1109,30 @@ public class GUIResource {
         continue;
       }
 
-      Image image = null;
+      SwtUniversalImage image = null;
       Image small_image = null;
 
       String filename = plugin.getImageFile();
       try {
         ClassLoader classLoader = registry.getClassLoader( plugin );
-        image = ImageUtil.getImage( display, classLoader, filename );
+        image = SwtSvgImageUtil.getUniversalImage( display, classLoader, filename );
       } catch ( Exception e ) {
         log.logError( "Unable to find required job entry image file ["
           + filename + "] for id [" + plugin.getIds()[0] + "] : " + e.toString() );
-        image = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
-        GC gc = new GC( image );
+        Image img = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
+        GC gc = new GC( img );
         gc.drawRectangle( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         gc.drawLine( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         gc.drawLine( ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE );
         gc.dispose();
+        image = new SwtUniversalImage( img );
       }
 
       // Calculate the smaller version of the image @ 16x16...
       // Perhaps we should make this configurable?
       //
       if ( image != null ) {
-        int xsize = image.getBounds().width;
-        int ysize = image.getBounds().height;
-        small_image = new Image( display, 16, 16 );
-        GC gc = new GC( small_image );
-        gc.drawImage( image, 0, 0, xsize, ysize, 0, 0, 16, 16 );
-        gc.dispose();
+        small_image = image.getAsBitmapForSize( display, 16, 16 );
       }
 
       imagesJobentries.put( plugin.getIds()[0], image );
@@ -1462,7 +1462,7 @@ public class GUIResource {
   /**
    * @return Returns the imagesSteps.
    */
-  public Map<String, Image> getImagesSteps() {
+  public Map<String, SwtUniversalImage> getImagesSteps() {
     return imagesSteps;
   }
 
@@ -1483,7 +1483,7 @@ public class GUIResource {
   /**
    * @return Returns the imagesJobentries.
    */
-  public Map<String, Image> getImagesJobentries() {
+  public Map<String, SwtUniversalImage> getImagesJobentries() {
     return imagesJobentries;
   }
 
@@ -1491,7 +1491,7 @@ public class GUIResource {
    * @param imagesJobentries
    *          The imagesJobentries to set.
    */
-  public void setImagesJobentries( Hashtable<String, Image> imagesJobentries ) {
+  public void setImagesJobentries( Hashtable<String, SwtUniversalImage> imagesJobentries ) {
     this.imagesJobentries = imagesJobentries;
   }
 

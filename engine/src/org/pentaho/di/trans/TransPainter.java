@@ -686,7 +686,7 @@ public class TransPainter extends BasePainter {
 
     gc.setBackground( EColor.BACKGROUND );
     gc.fillRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1 );
-    gc.drawStepIcon( x, y, stepMeta );
+    gc.drawStepIcon( x, y, stepMeta, magnification );
     if ( stepError ) {
       gc.setForeground( EColor.RED );
     } else {
