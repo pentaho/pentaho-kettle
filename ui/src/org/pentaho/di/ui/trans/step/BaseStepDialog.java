@@ -1390,7 +1390,7 @@ public class BaseStepDialog extends Dialog {
       createHelpButton( shell, stepMeta, plugin );
       String id = plugin.getIds()[ 0 ];
       if ( id != null ) {
-        shell.setImage( GUIResource.getInstance().getImagesSteps().get( id ) );
+        shell.setImage( GUIResource.getInstance().getImagesSteps().get( id ).getAsBitmap( shell.getDisplay() ) );
       }
     }
   }
