@@ -230,7 +230,7 @@ public class JobPainter extends BasePainter {
       gc.setLineWidth( 1 );
     }
 
-    gc.drawJobEntryIcon( x, y, jobEntryCopy );
+    gc.drawJobEntryIcon( x, y, jobEntryCopy, magnification );
     gc.setBackground( EColor.BACKGROUND );
 
     if ( activeJobEntries != null && activeJobEntries.contains( jobEntryCopy ) ) {

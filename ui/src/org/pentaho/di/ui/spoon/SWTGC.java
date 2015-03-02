@@ -38,6 +38,7 @@ import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
+import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -66,7 +67,7 @@ public class SWTGC implements GCInterface {
 
   private int iconsize;
 
-  private Map<String, Image> images;
+  private Map<String, SwtUniversalImage> images;
 
   private List<Color> colors;
   private List<Font> fonts;
@@ -330,12 +331,14 @@ public class SWTGC implements GCInterface {
     return new Point( p.x, p.y );
   }
 
-  public void drawStepIcon( int x, int y, StepMeta stepMeta ) {
+  public void drawStepIcon( int x, int y, StepMeta stepMeta, float magnification ) {
     // Draw a blank rectangle to prevent alpha channel problems...
     //
     gc.fillRectangle( x, y, iconsize, iconsize );
     String steptype = stepMeta.getStepID();
-    Image im = images.get( steptype );
+    Image im =
+        images.get( steptype ).getAsBitmapForSize( gc.getDevice(), Math.round( iconsize * magnification ),
+            Math.round( iconsize * magnification ) );
     if ( im != null ) { // Draw the icon!
 
       org.eclipse.swt.graphics.Rectangle bounds = im.getBounds();
@@ -343,7 +346,7 @@ public class SWTGC implements GCInterface {
     }
   }
 
-  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
+  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy, float magnification ) {
     if ( jobEntryCopy == null ) {
       return; // Don't draw anything
     }
@@ -360,7 +363,9 @@ public class SWTGC implements GCInterface {
     } else {
       String configId = jobEntryCopy.getEntry().getPluginId();
       if ( configId != null ) {
-        image = GUIResource.getInstance().getImagesJobentries().get( configId );
+        image =
+            GUIResource.getInstance().getImagesJobentries().get( configId ).getAsBitmapForSize( gc.getDevice(),
+                Math.round( iconsize * magnification ), Math.round( iconsize * magnification ) );
       }
     }
     if ( image == null ) {

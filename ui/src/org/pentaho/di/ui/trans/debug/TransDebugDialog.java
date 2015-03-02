@@ -253,7 +253,7 @@ public class TransDebugDialog extends Dialog {
     for ( int i = 0; i < transDebugMeta.getTransMeta().getSteps().size(); i++ ) {
       StepMeta stepMeta = transDebugMeta.getTransMeta().getStep( i );
       TableItem item = new TableItem( wSteps.table, SWT.NONE );
-      Image image = resource.getImagesSteps().get( stepMeta.getStepID() );
+      Image image = resource.getImagesSteps().get( stepMeta.getStepID() ).getAsBitmap( display );
       item.setImage( 0, image );
       item.setText( 0, "" );
       item.setText( 1, stepMeta.getName() );
