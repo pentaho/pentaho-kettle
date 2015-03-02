@@ -320,7 +320,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     refreshListeners = new ArrayList<RefreshListener>();
 
     try {
-      XulLoader loader = new KettleXulLoader();
+      KettleXulLoader loader = new KettleXulLoader();
+      loader.setIconsSize( 16, 16 );
       loader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
       ResourceBundle bundle = new XulSpoonResourceBundle( JobGraph.class );
       XulDomContainer container = loader.loadXul( XUL_FILE_JOB_GRAPH, bundle );
