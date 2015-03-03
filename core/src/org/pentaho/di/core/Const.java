@@ -255,7 +255,7 @@ public class Const {
   /**
    * The default shadow size on the graphical view.
    */
-  public static final int SHADOW_SIZE = 4;
+  public static final int SHADOW_SIZE = 0;
 
   /**
    * The size of relationship symbols
