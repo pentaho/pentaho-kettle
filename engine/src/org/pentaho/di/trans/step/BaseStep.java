@@ -48,7 +48,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -414,7 +414,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           + "] doesn't have a name.  A step should always have a name to identify it by." );
     }
 
-    log = new LogChannel( this, trans );
+    log = KettleLogStore.getLogChannelInterfaceFactory().create( this, trans );
     logLevel = log.getLogLevel();
 
     first = true;
@@ -1262,11 +1262,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
               }
             }
 
-            // Loop until we find room in the target rowset
-            //
-            while ( !rs.putRow( rowMeta, row ) && !isStopped() ) {
-              // Wait
-            }
+            putRowToRowSet( rs, rowMeta, row );
             incrementLinesWritten();
 
             // Now determine the next output rowset!
@@ -1299,11 +1295,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
             }
 
             try {
-              // Loop until we find room in the target rowset
-              //
-              while ( !rs.putRow( rowMeta, rowMeta.cloneRow( row ) ) && !isStopped() ) {
-                // Wait
-              }
+              putRowToRowSet( rs, rowMeta, rowMeta.cloneRow( row ) );
               incrementLinesWritten();
             } catch ( KettleValueException e ) {
               throw new KettleStepException( "Unable to clone row while copying rows to multiple target steps", e );
@@ -1313,9 +1305,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           // set row in first output rowset
           //
           RowSet rs = outputRowSets.get( 0 );
-          while ( !rs.putRow( rowMeta, row ) && !isStopped() ) {
-            // Wait
-          }
+          putRowToRowSet( rs, rowMeta, row );
           incrementLinesWritten();
         }
       }
@@ -1425,9 +1415,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
         // logBasic("Putting row to partition #"+partitionNr);
 
-        while ( !selectedRowSet.putRow( rowMeta, row ) && !isStopped() ) {
-          // Wait
-        }
+        putRowToRowSet( selectedRowSet, rowMeta, row );
         incrementLinesWritten();
 
         if ( log.isRowLevel() )
@@ -1443,14 +1431,30 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         //
         for ( int r = 0; r < outputRowSets.size(); r++ ) {
           RowSet rowSet = outputRowSets.get( r );
-          while ( !rowSet.putRow( rowMeta, row ) && !isStopped() ) {
-            // Wait
-          }
+          putRowToRowSet( rowSet, rowMeta, row );
         }
       }
         break;
       default:
         throw new KettleStepException( "Internal error: invalid repartitioning type: " + repartitioning );
+    }
+  }
+
+  private void putRowToRowSet( RowSet rs, RowMetaInterface rowMeta, Object[] row ) {
+    RowMetaInterface toBeSent;
+    RowMetaInterface metaFromRs = rs.getRowMeta();
+    if ( metaFromRs == null ) {
+      // RowSet is not initialised so far
+      toBeSent = rowMeta.clone();
+    } else {
+      // use the existing
+      toBeSent = metaFromRs;
+    }
+
+    while ( !rs.putRow( toBeSent, row ) ) {
+      if ( isStopped() ) {
+        return;
+      }
     }
   }
 
@@ -1505,9 +1509,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // Don't distribute or anything, only go to this rowset!
     //
-    while ( !rowSet.putRow( rowMeta, row ) && !isStopped() ) {
-      // Wait
-    }
+    putRowToRowSet( rowSet, rowMeta, row );
     incrementLinesWritten();
   }
 
@@ -1565,9 +1567,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     }
 
     if ( errorRowSet != null ) {
-      while ( !errorRowSet.putRow( errorRowMeta, errorRowData ) && !isStopped() ) {
-        // Wait
-      }
+      putRowToRowSet( errorRowSet, errorRowMeta, errorRowData );
       incrementLinesRejected();
     }
 
