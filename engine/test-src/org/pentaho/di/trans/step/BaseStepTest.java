@@ -16,6 +16,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.SingleRowRowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -23,6 +24,8 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.BasePartitioner;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
@@ -43,7 +46,7 @@ public class BaseStepTest {
 
   /**
    * This test checks that data from one non-partitioned step copies to 2 partitioned steps right.
-   * 
+   *
    * @see {@link <a href="http://jira.pentaho.com/browse/PDI-12211">http://jira.pentaho.com/browse/PDI-12211<a>}
    * @throws KettleException
    */
@@ -171,5 +174,41 @@ public class BaseStepTest {
       done.set( true );
       addListeners.join();
     }
+  }
+
+  @Test
+  public void outputRowMetasAreNotSharedAmongSeveralStreams() throws Exception {
+    RowSet rs1 = new SingleRowRowSet();
+    RowSet rs2 = new SingleRowRowSet();
+
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+      mockHelper.logChannelInterface );
+    when( mockHelper.trans.isRunning() ).thenReturn( true );
+    BaseStep baseStep =
+      new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+    baseStep.setStopped( false );
+    baseStep.setRepartitioning( StepPartitioningMeta.PARTITIONING_METHOD_NONE );
+    baseStep.setOutputRowSets( Arrays.asList( rs1, rs2 ) );
+
+    for ( RowSet rowSet : baseStep.getOutputRowSets() ) {
+      assertNull( "RowMeta should be null, since no calls were done", rowSet.getRowMeta() );
+    }
+
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "string" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "integer" ) );
+
+    baseStep.putRow( rowMeta, new Object[] { "a", 1 } );
+
+    RowMetaInterface meta1 = rs1.getRowMeta();
+    RowMetaInterface meta2 = rs2.getRowMeta();
+    assertNotNull( meta1 );
+    assertNotNull( meta2 );
+    // content is same
+    for ( ValueMetaInterface meta : meta1.getValueMetaList() ) {
+      assertTrue( meta.getName(), meta2.exists( meta ) );
+    }
+    // whereas instances differ
+    assertFalse( meta1 == meta2 );
   }
 }
