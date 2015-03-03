@@ -88,7 +88,7 @@ public class Props implements Cloneable {
   public static final String STRING_SVG_ENABLED = "EnableSVG";
   public static final String STRING_ICON_SIZE = "IconSize";
   public static final String STRING_LINE_WIDTH = "LineWidth";
-  public static final String STRING_SHADOW_SIZE = "ShadowSize";
+  public static final String STRING_SHADOW_SIZE = "ShadowSize54";
   public static final String STRING_LOG_LEVEL = "LogLevel";
   public static final String STRING_LOG_FILTER = "LogFilter";
   public static final String STRING_MIDDLE_PCT = "MiddlePct";
