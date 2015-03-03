@@ -119,8 +119,19 @@ public class MappingInput extends BaseStep implements StepInterface {
       // That means that all fields go through unchanged, unless specified.
       //
       for ( MappingValueRename valueRename : data.valueRenames ) {
-        replaceRenameIfNecessary( data.outputRowMeta, valueRename );
-        replaceRenameIfNecessary( getInputRowMeta(), valueRename );
+        ValueMetaInterface valueMeta = data.outputRowMeta.searchValueMeta( valueRename.getSourceValueName() );
+        if ( valueMeta == null ) {
+          throw new KettleStepException( BaseMessages.getString( PKG, "MappingInput.Exception.UnableToFindMappedValue",
+              valueRename.getSourceValueName() ) );
+        }
+        valueMeta.setName( valueRename.getTargetValueName() );
+
+        valueMeta = getInputRowMeta().searchValueMeta( valueRename.getSourceValueName() );
+        if ( valueMeta == null ) {
+          throw new KettleStepException( BaseMessages.getString( PKG, "MappingInput.Exception.UnableToFindMappedValue",
+              valueRename.getSourceValueName() ) );
+        }
+        valueMeta.setName( valueRename.getTargetValueName() );
       }
 
       // This is typical side effect of ESR-4178
@@ -163,21 +174,6 @@ public class MappingInput extends BaseStep implements StepInterface {
     }
 
     return true;
-  }
-
-  private void replaceRenameIfNecessary( RowMetaInterface rowMeta, MappingValueRename valueRename )
-    throws KettleStepException {
-    ValueMetaInterface valueMeta = rowMeta.searchValueMeta( valueRename.getSourceValueName() );
-    if ( valueMeta == null ) {
-      // it is possible, that valueMeta has been already renamed
-      valueMeta = rowMeta.searchValueMeta( valueRename.getTargetValueName() );
-      if ( valueMeta == null ) {
-        throw new KettleStepException( BaseMessages.getString( PKG, "MappingInput.Exception.UnableToFindMappedValue",
-          valueRename.getSourceValueName() ) );
-      }
-    } else {
-      valueMeta.setName( valueRename.getTargetValueName() );
-    }
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
