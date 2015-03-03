@@ -32,6 +32,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -83,8 +84,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * Sets the type of join
    *
-   * @param joinType
-   *          The type of join, e.g. INNER/FULL OUTER
+   * @param joinType The type of join, e.g. INNER/FULL OUTER
    */
   public void setJoinType( String joinType ) {
     this.joinType = joinType;
@@ -98,8 +98,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param keyFields1
-   *          The keyFields1 to set.
+   * @param keyFields1 The keyFields1 to set.
    */
   public void setKeyFields1( String[] keyFields1 ) {
     this.keyFields1 = keyFields1;
@@ -113,8 +112,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param keyFields2
-   *          The keyFields2 to set.
+   * @param keyFields2 The keyFields2 to set.
    */
   public void setKeyFields2( String[] keyFields2 ) {
     this.keyFields2 = keyFields2;
@@ -255,8 +253,8 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+                     Repository repository, IMetaStore metaStore ) {
     /*
      * @todo Need to check for the following: 1) Join type must be one of INNER / LEFT OUTER / RIGHT OUTER / FULL OUTER
      * 2) Number of input streams must be two (for now at least) 3) The field names of input streams must be unique
@@ -268,26 +266,29 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // We don't have any input fields here in "r" as they are all info fields.
     // So we just merge in the info fields.
     //
     if ( info != null ) {
       for ( int i = 0; i < info.length; i++ ) {
         if ( info[i] != null ) {
-          r.mergeRowMeta( info[i] );
+          r.mergeRowMeta( info[i], name );
         }
       }
     }
 
     for ( int i = 0; i < r.size(); i++ ) {
-      r.getValueMeta( i ).setOrigin( name );
+      ValueMetaInterface vmi = r.getValueMeta( i );
+      if ( vmi != null && Const.isEmpty( vmi.getName() ) ) {
+        vmi.setOrigin( name );
+      }
     }
     return;
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-    Trans trans ) {
+                                Trans trans ) {
     return new MergeJoin( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -317,6 +318,6 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public TransformationType[] getSupportedTransformationTypes() {
-    return new TransformationType[] { TransformationType.Normal, };
+    return new TransformationType[]{ TransformationType.Normal, };
   }
 }
