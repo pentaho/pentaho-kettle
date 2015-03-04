@@ -1273,11 +1273,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   private void mirrorPartitioning( RowMetaInterface rowMeta, Object[] row ) {
     for ( int r = 0; r < outputRowSets.size(); r++ ) {
       RowSet rowSet = outputRowSets.get( r );
-      while ( !rowSet.putRow( rowMeta, row ) ) {
-        if ( isStopped() ) {
-          break;
-        }
-      }
+      putRowToRowSet( rowSet, rowMeta, row );
     }
   }
 
@@ -1378,11 +1374,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         logBasic( BaseMessages.getString( PKG, "BaseStep.TargetRowsetIsNotAvailable", partitionNr ) );
       } else {
         // Wait
-        while ( !selectedRowSet.putRow( rowMeta, row ) ) {
-          if ( isStopped() ) {
-            break;
-          }
-        }
+        putRowToRowSet( selectedRowSet, rowMeta, row );
         incrementLinesWritten();
 
         if ( log.isRowLevel() ) {
@@ -1410,11 +1402,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         } else {
 
           // Wait
-          while ( !selectedRowSet.putRow( rowMeta, row ) ) {
-            if ( isStopped() ) {
-              break;
-            }
-          }
+          putRowToRowSet( selectedRowSet, rowMeta, row );
           incrementLinesWritten();
 
           if ( log.isRowLevel() ) {
@@ -1458,11 +1446,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
         // Loop until we find room in the target rowset
         //
-        while ( !rs.putRow( rowMeta, row ) ) {
-          if ( isStopped() ) {
-            break;
-          }
-        }
+        putRowToRowSet( rs, rowMeta, row );
         incrementLinesWritten();
 
         // Now determine the next output rowset!
@@ -1499,11 +1483,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         try {
           // Loop until we find room in the target rowset
           //
-          while ( !rs.putRow( rowMeta, rowMeta.cloneRow( row ) ) ) {
-            if ( isStopped() ) {
-              break;
-            }
-          }
+          putRowToRowSet( rs, rowMeta, rowMeta.cloneRow( row ) );
           incrementLinesWritten();
         } catch ( KettleValueException e ) {
           throw new KettleStepException( "Unable to clone row while copying rows to multiple target steps", e );
@@ -1513,12 +1493,26 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       // set row in first output rowset
       //
       RowSet rs = outputRowSets.get( 0 );
-      while ( !rs.putRow( rowMeta, row ) ) {
-        if ( isStopped() ) {
-          break;
-        }
-      }
+      putRowToRowSet( rs, rowMeta, row );
       incrementLinesWritten();
+    }
+  }
+
+  private void putRowToRowSet( RowSet rs, RowMetaInterface rowMeta, Object[] row ) {
+    RowMetaInterface toBeSent;
+    RowMetaInterface metaFromRs = rs.getRowMeta();
+    if ( metaFromRs == null ) {
+      // RowSet is not initialised so far
+      toBeSent = rowMeta.clone();
+    } else {
+      // use the existing
+      toBeSent = metaFromRs;
+    }
+
+    while ( !rs.putRow( toBeSent, row ) ) {
+      if ( isStopped() ) {
+        return;
+      }
     }
   }
 
