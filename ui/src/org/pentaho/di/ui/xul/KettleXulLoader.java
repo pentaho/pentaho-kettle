@@ -33,8 +33,8 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.SwtUniversalImage;
-import org.pentaho.di.ui.svg.SvgImage;
-import org.pentaho.di.ui.svg.SvgSupport;
+import org.pentaho.di.core.svg.SvgImage;
+import org.pentaho.di.core.svg.SvgSupport;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 
