@@ -25,7 +25,6 @@ package org.pentaho.di.job.entries.getpop;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -838,20 +837,22 @@ public class MailConnection {
   }
 
   private static void saveFile( String foldername, String filename, InputStream input ) throws KettleException {
-    FileOutputStream fos = null;
+    OutputStream fos = null;
     BufferedOutputStream bos = null;
-    File file = null;
     BufferedInputStream bis = null;
     try {
       if ( filename == null ) {
         filename = File.createTempFile( "xx", ".out" ).getName();
       }
       // Do no overwrite existing file
-      file = new File( foldername, filename );
-      for ( int i = 0; file.exists(); i++ ) {
-        file = new File( foldername, filename + i );
+      String targetFileName, baseTargetFileName;
+      targetFileName = baseTargetFileName = foldername + "/" + filename;
+      int i = 0;
+      while ( KettleVFS.fileExists( targetFileName ) ) {
+        targetFileName = baseTargetFileName + i;
+        i++;
       }
-      fos = new FileOutputStream( file );
+      fos = KettleVFS.getOutputStream( targetFileName, false );
       bos = new BufferedOutputStream( fos );
       bis = new BufferedInputStream( input );
       int aByte;
@@ -870,7 +871,10 @@ public class MailConnection {
           bis.close();
           bis = null;
         }
-        file = null;
+        if ( fos != null ) {
+          fos.flush();
+          fos.close();
+        }
       } catch ( Exception e ) { /* Ignore */
       }
     }
