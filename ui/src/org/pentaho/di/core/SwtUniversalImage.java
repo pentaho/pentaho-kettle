@@ -75,6 +75,10 @@ public class SwtUniversalImage {
     }
   }
 
+  /**
+   * @deprecated Use getAsBitmapForSize() instead.
+   */
+  @Deprecated
   public synchronized Image getAsBitmap( Device device ) {
     checkDisposed();
 

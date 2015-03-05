@@ -44,9 +44,6 @@ import org.pentaho.di.ui.svg.SvgSupport;
  */
 public class SwtSvgImageUtil {
 
-  /** Flag for enable/disable SVG loading. */
-  public static boolean enableSVG = true;
-
   private static FileObject base;
 
   static {
@@ -63,10 +60,10 @@ public class SwtSvgImageUtil {
    */
   public static SwtUniversalImage getImageAsResource( Display display, String location ) {
     SwtUniversalImage result = null;
-    if ( result == null && enableSVG && SvgSupport.isSvgName( location ) ) {
+    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( location ) ) {
       result = loadFromCurrentClasspath( display, location );
     }
-    if ( result == null && enableSVG && SvgSupport.isSvgName( location ) ) {
+    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( location ) ) {
       result = loadFromBasedVFS( display, location );
     }
     if ( result == null ) {
@@ -87,13 +84,13 @@ public class SwtSvgImageUtil {
    */
   private static SwtUniversalImage getImage( Display display, Class<?> resourceClass, String filename ) {
     SwtUniversalImage result = null;
-    if ( result == null && enableSVG && SvgSupport.isSvgName( filename ) ) {
+    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
       result = loadFromClass( display, resourceClass, filename );
     }
-    if ( result == null && enableSVG && SvgSupport.isSvgName( filename ) ) {
+    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
       result = loadFromClass( display, resourceClass, "/" + filename );
     }
-    if ( result == null && enableSVG && SvgSupport.isSvgName( filename ) ) {
+    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
       result = loadFromSimpleVFS( display, filename );
     }
     if ( result == null ) {
@@ -117,13 +114,13 @@ public class SwtSvgImageUtil {
    */
   public static SwtUniversalImage getUniversalImage( Display display, ClassLoader classLoader, String filename ) {
     SwtUniversalImage result = null;
-    if ( result == null && enableSVG && SvgSupport.isSvgName( filename ) ) {
+    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
       result = loadFromClassLoader( display, classLoader, filename );
     }
-    if ( result == null && enableSVG && SvgSupport.isSvgName( filename ) ) {
+    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
       result = loadFromClassLoader( display, classLoader, "/" + filename );
     }
-    if ( result == null && enableSVG && SvgSupport.isSvgName( filename ) ) {
+    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
       result = loadFromSimpleVFS( display, filename );
     }
     if ( result == null ) {
@@ -147,10 +144,10 @@ public class SwtSvgImageUtil {
    */
   public static SwtUniversalImage getImage( Display display, String location ) {
     SwtUniversalImage result = null;
-    if ( result == null && enableSVG && SvgSupport.isSvgName( location ) ) {
+    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( location ) ) {
       result = loadFromSimpleVFS( display, location );
     }
-    if ( result == null && enableSVG && SvgSupport.isSvgName( location ) ) {
+    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( location ) ) {
       result = loadFromCurrentClasspath( display, location );
     }
     if ( result == null ) {
