@@ -33,10 +33,10 @@ import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.pentaho.di.ui.svg.SvgImage;
+import org.pentaho.di.core.svg.SvgImage;
 
 /**
- * Universal image storage. It contains SVG or bitmap image depends on file and settings.
+ * Universal image storage for SWT processing. It contains SVG or bitmap image depends on file and settings.
  */
 public class SwtUniversalImage {
   private final SvgImage svg;

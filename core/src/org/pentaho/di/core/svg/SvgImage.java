@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.svg;
+package org.pentaho.di.core.svg;
 
 import org.w3c.dom.Document;
 
