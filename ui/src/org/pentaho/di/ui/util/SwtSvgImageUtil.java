@@ -33,8 +33,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.svg.SvgSupport;
 import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.ui.svg.SvgSupport;
 
 /**
  * Class for loading images from SVG, PNG, or other bitmap formats.
