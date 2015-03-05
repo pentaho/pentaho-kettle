@@ -639,8 +639,8 @@ public class PropsUI extends Props {
   }
 
   public boolean isSVGEnabled() {
-    String anti = properties.getProperty( STRING_SVG_ENABLED, YES );
-    return YES.equalsIgnoreCase( anti ); // Default: don't do anti-aliasing
+    String enabled = properties.getProperty( STRING_SVG_ENABLED, YES );
+    return YES.equalsIgnoreCase( enabled ); // Default: svg is enabled
   }
 
   public void setSVGEnabled( boolean svg ) {
