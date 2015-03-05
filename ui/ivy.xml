@@ -27,9 +27,6 @@
     <dependency org="pentaho"               name="pentaho-xul-swing"   rev="${dependency.pentaho-xul.revision}"         changing="true"/>
 
     <!-- Third-party (external) dependencies -->
-    <dependency org="org.apache.xmlgraphics" name="batik-svg-dom" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-transcoder" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-codec" rev="${dependency.batik.revision}" transitive="false"/>
 
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency org="org.eclipse.swt"       name="swt-linux-x86_64"    rev="4.3.2" transitive="false" />
