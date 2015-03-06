@@ -197,6 +197,7 @@ import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.jface.tags.JfaceMenuitem;
 import org.pentaho.ui.xul.jface.tags.JfaceMenupopup;
+import org.pentaho.di.core.SwtUniversalImage;
 
 /**
  * This class handles the display of the transformations in a graphical way using icons, arrows, etc. One transformation
@@ -1490,7 +1491,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       for ( final StreamInterface stream : streams ) {
         MenuItem item = new MenuItem( menu, SWT.NONE );
         item.setText( Const.NVL( stream.getDescription(), "" ) );
-        item.setImage( SWTGC.getNativeImage( BasePainter.getStreamIconImage( stream.getStreamIcon() ) ) );
+        item.setImage( getImageFor( stream ) );
         item.addSelectionListener( new SelectionAdapter() {
           public void widgetSelected( SelectionEvent e ) {
             addHop( stream );
@@ -1522,6 +1523,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     startErrorHopStep = false;
 
     // redraw();
+  }
+  
+  private Image getImageFor(StreamInterface stream) {
+    Display disp = shell.getDisplay();
+    SwtUniversalImage swtImage = SWTGC.getNativeImage( BasePainter.getStreamIconImage( stream.getStreamIcon() ) );
+    return swtImage.getAsBitmapForSize( disp, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
   protected void addHop( StreamInterface stream ) {
