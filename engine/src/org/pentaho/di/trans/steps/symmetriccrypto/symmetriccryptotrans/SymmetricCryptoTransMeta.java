@@ -160,7 +160,20 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
     return resultfieldname;
   }
 
+  /*
+   * Get the Message Field name
+   * 
+   * @deprecated use {@link #getMessageField()} instead.
+   */
+  @Deprecated
   public String getMessageFied() {
+    return getMessageField();
+  }
+
+  /*
+   * Get the Message Field name
+   */
+  public String getMessageField() {
     return messageField;
   }
 

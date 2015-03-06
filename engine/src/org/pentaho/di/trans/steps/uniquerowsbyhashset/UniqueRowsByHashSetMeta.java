@@ -214,6 +214,7 @@ public class UniqueRowsByHashSetMeta extends BaseStepMeta implements StepMetaInt
 
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
+      rep.saveStepAttribute( id_transformation, id_step, "store_values", storeValues );
       rep.saveStepAttribute( id_transformation, id_step, "reject_duplicate_row", rejectDuplicateRow );
       rep.saveStepAttribute( id_transformation, id_step, "error_description", errorDescription );
       for ( int i = 0; i < compareFields.length; i++ ) {
