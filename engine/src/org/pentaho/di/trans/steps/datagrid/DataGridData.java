@@ -26,6 +26,11 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Matt
  * @since 24-jan-2005
@@ -37,8 +42,17 @@ public class DataGridData extends BaseStepData implements StepDataInterface {
 
   public int linesWritten;
 
+  public Map<String, Integer> indexFieldsNames;
+
+  /**
+   * used to store values in used to look up things
+   */
+  public Map<String, Set> look;
+
   public DataGridData() {
     super();
+    indexFieldsNames = new HashMap<String, Integer>();
+    look = new HashMap<String, Set>();
   }
 
 }

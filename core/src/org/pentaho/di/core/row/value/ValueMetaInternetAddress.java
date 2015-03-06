@@ -477,4 +477,47 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
 
     return retval;
   }
+
+  @Override public byte[] getBinaryString( Object object ) throws KettleValueException {
+    return convertStringToBinaryString( getString( object ) );
+  }
+
+  /**
+   * Compare 2 values of the same data type
+   *
+   * @param data1 the first value
+   * @param data2 the second value
+   * @return 0 if the values are equal, -1 if data1 is smaller than data2 and +1 if it's larger.
+   * @throws org.pentaho.di.core.exception.KettleValueException In case we get conversion errors
+   */
+  @Override public int compare( Object data1, Object data2 ) throws KettleValueException {
+    InetAddress inetAddress1 = getInternetAddress( data1 );
+    InetAddress inetAddress2 = getInternetAddress( data2 );
+    if ( inetAddress1 == null ) {
+      if ( inetAddress2 == null ) {
+        return 0;
+      } else {
+        return -1;
+      }
+    } else {
+      if ( inetAddress2 == null ) {
+        return 1;
+      } else {
+        byte[] b1 = (byte[]) inetAddress1.getAddress();
+        byte[] b2 = (byte[]) inetAddress2.getAddress();
+
+        int length = b1.length < b2.length ? b1.length : b2.length;
+        int cmp;
+        for ( int i = 0; i < length; i++ ) {
+          cmp = b1[ i ] - b2[ i ];
+          if ( cmp != 0 ) {
+            cmp = cmp < 0 ? -1 : 1;
+            return cmp;
+          }
+        }
+        cmp = b1.length - b2.length;
+        return cmp;
+      }
+    }
+  }
 }
