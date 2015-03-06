@@ -2180,7 +2180,7 @@ TYPICAL TARGET SEQUENCE
 
     <property name="sonar.branch" value="${SCM_BRANCH}" />
 		<property name="sonar.projectKey" value="${ivy.artifact.group}:${ivy.artifact.id}" />
-		<property name="sonar.projectName" value="${impl.title}" />
+		<property name="sonar.projectName" value="${ivy.artifact.id}" />
 		<property name="sonar.projectVersion" value="${project.revision}" />
 		<property name="sonar.language" value="java" />
 		<property name="sonar.sources" value="${src.dir}" />
