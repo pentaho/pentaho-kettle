@@ -159,7 +159,7 @@ public class GUIResource {
 
   private Image imageDisabledHop;
 
-  private Image imageConnection;
+  private SwtUniversalImage imageConnection;
 
   private Image imageAdd;
 
@@ -193,6 +193,8 @@ public class GUIResource {
 
   private Image imageSlave;
 
+  private SwtUniversalImage swtImageArrow;
+  
   private Image imageArrow;
 
   private Image imageWizard;
@@ -279,13 +281,13 @@ public class GUIResource {
 
   private Image imageCollapseAll;
 
-  private Image imageStepError;
+  private SwtUniversalImage imageStepError;
 
-  private Image imageCopyHop;
+  private SwtUniversalImage imageCopyHop;
 
-  private Image imageErrorHop;
+  private SwtUniversalImage imageErrorHop;
 
-  private Image imageInfoHop;
+  private SwtUniversalImage imageInfoHop;
 
   private Image imageWarning;
 
@@ -295,7 +297,7 @@ public class GUIResource {
 
   private Image imageNew;
 
-  private Image imageEdit;
+  private SwtUniversalImage imageEdit;
 
   private Image imageDelete;
 
@@ -309,31 +311,31 @@ public class GUIResource {
 
   private Image imageExport;
 
-  private Image imageHopInput;
+  private  SwtUniversalImage imageHopInput;
 
-  private Image imageHopOutput;
+  private SwtUniversalImage imageHopOutput;
 
-  private Image imageHopTarget;
+  private SwtUniversalImage imageHopTarget;
 
-  private Image imageLocked;
+  private SwtUniversalImage imageLocked;
 
-  private Image imageTrue;
+  private SwtUniversalImage imageTrue;
 
-  private Image imageFalse;
+  private SwtUniversalImage imageFalse;
 
-  private Image imageContextMenu;
+  private SwtUniversalImage imageContextMenu;
 
-  private Image imageUnconditionalHop;
+  private SwtUniversalImage imageUnconditionalHop;
 
-  private Image imageParallelHop;
+  private SwtUniversalImage imageParallelHop;
 
-  private Image imageBusy;
+  private SwtUniversalImage imageBusy;
 
-  private Image imageInject;
+  private SwtUniversalImage imageInject;
 
-  private Image imageBalance;
+  private SwtUniversalImage imageBalance;
 
-  private Image imageCheckpoint;
+  private SwtUniversalImage imageCheckpoint;
 
   private Image imageGantt;
 
@@ -746,7 +748,7 @@ public class GUIResource {
     imageHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HOP_image" ) );
 
     // "ui/images/CNC.png"
-    imageConnection = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CNC_image" ) );
+    imageConnection = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CNC_image" ) );
 
     // "ui/images/Add.png"
     imageAdd = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Add_image" ) );
@@ -913,16 +915,16 @@ public class GUIResource {
 
     // "ui/images/show-error-lines.png;
     imageStepError =
-      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "StepErrorLines_image" ) );
+        SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "StepErrorLines_image" ) );
 
     // "ui/images/copy-hop.png;
-    imageCopyHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CopyHop_image" ) );
+    imageCopyHop = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CopyHop_image" ) );
 
     // "ui/images/error-hop.png;
-    imageErrorHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ErrorHop_image" ) );
+    imageErrorHop = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ErrorHop_image" ) );
 
     // "ui/images/info-hop.png;
-    imageInfoHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "InfoHop_image" ) );
+    imageInfoHop = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "InfoHop_image" ) );
 
     // "ui/images/warning.png;
     imageWarning = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Warning_image" ) );
@@ -938,7 +940,7 @@ public class GUIResource {
     imageNew = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "New_image" ) );
 
     // "ui/images/generic-edit.png;
-    imageEdit = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Edit_image" ) );
+    imageEdit = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Edit_image" ) );
 
     // "ui/images/generic-delete.png;
     imageDelete = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Delete_image" ) );
@@ -961,47 +963,47 @@ public class GUIResource {
     imageExport = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Export_image" ) );
 
     // "ui/images/hop-input.png;
-    imageHopInput = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopInput_image" ) );
+    imageHopInput = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopInput_image" ) );
 
     // "ui/images/hop-output.png;
-    imageHopOutput = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopOutput_image" ) );
+    imageHopOutput = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopOutput_image" ) );
 
     // "ui/images/hop-target.png;
-    imageHopTarget = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopTarget_image" ) );
+    imageHopTarget = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HopTarget_image" ) );
 
     // "ui/images/locked.png;
-    imageLocked = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Locked_image" ) );
+    imageLocked = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Locked_image" ) );
 
     // "ui/images/true.png;
-    imageTrue = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "True_image" ) );
+    imageTrue = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "True_image" ) );
 
     // "ui/images/false.png;
-    imageFalse = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "False_image" ) );
+    imageFalse = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "False_image" ) );
 
     // "ui/images/context_menu.png;
     imageContextMenu =
-      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ContextMenu_image" ) );
+        SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ContextMenu_image" ) );
 
     // "ui/images/parallel-hop.png
     imageParallelHop =
-      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ParallelHop_image" ) );
+        SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ParallelHop_image" ) );
 
     // "ui/images/unconditional-hop.png
     imageUnconditionalHop =
-      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "UnconditionalHop_image" ) );
+        SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "UnconditionalHop_image" ) );
 
     // "ui/images/busy.png
-    imageBusy = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Busy_image" ) );
+    imageBusy = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Busy_image" ) );
 
     // "ui/images/inject.png
-    imageInject = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Inject_image" ) );
+    imageInject = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Inject_image" ) );
 
     // "ui/images/scales.png
-    imageBalance = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "LoadBalance_image" ) );
+    imageBalance = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "LoadBalance_image" ) );
 
     // "ui/images/scales.png
     imageCheckpoint =
-      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CheckeredFlag_image" ) );
+        SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CheckeredFlag_image" ) );
 
     // "ui/images/gantt.png
     imageGantt = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Gantt_image" ) );
@@ -1054,6 +1056,8 @@ public class GUIResource {
       ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
         .getProperty( "ArrowIcon_image" ) ), // , "ui/images/arrow.png"
         new RGB( 255, 255, 255 ) );
+    swtImageArrow = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler
+          .getProperty( "ArrowIcon_image" ));
 
     // "ui/images/wizard.png"
     imageWizard = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Wizard_image" ) );
@@ -1339,6 +1343,10 @@ public class GUIResource {
    * @return Returns the imageConnection.
    */
   public Image getImageConnection() {
+    return imageConnection.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageConnection() {
     return imageConnection;
   }
 
@@ -1633,9 +1641,13 @@ public class GUIResource {
    * @return the imageArrow
    */
   public Image getImageArrow() {
-    return imageArrow;
+    return swtImageArrow.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-
+  
+  public SwtUniversalImage getSwtImageArrow() {
+    return swtImageArrow;
+  }
+  
   /**
    * @param imageArrow
    *          the imageArrow to set
@@ -1956,18 +1968,34 @@ public class GUIResource {
   }
 
   public Image getImageStepError() {
+    return imageStepError.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageStepError() {
     return imageStepError;
   }
 
   public Image getImageCopyHop() {
+    return imageCopyHop.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageCopyHop() {
     return imageCopyHop;
   }
 
   public Image getImageErrorHop() {
+    return imageErrorHop.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageErrorHop() {
     return imageErrorHop;
   }
 
   public Image getImageInfoHop() {
+    return imageInfoHop.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageInfoHop() {
     return imageInfoHop;
   }
 
@@ -1988,6 +2016,10 @@ public class GUIResource {
   }
 
   public Image getImageEdit() {
+    return imageEdit.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageEdit() {
     return imageEdit;
   }
 
@@ -2016,18 +2048,34 @@ public class GUIResource {
   }
 
   public Image getImageHopInput() {
+    return imageHopInput.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageHopInput() {
     return imageHopInput;
   }
 
   public Image getImageHopOutput() {
+    return imageHopOutput.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageHopOutput() {
     return imageHopOutput;
   }
 
   public Image getImageHopTarget() {
+    return imageHopTarget.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageHopTarget() {
     return imageHopTarget;
   }
 
   public Image getImageLocked() {
+    return imageLocked.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageLocked() {
     return imageLocked;
   }
 
@@ -2069,13 +2117,21 @@ public class GUIResource {
    * @return the imageTrue
    */
   public Image getImageTrue() {
+    return imageTrue.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageTrue() {
     return imageTrue;
   }
-
+  
   /**
    * @return the imageFalse
    */
   public Image getImageFalse() {
+    return imageFalse.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageFalse() {
     return imageFalse;
   }
 
@@ -2083,30 +2139,54 @@ public class GUIResource {
    * @return the imageContextMenu
    */
   public Image getImageContextMenu() {
+    return imageContextMenu.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageContextMenu() {
     return imageContextMenu;
   }
 
   public Image getImageParallelHop() {
+    return imageParallelHop.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageParallelHop() {
     return imageParallelHop;
   }
 
   public Image getImageUnconditionalHop() {
+    return imageUnconditionalHop.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageUnconditionalHop() {
     return imageUnconditionalHop;
   }
-
+  
   public Image getImageBusy() {
+    return imageBusy.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageBusy() {
     return imageBusy;
   }
-
+  
   public Image getImageEmpty16x16() {
     return imageEmpty16x16;
   }
 
   public Image getImageInject() {
+    return imageInject.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageInject() {
     return imageInject;
   }
 
   public Image getImageBalance() {
+    return imageBalance.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageBalance() {
     return imageBalance;
   }
 
@@ -2119,6 +2199,10 @@ public class GUIResource {
   }
 
   public Image getImageCheckpoint() {
+    return imageCheckpoint.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageCheckpoint() {
     return imageCheckpoint;
   }
 
