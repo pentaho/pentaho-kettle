@@ -42,6 +42,8 @@ public class ConstUI {
    * Default icon size
    */
   public static final int ICON_SIZE = 32;
+  
+  public static final int SMALL_ICON_SIZE = 16;
 
   /**
    * Default line width for arrows & around icons
