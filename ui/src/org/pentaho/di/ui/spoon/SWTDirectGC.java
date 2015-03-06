@@ -42,6 +42,7 @@ import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.util.ImageUtil;
@@ -57,6 +58,7 @@ public class SWTDirectGC implements GCInterface {
   protected Color background;
 
   protected Color black;
+  protected Color white;
   protected Color red;
   protected Color yellow;
   protected Color orange;
@@ -67,10 +69,14 @@ public class SWTDirectGC implements GCInterface {
   protected Color lightGray;
   protected Color darkGray;
   protected Color lightBlue;
+  protected Color crystal;
 
   private GC gc;
 
   private int iconsize;
+  
+  //TODO should be changed to PropsUI usage
+  private int small_icon_size = ConstUI.SMALL_ICON_SIZE;
 
   private Map<String, SwtUniversalImage> images;
 
@@ -92,6 +98,7 @@ public class SWTDirectGC implements GCInterface {
 
     this.background = GUIResource.getInstance().getColorGraph();
     this.black = GUIResource.getInstance().getColorBlack();
+    this.white = GUIResource.getInstance().getColorWhite();
     this.red = GUIResource.getInstance().getColorRed();
     this.yellow = GUIResource.getInstance().getColorYellow();
     this.orange = GUIResource.getInstance().getColorOrange();
@@ -102,6 +109,7 @@ public class SWTDirectGC implements GCInterface {
     this.lightGray = GUIResource.getInstance().getColorLightGray();
     this.darkGray = GUIResource.getInstance().getColorDarkGray();
     this.lightBlue = GUIResource.getInstance().getColorLightBlue();
+    this.crystal = GUIResource.getInstance().getColorCrystalTextPentaho();
 
   }
 
@@ -122,52 +130,58 @@ public class SWTDirectGC implements GCInterface {
     gc.drawLine( x, y, x2, y2 );
   }
 
-  public void drawImage( EImage image, int x, int y ) {
-
-    Image img = getNativeImage( image );
-    gc.drawImage( img, x, y );
+  public void drawImage( EImage image, int x, int y, float magnification ) {
+    Image img =
+        getNativeImage( image ).getAsBitmapForSize( gc.getDevice(), Math.round( small_icon_size * magnification ),
+            Math.round( small_icon_size * magnification ) );
+    if ( img != null ) {
+      Rectangle bounds = img.getBounds();
+      gc.drawImage( img, 0, 0, bounds.width, bounds.height, x, y, Math.round( small_icon_size * magnification ), Math
+          .round( small_icon_size * magnification ) );
+    }
   }
 
-  public Point getImageBounds( EImage image ) {
-    Image img = getNativeImage( image );
+  public Point getImageBounds( EImage image, float magnification ) {
+    Image img = getNativeImage( image ).getAsBitmapForSize( gc.getDevice(), Math.round( small_icon_size * magnification ),
+        Math.round( small_icon_size * magnification ) );
     Rectangle r = img.getBounds();
     return new Point( r.width, r.height );
   }
 
-  public static final Image getNativeImage( EImage image ) {
+  public static final SwtUniversalImage getNativeImage( EImage image ) {
     switch ( image ) {
       case LOCK:
-        return GUIResource.getInstance().getImageLocked();
+        return GUIResource.getInstance().getSwtImageLocked();
       case STEP_ERROR:
-        return GUIResource.getInstance().getImageStepError();
+        return GUIResource.getInstance().getSwtImageStepError();
       case EDIT:
-        return GUIResource.getInstance().getImageEdit();
+        return GUIResource.getInstance().getSwtImageEdit();
       case CONTEXT_MENU:
-        return GUIResource.getInstance().getImageContextMenu();
+        return GUIResource.getInstance().getSwtImageContextMenu();
       case TRUE:
-        return GUIResource.getInstance().getImageTrue();
+        return GUIResource.getInstance().getSwtImageTrue();
       case FALSE:
-        return GUIResource.getInstance().getImageFalse();
+        return GUIResource.getInstance().getSwtImageFalse();
       case ERROR:
-        return GUIResource.getInstance().getImageErrorHop();
+        return GUIResource.getInstance().getSwtImageErrorHop();
       case INFO:
-        return GUIResource.getInstance().getImageInfoHop();
+        return GUIResource.getInstance().getSwtImageInfoHop();
       case TARGET:
-        return GUIResource.getInstance().getImageHopTarget();
+        return GUIResource.getInstance().getSwtImageHopTarget();
       case INPUT:
-        return GUIResource.getInstance().getImageHopInput();
+        return GUIResource.getInstance().getSwtImageHopInput();
       case OUTPUT:
-        return GUIResource.getInstance().getImageHopOutput();
+        return GUIResource.getInstance().getSwtImageHopOutput();
       case ARROW:
-        return GUIResource.getInstance().getImageArrow();
+        return GUIResource.getInstance().getSwtImageArrow();
       case COPY_ROWS:
-        return GUIResource.getInstance().getImageCopyHop();
+        return GUIResource.getInstance().getSwtImageCopyHop();
       case PARALLEL:
-        return GUIResource.getInstance().getImageParallelHop();
+        return GUIResource.getInstance().getSwtImageParallelHop();
       case UNCONDITIONAL:
-        return GUIResource.getInstance().getImageUnconditionalHop();
+        return GUIResource.getInstance().getSwtImageUnconditionalHop();
       case BUSY:
-        return GUIResource.getInstance().getImageBusy();
+        return GUIResource.getInstance().getSwtImageBusy();
       default:
         break;
     }
@@ -241,6 +255,8 @@ public class SWTDirectGC implements GCInterface {
         return background;
       case BLACK:
         return black;
+      case WHITE:
+        return white;
       case RED:
         return red;
       case YELLOW:
@@ -261,6 +277,8 @@ public class SWTDirectGC implements GCInterface {
         return darkGray;
       case LIGHTBLUE:
         return lightBlue;
+      case CRYSTAL:
+        return crystal;
       default:
         break;
     }
