@@ -27,7 +27,7 @@ import java.awt.image.BufferedImage;
 public interface PrimitiveGCInterface {
 
   public enum EColor {
-    BACKGROUND, BLACK, RED, YELLOW, ORANGE, GREEN, BLUE, MAGENTA, GRAY, LIGHTGRAY, DARKGRAY, LIGHTBLUE,
+    BACKGROUND, BLACK, WHITE, RED, YELLOW, ORANGE, GREEN, BLUE, MAGENTA, GRAY, LIGHTGRAY, DARKGRAY, LIGHTBLUE, CRYSTAL,
   }
 
   public enum EFont {
@@ -66,7 +66,7 @@ public interface PrimitiveGCInterface {
 
   public void fillGradientRectangle( int x, int y, int width, int height, boolean vertical );
 
-  public void drawImage( EImage image, int x, int y );
+  public void drawImage( EImage image, int x, int y, float magnification );
 
   public void drawImage( BufferedImage image, int x, int y );
 
@@ -106,7 +106,7 @@ public interface PrimitiveGCInterface {
 
   public Object getImage();
 
-  public Point getImageBounds( EImage eImage );
+  public Point getImageBounds( EImage eImage, float magnification );
 
   public void switchForegroundBackgroundColors();
 

@@ -237,7 +237,7 @@ public class JobPainter extends BasePainter {
       gc.setForeground( EColor.BLUE );
       int iconX = x + iconsize - 7;
       int iconY = y - 7;
-      gc.drawImage( EImage.BUSY, iconX, iconY );
+      gc.drawImage( EImage.BUSY, iconX, iconY, magnification );
       areaOwners.add( new AreaOwner(
         AreaType.JOB_ENTRY_BUSY, iconX, iconY, iconsize, iconsize, offset, subject, jobEntryCopy ) );
     } else {
@@ -253,18 +253,18 @@ public class JobPainter extends BasePainter {
       // Draw an execution result on the top right corner...
       //
       if ( jobEntryResult.isCheckpoint() ) {
-        gc.drawImage( EImage.CHECKPOINT, iconX, iconY );
+        gc.drawImage( EImage.CHECKPOINT, iconX, iconY, magnification );
         areaOwners.add( new AreaOwner(
           AreaType.JOB_ENTRY_RESULT_CHECKPOINT, iconX, iconY, iconsize, iconsize, offset, jobEntryCopy,
           jobEntryResult ) );
       } else {
         if ( result.getResult() ) {
-          gc.drawImage( EImage.TRUE, iconX, iconY );
+          gc.drawImage( EImage.TRUE, iconX, iconY, magnification );
           areaOwners.add( new AreaOwner(
             AreaType.JOB_ENTRY_RESULT_SUCCESS, iconX, iconY, iconsize, iconsize, offset, jobEntryCopy,
             jobEntryResult ) );
         } else {
-          gc.drawImage( EImage.FALSE, x + iconsize, y - 5 );
+          gc.drawImage( EImage.FALSE, x + iconsize, y - 5, magnification );
           areaOwners.add( new AreaOwner(
             AreaType.JOB_ENTRY_RESULT_FAILURE, iconX, iconY, iconsize, iconsize, offset, jobEntryCopy,
             jobEntryResult ) );
@@ -300,7 +300,7 @@ public class JobPainter extends BasePainter {
       int totalIconsWidth = 0;
       int totalWidth = 2 * MINI_ICON_MARGIN;
       for ( EImage miniIcon : miniIcons ) {
-        Point bounds = gc.getImageBounds( miniIcon );
+        Point bounds = gc.getImageBounds( miniIcon, magnification );
         totalWidth += bounds.x + MINI_ICON_MARGIN;
         totalIconsWidth += bounds.x + MINI_ICON_MARGIN;
         if ( bounds.y > totalHeight ) {
@@ -321,22 +321,27 @@ public class JobPainter extends BasePainter {
       }
 
       int areaX = x + iconsize / 2 - totalWidth / 2 + MINI_ICON_SKEW;
-      int areaY = y + iconsize + MINI_ICON_DISTANCE;
+      int areaY = y + iconsize + MINI_ICON_DISTANCE + BasePainter.CONTENT_MENU_INDENT;
 
-      gc.setForeground( EColor.DARKGRAY );
-      gc.setBackground( EColor.LIGHTGRAY );
+      gc.setForeground( EColor.CRYSTAL );
+      gc.setBackground( EColor.CRYSTAL );
       gc.setLineWidth( 1 );
-      gc.fillRoundRectangle( areaX, areaY, totalWidth, totalHeight, 7, 7 );
-      gc.drawRoundRectangle( areaX, areaY, totalWidth, totalHeight, 7, 7 );
+      gc.fillRoundRectangle( areaX, areaY, totalWidth, totalHeight, BasePainter.CORNER_RADIUS_5, BasePainter.CORNER_RADIUS_5 );
 
-      gc.setBackground( EColor.BACKGROUND );
-      gc.fillRoundRectangle( areaX + 2, areaY + 2, totalWidth - MINI_ICON_MARGIN + 1, nameExtent.y
-        - MINI_ICON_MARGIN, 7, 7 );
-      gc.setForeground( EColor.BLACK );
+      gc.setBackground( EColor.WHITE );
+      
+      gc.fillRoundRectangle( areaX, areaY + nameExtent.y, totalWidth, (totalHeight - nameExtent.y), BasePainter.CORNER_RADIUS_5, 
+          BasePainter.CORNER_RADIUS_5 );
+      gc.fillRectangle( areaX, areaY + nameExtent.y, totalWidth, (totalHeight - nameExtent.y) / 2);
+      
+      gc.drawRoundRectangle( areaX, areaY, totalWidth, totalHeight, BasePainter.CORNER_RADIUS_5, BasePainter.CORNER_RADIUS_5 );
+      
+      gc.setForeground( EColor.WHITE );
+      
       gc.drawText( trimmedName, areaX + ( totalWidth - nameExtent.x ) / 2 + MINI_ICON_MARGIN, areaY
         + MINI_ICON_MARGIN, true );
-      gc.setForeground( EColor.DARKGRAY );
-      gc.setBackground( EColor.LIGHTGRAY );
+      gc.setForeground( EColor.CRYSTAL );
+      gc.setBackground( EColor.CRYSTAL );
 
       gc.setFont( EFont.GRAPH );
       areaOwners.add( new AreaOwner(
@@ -345,13 +350,13 @@ public class JobPainter extends BasePainter {
       gc.fillPolygon( new int[] {
         areaX + totalWidth / 2 - MINI_ICON_TRIANGLE_BASE / 2 + 1, areaY + 2,
         areaX + totalWidth / 2 + MINI_ICON_TRIANGLE_BASE / 2, areaY + 2,
-        areaX + totalWidth / 2 - MINI_ICON_SKEW, areaY - MINI_ICON_DISTANCE - 5, } );
-      gc.drawPolyline( new int[] {
+        areaX + totalWidth / 2 - MINI_ICON_SKEW, areaY - MINI_ICON_DISTANCE - 3, } );
+      /*gc.drawPolyline( new int[] {
         areaX + totalWidth / 2 - MINI_ICON_TRIANGLE_BASE / 2 + 1, areaY,
         areaX + totalWidth / 2 - MINI_ICON_SKEW, areaY - MINI_ICON_DISTANCE - 5,
         areaX + totalWidth / 2 + MINI_ICON_TRIANGLE_BASE / 2, areaY, areaX + totalWidth / 2 - MINI_ICON_SKEW,
-        areaY - MINI_ICON_DISTANCE - 5, } );
-      gc.setBackground( EColor.BACKGROUND );
+        areaY - MINI_ICON_DISTANCE - 5, } );*/
+      gc.setBackground( EColor.WHITE );
 
       // Put on the icons...
       //
@@ -359,7 +364,7 @@ public class JobPainter extends BasePainter {
       int yIcon = areaY + 5 + nameExtent.y;
       for ( int i = 0; i < miniIcons.length; i++ ) {
         EImage miniIcon = miniIcons[i];
-        Point bounds = gc.getImageBounds( miniIcon );
+        Point bounds = gc.getImageBounds( miniIcon, magnification );
         boolean enabled = false;
         switch ( i ) {
           case 0: // INPUT
@@ -395,7 +400,7 @@ public class JobPainter extends BasePainter {
         } else {
           gc.setAlpha( 100 );
         }
-        gc.drawImage( miniIcon, xIcon, yIcon );
+        gc.drawImage( miniIcon, xIcon, yIcon, magnification );
         xIcon += bounds.x + 5;
       }
     }
@@ -574,8 +579,8 @@ public class JobPainter extends BasePainter {
         }
       }
 
-      Point bounds = gc.getImageBounds( hopsIcon );
-      gc.drawImage( hopsIcon, mx, my );
+      Point bounds = gc.getImageBounds( hopsIcon, magnification );
+      gc.drawImage( hopsIcon, mx, my, magnification );
       if ( !shadow ) {
         areaOwners
           .add( new AreaOwner( AreaType.JOB_HOP_ICON, mx, my, bounds.x, bounds.y, offset, subject, jobHop ) );
@@ -590,7 +595,7 @@ public class JobPainter extends BasePainter {
         my = (int) ( y1 + factor * ( y2 - y1 ) / 2 ) - 8;
 
         hopsIcon = EImage.PARALLEL;
-        gc.drawImage( hopsIcon, mx, my );
+        gc.drawImage( hopsIcon, mx, my, magnification );
         if ( !shadow ) {
           areaOwners.add( new AreaOwner(
             AreaType.JOB_HOP_PARALLEL_ICON, mx, my, bounds.x, bounds.y, offset, subject, jobHop ) );

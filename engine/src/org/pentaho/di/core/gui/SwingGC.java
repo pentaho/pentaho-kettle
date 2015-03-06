@@ -278,7 +278,7 @@ public class SwingGC implements GCInterface {
     gc.drawLine( x + xOffset, y + yOffset, x2 + xOffset, y2 + yOffset );
   }
 
-  public void drawImage( EImage image, int locationX, int locationY ) {
+  public void drawImage( EImage image, int locationX, int locationY, float magnification ) {
 
     BufferedImage img = getNativeImage( image );
 
@@ -315,7 +315,7 @@ public class SwingGC implements GCInterface {
 
   }
 
-  public Point getImageBounds( EImage image ) {
+  public Point getImageBounds( EImage image, float magnification ) {
     BufferedImage img = getNativeImage( image );
     int width = img.getWidth( observer );
     int height = img.getHeight( observer );
