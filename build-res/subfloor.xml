@@ -504,7 +504,7 @@ TYPICAL TARGET SEQUENCE
       ====================================================================-->
   <target name="antcontrib.download" unless="antcontrib.available">
     <mkdir dir="${subfloor.tmp.dir}" />
-    <get src="http://downloads.sourceforge.net/ant-contrib/ant-contrib-1.0b3-bin.zip"
+    <get src="http://jaist.dl.sourceforge.net/project/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3-bin.zip"
          dest="${subfloor.tmp.dir}/antcontrib.zip"
          usetimestamp="true" />
     <unzip src="${subfloor.tmp.dir}/antcontrib.zip" dest="${subfloor.tmp.dir}">
