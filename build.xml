@@ -76,8 +76,8 @@
       <target name="iterate-target"/>
     </ant>
   </target>
-<!--,build-publish-plugins-->
-  <target name="build" depends="build-publish-modules"/>
+
+  <target name="build" depends="build-publish-modules,build-publish-plugins"/>
 
   <target name="clean" depends="install-antcontrib,subfloor.clean">
     <antcall target="call-for-all">

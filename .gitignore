@@ -23,3 +23,5 @@ build-res/module-scripts/
 *.ear
 *.iml
 /*.launch
+/assembly/package-res/samples/db/sampledb.h2.db
+/assembly/package-res/samples/db/sampledb.lobs.db
