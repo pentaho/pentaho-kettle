@@ -286,9 +286,7 @@ public class GUIResource {
 
   private SwtUniversalImage imageInfoHop;
 
-  private Image imageWarning;
-
-  private Image imageWarning32;
+  private SwtUniversalImage imageWarning;
 
   private Image imageVersionBrowser;
 
@@ -542,7 +540,6 @@ public class GUIResource {
       imageErrorHop.dispose();
       imageInfoHop.dispose();
       imageWarning.dispose();
-      imageWarning32.dispose();
       imageVersionBrowser.dispose();
       imageExpandAll.dispose();
       imageSearchSmall.dispose();
@@ -926,10 +923,7 @@ public class GUIResource {
     imageInfoHop = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "InfoHop_image" ) );
 
     // "ui/images/warning.png;
-    imageWarning = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Warning_image" ) );
-
-    // "ui/images/warning_32.png;
-    imageWarning32 = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Warning32_image" ) );
+    imageWarning = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Warning_image" ) );
 
     // "ui/images/version-history.png;
     imageVersionBrowser =
@@ -1988,11 +1982,11 @@ public class GUIResource {
   }
 
   public Image getImageWarning() {
-    return imageWarning;
+    return imageWarning.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
   public Image getImageWarning32() {
-    return imageWarning32;
+    return imageInfoHop.getAsBitmapForSize( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
   }
 
   public Image getImageVersionBrowser() {
