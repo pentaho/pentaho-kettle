@@ -1076,6 +1076,15 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 
       retval = true;
     } catch ( Exception e ) {
+      if ( ftpclient != null ) {
+        try {
+          ftpclient.quit();
+        } catch ( Exception ignored ) {
+          // We've tried quitting the FTP Client exception
+          // nothing else can be done if the FTP Client was already disconnected
+        }
+        ftpclient = null;
+      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.ErrorConnect.Title.Bad" ) );

@@ -1014,6 +1014,15 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         retval = sftpclient.folderExists( Remotefoldername );
       }
     } catch ( Exception e ) {
+      if ( sftpclient != null ) {
+        try {
+          sftpclient.disconnect();
+        } catch ( Exception ignored ) {
+          // We've tried quitting the SFTP Client exception
+          // nothing else to be done if the SFTP Client was already disconnected
+        }
+        sftpclient = null;
+      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobSFTP.ErrorConnect.NOK", wServerName.getText(), e
         .getMessage() )

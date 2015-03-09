@@ -1165,6 +1165,15 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
       }
 
     } catch ( Exception e ) {
+      if ( sftpclient != null ) {
+        try {
+          sftpclient.disconnect();
+        } catch ( Exception ignored ) {
+          // We've tried quitting the SFTP Client exception
+          // nothing else to be done if the SFTP Client was already disconnected
+        }
+        sftpclient = null;
+      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobSFTPPUT.ErrorConnect.NOK", wServerName.getText(), e
         .getMessage() )
