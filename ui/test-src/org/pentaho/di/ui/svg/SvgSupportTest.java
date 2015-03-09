@@ -22,10 +22,13 @@
 
 package org.pentaho.di.ui.svg;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.InputStream;
 
 import org.junit.Test;
-import static org.junit.Assert.assertNotNull;
+import org.pentaho.di.core.svg.SvgImage;
+import org.pentaho.di.core.svg.SvgSupport;
 
 public class SvgSupportTest {
 
