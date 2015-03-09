@@ -43,9 +43,8 @@
       </then>
     </if>
     
-    <!-- embed the UI definition files in the jar so that webstart will work -->
-    <copy todir="${classes.dir}/ui">
-        <fileset dir="${ui}" includes="**/*.png **/*.xml **/*.xul **/*.properties"/>
+    <copy todir="${classes.dir}">
+        <fileset dir="package-res" />
     </copy>
 
     <if>
