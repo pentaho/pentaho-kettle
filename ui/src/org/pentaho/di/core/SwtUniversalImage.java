@@ -123,8 +123,7 @@ public class SwtUniversalImage {
   /**
    * Convert SVG image to swt Image.
    */
-  private static Image renderToBitmap( Device device, SvgImage svg ) {
-    PNGTranscoder tr = new PNGTranscoder();
+  private static Image renderToBitmap( Device device, SvgImage svg, PNGTranscoder tr ) {
     TranscoderInput input = new TranscoderInput( svg.getDocument() );
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     TranscoderOutput output = new TranscoderOutput( out );
@@ -136,6 +135,14 @@ public class SwtUniversalImage {
 
     return new Image( device, new ByteArrayInputStream( out.toByteArray() ) );
   }
+  
+  /**
+   * Convert SVG image to swt Image.
+   */
+  private static Image renderToBitmap( Device device, SvgImage svg ) {
+    PNGTranscoder tr = new PNGTranscoder();
+    return renderToBitmap( device, svg, tr );
+  }
 
   /**
    * Convert SVG image to swt Image with specified size.
@@ -144,16 +151,6 @@ public class SwtUniversalImage {
     PNGTranscoder tr = new PNGTranscoder();
     tr.addTranscodingHint( PNGTranscoder.KEY_WIDTH, (float) width );
     tr.addTranscodingHint( PNGTranscoder.KEY_HEIGHT, (float) height );
-
-    TranscoderInput input = new TranscoderInput( svg.getDocument() );
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    TranscoderOutput output = new TranscoderOutput( out );
-    try {
-      tr.transcode( input, output );
-    } catch ( Exception ex ) {
-      throw new RuntimeException( ex );
-    }
-
-    return new Image( device, new ByteArrayInputStream( out.toByteArray() ) );
+    return renderToBitmap( device, svg, tr );
   }
 }
