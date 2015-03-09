@@ -71,29 +71,31 @@ public class ImageUtil {
     return image;
   }
 
-  /**
-   * TODO: Load splash and common images.
-   */
-  public static Image getImageAsResource( Display display, String location ) {
+  public static InputStream getImageInputStream( Display display, String location ) {
     // assume the classloader for the active thread
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
     URL res = cl.getResource( location );
     if ( res != null ) {
       try {
         java.io.InputStream s = res.openStream();
-        if ( s != null ) {
-          return new Image( display, s );
-        }
+        return s;
       } catch ( IOException e ) {
         // do nothing. just move on to trying to load via file system
       }
     }
     try {
       FileObject imageFileObject = KettleVFS.getInstance().getFileSystemManager().resolveFile( base, location );
-      return new Image( display, KettleVFS.getInputStream( imageFileObject ) );
+      return KettleVFS.getInputStream( imageFileObject );
     } catch ( FileSystemException e ) {
       throw new RuntimeException( "Unable to load image with name [" + location + "]", e );
     }
+  }  
+  
+  /**
+   * TODO: Load splash and common images.
+   */
+  public static Image getImageAsResource( Display display, String location ) {
+    return new Image( display, getImageInputStream( display, location ) );
   }
 
   /**

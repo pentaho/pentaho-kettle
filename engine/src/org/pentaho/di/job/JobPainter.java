@@ -225,7 +225,7 @@ public class JobPainter extends BasePainter {
 
     String name = jobEntryCopy.getName();
     if ( jobEntryCopy.isSelected() ) {
-      gc.setLineWidth( 3 );
+      gc.setLineWidth( 2 );
     } else {
       gc.setLineWidth( 1 );
     }
@@ -272,7 +272,8 @@ public class JobPainter extends BasePainter {
       }
     }
 
-    gc.drawRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1 );
+    gc.setForeground( EColor.CRYSTAL );
+    gc.drawRoundRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1, 8, 8 );
     Point textsize = new Point( gc.textExtent( "" + name ).x, gc.textExtent( "" + name ).y );
 
     if ( !shadow ) {

@@ -2980,7 +2980,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     if ( rect.height < 0 ) {
       s.y = s.y + rect.height;
     }
-    gc.drawRectangle( s.x, s.y, Math.abs( rect.width ), Math.abs( rect.height ) );
+    gc.drawRoundRectangle( s.x, s.y, Math.abs( rect.width ), Math.abs( rect.height ), 3, 3 );
     gc.setLineStyle( SWT.LINE_SOLID );
   }
 

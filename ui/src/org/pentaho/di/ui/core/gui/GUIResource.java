@@ -57,6 +57,7 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeListener;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.svg.SvgSupport;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
@@ -181,11 +182,11 @@ public class GUIResource {
 
   private Image imageKettleLogo;
 
-  private Image imageLogoSmall;
+  private SwtUniversalImage imageLogoSmall;
 
   private Image imageBanner;
 
-  private Image imageBol;
+  private SwtUniversalImage imageBol;
 
   private Image imageCalendar;
 
@@ -193,21 +194,17 @@ public class GUIResource {
 
   private Image imageSlave;
 
-  private SwtUniversalImage swtImageArrow;
-  
-  private Image imageArrow;
+  private SwtUniversalImage imageArrow;
+
+  private SwtUniversalImage imageFolder;
 
   private Image imageWizard;
 
   private Image imageCredits;
 
-  private Image imageStart;
+  private SwtUniversalImage imageStart;
 
-  private Image imageDummy;
-
-  private Image imageStartSmall;
-
-  private Image imageDummySmall;
+  private SwtUniversalImage imageDummy;
 
   private Image imageSpoon;
 
@@ -219,9 +216,9 @@ public class GUIResource {
 
   private Image imageVariable;
 
-  private Image imageTransGraph;
+  private SwtUniversalImage imageTransGraph;
 
-  private Image imageJobGraph;
+  private SwtUniversalImage imageJobGraph;
 
   private Image imageUser;
 
@@ -311,7 +308,7 @@ public class GUIResource {
 
   private Image imageExport;
 
-  private  SwtUniversalImage imageHopInput;
+  private SwtUniversalImage imageHopInput;
 
   private SwtUniversalImage imageHopOutput;
 
@@ -522,12 +519,11 @@ public class GUIResource {
       imageCluster.dispose();
       imageSlave.dispose();
       imageArrow.dispose();
+      imageFolder.dispose();
       imageWizard.dispose();
       imageCredits.dispose();
       imageStart.dispose();
       imageDummy.dispose();
-      imageStartSmall.dispose();
-      imageDummySmall.dispose();
       imageSpoon.dispose();
       imageJob.dispose();
       imagePentaho.dispose();
@@ -688,7 +684,7 @@ public class GUIResource {
       // Perhaps we should make this configurable?
       //
       if ( image != null ) {
-        small_image = image.getAsBitmapForSize( display, 16, 16 );
+        small_image = image.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
       }
 
       imagesSteps.put( steps.get( i ).getIds()[0], image );
@@ -798,8 +794,9 @@ public class GUIResource {
     imageBanner = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Banner_bg_image" ) );
 
     // "ui/images/BOL.png"
-    imageBol = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "BOL_image" ) );
-
+    imageBol = SwtSvgImageUtil.getUniversalImage( 
+        display, getClass().getClassLoader(), SvgSupport.toSvgName( BasePropertyHandler.getProperty( "BOL_image" ) ) );
+    
     imageCalendar =
       ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
         .getProperty( "Calendar_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/Calendar.png"
@@ -808,10 +805,12 @@ public class GUIResource {
     imageCredits = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Credits_image" ) );
 
     // "ui/images/STR.png"
-    imageStart = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "STR_image" ) );
+    imageStart = SwtSvgImageUtil.getUniversalImage( 
+        display, getClass().getClassLoader(), SvgSupport.toSvgName( BasePropertyHandler.getProperty( "STR_image" ) ) );
 
     // "ui/images/DUM.png"
-    imageDummy = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DUM_image" ) );
+    imageDummy = SwtSvgImageUtil.getUniversalImage( 
+        display, getClass().getClassLoader(), SvgSupport.toSvgName( BasePropertyHandler.getProperty( "DUM_image" ) ) );
 
     // "ui/images/spoon.ico"
     imageSpoon = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "spoon_image" ) );
@@ -1031,33 +1030,25 @@ public class GUIResource {
 
     imageEmpty16x16 = new Image( display, 16, 16 );
 
-    imageStartSmall = new Image( display, 16, 16 );
-    GC gc = new GC( imageStartSmall );
-    gc.drawImage( imageStart, 0, 0, 32, 32, 0, 0, 16, 16 );
-    gc.dispose();
-    imageDummySmall = new Image( display, 16, 16 );
-    gc = new GC( imageDummySmall );
-    gc.drawImage( imageDummy, 0, 0, 32, 32, 0, 0, 16, 16 );
-    gc.dispose();
+    imageTransGraph = SwtSvgImageUtil.getUniversalImage( 
+        display, getClass().getClassLoader(), SvgSupport.toSvgName( BasePropertyHandler.getProperty( "SpoonIcon_image" ) ) );
+    imageJobGraph = SwtSvgImageUtil.getUniversalImage( 
+        display, getClass().getClassLoader(), SvgSupport.toSvgName( BasePropertyHandler.getProperty( "ChefIcon_image" ) ) );
 
+    // "ui/images/kettle_logo_small.png"
+    imageLogoSmall = SwtSvgImageUtil.getUniversalImage( 
+        display, getClass().getClassLoader(), SvgSupport.toSvgName( BasePropertyHandler.getProperty( "Logo_sml_image" ) ) );
+    
+    // "ui/images/arrow.png"
+    imageArrow = SwtSvgImageUtil.getUniversalImage( 
+        display, getClass().getClassLoader(), SvgSupport.toSvgName( BasePropertyHandler.getProperty( "ArrowIcon_image" ) ) );
+
+    // "ui/images/folder.png"
+    imageFolder = SwtSvgImageUtil.getUniversalImage( 
+        display, getClass().getClassLoader(), ( "ui/images/folder.svg" ) );
+    
     // Makes transparent images "on the fly"
     //
-    imageTransGraph =
-      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-        .getProperty( "SpoonIcon_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/spoongraph.png"
-    imageJobGraph =
-      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-        .getProperty( "ChefIcon_image" ) ), // , "ui/images/chefgraph.png"
-        new RGB( 255, 255, 255 ) );
-    imageLogoSmall =
-      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-        .getProperty( "Logo_sml_image" ) ), new RGB( 255, 255, 255 ) ); // , "ui/images/kettle_logo_small.png"
-    imageArrow =
-      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-        .getProperty( "ArrowIcon_image" ) ), // , "ui/images/arrow.png"
-        new RGB( 255, 255, 255 ) );
-    swtImageArrow = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler
-          .getProperty( "ArrowIcon_image" ));
 
     // "ui/images/wizard.png"
     imageWizard = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Wizard_image" ) );
@@ -1142,7 +1133,7 @@ public class GUIResource {
       // Perhaps we should make this configurable?
       //
       if ( image != null ) {
-        small_image = image.getAsBitmapForSize( display, 16, 16 );
+        small_image = image.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
       }
 
       imagesJobentries.put( plugin.getIds()[0], image );
@@ -1315,7 +1306,7 @@ public class GUIResource {
    * @return Returns the imageBol.
    */
   public Image getImageBol() {
-    return imageBol;
+    return imageBol.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
   /**
@@ -1435,9 +1426,13 @@ public class GUIResource {
    * @return Returns the imageDummy.
    */
   public Image getImageDummy() {
-    return imageDummy;
+    return imageDummy.getAsBitmapForSize( display, 32, 32 );
   }
 
+  public SwtUniversalImage getSwtImageDummy() {
+    return imageDummy;
+  }
+  
   /**
    * @return Returns the imageHop.
    */
@@ -1491,9 +1486,13 @@ public class GUIResource {
    * @return Returns the imageStart.
    */
   public Image getImageStart() {
-    return imageStart;
+    return imageStart.getAsBitmapForSize( display, 32, 32 );
   }
 
+  public SwtUniversalImage getSwtImageStart() {
+    return imageStart;
+  }
+  
   /**
    * @return Returns the imagesJobentries.
    */
@@ -1602,7 +1601,7 @@ public class GUIResource {
   }
 
   public Image getImageTransGraph() {
-    return imageTransGraph;
+    return imageTransGraph.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
   public Image getImageUser() {
@@ -1618,7 +1617,7 @@ public class GUIResource {
   }
 
   public Image getImageJobGraph() {
-    return imageJobGraph;
+    return imageJobGraph.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
   public Image getEditOptionButton() {
@@ -1641,51 +1640,48 @@ public class GUIResource {
    * @return the imageArrow
    */
   public Image getImageArrow() {
-    return swtImageArrow.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+    return imageArrow.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
   
   public SwtUniversalImage getSwtImageArrow() {
-    return swtImageArrow;
+    return imageArrow;
   }
   
   /**
-   * @param imageArrow
-   *          the imageArrow to set
+   * @return the imageArrow
    */
-  public void setImageArrow( Image imageArrow ) {
-    this.imageArrow = imageArrow;
+  public Image getImageFolder() {
+    return imageFolder.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
-
+  
   /**
    * @return the imageDummySmall
    */
   public Image getImageDummySmall() {
-    return imageDummySmall;
-  }
-
-  /**
-   * @param imageDummySmall
-   *          the imageDummySmall to set
-   */
-  public void setImageDummySmall( Image imageDummySmall ) {
-    this.imageDummySmall = imageDummySmall;
+    return imageDummy.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
   /**
    * @return the imageStartSmall
    */
   public Image getImageStartSmall() {
-    return imageStartSmall;
+    return imageStart.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
   /**
-   * @param imageStartSmall
-   *          the imageStartSmall to set
+   * @return the imageDummyMedium
    */
-  public void setImageStartSmall( Image imageStartSmall ) {
-    this.imageStartSmall = imageStartSmall;
+  public Image getImageDummyMedium() {
+    return imageDummy.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
+  /**
+   * @return the imageStartSmall
+   */
+  public Image getImageStartMedium() {
+    return imageStart.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+  
   /**
    * @return the imageBanner
    */
@@ -1734,15 +1730,7 @@ public class GUIResource {
    * @return the imageLogoSmall
    */
   public Image getImageLogoSmall() {
-    return imageLogoSmall;
-  }
-
-  /**
-   * @param imageLogoSmall
-   *          the imageLogoSmall to set
-   */
-  public void setImageLogoSmall( Image imageLogoSmall ) {
-    this.imageLogoSmall = imageLogoSmall;
+    return imageLogoSmall.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
   /**
