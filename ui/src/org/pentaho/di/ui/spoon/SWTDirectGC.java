@@ -110,7 +110,6 @@ public class SWTDirectGC implements GCInterface {
     this.darkGray = GUIResource.getInstance().getColorDarkGray();
     this.lightBlue = GUIResource.getInstance().getColorLightBlue();
     this.crystal = GUIResource.getInstance().getColorCrystalTextPentaho();
-
   }
 
   public void dispose() {
@@ -365,27 +364,30 @@ public class SWTDirectGC implements GCInterface {
       return; // Don't draw anything
     }
 
-    Image image = null;
+    SwtUniversalImage swtImage = null;
 
+    int w = Math.round( iconsize * magnification );
+    int h = Math.round( iconsize * magnification );
+    
     if ( jobEntryCopy.isSpecial() ) {
       if ( jobEntryCopy.isStart() ) {
-        image = GUIResource.getInstance().getImageStart();
+        swtImage = GUIResource.getInstance().getSwtImageStart();
       }
       if ( jobEntryCopy.isDummy() ) {
-        image = GUIResource.getInstance().getImageDummy();
+        swtImage = GUIResource.getInstance().getSwtImageDummy();
       }
     } else {
       String configId = jobEntryCopy.getEntry().getPluginId();
       if ( configId != null ) {
-        image =
-            GUIResource.getInstance().getImagesJobentries().get( configId ).getAsBitmapForSize( gc.getDevice(),
-                Math.round( iconsize * magnification ), Math.round( iconsize * magnification ) );
+        swtImage = GUIResource.getInstance().getImagesJobentries().get( configId );
       }
     }
-    if ( image == null ) {
+    if ( swtImage == null ) {
       return;
     }
 
+    Image image = swtImage.getAsBitmapForSize( gc.getDevice(), w, h );
+    
     org.eclipse.swt.graphics.Rectangle bounds = image.getBounds();
     gc.drawImage( image, 0, 0, bounds.width, bounds.height, x, y, iconsize, iconsize );
   }
