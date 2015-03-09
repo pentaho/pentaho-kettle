@@ -22,7 +22,12 @@
 
 package org.pentaho.di.core;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Dimension2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,6 +36,11 @@ import java.util.TreeMap;
 
 import javax.imageio.ImageIO;
 
+import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.bridge.DocumentLoader;
+import org.apache.batik.bridge.GVTBuilder;
+import org.apache.batik.bridge.UserAgentAdapter;
+import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
@@ -41,6 +51,8 @@ import org.pentaho.di.core.svg.SvgImage;
  */
 public class SwingUniversalImage {
   private final SvgImage svg;
+  private GraphicsNode svgGraphicsNode;
+  private Dimension2D svgGraphicsSize;
   private final BufferedImage bitmap;
 
   private Map<String, BufferedImage> cache = new TreeMap<String, BufferedImage>();
@@ -53,6 +65,10 @@ public class SwingUniversalImage {
   public SwingUniversalImage( BufferedImage bitmap ) {
     this.svg = null;
     this.bitmap = bitmap;
+  }
+
+  public boolean isBitmap() {
+    return bitmap != null;
   }
 
   public synchronized BufferedImage getAsBitmapForSize( int width, int height ) {
@@ -73,6 +89,29 @@ public class SwingUniversalImage {
     }
     cache.put( key, result );
     return result;
+  }
+
+  public synchronized void drawImageTo( Graphics2D gc, int locationX, int locationY, int width, int height ) {
+    if ( bitmap != null ) {
+      // bitmap image
+      gc.drawImage( bitmap, locationX, locationY, width, height, null );
+    } else {
+      if ( svgGraphicsNode == null ) {
+        // get GraphicsNode and size from svg document
+        UserAgentAdapter userAgentAdapter = new UserAgentAdapter();
+        DocumentLoader documentLoader = new DocumentLoader( userAgentAdapter );
+        BridgeContext ctx = new BridgeContext( userAgentAdapter, documentLoader );
+        GVTBuilder builder = new GVTBuilder();
+        svgGraphicsNode = builder.build( ctx, svg.getDocument() );
+        svgGraphicsSize = ctx.getDocumentSize();
+      }
+
+      double scaleX = width / svgGraphicsSize.getWidth();
+      double scaleY = height / svgGraphicsSize.getHeight();
+      AffineTransform affineTransform = new AffineTransform( scaleX, 0.0, 0.0, scaleY, locationX, locationY );
+      svgGraphicsNode.setTransform( affineTransform );
+      svgGraphicsNode.paint( gc );
+    }
   }
 
   /**
