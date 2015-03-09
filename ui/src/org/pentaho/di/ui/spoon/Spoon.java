@@ -2029,7 +2029,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     sep4.setLayoutData( fdSep4 );
 
     variableComposite = new Composite( mainComposite, SWT.NONE );
-    variableComposite.setBackground( GUIResource.getInstance().getColorBackground() );
     variableComposite.setLayout( new FillLayout() );
     FormData fdVariableComposite = new FormData();
     fdVariableComposite.left = new FormAttachment( 0, 0 );
@@ -2194,7 +2193,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           if ( tip != null ) {
             PluginInterface plugin = PluginRegistry.getInstance().findPluginWithName( StepPluginType.class, name );
             if ( plugin != null ) {
-              Image image = GUIResource.getInstance().getImagesSteps().get( plugin.getIds()[0] ).getAsBitmap( display );
+              Image image = GUIResource.getInstance().getImagesSteps().get( plugin.getIds()[0] ).getAsBitmapForSize( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
               if ( image == null ) {
                 toolTip.hide();
               }
@@ -2209,7 +2208,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               PluginRegistry.getInstance().findPluginWithName( JobEntryPluginType.class, name );
             if ( plugin != null ) {
               Image image =
-                  GUIResource.getInstance().getImagesJobentries().get( plugin.getIds()[0] ).getAsBitmap( display );
+                  GUIResource.getInstance().getImagesJobentries().get( plugin.getIds()[0] ).getAsBitmapForSize( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
               toolTip.setImage( image );
               toolTip.setText( name + Const.CR + Const.CR + tip );
               toolTip.show( new org.eclipse.swt.graphics.Point( move.x + 10, move.y + 10 ) );
@@ -2230,6 +2229,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } );
 
     toolTip = new DefaultToolTip( variableComposite, ToolTip.RECREATE, true );
+    toolTip.setBackgroundColor( GUIResource.getInstance().getColor( 255, 254, 225 ) );
+    toolTip.setForegroundColor( GUIResource.getInstance().getColor( 0, 0, 0 ) );
     toolTip.setRespectMonitorBounds( true );
     toolTip.setRespectDisplayBounds( true );
     toolTip.setPopupDelay( 350 );
@@ -2302,7 +2303,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       for ( String baseCategory : baseCategories ) {
         TreeItem item = new TreeItem( coreObjectsTree, SWT.NONE );
         item.setText( baseCategory );
-        item.setImage( GUIResource.getInstance().getImageArrow() );
+        item.setImage( GUIResource.getInstance().getImageFolder() );
 
         for ( PluginInterface baseStep : baseSteps ) {
           if ( baseStep.getCategory().equalsIgnoreCase( baseCategory ) ) {
@@ -2331,7 +2332,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // Add History Items...
       TreeItem item = new TreeItem( coreObjectsTree, SWT.NONE );
       item.setText( BaseMessages.getString( PKG, "Spoon.History" ) );
-      item.setImage( GUIResource.getInstance().getImageArrow() );
+      item.setImage( GUIResource.getInstance().getImageFolder() );
 
       List<ObjectUsageCount> pluginHistory = props.getPluginHistory();
 
@@ -2343,7 +2344,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           PluginRegistry.getInstance().findPluginWithId( StepPluginType.class, usage.getObjectName() );
         if ( stepPlugin != null ) {
           final Image stepImage =
-              GUIResource.getInstance().getImagesSteps().get( stepPlugin.getIds()[0] ).getAsBitmap( display );
+              GUIResource.getInstance().getImagesSteps().get( stepPlugin.getIds()[0] ).getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
           String pluginName = Const.NVL( stepPlugin.getName(), "" );
           String pluginDescription = Const.NVL( stepPlugin.getDescription(), "" );
 
@@ -2381,7 +2382,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       for ( String baseCategory : baseCategories ) {
         TreeItem item = new TreeItem( coreObjectsTree, SWT.NONE );
         item.setText( baseCategory );
-        item.setImage( GUIResource.getInstance().getImageArrow() );
+        item.setImage( GUIResource.getInstance().getImageFolder() );
 
         if ( baseCategory.equalsIgnoreCase( JobEntryPluginType.GENERAL_CATEGORY ) ) {
           generalItem = item;
@@ -2426,7 +2427,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       String[] specialTooltip = new String[] { startEntry.getDescription(), dummyEntry.getDescription(), };
       Image[] specialImage =
         new Image[] {
-          GUIResource.getInstance().getImageStartSmall(), GUIResource.getInstance().getImageDummySmall() };
+          GUIResource.getInstance().getImageStartMedium(), GUIResource.getInstance().getImageDummyMedium() };
 
       for ( int i = 0; i < specialText.length; i++ ) {
         TreeItem specialItem = new TreeItem( generalItem, SWT.NONE, i );
@@ -6166,7 +6167,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( !props.isOnlyActiveFileShownInTree() || showAll || activeTransMeta != null ) {
       TreeItem tiTrans = new TreeItem( selectionTree, SWT.NONE );
       tiTrans.setText( STRING_TRANSFORMATIONS );
-      tiTrans.setImage( GUIResource.getInstance().getImageBol() );
+      tiTrans.setImage( GUIResource.getInstance().getImageFolder() );
 
       // Set expanded if this is the only transformation shown.
       if ( props.isOnlyActiveFileShownInTree() ) {
@@ -6218,7 +6219,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( !props.isOnlyActiveFileShownInTree() || showAll || activeJobMeta != null ) {
       TreeItem tiJobs = new TreeItem( selectionTree, SWT.NONE );
       tiJobs.setText( STRING_JOBS );
-      tiJobs.setImage( GUIResource.getInstance().getImageBol() );
+      tiJobs.setImage( GUIResource.getInstance().getImageFolder() );
 
       // Set expanded if this is the only job shown.
       if ( props.isOnlyActiveFileShownInTree() ) {
@@ -6285,7 +6286,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   @VisibleForTesting void refreshDbConnectionsSubtree( TreeItem tiRootName, AbstractMeta meta,
                                                        GUIResource guiResource ) {
-    TreeItem tiDbTitle = createTreeItem( tiRootName, STRING_CONNECTIONS, guiResource.getImageBol() );
+    TreeItem tiDbTitle = createTreeItem( tiRootName, STRING_CONNECTIONS, guiResource.getImageFolder() );
 
     DatabasesCollector collector = new DatabasesCollector( meta, rep );
     try {
@@ -6314,7 +6315,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private void refreshStepsSubtree( TreeItem tiRootName, TransMeta meta, GUIResource guiResource ) {
-    TreeItem tiStepTitle = createTreeItem( tiRootName, STRING_STEPS, guiResource.getImageBol() );
+    TreeItem tiStepTitle = createTreeItem( tiRootName, STRING_STEPS, guiResource.getImageFolder() );
 
     // Put the steps below it.
     for ( int i = 0; i < meta.nrSteps(); i++ ) {
@@ -6328,7 +6329,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       Image stepIcon = guiResource.getImagesStepsSmall().get( stepPlugin.getIds()[ 0 ] );
       if ( stepIcon == null ) {
-        stepIcon = guiResource.getImageBol();
+        stepIcon = guiResource.getImageFolder();
       }
 
       TreeItem tiStep = createTreeItem( tiStepTitle, stepMeta.getName(), stepIcon );
@@ -6343,7 +6344,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   @VisibleForTesting void refreshHopsSubtree( TreeItem tiTransName, TransMeta transMeta, GUIResource guiResource ) {
-    TreeItem tiHopTitle = createTreeItem( tiTransName, STRING_HOPS, guiResource.getImageBol() );
+    TreeItem tiHopTitle = createTreeItem( tiTransName, STRING_HOPS, guiResource.getImageFolder() );
 
     // Put the steps below it.
     for ( int i = 0; i < transMeta.nrTransHops(); i++ ) {
@@ -6387,7 +6388,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
 
   @VisibleForTesting void refreshPartitionsSubtree( TreeItem tiTransName, TransMeta transMeta, GUIResource guiResource ) {
-    TreeItem tiPartitionTitle = createTreeItem( tiTransName, STRING_PARTITIONS, guiResource.getImageBol() );
+    TreeItem tiPartitionTitle = createTreeItem( tiTransName, STRING_PARTITIONS, guiResource.getImageFolder() );
 
     List<PartitionSchema> partitionSchemas;
     try {
@@ -6447,7 +6448,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   @VisibleForTesting void refreshSlavesSubtree( TreeItem tiRootName, AbstractMeta meta, GUIResource guiResource ) {
-    TreeItem tiSlaveTitle = createTreeItem( tiRootName, STRING_SLAVES, guiResource.getImageBol() );
+    TreeItem tiSlaveTitle = createTreeItem( tiRootName, STRING_SLAVES, guiResource.getImageFolder() );
 
     List<SlaveServer> servers;
     try {
@@ -6480,7 +6481,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   @VisibleForTesting void refreshClustersSubtree( TreeItem tiTransName, TransMeta transMeta, GUIResource guiResource ) {
-    TreeItem tiClusterTitle = createTreeItem( tiTransName, STRING_CLUSTERS, guiResource.getImageBol() );
+    TreeItem tiClusterTitle = createTreeItem( tiTransName, STRING_CLUSTERS, guiResource.getImageFolder() );
 
     // Put the steps below it.
     for ( ClusterSchema clusterSchema : transMeta.getClusterSchemas() ) {
@@ -6496,7 +6497,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
 
   private void refreshJobEntriesSubtree( TreeItem tiJobName, JobMeta jobMeta, GUIResource guiResource ) {
-    TreeItem tiJobEntriesTitle = createTreeItem( tiJobName, STRING_JOB_ENTRIES, guiResource.getImageBol() );
+    TreeItem tiJobEntriesTitle = createTreeItem( tiJobName, STRING_JOB_ENTRIES, guiResource.getImageFolder() );
 
     for ( int i = 0; i < jobMeta.nrJobEntries(); i++ ) {
       JobEntryCopy jobEntry = jobMeta.getJobEntry( i );
@@ -6515,9 +6516,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // allow job entries to be shared as well...
       Image icon;
       if ( jobEntry.isStart() ) {
-        icon = GUIResource.getInstance().getImageStart();
+        icon = GUIResource.getInstance().getImageStartMedium();
       } else if ( jobEntry.isDummy() ) {
-        icon = GUIResource.getInstance().getImageDummy();
+        icon = GUIResource.getInstance().getImageDummyMedium();
       } else {
         String key = jobEntry.getEntry().getPluginId();
         icon = GUIResource.getInstance().getImagesJobentriesSmall().get( key );
