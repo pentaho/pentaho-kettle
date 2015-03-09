@@ -200,54 +200,6 @@ public class SwingGUIResource {
     }
   }
 
-  private BufferedImage getImageIcon( PluginInterface plugin ) throws KettleException {
-    try {
-      PluginRegistry registry = PluginRegistry.getInstance();
-      String filename = plugin.getImageFile();
-
-      ClassLoader classLoader = registry.getClassLoader( plugin );
-
-      // Try to use the plugin class loader to get access to the icon
-      //
-      InputStream inputStream = classLoader.getResourceAsStream( filename );
-      if ( inputStream == null ) {
-        inputStream = classLoader.getResourceAsStream( "/" + classLoader );
-      }
-      // Try to use the PDI class loader to get access to the icon
-      //
-      if ( inputStream == null ) {
-        inputStream = registry.getClass().getResourceAsStream( plugin.getImageFile() );
-      }
-      if ( inputStream == null ) {
-        inputStream = registry.getClass().getResourceAsStream( "/" + plugin.getImageFile() );
-      }
-      // As a last resort, try to use the standard file-system
-      //
-      if ( inputStream == null ) {
-        try {
-          inputStream = new FileInputStream( plugin.getImageFile() );
-        } catch ( FileNotFoundException e ) {
-          // Ignore, throws error below
-        }
-      }
-
-      if ( inputStream == null ) {
-        throw new KettleException( "Unable to find file: " + plugin.getImageFile() + " for plugin: " + plugin );
-      }
-
-      BufferedImage image = ImageIO.read( inputStream );
-      inputStream.close();
-
-      WaitingImageObserver wia = new WaitingImageObserver( image );
-      wia.waitImageLoaded();
-
-      return image;
-    } catch ( Throwable e ) {
-      throw new KettleException( "Unable to load image from file : '"
-        + plugin.getImageFile() + "' for plugin: " + plugin, e );
-    }
-  }
-
   public Map<String, SwingUniversalImage> getEntryImages() {
     return entryImages;
   }
