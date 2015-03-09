@@ -67,4 +67,21 @@ public class SvgSupport {
     }
     return name;
   }
+
+  /**
+   * Check by file name if image is PNG.
+   */
+  public static boolean isPngName( String name ) {
+    return name.toLowerCase().endsWith( ".png" );
+  }
+
+  /**
+   * Converts PNG file name to SVG.
+   */
+  public static String toSvgName( String name ) {
+    if ( isPngName( name ) ) {
+      name = name.substring( 0, name.length() - 4 ) + ".svg";
+    }
+    return name;
+  }
 }
