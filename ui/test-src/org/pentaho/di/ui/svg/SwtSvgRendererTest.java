@@ -30,6 +30,8 @@ import java.io.InputStream;
 import org.eclipse.swt.graphics.Image;
 import org.junit.Test;
 import org.pentaho.di.core.SwtUniversalImage;
+import org.pentaho.di.core.svg.SvgImage;
+import org.pentaho.di.core.svg.SvgSupport;
 
 public class SwtSvgRendererTest {
   @Test
