@@ -310,22 +310,19 @@ public class SwingDirectGC implements GCInterface {
 
     SwingUniversalImage img = getNativeImage( image );
 
-    drawPixelatedImage( img.getAsBitmapForSize( iconsize, iconsize ), locationX, locationY );
+    drawImage( img, locationX, locationY );
 
     // gc.drawImage(img, locationX+xOffset, locationY+yOffset, observer);
 
   }
 
-  public void drawPixelatedImage( BufferedImage img, int locationX, int locationY ) {
-    gc.setBackground( Color.white );
-    gc.clearRect( locationX, locationY, img.getWidth( observer ), img.getHeight( observer ) );
-
-    if ( isDrawingPixelatedImages() ) {
-      BufferedImage bi = new BufferedImage( img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB );
+  public void drawImage( SwingUniversalImage img, int locationX, int locationY ) {
+    if ( isDrawingPixelatedImages() && img.isBitmap() ) {
+      BufferedImage bi = new BufferedImage( iconsize, iconsize, BufferedImage.TYPE_INT_RGB );
       Graphics2D g2 = (Graphics2D) bi.getGraphics();
       g2.setColor( Color.WHITE );
-      g2.fillRect( 0, 0, img.getWidth(), img.getHeight() );
-      g2.drawImage( img, 0, 0, observer );
+      g2.fillRect( 0, 0, iconsize, iconsize );
+      g2.drawImage( img.getAsBitmapForSize( iconsize, iconsize ), 0, 0, observer );
       g2.dispose();
 
       for ( int x = 0; x < bi.getWidth( observer ); x++ ) {
@@ -335,21 +332,13 @@ public class SwingDirectGC implements GCInterface {
           gc.setStroke( new BasicStroke( 1.0f ) );
           gc.drawLine( locationX + xOffset + x, locationY + yOffset + y, locationX + xOffset + x, locationY
             + yOffset + y );
-          // gc.drawLine(locationX+xOffset+x, locationY+yOffset+y,
-          // locationX+xOffset+x+1, locationY+yOffset+y);
-          // gc.drawLine(locationX+xOffset+x, locationY+yOffset+y+1,
-          // locationX+xOffset+x+1, locationY+yOffset+y+1);
-          // gc.fillRect(locationX+xOffset+x, locationY+yOffset+y, 1, 1);
         }
       }
     } else {
-      // Wait
-      boolean changed = true;
-      while ( changed ) {
-        changed = !gc.drawImage( img, locationX, locationY, observer );
-      }
+      gc.setBackground( Color.white );
+      gc.clearRect( locationX, locationY, iconsize, iconsize );
+      img.drawImageTo( gc, locationX, locationY, iconsize, iconsize );
     }
-
   }
 
   public Point getImageBounds( EImage image, float magnification ) {
@@ -613,7 +602,7 @@ public class SwingDirectGC implements GCInterface {
     SwingUniversalImage im = stepImages.get( steptype );
     if ( im != null ) { // Draw the icon!
 
-      drawPixelatedImage( im.getAsBitmapForSize( iconsize, iconsize ), x + xOffset, y + xOffset );
+      drawImage( im, x + xOffset, y + xOffset );
 
       // gc.drawImage(im, x+xOffset, y+yOffset, observer);
     }
@@ -643,7 +632,7 @@ public class SwingDirectGC implements GCInterface {
       return;
     }
 
-    drawPixelatedImage( image.getAsBitmapForSize( iconsize, iconsize ), x + xOffset, y + xOffset );
+    drawImage( image, x + xOffset, y + xOffset );
     // gc.drawImage(image, x+xOffset, y+yOffset, observer);
   }
 

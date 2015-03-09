@@ -316,17 +316,15 @@ public class SwingGC implements GCInterface {
 
     SwingUniversalImage img = getNativeImage( image );
 
-    drawPixelatedImage( img.getAsBitmapForSize( iconsize, iconsize ), locationX, locationY );
+    drawImage( img, locationX, locationY );
 
     // gc.drawImage(img, locationX+xOffset, locationY+yOffset, observer);
 
   }
 
-  public void drawPixelatedImage( BufferedImage img, int locationX, int locationY ) {
-    gc.setBackground( Color.white );
-    gc.clearRect( locationX, locationY, img.getWidth( observer ), img.getHeight( observer ) );
-
-    if ( isDrawingPixelatedImages() ) {
+  public void drawImage( SwingUniversalImage image, int locationX, int locationY ) {
+    if ( isDrawingPixelatedImages() && image.isBitmap()) {
+      BufferedImage img=image.getAsBitmapForSize( iconsize, iconsize );
       ColorModel cm = img.getColorModel();
       Raster raster = img.getRaster();
 
@@ -343,11 +341,10 @@ public class SwingGC implements GCInterface {
         }
       }
     } else {
-      while ( !gc.drawImage( img, locationX, locationY, observer ) ) {
-        continue;
-      }
+      gc.setBackground( Color.white );
+      gc.clearRect( locationX, locationY, iconsize, iconsize );
+      image.drawImageTo( gc, locationX, locationY, iconsize, iconsize );
     }
-
   }
 
   public Point getImageBounds( EImage image, float magnification ) {
@@ -616,7 +613,7 @@ public class SwingGC implements GCInterface {
     SwingUniversalImage im = stepImages.get( steptype );
     if ( im != null ) { // Draw the icon!
 
-      drawPixelatedImage( im.getAsBitmapForSize( iconsize, iconsize ), x + xOffset, y + xOffset );
+      drawImage( im, x + xOffset, y + xOffset );
 
       // gc.drawImage(im, x+xOffset, y+yOffset, observer);
     }
@@ -646,7 +643,7 @@ public class SwingGC implements GCInterface {
       return;
     }
 
-    drawPixelatedImage( image.getAsBitmapForSize( iconsize, iconsize ), x + xOffset, y + xOffset );
+    drawImage( image, x + xOffset, y + xOffset );
     // gc.drawImage(image, x+xOffset, y+yOffset, observer);
   }
 
