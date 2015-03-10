@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
@@ -275,7 +276,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * Map of files that are generated or used by this step. After execution, these can be added to result. The entry to
    * the map is the filename
    */
-  private Map<String, ResultFile> resultFiles;
+  private final Map<String, ResultFile> resultFiles;
+  private final ReentrantReadWriteLock resultFilesLock;
 
   /**
    * This contains the first row received and will be the reference row. We used it to perform extra checking: see if we
@@ -481,7 +483,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     }
 
     rowListeners = new ArrayList<RowListener>();
-    resultFiles = new Hashtable<String, ResultFile>();
+    resultFiles = new HashMap<String, ResultFile>();
+    resultFilesLock = new ReentrantReadWriteLock(  );
 
     repartitioning = StepPartitioningMeta.PARTITIONING_METHOD_NONE;
     partitionTargets = new Hashtable<String, BlockingRowSet>();
@@ -3325,7 +3328,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    *          the result file
    */
   public void addResultFile( ResultFile resultFile ) {
-    resultFiles.put( resultFile.getFile().toString(), resultFile );
+    ReentrantReadWriteLock.WriteLock lock = resultFilesLock.writeLock();
+    lock.lock();
+    try {
+      resultFiles.put( resultFile.getFile().toString(), resultFile );
+    } finally {
+      lock.unlock();
+    }
   }
 
   /*
@@ -3334,7 +3343,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @see org.pentaho.di.trans.step.StepInterface#getResultFiles()
    */
   public Map<String, ResultFile> getResultFiles() {
-    return resultFiles;
+    ReentrantReadWriteLock.ReadLock lock = resultFilesLock.readLock();
+    lock.lock();
+    try {
+      return new HashMap<String, ResultFile>( this.resultFiles );
+    } finally {
+      lock.unlock();
+    }
   }
 
   /*

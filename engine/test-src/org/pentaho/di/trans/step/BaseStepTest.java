@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.After;
@@ -15,9 +16,11 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.BlockingRowSet;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.SingleRowRowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.fileinput.NonAccessibleFileObject;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
@@ -173,6 +176,46 @@ public class BaseStepTest {
       // Close addListeners thread
       done.set( true );
       addListeners.join();
+    }
+  }
+
+  @Test
+  public void resultFilesMapIsSafeForConcurrentModification() throws Exception {
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+      mockHelper.logChannelInterface );
+
+    final BaseStep step =
+      new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+
+    final AtomicBoolean complete = new AtomicBoolean( false );
+
+    final int FILES_AMOUNT = 10 * 1000;
+    Thread filesProducer = new Thread( new Runnable() {
+      @Override public void run() {
+        try {
+          for ( int i = 0; i < FILES_AMOUNT; i++ ) {
+            step.addResultFile( new ResultFile( 0, new NonAccessibleFileObject( Integer.toString( i ) ), null, null ) );
+            try {
+              Thread.sleep( 1 );
+            } catch ( Exception e ) {
+              fail( e.getMessage() );
+            }
+          }
+        } finally {
+          complete.set( true );
+        }
+      }
+    } );
+
+    filesProducer.start();
+    try {
+      while ( !complete.get() ) {
+        for ( Map.Entry<String, ResultFile> entry : step.getResultFiles().entrySet() ) {
+          entry.getKey();
+        }
+      }
+    } finally {
+      filesProducer.join();
     }
   }
 
