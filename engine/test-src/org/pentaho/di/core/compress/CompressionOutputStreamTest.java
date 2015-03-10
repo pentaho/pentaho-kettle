@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -35,8 +36,7 @@ public class CompressionOutputStreamTest {
     factory = CompressionProviderFactory.getInstance();
     CompressionProvider provider = factory.getCompressionProviderByName( PROVIDER_NAME );
     ByteArrayOutputStream in = new ByteArrayOutputStream();
-    outStream = new CompressionOutputStream( in, provider ) {
-    };
+    outStream = new DummyCompressionOS( in, provider );
   }
 
   @After
@@ -58,8 +58,7 @@ public class CompressionOutputStreamTest {
   public void testClose() throws IOException {
     CompressionProvider provider = outStream.getCompressionProvider();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    outStream = new CompressionOutputStream( out, provider ) {
-    };
+    outStream = new DummyCompressionOS( out, provider );
     outStream.close();
   }
 
@@ -67,8 +66,7 @@ public class CompressionOutputStreamTest {
   public void testWrite() throws IOException {
     CompressionProvider provider = outStream.getCompressionProvider();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    outStream = new CompressionOutputStream( out, provider ) {
-    };
+    outStream = new DummyCompressionOS( out, provider );
     outStream.write( "Test".getBytes() );
   }
 
@@ -76,8 +74,13 @@ public class CompressionOutputStreamTest {
   public void testAddEntry() throws IOException {
     CompressionProvider provider = outStream.getCompressionProvider();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    outStream = new CompressionOutputStream( out, provider ) {
-    };
-    outStream.addEntry( null );
+    outStream = new DummyCompressionOS( out, provider );
+    outStream.addEntry( null, null );
+  }
+
+  private static class DummyCompressionOS extends CompressionOutputStream {
+    public DummyCompressionOS( OutputStream out, CompressionProvider provider ) {
+      super( out, provider );
+    }
   }
 }
