@@ -1935,11 +1935,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     selectionLabel = new Label( mainComposite, SWT.HORIZONTAL );
     FormData fdsLabel = new FormData();
-    fdsLabel.left = new FormAttachment( 0, 0 );
-    fdsLabel.top = new FormAttachment( sep3, 5 );
+    fdsLabel.left = new FormAttachment( 3, 0 );
+    fdsLabel.top = new FormAttachment( sep3, 8 );
     selectionLabel.setLayoutData( fdsLabel );
 
-    ToolBar treeTb = new ToolBar( mainComposite, SWT.HORIZONTAL | SWT.FLAT | SWT.BORDER );
+    ToolBar treeTb = new ToolBar( mainComposite, SWT.HORIZONTAL | SWT.FLAT );
     /*
     This contains a map with all the unnamed transformation (just a filename)
    */
@@ -1959,7 +1959,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     selectionFilter.setToolTipText( BaseMessages.getString( PKG, "Spoon.SelectionFilter.Tooltip" ) );
     FormData fdSelectionFilter = new FormData();
     fdSelectionFilter.top =
-      new FormAttachment( treeTb, -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 5 ) );
+      new FormAttachment( treeTb, -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 9 ) );
     fdSelectionFilter.right = new FormAttachment( 95, -55 );
     fdSelectionFilter.left = new FormAttachment( selectionLabel, 10 );
     selectionFilter.setLayoutData( fdSelectionFilter );
@@ -6190,7 +6190,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               name = STRING_TRANS_NO_NAME;
             }
 
-            TreeItem tiTransName = createTreeItem( tiTrans, name, guiResource.getImageTransGraph() );
+            TreeItem tiTransName = createTreeItem( tiTrans, name, guiResource.getImageTransGraphMedium() );
 
             // Set expanded if this is the only transformation
             // shown.
@@ -6247,7 +6247,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               continue;
             }
 
-            TreeItem tiJobName = createTreeItem( tiJobs, name, guiResource.getImageJobGraph() );
+            TreeItem tiJobName = createTreeItem( tiJobs, name, guiResource.getImageJobGraphMedium() );
 
             // Set expanded if this is the only job shown.
             if ( props.isOnlyActiveFileShownInTree() ) {
@@ -6341,7 +6341,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         databaseMeta = findDatabase( dbs, dbName );
       }
 
-      TreeItem tiDb = createTreeItem( tiDbTitle, databaseMeta.getDisplayName(), guiResource.getImageConnection() );
+      TreeItem tiDb = createTreeItem( tiDbTitle, databaseMeta.getDisplayName(), guiResource.getImageConnectionMedium() );
       if ( databaseMeta.isShared() ) {
         tiDb.setFont( guiResource.getFontBold() );
       }
@@ -6443,7 +6443,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         continue;
       }
       TreeItem tiPartition =
-        createTreeItem( tiPartitionTitle, partitionSchema.getName(), guiResource.getImageFolderConnections() );
+        createTreeItem( tiPartitionTitle, partitionSchema.getName(), guiResource.getImageFolderConnectionsMedium() );
       if ( partitionSchema.isShared() ) {
         tiPartition.setFont( guiResource.getFontBold() );
       }
@@ -6507,7 +6507,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       SlaveServer slaveServer = SlaveServer.findSlaveServer( servers, slaveName );
 
-      TreeItem tiSlave = createTreeItem( tiSlaveTitle, slaveServer.getName(), guiResource.getImageSlave() );
+      TreeItem tiSlave = createTreeItem( tiSlaveTitle, slaveServer.getName(), guiResource.getImageSlaveMedium() );
       if ( slaveServer.isShared() ) {
         tiSlave.setFont( guiResource.getFontBold() );
       }
@@ -6522,13 +6522,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if ( !filterMatch( clusterSchema.getName() ) ) {
         continue;
       }
-      TreeItem tiCluster = createTreeItem( tiClusterTitle, clusterSchema.toString(), guiResource.getImageCluster() );
+      TreeItem tiCluster = createTreeItem( tiClusterTitle, clusterSchema.toString(), guiResource.getImageClusterMedium() );
       if ( clusterSchema.isShared() ) {
         tiCluster.setFont( guiResource.getFontBold() );
       }
     }
   }
-
 
   private void refreshJobEntriesSubtree( TreeItem tiJobName, JobMeta jobMeta, GUIResource guiResource ) {
     TreeItem tiJobEntriesTitle = createTreeItem( tiJobName, STRING_JOB_ENTRIES, guiResource.getImageFolder() );

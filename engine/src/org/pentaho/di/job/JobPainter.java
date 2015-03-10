@@ -275,7 +275,8 @@ public class JobPainter extends BasePainter {
     }
 
     gc.setForeground( EColor.CRYSTAL );
-    gc.drawRoundRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1, 8, 8 );
+    gc.setAntialias(true);
+    gc.drawRoundRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1, BasePainter.CORNER_RADIUS_5, BasePainter.CORNER_RADIUS_5 );
     Point textsize = new Point( gc.textExtent( "" + name ).x, gc.textExtent( "" + name ).y );
 
     if ( !shadow ) {

@@ -190,9 +190,9 @@ public class GUIResource {
 
   private Image imageCalendar;
 
-  private Image imageCluster;
+  private SwtUniversalImage imageCluster;
 
-  private Image imageSlave;
+  private SwtUniversalImage imageSlave;
 
   private SwtUniversalImage imageArrow;
 
@@ -224,7 +224,7 @@ public class GUIResource {
 
   private Image imageProfil;
 
-  private Image imageFolderConnections;
+  private SwtUniversalImage imageFolderConnections;
 
   private Image imageEditOptionButton;
 
@@ -270,13 +270,13 @@ public class GUIResource {
 
   private Image imageViewPanel;
 
-  private Image imageExpandAll;
+  private SwtUniversalImage imageExpandAll;
 
   private Image imageSearchSmall;
 
   private Image imageRegExSmall;
 
-  private Image imageCollapseAll;
+  private SwtUniversalImage imageCollapseAll;
 
   private SwtUniversalImage imageStepError;
 
@@ -741,7 +741,7 @@ public class GUIResource {
     imageHop = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HOP_image" ) );
 
     // "ui/images/CNC.png"
-    imageConnection = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CNC_image" ) );
+    imageConnection = SwtSvgImageUtil.getImageAsResource( display, SvgSupport.toSvgName( BasePropertyHandler.getProperty( "CNC_image" ) ) );
 
     // "ui/images/Add.png"
     imageAdd = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Add_image" ) );
@@ -778,13 +778,11 @@ public class GUIResource {
         .getProperty( "ExploreDbSmall_image" ) ), new RGB( 255, 255, 255 ) );
 
     // "ui/images/cluster.png"
-    imageCluster = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Cluster_image" ) );
+    imageCluster = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Cluster_image" ) );
 
     // , "ui/images/slave.png"
-    imageSlave =
-      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-        .getProperty( "Slave_image" ) ), new RGB( 255, 255, 255 ) );
-
+    imageSlave = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Slave_image" ) );
+    
     // "ui/images/logo_kettle_lrg.png"
     imageKettleLogo = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Logo_lrg_image" ) );
     // "ui/images/bg_banner.png"
@@ -903,11 +901,10 @@ public class GUIResource {
     imageViewPanel = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ViewPanel_image" ) );
 
     // "ui/images/ExpandAll.png;
-    imageExpandAll = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ExpandAll_image" ) );
-
+     imageExpandAll = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ExpandAll_image" ) );
+    
     // "ui/images/CollapseAll.png;
-    imageCollapseAll =
-      ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CollapseAll_image" ) );
+    imageCollapseAll = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CollapseAll_image" ) );
 
     // "ui/images/show-error-lines.png;
     imageStepError =
@@ -1061,10 +1058,8 @@ public class GUIResource {
         .getProperty( "Profil_image" ) ), // , "ui/images/profil.png"
         new RGB( 255, 255, 255 ) );
 
-    imageFolderConnections =
-      ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
-        .getProperty( "FolderConnections_image" ) ), // , "ui/images/folder_connection.png"
-        new RGB( 255, 255, 255 ) );
+    // "ui/images/folder_connection.png"
+    imageFolderConnections = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "FolderConnections_image" ) );
 
     imageRegExSmall =
       ImageUtil.makeImageTransparent( display, ImageUtil.getImageAsResource( display, BasePropertyHandler
@@ -1314,21 +1309,36 @@ public class GUIResource {
    * @return Returns the imageCluster.
    */
   public Image getImageCluster() {
-    return imageCluster;
+    return imageCluster.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+
+  public Image getImageClusterMedium() {
+    return imageCluster.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }  
+  
+  /**
+   * @return Returns the imageSlave.
+   */
+  public Image getImageSlave() {
+    return imageSlave.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
   /**
    * @return Returns the imageSlave.
    */
-  public Image getImageSlave() {
-    return imageSlave;
+  public Image getImageSlaveMedium() {
+    return imageSlave.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
-
+  
   /**
    * @return Returns the imageConnection.
    */
   public Image getImageConnection() {
     return imageConnection.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+
+  public Image getImageConnectionMedium() {
+    return imageConnection.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
   
   public SwtUniversalImage getSwtImageConnection() {
@@ -1598,6 +1608,10 @@ public class GUIResource {
     return imageTransGraph.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
+  public Image getImageTransGraphMedium() {
+    return imageTransGraph.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+  
   public Image getImageUser() {
     return imageUser;
   }
@@ -1607,13 +1621,21 @@ public class GUIResource {
   }
 
   public Image getImageFolderConnections() {
-    return imageFolderConnections;
+    return imageTransGraph.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
+  public Image getImageFolderConnectionsMedium() {
+    return imageTransGraph.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+  
   public Image getImageJobGraph() {
     return imageJobGraph.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
+  public Image getImageJobGraphMedium() {
+    return imageJobGraph.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+  
   public Image getEditOptionButton() {
     return imageEditOptionButton;
   }
@@ -1934,7 +1956,11 @@ public class GUIResource {
   }
 
   public Image getImageExpandAll() {
-    return imageExpandAll;
+    return imageExpandAll.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+
+  public Image getImageExpandAllMedium() {
+    return imageExpandAll.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
   public Image getImageSearchSmall() {
@@ -1946,9 +1972,13 @@ public class GUIResource {
   }
 
   public Image getImageCollapseAll() {
-    return imageCollapseAll;
+    return imageCollapseAll.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
+  public Image getImageCollapseAllMedium() {
+    return imageCollapseAll.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+  
   public Image getImageStepError() {
     return imageStepError.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
