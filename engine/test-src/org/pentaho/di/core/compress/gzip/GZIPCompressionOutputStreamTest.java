@@ -39,8 +39,7 @@ public class GZIPCompressionOutputStreamTest {
     factory = CompressionProviderFactory.getInstance();
     CompressionProvider provider = factory.getCompressionProviderByName( PROVIDER_NAME );
     ByteArrayOutputStream in = new ByteArrayOutputStream();
-    outStream = new GZIPCompressionOutputStream( in, provider ) {
-    };
+    outStream = new GZIPCompressionOutputStream( in, provider );
   }
 
   @After
@@ -77,8 +76,7 @@ public class GZIPCompressionOutputStreamTest {
   public void testWrite() throws IOException {
     CompressionProvider provider = outStream.getCompressionProvider();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    outStream = new GZIPCompressionOutputStream( out, provider ) {
-    };
+    outStream = new GZIPCompressionOutputStream( out, provider );
     outStream.write( "Test".getBytes() );
   }
 
@@ -86,8 +84,7 @@ public class GZIPCompressionOutputStreamTest {
   public void testAddEntry() throws IOException {
     CompressionProvider provider = outStream.getCompressionProvider();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    outStream = new GZIPCompressionOutputStream( out, provider ) {
-    };
-    outStream.addEntry( null );
+    outStream = new GZIPCompressionOutputStream( out, provider );
+    outStream.addEntry( null, null );
   }
 }

@@ -632,7 +632,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         // The compression output stream may also archive entries. For this we create the filename
         // (with appropriate extension) and add it as an entry to the output stream. For providers
         // that do not archive entries, they should use the default no-op implementation.
-        data.out.addEntry( filename + "." + meta.getExtension() );
+        data.out.addEntry( filename, environmentSubstitute( meta.getExtension() ) );
 
         if ( !Const.isEmpty( meta.getEncoding() ) ) {
           if ( log.isDetailed() ) {
