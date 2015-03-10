@@ -152,4 +152,12 @@ public class StringUtilTest extends TestCase {
     assertEquals( "  ", StringUtil.getIndent( 2 ) );
     assertEquals( "   ", StringUtil.getIndent( 3 ) );
   }
+
+  public void testIsVariable() throws Exception {
+    assertTrue( StringUtil.isVariable( "${somename}" ) );
+    assertTrue( StringUtil.isVariable( "%%somename%%" ) );
+    assertTrue( StringUtil.isVariable( "$[somename]" ) );
+    assertFalse( StringUtil.isVariable( "somename" ) );
+
+  }
 }
