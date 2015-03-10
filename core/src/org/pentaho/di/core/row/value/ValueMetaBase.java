@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.sql.Blob;
@@ -37,6 +38,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -3086,6 +3088,12 @@ public class ValueMetaBase implements ValueMetaInterface {
                 break;
               case TYPE_BINARY:
                 string = XMLHandler.encodeBinaryData( (byte[]) object );
+                break;
+              case TYPE_TIMESTAMP:
+                string = XMLHandler.timestamp2string( (Timestamp)  object );
+                break;
+              case TYPE_INET:
+                string = ( (InetAddress) object ).toString();
                 break;
               default:
                 throw new IOException( toString() + " : Unable to serialize data type to XML " + getType() );
