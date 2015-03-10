@@ -2779,7 +2779,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           } else {
             tip.append( BaseMessages.getString( PKG, "TransGraph.StepInjectionNotSupported.Tooltip" ) );
           }
-          tipImage = GUIResource.getInstance().getImageEdit();
+          tipImage = GUIResource.getInstance().getImageInject();
           break;
         default:
           break;
