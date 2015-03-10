@@ -806,7 +806,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     Composite sashComposite = null;
     MainSpoonPerspective mainPerspective = null;
     try {
-      SwtXulLoader xulLoader = new KettleXulLoader();
+      KettleXulLoader xulLoader = new KettleXulLoader();
+      xulLoader.setIconsSize( 16, 16 );
       xulLoader.setOuterContext( shell );
       xulLoader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
 
