@@ -582,4 +582,17 @@ public class StringUtil {
 
     return variable;
   }
+
+  /**
+   * @param variable
+   *          the variable to look for, with the $ or % variable specification.
+   * @return true if the input is a variable, false otherwise
+   */
+  public static boolean isVariable( String variable ) {
+    variable = variable.trim();
+    return variable.startsWith( UNIX_OPEN ) && variable.endsWith( UNIX_CLOSE )
+        || variable.startsWith( WINDOWS_OPEN ) && variable.endsWith( WINDOWS_CLOSE )
+        || variable.startsWith( HEX_OPEN ) && variable.endsWith( HEX_CLOSE );
+
+  }
 }
