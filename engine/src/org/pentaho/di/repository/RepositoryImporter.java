@@ -85,6 +85,8 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
 
   private boolean overwrite;
   private boolean askOverwrite = true;
+  // Ask Before Replacing Objects property handler
+  private boolean askReplace;
 
   private String versionComment;
 
@@ -133,10 +135,18 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
   }
 
   private boolean getPromptResult( String message, String rememberText, String rememberPropertyName ) {
-    if ( isRemembered( rememberPropertyName ) ) {
-      return rememberPropertyNamesToOverwrite.contains( rememberPropertyName );
+    boolean result = false;
+    // There is nothing to remember in case of Ask Before Replacing option is turned off.
+    // Thus is returned value of Replace existing objects checkbox
+    if ( !askReplace ) {
+      result = overwritePrompter.overwritePrompt( message, rememberText, rememberPropertyName );
+      return result;
     }
-    boolean result = overwritePrompter.overwritePrompt( message, rememberText, rememberPropertyName );
+    if ( isRemembered( rememberPropertyName ) ) {
+      result = rememberPropertyNamesToOverwrite.contains( rememberPropertyName );
+      return result;
+    }
+    result = overwritePrompter.overwritePrompt( message, rememberText, rememberPropertyName );
     // Save result so we'll know what to return if the user selects to remember
     if ( result ) {
       rememberPropertyNamesToOverwrite.add( rememberPropertyName );
@@ -159,7 +169,7 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
         System.getProperty( Const.KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES, "N" );
     this.needToCheckPathForVariables = "N".equalsIgnoreCase( importPathCompatibility );
 
-    boolean askReplace = Props.getInstance().askAboutReplacingDatabaseConnections();
+    askReplace = Props.getInstance().askAboutReplacingDatabaseConnections();
 
     if ( askReplace ) {
       if ( feedback instanceof HasOverwritePrompter ) {
