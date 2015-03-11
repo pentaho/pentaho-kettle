@@ -39,6 +39,13 @@ import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 
+/**
+ * Static methods provided by this class should be copied to their respective projects
+ *
+ * Data Service client code is now available in the pdi-dataservice-plugin project
+ *
+ */
+@Deprecated
 public class ThinUtil {
 
   public static String stripNewlines( String sql ) {
