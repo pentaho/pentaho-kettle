@@ -261,7 +261,7 @@ public class MappingTest extends TestCase {
    */
   public void testMapping_WhenNextStepHasTwoCopies_AndOutputIsNotDefinedExplicitly() throws Exception {
     runTransWhenMappingsIsFollowedByCopiedStep(
-      "testfiles/org/pentaho/di/trans/steps/mapping/pdi-13545/PDI-13545-1.ktr" );
+      "testfiles/org/pentaho/di/trans/steps/mapping/pdi-13545/pdi-13545-1.ktr" );
   }
 
   /**
@@ -272,7 +272,7 @@ public class MappingTest extends TestCase {
    */
   public void testMapping_WhenNextStepHasTwoCopies_AndOutputIsDefinedExplicitly() throws Exception {
     runTransWhenMappingsIsFollowedByCopiedStep(
-      "testfiles/org/pentaho/di/trans/steps/mapping/pdi-13545/PDI-13545-2.ktr" );
+      "testfiles/org/pentaho/di/trans/steps/mapping/pdi-13545/pdi-13545-2.ktr" );
   }
 
   /**
