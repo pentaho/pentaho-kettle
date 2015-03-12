@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -392,5 +392,32 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   @Override
   public int getMaxVARCHARLength() {
     return MAX_VARCHAR_LENGTH;
+  }
+
+  @Override
+  public boolean supportsSequences() {
+    return true;
+  }
+
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT name FROM sys.sequences";
+  }
+
+  @Override
+  public String getSQLSequenceExists( String sequenceName ) {
+    return String.format( "SELECT * FROM sys.sequences WHERE name = '%s'", sequenceName );
+  }
+
+  @Override
+  public String getSQLCurrentSequenceValue( String sequenceName ) {
+    String realSequenceName = sequenceName.replace( getStartQuote(), "" ).replace( getEndQuote(), "" );
+    return String.format( "SELECT get_value_for( 'sys', '%s' )", realSequenceName );
+  }
+
+  @Override
+  public String getSQLNextSequenceValue( String sequenceName ) {
+    String realSequenceName = sequenceName.replace( getStartQuote(), "" ).replace( getEndQuote(), "" );
+    return String.format( "SELECT next_value_for( 'sys', '%s' )", realSequenceName );
   }
 }
