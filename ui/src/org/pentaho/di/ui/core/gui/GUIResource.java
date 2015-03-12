@@ -162,6 +162,8 @@ public class GUIResource {
 
   private SwtUniversalImage imageConnection;
 
+  private SwtUniversalImage imageConnectionTree;
+  
   private Image imageAdd;
 
   private Image imageTable;
@@ -220,6 +222,10 @@ public class GUIResource {
 
   private SwtUniversalImage imageJobGraph;
 
+  private SwtUniversalImage imageTransTree;
+
+  private SwtUniversalImage imageJobTree;
+  
   private Image imageUser;
 
   private Image imageProfil;
@@ -502,6 +508,7 @@ public class GUIResource {
       imageHop.dispose();
       imageDisabledHop.dispose();
       imageConnection.dispose();
+      imageConnectionTree.dispose();
       imageAdd.dispose();
       imageTable.dispose();
       imageSchema.dispose();
@@ -529,6 +536,8 @@ public class GUIResource {
       imageVariable.dispose();
       imageTransGraph.dispose();
       imageJobGraph.dispose();
+      imageTransTree.dispose();
+      imageJobTree.dispose();
       imageUser.dispose();
       imageProfil.dispose();
       imageFolderConnections.dispose();
@@ -743,6 +752,9 @@ public class GUIResource {
     // "ui/images/CNC.png"
     imageConnection = SwtSvgImageUtil.getImageAsResource( display, SvgSupport.toSvgName( BasePropertyHandler.getProperty( "CNC_image" ) ) );
 
+    // "ui/images/CNC.png"
+    imageConnectionTree = SwtSvgImageUtil.getImageAsResource( display, SvgSupport.toSvgName( BasePropertyHandler.getProperty( "CNC_tree_image" ) ) );
+    
     // "ui/images/Add.png"
     imageAdd = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Add_image" ) );
 
@@ -1026,6 +1038,11 @@ public class GUIResource {
     imageJobGraph = SwtSvgImageUtil.getUniversalImage( 
         display, getClass().getClassLoader(), SvgSupport.toSvgName( BasePropertyHandler.getProperty( "ChefIcon_image" ) ) );
 
+    imageTransTree = SwtSvgImageUtil.getUniversalImage( 
+        display, getClass().getClassLoader(), SvgSupport.toSvgName( BasePropertyHandler.getProperty( "Job_tree_image" ) ) );
+    imageJobTree = SwtSvgImageUtil.getUniversalImage( 
+        display, getClass().getClassLoader(), SvgSupport.toSvgName( BasePropertyHandler.getProperty( "Trans_tree_image" ) ) );
+    
     // "ui/images/kettle_logo_small.png"
     imageLogoSmall = SwtSvgImageUtil.getUniversalImage( 
         display, getClass().getClassLoader(), SvgSupport.toSvgName( BasePropertyHandler.getProperty( "Logo_sml_image" ) ) );
@@ -1337,8 +1354,8 @@ public class GUIResource {
     return imageConnection.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
-  public Image getImageConnectionMedium() {
-    return imageConnection.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  public Image getImageConnectionTree() {
+    return imageConnectionTree.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
   
   public SwtUniversalImage getSwtImageConnection() {
@@ -1608,8 +1625,8 @@ public class GUIResource {
     return imageTransGraph.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
-  public Image getImageTransGraphMedium() {
-    return imageTransGraph.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  public Image getImageTransTree() {
+    return imageTransTree.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
   
   public Image getImageUser() {
@@ -1632,8 +1649,8 @@ public class GUIResource {
     return imageJobGraph.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
-  public Image getImageJobGraphMedium() {
-    return imageJobGraph.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  public Image getImageJobTree() {
+    return imageJobTree.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
   
   public Image getEditOptionButton() {
