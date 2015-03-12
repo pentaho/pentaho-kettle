@@ -145,8 +145,6 @@ public class EnterOptionsDialog extends Dialog {
 
   private Text wGridSize;
 
-  private Button wAntiAlias;
-
   private Button wOriginalLook;
 
   private Button wBranding;
@@ -835,32 +833,13 @@ public class EnterOptionsDialog extends Dialog {
     fdGridSize.top = new FormAttachment( wMiddlePct, margin );
     wGridSize.setLayoutData( fdGridSize );
 
-    // Enable anti-aliasing
-    Label wlAntiAlias = new Label( wLookComp, SWT.RIGHT );
-    wlAntiAlias.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.CanvasAntiAliasing.Label" ) );
-    props.setLook( wlAntiAlias );
-    FormData fdlAntiAlias = new FormData();
-    fdlAntiAlias.left = new FormAttachment( 0, 0 );
-    fdlAntiAlias.top = new FormAttachment( wGridSize, margin );
-    fdlAntiAlias.right = new FormAttachment( middle, -margin );
-    wlAntiAlias.setLayoutData( fdlAntiAlias );
-    wAntiAlias = new Button( wLookComp, SWT.CHECK );
-    props.setLook( wAntiAlias );
-    wAntiAlias.setSelection( props.isAntiAliasingEnabled() );
-    FormData fdAntiAlias = new FormData();
-    fdAntiAlias.left = new FormAttachment( middle, 0 );
-    fdAntiAlias.top = new FormAttachment( wGridSize, margin );
-    fdAntiAlias.right = new FormAttachment( 100, 0 );
-    wAntiAlias.setLayoutData( fdAntiAlias );
-
-    // Enable anti-aliasing
     Label wlIndicateSlowSteps = new Label( wLookComp, SWT.RIGHT );
     wlIndicateSlowSteps
       .setText( BaseMessages.getString( PKG, "EnterOptionsDialog.CanvasIndicateSlowSteps.Label" ) );
     props.setLook( wlIndicateSlowSteps );
     FormData fdlIndicateSlowSteps = new FormData();
     fdlIndicateSlowSteps.left = new FormAttachment( 0, 0 );
-    fdlIndicateSlowSteps.top = new FormAttachment( wAntiAlias, margin );
+    fdlIndicateSlowSteps.top = new FormAttachment( wGridSize, margin );
     fdlIndicateSlowSteps.right = new FormAttachment( middle, -margin );
     wlIndicateSlowSteps.setLayoutData( fdlIndicateSlowSteps );
     wIndicateSlowSteps = new Button( wLookComp, SWT.CHECK );
@@ -870,7 +849,7 @@ public class EnterOptionsDialog extends Dialog {
       PKG, "EnterOptionsDialog.CanvasIndicateSlowSteps.Tooltip" ) );
     FormData fdIndicateSlowSteps = new FormData();
     fdIndicateSlowSteps.left = new FormAttachment( middle, 0 );
-    fdIndicateSlowSteps.top = new FormAttachment( wAntiAlias, margin );
+    fdIndicateSlowSteps.top = new FormAttachment( wGridSize, margin );
     fdIndicateSlowSteps.right = new FormAttachment( 100, 0 );
     wIndicateSlowSteps.setLayoutData( fdIndicateSlowSteps );
 
@@ -1633,7 +1612,6 @@ public class EnterOptionsDialog extends Dialog {
     props.setAutoSplit( wAutoSplit.getSelection() );
     props.setShowCopyOrDistributeWarning( wCopyDistrib.getSelection() );
     props.setRepositoriesDialogAtStartupShown( wShowRep.getSelection() );
-    props.setAntiAliasingEnabled( wAntiAlias.getSelection() );
     props.setExitWarningShown( wExitWarning.getSelection() );
     props.setOSLookShown( wOriginalLook.getSelection() );
     props.setBrandingActive( wBranding.getSelection() );

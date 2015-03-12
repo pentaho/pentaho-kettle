@@ -22,11 +22,13 @@
 
 package org.pentaho.di.core;
 
+import java.awt.RenderingHints;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.batik.gvt.renderer.ImageRenderer;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
@@ -148,7 +150,18 @@ public class SwtUniversalImage {
    * Convert SVG image to swt Image with specified size.
    */
   private static Image renderToBitmap( Device device, SvgImage svg, int width, int height ) {
-    PNGTranscoder tr = new PNGTranscoder();
+    PNGTranscoder tr = new PNGTranscoder() {
+      protected ImageRenderer createRenderer() {
+        ImageRenderer ir = super.createRenderer();
+        RenderingHints h = ir.getRenderingHints();
+        h.add( new RenderingHints( RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE ) );
+        h.add( new RenderingHints( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON ) );
+        h.add( new RenderingHints( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY ) );
+        h.add( new RenderingHints( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC ) );
+        h.add( new RenderingHints( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE ) );
+        return ir;
+      }
+    };
     tr.addTranscodingHint( PNGTranscoder.KEY_WIDTH, (float) width );
     tr.addTranscodingHint( PNGTranscoder.KEY_HEIGHT, (float) height );
     return renderToBitmap( device, svg, tr );
