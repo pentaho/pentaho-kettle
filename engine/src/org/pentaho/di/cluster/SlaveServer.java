@@ -1024,6 +1024,29 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   public void setDescription( String description ) {
     // NOT USED
   }
+  
+  /**
+   * Verify the name of the slave server and if required, change it if it already exists in the list of slave servers.
+   *
+   * @param slaveServers
+   *          the slave servers to check against.
+   * @param oldname
+   *          the old name of the slave server
+   * @return the new slave server name
+   */
+  public String verifyAndModifySlaveServerName( List<SlaveServer> slaveServers, String oldname ) {
+    String name = getName();
+    if ( name.equalsIgnoreCase( oldname ) ) {
+      return name; // nothing to see here: move along!
+    }
+
+    int nr = 2;
+    while ( SlaveServer.findSlaveServer( slaveServers, getName() ) != null ) {
+      setName( name + " " + nr );
+      nr++;
+    }
+    return getName();
+  }
 
   /**
    * Sniff rows on a the slave server, return xml containing the row metadata and data.
