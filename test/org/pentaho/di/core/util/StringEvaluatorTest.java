@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -198,10 +198,10 @@ public class StringEvaluatorTest extends TestCase {
     }
     assertNull( initException );
 
-    // There will always be a PluginRegistryPluginType, so see if we have only 2 plugins here.
+    // There will always be a PluginRegistryPluginType, so see if we enough plugin types here.
     //
     List<Class<? extends PluginTypeInterface>> pluginTypes = registry.getPluginTypes();
-    assertEquals( "Two plugin types expected in the registry", 2, pluginTypes.size() );
+    assertTrue( "At least two plugin types expected in the registry", pluginTypes.size() > 1 );
 
     // ... and have at least 1 ValueMetaPlugin
     List<PluginInterface> valueMetaPlugins = registry.getPlugins( ValueMetaPluginType.class );
