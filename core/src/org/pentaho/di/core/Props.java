@@ -124,7 +124,6 @@ public class Props implements Cloneable {
 
   public static final String STRING_ONLY_ACTIVE_STEPS = "OnlyActiveSteps";
   public static final String STRING_START_SHOW_REPOSITORIES = "ShowRepositoriesAtStartup";
-  public static final String STRING_ANTI_ALIASING = "EnableAntiAliasing";
   public static final String STRING_SHOW_EXIT_WARNING = "ShowExitWarning";
   public static final String STRING_SHOW_OS_LOOK = "ShowOSLook";
   public static final String STRING_LAST_ARGUMENT = "LastArgument";
