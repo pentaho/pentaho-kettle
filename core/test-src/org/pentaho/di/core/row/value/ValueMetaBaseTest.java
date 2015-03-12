@@ -27,6 +27,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.apache.commons.lang.SystemUtils.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -140,33 +141,33 @@ public class ValueMetaBaseTest {
 
     BigDecimal bigDecimal = BigDecimal.ONE;
     ValueMetaBase valueDoubleMetaBase = new ValueMetaBase( String.valueOf( bigDecimal ), ValueMetaInterface.TYPE_BIGNUMBER, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( bigDecimal )  ) + "</value-data>\r\n", valueDoubleMetaBase.getDataXML( bigDecimal ) );
+    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( bigDecimal )  ) + "</value-data>" + LINE_SEPARATOR, valueDoubleMetaBase.getDataXML( bigDecimal ) );
 
     boolean valueBoolean = Boolean.TRUE;
     ValueMetaBase valueBooleanMetaBase = new ValueMetaBase( String.valueOf( valueBoolean ), ValueMetaInterface.TYPE_BOOLEAN, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( valueBoolean )  ) + "</value-data>\r\n", valueBooleanMetaBase.getDataXML( valueBoolean ) );
+    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( valueBoolean )  ) + "</value-data>" + LINE_SEPARATOR, valueBooleanMetaBase.getDataXML( valueBoolean ) );
 
     Date date = new Date( 0 );
     ValueMetaBase dateMetaBase = new ValueMetaBase( date.toString(), ValueMetaInterface.TYPE_DATE, ValueMetaInterface.STORAGE_TYPE_NORMAL );
     SimpleDateFormat formaterData = new SimpleDateFormat( ValueMetaBase.DEFAULT_DATE_FORMAT_MASK );
-    assertEquals( "<value-data>" +  encoder.encodeForXML( formaterData.format( date ) )  + "</value-data>\r\n", dateMetaBase.getDataXML( date ) );
+    assertEquals( "<value-data>" +  encoder.encodeForXML( formaterData.format( date ) )  + "</value-data>" + LINE_SEPARATOR, dateMetaBase.getDataXML( date ) );
 
     InetAddress inetAddress = InetAddress.getByName( "127.0.0.1" );
     ValueMetaBase inetAddressMetaBase = new ValueMetaBase( inetAddress.toString(), ValueMetaInterface.TYPE_INET, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" +  encoder.encodeForXML( inetAddress.toString() )  + "</value-data>\r\n", inetAddressMetaBase.getDataXML( inetAddress  ) );
+    assertEquals( "<value-data>" +  encoder.encodeForXML( inetAddress.toString() )  + "</value-data>" + LINE_SEPARATOR, inetAddressMetaBase.getDataXML( inetAddress  ) );
 
     long value = Long.MAX_VALUE;
     ValueMetaBase integerMetaBase = new ValueMetaBase( String.valueOf( value ), ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( value )  ) + "</value-data>\r\n", integerMetaBase.getDataXML( value ) );
+    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( value )  ) + "</value-data>" + LINE_SEPARATOR, integerMetaBase.getDataXML( value ) );
 
     String stringValue = "TEST_STRING";
     ValueMetaBase valueMetaBase = new ValueMetaBase( stringValue, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( stringValue ) + "</value-data>\r\n", valueMetaBase.getDataXML( stringValue ) );
+    assertEquals( "<value-data>" + encoder.encodeForXML( stringValue ) + "</value-data>" + LINE_SEPARATOR, valueMetaBase.getDataXML( stringValue ) );
 
     Timestamp timestamp = new Timestamp( 0 );
     ValueMetaBase valueMetaBaseTimeStamp = new ValueMetaBase( timestamp.toString(), ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.STORAGE_TYPE_NORMAL );
     SimpleDateFormat formater = new SimpleDateFormat( ValueMetaBase.DEFAULT_TIMESTAMP_FORMAT_MASK );
-    assertEquals( "<value-data>" + encoder.encodeForXML( formater.format( timestamp ) ) + "</value-data>\r\n", valueMetaBaseTimeStamp.getDataXML( timestamp ) );
+    assertEquals( "<value-data>" + encoder.encodeForXML( formater.format( timestamp ) ) + "</value-data>" + LINE_SEPARATOR, valueMetaBaseTimeStamp.getDataXML( timestamp ) );
   }
 
   @Test

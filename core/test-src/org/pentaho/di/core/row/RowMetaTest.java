@@ -90,7 +90,7 @@ public class RowMetaTest {
     assertEquals( -1, rowMeta.indexOfValue( null ) );
   }
 
-  @Test(expected=UnsupportedOperationException.class)
+  @Test( expected = UnsupportedOperationException.class )
   public void testDeSynchronizationModifyingOriginalList() {
     // remember 0-based arrays
     int size = rowMeta.size();
