@@ -6189,7 +6189,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               name = STRING_TRANS_NO_NAME;
             }
 
-            TreeItem tiTransName = createTreeItem( tiTrans, name, guiResource.getImageTransGraphMedium() );
+            TreeItem tiTransName = createTreeItem( tiTrans, name, guiResource.getImageTransTree() );
 
             // Set expanded if this is the only transformation
             // shown.
@@ -6246,7 +6246,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               continue;
             }
 
-            TreeItem tiJobName = createTreeItem( tiJobs, name, guiResource.getImageJobGraphMedium() );
+            TreeItem tiJobName = createTreeItem( tiJobs, name, guiResource.getImageJobTree() );
 
             // Set expanded if this is the only job shown.
             if ( props.isOnlyActiveFileShownInTree() ) {
@@ -6307,7 +6307,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
       DatabaseMeta databaseMeta = collector.getMetaFor( dbName );
 
-      TreeItem tiDb = createTreeItem( tiDbTitle, databaseMeta.getDisplayName(), guiResource.getImageConnectionMedium() );
+      TreeItem tiDb = createTreeItem( tiDbTitle, databaseMeta.getDisplayName(), guiResource.getImageConnectionTree() );
       if ( databaseMeta.isShared() ) {
         tiDb.setFont( guiResource.getFontBold() );
       }
