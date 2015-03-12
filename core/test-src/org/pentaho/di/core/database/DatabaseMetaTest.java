@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -85,5 +87,35 @@ public class DatabaseMetaTest {
       // check valueMeta is found by quoted name
       assertNotNull( fields.searchValueMeta( name ) );
     }
+  }
+
+  @Test
+  public void testModifyingName() throws Exception {
+    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
+    OracleDatabaseMeta odbm = new OracleDatabaseMeta();
+    doCallRealMethod().when( databaseMeta ).setDatabaseInterface( any( DatabaseInterface.class ) );
+    doCallRealMethod().when( databaseMeta ).setName( anyString() );
+    doCallRealMethod().when( databaseMeta ).getName();
+    doCallRealMethod().when( databaseMeta ).getDisplayName();
+    databaseMeta.setDatabaseInterface( odbm );
+    databaseMeta.setName( "test" );
+
+    List<DatabaseMeta> list = new ArrayList<DatabaseMeta>();
+    list.add( databaseMeta );
+
+    DatabaseMeta databaseMeta2 = mock( DatabaseMeta.class );
+    OracleDatabaseMeta odbm2 = new OracleDatabaseMeta();
+    doCallRealMethod().when( databaseMeta2 ).setDatabaseInterface( any( DatabaseInterface.class ) );
+    doCallRealMethod().when( databaseMeta2 ).setName( anyString() );
+    doCallRealMethod().when( databaseMeta2 ).getName();
+    doCallRealMethod().when( databaseMeta2 ).setDisplayName( anyString() );
+    doCallRealMethod().when( databaseMeta2 ).getDisplayName();
+    doCallRealMethod().when( databaseMeta2 ).verifyAndModifyDatabaseName( any( ArrayList.class ), anyString() );
+    databaseMeta2.setDatabaseInterface( odbm2 );
+    databaseMeta2.setName( "test" );
+
+    databaseMeta2.verifyAndModifyDatabaseName( list, null );
+
+    assertTrue( !databaseMeta.getDisplayName().equals( databaseMeta2.getDisplayName() ) );
   }
 }
