@@ -45,6 +45,9 @@ public class BasePainter {
   protected static final int CONTENT_MENU_INDENT = 4; 
   
   protected static final int CORNER_RADIUS_5 = 10;
+  protected static final int CORNER_RADIUS_4 = 8;
+  protected static final int CORNER_RADIUS_3 = 6;
+  protected static final int CORNER_RADIUS_2 = 4;
   
   protected static final float FACTOR_1_TO_1 = 1.0f;
 
