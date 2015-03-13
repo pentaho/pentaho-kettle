@@ -1352,6 +1352,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       toolbar = (XulToolbar) getXulDomContainer().getDocumentRoot().getElementById( "nav-toolbar" );
 
       ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
+      swtToolbar.setBackground( GUIResource.getInstance().getColorLightGray() );
       swtToolbar.pack();
 
       // Hack alert : more XUL limitations...
