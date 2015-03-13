@@ -277,7 +277,7 @@ public class WebServer {
           // TODO Auto-generated catch block
           e.printStackTrace();
         }
-        System.exit( 0 );
+        //System.exit( 0 );
       }
     } catch ( Exception e ) {
       log.logError( BaseMessages.getString( PKG, "WebServer.Error.FailedToStop.Title" ), BaseMessages.getString( PKG,
