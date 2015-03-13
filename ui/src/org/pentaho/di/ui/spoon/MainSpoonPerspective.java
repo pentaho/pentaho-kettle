@@ -72,7 +72,7 @@ public class MainSpoonPerspective extends AbstractSpoonPerspective {
   }
 
   public InputStream getPerspectiveIcon() {
-    return ImageUtil.getImageInputStream( Display.getCurrent(), "ui/images/transformation.png" );
+    return ImageUtil.getImageInputStream( Display.getCurrent(), "ui/images/transformation.svg" );
   }
   
   public Image getIcon() {

@@ -42,6 +42,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -49,6 +50,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.util.ImageUtil;
+import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.pentaho.di.version.BuildVersion;
 
 /**
@@ -83,11 +85,11 @@ public class Splash {
     Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
 
     // "kettle_splash.png"
-    kettle_image = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "splash_image" ) );
+    kettle_image = loadAsResource( display, BasePropertyHandler.getProperty( "splash_image" ) );
     // "spoon.ico"
-    kettle_icon = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "splash_icon" ) );
+    kettle_icon = loadAsResource( display, BasePropertyHandler.getProperty( "splash_icon" ) );
     // "exclamation.png"
-    exclamation_image = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "exclamation_image" ) );
+    exclamation_image = loadAsResource( display, BasePropertyHandler.getProperty( "exclamation_image" ) );
 
     verFont = new Font( display, "Helvetica", 11, SWT.BOLD );
     licFont = new Font( display, "Helvetica", licFontSize, SWT.NORMAL );
@@ -199,6 +201,14 @@ public class Splash {
         timer.cancel();
       }
     } );
+  }
+
+  // load image from svg
+  private Image loadAsResource( Display display, String location ) {
+    SwtUniversalImage img = SwtSvgImageUtil.getImageAsResource( display, location );
+    Image image = new Image( display, img.getAsBitmap( display ), SWT.IMAGE_COPY );
+    img.dispose();
+    return image;
   }
 
   // determine if the license text will fit the allocated space
