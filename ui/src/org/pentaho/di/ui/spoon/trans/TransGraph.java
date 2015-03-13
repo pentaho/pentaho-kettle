@@ -1660,6 +1660,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       toolbar = (XulToolbar) getXulDomContainer().getDocumentRoot().getElementById( "nav-toolbar" );
 
       ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
+      swtToolbar.setBackground( GUIResource.getInstance().getColorLightGray() );
       swtToolbar.pack();
 
       // Hack alert : more XUL limitations...
