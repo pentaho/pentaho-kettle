@@ -79,6 +79,7 @@ public class WebServer {
 
   private String passwordFile;
   private WebServerShutdownHook webServerShutdownHook;
+  private IWebServerShutdownHandler webServerShutdownHandler = new DefaultWebServerShutdownHandler(); 
 
   private SslConfiguration sslConfig;
   
@@ -270,14 +271,9 @@ public class WebServer {
         //
         server.stop();
         KettleEnvironment.shutdown();
-        try {
-          Thread.sleep( 30000 ); // Wait for karaf and kettle to shutdown, then do System.exit to take care of some
-                                 // straggler timer threads
-        } catch ( InterruptedException e ) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+        if ( webServerShutdownHandler != null ) {
+            webServerShutdownHandler.shutdownWebServer();
         }
-        //System.exit( 0 );
       }
     } catch ( Exception e ) {
       log.logError( BaseMessages.getString( PKG, "WebServer.Error.FailedToStop.Title" ), BaseMessages.getString( PKG,
@@ -483,4 +479,13 @@ public class WebServer {
   public void setDetections( List<SlaveServerDetection> detections ) {
     this.detections = detections;
   }
+
+  /**
+   * Can be used to override the default shutdown behavior of performing a System.exit
+   * @param webServerShutdownHandler
+   */
+  public void setWebServerShutdownHandler( IWebServerShutdownHandler webServerShutdownHandler ) {
+    this.webServerShutdownHandler = webServerShutdownHandler;
+  }
+   
 }
