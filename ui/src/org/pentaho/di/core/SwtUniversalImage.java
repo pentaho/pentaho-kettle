@@ -142,14 +142,20 @@ public class SwtUniversalImage {
    * Convert SVG image to swt Image.
    */
   private static Image renderToBitmap( Device device, SvgImage svg ) {
-    PNGTranscoder tr = new PNGTranscoder();
-    return renderToBitmap( device, svg, tr );
+    return renderToBitmap( device, svg, getTranscoder() );
   }
 
   /**
    * Convert SVG image to swt Image with specified size.
    */
   private static Image renderToBitmap( Device device, SvgImage svg, int width, int height ) {
+    PNGTranscoder tr = getTranscoder();
+    tr.addTranscodingHint( PNGTranscoder.KEY_WIDTH, (float) width );
+    tr.addTranscodingHint( PNGTranscoder.KEY_HEIGHT, (float) height );
+    return renderToBitmap( device, svg, tr );
+  }
+  
+  private static PNGTranscoder getTranscoder() {
     PNGTranscoder tr = new PNGTranscoder() {
       protected ImageRenderer createRenderer() {
         ImageRenderer ir = super.createRenderer();
@@ -162,8 +168,7 @@ public class SwtUniversalImage {
         return ir;
       }
     };
-    tr.addTranscodingHint( PNGTranscoder.KEY_WIDTH, (float) width );
-    tr.addTranscodingHint( PNGTranscoder.KEY_HEIGHT, (float) height );
-    return renderToBitmap( device, svg, tr );
+    return tr;
   }
+  
 }

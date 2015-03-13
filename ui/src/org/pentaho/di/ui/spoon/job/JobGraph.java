@@ -1352,7 +1352,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       toolbar = (XulToolbar) getXulDomContainer().getDocumentRoot().getElementById( "nav-toolbar" );
 
       ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
-      swtToolbar.setBackground( GUIResource.getInstance().getColorLightGray() );
+      swtToolbar.setBackground( GUIResource.getInstance().getColorDemoGray() );
       swtToolbar.pack();
 
       // Hack alert : more XUL limitations...
@@ -3161,7 +3161,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     //
     Label wResultsLabel = new Label( extraViewComposite, SWT.LEFT );
     wResultsLabel.setFont( GUIResource.getInstance().getFontMediumBold() );
-    wResultsLabel.setBackground( GUIResource.getInstance().getColorLightGray() );
+    wResultsLabel.setBackground( GUIResource.getInstance().getColorWhite() );
     wResultsLabel.setText( BaseMessages.getString( PKG, "JobLog.ResultsPanel.NameLabel" ) );
     FormData fdResultsLabel = new FormData();
     fdResultsLabel.left = new FormAttachment( 0, 0 );

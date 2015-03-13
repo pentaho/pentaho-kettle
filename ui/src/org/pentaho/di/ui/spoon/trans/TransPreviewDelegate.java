@@ -150,7 +150,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     }
 
     transPreviewTab = new CTabItem( transGraph.extraViewTabFolder, SWT.NONE );
-    transPreviewTab.setImage( GUIResource.getInstance().getImageTable() );
+    transPreviewTab.setImage( GUIResource.getInstance().getImagePreview() );
     transPreviewTab.setText( BaseMessages.getString( PKG, "Spoon.TransGraph.PreviewTab.Name" ) );
 
     transPreviewComposite = new Composite( transGraph.extraViewTabFolder, SWT.NONE );
