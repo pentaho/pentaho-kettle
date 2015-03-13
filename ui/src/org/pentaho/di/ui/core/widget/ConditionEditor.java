@@ -144,7 +144,7 @@ public class ConditionEditor extends Composite {
     this.active_condition = co;
     this.fields = inputFields;
 
-    imageAdd = GUIResource.getInstance().getImage( "ui/images/eq_add.png" );
+    imageAdd = GUIResource.getInstance().getImage( "ui/images/eq_add.svg" );
 
     modListeners = new ArrayList<ModifyListener>();
 
