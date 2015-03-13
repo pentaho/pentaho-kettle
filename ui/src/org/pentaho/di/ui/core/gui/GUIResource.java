@@ -168,6 +168,8 @@ public class GUIResource {
 
   private Image imageTable;
 
+  private SwtUniversalImage imagePreview;
+  
   private Image imageKeySmall;
 
   private Image imageColumnSmall;
@@ -511,6 +513,7 @@ public class GUIResource {
       imageConnectionTree.dispose();
       imageAdd.dispose();
       imageTable.dispose();
+      imagePreview.dispose();
       imageSchema.dispose();
       imageSynonym.dispose();
       imageProcedure.dispose();
@@ -778,6 +781,9 @@ public class GUIResource {
     // "ui/images/table.png"
     imageTable = loadAsResource( display, BasePropertyHandler.getProperty( "Table_image" ), ConstUI.SMALL_ICON_SIZE );
 
+    // "ui/images/preview.svg"
+    imagePreview = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Preview_image" ) );
+    
     // "ui/images/schema.png"
     imageSchema = loadAsResource( display, BasePropertyHandler.getProperty( "Schema_image" ), ConstUI.SMALL_ICON_SIZE );
 
@@ -1065,10 +1071,10 @@ public class GUIResource {
 
     imageTransTree =
         SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), SvgSupport
-            .toSvgName( BasePropertyHandler.getProperty( "Job_tree_image" ) ) );
+            .toSvgName( BasePropertyHandler.getProperty( "Trans_tree_image" ) ) );
     imageJobTree =
         SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), SvgSupport
-            .toSvgName( BasePropertyHandler.getProperty( "Trans_tree_image" ) ) );
+            .toSvgName( BasePropertyHandler.getProperty( "Job_tree_image" ) ) );
 
     // "ui/images/kettle_logo_small.png"
     imageLogoSmall =
@@ -1395,6 +1401,13 @@ public class GUIResource {
     return imageTable;
   }
 
+  /**
+   * @return Returns the imageTable.
+   */
+  public Image getImagePreview() {
+    return imagePreview.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+  
   /**
    * @return Returns the imageKeySmall.
    */
