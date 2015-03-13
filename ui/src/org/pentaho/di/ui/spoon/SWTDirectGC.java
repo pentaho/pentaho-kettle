@@ -135,8 +135,7 @@ public class SWTDirectGC implements GCInterface {
             Math.round( small_icon_size * magnification ) );
     if ( img != null ) {
       Rectangle bounds = img.getBounds();
-      gc.drawImage( img, 0, 0, bounds.width, bounds.height, x, y, Math.round( small_icon_size * magnification ), Math
-          .round( small_icon_size * magnification ) );
+      gc.drawImage( img, 0, 0, bounds.width, bounds.height, x, y, small_icon_size, small_icon_size );
     }
   }
 
