@@ -477,17 +477,23 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
 
     Database db = repository.connectionDelegate.getDatabase();
 
+    /**gaojd 20150305 add initialise preparedstatement --begin **/
+    RowMetaAndData attributeDataInit = createAttributeRow( idDatabase, "", "" );
+    db.prepareInsert( attributeDataInit.getRowMeta(), KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE );
+    PreparedStatement pst=db.getPrepStatementInsert();
+    /**gaojd 20150305 add initialise preparedstatement --end **/
+    
     Enumeration<Object> keys = properties.keys();
     while ( keys.hasMoreElements() ) {
       String code = (String) keys.nextElement();
       String attribute = (String) properties.get( code );
 
       RowMetaAndData attributeData = createAttributeRow( idDatabase, code, attribute );
-      db.prepareInsert( attributeData.getRowMeta(), KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE );
+      //db.prepareInsert( attributeData.getRowMeta(), KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE );//gaojd 20150305 comment
       db.setValuesInsert( attributeData );
-      db.insertRow( db.getPrepStatementInsert(), true, false );
+      db.insertRow( pst, true, false );
     }
-    db.executeAndClearBatch( db.getPrepStatementInsert() );
+    db.executeAndClearBatch( pst);
     db.closeInsert();
   }
 }
