@@ -28,6 +28,6 @@ public class GZIPCompressionOutputStream extends CompressionOutputStream {
   @Override
   public void close() throws IOException {
     GZIPOutputStream zos = (GZIPOutputStream) delegate;
-    zos.finish();
+    zos.close();
   }
 }

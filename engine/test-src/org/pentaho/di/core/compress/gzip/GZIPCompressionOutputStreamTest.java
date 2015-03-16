@@ -2,6 +2,7 @@ package org.pentaho.di.core.compress.gzip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -63,6 +64,12 @@ public class GZIPCompressionOutputStreamTest {
     outStream = new GZIPCompressionOutputStream( out, provider ) {
     };
     outStream.close();
+    try {
+      outStream.write( "This will throw an Exception if the stream is already closed".getBytes() );
+      fail();
+    } catch (IOException e) {
+      //Success, The Output Stream was already closed
+    }
   }
 
   @Test
