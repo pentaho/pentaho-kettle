@@ -38,8 +38,7 @@ public class SnappyCompressionOutputStreamTest {
     factory = CompressionProviderFactory.getInstance();
     CompressionProvider provider = factory.getCompressionProviderByName( PROVIDER_NAME );
     ByteArrayOutputStream in = new ByteArrayOutputStream();
-    outStream = new SnappyCompressionOutputStream( in, provider ) {
-    };
+    outStream = new SnappyCompressionOutputStream( in, provider );
   }
 
   @After
@@ -61,8 +60,7 @@ public class SnappyCompressionOutputStreamTest {
   public void testClose() throws IOException {
     CompressionProvider provider = outStream.getCompressionProvider();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    outStream = new SnappyCompressionOutputStream( out, provider ) {
-    };
+    outStream = new SnappyCompressionOutputStream( out, provider );
     outStream.close();
   }
 
@@ -70,8 +68,7 @@ public class SnappyCompressionOutputStreamTest {
   public void testWrite() throws IOException {
     CompressionProvider provider = outStream.getCompressionProvider();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    outStream = new SnappyCompressionOutputStream( out, provider ) {
-    };
+    outStream = new SnappyCompressionOutputStream( out, provider );
     outStream.write( "Test".getBytes() );
   }
 
@@ -79,8 +76,7 @@ public class SnappyCompressionOutputStreamTest {
   public void testAddEntry() throws IOException {
     CompressionProvider provider = outStream.getCompressionProvider();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    outStream = new SnappyCompressionOutputStream( out, provider ) {
-    };
-    outStream.addEntry( null );
+    outStream = new SnappyCompressionOutputStream( out, provider );
+    outStream.addEntry( null, null );
   }
 }
