@@ -229,6 +229,18 @@
     </antcall>
   </target>
 
+  <target name="build-testless" depends="install-antcontrib,subfloor.clean">
+    <antcall target="call-for-all">
+      <param name="target.name" value="subfloor.build-testless"/>
+    </antcall>
+  </target>
+
+  <target name="continuous-testless" depends="install-antcontrib,subfloor.clean">
+    <antcall target="call-for-all">
+      <param name="target.name" value="continuous-testless"/>
+    </antcall>
+  </target>
+
 
 
   <!--=======================================================================
