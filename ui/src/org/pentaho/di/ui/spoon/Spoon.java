@@ -6282,19 +6282,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     setShellText();
   }
 
-  private String[] pickupDbConnections( AbstractMeta transMeta ) throws KettleException {
-    return ( rep == null ) ? transMeta.getDatabaseNames() : rep.getDatabaseNames( false );
-  }
-
-  private DatabaseMeta findDatabase( List<? extends DatabaseMeta> dbs, String dbName ) {
-    for ( DatabaseMeta meta : dbs ) {
-      if ( meta.getName().equalsIgnoreCase( dbName ) || meta.getDisplayName().equalsIgnoreCase( dbName ) ) {
-        return meta;
-      }
-    }
-    return null;
-  }
-
   @VisibleForTesting TreeItem createTreeItem( TreeItem parent, String text, Image image ) {
     TreeItem item = new TreeItem( parent, SWT.NONE );
     item.setText( text );
@@ -6302,27 +6289,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return item;
   }
 
-  @VisibleForTesting void refreshDbConnectionsSubtree( TreeItem tiRootName, AbstractMeta meta, GUIResource guiResource ) {
+  @VisibleForTesting void refreshDbConnectionsSubtree( TreeItem tiRootName, AbstractMeta meta,
+                                                       GUIResource guiResource ) {
     TreeItem tiDbTitle = createTreeItem( tiRootName, STRING_CONNECTIONS, guiResource.getImageBol() );
 
-    String[] dbNames;
-    List<DatabaseMeta> dbs;
+    DatabasesCollector collector = new DatabasesCollector( meta, rep );
     try {
-      dbNames = pickupDbConnections( meta );
-
-      if ( dbNames.length == 0 ) {
-        return;
-      }
-
-      if ( rep == null ) {
-        dbs = meta.getDatabases();
-      } else {
-        dbs = rep.readDatabases();
-        for ( int i = 0; i < dbNames.length; i++ ) {
-          String dbName = dbNames[ i ];
-          dbs.get( i ).setName( dbName );
-        }
-      }
+      collector.collectDatabases();
     } catch ( KettleException e ) {
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
@@ -6333,17 +6306,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return;
     }
 
-    Arrays.sort( dbNames, String.CASE_INSENSITIVE_ORDER );
-
-    for ( String dbName : dbNames ) {
+    for ( String dbName : collector.getDatabaseNames() ) {
       if ( !filterMatch( dbName ) ) {
         continue;
       }
-
-      DatabaseMeta databaseMeta = meta.findDatabase( dbName );
-      if ( databaseMeta == null ) {
-        databaseMeta = findDatabase( dbs, dbName );
-      }      
+      DatabaseMeta databaseMeta = collector.getMetaFor( dbName );
 
       TreeItem tiDb = createTreeItem( tiDbTitle, databaseMeta.getDisplayName(), guiResource.getImageConnection() );
       if ( databaseMeta.isShared() ) {
