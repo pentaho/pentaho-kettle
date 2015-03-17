@@ -1,3 +1,25 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package org.pentaho.di.ui.spoon;
 
 import org.eclipse.swt.graphics.Image;
@@ -8,6 +30,7 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -47,7 +70,7 @@ public class SpoonRefreshDbConnectionsSubtreeTest {
   @Test
   public void noConnectionsExist() {
     AbstractMeta meta = mock( AbstractMeta.class );
-    when( meta.getDatabaseNames() ).thenReturn( new String[ 0 ] );
+    when( meta.getDatabases() ).thenReturn( Collections.<DatabaseMeta>emptyList() );
 
     callRefreshWith( meta );
     // one call - to create a parent tree node
@@ -75,7 +98,6 @@ public class SpoonRefreshDbConnectionsSubtreeTest {
 
   private static AbstractMeta prepareMetaWithThreeDbs() {
     AbstractMeta meta = mock( AbstractMeta.class );
-    when( meta.getDatabaseNames() ).thenReturn( new String[] { "1", "2", "3" } );
     List<DatabaseMeta> dbs =
       asList( mockDatabaseMeta( "1" ), mockDatabaseMeta( "2" ), mockDatabaseMeta( "3" ) );
     when( meta.getDatabases() ).thenReturn( dbs );
