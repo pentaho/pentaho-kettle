@@ -144,8 +144,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   /** A constant specifying the repository element type as a Transformation. */
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.TRANSFORMATION;
 
+  public static final int BORDER_INDENT = 20;
   /** The list of steps associated with the transformation. */
-
   protected List<StepMeta> steps;
 
   /** The list of hops associated with the transformation. */
@@ -3816,13 +3816,13 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       }
     }
 
-    if ( minx > 20 ) {
-      minx -= 20;
+    if ( minx > BORDER_INDENT && minx != Integer.MAX_VALUE ) {
+      minx -= BORDER_INDENT;
     } else {
       minx = 0;
     }
-    if ( miny > 20 ) {
-      miny -= 20;
+    if ( miny > BORDER_INDENT && miny != Integer.MAX_VALUE ) {
+      miny -= BORDER_INDENT;
     } else {
       miny = 0;
     }
