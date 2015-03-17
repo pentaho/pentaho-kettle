@@ -36,6 +36,8 @@ import static org.mockito.Mockito.spy;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
@@ -127,5 +129,19 @@ public class SlaveServerTest {
     UsernamePasswordCredentials baseCredentials = (UsernamePasswordCredentials) credentials;
     assertEquals( slaveServer.getUsername(), baseCredentials.getUserName() );
     assertEquals( slaveServer.getPassword(), baseCredentials.getPassword() );
+  }
+  
+  @Test
+  public void testModifyingName() {
+    slaveServer.setName( "test" );
+    List<SlaveServer> list = new ArrayList<SlaveServer>();
+    list.add( slaveServer );
+    
+    SlaveServer slaveServer2 = spy( new SlaveServer() );
+    slaveServer2.setName( "test" );
+    
+    slaveServer2.verifyAndModifySlaveServerName( list, null );
+    
+    assertTrue( !slaveServer.getName().equals( slaveServer2.getName() ) );
   }
 }

@@ -2330,6 +2330,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     int nr = 2;
     while ( DatabaseMeta.findDatabase( databases, getName() ) != null ) {
       setName( name + " " + nr );
+      setDisplayName( name + " " + nr );
       nr++;
     }
     return getName();
