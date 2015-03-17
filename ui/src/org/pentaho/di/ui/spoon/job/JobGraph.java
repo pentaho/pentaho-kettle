@@ -2249,7 +2249,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
         case JOB_ENTRY_MINI_ICON_CONTEXT:
           tip.append( BaseMessages.getString( PKG, "JobGraph.ShowMenu.Tooltip" ) );
-          tipImage = GUIResource.getInstance().getImageEdit();
+          tipImage = GUIResource.getInstance().getImageContextMenu();
           resetDelayTimer( (JobEntryCopy) areaOwner.getOwner() );
           break;
 
