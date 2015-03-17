@@ -295,6 +295,8 @@ public class JobPainter extends BasePainter {
     // Optionally drawn the mouse-over information
     //
     if ( mouseOverEntries.contains( jobEntryCopy ) ) {
+      gc.setTransform( translationX, translationY, 0, BasePainter.FACTOR_1_TO_1 );
+
       EImage[] miniIcons = new EImage[] { EImage.INPUT, EImage.EDIT, EImage.CONTEXT_MENU, EImage.OUTPUT, };
 
       // First drawn the mini-icons balloon below the job entry
@@ -323,8 +325,11 @@ public class JobPainter extends BasePainter {
         totalWidth = nameExtent.x;
       }
 
-      int areaX = x + iconsize / 2 - totalWidth / 2 + MINI_ICON_SKEW;
-      int areaY = y + iconsize + MINI_ICON_DISTANCE + BasePainter.CONTENT_MENU_INDENT;
+      int areaX = translateToCurrentScale( x ) + 
+          translateToCurrentScale( iconsize ) / 2 - totalWidth / 2 + MINI_ICON_SKEW;
+      int areaY =
+          translateToCurrentScale( y ) + translateToCurrentScale( iconsize ) + MINI_ICON_DISTANCE
+              + BasePainter.CONTENT_MENU_INDENT;
 
       gc.setForeground( EColor.CRYSTAL );
       gc.setBackground( EColor.CRYSTAL );
@@ -332,15 +337,16 @@ public class JobPainter extends BasePainter {
       gc.fillRoundRectangle( areaX, areaY, totalWidth, totalHeight, BasePainter.CORNER_RADIUS_5, BasePainter.CORNER_RADIUS_5 );
 
       gc.setBackground( EColor.WHITE );
-      
-      gc.fillRoundRectangle( areaX, areaY + nameExtent.y, totalWidth, (totalHeight - nameExtent.y), BasePainter.CORNER_RADIUS_5, 
+
+      gc.fillRoundRectangle( areaX, areaY + nameExtent.y, totalWidth, ( totalHeight - nameExtent.y ),
+          BasePainter.CORNER_RADIUS_5,
           BasePainter.CORNER_RADIUS_5 );
-      gc.fillRectangle( areaX, areaY + nameExtent.y, totalWidth, (totalHeight - nameExtent.y) / 2);
-      
+      gc.fillRectangle( areaX, areaY + nameExtent.y, totalWidth, ( totalHeight - nameExtent.y ) / 2 );
+
       gc.drawRoundRectangle( areaX, areaY, totalWidth, totalHeight, BasePainter.CORNER_RADIUS_5, BasePainter.CORNER_RADIUS_5 );
-      
+
       gc.setForeground( EColor.WHITE );
-      
+
       gc.drawText( trimmedName, areaX + ( totalWidth - nameExtent.x ) / 2 + MINI_ICON_MARGIN, areaY
         + MINI_ICON_MARGIN, true );
       gc.setForeground( EColor.CRYSTAL );
@@ -348,23 +354,19 @@ public class JobPainter extends BasePainter {
 
       gc.setFont( EFont.GRAPH );
       areaOwners.add( new AreaOwner(
-        AreaType.MINI_ICONS_BALLOON, areaX, areaY, totalWidth, totalHeight, offset, jobMeta, jobEntryCopy ) );
+        AreaType.MINI_ICONS_BALLOON, translateTo1To1( areaX ), translateTo1To1( areaY ), translateTo1To1( totalWidth ), translateTo1To1( totalHeight ), offset, jobMeta, jobEntryCopy ) );
 
       gc.fillPolygon( new int[] {
         areaX + totalWidth / 2 - MINI_ICON_TRIANGLE_BASE / 2 + 1, areaY + 2,
         areaX + totalWidth / 2 + MINI_ICON_TRIANGLE_BASE / 2, areaY + 2,
         areaX + totalWidth / 2 - MINI_ICON_SKEW, areaY - MINI_ICON_DISTANCE - 3, } );
-      /*gc.drawPolyline( new int[] {
-        areaX + totalWidth / 2 - MINI_ICON_TRIANGLE_BASE / 2 + 1, areaY,
-        areaX + totalWidth / 2 - MINI_ICON_SKEW, areaY - MINI_ICON_DISTANCE - 5,
-        areaX + totalWidth / 2 + MINI_ICON_TRIANGLE_BASE / 2, areaY, areaX + totalWidth / 2 - MINI_ICON_SKEW,
-        areaY - MINI_ICON_DISTANCE - 5, } );*/
       gc.setBackground( EColor.WHITE );
 
       // Put on the icons...
       //
       int xIcon = areaX + ( totalWidth - totalIconsWidth ) / 2 + MINI_ICON_MARGIN;
       int yIcon = areaY + 5 + nameExtent.y;
+      
       for ( int i = 0; i < miniIcons.length; i++ ) {
         EImage miniIcon = miniIcons[i];
         Point bounds = gc.getImageBounds( miniIcon, magnification );
@@ -372,40 +374,41 @@ public class JobPainter extends BasePainter {
         switch ( i ) {
           case 0: // INPUT
             enabled = !jobEntryCopy.isStart();
-            areaOwners.add( new AreaOwner(
-              AreaType.JOB_ENTRY_MINI_ICON_INPUT, xIcon, yIcon, bounds.x, bounds.y, offset, jobMeta,
-              jobEntryCopy ) );
+            areaOwners.add( new AreaOwner( AreaType.JOB_ENTRY_MINI_ICON_INPUT, translateTo1To1( xIcon ),
+                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, jobMeta,
+                jobEntryCopy ) );
             break;
           case 1: // EDIT
             enabled = true;
-            areaOwners
-              .add( new AreaOwner(
-                AreaType.JOB_ENTRY_MINI_ICON_EDIT, xIcon, yIcon, bounds.x, bounds.y, offset, jobMeta,
+            areaOwners.add( new AreaOwner( AreaType.JOB_ENTRY_MINI_ICON_EDIT, translateTo1To1( xIcon ),
+                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, jobMeta,
                 jobEntryCopy ) );
             break;
           case 2: // Job entry context menu
             enabled = true;
-            areaOwners.add( new AreaOwner(
-              AreaType.JOB_ENTRY_MINI_ICON_CONTEXT, xIcon, yIcon, bounds.x, bounds.y, offset, jobMeta,
-              jobEntryCopy ) );
+            areaOwners.add( new AreaOwner( AreaType.JOB_ENTRY_MINI_ICON_CONTEXT, translateTo1To1( xIcon ),
+                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, jobMeta,
+                jobEntryCopy ) );
             break;
           case 3: // OUTPUT
             enabled = true;
-            areaOwners.add( new AreaOwner(
-              AreaType.JOB_ENTRY_MINI_ICON_OUTPUT, xIcon, yIcon, bounds.x, bounds.y, offset, jobMeta,
-              jobEntryCopy ) );
+            areaOwners.add( new AreaOwner( AreaType.JOB_ENTRY_MINI_ICON_OUTPUT, translateTo1To1( xIcon ),
+                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, jobMeta,
+                jobEntryCopy ) );
             break;
           default:
             break;
         }
+
         if ( enabled ) {
           gc.setAlpha( 255 );
         } else {
           gc.setAlpha( 100 );
         }
-        gc.drawImage( miniIcon, xIcon, yIcon, magnification );
+        gc.drawImage( miniIcon, xIcon, yIcon, BasePainter.FACTOR_1_TO_1 );
         xIcon += bounds.x + 5;
       }
+      gc.setTransform( translationX, translationY, 0, magnification );
     }
 
     // Restore the previous alpha value
