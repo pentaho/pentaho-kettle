@@ -214,6 +214,36 @@
   </target>
 
   <!--=======================================================================
+        Support pentaho-standard CI subfloor build targets
+
+      ====================================================================-->
+  <target name="build-sonar" depends="install-antcontrib,subfloor.clean">
+    <antcall target="call-for-all">
+      <param name="target.name" value="subfloor.build-sonar"/>
+    </antcall>
+  </target>
+
+  <target name="continuous-sonar" depends="install-antcontrib,subfloor.clean">
+    <antcall target="call-for-all">
+      <param name="target.name" value="continuous-sonar"/>
+    </antcall>
+  </target>
+
+  <target name="build-testless" depends="install-antcontrib,subfloor.clean">
+    <antcall target="call-for-all">
+      <param name="target.name" value="subfloor.build-testless"/>
+    </antcall>
+  </target>
+
+  <target name="continuous-testless" depends="install-antcontrib,subfloor.clean">
+    <antcall target="call-for-all">
+      <param name="target.name" value="continuous-testless"/>
+    </antcall>
+  </target>
+
+
+
+  <!--=======================================================================
         create-dot-classpath
 
         Creates the Eclipse .classpath file from the resolved
@@ -649,7 +679,7 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.resource.ResourceDependencyTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.resource.ResourceExportTest" haltonerror="false"/>
     </junit>
-  	
+
     <junitreport todir="${testreports.html.dir}">
       <fileset dir="${testreports.xml.dir}">
         <include name="TEST-*.xml"/>
