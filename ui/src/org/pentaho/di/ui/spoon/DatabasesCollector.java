@@ -79,10 +79,10 @@ public class DatabasesCollector {
     if ( names2metas == null ) {
       throw exception();
     }
-    return names2metas.get( dbName.toLowerCase() );
+    return names2metas.get( dbName );
   }
 
-  private static UnsupportedOperationException exception() {
-    return new UnsupportedOperationException( "Call collectDatabases() first" );
+  private static IllegalStateException exception() {
+    return new IllegalStateException( "Call collectDatabases() first" );
   }
 }
