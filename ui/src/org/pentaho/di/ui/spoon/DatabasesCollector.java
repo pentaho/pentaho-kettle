@@ -79,7 +79,7 @@ public class DatabasesCollector {
     if ( names2metas == null ) {
       throw exception();
     }
-    return names2metas.get( dbName.toLowerCase() );
+    return names2metas.get( dbName );
   }
 
   private static IllegalStateException exception() {
