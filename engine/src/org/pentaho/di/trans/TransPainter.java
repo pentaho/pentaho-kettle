@@ -753,6 +753,8 @@ public class TransPainter extends BasePainter {
     // Optionally drawn the mouse-over information
     //
     if ( mouseOverSteps.contains( stepMeta ) ) {
+      gc.setTransform( translationX, translationY, 0, BasePainter.FACTOR_1_TO_1 );
+
       StepMetaInjectionInterface injectionInterface =
         stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
 
@@ -787,8 +789,8 @@ public class TransPainter extends BasePainter {
         totalWidth = nameExtent.x;
       }
 
-      int areaX = x + iconsize / 2 - totalWidth / 2 + MINI_ICON_SKEW;
-      int areaY = y + iconsize + MINI_ICON_DISTANCE  + BasePainter.CONTENT_MENU_INDENT;
+      int areaX = translateToCurrentScale( x ) + translateToCurrentScale( iconsize ) / 2 - totalWidth / 2 + MINI_ICON_SKEW;
+      int areaY = translateToCurrentScale( y ) + translateToCurrentScale( iconsize ) + MINI_ICON_DISTANCE  + BasePainter.CONTENT_MENU_INDENT;
 
       gc.setForeground( EColor.CRYSTAL );
       gc.setBackground( EColor.CRYSTAL );
@@ -796,41 +798,36 @@ public class TransPainter extends BasePainter {
       gc.fillRoundRectangle( areaX, areaY, totalWidth, totalHeight, BasePainter.CORNER_RADIUS_5, BasePainter.CORNER_RADIUS_5 );
 
       gc.setBackground( EColor.WHITE );
-      
-      gc.fillRoundRectangle( areaX, areaY + nameExtent.y, totalWidth, (totalHeight - nameExtent.y), BasePainter.CORNER_RADIUS_5, 
-          BasePainter.CORNER_RADIUS_5 );
-      gc.fillRectangle( areaX, areaY + nameExtent.y, totalWidth, (totalHeight - nameExtent.y) / 2);
-      
+
+      gc.fillRoundRectangle( areaX, areaY + nameExtent.y, totalWidth, ( totalHeight - nameExtent.y ),
+          BasePainter.CORNER_RADIUS_5, BasePainter.CORNER_RADIUS_5 );
+      gc.fillRectangle( areaX, areaY + nameExtent.y, totalWidth, ( totalHeight - nameExtent.y ) / 2 );
+
       gc.drawRoundRectangle( areaX, areaY, totalWidth, totalHeight, BasePainter.CORNER_RADIUS_5, BasePainter.CORNER_RADIUS_5 );
-      
+
       gc.setForeground( EColor.WHITE );
-      
+
       gc.drawText( trimmedName, areaX + ( totalWidth - nameExtent.x ) / 2 + MINI_ICON_MARGIN, areaY
         + MINI_ICON_MARGIN, true );
       gc.setForeground( EColor.CRYSTAL );
       gc.setBackground( EColor.CRYSTAL );
 
       gc.setFont( EFont.GRAPH );
-      areaOwners.add( new AreaOwner(
-        AreaType.MINI_ICONS_BALLOON, areaX, areaY, totalWidth, totalHeight, offset, stepMeta, ioMeta ) );
+      areaOwners.add( new AreaOwner( AreaType.MINI_ICONS_BALLOON, translateTo1To1( areaX ), translateTo1To1( areaY ),
+          translateTo1To1( totalWidth ), translateTo1To1( totalHeight ), offset, stepMeta, ioMeta ) );
 
       gc.fillPolygon( new int[] {
         areaX + totalWidth / 2 - MINI_ICON_TRIANGLE_BASE / 2 + 1, areaY + 2,
         areaX + totalWidth / 2 + MINI_ICON_TRIANGLE_BASE / 2, areaY + 2,
         areaX + totalWidth / 2 - MINI_ICON_SKEW, areaY - MINI_ICON_DISTANCE - 3, } );
 
-      /*/gc.drawPolyline( new int[] {
-        areaX + totalWidth / 2 - MINI_ICON_TRIANGLE_BASE / 2 + 1, areaY,
-        areaX + totalWidth / 2 - MINI_ICON_SKEW, areaY - MINI_ICON_DISTANCE - 5,
-        areaX + totalWidth / 2 + MINI_ICON_TRIANGLE_BASE / 2, areaY, areaX + totalWidth / 2 - MINI_ICON_SKEW,
-        areaY - MINI_ICON_DISTANCE - 5, } );
-*/
       gc.setBackground( EColor.WHITE );
 
       // Put on the icons...
       //
       int xIcon = areaX + ( totalWidth - totalIconsWidth ) / 2 + MINI_ICON_MARGIN;
       int yIcon = areaY + 5 + nameExtent.y;
+      
       for ( int i = 0; i < miniIcons.length; i++ ) {
         EImage miniIcon = miniIcons[i];
         Point bounds = gc.getImageBounds( miniIcon, magnification );
@@ -838,29 +835,30 @@ public class TransPainter extends BasePainter {
         switch ( i ) {
           case 0: // INPUT
             enabled = ioMeta.isInputAcceptor() || ioMeta.isInputDynamic();
-            areaOwners.add( new AreaOwner(
-              AreaType.STEP_INPUT_HOP_ICON, xIcon, yIcon, bounds.x, bounds.y, offset, stepMeta, ioMeta ) );
+            areaOwners.add( new AreaOwner( AreaType.STEP_INPUT_HOP_ICON, translateTo1To1( xIcon ),
+                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta,
+                ioMeta ) );
             break;
           case 1: // EDIT
             enabled = true;
-            areaOwners.add( new AreaOwner(
-              AreaType.STEP_EDIT_ICON, xIcon, yIcon, bounds.x, bounds.y, offset, stepMeta, ioMeta ) );
+            areaOwners.add( new AreaOwner( AreaType.STEP_EDIT_ICON, translateTo1To1( xIcon ), translateTo1To1( yIcon ),
+                translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta, ioMeta ) );
             break;
           case 2: // STEP_MENU
             enabled = true;
-            areaOwners.add( new AreaOwner(
-              AreaType.STEP_MENU_ICON, xIcon, yIcon, bounds.x, bounds.y, offset, stepMeta, ioMeta ) );
+            areaOwners.add( new AreaOwner( AreaType.STEP_MENU_ICON, translateTo1To1( xIcon ), translateTo1To1( yIcon ),
+                translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta, ioMeta ) );
             break;
           case 3: // OUTPUT
             enabled = ioMeta.isOutputProducer() || ioMeta.isOutputDynamic();
-            areaOwners.add( new AreaOwner(
-              AreaType.STEP_OUTPUT_HOP_ICON, xIcon, yIcon, bounds.x, bounds.y, offset, stepMeta, ioMeta ) );
+            areaOwners.add( new AreaOwner( AreaType.STEP_OUTPUT_HOP_ICON, translateTo1To1( xIcon ),
+                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta,
+                ioMeta ) );
             break;
           case 4: // INJECT
             enabled = injectionInterface != null;
-            areaOwners
-              .add( new AreaOwner(
-                AreaType.STEP_INJECT_ICON, xIcon, yIcon, bounds.x, bounds.y, offset, stepMeta,
+            areaOwners.add( new AreaOwner( AreaType.STEP_INJECT_ICON, translateTo1To1( xIcon ),
+                translateTo1To1( yIcon ), translateTo1To1( bounds.x ), translateTo1To1( bounds.y ), offset, stepMeta,
                 injectionInterface ) );
             break;
           default:
@@ -871,7 +869,7 @@ public class TransPainter extends BasePainter {
         } else {
           gc.setAlpha( 100 );
         }
-        gc.drawImage( miniIcon, xIcon, yIcon, magnification );
+        gc.drawImage( miniIcon, xIcon, yIcon, BasePainter.FACTOR_1_TO_1 );
         xIcon += bounds.x + 5;
       }
 
@@ -915,6 +913,7 @@ public class TransPainter extends BasePainter {
 
         gc.setBackground( EColor.BACKGROUND );
       }
+      gc.setTransform( translationX, translationY, 0, magnification );
     }
 
     TransPainterExtension extension =

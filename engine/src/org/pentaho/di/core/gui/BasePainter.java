@@ -215,6 +215,14 @@ public class BasePainter {
       areaOwners.add( new AreaOwner( AreaType.NOTE, note.x, note.y, width, height, offset, subject, notePadMeta ) );
     }
   }
+  
+  protected int translateTo1To1( int value ) {
+    return Math.round( value / magnification );
+  }
+  
+  protected int translateToCurrentScale( int value ) {
+    return Math.round( value * magnification );
+  }
 
   protected Point real2screen( int x, int y ) {
     Point screen = new Point( x + offset.x, y + offset.y );
