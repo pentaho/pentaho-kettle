@@ -1750,22 +1750,27 @@ TYPICAL TARGET SEQUENCE
 			</junit>
 		</jacoco:coverage>
 
-		<jacoco:report xmlns:jacoco="antlib:org.jacoco.ant">
-			<executiondata>
-			<file file="${jacoco.execfile.path}"/>
-			</executiondata>
-			<structure name="${ivy.artifact.id}">
-				<classfiles>
-    			<fileset dir="${classes.dir}"/>
-				</classfiles>
-				<sourcefiles encoding="UTF-8">
-		  		<fileset dir="${src.dir}"/>
-				</sourcefiles>
-			</structure>
-			<html destdir="${jacoco.report.dir}"/>
-			<csv destfile="${jacoco.report.dir}/report.csv"/>
-			<xml destfile="${jacoco.report.dir}/report.xml"/>
-		</jacoco:report>
+    <if>
+			<available file="${jacoco.execfile.path}" property="jacoco.exec.file.found"/>
+			<then>
+				<jacoco:report xmlns:jacoco="antlib:org.jacoco.ant">
+					<executiondata>
+					<file file="${jacoco.execfile.path}"/>
+					</executiondata>
+					<structure name="${ivy.artifact.id}">
+						<classfiles>
+							<fileset dir="${classes.dir}"/>
+						</classfiles>
+						<sourcefiles encoding="UTF-8">
+							<fileset dir="${src.dir}"/>
+						</sourcefiles>
+					</structure>
+					<html destdir="${jacoco.report.dir}"/>
+					<csv destfile="${jacoco.report.dir}/report.csv"/>
+					<xml destfile="${jacoco.report.dir}/report.xml"/>
+				</jacoco:report>
+			</then>
+		</if>
 
 		<junitreport todir="${testreports.html.dir}">
 			<fileset dir="${testreports.xml.dir}">
