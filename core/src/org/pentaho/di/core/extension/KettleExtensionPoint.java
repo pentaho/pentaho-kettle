@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -89,6 +89,11 @@ public enum KettleExtensionPoint {
 
     StepBeforeStart( "StepBeforeStart", "Right before a step is about to be started" ),
     StepFinished( "StepFinished", "After a step has finished" ),
+
+    BeforeCheckSteps( "BeforeCheckSteps", "Right before a set of steps is about to be verified." ),
+    AfterCheckSteps( "AfterCheckSteps", "After a set of steps has been checked for warnings/errors." ),
+    BeforeCheckStep( "BeforeCheckStep", "Right before a step is about to be verified." ),
+    AfterCheckStep( "AfterCheckStep", "After a step has been checked for warnings/errors." ),
 
     CarteStartup( "CarteStartup", "Right after the Carte webserver has started and is fully functional" ),
     CarteShutdown( "CarteShutdown", "Right before the Carte webserver will shut down" ),
