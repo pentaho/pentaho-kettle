@@ -137,10 +137,7 @@ public class SWTGC implements GCInterface {
   }
 
   public Point getImageBounds( EImage image, float magnification ) {
-    Image img = getNativeImage( image ).getAsBitmapForSize( gc.getDevice(), Math.round( small_icon_size * magnification ),
-        Math.round( small_icon_size * magnification ) );
-    Rectangle r = img.getBounds();
-    return new Point( r.width, r.height );
+    return new Point( small_icon_size, small_icon_size );
   }
 
   public static final SwtUniversalImage getNativeImage( EImage image ) {
