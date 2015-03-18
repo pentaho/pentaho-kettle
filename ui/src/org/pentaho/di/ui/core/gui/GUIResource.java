@@ -768,7 +768,7 @@ public class GUIResource {
     // "ui/images/CNC.png"
     imageConnection = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CNC_image" ) );
 
-    // "ui/images/CNC.png"
+    // "ui/images/CNC_tree"
     imageConnectionTree =
         SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CNC_tree_image" ) );
 
