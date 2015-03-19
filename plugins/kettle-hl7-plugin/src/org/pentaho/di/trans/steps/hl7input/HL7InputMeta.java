@@ -44,7 +44,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step( id = "HL7Input", image = "hl7-input.png", i18nPackageName = "org.pentaho.di.trans.steps.hl7input",
+@Step( id = "HL7Input", image = "hl7-input.svg", i18nPackageName = "org.pentaho.di.trans.steps.hl7input",
     name = "HL7Input.Name", description = "HL7Input.TooltipDesc",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input" )
 public class HL7InputMeta extends BaseStepMeta implements StepMetaInterface {
