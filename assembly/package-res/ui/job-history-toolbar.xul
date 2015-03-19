@@ -6,7 +6,7 @@
     <toolbarbutton id="replay-history" label="${JobHistory.Button.Replay}" image="images/replay.svg"
       tooltiptext="${JobHistory.Button.Replay}" onclick="history.replayHistory()" />
     <toolbarseparator />
-    <toolbarbutton id="clear-history" label="${JobHistory.Button.Clear}" image="images/clear-log.svg"
+    <toolbarbutton id="clear-history" label="${JobHistory.Button.Clear}" image="images/trash.svg"
       tooltiptext="${JobHistory.Button.Clear}" onclick="history.clearLogTable()" />
     <toolbarseparator />
     <toolbarbutton id="fetch-next-batch-history" label="${JobHistory.Button.FetchNextBatch}" image="images/history_get_next.svg"

@@ -6,7 +6,7 @@
     <toolbarbutton id="replay-history" label="${TransHistory.Button.Replay}" image="images/replay.svg"
       tooltiptext="${TransHistory.Button.Replay}" onclick="transhistory.replayHistory()" />
     <toolbarseparator />
-    <toolbarbutton id="clear-history" label="${TransHistory.Button.Clear}" image="images/clear-log.svg"
+    <toolbarbutton id="clear-history" label="${TransHistory.Button.Clear}" image="images/trash.svg"
       tooltiptext="${TransHistory.Button.Clear}" onclick="transhistory.clearLogTable()" />
     <toolbarseparator />
     <toolbarbutton id="fetch-next-batch-history" label="${TransHistory.Button.FetchNextBatch}" image="images/history_get_next.svg"
