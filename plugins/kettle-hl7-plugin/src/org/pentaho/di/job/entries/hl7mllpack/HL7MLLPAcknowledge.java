@@ -54,7 +54,7 @@ import ca.uhn.hl7v2.validation.impl.NoValidation;
 
 @org.pentaho.di.core.annotations.JobEntry( id = "HL7MLLPAcknowledge",
     categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Utility",
-    i18nPackageName = "org.pentaho.di.job.entries.hl7mllpack", image = "mllp-ack.png",
+    i18nPackageName = "org.pentaho.di.job.entries.hl7mllpack", image = "mllp-ack.svg",
     name = "HL7MLLPAcknowledge.Name", description = "HL7MLLPAcknowledge.TooltipDesc" )
 public class HL7MLLPAcknowledge extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = HL7MLLPAcknowledge.class; // for i18n purposes, needed by Translator2!!
