@@ -168,6 +168,7 @@ public class Props implements Cloneable {
   public static final int WIDGET_STYLE_NOTEPAD = 3;
   public static final int WIDGET_STYLE_GRAPH = 4;
   public static final int WIDGET_STYLE_TAB = 5;
+  public static final int WIDGET_STYLE_TOOLBAR = 6;
 
   /**
    * Initialize the properties: load from disk.

@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
@@ -158,6 +159,7 @@ public class TransLogDelegate extends SpoonDelegate implements XulEventHandler {
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById( "nav-toolbar" );
 
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
+      spoon.props.setLook( swtToolBar, Props.WIDGET_STYLE_TOOLBAR );
       swtToolBar.layout( true, true );
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );
