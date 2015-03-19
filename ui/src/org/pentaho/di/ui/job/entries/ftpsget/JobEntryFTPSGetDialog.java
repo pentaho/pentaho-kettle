@@ -1355,6 +1355,15 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 
     } catch ( Exception e ) {
       retval = false;
+      if ( connection != null ) {
+        try {
+          connection.disconnect();
+        } catch ( Exception ignored ) {
+          // We've tried quitting the FTPS Client exception
+          // nothing else to be done if the FTPS Client was already disconnected
+        }
+        connection = null;
+      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPS.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPS.ErrorConnect.Title.Bad" ) );
