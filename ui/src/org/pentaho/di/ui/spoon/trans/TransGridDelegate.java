@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
@@ -253,6 +254,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById( "nav-toolbar" );
 
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
+      spoon.props.setLook( swtToolBar, Props.WIDGET_STYLE_TOOLBAR );
       swtToolBar.layout( true, true );
     } catch ( Throwable t ) {
       log.logError( toString(), Const.getStackTracker( t ) );
