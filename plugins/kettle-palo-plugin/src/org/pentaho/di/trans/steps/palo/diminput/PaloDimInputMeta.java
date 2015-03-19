@@ -50,7 +50,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step( id = "PaloDimInput", image = "PaloDimInput.png", i18nPackageName = "org.pentaho.di.trans.steps.palo.diminput",
+@Step( id = "PaloDimInput", image = "PaloDimInput.svg", i18nPackageName = "org.pentaho.di.trans.steps.palo.diminput",
     name = "PaloDimInput.TransName", description = "PaloDimInput.TransDescription",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo" )
 public class PaloDimInputMeta extends BaseStepMeta implements StepMetaInterface {

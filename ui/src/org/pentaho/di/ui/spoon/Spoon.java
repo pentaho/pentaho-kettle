@@ -1907,17 +1907,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     tabFolder.setLayoutData( fdTab );
 
     view = new CTabItem( tabFolder, SWT.NONE );
-    Composite nothing1 = new Composite( tabFolder, SWT.NONE );
-    nothing1.setBounds( 0,  0,  0,  0 );
-    view.setControl( nothing1 );
+    view.setControl( new Composite( tabFolder, SWT.NONE ) );
     view.setText( STRING_SPOON_MAIN_TREE );
     view.setImage( GUIResource.getInstance().getImageExploreSolutionSmall() );
     
     design = new CTabItem( tabFolder, SWT.NONE );
     design.setText( STRING_SPOON_CORE_OBJECTS_TREE );
-    Composite nothing = new Composite( tabFolder, SWT.NONE );
-    nothing.setBounds( 0,  0,  0,  0 );
-    design.setControl( nothing );
+    design.setControl( new Composite( tabFolder, SWT.NONE ) );
     design.setImage( GUIResource.getInstance().getImageEditSmall() );
 
     Label sep3 = new Label( mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL );
@@ -1930,8 +1926,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     selectionLabel = new Label( mainComposite, SWT.HORIZONTAL );
     FormData fdsLabel = new FormData();
-    fdsLabel.left = new FormAttachment( 3, 0 );
-    fdsLabel.top = new FormAttachment( sep3, 8 );
+    if ( Const.isLinux() ) {
+      fdsLabel.left = new FormAttachment( 3, 0 );
+      fdsLabel.top = new FormAttachment( sep3, 8 );
+    } else {
+      fdsLabel.left = new FormAttachment( 0, 0 );
+      fdsLabel.top = new FormAttachment( sep3, 5 );      
+    }
     selectionLabel.setLayoutData( fdsLabel );
 
     ToolBar treeTb = new ToolBar( mainComposite, SWT.HORIZONTAL | SWT.FLAT );
@@ -1954,8 +1955,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         | SWT.BORDER | SWT.LEFT | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL );
     selectionFilter.setToolTipText( BaseMessages.getString( PKG, "Spoon.SelectionFilter.Tooltip" ) );
     FormData fdSelectionFilter = new FormData();
-    fdSelectionFilter.top =
-      new FormAttachment( treeTb, -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 9 ) );
+    if ( Const.isLinux() ) {
+      fdSelectionFilter.top =
+        new FormAttachment( treeTb, -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 9 ) );
+    } else {
+      fdSelectionFilter.top =
+        new FormAttachment( treeTb, -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 5 ) );
+    }
     fdSelectionFilter.right = new FormAttachment( 95, -55 );
     fdSelectionFilter.left = new FormAttachment( selectionLabel, 10 );
     selectionFilter.setLayoutData( fdSelectionFilter );

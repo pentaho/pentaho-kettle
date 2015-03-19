@@ -53,7 +53,7 @@ import org.w3c.dom.Node;
 /**
  *
  */
-@Step( id = "PaloDimOutput", image = "PaloDimOutput.png",
+@Step( id = "PaloDimOutput", image = "PaloDimOutput.svg",
     i18nPackageName = "org.pentaho.di.trans.steps.palo.dimoutput", name = "PaloDimOutput.TransName",
     description = "PaloDimOutput.TransDescription",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo" )
