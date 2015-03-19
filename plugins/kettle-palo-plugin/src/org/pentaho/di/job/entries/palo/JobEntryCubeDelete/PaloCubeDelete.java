@@ -46,7 +46,7 @@ import org.w3c.dom.Node;
  */
 
 @org.pentaho.di.core.annotations.JobEntry( id = "PALO_CUBE_DELETE",
-    i18nPackageName = "org.pentaho.di.job.entries.palo.JobEntryCubeDelete", image = "PaloCubeDelete.png",
+    i18nPackageName = "org.pentaho.di.job.entries.palo.JobEntryCubeDelete", image = "PaloCubeDelete.svg",
     name = "PaloCubeDelete.JobName", description = "PaloCubeDelete.JobDescription",
     categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Palo" )
 public class PaloCubeDelete extends JobEntryBase implements Cloneable, JobEntryInterface {
