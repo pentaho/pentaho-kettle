@@ -91,7 +91,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TreeAdapter;
 import org.eclipse.swt.events.TreeEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.graphics.Image;
@@ -1897,15 +1896,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     fdTabWrapper.right = new FormAttachment( 100, 0 );
     tabWrapper.setLayoutData( fdTabWrapper );
 
-    CTabFolder tabFolder = new CTabFolder( tabWrapper, SWT.HORIZONTAL | SWT.FLAT );
-    tabFolder.setSimple( false ); // Set simple what!!?? Well it sets the style of
-    // the tab folder to simple or stylish (curvy
-    // borders)
-    tabFolder.setBackground( GUIResource.getInstance().getColorWhite() );
-    tabFolder.setBorderVisible( false );
-    tabFolder.setSelectionBackground( new Color[] {
-      display.getSystemColor( SWT.COLOR_WIDGET_NORMAL_SHADOW ),
-      display.getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ), }, new int[] { 55, }, true );
+    CTabFolder tabFolder = new CTabFolder( tabWrapper, SWT.HORIZONTAL );
+    props.setLook( tabFolder, Props.WIDGET_STYLE_TAB );
 
     FormData fdTab = new FormData();
     fdTab.left = new FormAttachment( 0, 0 );
@@ -1915,13 +1907,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     tabFolder.setLayoutData( fdTab );
 
     view = new CTabItem( tabFolder, SWT.NONE );
-    view.setControl( new Composite( tabFolder, SWT.NONE ) );
+    Composite nothing1 = new Composite( tabFolder, SWT.NONE );
+    nothing1.setBounds( 0,  0,  0,  0 );
+    view.setControl( nothing1 );
     view.setText( STRING_SPOON_MAIN_TREE );
     view.setImage( GUIResource.getInstance().getImageExploreSolutionSmall() );
-
+    
     design = new CTabItem( tabFolder, SWT.NONE );
     design.setText( STRING_SPOON_CORE_OBJECTS_TREE );
-    design.setControl( new Composite( tabFolder, SWT.NONE ) );
+    Composite nothing = new Composite( tabFolder, SWT.NONE );
+    nothing.setBounds( 0,  0,  0,  0 );
+    design.setControl( nothing );
     design.setImage( GUIResource.getInstance().getImageEditSmall() );
 
     Label sep3 = new Label( mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL );
@@ -1939,6 +1935,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     selectionLabel.setLayoutData( fdsLabel );
 
     ToolBar treeTb = new ToolBar( mainComposite, SWT.HORIZONTAL | SWT.FLAT );
+    treeTb.setBackground( GUIResource.getInstance().getColorDemoGray() );
     /*
     This contains a map with all the unnamed transformation (just a filename)
    */
@@ -3148,8 +3145,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     tabfolder = new TabSet( tabComp );
     tabfolder.setChangedFont( GUIResource.getInstance().getFontBold() );
-    props.setLook( tabfolder.getSwtTabset(), Props.WIDGET_STYLE_TAB );
     final CTabFolder cTabFolder = tabfolder.getSwtTabset();
+    props.setLook( cTabFolder, Props.WIDGET_STYLE_TAB );
     cTabFolder.addMenuDetectListener( new MenuDetectListener() {
       @Override
       public void menuDetected( MenuDetectEvent event ) {

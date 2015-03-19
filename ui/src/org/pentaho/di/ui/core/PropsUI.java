@@ -895,17 +895,16 @@ public class PropsUI extends Props {
         background = gui.getColorBackground();
         font = gui.getFontGraph();
         break;
+      case WIDGET_STYLE_TOOLBAR:
+        background = GUIResource.getInstance().getColorDemoGray();
+        break;
       case WIDGET_STYLE_TAB:
-        background = gui.getColorBackground();
+        background = GUIResource.getInstance().getColorWhite();
         // font = gui.getFontDefault();
         CTabFolder tabFolder = (CTabFolder) control;
         tabFolder.setSimple( false );
-        tabFolder.setBorderVisible( false );
-
-        // Set a small vertical gradient
-        tabFolder.setSelectionBackground( new Color[] {
-          display.getSystemColor( SWT.COLOR_WIDGET_NORMAL_SHADOW ),
-          display.getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ), }, new int[] { 55, }, true );
+        tabFolder.setBorderVisible( true );
+        tabFolder.setSelectionBackground( GUIResource.getInstance().getColorDemoGray() );
         break;
       default:
         background = gui.getColorBackground();
