@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -112,7 +113,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
     addToolBar();
 
     Control toolbarControl = (Control) toolbar.getManagedObject();
-    spoon.props.setLook( toolbarControl );
+    //spoon.props.setLook( toolbarControl );
 
     toolbarControl.setLayoutData( new FormData() );
     FormData fd = new FormData();
@@ -161,6 +162,7 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById( "nav-toolbar" );
 
       ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
+      spoon.props.setLook( swtToolbar, Props.WIDGET_STYLE_TOOLBAR );
       swtToolbar.layout( true, true );
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );
