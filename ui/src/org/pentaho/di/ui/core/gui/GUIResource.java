@@ -1652,7 +1652,7 @@ public class GUIResource {
    * @return the imageVariable
    */
   public Image getImageVariable() {
-    return imageVariable.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+    return imageVariable.getAsBitmapForSize( display, 13, 13 );
   }
 
   public Image getImageTransGraph() {

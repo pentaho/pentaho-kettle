@@ -1619,7 +1619,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     mouseOverSteps.add( stepMeta );
 
-    DelayTimer delayTimer = new DelayTimer( 2500, new DelayListener() {
+    DelayTimer delayTimer = new DelayTimer( 500, new DelayListener() {
       public void expired() {
         mouseOverSteps.remove( stepMeta );
         delayTimers.remove( stepMeta );

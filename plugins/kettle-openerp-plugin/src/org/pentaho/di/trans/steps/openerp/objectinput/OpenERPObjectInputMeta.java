@@ -48,7 +48,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step( id = "OpenERPObjectInput", image = "OpenERPObjectInput.png",
+@Step( id = "OpenERPObjectInput", image = "OpenERPObjectInput.svg",
   i18nPackageName = "org.pentaho.di.trans.steps.openerp.objectinput", name = "OpenERPObjectInput.TransName",
   description = "OpenERPObjectInput.TransDescription",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.OpenERP" )
