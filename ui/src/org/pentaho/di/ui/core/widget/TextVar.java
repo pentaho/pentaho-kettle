@@ -103,12 +103,12 @@ public class TextVar extends Composite {
 
     // add a text field on it...
     wText = new Text( this, flags );
-    controlDecoration = new ControlDecoration( wText, SWT.TOP | SWT.RIGHT, this );
+    controlDecoration = new ControlDecoration( wText, SWT.CENTER | SWT.RIGHT, this );
     Image image = GUIResource.getInstance().getImageVariable();
     controlDecoration.setImage( image );
     controlDecoration.setDescriptionText( BaseMessages.getString( PKG, "TextVar.tooltip.InsertVariable" ) );
     PropsUI.getInstance().setLook( controlDecoration.getControl() );
-
+    
     modifyListenerTooltipText = getModifyListenerTooltipText( wText );
     wText.addModifyListener( modifyListenerTooltipText );
 
