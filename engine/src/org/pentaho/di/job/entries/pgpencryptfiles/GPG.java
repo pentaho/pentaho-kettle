@@ -120,7 +120,11 @@ public class GPG {
       // No filename specified
       throw new KettleException( BaseMessages.getString( PKG, "GPG.GPGFilenameMissing" ) );
     }
-    // We have a filename, we need to check
+  /**Zdravko Lacic 2015-03-20
+   * The following commented code causes "File not found Error"
+   * http://jira.pentaho.com/browse/PDI-7885
+   */
+  /**  // We have a filename, we need to check
     FileObject file = null;
     try {
       file = KettleVFS.getFileObject( getGpgExeFile() );
@@ -147,7 +151,7 @@ public class GPG {
       } catch ( Exception e ) {
         // Ignore close errors
       }
-    }
+    }**/
   }
 
   /**
