@@ -1926,12 +1926,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     selectionLabel = new Label( mainComposite, SWT.HORIZONTAL );
     FormData fdsLabel = new FormData();
+    fdsLabel.left = new FormAttachment( 3, 0 );
     if ( Const.isLinux() ) {
-      fdsLabel.left = new FormAttachment( 3, 0 );
       fdsLabel.top = new FormAttachment( sep3, 10 );
     } else {
-      fdsLabel.left = new FormAttachment( 2, 0 );
-      fdsLabel.top = new FormAttachment( sep3, 5 );      
+      fdsLabel.top = new FormAttachment( sep3, 8 );      
     }
     selectionLabel.setLayoutData( fdsLabel );
 
@@ -1949,7 +1948,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( Const.isLinux() ) {
       fdTreeToolbar.top = new FormAttachment( sep3, 3 );
     } else {
-      fdTreeToolbar.top = new FormAttachment( sep3, 2 );
+      fdTreeToolbar.top = new FormAttachment( sep3, 5 );
     }
     fdTreeToolbar.right = new FormAttachment( 95, 5 );
     treeTb.setLayoutData( fdTreeToolbar );
@@ -1964,7 +1963,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         new FormAttachment( treeTb, -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 12 ) );
     } else {
       fdSelectionFilter.top =
-        new FormAttachment( treeTb, -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 3 ) );
+        new FormAttachment( treeTb, -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 5 ) );
     }
     fdSelectionFilter.right = new FormAttachment( 95, -55 );
     fdSelectionFilter.left = new FormAttachment( selectionLabel, 10 );
