@@ -218,7 +218,7 @@ public class GUIResource {
 
   private Image imagePentahoSwirl;
 
-  private Image imageVariable;
+  private SwtUniversalImage imageVariable;
 
   private SwtUniversalImage imageTransGraph;
 
@@ -856,10 +856,9 @@ public class GUIResource {
     // "ui/images/pentaho-swirl.png"
     imagePentahoSwirl = loadAsResource( display, BasePropertyHandler.getProperty( "CorpSwirl_image" ), 0 );
 
-    // "ui/images/variable.png"
-    imageVariable =
-        loadAsResource( display, BasePropertyHandler.getProperty( "Variable_image" ), ConstUI.SMALL_ICON_SIZE );
-
+    // "ui/images/variable.svg"
+    imageVariable = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Variable_image" ) );
+    
     // "ui/images/edit_option.png"
     imageEditOptionButton =
         loadAsResource( display, BasePropertyHandler.getProperty( "EditOption_image" ), ConstUI.SMALL_ICON_SIZE );
@@ -1653,7 +1652,7 @@ public class GUIResource {
    * @return the imageVariable
    */
   public Image getImageVariable() {
-    return imageVariable;
+    return imageVariable.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
   public Image getImageTransGraph() {
