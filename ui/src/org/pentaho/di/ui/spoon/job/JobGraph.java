@@ -1306,7 +1306,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
     mouseOverEntries.add( jobEntryCopy );
 
-    DelayTimer delayTimer = new DelayTimer( 2500, new DelayListener() {
+    DelayTimer delayTimer = new DelayTimer( 500, new DelayListener() {
       public void expired() {
         mouseOverEntries.remove( jobEntryCopy );
         delayTimers.remove( jobEntryCopy );
