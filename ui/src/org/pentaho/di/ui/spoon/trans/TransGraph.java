@@ -35,6 +35,7 @@ import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
@@ -100,6 +101,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.AreaOwner;
+import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.gui.BasePainter;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
@@ -1200,11 +1202,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     //
     toolTip.hide();
 
+    Point real = screen2real( e.x, e.y );
     // Remember the last position of the mouse for paste with keyboard
     //
-    lastMove = new Point( e.x, e.y );
-    Point real = screen2real( e.x, e.y );
-
+    lastMove = real;
+    
     if ( iconoffset == null ) {
       iconoffset = new Point( 0, 0 );
     }
@@ -1624,6 +1626,26 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         showTargetStreamsStep = null;
         asyncRedraw();
       }
+    }, new Callable<Boolean>() {
+
+      @Override
+      public Boolean call() throws Exception {
+        Point cursor = getLastMove();
+        if ( cursor != null ) {
+          AreaOwner areaOwner = getVisibleAreaOwner( cursor.x, cursor.y );
+          if ( areaOwner != null ) {
+            AreaType areaType = areaOwner.getAreaType();
+            if ( areaType == AreaType.STEP_ICON ) {
+              StepMeta selectedStepMeta = (StepMeta) areaOwner.getOwner();
+              return selectedStepMeta == stepMeta;
+            } else if ( areaType.belongsToTransContextMenu() ) {
+              StepMeta selectedStepMeta = (StepMeta) areaOwner.getParent();
+              return selectedStepMeta == stepMeta;
+            }
+          }
+        }
+        return false;
+      }
     } );
 
     new Thread( delayTimer ).start();
@@ -1852,7 +1874,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     // SPACE : over a step: show output fields...
     if ( e.character == ' ' && lastMove != null ) {
 
-      Point real = screen2real( lastMove.x, lastMove.y );
+      Point real = lastMove;
 
       // Hide the tooltip!
       hideToolTips();

@@ -24,6 +24,7 @@ package org.pentaho.di.ui.spoon.trans;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * A timer where you can attach a timer to. Once the time is up, the listeners are fired off.
@@ -37,6 +38,16 @@ public class DelayTimer implements Runnable {
   private boolean stopped;
 
   private List<DelayListener> delayListeners;
+  /**
+   * Default prolonger should not prolong  delay.
+   */
+  private Callable<Boolean> prolonger = new Callable<Boolean>() {
+    @Override
+    public Boolean call() throws Exception {
+      return false;
+    }
+  };
+  
   private long start;
 
   public DelayTimer( int delayInMiliseconds ) {
@@ -50,6 +61,11 @@ public class DelayTimer implements Runnable {
     this( delayInMilliseconds );
     addDelayListener( delayListener );
   }
+  
+  public DelayTimer( int delayInMilliseconds, DelayListener delayListener, Callable<Boolean> prolonger) {
+    this( delayInMilliseconds, delayListener );
+    this.prolonger = prolonger;
+  }
 
   public void reset() {
     start = System.currentTimeMillis();
@@ -57,7 +73,7 @@ public class DelayTimer implements Runnable {
 
   public void run() {
     reset();
-    while ( ( System.currentTimeMillis() - start ) < ( delayInMiliseconds ) && !stopped ) {
+    while ( ( delayNotExpired() || needProlong() ) && !stopped ) {
       try {
         Thread.sleep( 25 );
       } catch ( InterruptedException e ) {
@@ -70,6 +86,19 @@ public class DelayTimer implements Runnable {
     //
     for ( DelayListener delayListener : delayListeners ) {
       delayListener.expired();
+    }
+  }
+  
+  private boolean delayNotExpired() {
+    return ( System.currentTimeMillis() - start ) < delayInMiliseconds;
+  }
+  
+  
+  private boolean needProlong() {
+    try {
+      return Boolean.valueOf( prolonger.call() );
+    } catch ( Exception e ) {
+      throw new RuntimeException( "Prolonger call finished with error", e );
     }
   }
 
