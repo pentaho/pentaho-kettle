@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -101,6 +102,7 @@ import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
+import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
@@ -131,6 +133,7 @@ import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPainter;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -1012,10 +1015,10 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     //
     toolTip.hide();
 
+    Point real = screen2real( e.x, e.y );
     // Remember the last position of the mouse for paste with keyboard
     //
-    lastMove = new Point( e.x, e.y );
-    Point real = screen2real( e.x, e.y );
+    lastMove = real;
 
     if ( iconoffset == null ) {
       iconoffset = new Point( 0, 0 );
@@ -1308,6 +1311,23 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         mouseOverEntries.remove( jobEntryCopy );
         delayTimers.remove( jobEntryCopy );
         asyncRedraw();
+      }
+    }, new Callable<Boolean>() {
+
+      @Override
+      public Boolean call() throws Exception {
+        Point cursor = getLastMove();
+        if ( cursor != null ) {
+          AreaOwner areaOwner = getVisibleAreaOwner( cursor.x, cursor.y );
+          if ( areaOwner != null ) {
+            AreaType areaType = areaOwner.getAreaType();
+            if ( areaType == AreaType.JOB_ENTRY_ICON || areaType.belongsToJobContextMenu() ) {
+              JobEntryCopy selectedJobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
+              return selectedJobEntryCopy == jobEntryCopy;
+            }
+          }
+        }
+        return false;
       }
     } );
 
