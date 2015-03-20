@@ -22,6 +22,9 @@
 
 package org.pentaho.di.core.gui;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * When we draw something in Spoon (TransPainter) we keep a list of all the things we draw and the object that's behind
  * it. That should make it a lot easier to track what was drawn, setting tooltips, etc.
@@ -46,7 +49,21 @@ public class AreaOwner {
       JOB_ENTRY_BUSY, JOB_ENTRY_RESULT_SUCCESS, JOB_ENTRY_RESULT_FAILURE, JOB_ENTRY_RESULT_CHECKPOINT,
       STEP_INJECT_ICON,
 
-      CUSTOM,
+      CUSTOM;
+    
+    private static final Set<AreaType> jobContextMenuArea = EnumSet.of( MINI_ICONS_BALLOON, JOB_ENTRY_MINI_ICON_INPUT,
+        JOB_ENTRY_MINI_ICON_EDIT, JOB_ENTRY_MINI_ICON_CONTEXT, JOB_ENTRY_MINI_ICON_OUTPUT );
+
+    private static final Set<AreaType> stepContextMenuArea = EnumSet.of( MINI_ICONS_BALLOON, STEP_INPUT_HOP_ICON,
+        STEP_EDIT_ICON, STEP_MENU_ICON, STEP_OUTPUT_HOP_ICON, STEP_INJECT_ICON );
+    
+    public boolean belongsToJobContextMenu() {
+      return jobContextMenuArea.contains( this );
+    }
+    
+    public boolean belongsToTransContextMenu() {
+      return stepContextMenuArea.contains( this );
+    }
 
   }
 
