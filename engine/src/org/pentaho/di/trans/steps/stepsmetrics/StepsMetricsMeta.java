@@ -486,4 +486,8 @@ public class StepsMetricsMeta extends BaseStepMeta implements StepMetaInterface 
     return new StepsMetricsData();
   }
 
+  @Override
+  public TransMeta.TransformationType[] getSupportedTransformationTypes() {
+    return new TransMeta.TransformationType[] { TransMeta.TransformationType.Normal };
+  }
 }
