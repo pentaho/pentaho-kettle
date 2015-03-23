@@ -140,6 +140,7 @@ public class JobPainter extends BasePainter {
       drawJobHop( hi, false );
     }
 
+    EImage arrow;
     if ( candidate != null ) {
       drawJobHop( candidate, true );
     } else {
@@ -148,27 +149,29 @@ public class JobPainter extends BasePainter {
         Point to = endHopLocation;
         if ( endHopEntry == null ) {
           gc.setForeground( EColor.GRAY );
+          arrow = EImage.ARROW_DISABLED;
         } else {
           gc.setForeground( EColor.BLUE );
+          arrow = EImage.ARROW_DEFAULT;
         }
         Point start = real2screen( fr.x + iconsize / 2, fr.y + iconsize / 2 );
         Point end = real2screen( to.x, to.y );
-        drawArrow(
-          start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopEntry,
-          endHopEntry == null ? endHopLocation : endHopEntry );
+        drawArrow( arrow, start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopEntry,
+            endHopEntry == null ? endHopLocation : endHopEntry );
       } else if ( endHopEntry != null && endHopLocation != null ) {
         Point fr = endHopLocation;
         Point to = endHopEntry.getLocation();
         if ( startHopEntry == null ) {
           gc.setForeground( EColor.GRAY );
+          arrow = EImage.ARROW_DISABLED;
         } else {
           gc.setForeground( EColor.BLUE );
+          arrow = EImage.ARROW_DEFAULT;
         }
         Point start = real2screen( fr.x, fr.y );
         Point end = real2screen( to.x + iconsize / 2, to.y + iconsize / 2 );
-        drawArrow(
-          start.x, start.y, end.x, end.y + iconsize / 2, theta, calcArrowLength(), 1.2, null,
-          startHopEntry == null ? endHopLocation : startHopEntry, endHopEntry );
+        drawArrow( arrow, start.x, start.y, end.x, end.y + iconsize / 2, theta, calcArrowLength(), 1.2, null,
+            startHopEntry == null ? endHopLocation : startHopEntry, endHopEntry );
       }
     }
 
@@ -445,6 +448,9 @@ public class JobPainter extends BasePainter {
     drawLine( hop, candidate );
   }
 
+  /**
+   * Calculates line coordinates from center to center.
+   */
   protected void drawLine( JobHopMeta jobHop, boolean is_candidate ) {
     int[] line = getLine( jobHop.getFromEntry(), jobHop.getToEntry() );
 
@@ -457,20 +463,26 @@ public class JobPainter extends BasePainter {
       gc.setLineStyle( ELineStyle.SOLID );
     }
 
+    EImage arrow;
     if ( is_candidate ) {
       col = EColor.BLUE;
+      arrow = EImage.ARROW_DEFAULT;
     } else if ( jobHop.isEnabled() ) {
       if ( jobHop.isUnconditional() ) {
         col = EColor.BLACK;
+        arrow = EImage.ARROW_DEFAULT;
       } else {
         if ( jobHop.getEvaluation() ) {
           col = EColor.GREEN;
+          arrow = EImage.ARROW_OK;
         } else {
           col = EColor.RED;
+          arrow = EImage.ARROW_ERROR;
         }
       }
     } else {
       col = EColor.GRAY;
+      arrow = EImage.ARROW_DISABLED;
     }
 
     gc.setForeground( col );
@@ -478,7 +490,7 @@ public class JobPainter extends BasePainter {
     if ( jobHop.isSplit() ) {
       gc.setLineWidth( linewidth + 2 );
     }
-    drawArrow( line, jobHop );
+    drawArrow( arrow, line, jobHop );
     if ( jobHop.isSplit() ) {
       gc.setLineWidth( linewidth );
     }
@@ -505,26 +517,21 @@ public class JobPainter extends BasePainter {
     return new int[] { x1, y1, x2, y2 };
   }
 
-  private void drawArrow( int[] line, JobHopMeta jobHop ) {
-    drawArrow( line, jobHop, jobHop.getFromEntry(), jobHop.getToEntry() );
+  private void drawArrow( EImage arrow, int[] line, JobHopMeta jobHop ) {
+    drawArrow( arrow, line, jobHop, jobHop.getFromEntry(), jobHop.getToEntry() );
   }
 
-  private void drawArrow( int[] line, JobHopMeta jobHop, Object startObject, Object endObject ) {
+  private void drawArrow( EImage arrow, int[] line, JobHopMeta jobHop, Object startObject, Object endObject ) {
     Point screen_from = real2screen( line[0], line[1] );
     Point screen_to = real2screen( line[2], line[3] );
 
-    drawArrow(
-      screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, calcArrowLength(), -1, jobHop, startObject,
-      endObject );
+    drawArrow( arrow, screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, calcArrowLength(), -1, jobHop,
+        startObject, endObject );
   }
 
-  private void drawArrow( int x1, int y1, int x2, int y2, double theta, int size, double factor,
-    JobHopMeta jobHop, Object startObject, Object endObject ) {
+  private void drawArrow( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size, double factor,
+      JobHopMeta jobHop, Object startObject, Object endObject ) {
     int mx, my;
-    int x3;
-    int y3;
-    int x4;
-    int y4;
     int a, b, dist;
     double angle;
 
@@ -554,16 +561,8 @@ public class JobPainter extends BasePainter {
 
     // calculate points for arrowhead
     angle = Math.atan2( y2 - y1, x2 - x1 ) + Math.PI;
-
-    x3 = (int) ( mx + Math.cos( angle - theta ) * size );
-    y3 = (int) ( my + Math.sin( angle - theta ) * size );
-
-    x4 = (int) ( mx + Math.cos( angle + theta ) * size );
-    y4 = (int) ( my + Math.sin( angle + theta ) * size );
-
-    gc.switchForegroundBackgroundColors();
-    gc.fillPolygon( new int[] { mx, my, x3, y3, x4, y4 } );
-    gc.switchForegroundBackgroundColors();
+    
+    gc.drawImage( arrow, mx, my, magnification, angle - Math.PI / 2 );
 
     // Display an icon above the hop...
     //
