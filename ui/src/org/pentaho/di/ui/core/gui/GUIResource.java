@@ -128,7 +128,11 @@ public class GUIResource {
   private ManagedColor colorLightBlue;
 
   private ManagedColor colorCrystalTextPentaho;
-
+  
+  private ManagedColor colorHopDefault;
+  
+  private ManagedColor colorHopOK;
+  
   /* * * Fonts * * */
   private ManagedFont fontGraph;
 
@@ -233,6 +237,7 @@ public class GUIResource {
   private SwtUniversalImage okArrow;
   private SwtUniversalImage errorArrow;
   private SwtUniversalImage disabledArrow;
+  private SwtUniversalImage candidateArrow;
   
   private Image imageUser;
 
@@ -461,6 +466,10 @@ public class GUIResource {
 
     colorCrystalTextPentaho = new ManagedColor( display, 61, 99, 128 );
 
+    colorHopDefault = new ManagedColor( display, 61, 99, 128 );
+    
+    colorHopOK = new ManagedColor( display, 12, 178, 15 );
+    
     // Load all images from files...
     loadFonts();
     loadCommonImages();
@@ -601,7 +610,8 @@ public class GUIResource {
       okArrow.dispose();
       errorArrow.dispose();
       disabledArrow.dispose();
-
+      candidateArrow.dispose();
+      
       disposeImage( imageNoteSmall );
       disposeImage( imageColor );
       disposeImage( imageEditOptionButton );
@@ -1143,6 +1153,11 @@ public class GUIResource {
     disabledArrow =
         SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
             .getProperty( "disabledArrow_image" ) );
+    candidateArrow =
+        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
+            .getProperty( "candidateArrow_image" ) );
+    
+    
   }
 
   /**
@@ -1844,6 +1859,20 @@ public class GUIResource {
     return colorCrystalTextPentaho.getColor();
   }
 
+  /**
+   * @return the default color the hop lines for default/unconditional
+   */
+  public Color getColorHopDefault() {
+    return colorHopDefault.getColor();
+  }
+
+  /**
+   * @return the default color the hop lines for the "OK" condition
+   */
+  public Color getColorHopOK() {
+    return colorHopOK.getColor();
+  }
+  
   public void drawPentahoGradient( Display display, GC gc, Rectangle rect, boolean vertical ) {
     if ( !vertical ) {
       gc.setForeground( display.getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
@@ -2359,4 +2388,10 @@ public class GUIResource {
   public SwtUniversalImage getDisabledArrow() {
     return disabledArrow;
   }
+  
+  public SwtUniversalImage getCandidateArrow() {
+    return candidateArrow;
+  }
+  
+  
 }
