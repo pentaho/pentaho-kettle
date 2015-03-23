@@ -45,6 +45,8 @@ import org.apache.commons.io.IOUtils;
 import org.jfree.text.TextUtilities;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwingUniversalImage;
+import org.pentaho.di.core.SwingUniversalImageBitmap;
+import org.pentaho.di.core.SwingUniversalImageSvg;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.svg.SvgImage;
 import org.pentaho.di.core.svg.SvgSupport;
@@ -98,6 +100,11 @@ public class SwingDirectGC implements GCInterface {
   private static SwingUniversalImage imageBusy;
 
   private static SwingUniversalImage imageInject;
+
+  private static SwingUniversalImage defaultArrow;
+  private static SwingUniversalImage okArrow;
+  private static SwingUniversalImage errorArrow;
+  private static SwingUniversalImage disabledArrow;
 
   protected Color background;
 
@@ -211,6 +218,11 @@ public class SwingDirectGC implements GCInterface {
     imageBusy = getImageIcon( BasePropertyHandler.getProperty( "Busy_image" ) );
     imageInject = getImageIcon( BasePropertyHandler.getProperty( "Inject_image" ) );
 
+    defaultArrow = getImageIcon( BasePropertyHandler.getProperty( "defaultArrow_image" ) );
+    okArrow = getImageIcon( BasePropertyHandler.getProperty( "okArrow_image" ) );
+    errorArrow = getImageIcon( BasePropertyHandler.getProperty( "errorArrow_image" ) );
+    disabledArrow = getImageIcon( BasePropertyHandler.getProperty( "disabledArrow_image" ) );
+
     fontGraph = new Font( "FreeSans", Font.PLAIN, 10 );
     fontNote = new Font( "FreeSans", Font.PLAIN, 10 );
     fontSmall = new Font( "FreeSans", Font.PLAIN, 8 );
@@ -249,7 +261,7 @@ public class SwingDirectGC implements GCInterface {
       if ( inputStream != null ) {
         try {
           SvgImage svg = SvgSupport.loadSvgImage( inputStream );
-          image = new SwingUniversalImage( svg );
+          image = new SwingUniversalImageSvg( svg );
         } catch ( Exception ex ) {
           throw new KettleException( "Unable to load image from classpath : '" + fileName + "'", ex );
         } finally {
@@ -284,7 +296,7 @@ public class SwingDirectGC implements GCInterface {
           WaitingImageObserver wia = new WaitingImageObserver( bitmap );
           wia.waitImageLoaded();
 
-          image = new SwingUniversalImage( bitmap );
+          image = new SwingUniversalImageBitmap( bitmap );
         } catch ( Exception ex ) {
           throw new KettleException( "Unable to load image from classpath : '" + fileName + "'", ex );
         } finally {
@@ -316,6 +328,11 @@ public class SwingDirectGC implements GCInterface {
 
   }
 
+  public void drawImage( EImage image, int locationX, int locationY, float magnification, double angle ) {
+    SwingUniversalImage img = getNativeImage( image );
+    drawImage( img, locationX, locationY, angle );
+  }
+
   public void drawImage( SwingUniversalImage img, int locationX, int locationY ) {
     if ( isDrawingPixelatedImages() && img.isBitmap() ) {
       BufferedImage bi = new BufferedImage( iconsize, iconsize, BufferedImage.TYPE_INT_RGB );
@@ -337,7 +354,28 @@ public class SwingDirectGC implements GCInterface {
     } else {
       gc.setBackground( Color.white );
       gc.clearRect( locationX, locationY, iconsize, iconsize );
-      img.drawImageTo( gc, locationX, locationY, iconsize, iconsize );
+      img.drawToGraphics( gc, locationX, locationY, iconsize, iconsize );
+    }
+  }
+
+  public void drawImage( SwingUniversalImage img, int centerX, int centerY, double angle ) {
+    if ( isDrawingPixelatedImages() && img.isBitmap() ) {
+      BufferedImage bi =  img.getAsBitmapForSize( iconsize, iconsize, angle );
+
+      int offx = centerX + xOffset - bi.getWidth() / 2;
+      int offy = centerY + yOffset - bi.getHeight() / 2;
+      for ( int x = 0; x < bi.getWidth( observer ); x++ ) {
+        for ( int y = 0; y < bi.getHeight( observer ); y++ ) {
+          int rgb = bi.getRGB( x, y );
+          gc.setColor( new Color( rgb ) );
+          gc.setStroke( new BasicStroke( 1.0f ) );
+          gc.drawLine( offx + x, offy + y, offx + x, offy + y );
+        }
+      }
+    } else {
+      gc.setBackground( Color.white );
+      gc.clearRect( centerX, centerY, iconsize, iconsize );
+      img.drawToGraphics( gc, centerX, centerY, iconsize, iconsize, angle );
     }
   }
 
@@ -387,6 +425,14 @@ public class SwingDirectGC implements GCInterface {
         return imageBusy;
       case INJECT:
         return imageInject;
+      case ARROW_DEFAULT:
+        return defaultArrow;
+      case ARROW_OK:
+        return okArrow;
+      case ARROW_ERROR:
+        return errorArrow;
+      case ARROW_DISABLED:
+        return disabledArrow;
       default:
         break;
     }

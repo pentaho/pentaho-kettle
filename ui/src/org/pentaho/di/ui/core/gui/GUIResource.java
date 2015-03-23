@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
+import org.pentaho.di.core.SwtUniversalImageBitmap;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
@@ -227,6 +228,11 @@ public class GUIResource {
   private SwtUniversalImage imageTransTree;
 
   private SwtUniversalImage imageJobTree;
+
+  private SwtUniversalImage defaultArrow;
+  private SwtUniversalImage okArrow;
+  private SwtUniversalImage errorArrow;
+  private SwtUniversalImage disabledArrow;
   
   private Image imageUser;
 
@@ -591,6 +597,11 @@ public class GUIResource {
       imageRemoveAll.dispose();
       imageRemoveSingle.dispose();
 
+      defaultArrow.dispose();
+      okArrow.dispose();
+      errorArrow.dispose();
+      disabledArrow.dispose();
+
       disposeImage( imageNoteSmall );
       disposeImage( imageColor );
       disposeImage( imageEditOptionButton );
@@ -686,7 +697,7 @@ public class GUIResource {
         gc.drawLine( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         gc.drawLine( ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE );
         gc.dispose();
-        image = new SwtUniversalImage( img );
+        image = new SwtUniversalImageBitmap( img );
       }
 
       // Calculate the smaller version of the image @ 16x16...
@@ -1120,6 +1131,18 @@ public class GUIResource {
     imageColumnSmall =
         loadAsResource( display, BasePropertyHandler.getProperty( "ColumnSmall_image" ), ConstUI.SMALL_ICON_SIZE );
 
+    defaultArrow =
+        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
+            .getProperty( "defaultArrow_image" ) );
+    okArrow =
+        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
+            .getProperty( "okArrow_image" ) );
+    errorArrow =
+        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
+            .getProperty( "errorArrow_image" ) );
+    disabledArrow =
+        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
+            .getProperty( "disabledArrow_image" ) );
   }
 
   /**
@@ -1159,7 +1182,7 @@ public class GUIResource {
         gc.drawLine( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         gc.drawLine( ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE );
         gc.dispose();
-        image = new SwtUniversalImage( img );
+        image = new SwtUniversalImageBitmap( img );
       }
 
       // Calculate the smaller version of the image @ 16x16...
@@ -2321,4 +2344,19 @@ public class GUIResource {
     return imageRemoveSingle;
   }
 
+  public SwtUniversalImage getDefaultArrow() {
+    return defaultArrow;
+  }
+
+  public SwtUniversalImage getOkArrow() {
+    return okArrow;
+  }
+
+  public SwtUniversalImage getErrorArrow() {
+    return errorArrow;
+  }
+
+  public SwtUniversalImage getDisabledArrow() {
+    return disabledArrow;
+  }
 }

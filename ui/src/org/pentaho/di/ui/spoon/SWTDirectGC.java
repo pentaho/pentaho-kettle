@@ -138,6 +138,19 @@ public class SWTDirectGC implements GCInterface {
       gc.drawImage( img, 0, 0, bounds.width, bounds.height, x, y, small_icon_size, small_icon_size );
     }
   }
+ 
+  @Override
+  public void drawImage( EImage image, int x, int y, float magnification, double angle ) {
+    Image img =
+        getNativeImage( image ).getAsBitmapForSize( gc.getDevice(), Math.round( small_icon_size * magnification ),
+            Math.round( small_icon_size * magnification ), angle );
+    if ( img != null ) {
+      Rectangle bounds = img.getBounds();
+      int hx = Math.round( bounds.width / magnification );
+      int hy = Math.round( bounds.height / magnification );
+      gc.drawImage( img, 0, 0, bounds.width, bounds.height, x - hx / 2, y - hy / 2, hx, hy );
+    }
+  }
 
   public Point getImageBounds( EImage image, float magnification ) {
     return new Point( small_icon_size, small_icon_size );
@@ -177,6 +190,14 @@ public class SWTDirectGC implements GCInterface {
         return GUIResource.getInstance().getSwtImageUnconditionalHop();
       case BUSY:
         return GUIResource.getInstance().getSwtImageBusy();
+      case ARROW_DEFAULT:
+        return GUIResource.getInstance().getDefaultArrow();
+      case ARROW_OK:
+        return GUIResource.getInstance().getOkArrow();
+      case ARROW_ERROR:
+        return GUIResource.getInstance().getErrorArrow();
+      case ARROW_DISABLED:
+        return GUIResource.getInstance().getDisabledArrow();
       default:
         break;
     }
