@@ -4359,6 +4359,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       switch ( type ) {
         case java.sql.Types.CHAR:
         case java.sql.Types.VARCHAR:
+        case java.sql.Types.NVARCHAR:
         case java.sql.Types.LONGVARCHAR: // Character Large Object
           valtype = ValueMetaInterface.TYPE_STRING;
           if ( !ignoreLength ) {
@@ -4367,6 +4368,7 @@ public class ValueMetaBase implements ValueMetaInterface {
           break;
 
         case java.sql.Types.CLOB:
+        case java.sql.Types.NCLOB:
           valtype = ValueMetaInterface.TYPE_STRING;
           length = DatabaseMeta.CLOB_LENGTH;
           isClob = true;
@@ -4484,6 +4486,7 @@ public class ValueMetaBase implements ValueMetaInterface {
               precision = -1;
             }
           }
+          
           break;
 
         case java.sql.Types.TIMESTAMP:
@@ -4576,8 +4579,13 @@ public class ValueMetaBase implements ValueMetaInterface {
           throw new SQLException( e );
         }
       }
-
-      return v;
+      
+      ValueMetaInterface newValueMetaInterface = databaseMeta.getDatabaseInterface().customizeValueFromSQLType( v, rm, index );
+      if( newValueMetaInterface != null ) {
+        return newValueMetaInterface;
+      } else {
+        return v;
+      }
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Error determining value metadata from SQL resultset metadata", e );
     }
