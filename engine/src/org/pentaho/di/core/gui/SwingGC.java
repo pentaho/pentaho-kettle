@@ -104,6 +104,11 @@ public class SwingGC implements GCInterface {
 
   private static SwingUniversalImage imageInject;
 
+  private static SwingUniversalImage defaultArrow;
+  private static SwingUniversalImage okArrow;
+  private static SwingUniversalImage errorArrow;
+  private static SwingUniversalImage disabledArrow;
+
   protected Color background;
 
   protected Color black;
@@ -219,6 +224,11 @@ public class SwingGC implements GCInterface {
     imageBusy = getImageIcon( BasePropertyHandler.getProperty( "Busy_image" ) );
     imageInject = getImageIcon( BasePropertyHandler.getProperty( "Inject_image" ) );
 
+    defaultArrow = getImageIcon( BasePropertyHandler.getProperty( "defaultArrow_image" ) );
+    okArrow = getImageIcon( BasePropertyHandler.getProperty( "okArrow_image" ) );
+    errorArrow = getImageIcon( BasePropertyHandler.getProperty( "errorArrow_image" ) );
+    disabledArrow = getImageIcon( BasePropertyHandler.getProperty( "disabledArrow_image" ) );
+
     fontGraph = new Font( "FreeSans", Font.PLAIN, 10 );
     fontNote = new Font( "FreeSans", Font.PLAIN, 10 );
     fontSmall = new Font( "FreeSans", Font.PLAIN, 8 );
@@ -323,6 +333,12 @@ public class SwingGC implements GCInterface {
     // gc.drawImage(img, locationX+xOffset, locationY+yOffset, observer);
 
   }
+  
+  @Override
+  public void drawImage( EImage image, int x, int y, float magnification, double angle ) {
+    SwingUniversalImage img = getNativeImage( image );
+    drawImage( img, x, y, angle );
+  }
 
   public void drawImage( SwingUniversalImage image, int locationX, int locationY ) {
     if ( isDrawingPixelatedImages() && image.isBitmap()) {
@@ -346,6 +362,33 @@ public class SwingGC implements GCInterface {
       gc.setBackground( Color.white );
       gc.clearRect( locationX, locationY, iconsize, iconsize );
       image.drawToGraphics( gc, locationX, locationY, iconsize, iconsize );
+    }
+  }
+
+  public void drawImage( SwingUniversalImage image, int centerX, int centerY, double angle ) {
+    if ( isDrawingPixelatedImages() && image.isBitmap()) {
+      BufferedImage img =  image.getAsBitmapForSize( iconsize, iconsize, angle );
+      ColorModel cm = img.getColorModel();
+      Raster raster = img.getRaster();
+
+      int offx = centerX + xOffset - img.getWidth() / 2;
+      int offy = centerY + yOffset - img.getHeight() / 2;
+      for ( int x = 0; x < img.getWidth( observer ); x++ ) {
+        for ( int y = 0; y < img.getHeight( observer ); y++ ) {
+          Object pix = raster.getDataElements( x, y, null );
+          gc.setColor( new Color( cm.getRed( pix ), cm.getGreen( pix ), cm.getBlue( pix ), cm.getAlpha( pix ) ) );
+          gc.setStroke( new BasicStroke( 1.0f ) );
+          gc.drawLine(
+              offx + x,
+              offy + y,
+              offx + x + 1,
+              offy + y + 1 );
+        }
+      }
+    } else {
+      gc.setBackground( Color.white );
+      gc.clearRect( centerX, centerY, iconsize, iconsize );
+      image.drawToGraphics( gc, centerX, centerY, iconsize, iconsize, angle );
     }
   }
 
@@ -395,6 +438,14 @@ public class SwingGC implements GCInterface {
         return imageBusy;
       case INJECT:
         return imageInject;
+      case ARROW_DEFAULT:
+        return defaultArrow;
+      case ARROW_OK:
+        return okArrow;
+      case ARROW_ERROR:
+        return errorArrow;
+      case ARROW_DISABLED:
+        return disabledArrow;
       default:
         break;
     }
