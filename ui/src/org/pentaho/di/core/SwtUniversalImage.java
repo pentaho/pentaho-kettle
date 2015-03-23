@@ -22,51 +22,39 @@
 
 package org.pentaho.di.core;
 
-import java.awt.RenderingHints;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.batik.gvt.renderer.ImageRenderer;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.pentaho.di.core.svg.SvgImage;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
 
 /**
  * Universal image storage for SWT processing. It contains SVG or bitmap image depends on file and settings.
  */
-public class SwtUniversalImage {
-  private final SvgImage svg;
-  private final Image bitmap;
+public abstract class SwtUniversalImage {
 
   private Map<String, Image> cache = new TreeMap<String, Image>();
 
-  public SwtUniversalImage( SvgImage svg ) {
-    this.svg = svg;
-    this.bitmap = null;
-  }
+  @Deprecated
+  abstract protected Image renderSimple( Device device );
 
-  public SwtUniversalImage( Image bitmap ) {
-    this.svg = null;
-    this.bitmap = bitmap;
-  }
+  abstract protected Image renderSimple( Device device, int width, int height );
+
+  abstract protected Image renderRotated( Device device, int width, int height, double angleRadians );
 
   public synchronized void dispose() {
     if ( cache == null ) {
       return;
     }
+
     for ( Image img : cache.values() ) {
       if ( !img.isDisposed() ) {
         img.dispose();
       }
-    }
-    if ( bitmap != null && !bitmap.isDisposed() ) {
-      bitmap.dispose();
     }
     cache = null;
   }
@@ -86,89 +74,66 @@ public class SwtUniversalImage {
 
     Image result = cache.get( "" );
 
-    if ( result != null && !result.isDisposed() ) {
-      return result;
+    if ( result == null ) {
+      result = renderSimple( device );
+      cache.put( "", result );
     }
-
-    if ( svg != null ) {
-      result = renderToBitmap( device, svg );
-    } else {
-      result = bitmap;
-    }
-    cache.put( "", result );
     return result;
   }
 
+  /**
+   * Method getAsBitmapForSize(..., angle) can't be called, because it returns bigger picture.
+   */
   public synchronized Image getAsBitmapForSize( Device device, int width, int height ) {
     checkDisposed();
 
     String key = width + "x" + height;
     Image result = cache.get( key );
-    if ( result != null && !result.isDisposed() ) {
-      return result;
+    if ( result == null ) {
+      result = renderSimple( device, width, height );
+      cache.put( key, result );
     }
-
-    if ( svg != null ) {
-      result = renderToBitmap( device, svg, width, height );
-    } else {
-      int xsize = bitmap.getBounds().width;
-      int ysize = bitmap.getBounds().height;
-      result = new Image( device, width, height );
-      GC gc = new GC( result );
-      gc.drawImage( bitmap, 0, 0, xsize, ysize, 0, 0, width, height );
-      gc.dispose();
-    }
-    cache.put( key, result );
     return result;
   }
 
   /**
-   * Convert SVG image to swt Image.
+   * Draw rotated image on double canvas size. It required against lost corners on rotate.
    */
-  private static Image renderToBitmap( Device device, SvgImage svg, PNGTranscoder tr ) {
-    TranscoderInput input = new TranscoderInput( svg.getDocument() );
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    TranscoderOutput output = new TranscoderOutput( out );
-    try {
-      tr.transcode( input, output );
-    } catch ( Exception ex ) {
-      throw new RuntimeException( ex );
+  public synchronized Image getAsBitmapForSize( Device device, int width, int height, double angleRadians ) {
+    checkDisposed();
+
+    int angleDegree = (int) Math.round( Math.toDegrees( angleRadians ) );
+    while ( angleDegree < 0 ) {
+      angleDegree += 360;
+    }
+    angleDegree %= 360;
+    angleRadians = Math.toRadians( angleDegree );
+
+    String key = width + "x" + height + "/" + angleDegree;
+    Image result = cache.get( key );
+    if ( result == null ) {
+      result = renderRotated( device, width, height, angleRadians );
+      cache.put( key, result );
     }
 
-    return new Image( device, new ByteArrayInputStream( out.toByteArray() ) );
-  }
-  
-  /**
-   * Convert SVG image to swt Image.
-   */
-  private static Image renderToBitmap( Device device, SvgImage svg ) {
-    return renderToBitmap( device, svg, getTranscoder() );
+    return result;
   }
 
   /**
-   * Convert SVG image to swt Image with specified size.
+   * Converts BufferedImage to SWT/Image with alpha channel.
    */
-  private static Image renderToBitmap( Device device, SvgImage svg, int width, int height ) {
-    PNGTranscoder tr = getTranscoder();
-    tr.addTranscodingHint( PNGTranscoder.KEY_WIDTH, (float) width );
-    tr.addTranscodingHint( PNGTranscoder.KEY_HEIGHT, (float) height );
-    return renderToBitmap( device, svg, tr );
-  }
-  
-  private static PNGTranscoder getTranscoder() {
-    PNGTranscoder tr = new PNGTranscoder() {
-      protected ImageRenderer createRenderer() {
-        ImageRenderer ir = super.createRenderer();
-        RenderingHints h = ir.getRenderingHints();
-        h.add( new RenderingHints( RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE ) );
-        h.add( new RenderingHints( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON ) );
-        h.add( new RenderingHints( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY ) );
-        h.add( new RenderingHints( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC ) );
-        h.add( new RenderingHints( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE ) );
-        return ir;
+  protected Image swing2swt( Device device, BufferedImage img ) {
+    PaletteData palette = new PaletteData( 0xFF0000, 0xFF00, 0xFF );
+    ImageData data = new ImageData( img.getWidth(), img.getHeight(), 32, palette );
+    for ( int y = 0; y < data.height; y++ ) {
+      for ( int x = 0; x < data.width; x++ ) {
+        int rgba = img.getRGB( x, y );
+        int rgb = palette.getPixel( new RGB( ( rgba >> 16 ) & 0xFF, ( rgba >> 8 ) & 0xFF, rgba & 0xFF ) );
+        int a = ( rgba >> 24 ) & 0xFF;
+        data.setPixel( x, y, rgb );
+        data.setAlpha( x, y, a );
       }
-    };
-    return tr;
+    }
+    return new Image( device, data );
   }
-  
 }

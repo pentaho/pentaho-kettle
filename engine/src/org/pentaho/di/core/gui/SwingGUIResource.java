@@ -33,6 +33,8 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
 import org.pentaho.di.core.SwingUniversalImage;
+import org.pentaho.di.core.SwingUniversalImageBitmap;
+import org.pentaho.di.core.SwingUniversalImageSvg;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -143,7 +145,7 @@ public class SwingGUIResource {
         if ( inputStream != null ) {
           try {
             SvgImage svg = SvgSupport.loadSvgImage( inputStream );
-            image = new SwingUniversalImage( svg );
+            image = new SwingUniversalImageSvg( svg );
           } finally {
             IOUtils.closeQuietly( inputStream );
           }
@@ -182,7 +184,7 @@ public class SwingGUIResource {
             WaitingImageObserver wia = new WaitingImageObserver( bitmap );
             wia.waitImageLoaded();
 
-            image = new SwingUniversalImage( bitmap );
+            image = new SwingUniversalImageBitmap( bitmap );
           } finally {
             IOUtils.closeQuietly( inputStream );
           }

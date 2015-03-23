@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
+import org.pentaho.di.core.SwtUniversalImageBitmap;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
@@ -686,7 +687,7 @@ public class GUIResource {
         gc.drawLine( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         gc.drawLine( ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE );
         gc.dispose();
-        image = new SwtUniversalImage( img );
+        image = new SwtUniversalImageBitmap( img );
       }
 
       // Calculate the smaller version of the image @ 16x16...
@@ -1159,7 +1160,7 @@ public class GUIResource {
         gc.drawLine( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         gc.drawLine( ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE );
         gc.dispose();
-        image = new SwtUniversalImage( img );
+        image = new SwtUniversalImageBitmap( img );
       }
 
       // Calculate the smaller version of the image @ 16x16...
