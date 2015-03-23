@@ -153,9 +153,12 @@ public class SpoonStepsDelegate extends SpoonDelegate {
         if ( !stepname.equals( name ) ) {
           refresh = true;
         }
-
+        
+        StepMeta newStepMeta = (StepMeta) stepMeta.clone();
+        newStepMeta.setName( stepname );
+        transMeta.NotifyAllListeners( stepMeta, newStepMeta );
         stepMeta.setName( stepname );
-
+        
         //
         // OK, so the step has changed...
         // Backup the situation for undo/redo
