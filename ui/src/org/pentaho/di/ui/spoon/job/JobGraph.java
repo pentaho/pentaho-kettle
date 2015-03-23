@@ -2378,7 +2378,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         }
         toolTip.setText( tip.toString() );
         toolTip.hide();
-        toolTip.show( new org.eclipse.swt.graphics.Point( x, y ) );
+        toolTip.show( new org.eclipse.swt.graphics.Point( screenX, screenY ) );
       }
     }
   }
