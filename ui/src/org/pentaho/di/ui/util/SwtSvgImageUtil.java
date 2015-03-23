@@ -32,6 +32,8 @@ import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.SwtUniversalImage;
+import org.pentaho.di.core.SwtUniversalImageBitmap;
+import org.pentaho.di.core.SwtUniversalImageSvg;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.svg.SvgSupport;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -264,11 +266,11 @@ public class SwtSvgImageUtil {
   private static SwtUniversalImage loadImage( Display display, InputStream in, String filename ) {
     if ( !SvgSupport.isSvgName( filename ) ) {
       // bitmap image
-      return new SwtUniversalImage( new Image( display, in ) );
+      return new SwtUniversalImageBitmap( new Image( display, in ) );
     } else {
       // svg image - need to convert to bitmap
       try {
-        return new SwtUniversalImage( SvgSupport.loadSvgImage( in ) );
+        return new SwtUniversalImageSvg( SvgSupport.loadSvgImage( in ) );
       } catch ( Exception ex ) {
         throw new RuntimeException( ex );
       }
