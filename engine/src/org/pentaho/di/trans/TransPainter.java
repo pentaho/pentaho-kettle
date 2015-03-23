@@ -194,6 +194,7 @@ public class TransPainter extends BasePainter {
       drawHop( hi );
     }
 
+    EImage arrow;
     if ( candidate != null ) {
       drawHop( candidate, true );
     } else {
@@ -202,26 +203,29 @@ public class TransPainter extends BasePainter {
         Point to = endHopLocation;
         if ( endHopStep == null ) {
           gc.setForeground( EColor.GRAY );
+          arrow = EImage.ARROW_DISABLED;
         } else {
           gc.setForeground( EColor.BLUE );
+          arrow = EImage.ARROW_DEFAULT;
         }
         Point start = real2screen( fr.x + iconsize / 2, fr.y + iconsize / 2 );
         Point end = real2screen( to.x, to.y );
-        drawArrow(
-          start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopStep, endHopStep == null
-            ? endHopLocation : endHopStep );
+        drawArrow( arrow, start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopStep,
+            endHopStep == null ? endHopLocation : endHopStep );
       } else if ( endHopStep != null && endHopLocation != null ) {
         Point fr = endHopLocation;
         Point to = endHopStep.getLocation();
         if ( startHopStep == null ) {
           gc.setForeground( EColor.GRAY );
+          arrow = EImage.ARROW_DISABLED;
         } else {
           gc.setForeground( EColor.BLUE );
+          arrow = EImage.ARROW_DEFAULT;
         }
         Point start = real2screen( fr.x, fr.y );
         Point end = real2screen( to.x + iconsize / 2, to.y + iconsize / 2 );
-        drawArrow( start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopStep == null
-          ? endHopLocation : startHopStep, endHopStep );
+        drawArrow( arrow, start.x, start.y, end.x, end.y, theta, calcArrowLength(), 1.2, null, startHopStep == null
+            ? endHopLocation : startHopStep, endHopStep );
       }
 
     }
@@ -571,7 +575,7 @@ public class TransPainter extends BasePainter {
       //
       gc.drawLine( point.x + textExtent.x, point.y + textExtent.y / 2, x - iconsize / 2, point.y
         + textExtent.y / 2 );
-      drawArrow(
+      drawArrow( EImage.ARROW_DISABLED,
         x - iconsize / 2, point.y + textExtent.y / 2, x + iconsize / 3, y, Math.toRadians( 15 ), 15, 1.8, null,
         null, null );
 
@@ -606,7 +610,7 @@ public class TransPainter extends BasePainter {
       // This time, we start at the left side...
       //
       gc.drawLine( point.x, point.y + textExtent.y / 2, x + iconsize + iconsize / 2, point.y + textExtent.y / 2 );
-      drawArrow( x + 2 * iconsize / 3, y, x + iconsize + iconsize / 2, point.y + textExtent.y / 2, Math
+      drawArrow( EImage.ARROW_DISABLED, x + 2 * iconsize / 3, y, x + iconsize + iconsize / 2, point.y + textExtent.y / 2, Math
         .toRadians( 15 ), 15, 1.8, null, null, null );
 
       // Add to the list of areas...
@@ -947,19 +951,24 @@ public class TransPainter extends BasePainter {
     ELineStyle linestyle = ELineStyle.SOLID;
     int activeLinewidth = linewidth;
 
+    EImage arrow;
     if ( is_candidate ) {
       col = EColor.BLUE;
+      arrow = EImage.ARROW_DEFAULT;
     } else {
       if ( hi.isEnabled() ) {
         if ( fs.isSendingErrorRowsToStep( ts ) ) {
           col = EColor.RED;
           linestyle = ELineStyle.DOT;
           activeLinewidth = linewidth + 1;
+          arrow = EImage.ARROW_ERROR;
         } else {
           col = EColor.BLACK;
+          arrow = EImage.ARROW_DEFAULT;
         }
       } else {
         col = EColor.GRAY;
+        arrow = EImage.ARROW_DISABLED;
       }
     }
     if ( hi.split ) {
@@ -983,6 +992,7 @@ public class TransPainter extends BasePainter {
             // We do this by drawing an error icon over the hop...
             //
             col = EColor.RED;
+            arrow = EImage.ARROW_ERROR;
           }
         }
       }
@@ -992,7 +1002,7 @@ public class TransPainter extends BasePainter {
     gc.setLineStyle( linestyle );
     gc.setLineWidth( activeLinewidth );
 
-    drawArrow( line, hi, fs, ts );
+    drawArrow( arrow, line, hi, fs, ts );
 
     if ( hi.split ) {
       gc.setLineWidth( linewidth );
@@ -1016,22 +1026,17 @@ public class TransPainter extends BasePainter {
     return new int[] { x1, y1, x2, y2 };
   }
 
-  private void drawArrow( int[] line, TransHopMeta transHop, Object startObject, Object endObject ) {
+  private void drawArrow( EImage arrow, int[] line, TransHopMeta transHop, Object startObject, Object endObject ) {
     Point screen_from = real2screen( line[0], line[1] );
     Point screen_to = real2screen( line[2], line[3] );
 
-    drawArrow(
-      screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, calcArrowLength(), -1, transHop,
-      startObject, endObject );
+    drawArrow( arrow, screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, calcArrowLength(), -1, transHop,
+        startObject, endObject );
   }
 
-  private void drawArrow( int x1, int y1, int x2, int y2, double theta, int size, double factor,
-    TransHopMeta transHop, Object startObject, Object endObject ) {
+  private void drawArrow( EImage arrow, int x1, int y1, int x2, int y2, double theta, int size, double factor,
+      TransHopMeta transHop, Object startObject, Object endObject ) {
     int mx, my;
-    int x3;
-    int y3;
-    int x4;
-    int y4;
     int a, b, dist;
     double angle;
 
@@ -1062,15 +1067,7 @@ public class TransPainter extends BasePainter {
     // calculate points for arrowhead
     angle = Math.atan2( y2 - y1, x2 - x1 ) + Math.PI;
 
-    x3 = (int) ( mx + Math.cos( angle - theta ) * size );
-    y3 = (int) ( my + Math.sin( angle - theta ) * size );
-
-    x4 = (int) ( mx + Math.cos( angle + theta ) * size );
-    y4 = (int) ( my + Math.sin( angle + theta ) * size );
-
-    gc.switchForegroundBackgroundColors();
-    gc.fillPolygon( new int[] { mx, my, x3, y3, x4, y4 } );
-    gc.switchForegroundBackgroundColors();
+    gc.drawImage( arrow, mx, my, magnification, angle - Math.PI / 2 );
 
     if ( startObject instanceof StepMeta && endObject instanceof StepMeta ) {
       factor = 0.8;

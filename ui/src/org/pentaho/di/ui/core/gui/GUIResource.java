@@ -228,6 +228,11 @@ public class GUIResource {
   private SwtUniversalImage imageTransTree;
 
   private SwtUniversalImage imageJobTree;
+
+  private SwtUniversalImage defaultArrow;
+  private SwtUniversalImage okArrow;
+  private SwtUniversalImage errorArrow;
+  private SwtUniversalImage disabledArrow;
   
   private Image imageUser;
 
@@ -591,6 +596,11 @@ public class GUIResource {
       imageAddSingle.dispose();
       imageRemoveAll.dispose();
       imageRemoveSingle.dispose();
+
+      defaultArrow.dispose();
+      okArrow.dispose();
+      errorArrow.dispose();
+      disabledArrow.dispose();
 
       disposeImage( imageNoteSmall );
       disposeImage( imageColor );
@@ -1121,6 +1131,18 @@ public class GUIResource {
     imageColumnSmall =
         loadAsResource( display, BasePropertyHandler.getProperty( "ColumnSmall_image" ), ConstUI.SMALL_ICON_SIZE );
 
+    defaultArrow =
+        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
+            .getProperty( "defaultArrow_image" ) );
+    okArrow =
+        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
+            .getProperty( "okArrow_image" ) );
+    errorArrow =
+        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
+            .getProperty( "errorArrow_image" ) );
+    disabledArrow =
+        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
+            .getProperty( "disabledArrow_image" ) );
   }
 
   /**
@@ -2322,4 +2344,19 @@ public class GUIResource {
     return imageRemoveSingle;
   }
 
+  public SwtUniversalImage getDefaultArrow() {
+    return defaultArrow;
+  }
+
+  public SwtUniversalImage getOkArrow() {
+    return okArrow;
+  }
+
+  public SwtUniversalImage getErrorArrow() {
+    return errorArrow;
+  }
+
+  public SwtUniversalImage getDisabledArrow() {
+    return disabledArrow;
+  }
 }
