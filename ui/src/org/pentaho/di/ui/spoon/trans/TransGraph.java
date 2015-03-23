@@ -223,6 +223,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   private static final String XUL_FILE_TRANS_TOOLBAR = "ui/trans-toolbar.xul";
 
   private static final String LOAD_TAB = "loadTab";
+  
+  private static final String PREVIEW_TRANS = "previewTrans";
 
   public static final String START_TEXT = BaseMessages.getString( PKG, "TransLog.Button.StartTransformation" );
 
@@ -3787,6 +3789,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         trans.prepareExecution( args );
         trans.setRepository( spoon.rep );
 
+        List<SpoonUiExtenderPluginInterface> relevantExtenders =
+            SpoonUiExtenderPluginType.getInstance().getRelevantExtenders(
+                TransDebugMeta.class, PREVIEW_TRANS );
+        for ( SpoonUiExtenderPluginInterface relevantExtender : relevantExtenders ) {
+          relevantExtender.uiEvent( transDebugMeta, PREVIEW_TRANS );
+        }
         // Add the row listeners to the allocated threads
         //
         transDebugMeta.addRowListenersToTransformation( trans );
