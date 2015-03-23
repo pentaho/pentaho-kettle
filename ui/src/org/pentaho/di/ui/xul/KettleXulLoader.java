@@ -33,6 +33,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.SwtUniversalImage;
+import org.pentaho.di.core.SwtUniversalImageSvg;
 import org.pentaho.di.core.svg.SvgImage;
 import org.pentaho.di.core.svg.SvgSupport;
 import org.pentaho.ui.xul.XulException;
@@ -62,7 +63,7 @@ public class KettleXulLoader extends SwtXulLoader {
           try {
             // load SVG
             SvgImage svg = SvgSupport.loadSvgImage( in );
-            SwtUniversalImage image = new SwtUniversalImage( svg );
+            SwtUniversalImage image = new SwtUniversalImageSvg( svg );
 
             Display d = Display.getCurrent() != null ? Display.getCurrent() : Display.getDefault();
             // write to png

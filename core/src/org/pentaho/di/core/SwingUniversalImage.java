@@ -22,115 +22,104 @@
 
 package org.pentaho.di.core;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Dimension2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.Map;
 import java.util.TreeMap;
-
-import javax.imageio.ImageIO;
-
-import org.apache.batik.bridge.BridgeContext;
-import org.apache.batik.bridge.DocumentLoader;
-import org.apache.batik.bridge.GVTBuilder;
-import org.apache.batik.bridge.UserAgentAdapter;
-import org.apache.batik.gvt.GraphicsNode;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.pentaho.di.core.svg.SvgImage;
 
 /**
  * Universal image storage for Swing processing. It contains SVG or bitmap image depends on file and settings.
  */
-public class SwingUniversalImage {
-  private final SvgImage svg;
-  private GraphicsNode svgGraphicsNode;
-  private Dimension2D svgGraphicsSize;
-  private final BufferedImage bitmap;
+public abstract class SwingUniversalImage {
 
   private Map<String, BufferedImage> cache = new TreeMap<String, BufferedImage>();
 
-  public SwingUniversalImage( SvgImage svg ) {
-    this.svg = svg;
-    this.bitmap = null;
-  }
+  abstract public boolean isBitmap();
 
-  public SwingUniversalImage( BufferedImage bitmap ) {
-    this.svg = null;
-    this.bitmap = bitmap;
-  }
+  /**
+   * Just scale for area's size.
+   */
+  abstract protected void renderSimple( BufferedImage area );
 
-  public boolean isBitmap() {
-    return bitmap != null;
-  }
+  /**
+   * Render with scale, at specified position, with possible rotation.
+   */
+  abstract protected void render( Graphics2D gc, int centerX, int centerY, int width, int height, double angleRadians );
 
+  /**
+   * Get scaled image.
+   */
   public synchronized BufferedImage getAsBitmapForSize( int width, int height ) {
     String key = width + "x" + height;
     BufferedImage result = cache.get( key );
-    if ( result != null ) {
-      return result;
+    if ( result == null ) {
+      result = createBitmap( width, height );
+      renderSimple( result );
+      cache.put( key, result );
     }
-
-    if ( svg != null ) {
-      result = renderToBitmap( svg, width, height );
-    } else {
-      result = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-
-      Graphics g = result.createGraphics();
-      g.drawImage( bitmap, 0, 0, width, height, null );
-      g.dispose();
-    }
-    cache.put( key, result );
     return result;
   }
 
-  public synchronized void drawImageTo( Graphics2D gc, int locationX, int locationY, int width, int height ) {
-    if ( bitmap != null ) {
-      // bitmap image
-      gc.drawImage( bitmap, locationX, locationY, width, height, null );
-    } else {
-      if ( svgGraphicsNode == null ) {
-        // get GraphicsNode and size from svg document
-        UserAgentAdapter userAgentAdapter = new UserAgentAdapter();
-        DocumentLoader documentLoader = new DocumentLoader( userAgentAdapter );
-        BridgeContext ctx = new BridgeContext( userAgentAdapter, documentLoader );
-        GVTBuilder builder = new GVTBuilder();
-        svgGraphicsNode = builder.build( ctx, svg.getDocument() );
-        svgGraphicsSize = ctx.getDocumentSize();
-      }
-
-      double scaleX = width / svgGraphicsSize.getWidth();
-      double scaleY = height / svgGraphicsSize.getHeight();
-      AffineTransform affineTransform = new AffineTransform( scaleX, 0.0, 0.0, scaleY, locationX, locationY );
-      svgGraphicsNode.setTransform( affineTransform );
-      svgGraphicsNode.paint( gc );
+  /**
+   * Draw rotated image on double canvas size. It required against lost corners on rotate.
+   */
+  public synchronized BufferedImage getAsBitmapForSize( int width, int height, double angleRadians ) {
+    int angleDegree = (int) Math.round( Math.toDegrees( angleRadians ) );
+    while ( angleDegree < 0 ) {
+      angleDegree += 360;
     }
+    angleDegree %= 360;
+    angleRadians = Math.toRadians( angleDegree );
+
+    String key = width + "x" + height + "/" + Integer.toString( angleDegree );
+    BufferedImage result = cache.get( key );
+    if ( result == null ) {
+      result = createDoubleBitmap( width, height );
+
+      Graphics2D gc = createGraphics( result );
+      render( gc, result.getWidth() / 2, result.getHeight() / 2, width, height, angleRadians );
+      gc.dispose();
+
+      cache.put( key, result );
+    }
+    return result;
+  }
+
+  public synchronized void drawToGraphics( Graphics2D gc, int locationX, int locationY, int width, int height ) {
+    render( gc, locationX + width / 2, locationY + height / 2, width, height, 0 );
+  }
+
+  public synchronized void drawToGraphics( Graphics2D gc, int centerX, int centerY, int width, int height,
+      double angleRadians ) {
+    render( gc, centerX, centerY, width, height, angleRadians );
   }
 
   /**
-   * Convert SVG image to swt Image with specified size. TODO: change to GVTBuilder rendering.
+   * Create bitmap with specified size and full colorspace.
    */
-  private static BufferedImage renderToBitmap( SvgImage svg, int width, int height ) {
-    PNGTranscoder tr = new PNGTranscoder();
-    tr.addTranscodingHint( PNGTranscoder.KEY_WIDTH, (float) width );
-    tr.addTranscodingHint( PNGTranscoder.KEY_HEIGHT, (float) height );
+  public static BufferedImage createBitmap( int width, int height ) {
+    return new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+  }
 
-    TranscoderInput input = new TranscoderInput( svg.getDocument() );
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    TranscoderOutput output = new TranscoderOutput( out );
-    try {
-      tr.transcode( input, output );
+  /**
+   * Create bitmap with double of specified size and full colorspace. Used for rotated images.
+   */
+  public static BufferedImage createDoubleBitmap( int width, int height ) {
+    int sz = Math.max( width, height ) * 2;
+    return new BufferedImage( sz, sz, BufferedImage.TYPE_INT_ARGB );
+  }
 
-      return ImageIO.read( new ByteArrayInputStream( out.toByteArray() ) );
-    } catch ( Exception ex ) {
-      throw new RuntimeException( ex );
-    }
+  /**
+   * Create Graphics2D for specified bitmap with rendering hints.
+   */
+  public static Graphics2D createGraphics( BufferedImage area ) {
+    Graphics2D gc = (Graphics2D) area.getGraphics();
+    gc.setRenderingHint( RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE );
+    gc.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+    gc.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
+    gc.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
+    gc.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
+    return gc;
   }
 }

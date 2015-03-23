@@ -47,6 +47,8 @@ import org.apache.commons.io.IOUtils;
 import org.jfree.text.TextUtilities;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwingUniversalImage;
+import org.pentaho.di.core.SwingUniversalImageBitmap;
+import org.pentaho.di.core.SwingUniversalImageSvg;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.svg.SvgImage;
 import org.pentaho.di.core.svg.SvgSupport;
@@ -255,7 +257,7 @@ public class SwingGC implements GCInterface {
       if ( inputStream != null ) {
         try {
           SvgImage svg = SvgSupport.loadSvgImage( inputStream );
-          image = new SwingUniversalImage( svg );
+          image = new SwingUniversalImageSvg( svg );
         } catch ( Exception ex ) {
           throw new KettleException( "Unable to load image from classpath : '" + fileName + "'", ex );
         } finally {
@@ -290,7 +292,7 @@ public class SwingGC implements GCInterface {
           WaitingImageObserver wia = new WaitingImageObserver( bitmap );
           wia.waitImageLoaded();
 
-          image = new SwingUniversalImage( bitmap );
+          image = new SwingUniversalImageBitmap( bitmap );
         } catch ( Exception ex ) {
           throw new KettleException( "Unable to load image from classpath : '" + fileName + "'", ex );
         } finally {
@@ -343,7 +345,7 @@ public class SwingGC implements GCInterface {
     } else {
       gc.setBackground( Color.white );
       gc.clearRect( locationX, locationY, iconsize, iconsize );
-      image.drawImageTo( gc, locationX, locationY, iconsize, iconsize );
+      image.drawToGraphics( gc, locationX, locationY, iconsize, iconsize );
     }
   }
 
