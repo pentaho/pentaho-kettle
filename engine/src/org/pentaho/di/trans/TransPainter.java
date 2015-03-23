@@ -954,16 +954,16 @@ public class TransPainter extends BasePainter {
     EImage arrow;
     if ( is_candidate ) {
       col = EColor.BLUE;
-      arrow = EImage.ARROW_DEFAULT;
+      arrow = EImage.ARROW_CANDIDATE;
     } else {
       if ( hi.isEnabled() ) {
         if ( fs.isSendingErrorRowsToStep( ts ) ) {
           col = EColor.RED;
-          linestyle = ELineStyle.DOT;
+          linestyle = ELineStyle.DASH;
           activeLinewidth = linewidth + 1;
           arrow = EImage.ARROW_ERROR;
         } else {
-          col = EColor.BLACK;
+          col = EColor.HOP_DEFAULT;
           arrow = EImage.ARROW_DEFAULT;
         }
       } else {
@@ -1128,7 +1128,7 @@ public class TransPainter extends BasePainter {
 
       if ( errorHop ) {
         Point bounds = gc.getImageBounds( EImage.COPY_ROWS, magnification );
-        gc.drawImage( EImage.ERROR, mx, my, magnification );
+        gc.drawImage( EImage.FALSE, mx, my, magnification );
         if ( !shadow ) {
           areaOwners.add( new AreaOwner( AreaType.HOP_ERROR_ICON, mx, my, bounds.x, bounds.y, offset, fs, ts ) );
         }

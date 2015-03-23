@@ -466,18 +466,19 @@ public class JobPainter extends BasePainter {
     EImage arrow;
     if ( is_candidate ) {
       col = EColor.BLUE;
-      arrow = EImage.ARROW_DEFAULT;
+      arrow = EImage.ARROW_CANDIDATE;
     } else if ( jobHop.isEnabled() ) {
       if ( jobHop.isUnconditional() ) {
-        col = EColor.BLACK;
+        col = EColor.HOP_DEFAULT;
         arrow = EImage.ARROW_DEFAULT;
       } else {
         if ( jobHop.getEvaluation() ) {
-          col = EColor.GREEN;
+          col = EColor.HOP_OK;
           arrow = EImage.ARROW_OK;
         } else {
           col = EColor.RED;
           arrow = EImage.ARROW_ERROR;
+          gc.setLineStyle( ELineStyle.DASH );
         }
       }
     } else {
