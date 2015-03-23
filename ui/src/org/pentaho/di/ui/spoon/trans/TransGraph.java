@@ -2804,6 +2804,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           }
           tipImage = GUIResource.getInstance().getImageInject();
           break;
+        case STEP_MENU_ICON:
+          tip.append( BaseMessages.getString( PKG, "TransGraph.ShowMenu.Tooltip" ) );
+          tipImage = GUIResource.getInstance().getImageContextMenu();
+          break;
         default:
           break;
 
@@ -2856,7 +2860,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       }
       toolTip.setText( newTip );
       toolTip.hide();
-      toolTip.show( new org.eclipse.swt.graphics.Point( x, y ) );
+      toolTip.show( new org.eclipse.swt.graphics.Point( screenX, screenY ) );
     }
 
     return subject;
