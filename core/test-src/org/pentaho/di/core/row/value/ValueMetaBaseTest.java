@@ -28,6 +28,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.apache.commons.lang.SystemUtils.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -178,7 +183,7 @@ public class ValueMetaBaseTest {
     final int expectedVarBinarylength = 80;
 
     ValueMetaBase obj = new ValueMetaBase();
-    DatabaseMeta dbMeta = Mockito.spy( new DatabaseMeta() );
+    DatabaseMeta dbMeta = spy( new DatabaseMeta() );
     DatabaseInterface databaseInterface = new Vertica5DatabaseMeta();
     dbMeta.setDatabaseInterface( databaseInterface );
 
@@ -212,6 +217,23 @@ public class ValueMetaBaseTest {
     assertTrue( expectedVarBinarylength == varbinaryValueMeta.getLength() );
     assertFalse( varbinaryValueMeta.isLargeTextField() );
 
+  }
+  
+  @Test
+  public void testGetValueFromSQLTypeTypeOverride() throws Exception {
+    final int varbinaryColumnIndex = 2;
+    
+    ValueMetaBase valueMetaBase = new ValueMetaBase(),
+        valueMetaBaseSpy = spy( valueMetaBase );
+    DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
+    DatabaseInterface databaseInterface = Mockito.mock( DatabaseInterface.class );
+    doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface( );
+
+    ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
+    valueMetaBaseSpy.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
+
+    verify( databaseInterface, Mockito.times( 1 ) ).customizeValueFromSQLType( any( ValueMetaInterface.class),
+        any( ResultSetMetaData.class ), anyInt() );
   }
 
   @Test
