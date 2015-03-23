@@ -70,6 +70,8 @@ public class SWTDirectGC implements GCInterface {
   protected Color darkGray;
   protected Color lightBlue;
   protected Color crystal;
+  protected Color hopDefault;
+  protected Color hopOK;
 
   private GC gc;
 
@@ -110,6 +112,8 @@ public class SWTDirectGC implements GCInterface {
     this.darkGray = GUIResource.getInstance().getColorDarkGray();
     this.lightBlue = GUIResource.getInstance().getColorLightBlue();
     this.crystal = GUIResource.getInstance().getColorCrystalTextPentaho();
+    this.hopDefault = GUIResource.getInstance().getColorHopDefault();
+    this.hopOK = GUIResource.getInstance().getColorHopOK();
   }
 
   public void dispose() {
@@ -198,6 +202,8 @@ public class SWTDirectGC implements GCInterface {
         return GUIResource.getInstance().getErrorArrow();
       case ARROW_DISABLED:
         return GUIResource.getInstance().getDisabledArrow();
+      case ARROW_CANDIDATE:
+        return GUIResource.getInstance().getCandidateArrow();
       default:
         break;
     }
@@ -295,6 +301,10 @@ public class SWTDirectGC implements GCInterface {
         return lightBlue;
       case CRYSTAL:
         return crystal;
+      case HOP_DEFAULT:
+        return hopDefault;
+      case HOP_OK:
+        return hopOK;
       default:
         break;
     }
@@ -314,7 +324,6 @@ public class SWTDirectGC implements GCInterface {
         break;
       default:
         break;
-
     }
   }
 
@@ -332,6 +341,9 @@ public class SWTDirectGC implements GCInterface {
         break;
       case DOT:
         gc.setLineStyle( SWT.LINE_DOT );
+        break;
+      case DASH:
+        gc.setLineStyle( SWT.LINE_DASH );
         break;
       case PARALLEL:
         gc.setLineAttributes( new LineAttributes(
