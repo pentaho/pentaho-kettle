@@ -238,53 +238,14 @@ public class JobPainter extends BasePainter {
     gc.fillRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1 );
     gc.drawJobEntryIcon( x, y, jobEntryCopy, magnification );
     
-    if ( activeJobEntries != null && activeJobEntries.contains( jobEntryCopy ) ) {
-      gc.setForeground( EColor.BLUE );
-      int iconX = x + iconsize - 7;
-      int iconY = y - 7;
-      gc.drawImage( EImage.BUSY, iconX, iconY, magnification );
+    if ( !shadow ) {
       areaOwners.add( new AreaOwner(
-        AreaType.JOB_ENTRY_BUSY, iconX, iconY, iconsize, iconsize, offset, subject, jobEntryCopy ) );
-    } else {
-      gc.setForeground( EColor.BLACK );
-    }
-
-    JobEntryResult jobEntryResult = findJobEntryResult( jobEntryCopy );
-    if ( jobEntryResult != null ) {
-      Result result = jobEntryResult.getResult();
-      int iconX = x + iconsize - 7;
-      int iconY = y - 7;
-
-      // Draw an execution result on the top right corner...
-      //
-      if ( jobEntryResult.isCheckpoint() ) {
-        gc.drawImage( EImage.CHECKPOINT, iconX, iconY, magnification );
-        areaOwners.add( new AreaOwner(
-          AreaType.JOB_ENTRY_RESULT_CHECKPOINT, iconX, iconY, iconsize, iconsize, offset, jobEntryCopy,
-          jobEntryResult ) );
-      } else {
-        if ( result.getResult() ) {
-          gc.drawImage( EImage.TRUE, iconX, iconY, magnification );
-          areaOwners.add( new AreaOwner(
-            AreaType.JOB_ENTRY_RESULT_SUCCESS, iconX, iconY, iconsize, iconsize, offset, jobEntryCopy,
-            jobEntryResult ) );
-        } else {
-          gc.drawImage( EImage.FALSE, x + iconsize, y - 5, magnification );
-          areaOwners.add( new AreaOwner(
-            AreaType.JOB_ENTRY_RESULT_FAILURE, iconX, iconY, iconsize, iconsize, offset, jobEntryCopy,
-            jobEntryResult ) );
-        }
-      }
+        AreaType.JOB_ENTRY_ICON, x, y, iconsize, iconsize, offset, subject, jobEntryCopy ) );
     }
 
     gc.setForeground( EColor.CRYSTAL );
     gc.drawRoundRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1, 7, 7 );
     Point textsize = new Point( gc.textExtent( "" + name ).x, gc.textExtent( "" + name ).y );
-
-    if ( !shadow ) {
-      areaOwners.add( new AreaOwner(
-        AreaType.JOB_ENTRY_ICON, x, y, iconsize, iconsize, offset, subject, jobEntryCopy ) );
-    }
 
     gc.setBackground( EColor.BACKGROUND );
     gc.setLineWidth( 1 );
@@ -294,7 +255,46 @@ public class JobPainter extends BasePainter {
 
     gc.setForeground( EColor.BLACK );
     gc.drawText( name, xpos, ypos, true );
+    
+    if ( activeJobEntries != null && activeJobEntries.contains( jobEntryCopy ) ) {
+      gc.setForeground( EColor.BLUE );
+      int iconX = ( x + iconsize ) - ( MINI_ICON_SIZE / 2 );
+      int iconY = y - ( MINI_ICON_SIZE / 2 );
+      gc.drawImage( EImage.BUSY, iconX, iconY, magnification );
+      areaOwners.add( new AreaOwner(
+        AreaType.JOB_ENTRY_BUSY, iconX, iconY, MINI_ICON_SIZE, MINI_ICON_SIZE, offset, subject, jobEntryCopy ) );
+    } else {
+      gc.setForeground( EColor.BLACK );
+    }
 
+    JobEntryResult jobEntryResult = findJobEntryResult( jobEntryCopy );
+    if ( jobEntryResult != null ) {
+      Result result = jobEntryResult.getResult();
+      int iconX = ( x + iconsize ) - ( MINI_ICON_SIZE / 2 );
+      int iconY = y - ( MINI_ICON_SIZE / 2 );
+
+      // Draw an execution result on the top right corner...
+      //
+      if ( jobEntryResult.isCheckpoint() ) {
+        gc.drawImage( EImage.CHECKPOINT, iconX, iconY, magnification );
+        areaOwners.add( new AreaOwner(
+          AreaType.JOB_ENTRY_RESULT_CHECKPOINT, iconX, iconY, MINI_ICON_SIZE, MINI_ICON_SIZE, offset, jobEntryCopy,
+          jobEntryResult ) );
+      } else {
+        if ( result.getResult() ) {
+          gc.drawImage( EImage.TRUE, iconX, iconY, magnification );
+          areaOwners.add( new AreaOwner(
+            AreaType.JOB_ENTRY_RESULT_SUCCESS, iconX, iconY, MINI_ICON_SIZE, MINI_ICON_SIZE, offset, jobEntryCopy,
+            jobEntryResult ) );
+        } else {
+          gc.drawImage( EImage.FALSE, iconX, iconY, magnification );
+          areaOwners.add( new AreaOwner(
+            AreaType.JOB_ENTRY_RESULT_FAILURE, iconX, iconY, MINI_ICON_SIZE, MINI_ICON_SIZE, offset, jobEntryCopy,
+            jobEntryResult ) );
+        }
+      }
+    }
+    
     // Optionally drawn the mouse-over information
     //
     if ( mouseOverEntries.contains( jobEntryCopy ) ) {
