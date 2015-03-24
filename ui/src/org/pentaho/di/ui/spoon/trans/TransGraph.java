@@ -141,6 +141,7 @@ import org.pentaho.di.trans.TransPainter;
 import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
+import org.pentaho.di.trans.debug.TransDebugMetaWrapper;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.RowDistributionInterface;
 import org.pentaho.di.trans.step.RowDistributionPluginType;
@@ -3791,9 +3792,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
         List<SpoonUiExtenderPluginInterface> relevantExtenders =
             SpoonUiExtenderPluginType.getInstance().getRelevantExtenders(
-                TransDebugMeta.class, PREVIEW_TRANS );
+                TransDebugMetaWrapper.class, PREVIEW_TRANS );
+        TransDebugMetaWrapper transDebugMetaWrapper = new TransDebugMetaWrapper( trans, transDebugMeta );
         for ( SpoonUiExtenderPluginInterface relevantExtender : relevantExtenders ) {
-          relevantExtender.uiEvent( transDebugMeta, PREVIEW_TRANS );
+          relevantExtender.uiEvent( transDebugMetaWrapper, PREVIEW_TRANS );
         }
         // Add the row listeners to the allocated threads
         //
