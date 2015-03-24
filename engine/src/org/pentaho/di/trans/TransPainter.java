@@ -499,7 +499,7 @@ public class TransPainter extends BasePainter {
 
       for ( StepInterface step : steps ) {
         if ( step.getStatus().equals( StepExecutionStatus.STATUS_FINISHED ) ) {
-          gc.drawImage( EImage.TRUE, x + iconsize - 7, y - 7, magnification );
+          gc.drawImage( EImage.TRUE, ( x + iconsize ) - ( MINI_ICON_SIZE / 2 ), y - ( MINI_ICON_SIZE / 2 ), magnification );
         }
       }
 
@@ -743,8 +743,8 @@ public class TransPainter extends BasePainter {
 
       // Show an error lines icon in the lower right corner of the step...
       //
-      int xError = x + iconsize - 5;
-      int yError = y + iconsize - 5;
+      int xError = ( x + iconsize ) - ( MINI_ICON_SIZE / 2 );
+      int yError = ( y + iconsize ) - ( MINI_ICON_SIZE / 2 );
       Point ib = gc.getImageBounds( EImage.STEP_ERROR, magnification );
       gc.drawImage( EImage.STEP_ERROR, xError, yError, magnification );
       if ( !shadow ) {
