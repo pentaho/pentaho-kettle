@@ -823,11 +823,12 @@ public class PropsUI extends Props {
   }
 
   public boolean isAntiAliasingEnabled() {
-    return true;
+    String anti = properties.getProperty( STRING_ANTI_ALIASING, YES );
+    return YES.equalsIgnoreCase( anti ); // Default: don't do anti-aliasing
   }
 
   public void setAntiAliasingEnabled( boolean anti ) {
-    // no-op, let's not change API for now
+    properties.setProperty( STRING_ANTI_ALIASING, anti ? YES : NO );
   }
 
   public boolean showExitWarning() {
