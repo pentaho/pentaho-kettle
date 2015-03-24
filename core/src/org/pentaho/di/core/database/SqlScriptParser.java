@@ -116,7 +116,13 @@ public class SqlScriptParser {
           }
           break;
         case STRING:
-          if ( ch == currentStringChar ) {
+          if ( ch == '\\' && nextCh == currentStringChar ) {
+            /*
+             * The user is hard-coding a quote character into the string.
+             * Pass the hard-coded quote character through, and skip over the quote on next loop
+             */
+            i++;
+          } else if ( ch == currentStringChar ) {
             mode = MODE.SQL;
           }
           break;
@@ -193,7 +199,16 @@ public class SqlScriptParser {
           }
           break;
         case STRING:
-          if ( ch == currentStringChar ) {
+          if ( ch == '\\' && nextCh == currentStringChar ) {
+            /*
+             * The user is hard-coding a quote character into the string.
+             * Pass the hard-coded quote character through, and skip over the quote on next loop
+             */
+            result.append( ch );
+            result.append( nextCh );
+            ch = 0;
+            i++;
+          } else if ( ch == currentStringChar ) {
             mode = MODE.SQL;
           }
           break;
