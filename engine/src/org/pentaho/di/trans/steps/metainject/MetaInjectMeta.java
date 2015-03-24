@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -44,11 +45,13 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -59,7 +62,7 @@ import org.w3c.dom.Node;
  * @version 3.0
  */
 
-public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
+public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, StepMetaChangeListenerInterface  {
 
   private static Class<?> PKG = MetaInjectMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -630,4 +633,25 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface {
     this.sourceOutputFields = sourceOutputFields;
   }
 
+  @Override
+  public void onStepChange( TransMeta transMeta, StepMeta oldMeta, StepMeta newMeta ) {
+    for ( int i = 0; i < transMeta.nrTransHops(); i++ ) {
+      TransHopMeta hopMeta = transMeta.getTransHop( i );
+      if ( hopMeta.getFromStep().equals( oldMeta ) ) {
+        StepMeta toStepMeta = hopMeta.getToStep();
+        if ( ( toStepMeta.getStepMetaInterface() instanceof MetaInjectMeta )
+            && ( toStepMeta.equals( this.getParentStepMeta() ) ) ) {
+          MetaInjectMeta toMeta = (MetaInjectMeta) toStepMeta.getStepMetaInterface();
+          Map<TargetStepAttribute, SourceStepField> sourceMapping = toMeta.getTargetSourceMapping();
+          for ( Entry<TargetStepAttribute, SourceStepField> entry : sourceMapping.entrySet() ) {
+            SourceStepField value = entry.getValue();
+            if ( value.getStepname().equals( oldMeta.getName() ) ) {
+              value.setStepname( newMeta.getName() );
+            }
+          }
+        }
+      }
+    }
+  }
+  
 }
