@@ -1936,6 +1936,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     ToolBar treeTb = new ToolBar( mainComposite, SWT.HORIZONTAL | SWT.FLAT );
     treeTb.setBackground( GUIResource.getInstance().getColorDemoGray() );
+    props.setLook( treeTb, Props.WIDGET_STYLE_TOOLBAR );
     /*
     This contains a map with all the unnamed transformation (just a filename)
    */
