@@ -1065,9 +1065,19 @@ public class TransPainter extends BasePainter {
     my = (int) ( y1 + factor * ( y2 - y1 ) / 2 );
 
     // calculate points for arrowhead
-    angle = Math.atan2( y2 - y1, x2 - x1 ) + Math.PI;
+    // calculate points for arrowhead
+    angle = Math.atan2( y2 - y1, x2 - x1 ) + ( Math.PI / 2 );
 
-    gc.drawImage( arrow, mx, my, magnification, angle - Math.PI / 2 );
+    boolean q1 = Math.toDegrees( angle ) >= 0 && Math.toDegrees( angle ) <= 90;
+    boolean q2 = Math.toDegrees( angle ) > 90 && Math.toDegrees( angle ) <= 180;
+    boolean q3 = Math.toDegrees( angle ) > 180 && Math.toDegrees( angle ) <= 270;
+    boolean q4 = Math.toDegrees( angle ) > 270 || Math.toDegrees( angle ) < 0;
+
+    if ( q1 || q3 ) {
+      gc.drawImage( arrow, mx+1, my, magnification, angle );
+    } else if ( q2 || q4 ) {
+      gc.drawImage( arrow, mx, my, magnification, angle );
+    }
 
     if ( startObject instanceof StepMeta && endObject instanceof StepMeta ) {
       factor = 0.8;
