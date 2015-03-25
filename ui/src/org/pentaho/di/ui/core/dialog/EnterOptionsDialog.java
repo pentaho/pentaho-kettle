@@ -1356,7 +1356,8 @@ public class EnterOptionsDialog extends Dialog {
     props.setLook( wClearCustom );
 
     FormData fdClearCustom = layoutResetOptionButton( wClearCustom );
-    fdClearCustom.height = fdClearCustom.height + 12;
+    fdClearCustom.width = fdClearCustom.width + 6;
+    fdClearCustom.height = fdClearCustom.height + 18;
     fdClearCustom.left = new FormAttachment( middle, 0 );
     fdClearCustom.top = new FormAttachment( wExitWarning, margin );
     wClearCustom.setLayoutData( fdClearCustom );
