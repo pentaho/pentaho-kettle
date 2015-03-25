@@ -67,7 +67,7 @@ public class BasePainter {
   protected float translationX;
   protected float translationY;
   protected boolean shadow;
-
+  
   protected Object subject;
 
   protected GCInterface gc;
