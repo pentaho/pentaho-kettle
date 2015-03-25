@@ -77,6 +77,7 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.ImageTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -138,7 +139,6 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.changed.PDIObserver;
-import org.pentaho.di.core.clipboard.ImageDataTransfer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleAuthException;
@@ -7576,7 +7576,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     Point area = transMeta.getMaximum();
     Image image = transGraph.getTransformationImage( Display.getCurrent(), area.x, area.y, 1.0f );
     clipboard.setContents(
-      new Object[] { image.getImageData() }, new Transfer[] { ImageDataTransfer.getInstance() } );
+      new Object[] { image.getImageData() }, new Transfer[] { ImageTransfer.getInstance() } );
   }
 
   /**
