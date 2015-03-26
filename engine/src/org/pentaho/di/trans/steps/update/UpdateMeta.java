@@ -787,11 +787,11 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
 
             // Key lookup dimensions...
             if ( idx_fields != null
-              && idx_fields.length > 0 && !db.checkIndexExists( schemaName, tableName, idx_fields ) ) {
+              && idx_fields.length > 0 && !db.checkIndexExists( schemaTable, idx_fields ) ) {
               String indexname = "idx_" + tableName + "_lookup";
               cr_index =
                 db.getCreateIndexStatement(
-                  schemaName, tableName, indexname, idx_fields, false, false, false, true );
+                  schemaTable, indexname, idx_fields, false, false, false, true );
             }
 
             String sql = cr_table + cr_index;
