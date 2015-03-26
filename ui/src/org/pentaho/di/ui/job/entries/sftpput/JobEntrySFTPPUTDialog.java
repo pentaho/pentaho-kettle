@@ -1111,14 +1111,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
       mb.setMessage( BaseMessages.getString( PKG, "JobSFTPPUT.Connected.OK", wServerName.getText() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobSFTPPUT.Connected.Title.Ok" ) );
       mb.open();
-    } else {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobSFTPPUT.Connected.NOK.ConnectionBad", wServerName.getText() )
-        + Const.CR );
-      mb.setText( BaseMessages.getString( PKG, "JobSFTPPUT.Connected.Title.Bad" ) );
-      mb.open();
     }
-
   }
 
   private void closeFTPConnections() {

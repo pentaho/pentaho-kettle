@@ -1263,14 +1263,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPS.Connected.OK", wServerName.getText() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPS.Connected.Title.Ok" ) );
       mb.open();
-    } else {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTPS.Connected.NOK.ConnectionBad", wServerName.getText() )
-        + Const.CR );
-      mb.setText( BaseMessages.getString( PKG, "JobFTPS.Connected.Title.Bad" ) );
-      mb.open();
     }
-
   }
 
   private void checkRemoteFolder( boolean FTPSFolfer, boolean checkMoveFolder, String foldername ) {
@@ -1291,10 +1284,11 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 
   private boolean connectToFTPS( boolean checkfolder, boolean checkmoveToFolder ) {
     boolean retval = true;
+    String realServername = null;
     try {
       if ( connection == null ) {
         // Create FTPS client to host:port ...
-        String realServername = jobMeta.environmentSubstitute( wServerName.getText() );
+        realServername = jobMeta.environmentSubstitute( wServerName.getText() );
         int port = Const.toInt( jobMeta.environmentSubstitute( wPort.getText() ), 0 );
         String realUsername = jobMeta.environmentSubstitute( wUserName.getText() );
         String realPassword = jobMeta.environmentSubstitute( wPassword.getText() );
@@ -1365,7 +1359,8 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
         connection = null;
       }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTPS.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
+      mb.setMessage( BaseMessages.getString( PKG, "JobFTPS.ErrorConnect.NOK", realServername,
+          e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPS.ErrorConnect.Title.Bad" ) );
       mb.open();
     }
