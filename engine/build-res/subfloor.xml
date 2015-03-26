@@ -1704,6 +1704,14 @@ TYPICAL TARGET SEQUENCE
       ====================================================================-->
   <target name="jacoco" depends="install-jacoco,compile,compile-tests, init-test-reports" description="Compiles and runs unit tests with Jacoco code coverage.">
 
+    <if>
+     <!--
+          If JUnit not in class path, jacoco junits will fail the build
+          Need to skip over this for some projects that have no tests (sample file assemblies)
+     -->
+     <available classname="org.junit.Test" />
+     <then>
+
 		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
 				<classpath>
 						<path refid="classpath"/>
@@ -1757,6 +1765,7 @@ TYPICAL TARGET SEQUENCE
 		</jacoco:coverage>
 
     <if>
+    <!-- if there is no exec file (no tests or faulty tests), cannot gen report -->
 			<available file="${jacoco.execfile.path}" property="jacoco.exec.file.found"/>
 			<then>
 				<jacoco:report xmlns:jacoco="antlib:org.jacoco.ant">
@@ -1784,6 +1793,11 @@ TYPICAL TARGET SEQUENCE
 			</fileset>
 			<report format="frames" todir="${testreports.html.dir}" />
 		</junitreport>
+    </then>
+    <else>
+      <echo>The JUnit jar is not in the classpath -- tests cannot execute</echo>
+    </else>
+   </if>
 
   </target>
 
