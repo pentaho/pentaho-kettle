@@ -22,12 +22,20 @@
 
 package org.pentaho.di.trans.steps.combinationlookup;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 import java.sql.ResultSet;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.lang.StringUtils;
+import org.junit.Assert;
+import org.junit.Before;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -37,11 +45,13 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
+import org.pentaho.metastore.api.IMetaStore;
 
 /**
  * Test class for combination lookup/update. HSQL is used as database in memory to get an easy playground for database
@@ -80,6 +90,11 @@ public class CombinationLookupTest extends TestCase {
     "INSERT INTO "
       + source_table + "(ORDNO, DLR_CD, DLR_NM, DLR_DESC)"
       + "VALUES (5, 'DE010004', 'Germania', 'German Distribution Center');" };
+  
+  @Before
+  public void setUp() throws Exception {
+    KettleEnvironment.init();
+  }
 
   public RowMetaInterface createTargetRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
@@ -180,13 +195,46 @@ public class CombinationLookupTest extends TestCase {
       fail( "less rows returned than expected" );
     }
   }
+  
+  public void testUseDefaultSchemaName() throws Exception {
+    String schemaName = "";
+    String tableName = "tableName";
+    String schemaTable = "default.tableName";
+    String technicalKeyField = "technicalKeyField";
+
+    DatabaseMeta databaseMeta = spy( new DatabaseMeta( databasesXML[0] ) {
+      public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc ) {
+        return "someValue";
+      }
+    } );
+    when( databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName ) ).thenReturn( schemaTable );
+
+    CombinationLookupMeta clm = new CombinationLookupMeta();
+    clm.setTechnicalKeyField( technicalKeyField );
+    clm.setKeyLookup( new String[] { "keyLookup1", "keyLookup2" } );
+    clm.setDatabaseMeta( databaseMeta );
+    clm.setTablename( tableName );
+    clm.setSchemaName( schemaName );
+
+    StepMeta stepMeta = mock( StepMeta.class );
+
+    RowMetaInterface rowMetaInterface = mock( RowMetaInterface.class );
+    when( rowMetaInterface.size() ).thenReturn( 1 );
+
+    Repository repository = mock( Repository.class );
+    IMetaStore metaStore = mock( IMetaStore.class );
+
+    SQLStatement sqlStatement =
+        clm.getSQLStatements( new TransMeta(), stepMeta, rowMetaInterface, repository, metaStore );
+    
+    String sql = sqlStatement.getSQL();
+    Assert.assertTrue( StringUtils.countMatches( sql, schemaTable ) == 3 );
+  }
 
   /**
    * Test case for Combination lookup/update.
    */
   public void testCombinationLookup() throws Exception {
-    KettleEnvironment.init();
-
     //
     // Create a new transformation...
     //
