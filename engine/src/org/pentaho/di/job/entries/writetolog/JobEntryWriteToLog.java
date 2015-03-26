@@ -58,9 +58,16 @@ import org.w3c.dom.Node;
 public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryWriteToLog.class; // for i18n purposes, needed by Translator2!!
 
-  private String logmessage;
+  /**
+   * The log level with which the message should be logged.
+   *
+   * @deprecated Use {@link JobEntryWriteToLog#getEntryLogLevel()} and
+   * {@link JobEntryWriteToLog#setEntryLogLevel(LogLevel)} instead.
+   */
+  @Deprecated
   public LogLevel entryLogLevel;
   private String logsubject;
+  private String logmessage;
 
   public JobEntryWriteToLog( String n ) {
     super( n, "" );
@@ -246,7 +253,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
           logChannel.logMinimal( message + Const.CR );
           break;
         case BASIC:
-          logChannel.logBasic( getRealLogMessage() + Const.CR );
+          logChannel.logBasic( message + Const.CR );
           break;
         case DETAILED:
           logChannel.logDetailed( message + Const.CR );
@@ -325,14 +332,18 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
   }
 
   public void setLogMessage( String s ) {
-
     logmessage = s;
-
   }
 
   public void setLogSubject( String logsubjectin ) {
-
     logsubject = logsubjectin;
+  }
 
+  public LogLevel getEntryLogLevel() {
+    return entryLogLevel;
+  }
+
+  public void setEntryLogLevel( LogLevel in ) {
+    this.entryLogLevel = in;
   }
 }
