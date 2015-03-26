@@ -315,7 +315,8 @@ TYPICAL TARGET SEQUENCE
   <property name="sonar.sourceEncoding" value="UTF-8" />
   <property name="sonar.java.coveragePlugin" value="jacoco" />
 
-
+   <!-- Maven properties -->
+   <property name="maven.options" value="-q" />
 
   <!-- Load the manifest file (if any) as a properties file -->
   <property name="dist.manifest.file"
@@ -1005,6 +1006,7 @@ TYPICAL TARGET SEQUENCE
             <arg value="-Dversion=${publish.version}" />
             <arg value="-Dpackaging=ivy.xml" />
             <arg value="-Dfile=${publish.file}" />
+            <arg value="${maven.options}" />
           </exec>
         </then>
         <else>
@@ -1017,7 +1019,7 @@ TYPICAL TARGET SEQUENCE
             <arg value="-Dversion=${publish.version}" />
             <arg value="-Dpackaging=ivy.xml" />
             <arg value="-Dfile=${publish.file}" />
-            <arg value="-e" />
+            <arg value="${maven.options}" />
           </exec>
         </else>
       </if>
@@ -1051,6 +1053,7 @@ TYPICAL TARGET SEQUENCE
             <arg value="-Durl=${ivy.repository.publish}" />
             <arg value="-DpomFile=${publish.pomFile}" />
             <arg value="-Dfile=${publish.file}" />
+            <arg value="${maven.options}" />
           </exec>
         </then>
         <else>
@@ -1060,6 +1063,7 @@ TYPICAL TARGET SEQUENCE
             <arg value="-Durl=${ivy.repository.publish}" />
             <arg value="-DpomFile=${publish.pomFile}" />
             <arg value="-Dfile=${publish.file}" />
+            <arg value="${maven.options}" />
           </exec>
         </else>
       </if>
@@ -1097,6 +1101,7 @@ TYPICAL TARGET SEQUENCE
             <arg value="-DgeneratePom=true" />
             <arg value="-Dpackaging=java-source" />
             <arg value="-Dfile=${publish.file}" />
+            <arg value="${maven.options}" />
           </exec>
         </then>
         <else>
@@ -1110,6 +1115,7 @@ TYPICAL TARGET SEQUENCE
             <arg value="-DgeneratePom=true" />
             <arg value="-Dpackaging=java-source" />
             <arg value="-Dfile=${publish.file}" />
+            <arg value="${maven.options}" />
           </exec>
         </else>
       </if>
@@ -2218,7 +2224,7 @@ TYPICAL TARGET SEQUENCE
 				<property name="sonar.cobertura.reportPath" value="${coberturareports.xml.dir}/coverage.xml" />
 			</then>
 			<else>
-				<property name="sonar.jacoco.reportPath" value="${bin.dir}/jacoco.exec" />
+				<property name="sonar.jacoco.reportPath" value="${jacoco.execfile.path}" />
 			</else>
 		</if>
     <property name="sonar.junit.reportsPath"  value="${testreports.xml.dir}" />
