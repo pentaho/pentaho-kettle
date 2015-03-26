@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,33 +19,23 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package org.pentaho.di.trans.step;
 
-package org.pentaho.di.core.clipboard;
+import org.pentaho.di.trans.TransMeta;
 
-import java.io.IOException;
-import java.io.OutputStream;
+public interface StepMetaChangeListenerInterface {
+  /**
+   * This method is called when a step was changed
+   * 
+   * @param transMeta
+   *          TransMeta which include this steps
+   * 
+   * @param oldMeta
+   *          the previous meta, which changed
+   * 
+   * @param newMeta
+   *          the updated meta with new variables values
+   */
+  public void onStepChange( TransMeta transMeta, StepMeta oldMeta, StepMeta newMeta );
 
-/**
- * Strips off the BITMAPFILEHEADER from a ImageLoader.save() call
- *
- * Used when converting from ImageData to CF_DIB (pasting on clipboard)
- *
- * @author Philip Schatz ( www.philschatz.com )
- */
-class RemoveWinBMPHeaderFilterOutputStream extends OutputStream {
-  private final OutputStream out;
-  private int counter = 0;
-
-  public RemoveWinBMPHeaderFilterOutputStream( OutputStream out ) {
-    this.out = out;
-  }
-
-  public void write( int b ) throws IOException {
-    // ignore the bmp file header
-    if ( this.counter < PrependWinBMPHeaderFilterInputStream.BITMAPFILEHEADER_SIZEOF ) {
-      this.counter++;
-    } else {
-      this.out.write( b );
-    }
-  }
 }

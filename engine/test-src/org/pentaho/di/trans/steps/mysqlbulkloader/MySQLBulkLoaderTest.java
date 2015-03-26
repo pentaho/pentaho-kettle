@@ -61,7 +61,7 @@ public class MySQLBulkLoaderTest {
     loader = Mockito.spy( new MySQLBulkLoader( stepMeta, ld, 1, transMeta, trans ) );
 
     RowMeta rm = new RowMeta();
-    ValueMetaString vm = new ValueMetaString();
+    ValueMetaString vm = new ValueMetaString( "I don't want NPE!" );
     rm.addValueMeta( vm );
     RowMeta spyRowMeta = Mockito.spy( new RowMeta() );
     Mockito.when( spyRowMeta.getValueMeta( Mockito.anyInt() ) ).thenReturn( vm );

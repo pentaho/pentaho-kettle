@@ -38,7 +38,7 @@ import com.debortoliwines.openerp.api.Field.FieldType;
 
 /**
  * Helper class to keep common functionality in one class
- * 
+ *
  * @author Pieter van der Merwe
  */
 public class OpenERPHelper implements DatabaseFactoryInterface {
@@ -68,10 +68,10 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 
   public OpenERPHelper( DatabaseMeta databaseMeta ) {
     openERPConnection =
-        new Session( databaseMeta.environmentSubstitute( databaseMeta.getHostname() ), Integer.parseInt( databaseMeta
-            .environmentSubstitute( databaseMeta.getDatabasePortNumberString() ) ), databaseMeta
-            .environmentSubstitute( databaseMeta.getDatabaseName() ), databaseMeta.environmentSubstitute( databaseMeta
-              .getUsername() ), databaseMeta.environmentSubstitute( databaseMeta.getPassword() ) );
+      new Session( databaseMeta.environmentSubstitute( databaseMeta.getHostname() ), Integer.parseInt( databaseMeta
+        .environmentSubstitute( databaseMeta.getDatabasePortNumberString() ) ), databaseMeta
+        .environmentSubstitute( databaseMeta.getDatabaseName() ), databaseMeta.environmentSubstitute( databaseMeta
+        .getUsername() ), databaseMeta.environmentSubstitute( databaseMeta.getPassword() ) );
   }
 
   public void StartSession() throws Exception {
@@ -95,12 +95,12 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
     String[] modelNames = new String[0];
     try {
       ObjectAdapter modelAdapter = new ObjectAdapter( openERPConnection, "ir.model" );
-      RowCollection rows = modelAdapter.searchAndReadObject( null, new String[] { "model" } );
+      RowCollection rows = modelAdapter.searchAndReadObject( null, new String[]{ "model" } );
       modelNames = new String[rows.size()];
       for ( int i = 0; i < modelNames.length; i++ ) {
         modelNames[i] = rows.get( i ).get( "model" ).toString();
       }
-    //CHECKSTYLE:EmptyBlock:OFF
+      //CHECKSTYLE:EmptyBlock:OFF
     } catch ( Exception e ) {
     }
 
@@ -113,7 +113,7 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
   }
 
   public RowCollection getModelData( String model, FilterCollection filter, ArrayList<FieldMapping> mappings,
-      int offset, int limit ) throws XmlRpcException, OpeneERPApiException {
+                                     int offset, int limit ) throws XmlRpcException, OpeneERPApiException {
     ArrayList<String> fieldList = new ArrayList<String>();
     for ( FieldMapping map : mappings ) {
       if ( !fieldList.contains( map.source_field ) ) {
@@ -148,7 +148,7 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
       if ( readonly == true ) {
         for ( Object[] stateProperty : field.getStateProperties( "readonly" ) ) {
           boolean stateReadonly =
-              ( (Boolean) ( stateProperty[1] instanceof Integer ? (Integer) stateProperty[1] == 1 : stateProperty[1] ) );
+            ( (Boolean) ( stateProperty[1] instanceof Integer ? (Integer) stateProperty[1] == 1 : stateProperty[1] ) );
           readonly = readonly && stateReadonly;
 
           if ( readonly == false ) {

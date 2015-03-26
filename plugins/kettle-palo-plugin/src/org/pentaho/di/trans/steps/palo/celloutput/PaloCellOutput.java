@@ -37,7 +37,7 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
   private PaloCellOutputData data;
 
   public PaloCellOutput( final StepMeta stepMeta, final StepDataInterface stepDataInterface, final int copyNr,
-      final TransMeta transMeta, final Trans trans ) {
+                         final TransMeta transMeta, final Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -47,7 +47,7 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
     data = (PaloCellOutputData) sdi;
 
     Object[] r = getRow(); // this also waits for a previous step to be
-                           // finished.
+    // finished.
     if ( r == null ) { // no more input to be expected...
       this.logDebug( "No More Rows." );
       setOutputDone();
@@ -76,13 +76,15 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
     try {
       Object[] newRow = new Object[meta.getFields().size() + 1];
       for ( int i = 0; i < data.indexes.length; i++ ) {
-        if ( i == data.indexes.length - 1 )
-          if ( meta.getMeasureType().equals( "Numeric" ) )
+        if ( i == data.indexes.length - 1 ) {
+          if ( meta.getMeasureType().equals( "Numeric" ) ) {
             newRow[i] = getInputRowMeta().getNumber( r, data.indexes[i] );
-          else
+          } else {
             newRow[i] = getInputRowMeta().getString( r, data.indexes[i] );
-        else
+          }
+        } else {
           newRow[i] = getInputRowMeta().getString( r, data.indexes[i] );
+        }
       }
       data.batchCache.add( newRow );
       if ( data.batchCache.size() == meta.getCommitSize() ) {

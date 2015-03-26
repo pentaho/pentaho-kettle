@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,8 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
@@ -46,6 +48,7 @@ import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.DefaultLogLevel;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.parameters.DuplicateParamException;
@@ -57,6 +60,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
@@ -67,6 +71,10 @@ import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.api.IMetaStoreElement;
+import org.pentaho.metastore.api.IMetaStoreElementType;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
+import org.pentaho.metastore.util.PentahoDefaults;
 
 public abstract class AbstractMeta extends ChangedFlag implements UndoInterface, HasDatabasesInterface, VariableSpace,
     EngineMetaInterface, NamedParams, HasSlaveServersInterface, AttributesInterface, HasRepositoryInterface,
@@ -386,7 +394,26 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
   public DatabaseMeta getDatabase( int i ) {
     return databases.get( i );
   }
-
+  
+  public void importFromMetaStore() throws MetaStoreException, KettlePluginException {
+    // Read the databases...
+    //
+    if ( metaStore != null ) {
+      IMetaStoreElementType databaseType =
+        metaStore.getElementTypeByName(
+          PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
+      if ( databaseType != null ) {
+        List<IMetaStoreElement> databaseElements = metaStore.getElements( PentahoDefaults.NAMESPACE, databaseType );
+        for ( IMetaStoreElement databaseElement : databaseElements ) {
+          addOrReplaceDatabase( DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(
+            metaStore, databaseElement ) );
+        }
+      }
+      
+      // TODO: do the same for slaves, clusters, partition schemas
+    }
+  }  
+  
   /**
    * Adds the name changed listener.
    * 
@@ -1442,6 +1469,14 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
    * @return the sharedObjects
    */
   public SharedObjects getSharedObjects() {
+    if ( sharedObjects == null ) {
+      try {
+        String soFile = environmentSubstitute( sharedObjectsFile );
+        sharedObjects = new SharedObjects( soFile );	  
+      } catch ( KettleException e ) {
+        LogChannel.GENERAL.logDebug( e.getMessage(), e );
+      }
+    }
     return sharedObjects;
   }
 

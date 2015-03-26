@@ -132,9 +132,14 @@ public class CloneRow extends BaseStep implements StepInterface {
     putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
 
     if ( meta.isNrCloneInField() ) {
-      data.nrclones = getInputRowMeta().getInteger( r, data.indexOfNrCloneField );
-      if ( log.isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "CloneRow.Log.NrClones", "" + data.nrclones ) );
+      Long nrCloneFieldValue = getInputRowMeta().getInteger( r, data.indexOfNrCloneField );
+      if ( nrCloneFieldValue == null ) {
+        throw new KettleException( BaseMessages.getString( PKG, "CloneRow.Log.NrClonesIsNull" ) );
+      } else {
+        data.nrclones = nrCloneFieldValue;
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "CloneRow.Log.NrClones", "" + data.nrclones ) );
+        }
       }
     }
     for ( int i = 0; i < data.nrclones && !isStopped(); i++ ) {

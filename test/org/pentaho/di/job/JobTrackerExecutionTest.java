@@ -132,7 +132,7 @@ public class JobTrackerExecutionTest extends JobTrackerExecution {
     resParFalse.assertMessage =
         "[3-2] Log exception at start (see [1] log_job_1.kjb results) in job call from parent job: "
         + "Job trackers shows negative result, job failed.";
-    resParFalse.jobTrackerStatus = new Boolean[] { null, null, true, null, false, null, false, false };
+    resParFalse.jobTrackerStatus = new Boolean[] { null, null, true, null, null, false, null, false, false };
     resParFalse.setAsVariable = true;
 
     return new Result[] { res, resVarFalse, resParFalse };

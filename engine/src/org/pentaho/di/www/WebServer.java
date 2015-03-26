@@ -22,14 +22,6 @@
 
 package org.pentaho.di.www;
 
-import java.io.File;
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.servlet.Servlet;
-
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
@@ -41,6 +33,7 @@ import org.mortbay.jetty.security.Constraint;
 import org.mortbay.jetty.security.ConstraintMapping;
 import org.mortbay.jetty.security.HashUserRealm;
 import org.mortbay.jetty.security.SecurityHandler;
+import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.pentaho.di.cluster.SlaveServer;
@@ -53,6 +46,14 @@ import org.pentaho.di.core.plugins.CartePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
+
+import java.io.File;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.servlet.Servlet;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
@@ -77,9 +78,17 @@ public class WebServer {
 
   private String passwordFile;
 
+  private SslConfiguration sslConfig;
+  
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
-    SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
-    boolean join, String passwordFile ) throws Exception {
+      SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
+      boolean join, String passwordFile ) throws Exception {
+    this( log, transformationMap, jobMap, socketRepository, detections, hostname, port, join, passwordFile, null );
+  }
+
+  public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
+      SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
+      boolean join, String passwordFile, SslConfiguration sslConfig ) throws Exception {
     this.log = log;
     this.transformationMap = transformationMap;
     this.jobMap = jobMap;
@@ -88,6 +97,7 @@ public class WebServer {
     this.hostname = hostname;
     this.port = port;
     this.passwordFile = passwordFile;
+    this.sslConfig = sslConfig;
 
     startServer();
 
@@ -109,14 +119,15 @@ public class WebServer {
   }
 
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
-    SocketRepository socketRepository, List<SlaveServerDetection> slaveServers, String hostname, int port ) throws Exception {
+      SocketRepository socketRepository, List<SlaveServerDetection> slaveServers, String hostname, int port )
+    throws Exception {
     this( log, transformationMap, jobMap, socketRepository, slaveServers, hostname, port, true );
   }
 
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
-    SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
-    boolean join ) throws Exception {
-    this( log, transformationMap, jobMap, socketRepository, detections, hostname, port, join, null );
+      SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port, boolean join )
+    throws Exception {
+    this( log, transformationMap, jobMap, socketRepository, detections, hostname, port, join, null, null );
   }
 
   public Server getServer() {
@@ -140,7 +151,7 @@ public class WebServer {
     SecurityHandler securityHandler = new SecurityHandler();
 
     if ( System.getProperty( "loginmodulename" ) != null
-      && System.getProperty( "java.security.auth.login.config" ) != null ) {
+        && System.getProperty( "java.security.auth.login.config" ) != null ) {
       JAASUserRealm jaasRealm = new JAASUserRealm( "Kettle" );
       jaasRealm.setLoginModuleName( System.getProperty( "loginmodulename" ) );
       securityHandler.setUserRealm( jaasRealm );
@@ -193,8 +204,8 @@ public class WebServer {
 
     // setup jersey (REST)
     ServletHolder jerseyServletHolder = new ServletHolder( ServletContainer.class );
-    jerseyServletHolder.setInitParameter(
-      "com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig" );
+    jerseyServletHolder.setInitParameter( "com.sun.jersey.config.property.resourceConfigClass",
+        "com.sun.jersey.api.core.PackagesResourceConfig" );
     jerseyServletHolder.setInitParameter( "com.sun.jersey.config.property.packages", "org.pentaho.di.www.jaxrs" );
     root.addServlet( jerseyServletHolder, "/api/*" );
 
@@ -202,7 +213,7 @@ public class WebServer {
     // ResourceHandler mobileResourceHandler = new ResourceHandler();
     // mobileResourceHandler.setWelcomeFiles(new String[]{"index.html"});
     // mobileResourceHandler.setResourceBase(getClass().getClassLoader().
-    //   getResource("org/pentaho/di/www/mobile").toExternalForm());
+    // getResource("org/pentaho/di/www/mobile").toExternalForm());
     // Context mobileContext = new Context(contexts, "/mobile", Context.SESSIONS);
     // mobileContext.setHandler(mobileResourceHandler);
 
@@ -253,19 +264,85 @@ public class WebServer {
         server.stop();
       }
     } catch ( Exception e ) {
-      log.logError( BaseMessages.getString( PKG, "WebServer.Error.FailedToStop.Title" ), BaseMessages.getString(
-        PKG, "WebServer.Error.FailedToStop.Msg", "" + e ) );
+      log.logError( BaseMessages.getString( PKG, "WebServer.Error.FailedToStop.Title" ), BaseMessages.getString( PKG,
+          "WebServer.Error.FailedToStop.Msg", "" + e ) );
     }
   }
 
   private void createListeners() {
-    SocketConnector connector = new SocketConnector();
+
+    SocketConnector connector = getConnector();
+    setupJettyOptions( connector );
     connector.setPort( port );
     connector.setHost( hostname );
     connector.setName( BaseMessages.getString( PKG, "WebServer.Log.KettleHTTPListener", hostname ) );
     log.logBasic( BaseMessages.getString( PKG, "WebServer.Log.CreateListener", hostname, "" + port ) );
 
     server.setConnectors( new Connector[] { connector } );
+  }
+
+  private SocketConnector getConnector() {
+    if ( sslConfig != null ) {
+      log.logBasic( BaseMessages.getString( PKG, "WebServer.Log.SslModeUsing" ) );
+      SslSocketConnector connector = new SslSocketConnector();
+      connector.setKeystore( sslConfig.getKeyStore() );
+      connector.setPassword( sslConfig.getKeyStorePassword() );
+      connector.setKeyPassword( sslConfig.getKeyPassword() );
+      connector.setKeystoreType( sslConfig.getKeyStoreType() );
+      return connector;
+    } else {
+      return new SocketConnector();
+    }
+
+  }
+
+  /**
+   * Set up jetty options to the connector
+   * 
+   * @param connector
+   */
+  protected void setupJettyOptions( SocketConnector connector ) {
+    if ( validProperty( Const.KETTLE_CARTE_JETTY_ACCEPTORS ) ) {
+      connector.setAcceptors( Integer.parseInt( System.getProperty( Const.KETTLE_CARTE_JETTY_ACCEPTORS ) ) );
+      log.logBasic( BaseMessages.getString( PKG, "WebServer.Log.ConfigOptions", "acceptors", connector.getAcceptors() ) );
+    }
+
+    if ( validProperty( Const.KETTLE_CARTE_JETTY_ACCEPT_QUEUE_SIZE ) ) {
+      connector
+          .setAcceptQueueSize( Integer.parseInt( System.getProperty( Const.KETTLE_CARTE_JETTY_ACCEPT_QUEUE_SIZE ) ) );
+      log.logBasic( BaseMessages.getString( PKG, "WebServer.Log.ConfigOptions", "acceptQueueSize", connector
+          .getAcceptQueueSize() ) );
+    }
+
+    if ( validProperty( Const.KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME ) ) {
+      connector.setLowResourceMaxIdleTime( Integer.parseInt( System
+          .getProperty( Const.KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME ) ) );
+      log.logBasic( BaseMessages.getString( PKG, "WebServer.Log.ConfigOptions", "lowResourcesMaxIdleTime", connector
+          .getLowResourceMaxIdleTime() ) );
+    }
+
+  }
+
+  /**
+   * Checks if the property is not null or not empty String that can be parseable as int and returns true if it is,
+   * otherwise false
+   * 
+   * @param property
+   *          the property to check
+   * @return true if the property is not null or not empty String that can be parseable as int, false otherwise
+   */
+  private boolean validProperty( String property ) {
+    boolean isValid = false;
+    if ( System.getProperty( property ) != null && System.getProperty( property ).length() > 0 ) {
+      try {
+        Integer.parseInt( System.getProperty( property ) );
+        isValid = true;
+      } catch ( NumberFormatException nmbfExc ) {
+        log.logBasic( BaseMessages.getString( PKG, "WebServer.Log.ConfigOptionsInvalid", property, System
+            .getProperty( property ) ) );
+      }
+    }
+    return isValid;
   }
 
   /**

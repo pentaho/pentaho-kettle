@@ -3360,7 +3360,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
             if ( spoon.rep != null ) {
               runJobMeta = spoon.rep.loadJob( jobMeta.getName(), jobMeta.getRepositoryDirectory(), null, null );
             } else {
-              runJobMeta = new JobMeta( jobMeta.getFilename(), null, null );
+              runJobMeta = new JobMeta( null, jobMeta.getFilename(), null, jobMeta.getMetaStore(), null );
             }
 
             String spoonObjectId = UUID.randomUUID().toString();

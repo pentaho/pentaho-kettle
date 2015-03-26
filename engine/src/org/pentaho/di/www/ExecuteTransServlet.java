@@ -68,6 +68,134 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     super( transformationMap );
   }
 
+
+  /**
+ <div id="mindtouch">
+    <h1>/kettle/executeTrans</h1>
+    <a name="GET"></a>
+    <h2>GET</h2>
+    <p>Executes transformation from the specified repository.
+  Connects to the repository provided as a parameter, loads the transformation from it and executes it.
+  Empty response is returned or response contains output of an error happened during the transformation execution. 
+  Response contains <code>ERROR</code> result if error happened during transformation execution.</p>
+    
+    <p><b>Example Request:</b><br />
+    <pre function="syntax.xml">
+    GET /kettle/executeTrans/?rep=my_repository&user=my_user&pass=my_password&trans=my_trans&level=INFO
+    </pre>
+    
+    </p>
+    <h3>Parameters</h3>
+    <table class="pentaho-table">
+    <tbody>
+    <tr>
+      <th>name</th>
+      <th>description</th>
+      <th>type</th>
+    </tr>
+    <tr>
+    <td>rep</td>
+    <td>Repository id to connect to.</td>
+    <td>query</td>
+    </tr>
+    <tr>
+    <td>user</td>
+    <td>User name to be used to connect to repository.</td>
+    <td>query</td>
+    </tr>
+    <tr>
+    <td>pass</td>
+    <td>User password to be used to connect to repository.</td>
+    <td>query</td>
+    </tr>
+    <tr>
+    <td>trans</td>
+    <td>Transfromation name to be loaded and executed.</td>
+    <td>query</td>
+    </tr>
+    <tr>
+    <td>level</td>
+    <td>Logging level to be used for transformation execution (i.e. Debug).</td>
+    <td>query</td>
+    </tr>
+    <tr>
+    <td>*any name*</td>
+    <td>All the other parameters will be sent to the transformation for using as variables. 
+  When necessary you can add custom parameters to the request. 
+  They will be used to set the transformation variables values..</td>
+    <td>query</td>
+    </tr>
+    </tbody>
+    </table>
+  
+  <h3>Response Body</h3>
+
+  <table class="pentaho-table">
+    <tbody>
+      <tr>
+        <td align="right">element:</td>
+        <td>(custom)</td>
+      </tr>
+      <tr>
+        <td align="right">media types:</td>
+        <td>application/xml</td>
+      </tr>
+    </tbody>
+  </table>
+    <p>Response contains error output of the transformation executed or nothing 
+  if the execution was successful.</p>
+    
+    <p><b>Example Error Response:</b></p>
+    <pre function="syntax.xml">
+  <webresult>
+    <result>ERROR</result>
+    <message>Unexpected error executing the transformation&#x3a; 
+    &#xd;&#xa;org.pentaho.di.core.exception.KettleException&#x3a; 
+    &#xd;&#xa;Unable to find transformation &#x27;dummy-trans.ktr&#x27; in directory 
+    &#x3a;&#x2f;home&#x2f;admin&#xd;&#xa;&#xd;&#xa; at 
+    org.pentaho.di.www.ExecuteTransServlet.loadTransformation&#x28;ExecuteTransServlet.java&#x3a;214&#x29;&#xd;&#xa; 
+    at org.pentaho.di.www.ExecuteTransServlet.doGet&#x28;ExecuteTransServlet.java&#x3a;104&#x29;&#xd;&#xa;  
+    at javax.servlet.http.HttpServlet.service&#x28;HttpServlet.java&#x3a;707&#x29;&#xd;&#xa;  
+    at javax.servlet.http.HttpServlet.service&#x28;HttpServlet.java&#x3a;820&#x29;&#xd;&#xa;  
+    at org.mortbay.jetty.servlet.ServletHolder.handle&#x28;ServletHolder.java&#x3a;511&#x29;&#xd;&#xa;  
+    at org.mortbay.jetty.servlet.ServletHandler.handle&#x28;ServletHandler.java&#x3a;390&#x29;&#xd;&#xa;  
+    at org.mortbay.jetty.servlet.SessionHandler.handle&#x28;SessionHandler.java&#x3a;182&#x29;&#xd;&#xa;  
+    at org.mortbay.jetty.handler.ContextHandler.handle&#x28;ContextHandler.java&#x3a;765&#x29;&#xd;&#xa;  
+    at org.mortbay.jetty.handler.ContextHandlerCollection.handle&#x28;ContextHandlerCollection.java&#x3a;230&#x29;&#xd;&#xa;  
+    at org.mortbay.jetty.handler.HandlerCollection.handle&#x28;HandlerCollection.java&#x3a;114&#x29;&#xd;&#xa;  
+    at org.mortbay.jetty.handler.HandlerWrapper.handle&#x28;HandlerWrapper.java&#x3a;152&#x29;&#xd;&#xa;  
+    at org.mortbay.jetty.Server.handle&#x28;Server.java&#x3a;326&#x29;&#xd;&#xa;  
+    at org.mortbay.jetty.HttpConnection.handleRequest&#x28;HttpConnection.java&#x3a;536&#x29;&#xd;&#xa; 
+    at org.mortbay.jetty.HttpConnection&#x24;RequestHandler.headerComplete&#x28;HttpConnection.java&#x3a;915&#x29;&#xd;&#xa;  
+    at org.mortbay.jetty.HttpParser.parseNext&#x28;HttpParser.java&#x3a;539&#x29;&#xd;&#xa; 
+    at org.mortbay.jetty.HttpParser.parseAvailable&#x28;HttpParser.java&#x3a;212&#x29;&#xd;&#xa;  
+    at org.mortbay.jetty.HttpConnection.handle&#x28;HttpConnection.java&#x3a;405&#x29;&#xd;&#xa; 
+    at org.mortbay.jetty.bio.SocketConnector&#x24;Connection.run&#x28;SocketConnector.java&#x3a;228&#x29;&#xd;&#xa; 
+    at org.mortbay.thread.QueuedThreadPool&#x24;PoolThread.run&#x28;QueuedThreadPool.java&#x3a;582&#x29;&#xd;&#xa;
+    </message>
+    <id/>
+  </webresult>
+    </pre>
+    
+    <h3>Status Codes</h3>
+    <table class="pentaho-table">
+  <tbody>
+    <tr>
+      <th>code</th>
+      <th>description</th>
+    </tr>
+    <tr>
+      <td>200</td>
+      <td>Request was processed.</td>
+    </tr>
+    <tr>
+      <td>500</td>
+      <td>Internal server error occurs during request processing.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  */
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
     IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {

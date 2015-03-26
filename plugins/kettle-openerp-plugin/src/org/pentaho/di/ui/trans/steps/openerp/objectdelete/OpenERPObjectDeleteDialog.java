@@ -144,7 +144,7 @@ public class OpenERPObjectDeleteDialog extends BaseStepDialog implements StepDia
     buttonCancel = new Button( shell, SWT.CENTER );
     buttonOk.setText( BaseMessages.getString( "System.Button.OK" ) );
     buttonCancel.setText( BaseMessages.getString( "System.Button.Cancel" ) );
-    setButtonPositions( new Button[] { buttonOk, buttonCancel }, margin, null );
+    setButtonPositions( new Button[]{ buttonOk, buttonCancel }, margin, null );
 
     addConnectionLine.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -192,8 +192,9 @@ public class OpenERPObjectDeleteDialog extends BaseStepDialog implements StepDia
     shell.open();
 
     while ( !shell.isDisposed() ) {
-      if ( !display.readAndDispatch() )
+      if ( !display.readAndDispatch() ) {
         display.sleep();
+      }
     }
 
     return stepname;
@@ -209,12 +210,14 @@ public class OpenERPObjectDeleteDialog extends BaseStepDialog implements StepDia
 
   private void setModelComboOptions() {
     String[] objectList = getModelList();
-    if ( objectList == null )
+    if ( objectList == null ) {
       return;
+    }
 
     for ( String objectName : objectList ) {
-      if ( comboModelName.indexOf( objectName ) == -1 )
+      if ( comboModelName.indexOf( objectName ) == -1 ) {
         comboModelName.add( objectName );
+      }
     }
   }
 
@@ -247,13 +250,15 @@ public class OpenERPObjectDeleteDialog extends BaseStepDialog implements StepDia
     try {
       row = transMeta.getPrevStepFields( stepMeta );
       fields = new String[row.size()];
-      for ( int i = 0; i < row.size(); i++ )
+      for ( int i = 0; i < row.size(); i++ ) {
         fields[i] = row.getValueMeta( i ).getName();
+      }
     } catch ( KettleStepException e ) {
-      if ( showError )
+      if ( showError ) {
         new ErrorDialog( shell,
-            BaseMessages.getString( PKG, "OpenERPObjectOutputDialog.UnableToFindStreamFieldsTitle" ), BaseMessages
-                .getString( PKG, "OpenERPObjectOutputDialog.UnableToFindStreamFieldsMessage" ), e );
+          BaseMessages.getString( PKG, "OpenERPObjectOutputDialog.UnableToFindStreamFieldsTitle" ), BaseMessages
+          .getString( PKG, "OpenERPObjectOutputDialog.UnableToFindStreamFieldsMessage" ), e );
+      }
       return null;
     }
 
@@ -263,20 +268,24 @@ public class OpenERPObjectDeleteDialog extends BaseStepDialog implements StepDia
   private void setIDComboOptions() {
     String[] steamFields = getSteamFieldsNames( false );
 
-    if ( steamFields != null )
-      for ( String streamField : steamFields )
+    if ( steamFields != null ) {
+      for ( String streamField : steamFields ) {
         comboIDFieldName.add( streamField );
+      }
+    }
 
   }
 
   private void fillStoredData() {
 
-    if ( stepname != null )
+    if ( stepname != null ) {
       textStepName.setText( stepname );
+    }
 
     int index = addConnectionLine.indexOf( meta.getDatabaseMeta() != null ? meta.getDatabaseMeta().getName() : "" );
-    if ( index >= 0 )
+    if ( index >= 0 ) {
       addConnectionLine.select( index );
+    }
 
     if ( meta.getModelName() != null ) {
       comboModelName.add( meta.getModelName() );
@@ -295,8 +304,9 @@ public class OpenERPObjectDeleteDialog extends BaseStepDialog implements StepDia
   }
 
   private void ok() {
-    if ( SaveToMeta( meta ) )
+    if ( SaveToMeta( meta ) ) {
       dispose();
+    }
   }
 
   private boolean SaveToMeta( OpenERPObjectDeleteMeta targetMeta ) {
@@ -308,7 +318,7 @@ public class OpenERPObjectDeleteDialog extends BaseStepDialog implements StepDia
         new OpenERPObjectDeleteData( dbMeta );
       } catch ( KettleException e ) {
         new ErrorDialog( shell, BaseMessages.getString( PKG, "OpenERPObjectDeleteDialog.ConnectionTypeErrorTitle" ),
-            BaseMessages.getString( PKG, "OpenERPObjectDeleteDialog.ConnectionTypeErrorString" ), e );
+          BaseMessages.getString( PKG, "OpenERPObjectDeleteDialog.ConnectionTypeErrorString" ), e );
         return false;
       }
     }
@@ -318,7 +328,7 @@ public class OpenERPObjectDeleteDialog extends BaseStepDialog implements StepDia
       commitBatchSize = Integer.parseInt( textCommitBatchSize.getText() );
     } catch ( NumberFormatException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "OpenERPObjectDeleteDialog.ParseErrorTitle" ), BaseMessages
-          .getString( PKG, "OpenERPObjectDeleteDialog.ParseErrorString", textCommitBatchSize.getText() ), e );
+        .getString( PKG, "OpenERPObjectDeleteDialog.ParseErrorString", textCommitBatchSize.getText() ), e );
       return false;
     }
 

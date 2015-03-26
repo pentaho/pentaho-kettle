@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -728,7 +728,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
         // The jobnode
         Node jobnode = XMLHandler.getSubNode( doc, XML_TAG );
 
-        loadXML( jobnode, fname, rep, prompter );
+        loadXML( jobnode, fname, rep, metaStore, false, prompter );
       } else {
         throw new KettleXMLException( BaseMessages.getString( PKG, "JobMeta.Exception.ErrorReadingFromXMLFile" )
           + fname );
@@ -752,6 +752,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
    *           the kettle xml exception
    */
   public JobMeta( InputStream inputStream, Repository rep, OverwritePrompter prompter ) throws KettleXMLException {
+    this();
     Document doc = XMLHandler.loadXMLFile( inputStream, null, false, false );
     loadXML( XMLHandler.getSubNode( doc, JobMeta.XML_TAG ), rep, prompter );
   }
@@ -768,6 +769,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
    * @throws KettleXMLException
    */
   public JobMeta( Node jobnode, Repository rep, OverwritePrompter prompter ) throws KettleXMLException {
+    this();
     loadXML( jobnode, rep, false, prompter );
   }
 
@@ -785,6 +787,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
    * @throws KettleXMLException
    */
   public JobMeta( Node jobnode, Repository rep, boolean ignoreRepositorySharedObjects, OverwritePrompter prompter ) throws KettleXMLException {
+    this();
     loadXML( jobnode, rep, ignoreRepositorySharedObjects, prompter );
   }
 
@@ -999,6 +1002,10 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
         // //
       }
 
+      // Load the database connections, slave servers, cluster schemas & partition schemas into this object.
+      //
+      importFromMetaStore();      
+      
       // Read the named parameters.
       Node paramsNode = XMLHandler.getSubNode( jobnode, XML_TAG_PARAMETERS );
       int nrParams = XMLHandler.countNodes( paramsNode, "parameter" );

@@ -68,6 +68,140 @@ public class AllocateServerSocketServlet extends BaseHttpServlet implements Cart
     super( transformationMap );
   }
 
+  /**
+
+    <div id="mindtouch">
+    <h1>/kettle/allocateSocket</h1>
+    <a name="GET"></a>
+    <h2>GET</h2>
+    <p>Allocates port to use by client. 
+  Allows any client to ask for a port number to use. This is necessary several slaves can be run on the same host.
+  The method ensures the port number is unique for host name provided and makes sure the slaves are using 
+  valid port numbers. Data communication across a cluster of Carte servers happens through TCP/IP sockets.
+  Slave transformations sometimes open (or listen to) tens to hundreds of sockets.  When you want to allocate 
+  the port numbers for data communication between slave transformation in a kettle clustering run, you need 
+  unique combinations of all the parameters below.
+  
+  <code>port number</code> will be returned in the Response object. If an error occurred you'll receive html output
+  describing the problem. HTTP status code of such response is 500.</p>
+    
+    <p><b>Example Request:</b><br />
+    <pre function="syntax.xml">
+    GET /kettle/allocateSocket/?xml=Y&rangeStart=100&host=locahost&id=clust&trans=my_trans&sourceSlave=slave_1
+  &sourceStep=200&sourceCopy=1&targetSlave=slave_2&targetStep=50&targetCopy=1
+    </pre>
+
+    </p>
+    <h3>Parameters</h3>
+    <table class="pentaho-table">
+    <tbody>
+    <tr>
+      <th>name</th>
+      <th>description</th>
+      <th>type</th>
+    </tr>
+    <tr>
+    <td>xml</td>
+    <td>Boolean flag set to either <code>Y</code> or <code>N</code> describing if xml or html reply 
+  should be produced.</td>
+    <td>boolean, optional</td>
+    </tr>
+    <tr>
+    <td>rangeStart</td>
+    <td>Port number to start looking from.</td>
+    <td>integer</td>
+    </tr>
+    <tr>
+    <td>host</td>
+    <td>Port's host.</td>
+    <td>query</td>
+    </tr>
+    <tr>
+    <td>id</td>
+    <td>Carte container id.</td>
+    <td>query</td>
+    </tr>
+    <tr>
+    <td>trans</td>
+    <td>Running transformation id.</td>
+    <td>query</td>
+    </tr>
+    <tr>
+    <td>sourceSlave</td>
+    <td>Name of the source slave server.</td>
+    <td>query</td>
+    </tr>
+    <tr>
+    <td>sourceStep</td>
+    <td>Port number step used on source slave server.</td>
+    <td>integer</td>
+    </tr>
+    <tr>
+    <td>sourceCopy</td>
+    <td>Number of copies of the step on source server.</td>
+    <td>integer</td>
+    </tr>
+    <tr>
+    <td>targetSlave</td>
+    <td>Name of the target slave server.</td>
+    <td>query</td>
+    </tr>
+    <tr>
+    <td>targetStep</td>
+    <td>Port number step used on target slave server.</td>
+    <td>integer</td>
+    </tr>
+    <tr>
+    <td>targetCopy</td>
+    <td>Number of copies of the step on target server.</td>
+    <td>integer</td>
+    </tr>
+    </tbody>
+    </table>
+  
+  <h3>Response Body</h3>
+
+  <table class="pentaho-table">
+    <tbody>
+      <tr>
+        <td align="right">element:</td>
+        <td>(custom)</td>
+      </tr>
+      <tr>
+        <td align="right">media types:</td>
+        <td>text/xml, text/html</td>
+      </tr>
+    </tbody>
+  </table>
+    <p>Response wraps port number that was allocated or error stack trace
+  if an error occurred. Response HTTP code is 200 if there were no errors. Otherwise it is 500.</p>
+    
+    <p><b>Example Response:</b></p>
+    <pre function="syntax.xml">
+    <?xml version="1.0" encoding="UTF-8"?>
+    <port>100</port>
+    </pre>
+    
+    <h3>Status Codes</h3>
+    <table class="pentaho-table">
+  <tbody>
+    <tr>
+      <th>code</th>
+      <th>description</th>
+    </tr>
+    <tr>
+      <td>200</td>
+      <td>Request was processed and XML response is returned.</td>
+    </tr>
+    <tr>
+      <td>500</td>
+      <td>Internal server error occurs during request processing. 
+      This might also be caused by missing request parameter.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  */
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
     IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {

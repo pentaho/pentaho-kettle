@@ -24,11 +24,11 @@ package org.pentaho.di.ui.spoon;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
+import static junit.framework.Assert.*;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
-import junit.framework.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -41,6 +41,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
+import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
 /**
  * Spoon tests
@@ -49,9 +50,11 @@ import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
  * @see Spoon
  */
 public class SpoonTest {
-  @Test
-  public void testCopyPasteStepErrorHandling() throws KettleException {
-    final Spoon spoon = mock( Spoon.class );
+
+  private final Spoon spoon = mock( Spoon.class );
+
+  @Before
+  public void setUp() throws KettleException {
     doCallRealMethod().when( spoon ).copySelected( any( TransMeta.class ), anyListOf( StepMeta.class ),
         anyListOf( NotePadMeta.class ) );
     doCallRealMethod().when( spoon ).pasteXML( any( TransMeta.class ), anyString(), any( Point.class ) );
@@ -59,29 +62,93 @@ public class SpoonTest {
     LogChannelInterface log = mock( LogChannelInterface.class );
     when( spoon.getLog() ).thenReturn( log );
 
+    KettleEnvironment.init();
+  }
+
+  /**
+   * test two steps
+   * @see http://jira.pentaho.com/browse/PDI-689
+   * 
+   * @throws KettleException
+   */
+  @Test
+  public void testCopyPasteStepsErrorHandling() throws KettleException {
+
+    final TransMeta transMeta = new TransMeta();
+
+    //for check copy both step and hop
+    StepMeta sourceStep = new StepMeta( "CsvInput", "Step1", new CsvInputMeta() );
+    StepMeta targetStep = new StepMeta( "Dummy", "Dummy Step1", new DummyTransMeta() );
+
+    sourceStep.setSelected( true );
+    targetStep.setSelected( true );
+
+    transMeta.addStep( sourceStep );
+    transMeta.addStep( targetStep  );
+
+    StepErrorMeta errorMeta = new StepErrorMeta( transMeta, sourceStep, targetStep );
+    sourceStep.setStepErrorMeta( errorMeta );
+    errorMeta.setSourceStep( sourceStep );
+    errorMeta.setTargetStep( targetStep );
+
+    final int stepsSizeBefore = transMeta.getSteps().size();
     doAnswer( new Answer() {
       @Override
       public Object answer( InvocationOnMock invocation ) throws Throwable {
-        TransMeta transMeta = new TransMeta();
         spoon.pasteXML( transMeta, (String) invocation.getArguments()[0], mock( Point.class ) );
-        Assert.assertNotNull( "No steps found in transformation", transMeta.getStep( 0 ) );
-        Assert.assertNotNull( "Error handling information was not copied", transMeta.getStep( 0 ).getStepErrorMeta() );
+        assertTrue( "Steps was not copied", stepsSizeBefore < transMeta.getSteps().size() );
+        //selected copied step
+        for ( StepMeta s:transMeta.getSelectedSteps() ) {
+          if ( s.getStepMetaInterface() instanceof CsvInputMeta ) {
+            //check that stepError was copied
+            assertNotNull(" Error hop was not copied" , s.getStepErrorMeta() );
+          }
+        }
+        return null;
+      }
+    } ).when( spoon ).toClipboard( anyString() );
+    spoon.copySelected( transMeta, transMeta.getSelectedSteps(), Collections.<NotePadMeta>emptyList() );
+  }
 
+  /**
+   * test copy one step with error handling 
+   * @see http://jira.pentaho.com/browse/PDI-13358
+   * 
+   * @throws KettleException
+   */
+  @Test
+  public void testCopyPasteOneStepWithErrorHandling() throws KettleException {
+
+    final TransMeta transMeta = new TransMeta();
+    StepMeta sourceStep = new StepMeta( "CsvInput", "Step1", new CsvInputMeta() );
+    StepMeta targetStep = new StepMeta( "Dummy", "Dummy Step1", new DummyTransMeta() );
+
+    sourceStep.setSelected( true );
+    transMeta.addStep( sourceStep );
+    transMeta.addStep( targetStep );
+
+    StepErrorMeta errorMeta = new StepErrorMeta( transMeta, sourceStep, targetStep );
+    sourceStep.setStepErrorMeta( errorMeta );
+    errorMeta.setSourceStep( sourceStep );
+    errorMeta.setTargetStep( targetStep );
+
+    final int stepsSizeBefore = transMeta.getSteps().size();
+    doAnswer( new Answer() {
+      @Override
+      public Object answer( InvocationOnMock invocation ) throws Throwable {
+        spoon.pasteXML( transMeta, (String) invocation.getArguments()[0], mock( Point.class ) );
+        assertTrue( "Steps was not copied", stepsSizeBefore < transMeta.getSteps().size() );
+        //selected copied step
+        for ( StepMeta s:transMeta.getSelectedSteps() ) {
+          if ( s.getStepMetaInterface() instanceof CsvInputMeta ) {
+            //check that stepError was empty, because we copy only one step from pair
+            assertNull(" Error hop was not copied" , s.getStepErrorMeta() );
+          }
+        }
         return null;
       }
     } ).when( spoon ).toClipboard( anyString() );
 
-    StepMeta stepMeta = new StepMeta( "CsvInput", "Step1", new CsvInputMeta() );
-    TransMeta transMeta = mock( TransMeta.class );
-
-    StepErrorMeta errorMeta = new StepErrorMeta( transMeta, stepMeta, stepMeta );
-    stepMeta.setStepErrorMeta( errorMeta );
-
-    ArrayList<StepMeta> steps = new ArrayList<StepMeta>();
-    steps.add( stepMeta );
-
-    KettleEnvironment.init();
-
-    spoon.copySelected( transMeta, steps, Collections.<NotePadMeta>emptyList() );
+    spoon.copySelected( transMeta, transMeta.getSelectedSteps(), Collections.<NotePadMeta>emptyList() );
   }
 }

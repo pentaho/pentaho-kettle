@@ -54,7 +54,7 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
   private FieldCollection rowFields;
 
   public OpenERPObjectOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+                              Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -102,51 +102,55 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 
     // Prepare output row
     Object[] outputRow = new Object[data.outputRowMeta.size()];
-    for ( int i = 0; i < getInputRowMeta().size(); i++ )
+    for ( int i = 0; i < getInputRowMeta().size(); i++ ) {
       outputRow[i] = inputRow[i]; // Don't convert to normal storage. Send it through as is.
-
+    }
     String row = "";
     try {
       Row updateRow = openerERPAdapter.getNewRow( rowFields );
 
       // If ID field was mapped in the filter, use it. Otherwise try and find it from cache.
-      if ( idIndex >= 0 )
+      if ( idIndex >= 0 ) {
         updateRow.put( "id", this.getInputValue( inputRow, idIndex ) );
-      else {
+      } else {
         String combinedKey = "";
-        for ( int i : readRowIndex )
+        for ( int i : readRowIndex ) {
           combinedKey += SEPARATOR + ( inputRow[i] == null ? "" : this.getInputValue( inputRow, i ) );
-        if ( filterRowCache.containsKey( combinedKey ) )
+        }
+        if ( filterRowCache.containsKey( combinedKey ) ) {
           updateRow.put( "id", filterRowCache.get( combinedKey ) );
-        else
+        } else {
           updateRow.put( "id", 0 );
+        }
       }
 
-      for ( int i = 0; i < meta.getModelFields().length; i++ )
+      for ( int i = 0; i < meta.getModelFields().length; i++ ) {
         updateRow.put( meta.getModelFields()[i], this.getInputValue( inputRow, this.index[i] ) );
-
+      }
       // If the import function does not return the ID field once complete then
       // we have to call the create function for each row, to return the ID
       if ( data.helper.getImportReturnIDS() == false && meta.getOutputIDField() && updateRow.getID() == 0 ) {
 
         openerERPAdapter.createObject( updateRow );
         outputRow[data.outputRowMeta.indexOfValue( meta.getOutputIDFieldName() )] =
-            Long.parseLong( updateRow.get( "id" ).toString() );
+          Long.parseLong( updateRow.get( "id" ).toString() );
 
         incrementLinesOutput();
         putRow( data.outputRowMeta, outputRow );
 
       } else {
         // Get the ID of an existing row
-        if ( data.helper.getImportReturnIDS() == false && meta.getOutputIDField() )
+        if ( data.helper.getImportReturnIDS() == false && meta.getOutputIDField() ) {
           outputRow[data.outputRowMeta.indexOfValue( meta.getOutputIDFieldName() )] =
-              Long.parseLong( updateRow.get( "id" ).toString() );
+            Long.parseLong( updateRow.get( "id" ).toString() );
+        }
 
         data.updateBatchRows.add( updateRow );
         data.outputBatchRows.add( outputRow );
 
-        if ( data.updateBatchRows.size() == meta.getCommitBatchSize() )
+        if ( data.updateBatchRows.size() == meta.getCommitBatchSize() ) {
           CommitBatch();
+        }
       }
 
     } catch ( Exception e ) {
@@ -163,14 +167,16 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 
   private void CommitBatch() throws Exception {
     // In the process of stopping, return
-    if ( isStopped() || data.updateBatchRows.size() == 0 )
+    if ( isStopped() || data.updateBatchRows.size() == 0 ) {
       return;
+    }
 
     try {
       openerERPAdapter.importData( data.updateBatchRows );
       int idFieldIndex = -1;
-      if ( meta.getOutputIDField() )
+      if ( meta.getOutputIDField() ) {
         idFieldIndex = data.outputRowMeta.indexOfValue( meta.getOutputIDFieldName() );
+      }
 
       // The input and output rows are in the same order
       for ( int i = 0; i < data.updateBatchRows.size(); i++ ) {
@@ -178,8 +184,9 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 
         Object[] outputrow = data.outputBatchRows.get( i );
 
-        if ( data.helper.getImportReturnIDS() && idFieldIndex >= 0 )
+        if ( data.helper.getImportReturnIDS() && idFieldIndex >= 0 ) {
           outputrow[idFieldIndex] = Long.parseLong( data.updateBatchRows.get( i ).get( "id" ).toString() );
+        }
 
         putRow( data.outputRowMeta, outputrow );
       }
@@ -193,16 +200,17 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
     filterRowCache.clear();
 
     RowCollection rows =
-        data.helper.getModelData( meta.getModelName(), readSourceFilter, readFieldList
-            .toArray( new String[readFieldList.size()] ) );
+      data.helper.getModelData( meta.getModelName(), readSourceFilter, readFieldList
+        .toArray( new String[readFieldList.size()] ) );
     for ( Row row : rows ) {
       String combinedKey = "";
       for ( String fieldname : readFieldList ) {
         Object value = row.get( fieldname );
 
         // For id fields
-        if ( value instanceof Object[] )
+        if ( value instanceof Object[] ) {
           value = ( (Object[]) value )[0];
+        }
 
         combinedKey += SEPARATOR + ( value == null ? "" : value );
       }
@@ -231,24 +239,27 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
       this.logBasic( "Setting filter: [" + modelField + "," + comparison + "," + streamField + "]" );
     }
     readRowIndex = new int[readIdx.size()];
-    for ( int i = 0; i < readRowIndex.length; i++ )
+    for ( int i = 0; i < readRowIndex.length; i++ ) {
       readRowIndex[i] = readIdx.get( i );
+    }
   }
 
   private void prepareFieldList() throws Exception {
 
     // If the ID field is the only filter, include it in the field
     if ( meta.getKeyLookups().size() == 1 && meta.getKeyLookups().get( 0 )[0] != null
-        && meta.getKeyLookups().get( 0 )[1] != null && meta.getKeyLookups().get( 0 )[2] != null
-        && meta.getKeyLookups().get( 0 )[0].equals( "id" ) && meta.getKeyLookups().get( 0 )[1].equals( "=" ) )
+      && meta.getKeyLookups().get( 0 )[1] != null && meta.getKeyLookups().get( 0 )[2] != null
+      && meta.getKeyLookups().get( 0 )[0].equals( "id" ) && meta.getKeyLookups().get( 0 )[1].equals( "=" ) ) {
       idIndex = getInputRowMeta().indexOfValue( meta.getKeyLookups().get( 0 )[2] );
+    }
 
     index = new int[meta.getModelFields().length];
     for ( int i = 0; i < meta.getModelFields().length; i++ ) {
       index[i] = getInputRowMeta().indexOfValue( meta.getStreamFields()[i] );
-      if ( index[i] < 0 )
+      if ( index[i] < 0 ) {
         throw new KettleException( "Stream field not found", new Exception( "Could not find stream field: "
-            + meta.getStreamFields()[i] ) );
+          + meta.getStreamFields()[i] ) );
+      }
     }
 
   }

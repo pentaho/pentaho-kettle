@@ -292,6 +292,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
     fdCommitSize.right = new FormAttachment( 100, 0 );
     fdCommitSize.top = new FormAttachment( wCreateTable, margin );
     wCommitSize.setLayoutData( fdCommitSize );
+    wCommitSize.addModifyListener( lsMod );
 
     // Add File to the result files name
     wlAddToResult = new Label( shell, SWT.RIGHT );

@@ -2,6 +2,7 @@ package org.pentaho.di.core.compress.gzip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -38,8 +39,7 @@ public class GZIPCompressionOutputStreamTest {
     factory = CompressionProviderFactory.getInstance();
     CompressionProvider provider = factory.getCompressionProviderByName( PROVIDER_NAME );
     ByteArrayOutputStream in = new ByteArrayOutputStream();
-    outStream = new GZIPCompressionOutputStream( in, provider ) {
-    };
+    outStream = new GZIPCompressionOutputStream( in, provider );
   }
 
   @After
@@ -64,14 +64,19 @@ public class GZIPCompressionOutputStreamTest {
     outStream = new GZIPCompressionOutputStream( out, provider ) {
     };
     outStream.close();
+    try {
+      outStream.write( "This will throw an Exception if the stream is already closed".getBytes() );
+      fail();
+    } catch (IOException e) {
+      //Success, The Output Stream was already closed
+    }
   }
 
   @Test
   public void testWrite() throws IOException {
     CompressionProvider provider = outStream.getCompressionProvider();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    outStream = new GZIPCompressionOutputStream( out, provider ) {
-    };
+    outStream = new GZIPCompressionOutputStream( out, provider );
     outStream.write( "Test".getBytes() );
   }
 
@@ -79,8 +84,7 @@ public class GZIPCompressionOutputStreamTest {
   public void testAddEntry() throws IOException {
     CompressionProvider provider = outStream.getCompressionProvider();
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    outStream = new GZIPCompressionOutputStream( out, provider ) {
-    };
-    outStream.addEntry( null );
+    outStream = new GZIPCompressionOutputStream( out, provider );
+    outStream.addEntry( null, null );
   }
 }

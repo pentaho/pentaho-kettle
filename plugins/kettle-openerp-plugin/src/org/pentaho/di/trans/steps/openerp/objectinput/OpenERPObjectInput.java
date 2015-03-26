@@ -44,7 +44,7 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface {
   private OpenERPObjectInputData data;
 
   public OpenERPObjectInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+                             Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -83,7 +83,7 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface {
       fixedValue = Long.parseLong( value.toString() );
     } else if ( map.target_field_type == ValueMetaInterface.TYPE_NUMBER ) {
       fixedValue = Double.parseDouble( value.toString() );
-    // ONE2MANY and MANY2MANY fields
+      // ONE2MANY and MANY2MANY fields
     } else if ( map.target_field_type == ValueMetaInterface.TYPE_STRING && value instanceof Object[] ) {
       String stringValue = "";
       for ( Object singleValue : (Object[]) value ) {
@@ -118,7 +118,7 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface {
           filter.add( filterItem.getFieldName(), filterItem.getComparator(), filterItem.getValue() );
 
           this.logBasic( "Setting filter: [" + filterItem.getFieldName() + "," + filterItem.getComparator() + ","
-              + filterItem.getValue() + "]" );
+            + filterItem.getValue() + "]" );
         }
 
         int rowCount = data.helper.getModelDataCount( meta.getModelName(), filter );
@@ -130,7 +130,7 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface {
             break;
           }
           RowCollection rows =
-              data.helper.getModelData( meta.getModelName(), filter, meta.getMappings(), offset, limit );
+            data.helper.getModelData( meta.getModelName(), filter, meta.getMappings(), offset, limit );
           for ( Row row : rows ) {
             try {
               putRow( row, rowMeta );

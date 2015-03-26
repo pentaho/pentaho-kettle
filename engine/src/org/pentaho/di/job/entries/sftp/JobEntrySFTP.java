@@ -578,9 +578,9 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
             logDetailed( BaseMessages.getString( PKG, "JobSFTP.Log.TargetFolderExists", realTargetDirectory ) );
           }
         } else {
-          logError( BaseMessages.getString( PKG, "JobSFTP.Error.TargetFolderNotExists", realTargetDirectory ) );
           if ( !createtargetfolder ) {
             // Error..Target folder can not be found !
+            logError( BaseMessages.getString( PKG, "JobSFTP.Error.TargetFolderNotExists", realTargetDirectory ) );
             result.setNrErrors( 1 );
             return result;
           } else {

@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
 import java.sql.Blob;
@@ -37,6 +38,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -3087,6 +3089,12 @@ public class ValueMetaBase implements ValueMetaInterface {
               case TYPE_BINARY:
                 string = XMLHandler.encodeBinaryData( (byte[]) object );
                 break;
+              case TYPE_TIMESTAMP:
+                string = XMLHandler.timestamp2string( (Timestamp)  object );
+                break;
+              case TYPE_INET:
+                string = ( (InetAddress) object ).toString();
+                break;
               default:
                 throw new IOException( toString() + " : Unable to serialize data type to XML " + getType() );
             }
@@ -4351,6 +4359,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       switch ( type ) {
         case java.sql.Types.CHAR:
         case java.sql.Types.VARCHAR:
+        case java.sql.Types.NVARCHAR:
         case java.sql.Types.LONGVARCHAR: // Character Large Object
           valtype = ValueMetaInterface.TYPE_STRING;
           if ( !ignoreLength ) {
@@ -4359,6 +4368,7 @@ public class ValueMetaBase implements ValueMetaInterface {
           break;
 
         case java.sql.Types.CLOB:
+        case java.sql.Types.NCLOB:
           valtype = ValueMetaInterface.TYPE_STRING;
           length = DatabaseMeta.CLOB_LENGTH;
           isClob = true;
@@ -4476,6 +4486,7 @@ public class ValueMetaBase implements ValueMetaInterface {
               precision = -1;
             }
           }
+          
           break;
 
         case java.sql.Types.TIMESTAMP:
@@ -4568,8 +4579,13 @@ public class ValueMetaBase implements ValueMetaInterface {
           throw new SQLException( e );
         }
       }
-
-      return v;
+      
+      ValueMetaInterface newValueMetaInterface = databaseMeta.getDatabaseInterface().customizeValueFromSQLType( v, rm, index );
+      if( newValueMetaInterface != null ) {
+        return newValueMetaInterface;
+      } else {
+        return v;
+      }
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Error determining value metadata from SQL resultset metadata", e );
     }

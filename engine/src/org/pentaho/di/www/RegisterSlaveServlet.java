@@ -22,7 +22,11 @@
 
 package org.pentaho.di.www;
 
-import java.io.BufferedReader;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -30,11 +34,6 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 public class RegisterSlaveServlet extends BaseHttpServlet implements CartePluginInterface {
   private static final long serialVersionUID = 8513820270964866132L;
@@ -52,6 +51,68 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements CartePlugin
     super( detections, isJetty );
   }
 
+  /**
+
+  <div id="mindtouch">
+  <h1>/kettle/registerSlave/</h1>
+  <a name="POST"></a>
+  <h2>POST</h2>
+  <p>Registers slave server in the master.
+  The method is used to add or update information of slave server.</p>
+  
+  <p><b>Example Request:</b><br />
+  <pre function="syntax.xml">
+  POST /kettle/registerSlave/
+  </pre>
+  Request body should contain xml containing slave server description.
+  </p>
+
+<h3>Response Body</h3>
+
+<table class="pentaho-table">
+  <tbody>
+    <tr>
+      <td align="right">element:</td>
+      <td>(custom)</td>
+    </tr>
+    <tr>
+      <td align="right">media types:</td>
+      <td>text/xml</td>
+    </tr>
+  </tbody>
+</table>
+  <p>Response contains slave server name or error stack trace
+if an error occurred. Response has <code>result</code> OK if there were no errors. Otherwise it returns ERROR.</p>
+  
+  <p><b>Example Response:</b></p>
+  <pre function="syntax.xml">
+  <?xml version="1.0" encoding="UTF-8"?>
+  <webresult>
+    <result>OK</result>
+    <message>Slave server detection &#x27;Dynamic slave &#x5b;localhost&#x3a;901&#x5d;&#x27; was replaced in the list.</message>
+    <id/>
+  </webresult>
+  </pre>
+  
+  <h3>Status Codes</h3>
+  <table class="pentaho-table">
+<tbody>
+  <tr>
+    <th>code</th>
+    <th>description</th>
+  </tr>
+  <tr>
+    <td>200</td>
+    <td>Request was processed and XML response is returned.</td>
+  </tr>
+  <tr>
+    <td>500</td>
+    <td>Internal server error occurs during request processing.</td>
+  </tr>
+</tbody>
+</table>
+</div>
+*/
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
     IOException {
     if ( isJettyMode() && !request.getRequestURI().startsWith( CONTEXT_PATH ) ) {
@@ -63,7 +124,6 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements CartePlugin
     }
 
     PrintWriter out = response.getWriter();
-    BufferedReader in = request.getReader();
     if ( log.isDetailed() ) {
       logDetailed( "Encoding: " + request.getCharacterEncoding() );
     }
@@ -76,16 +136,9 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements CartePlugin
 
     try {
       // First read the slave server information in memory from the request
-      //
-      StringBuilder xml = new StringBuilder( request.getContentLength() );
-      int c;
-      while ( ( c = in.read() ) != -1 ) {
-        xml.append( (char) c );
-      }
-
       // Parse the XML, create a transformation configuration
       //
-      Document document = XMLHandler.loadXMLString( xml.toString() );
+      Document document = XMLHandler.loadXMLFile( request.getInputStream() );
       Node node = XMLHandler.getSubNode( document, SlaveServerDetection.XML_TAG );
       SlaveServerDetection slaveServerDetection = new SlaveServerDetection( node );
 

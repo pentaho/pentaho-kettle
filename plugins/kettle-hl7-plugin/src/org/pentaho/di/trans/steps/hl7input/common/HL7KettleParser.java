@@ -80,10 +80,6 @@ public class HL7KettleParser {
               List<String> list = nameMap.get( types[t].getName() );
               if ( list != null && c - 1 < list.size() ) {
                 description = list.get( c - 1 );
-              } else {
-                /*
-                 * if (list==null) { System.out.println("Unknown data type name: "+types[t].getName()); }
-                 */
               }
 
               Group group = structure.getParent();

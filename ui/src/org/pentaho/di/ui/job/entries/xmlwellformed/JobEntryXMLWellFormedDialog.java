@@ -769,7 +769,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
         }
 
         if ( jobEntry.wildcard[i] != null ) {
-          ti.setText( 3, jobEntry.wildcard[i] );
+          ti.setText( 2, jobEntry.wildcard[i] );
         }
       }
       wFields.setRowNums();

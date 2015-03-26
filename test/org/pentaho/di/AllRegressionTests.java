@@ -26,6 +26,7 @@ import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.pentaho.di.core.database.ConnectionPoolUtilIntegrationTest;
 import org.pentaho.di.core.database.DatabaseTest;
 import org.pentaho.di.core.parameters.ParameterSimpleTransTest;
 import org.pentaho.di.core.row.ValueDataUtilTest;
@@ -77,6 +78,7 @@ public class AllRegressionTests {
     suite.addTestSuite( ParameterSimpleTransTest.class );
     suite.addTestSuite( ValueDataUtilTest.class );
     suite.addTest( new JUnit4TestAdapter( DatabaseTest.class ) );
+    suite.addTest( new JUnit4TestAdapter( ConnectionPoolUtilIntegrationTest.class ) );
     suite.addTestSuite( HopTest.class );
     suite.addTestSuite( InjectorTest.class );
     suite.addTestSuite( RowGeneratorTest.class );

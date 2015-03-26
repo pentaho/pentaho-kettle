@@ -147,6 +147,7 @@ public class RandomValueDialog extends BaseStepDialog implements StepDialogInter
         if ( string != null ) {
           TableView tv = (TableView) e.widget;
           tv.setText( string, e.x, e.y );
+          input.setChanged();
         }
       }
     } );

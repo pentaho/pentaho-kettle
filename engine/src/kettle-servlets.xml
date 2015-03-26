@@ -37,12 +37,19 @@
   <servlet id="addJob"> <description>Add a job to the server</description> <classname>org.pentaho.di.www.AddJobServlet</classname> </servlet>
   <servlet id="removeJob"> <description>Remove a job from the server</description> <classname>org.pentaho.di.www.RemoveJobServlet</classname> </servlet>
   <servlet id="runJob"> <description>Run a job directly from a repository</description> <classname>org.pentaho.di.www.RunJobServlet</classname> </servlet>
+  <servlet id="executeJob"> <description>Execute (prepare and start) a specific job</description> <classname>org.pentaho.di.www.ExecuteJobServlet</classname> </servlet>
   <servlet id="jobImage"> <description>Generate a PNG image of a job</description> <classname>org.pentaho.di.www.GetJobImageServlet</classname> </servlet>
+  
+  <servlet id="registerJob"> <description>Add a job to the server</description> <classname>org.pentaho.di.www.RegisterJobServlet</classname> </servlet>
+  <servlet id="registerTrans"> <description>Add a transformation to the server</description> <classname>org.pentaho.di.www.RegisterTransServlet</classname> </servlet>
+  <servlet id="registerPackage"> <description>Upload a resources export file</description> <classname>org.pentaho.di.www.RegisterPackageServlet</classname> </servlet>
+  
   
   <!-- The dynamic clustering ... -->
   
   <servlet id="registerSlave"> <description>Register a slave server</description> <classname>org.pentaho.di.www.RegisterSlaveServlet</classname> </servlet>
   <servlet id="getSlaves"> <description>List all registered slave servers</description> <classname>org.pentaho.di.www.GetSlavesServlet</classname> </servlet>
+  <servlet id="properties"> <description>Get properties from kettle.properties</description> <classname>org.pentaho.di.www.GetPropertiesServlet</classname> </servlet>
 
   <!-- Easier remote execution ... -->
 

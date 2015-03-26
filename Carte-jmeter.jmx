@@ -1,0 +1,1989 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="2.7" jmeter="2.12 r1636949">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="CartePlan" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Standard User Load" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">750</stringProp>
+        <longProp name="ThreadGroup.start_time">1415785637000</longProp>
+        <longProp name="ThreadGroup.end_time">1415785637000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${__property(run.server,,localhost)}</stringProp>
+          <stringProp name="HTTPSampler.port">${__property(run.port,,8088)}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager" enabled="true">
+          <collectionProp name="CookieManager.cookies"/>
+          <boolProp name="CookieManager.clearEachIteration">false</boolProp>
+        </CookieManager>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Basic Y2x1c3RlcjpjbHVzdGVy</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="demo_files_dir" elementType="Argument">
+              <stringProp name="Argument.name">demo_files_dir</stringProp>
+              <stringProp name="Argument.value">./testfiles/jmeter</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Carte" enabled="true"/>
+        <hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="AddExportServlet" enabled="true"/>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Add ExportTrans" enabled="true">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/addExport/?load=dummy_trans.ktr&amp;type=trans</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
+              <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
+                <collectionProp name="HTTPFileArgs.files">
+                  <elementProp name="${demo_files_dir}\dummy_trans.zip" elementType="HTTPFileArg">
+                    <stringProp name="File.path">${demo_files_dir}\dummy_trans.zip</stringProp>
+                    <stringProp name="File.paramname"></stringProp>
+                    <stringProp name="File.mimetype"></stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Add ExportJob" enabled="true">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/addExport/?load=dummy_job.kjb&amp;type=job</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
+              <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
+                <collectionProp name="HTTPFileArgs.files">
+                  <elementProp name="${demo_files_dir}\dummy_job.zip" elementType="HTTPFileArg">
+                    <stringProp name="File.path">${demo_files_dir}\dummy_job.zip</stringProp>
+                    <stringProp name="File.paramname"></stringProp>
+                    <stringProp name="File.mimetype"></stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="AddJobServlet" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">&lt;job_configuration&gt;&#xd;
+&lt;job&gt;&#xd;
+  &lt;name&gt;dummy_job&lt;/name&gt;&#xd;
+    &lt;description/&gt;&#xd;
+    &lt;extended_description/&gt;&#xd;
+    &lt;job_version/&gt;&#xd;
+  &lt;directory&gt;&amp;#x2f;&lt;/directory&gt;&#xd;
+  &lt;created_user&gt;-&lt;/created_user&gt;&#xd;
+  &lt;created_date&gt;2014&amp;#x2f;11&amp;#x2f;12 09&amp;#x3a;18&amp;#x3a;56.088&lt;/created_date&gt;&#xd;
+  &lt;modified_user&gt;-&lt;/modified_user&gt;&#xd;
+  &lt;modified_date&gt;2014&amp;#x2f;11&amp;#x2f;12 09&amp;#x3a;18&amp;#x3a;56.088&lt;/modified_date&gt;&#xd;
+    &lt;parameters&gt;&#xd;
+    &lt;/parameters&gt;&#xd;
+  &lt;connection&gt;&#xd;
+    &lt;name&gt;AgileBI&lt;/name&gt;&#xd;
+    &lt;server&gt;localhost&lt;/server&gt;&#xd;
+    &lt;type&gt;MONETDB&lt;/type&gt;&#xd;
+    &lt;access&gt;Native&lt;/access&gt;&#xd;
+    &lt;database&gt;pentaho-instaview&lt;/database&gt;&#xd;
+    &lt;port&gt;50006&lt;/port&gt;&#xd;
+    &lt;username&gt;monetdb&lt;/username&gt;&#xd;
+    &lt;password&gt;Encrypted 2be98afc86aa7f2e4cb14a17edb86abd8&lt;/password&gt;&#xd;
+    &lt;servername/&gt;&#xd;
+    &lt;data_tablespace/&gt;&#xd;
+    &lt;index_tablespace/&gt;&#xd;
+    &lt;read_only&gt;true&lt;/read_only&gt;&#xd;
+    &lt;attributes&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;EXTRA_OPTION_INFOBRIGHT.characterEncoding&lt;/code&gt;&lt;attribute&gt;UTF-8&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;EXTRA_OPTION_MYSQL.defaultFetchSize&lt;/code&gt;&lt;attribute&gt;500&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;EXTRA_OPTION_MYSQL.useCursorFetch&lt;/code&gt;&lt;attribute&gt;true&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;PORT_NUMBER&lt;/code&gt;&lt;attribute&gt;50006&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;PRESERVE_RESERVED_WORD_CASE&lt;/code&gt;&lt;attribute&gt;Y&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;SUPPORTS_BOOLEAN_DATA_TYPE&lt;/code&gt;&lt;attribute&gt;Y&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;SUPPORTS_TIMESTAMP_DATA_TYPE&lt;/code&gt;&lt;attribute&gt;Y&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+    &lt;/attributes&gt;&#xd;
+  &lt;/connection&gt;&#xd;
+    &lt;slaveservers&gt;&#xd;
+      &lt;slaveserver&gt;&lt;name&gt;clr&lt;/name&gt;&lt;hostname&gt;localhost&lt;/hostname&gt;&lt;port&gt;8088&lt;/port&gt;&lt;webAppName/&gt;&lt;username&gt;cluster&lt;/username&gt;&#xd;
+				&lt;password&gt;Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8&lt;/password&gt;&lt;proxy_hostname/&gt;&lt;proxy_port/&gt;&lt;non_proxy_hosts/&gt;&lt;master&gt;N&lt;/master&gt;&#xd;
+			&lt;/slaveserver&gt;&#xd;
+    &lt;/slaveservers&gt;&#xd;
+&lt;job-log-table&gt;&lt;connection/&gt;&#xd;
+&lt;schema/&gt;&#xd;
+&lt;table/&gt;&#xd;
+&lt;size_limit_lines/&gt;&#xd;
+&lt;interval/&gt;&#xd;
+&lt;timeout_days/&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ID_JOB&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ID_JOB&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;CHANNEL_ID&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;CHANNEL_ID&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;JOBNAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;JOBNAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;STATUS&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;STATUS&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_READ&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_READ&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_WRITTEN&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_WRITTEN&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_UPDATED&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_UPDATED&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_INPUT&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_INPUT&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_OUTPUT&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_OUTPUT&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_REJECTED&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_REJECTED&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ERRORS&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ERRORS&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;STARTDATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;STARTDATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ENDDATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ENDDATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOGDATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LOGDATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;DEPDATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;DEPDATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;REPLAYDATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;REPLAYDATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOG_FIELD&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LOG_FIELD&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;EXECUTING_SERVER&lt;/id&gt;&lt;enabled&gt;N&lt;/enabled&gt;&lt;name&gt;EXECUTING_SERVER&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;EXECUTING_USER&lt;/id&gt;&lt;enabled&gt;N&lt;/enabled&gt;&lt;name&gt;EXECUTING_USER&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;START_JOB_ENTRY&lt;/id&gt;&lt;enabled&gt;N&lt;/enabled&gt;&lt;name&gt;START_JOB_ENTRY&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;CLIENT&lt;/id&gt;&lt;enabled&gt;N&lt;/enabled&gt;&lt;name&gt;CLIENT&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;/job-log-table&gt;&#xd;
+&lt;jobentry-log-table&gt;&#xd;
+&lt;connection/&gt;&#xd;
+&lt;schema/&gt;&#xd;
+&lt;table/&gt;&#xd;
+&lt;timeout_days/&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ID_BATCH&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ID_BATCH&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;CHANNEL_ID&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;CHANNEL_ID&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOG_DATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LOG_DATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;JOBNAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;TRANSNAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;JOBENTRYNAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;STEPNAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_READ&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_READ&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_WRITTEN&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_WRITTEN&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_UPDATED&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_UPDATED&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_INPUT&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_INPUT&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_OUTPUT&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_OUTPUT&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_REJECTED&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_REJECTED&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ERRORS&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ERRORS&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;RESULT&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;RESULT&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;NR_RESULT_ROWS&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;NR_RESULT_ROWS&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;NR_RESULT_FILES&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;NR_RESULT_FILES&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOG_FIELD&lt;/id&gt;&lt;enabled&gt;N&lt;/enabled&gt;&lt;name&gt;LOG_FIELD&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;COPY_NR&lt;/id&gt;&lt;enabled&gt;N&lt;/enabled&gt;&lt;name&gt;COPY_NR&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;/jobentry-log-table&gt;&#xd;
+&lt;channel-log-table&gt;&lt;connection/&gt;&#xd;
+&lt;schema/&gt;&#xd;
+&lt;table/&gt;&#xd;
+&lt;timeout_days/&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ID_BATCH&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ID_BATCH&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;CHANNEL_ID&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;CHANNEL_ID&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOG_DATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LOG_DATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOGGING_OBJECT_TYPE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LOGGING_OBJECT_TYPE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;OBJECT_NAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;OBJECT_NAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;OBJECT_COPY&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;OBJECT_COPY&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;REPOSITORY_DIRECTORY&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;REPOSITORY_DIRECTORY&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;FILENAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;FILENAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;OBJECT_ID&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;OBJECT_ID&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;OBJECT_REVISION&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;OBJECT_REVISION&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;PARENT_CHANNEL_ID&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;PARENT_CHANNEL_ID&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ROOT_CHANNEL_ID&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ROOT_CHANNEL_ID&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;/channel-log-table&gt;&#xd;
+&lt;checkpoint-log-table&gt;&lt;connection/&gt;&#xd;
+&lt;schema/&gt;&#xd;
+&lt;table/&gt;&#xd;
+&lt;timeout_days/&gt;&#xd;
+&lt;max_nr_retries/&gt;&#xd;
+&lt;run_retry_period/&gt;&#xd;
+&lt;namespace_parameter/&gt;&#xd;
+&lt;save_parameters&gt;Y&lt;/save_parameters&gt;&#xd;
+&lt;save_result_rows&gt;Y&lt;/save_result_rows&gt;&#xd;
+&lt;save_result_files&gt;Y&lt;/save_result_files&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ID_JOB_RUN&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ID_JOB_RUN&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ID_JOB&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ID_JOB&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;JOBNAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;JOBNAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;NAMESPACE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;NAMESPACE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;CHECKPOINT_NAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;CHECKPOINT_NAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;CHECKPOINT_COPYNR&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;CHECKPOINT_COPYNR&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ATTEMPT_NR&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ATTEMPT_NR&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;JOB_RUN_START_DATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;JOB_RUN_START_DATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOGDATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LOGDATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;RESULT_XML&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;RESULT_XML&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;PARAMETER_XML&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;PARAMETER_XML&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;/checkpoint-log-table&gt;&#xd;
+   &lt;pass_batchid&gt;N&lt;/pass_batchid&gt;&#xd;
+   &lt;shared_objects_file/&gt;&#xd;
+  &lt;entries&gt;&#xd;
+    &lt;entry&gt;&#xd;
+      &lt;name&gt;START&lt;/name&gt;&#xd;
+      &lt;description/&gt;&#xd;
+      &lt;type&gt;SPECIAL&lt;/type&gt;&#xd;
+      &lt;start&gt;Y&lt;/start&gt;&#xd;
+      &lt;dummy&gt;N&lt;/dummy&gt;&#xd;
+      &lt;repeat&gt;N&lt;/repeat&gt;&#xd;
+      &lt;schedulerType&gt;0&lt;/schedulerType&gt;&#xd;
+      &lt;intervalSeconds&gt;0&lt;/intervalSeconds&gt;&#xd;
+      &lt;intervalMinutes&gt;60&lt;/intervalMinutes&gt;&#xd;
+      &lt;hour&gt;12&lt;/hour&gt;&#xd;
+      &lt;minutes&gt;0&lt;/minutes&gt;&#xd;
+      &lt;weekDay&gt;1&lt;/weekDay&gt;&#xd;
+      &lt;DayOfMonth&gt;1&lt;/DayOfMonth&gt;&#xd;
+      &lt;parallel&gt;N&lt;/parallel&gt;&#xd;
+      &lt;draw&gt;Y&lt;/draw&gt;&#xd;
+      &lt;nr&gt;0&lt;/nr&gt;&#xd;
+      &lt;xloc&gt;182&lt;/xloc&gt;&#xd;
+      &lt;yloc&gt;156&lt;/yloc&gt;&#xd;
+      &lt;/entry&gt;&#xd;
+    &lt;entry&gt;&#xd;
+      &lt;name&gt;DUMMY&lt;/name&gt;&#xd;
+      &lt;description/&gt;&#xd;
+      &lt;type&gt;SPECIAL&lt;/type&gt;&#xd;
+      &lt;start&gt;N&lt;/start&gt;&#xd;
+      &lt;dummy&gt;Y&lt;/dummy&gt;&#xd;
+      &lt;repeat&gt;N&lt;/repeat&gt;&#xd;
+      &lt;schedulerType&gt;0&lt;/schedulerType&gt;&#xd;
+      &lt;intervalSeconds&gt;0&lt;/intervalSeconds&gt;&#xd;
+      &lt;intervalMinutes&gt;60&lt;/intervalMinutes&gt;&#xd;
+      &lt;hour&gt;12&lt;/hour&gt;&#xd;
+      &lt;minutes&gt;0&lt;/minutes&gt;&#xd;
+      &lt;weekDay&gt;1&lt;/weekDay&gt;&#xd;
+      &lt;DayOfMonth&gt;1&lt;/DayOfMonth&gt;&#xd;
+      &lt;parallel&gt;N&lt;/parallel&gt;&#xd;
+      &lt;draw&gt;Y&lt;/draw&gt;&#xd;
+      &lt;nr&gt;0&lt;/nr&gt;&#xd;
+      &lt;xloc&gt;404&lt;/xloc&gt;&#xd;
+      &lt;yloc&gt;145&lt;/yloc&gt;&#xd;
+      &lt;/entry&gt;&#xd;
+  &lt;/entries&gt;&#xd;
+  &lt;hops&gt;&#xd;
+    &lt;hop&gt;&#xd;
+      &lt;from&gt;START&lt;/from&gt;&#xd;
+      &lt;to&gt;DUMMY&lt;/to&gt;&#xd;
+      &lt;from_nr&gt;0&lt;/from_nr&gt;&#xd;
+      &lt;to_nr&gt;0&lt;/to_nr&gt;&#xd;
+      &lt;enabled&gt;Y&lt;/enabled&gt;&#xd;
+      &lt;evaluation&gt;Y&lt;/evaluation&gt;&#xd;
+      &lt;unconditional&gt;Y&lt;/unconditional&gt;&#xd;
+    &lt;/hop&gt;&#xd;
+  &lt;/hops&gt;&#xd;
+  &lt;notepads&gt;&#xd;
+  &lt;/notepads&gt;&#xd;
+&#xd;
+&lt;/job&gt;&#xd;
+  &lt;job_execution_configuration&gt;&#xd;
+    &lt;exec_local&gt;N&lt;/exec_local&gt;&#xd;
+    &lt;exec_remote&gt;Y&lt;/exec_remote&gt;&#xd;
+    &lt;slaveserver&gt;&lt;name&gt;clr&lt;/name&gt;&lt;hostname&gt;localhost&lt;/hostname&gt;&lt;port&gt;8088&lt;/port&gt;&lt;webAppName/&gt;&#xd;
+    &lt;username&gt;cluster&lt;/username&gt;&lt;password&gt;Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8&lt;/password&gt;&#xd;
+    &lt;proxy_hostname/&gt;&lt;proxy_port/&gt;&lt;non_proxy_hosts/&gt;&lt;master&gt;N&lt;/master&gt;&#xd;
+    &lt;/slaveserver&gt;&#xd;
+    &lt;pass_export&gt;N&lt;/pass_export&gt;&#xd;
+    &lt;parameters&gt;&#xd;
+    &lt;/parameters&gt;&#xd;
+    &lt;variables&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Job.Filename.Directory&lt;/name&gt;&lt;value&gt;file&amp;#x3a;&amp;#x2f;&amp;#x2f;&amp;#x2f;temp&lt;/value&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Job.Filename.Name&lt;/name&gt;&lt;value&gt;dummy_job.kjb&lt;/value&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Job.Name&lt;/name&gt;&lt;value&gt;dummy_job&lt;/value&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Job.Repository.Directory&lt;/name&gt;&lt;value&gt;&amp;#x2f;&lt;/value&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Job.Run.AttemptNr&lt;/name&gt;&lt;value/&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Job.Run.ID&lt;/name&gt;&lt;value/&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Transformation.Filename.Directory&lt;/name&gt;&lt;value/&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Transformation.Filename.Name&lt;/name&gt;&lt;value/&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Transformation.Name&lt;/name&gt;&lt;value/&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Transformation.Repository.Directory&lt;/name&gt;&lt;value/&gt;&lt;/variable&gt;&#xd;
+    &lt;/variables&gt;&#xd;
+    &lt;arguments&gt;&#xd;
+    &lt;argument&gt;&lt;name&gt;01&lt;/name&gt;&lt;value/&gt;&lt;/argument&gt;&#xd;
+    &lt;argument&gt;&lt;name&gt;02&lt;/name&gt;&lt;value/&gt;&lt;/argument&gt;&#xd;
+    &lt;argument&gt;&lt;name&gt;03&lt;/name&gt;&lt;value/&gt;&lt;/argument&gt;&#xd;
+    &lt;argument&gt;&lt;name&gt;04&lt;/name&gt;&lt;value/&gt;&lt;/argument&gt;&#xd;
+    &lt;argument&gt;&lt;name&gt;05&lt;/name&gt;&lt;value/&gt;&lt;/argument&gt;&#xd;
+    &lt;argument&gt;&lt;name&gt;06&lt;/name&gt;&lt;value/&gt;&lt;/argument&gt;&#xd;
+    &lt;argument&gt;&lt;name&gt;07&lt;/name&gt;&lt;value/&gt;&lt;/argument&gt;&#xd;
+    &lt;argument&gt;&lt;name&gt;08&lt;/name&gt;&lt;value/&gt;&lt;/argument&gt;&#xd;
+    &lt;argument&gt;&lt;name&gt;09&lt;/name&gt;&lt;value/&gt;&lt;/argument&gt;&#xd;
+    &lt;argument&gt;&lt;name&gt;10&lt;/name&gt;&lt;value/&gt;&lt;/argument&gt;&#xd;
+    &lt;/arguments&gt;&#xd;
+    &lt;replay_date/&gt;&#xd;
+    &lt;safe_mode&gt;N&lt;/safe_mode&gt;&#xd;
+    &lt;log_level&gt;Basic&lt;/log_level&gt;&#xd;
+    &lt;clear_log&gt;Y&lt;/clear_log&gt;&#xd;
+    &lt;start_copy_name/&gt;&#xd;
+    &lt;start_copy_nr&gt;0&lt;/start_copy_nr&gt;&#xd;
+    &lt;gather_metrics&gt;N&lt;/gather_metrics&gt;&#xd;
+    &lt;expand_remote_job&gt;N&lt;/expand_remote_job&gt;&#xd;
+&lt;/job_execution_configuration&gt;&#xd;
+&lt;/job_configuration&gt;</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/addJob/?xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">text/xml;charset=UTF-8</stringProp>
+                </elementProp>
+              </collectionProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="AddTransServlet" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">&lt;transformation_configuration&gt;&#xd;
+&lt;transformation&gt;&#xd;
+  &lt;info&gt;&#xd;
+    &lt;name&gt;dummy-trans&lt;/name&gt;&#xd;
+    &lt;description/&gt;&#xd;
+    &lt;extended_description/&gt;&#xd;
+    &lt;trans_version/&gt;&#xd;
+    &lt;trans_type&gt;Normal&lt;/trans_type&gt;&#xd;
+    &lt;trans_status&gt;0&lt;/trans_status&gt;&#xd;
+    &lt;directory&gt;&amp;#x2f;&lt;/directory&gt;&#xd;
+    &lt;parameters&gt;&#xd;
+    &lt;/parameters&gt;&#xd;
+    &lt;log&gt;&#xd;
+&lt;trans-log-table&gt;&lt;connection/&gt;&#xd;
+&lt;schema/&gt;&#xd;
+&lt;table/&gt;&#xd;
+&lt;size_limit_lines/&gt;&#xd;
+&lt;interval/&gt;&#xd;
+&lt;timeout_days/&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ID_BATCH&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ID_BATCH&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;CHANNEL_ID&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;CHANNEL_ID&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;TRANSNAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;TRANSNAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;STATUS&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;STATUS&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_READ&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_READ&lt;/name&gt;&lt;subject/&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_WRITTEN&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_WRITTEN&lt;/name&gt;&lt;subject/&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_UPDATED&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_UPDATED&lt;/name&gt;&lt;subject/&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_INPUT&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_INPUT&lt;/name&gt;&lt;subject/&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_OUTPUT&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_OUTPUT&lt;/name&gt;&lt;subject/&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_REJECTED&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_REJECTED&lt;/name&gt;&lt;subject/&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ERRORS&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ERRORS&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;STARTDATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;STARTDATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ENDDATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ENDDATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOGDATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LOGDATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;DEPDATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;DEPDATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;REPLAYDATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;REPLAYDATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOG_FIELD&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LOG_FIELD&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;EXECUTING_SERVER&lt;/id&gt;&lt;enabled&gt;N&lt;/enabled&gt;&lt;name&gt;EXECUTING_SERVER&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;EXECUTING_USER&lt;/id&gt;&lt;enabled&gt;N&lt;/enabled&gt;&lt;name&gt;EXECUTING_USER&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;CLIENT&lt;/id&gt;&lt;enabled&gt;N&lt;/enabled&gt;&lt;name&gt;CLIENT&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;/trans-log-table&gt;&#xd;
+&#xd;
+&lt;perf-log-table&gt;&lt;connection/&gt;&#xd;
+&lt;schema/&gt;&#xd;
+&lt;table/&gt;&#xd;
+&lt;interval/&gt;&#xd;
+&lt;timeout_days/&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ID_BATCH&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ID_BATCH&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;SEQ_NR&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;SEQ_NR&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOGDATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LOGDATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;TRANSNAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;TRANSNAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;STEPNAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;STEPNAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;STEP_COPY&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;STEP_COPY&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_READ&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_READ&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_WRITTEN&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_WRITTEN&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_UPDATED&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_UPDATED&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_INPUT&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_INPUT&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_OUTPUT&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_OUTPUT&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_REJECTED&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_REJECTED&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ERRORS&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ERRORS&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;INPUT_BUFFER_ROWS&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;INPUT_BUFFER_ROWS&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;OUTPUT_BUFFER_ROWS&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;OUTPUT_BUFFER_ROWS&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;/perf-log-table&gt;&#xd;
+&lt;channel-log-table&gt;&lt;connection/&gt;&#xd;
+&lt;schema/&gt;&#xd;
+&lt;table/&gt;&#xd;
+&lt;timeout_days/&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ID_BATCH&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ID_BATCH&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;CHANNEL_ID&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;CHANNEL_ID&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOG_DATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LOG_DATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOGGING_OBJECT_TYPE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LOGGING_OBJECT_TYPE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;OBJECT_NAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;OBJECT_NAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;OBJECT_COPY&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;OBJECT_COPY&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;REPOSITORY_DIRECTORY&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;REPOSITORY_DIRECTORY&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;FILENAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;FILENAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;OBJECT_ID&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;OBJECT_ID&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;OBJECT_REVISION&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;OBJECT_REVISION&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;PARENT_CHANNEL_ID&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;PARENT_CHANNEL_ID&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ROOT_CHANNEL_ID&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ROOT_CHANNEL_ID&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;/channel-log-table&gt;&#xd;
+&lt;step-log-table&gt;&lt;connection/&gt;&#xd;
+&lt;schema/&gt;&#xd;
+&lt;table/&gt;&#xd;
+&lt;timeout_days/&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ID_BATCH&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ID_BATCH&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;CHANNEL_ID&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;CHANNEL_ID&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOG_DATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LOG_DATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;TRANSNAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;TRANSNAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;STEPNAME&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;STEPNAME&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;STEP_COPY&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;STEP_COPY&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_READ&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_READ&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_WRITTEN&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_WRITTEN&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_UPDATED&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_UPDATED&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_INPUT&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_INPUT&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_OUTPUT&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_OUTPUT&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LINES_REJECTED&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LINES_REJECTED&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ERRORS&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ERRORS&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOG_FIELD&lt;/id&gt;&lt;enabled&gt;N&lt;/enabled&gt;&lt;name&gt;LOG_FIELD&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;/step-log-table&gt;&#xd;
+&lt;metrics-log-table&gt;&lt;connection/&gt;&#xd;
+&lt;schema/&gt;&#xd;
+&lt;table/&gt;&#xd;
+&lt;timeout_days/&gt;&#xd;
+&lt;field&gt;&lt;id&gt;ID_BATCH&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;ID_BATCH&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;CHANNEL_ID&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;CHANNEL_ID&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;LOG_DATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;LOG_DATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;METRICS_DATE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;METRICS_DATE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;METRICS_CODE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;METRICS_CODE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;METRICS_DESCRIPTION&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;METRICS_DESCRIPTION&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;METRICS_SUBJECT&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;METRICS_SUBJECT&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;METRICS_TYPE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;METRICS_TYPE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;field&gt;&lt;id&gt;METRICS_VALUE&lt;/id&gt;&lt;enabled&gt;Y&lt;/enabled&gt;&lt;name&gt;METRICS_VALUE&lt;/name&gt;&lt;/field&gt;&#xd;
+&lt;/metrics-log-table&gt;&#xd;
+    &lt;/log&gt;&#xd;
+    &lt;maxdate&gt;&#xd;
+      &lt;connection/&gt;&#xd;
+      &lt;table/&gt;&#xd;
+      &lt;field/&gt;&#xd;
+      &lt;offset&gt;0.0&lt;/offset&gt;&#xd;
+      &lt;maxdiff&gt;0.0&lt;/maxdiff&gt;&#xd;
+    &lt;/maxdate&gt;&#xd;
+    &lt;size_rowset&gt;10000&lt;/size_rowset&gt;&#xd;
+    &lt;sleep_time_empty&gt;50&lt;/sleep_time_empty&gt;&#xd;
+    &lt;sleep_time_full&gt;50&lt;/sleep_time_full&gt;&#xd;
+    &lt;unique_connections&gt;N&lt;/unique_connections&gt;&#xd;
+    &lt;feedback_shown&gt;Y&lt;/feedback_shown&gt;&#xd;
+    &lt;feedback_size&gt;50000&lt;/feedback_size&gt;&#xd;
+    &lt;using_thread_priorities&gt;Y&lt;/using_thread_priorities&gt;&#xd;
+    &lt;shared_objects_file/&gt;&#xd;
+    &lt;capture_step_performance&gt;N&lt;/capture_step_performance&gt;&#xd;
+    &lt;step_performance_capturing_delay&gt;1000&lt;/step_performance_capturing_delay&gt;&#xd;
+    &lt;step_performance_capturing_size_limit&gt;100&lt;/step_performance_capturing_size_limit&gt;&#xd;
+    &lt;dependencies&gt;&#xd;
+    &lt;/dependencies&gt;&#xd;
+    &lt;partitionschemas&gt;&#xd;
+    &lt;/partitionschemas&gt;&#xd;
+    &lt;slaveservers&gt;&#xd;
+         &lt;slaveserver&gt;&lt;name&gt;crt&lt;/name&gt;&lt;hostname&gt;127.0.0.1&lt;/hostname&gt;&lt;port&gt;8088&lt;/port&gt;&lt;webAppName/&gt;&#xd;
+         &lt;username&gt;cluster&lt;/username&gt;&lt;password&gt;Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8&lt;/password&gt;&#xd;
+         &lt;proxy_hostname/&gt;&lt;proxy_port/&gt;&lt;non_proxy_hosts/&gt;&lt;master&gt;N&lt;/master&gt;&lt;/slaveserver&gt;&#xd;
+    &lt;/slaveservers&gt;&#xd;
+    &lt;clusterschemas&gt;&#xd;
+    &lt;/clusterschemas&gt;&#xd;
+  &lt;created_user&gt;-&lt;/created_user&gt;&#xd;
+  &lt;created_date&gt;2014&amp;#x2f;11&amp;#x2f;12 06&amp;#x3a;57&amp;#x3a;13.445&lt;/created_date&gt;&#xd;
+  &lt;modified_user&gt;admin&lt;/modified_user&gt;&#xd;
+  &lt;modified_date&gt;2014&amp;#x2f;11&amp;#x2f;12 10&amp;#x3a;39&amp;#x3a;24.886&lt;/modified_date&gt;&#xd;
+  &lt;/info&gt;&#xd;
+  &lt;notepads&gt;&#xd;
+  &lt;/notepads&gt;&#xd;
+  &lt;connection&gt;&#xd;
+    &lt;name&gt;AgileBI&lt;/name&gt;&#xd;
+    &lt;server&gt;localhost&lt;/server&gt;&#xd;
+    &lt;type&gt;MONETDB&lt;/type&gt;&#xd;
+    &lt;access&gt;Native&lt;/access&gt;&#xd;
+    &lt;database&gt;pentaho-instaview&lt;/database&gt;&#xd;
+    &lt;port&gt;50006&lt;/port&gt;&#xd;
+    &lt;username&gt;monetdb&lt;/username&gt;&#xd;
+    &lt;password&gt;Encrypted 2be98afc86aa7f2e4cb14a17edb86abd8&lt;/password&gt;&#xd;
+    &lt;servername/&gt;&#xd;
+    &lt;data_tablespace/&gt;&#xd;
+    &lt;index_tablespace/&gt;&#xd;
+    &lt;read_only&gt;true&lt;/read_only&gt;&#xd;
+    &lt;attributes&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;EXTRA_OPTION_INFOBRIGHT.characterEncoding&lt;/code&gt;&lt;attribute&gt;UTF-8&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;EXTRA_OPTION_MYSQL.defaultFetchSize&lt;/code&gt;&lt;attribute&gt;500&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;EXTRA_OPTION_MYSQL.useCursorFetch&lt;/code&gt;&lt;attribute&gt;true&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;PORT_NUMBER&lt;/code&gt;&lt;attribute&gt;50006&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;PRESERVE_RESERVED_WORD_CASE&lt;/code&gt;&lt;attribute&gt;Y&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;SUPPORTS_BOOLEAN_DATA_TYPE&lt;/code&gt;&lt;attribute&gt;Y&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+      &lt;attribute&gt;&lt;code&gt;SUPPORTS_TIMESTAMP_DATA_TYPE&lt;/code&gt;&lt;attribute&gt;Y&lt;/attribute&gt;&lt;/attribute&gt;&#xd;
+    &lt;/attributes&gt;&#xd;
+  &lt;/connection&gt;&#xd;
+  &lt;order&gt;&#xd;
+  &lt;/order&gt;&#xd;
+  &lt;step&gt;&#xd;
+    &lt;name&gt;Dummy &amp;#x28;do nothing&amp;#x29;&lt;/name&gt;&#xd;
+    &lt;type&gt;Dummy&lt;/type&gt;&#xd;
+    &lt;description/&gt;&#xd;
+    &lt;distribute&gt;Y&lt;/distribute&gt;&#xd;
+    &lt;custom_distribution/&gt;&#xd;
+    &lt;copies&gt;1&lt;/copies&gt;&#xd;
+         &lt;partitioning&gt;&#xd;
+           &lt;method&gt;none&lt;/method&gt;&#xd;
+           &lt;schema_name/&gt;&#xd;
+           &lt;/partitioning&gt;&#xd;
+     &lt;cluster_schema/&gt;&#xd;
+ &lt;remotesteps&gt;   &lt;input&gt;   &lt;/input&gt;   &lt;output&gt;   &lt;/output&gt; &lt;/remotesteps&gt;    &lt;GUI&gt;&#xd;
+      &lt;xloc&gt;297&lt;/xloc&gt;&#xd;
+      &lt;yloc&gt;157&lt;/yloc&gt;&#xd;
+      &lt;draw&gt;Y&lt;/draw&gt;&#xd;
+      &lt;/GUI&gt;&#xd;
+    &lt;/step&gt;&#xd;
+&#xd;
+  &lt;step_error_handling&gt;&#xd;
+  &lt;/step_error_handling&gt;&#xd;
+   &lt;slave-step-copy-partition-distribution&gt;&#xd;
+&lt;/slave-step-copy-partition-distribution&gt;&#xd;
+   &lt;slave_transformation&gt;N&lt;/slave_transformation&gt;&#xd;
+&#xd;
+&lt;/transformation&gt;&#xd;
+  &lt;transformation_execution_configuration&gt;&#xd;
+    &lt;exec_local&gt;N&lt;/exec_local&gt;&#xd;
+    &lt;exec_remote&gt;Y&lt;/exec_remote&gt;&#xd;
+    &lt;slaveserver&gt;&lt;name&gt;crt&lt;/name&gt;&lt;hostname&gt;127.0.0.1&lt;/hostname&gt;&lt;port&gt;8088&lt;/port&gt;&lt;webAppName/&gt;&#xd;
+    &lt;username&gt;cluster&lt;/username&gt;&lt;password&gt;Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8&lt;/password&gt;&#xd;
+    &lt;proxy_hostname/&gt;&lt;proxy_port/&gt;&lt;non_proxy_hosts/&gt;&lt;master&gt;N&lt;/master&gt;&#xd;
+    &lt;/slaveserver&gt;&#xd;
+    &lt;pass_export&gt;N&lt;/pass_export&gt;&#xd;
+    &lt;exec_cluster&gt;N&lt;/exec_cluster&gt;&#xd;
+    &lt;cluster_post&gt;Y&lt;/cluster_post&gt;&#xd;
+    &lt;cluster_prepare&gt;Y&lt;/cluster_prepare&gt;&#xd;
+    &lt;cluster_start&gt;Y&lt;/cluster_start&gt;&#xd;
+    &lt;cluster_show_trans&gt;N&lt;/cluster_show_trans&gt;&#xd;
+    &lt;parameters&gt;&#xd;
+    &lt;/parameters&gt;&#xd;
+    &lt;variables&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Job.Filename.Directory&lt;/name&gt;&lt;value&gt;Parent Job File Directory&lt;/value&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Job.Filename.Name&lt;/name&gt;&lt;value&gt;Parent Job Filename&lt;/value&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Job.Name&lt;/name&gt;&lt;value&gt;Parent Job Name&lt;/value&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Job.Repository.Directory&lt;/name&gt;&lt;value&gt;Parent Job Repository Directory&lt;/value&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Job.Run.AttemptNr&lt;/name&gt;&lt;value/&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Job.Run.ID&lt;/name&gt;&lt;value/&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Transformation.Filename.Directory&lt;/name&gt;&lt;value&gt;file&amp;#x3a;&amp;#x2f;&amp;#x2f;&amp;#x2f;tmp&lt;/value&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Transformation.Filename.Name&lt;/name&gt;&lt;value&gt;dummy_trans.ktr&lt;/value&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Transformation.Name&lt;/name&gt;&lt;value&gt;dummy-trans&lt;/value&gt;&lt;/variable&gt;&#xd;
+    &lt;variable&gt;&lt;name&gt;Internal.Transformation.Repository.Directory&lt;/name&gt;&lt;value&gt;&amp;#x2f;&lt;/value&gt;&lt;/variable&gt;&#xd;
+    &lt;/variables&gt;&#xd;
+    &lt;arguments&gt;&#xd;
+    &lt;/arguments&gt;&#xd;
+    &lt;replay_date/&gt;&#xd;
+    &lt;safe_mode&gt;N&lt;/safe_mode&gt;&#xd;
+    &lt;log_level&gt;Basic&lt;/log_level&gt;&#xd;
+    &lt;log_file&gt;N&lt;/log_file&gt;&#xd;
+    &lt;log_filename/&gt;&#xd;
+    &lt;log_file_append&gt;N&lt;/log_file_append&gt;&#xd;
+    &lt;create_parent_folder&gt;N&lt;/create_parent_folder&gt;&#xd;
+    &lt;clear_log&gt;Y&lt;/clear_log&gt;&#xd;
+    &lt;gather_metrics&gt;Y&lt;/gather_metrics&gt;&#xd;
+    &lt;show_subcomponents&gt;Y&lt;/show_subcomponents&gt;&#xd;
+&lt;/transformation_execution_configuration&gt;&#xd;
+&lt;/transformation_configuration&gt;</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/addTrans/?xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">text/xml;charset=UTF-8</stringProp>
+                </elementProp>
+              </collectionProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="AllocateServerSocketServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/allocateSocket/?xml=Y&amp;rangeStart=100&amp;host=locahost&amp;id=clust&amp;trans=my_trans&amp;sourceSlave=slave_1&amp;sourceStep=200&amp;sourceCopy=1&amp;targetSlave=slave_2&amp;targetStep=50&amp;targetCopy=1</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ExecuteTransServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/executeTrans/?user=admin&amp;pass=password&amp;trans=home%2fadmin%2fdummy-trans&amp;level=Debug&amp;rep=di</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ExecuteTransServlet2" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/executeTrans/?user=admin&amp;pass=password&amp;trans=${demo_files_dir}/dummy_trans.ktr&amp;level=Debug</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ExecuteJobServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/executeJob/?user=admin&amp;pass=password&amp;job=${demo_files_dir}/dummy_job.kjb&amp;level=Debug</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetSlavesServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/getSlaves/</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetJobImageServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/jobImage/?name=dummy_job</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetJobStatusServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/jobStatus/?name=dummy_job&amp;xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ListServerSocketServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/listSocket/?host=127.0.0.1</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="NextSequenceValueServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/nextSequence/?name=test_seq</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PauseTransServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/pauseTrans/?name=dummy-trans&amp;xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="CleanupTransServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/cleanupTrans/?name=dummy-trans&amp;xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RegisterSlaveServlet" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">&lt;SlaveServerDetection&gt;&#xd;
+&lt;slaveserver&gt;&lt;name&gt;Dynamic slave &amp;#x5b;localhost&amp;#x3a;901&amp;#x5d;&lt;/name&gt;&lt;hostname&gt;localhost&lt;/hostname&gt;&lt;port&gt;901&lt;/port&gt;&lt;webAppName/&gt;&lt;username&gt;cluster&lt;/username&gt;&lt;password&gt;Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8&lt;/password&gt;&lt;proxy_hostname/&gt;&lt;proxy_port/&gt;&lt;non_proxy_hosts/&gt;&lt;master&gt;N&lt;/master&gt;&lt;/slaveserver&gt;&lt;active&gt;Y&lt;/active&gt;&#xd;
+&lt;last_active_date&gt;2014&amp;#x2f;11&amp;#x2f;24 10&amp;#x3a;41&amp;#x3a;57.425&lt;/last_active_date&gt;&#xd;
+&lt;last_inactive_date/&gt;&#xd;
+&lt;/SlaveServerDetection&gt;</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/registerSlave/</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RemoveJobServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/removeJob/?name=dummy_job&amp;xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RemoveTransServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/removeTrans/?name=dummy-trans&amp;xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PrepareExecutionTransServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/prepareExec/?name=dummy-trans&amp;xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="StartExecutionTransServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/startExec/?name=dummy-trans&amp;xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="StartJobServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/startJob/?name=dummy_job&amp;xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="StartTransServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/startTrans/?name=dummy-trans&amp;xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="StopJobServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/stopJob/?name=dummy_job&amp;xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="StopTransServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/stopTrans/?name=dummy-trans&amp;xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetTransImageServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/transImage/?name=dummy-trans</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetTransStatusServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/transStatus/?name=dummy-trans&amp;xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetStatusServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/status/?xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RunJobServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/runJob/?job=home%2Fadmin%2Fdummy_job&amp;level=Debug</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RunTransServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/runTrans/?trans=home%2Fadmin%2Fdummy-trans&amp;level=Debug</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetRootServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SniffStepServlet" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/kettle/sniffStep/?trans=dummy-trans&amp;step=Dummy (do nothing)&amp;xml=Y</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="POST instead GET" enabled="true"/>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="AllocateServerSocketServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">xml=Y&amp;rangeStart=100&amp;host=locahost&amp;id=clust&amp;trans=my_trans&amp;sourceSlave=slave_1&amp;sourceStep=200&amp;sourceCopy=1&amp;targetSlave=slave_2&amp;targetStep=50&amp;targetCopy=1</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/allocateSocket/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ExecuteTransServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">user=admin&amp;pass=password&amp;trans=home%2fadmin%2fdummy-trans&amp;level=Debug&amp;rep=di</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/executeTrans/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ExecuteTransServlet2" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">user=admin&amp;pass=password&amp;trans=${demo_files_dir}/dummy_trans.ktr&amp;level=Debug</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/executeTrans/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ExecuteJobServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">user=admin&amp;pass=password&amp;job=${demo_files_dir}/dummy_job.kjb&amp;level=Debug</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/executeJob/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetSlavesServlet" enabled="true">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/getSlaves/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetJobImageServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy_job</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/jobImage/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetJobStatusServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy_job&amp;xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/jobStatus/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ListServerSocketServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">host=127.0.0.1</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/listSocket/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="NextSequenceValueServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=test_seq</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/nextSequence/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PauseTransServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy-trans&amp;xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/pauseTrans/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="CleanupTransServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy-trans&amp;xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/cleanupTrans/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RemoveJobServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy_job&amp;xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/removeJob/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RemoveTransServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy-trans&amp;xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/removeTrans/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PrepareExecutionTransServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy-trans&amp;xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/prepareExec/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="StartExecutionTransServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy-trans&amp;xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/startExec/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="StartJobServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy_job&amp;xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/startJob/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="StartTransServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy-trans&amp;xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/startTrans/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="StopJobServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy_job&amp;xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/stopJob/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="StopTransServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy-trans&amp;xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/stopTrans/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetTransImageServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy-trans</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/transImage/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetTransStatusServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">name=dummy-trans&amp;xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/transStatus/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetStatusServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/status/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RunJobServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">job=home%2Fadmin%2Fdummy_job&amp;level=Debug</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/runJob/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="RunTransServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">trans=home%2Fadmin%2Fdummy-trans&amp;level=Debug</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/runTrans/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GetRootServlet" enabled="true">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SniffStepServlet" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">trans=dummy-trans&amp;step=Dummy (do nothing)&amp;xml=Y</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/kettle/sniffStep/</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

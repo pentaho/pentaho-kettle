@@ -19,9 +19,8 @@ package org.pentaho.di.openerp.core;
 
 /**
  * Simple class to hold the filter information for the OpenERPObjectInput step
- * 
+ *
  * @author Pieter van der Merwe
- * 
  */
 public class ReadFilter {
   private String operator = "";

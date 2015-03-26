@@ -298,7 +298,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface {
           while ( itemNode != null ) {
             if ( "item".equals( itemNode.getNodeName() ) ) {
               String itemNodeValue = XMLHandler.getNodeValue( itemNode );
-              line.add( itemNodeValue != null ? itemNodeValue : StringUtils.EMPTY );
+              line.add( itemNodeValue );
             }
             itemNode = itemNode.getNextSibling();
           }

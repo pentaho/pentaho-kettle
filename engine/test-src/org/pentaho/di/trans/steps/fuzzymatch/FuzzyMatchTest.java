@@ -146,6 +146,7 @@ public class FuzzyMatchTest {
     data.minimalDistance = 0;
     data.maximalDistance = 5;
     FuzzyMatchMeta meta = spy( new FuzzyMatchMeta() );
+    meta.setOutputMatchField( "I don't want NPE here!" );
     data.readLookupValues = true;
     fuzzyMatch =
         new FuzzyMatchHandler( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
@@ -178,8 +179,7 @@ public class FuzzyMatchTest {
     when( stepIOMetaInterface.getInfoStreams() ).thenReturn( streamInterfaceList );
 
     fuzzyMatch.processRow( meta, data );
-    Assert
-      .assertEquals( rowMetaInterface.getString( row3B, 0 ),
+    Assert.assertEquals( rowMetaInterface.getString( row3B, 0 ),
         data.outputRowMeta.getString( fuzzyMatch.resultRow, 1 ) );
   }
 }

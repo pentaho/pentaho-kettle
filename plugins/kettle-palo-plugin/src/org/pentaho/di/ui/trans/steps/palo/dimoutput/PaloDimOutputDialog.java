@@ -62,8 +62,8 @@ import org.pentaho.di.ui.trans.steps.palo.cellinput.PaloCellInputDialog;
 
 public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = PaloDimOutputMeta.class; // for i18n purposes,
-                                                         // needed by
-                                                         // Translator2!!
+  // needed by
+  // Translator2!!
 
   public static void main( String[] args ) {
     try {
@@ -260,12 +260,12 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     comboElementType.setLayoutData( fd );
 
     colinf =
-        new ColumnInfo[] { new ColumnInfo( getLocalizedColumn( 0 ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-          new ColumnInfo( getLocalizedColumn( 1 ), ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
-          new ColumnInfo( getLocalizedColumn( 2 ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, true ),
-          new ColumnInfo( getLocalizedColumn( 3 ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, true ),
+      new ColumnInfo[]{ new ColumnInfo( getLocalizedColumn( 0 ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo( getLocalizedColumn( 1 ), ColumnInfo.COLUMN_TYPE_TEXT, false, false ),
+        new ColumnInfo( getLocalizedColumn( 2 ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{ }, true ),
+        new ColumnInfo( getLocalizedColumn( 3 ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{ }, true ),
 
-        };
+      };
 
     tableViewFields = new TableView( null, shell, SWT.FILL | SWT.BORDER, colinf, 10, true, lsMod, props );
 
@@ -299,7 +299,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     buttonCancel = new Button( shell, SWT.CENTER );
     buttonOk.setText( BaseMessages.getString( "System.Button.OK" ) );
     buttonCancel.setText( BaseMessages.getString( "System.Button.Cancel" ) );
-    setButtonPositions( new Button[] { buttonOk, buttonCancel }, margin, null );
+    setButtonPositions( new Button[]{ buttonOk, buttonCancel }, margin, null );
 
     addConnectionLine.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -398,8 +398,9 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     PaloCellInputDialog.showPaloLibWarningDialog( shell );
 
     while ( !shell.isDisposed() ) {
-      if ( !display.readAndDispatch() )
+      if ( !display.readAndDispatch() ) {
         display.sleep();
+      }
     }
     return stepname;
   }
@@ -423,15 +424,16 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
           List<String> dimensions = data.helper.getDimensionsNames();
           Collections.sort( dimensions, new PaloNameComparator() );
           for ( String dimensionName : dimensions ) {
-            if ( comboDimension.indexOf( dimensionName ) == -1 )
+            if ( comboDimension.indexOf( dimensionName ) == -1 ) {
               comboDimension.add( dimensionName );
+            }
           }
           data.helper.disconnect();
         }
       }
     } catch ( Exception ex ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "PaloDimOutputDialog.RetreiveDimensionsErrorTitle" ),
-          BaseMessages.getString( PKG, "PaloDimOutputDialog.RetreiveDimensionsError" ), ex );
+        BaseMessages.getString( PKG, "PaloDimOutputDialog.RetreiveDimensionsError" ), ex );
     }
   }
 
@@ -447,8 +449,9 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
       intFields.add( BaseMessages.getString( PKG, "PaloDimOutputDialog.ConsolidationFactorDefault" ) );
       for ( int i = 0; i < fieldNames.length; i++ )
         if ( fieldTypes[i].toLowerCase().indexOf( "integer" ) >= 0
-            || fieldTypes[i].toLowerCase().indexOf( "number" ) > 0 )
+          || fieldTypes[i].toLowerCase().indexOf( "number" ) > 0 ) {
           intFields.add( fieldNames[i] );
+        }
 
       String[] fieldNamesDefault = intFields.toArray( new String[intFields.size()] );
       colinf[3] = new ColumnInfo( getLocalizedColumn( 3 ), ColumnInfo.COLUMN_TYPE_CCOMBO, fieldNamesDefault, true );
@@ -467,7 +470,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
             List<PaloDimensionLevel> levels = data.helper.getDimensionLevels( comboDimension.getText() );
             for ( PaloDimensionLevel level : levels ) {
               tableViewFields
-                  .add( String.valueOf( level.getLevelNumber() ), level.getLevelName(), level.getFieldName() );
+                .add( String.valueOf( level.getLevelNumber() ), level.getLevelName(), level.getFieldName() );
             }
             tableViewFields.removeEmptyRows();
             tableViewFields.setRowNums();
@@ -478,15 +481,15 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
         }
       } else {
         new ErrorDialog( shell, BaseMessages.getString( "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-            .getString( "System.Dialog.GetFieldsFailed.Message" ), new Exception( BaseMessages.getString( PKG,
-            "PaloDimOutputDialog.SelectDimensionsFirstError" ) ) );
+          .getString( "System.Dialog.GetFieldsFailed.Message" ), new Exception( BaseMessages.getString( PKG,
+          "PaloDimOutputDialog.SelectDimensionsFirstError" ) ) );
       }
 
       this.fillPreviousFieldTableViewColumn();
 
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( "System.Dialog.GetFieldsFailed.Message" ), ke );
+        .getString( "System.Dialog.GetFieldsFailed.Message" ), ke );
       tableViewFields.add();
     }
   }
@@ -512,22 +515,25 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void fillStoredData() {
-    if ( stepname != null )
+    if ( stepname != null ) {
       textStepName.setText( stepname );
+    }
 
     int index = addConnectionLine.indexOf( meta.getDatabaseMeta() != null ? meta.getDatabaseMeta().getName() : "" );
-    if ( index >= 0 )
+    if ( index >= 0 ) {
       addConnectionLine.select( index );
+    }
 
     tableViewFields.table.removeAll();
     if ( meta.getLevels().size() > 0 ) {
       for ( PaloDimensionLevel level : meta.getLevels() ) {
         String consolidationFactor = level.getConsolidationFieldName();
-        if ( consolidationFactor == null )
+        if ( consolidationFactor == null ) {
           consolidationFactor = BaseMessages.getString( PKG, "PaloDimOutputDialog.ConsolidationFactorDefault" );
+        }
 
         tableViewFields.add( String.valueOf( level.getLevelNumber() ), level.getLevelName(), level.getFieldName(),
-            consolidationFactor );
+          consolidationFactor );
       }
       tableViewFields.setRowNums();
       tableViewFields.optWidth( true );
@@ -541,12 +547,13 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
       comboElementType.select( 0 );
     }
 
-    comboElementType.setItems( new String[] { "Numeric", "String" } );
+    comboElementType.setItems( new String[]{ "Numeric", "String" } );
     comboElementType.select( 0 );
     if ( meta.getElementType() != null ) {
       int indexType = comboElementType.indexOf( meta.getElementType() );
-      if ( indexType >= 0 )
+      if ( indexType >= 0 ) {
         comboElementType.select( indexType );
+      }
     }
 
     buttonCreateDimension.setSelection( meta.getCreateNewDimension() );
@@ -560,8 +567,9 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     buttonClearConsolidations.setEnabled( !buttonRecreateDimension.getSelection() );
     buttonPreloadElementCache.setEnabled( buttonEnableElementCache.getSelection() );
 
-    if ( buttonClearDimension.getEnabled() )
+    if ( buttonClearDimension.getEnabled() ) {
       buttonClearConsolidations.setEnabled( !buttonClearDimension.getSelection() );
+    }
 
   }
 
@@ -592,7 +600,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
       dispose();
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "PaloDimOutputDialog.FailedToSaveDataErrorTitle" ),
-          BaseMessages.getString( PKG, "PaloDimOutputDialog.FailedToSaveDataError" ), e );
+        BaseMessages.getString( PKG, "PaloDimOutputDialog.FailedToSaveDataError" ), e );
     }
   }
 
@@ -603,12 +611,13 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     tableViewFields.removeEmptyRows();
     for ( int i = 0; i < tableViewFields.table.getItemCount(); i++ ) {
       String consolidationFactor = tableViewFields.table.getItem( i ).getText( 4 );
-      if ( consolidationFactor.equals( BaseMessages.getString( PKG, "PaloDimOutputDialog.ConsolidationFactorDefault" ) ) )
+      if ( consolidationFactor.equals( BaseMessages.getString( PKG, "PaloDimOutputDialog.ConsolidationFactorDefault" ) ) ) {
         consolidationFactor = null;
+      }
 
       PaloDimensionLevel level =
-          new PaloDimensionLevel( tableViewFields.table.getItem( i ).getText( 2 ), i, tableViewFields.table.getItem( i )
-              .getText( 3 ), "String", consolidationFactor );
+        new PaloDimensionLevel( tableViewFields.table.getItem( i ).getText( 2 ), i, tableViewFields.table.getItem( i )
+          .getText( 3 ), "String", consolidationFactor );
       levels.add( level );
     }
     myMeta.setDatabaseMeta( transMeta.findDatabase( addConnectionLine.getText() ) );
@@ -616,17 +625,19 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     myMeta.setCreateNewDimension( this.buttonCreateDimension.getSelection() );
     myMeta.setClearDimension( this.buttonClearDimension.getSelection() );
 
-    if ( this.buttonClearDimension.getSelection() )
+    if ( this.buttonClearDimension.getSelection() ) {
       myMeta.setClearConsolidations( false );
-    else
+    } else {
       myMeta.setClearConsolidations( buttonClearConsolidations.getSelection() );
+    }
 
     myMeta.setEnableElementCache( buttonEnableElementCache.getSelection() );
 
-    if ( !this.buttonEnableElementCache.getSelection() )
+    if ( !this.buttonEnableElementCache.getSelection() ) {
       myMeta.setPreloadElementCache( false );
-    else
+    } else {
       myMeta.setPreloadElementCache( buttonPreloadElementCache.getSelection() );
+    }
 
     myMeta.setRecreateDimension( this.buttonRecreateDimension.getSelection() );
     myMeta.setDimension( this.comboDimension.getText() );

@@ -129,7 +129,7 @@ public class HTTPTest {
 
   @After
   public void tearDown() throws Exception {
-    httpServer.stop( 0 );
+    httpServer.stop( 5 );
 
   }
 

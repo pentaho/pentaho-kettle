@@ -92,8 +92,9 @@
   </target>
 
   <target name="compile" depends="install-antcontrib">
-    <echo
-        message="The compile target is not supported at the root level. Please see README.txt for instructions on build and compilation"/>
+    <antcall target="call-for-all">
+      <param name="target.name" value="compile"/>
+    </antcall>
   </target>
 
   <target name="compile-tests" depends="install-antcontrib">
@@ -213,6 +214,36 @@
   </target>
 
   <!--=======================================================================
+        Support pentaho-standard CI subfloor build targets
+
+      ====================================================================-->
+  <target name="build-sonar" depends="install-antcontrib,subfloor.clean">
+    <antcall target="call-for-all">
+      <param name="target.name" value="subfloor.build-sonar"/>
+    </antcall>
+  </target>
+
+  <target name="continuous-sonar" depends="install-antcontrib,subfloor.clean">
+    <antcall target="call-for-all">
+      <param name="target.name" value="continuous-sonar"/>
+    </antcall>
+  </target>
+
+  <target name="build-testless" depends="install-antcontrib,subfloor.clean">
+    <antcall target="call-for-all">
+      <param name="target.name" value="subfloor.build-testless"/>
+    </antcall>
+  </target>
+
+  <target name="continuous-testless" depends="install-antcontrib,subfloor.clean">
+    <antcall target="call-for-all">
+      <param name="target.name" value="continuous-testless"/>
+    </antcall>
+  </target>
+
+
+
+  <!--=======================================================================
         create-dot-classpath
 
         Creates the Eclipse .classpath file from the resolved
@@ -308,6 +339,9 @@
     </if>
   </target>
 
+<target name="cobertura"
+        description="Runs tests in an instrumented environment and produces Cobertura test coverage reports"
+        depends="clean-cobertura,install-cobertura,compile-integration-tests,compile-tests,cobertura.instrument-classes,cobertura.test-instrumented,cobertura.xml-report,cobertura.html-report" />
 
   <!--=======================================================================
       cobertura.instrument-classes
@@ -315,7 +349,10 @@
       Instruments the application classes used by Cobertura during cobertura.test-instrumented
       ====================================================================-->
   <target name="cobertura.instrument-classes" depends="cobertura.clean-instrumented-classes,install-cobertura,compile">
-    <cobertura-instrument todir="${instrumented.classes.dir}" datafile="${cobertura.data.dir}/cobertura.ser">
+    <cobertura-instrument
+            todir="${instrumented.classes.dir}"
+            datafile="${cobertura.data.dir}/cobertura.ser"
+            maxmemory="${junit.maxmemory}"> <!-- This should be at least 2G -->
       <ignore regex="org.apache.log4j.*"/>
       <!--
         Instrument all the application classes, but
@@ -323,8 +360,10 @@
       -->
       <fileset dir="core/bin/classes" includes="**/*.class"/>
       <fileset dir="engine/bin/classes" includes="**/*.class"/>
+      <!-- Omit UI classes (for coverage) as we can't feasibly test them enough
       <fileset dir="dbdialog/bin/classes" includes="**/*.class"/>
       <fileset dir="ui/bin/classes" includes="**/*.class"/>
+      -->
 
     </cobertura-instrument>
   </target>
@@ -355,15 +394,12 @@
     <path id="module-src.classpath">
       <pathelement path="${module-src-class-dirs}"/>
       <pathelement path="${module-test-class-dirs}"/>
-      <pathelement location="core/bin/test/classes"/>
-      <pathelement location="engine/bin/test/classes"/>
-      <pathelement location="dbdialog/bin/test/classes"/>
-      <pathelement location="ui/bin/test/classes"/>
+      <pathelement location="testClasses"/>
     </path>
 
     <junit fork="yes"
            forkmode="${junit.forkmode}"
-           dir="${junit.base.dir}"
+           dir="${basedir}/${dist.dir}"
            maxmemory="${junit.maxmemory}"
            failureProperty="test.failed"
            haltonerror="${junit.haltonerror}"
@@ -386,23 +422,22 @@
       <classpath refid="module-src.classpath"/>
       <classpath refid="test.classpath"/>
       <classpath refid="cobertura.classpath"/>
+      <classpath>
+        <fileset dir="test/libext/" includes="*.jar"/>
+        <pathelement path="${dist.dir}/testfiles"/>
+        <fileset dir="${dist.dir}/${lib.dir}" includes="*.jar *.zip"/>
+        <fileset dir="${dist.dir}/${libswt}" includes="*.jar *.zip"/>
+        <fileset dir="${dist.dir}/${libswt}/win32/" includes="*.jar *.zip"/>
+      </classpath>
 
       <formatter type="xml"/>
       <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase"/>
       <batchtest todir="${testreports.xml.dir}" unless="testcase">
         <fileset dir="core/test-src" includes="**/*Test.java"/>
         <fileset dir="engine/test-src" includes="**/*Test.java"/>
-        <fileset dir="dbdialog/test-src" includes="**/*Test.java"/>
-        <fileset dir="ui/test-src" includes="**/*Test.java"/>
+      <fileset dir="test" includes="**/*Test.java,**/*Tests.java"/>
       </batchtest>
     </junit>
-
-    <junitreport todir="${testreports.html.dir}">
-      <fileset dir="${testreports.xml.dir}">
-        <include name="TEST-*.xml"/>
-      </fileset>
-      <report format="frames" todir="${testreports.html.dir}"/>
-    </junitreport>
   </target>
 
   <!--=======================================================================
@@ -412,7 +447,11 @@
       ====================================================================-->
   <target name="cobertura.xml-report" depends="cobertura.test-instrumented">
 
-    <cobertura-report destdir="${coberturareports.xml.dir}" datafile="${cobertura.data.dir}/cobertura.ser" format="xml">
+    <cobertura-report
+            destdir="${coberturareports.xml.dir}"
+            datafile="${cobertura.data.dir}/cobertura.ser"
+            format="xml"
+            maxmemory="${junit.maxmemory}">
       <fileset dir="core/src" includes="**/*.java"/>
       <fileset dir="engine/src" includes="**/*.java"/>
       <fileset dir="dbdialog/src" includes="**/*.java"/>
@@ -429,7 +468,8 @@
   <target name="cobertura.html-report" depends="cobertura.test-instrumented">
     <cobertura-report destdir="${coberturareports.html.dir}"
                       datafile="${cobertura.data.dir}/cobertura.ser"
-                      format="html">
+                      format="html"
+                      maxmemory="${junit.maxmemory}">
       <fileset dir="core/src" includes="**/*.java"/>
       <fileset dir="engine/src" includes="**/*.java"/>
       <fileset dir="dbdialog/src" includes="**/*.java"/>
@@ -608,54 +648,38 @@
 
       <formatter type="xml"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.KettleEnvironmentTest" haltonerror="false" />
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.ConnectionPoolUtilIntegrationTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.DatabaseTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SelectCountTests" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SQLStatementParserTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.ReleaseSavePointTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.TablespaceDDLFragmentTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.VerticaDatabaseMetaTest"
-            haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.SQLStatementParserTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.ReleaseSavePointTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.TablespaceDDLFragmentTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.VerticaDatabaseMetaTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.row.ValueDataUtilTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.DatabaseConfigurationImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasANoteImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasANoteImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasDescriptionImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasDescriptionImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasJobLogConfiguredImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}"
-            name="org.pentaho.di.imp.rule.TransformationHasTransLogConfiguredImportRuleTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasNoDisabledHopsImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasNoDisabledHopsImportRuleTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.KettleDatabaseRepositoryTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.KettleFileRepositoryTest"
-            haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.RepositoryImportExporterApiTest"
-            haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.DatabaseConfigurationImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasANoteImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasANoteImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasDescriptionImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasDescriptionImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasJobLogConfiguredImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasTransLogConfiguredImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.TransformationHasNoDisabledHopsImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasNoDisabledHopsImportRuleTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.KettleDatabaseRepositoryTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.KettleFileRepositoryTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.RepositoryImportExporterApiTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.RepositoryUnitTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.sql.SqlTransMetaTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.logging.MetricsTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.parameters.ParameterSimpleTransTest"
-            haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.parameters.ParameterSimpleTransTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.plugins.PluginRegistryTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.util.StringEvaluatorTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.vfs.VfsCoreTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.resource.NameResourceTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.resource.ResourceDependencyTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.resource.ResourceExportTest" haltonerror="false"/>
-
     </junit>
+
     <junitreport todir="${testreports.html.dir}">
       <fileset dir="${testreports.xml.dir}">
         <include name="TEST-*.xml"/>
@@ -810,6 +834,8 @@
 
       <formatter type="xml"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.JobTrackerExecutionTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.SimultaneousJobsAppenderTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.SimpleEvalNullFieldTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.tablecompare.TableCompareTest" haltonerror="false" />
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.blackbox.BlackBoxTests" haltonerror="false" />
     </junit>
@@ -848,6 +874,7 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.cluster.MasterSlaveTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.cluster.PartitioningTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.cluster.SlaveSequenceTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.concatfields.ConcatFields_PDI_10856_Test" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.www.CarteTest" haltonerror="false"/>
 
       <!-- Some extra things to run -->

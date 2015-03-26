@@ -1617,21 +1617,21 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                   PKG, "DimensionLookupMeta.ReturnValue.NoKeyFieldsSpecified" ) );
               }
 
-              if ( !Const.isEmpty( idx_fields ) && !db.checkIndexExists( schemaName, tableName, idx_fields ) ) {
+              if ( !Const.isEmpty( idx_fields ) && !db.checkIndexExists( schemaTable, idx_fields ) ) {
                 String indexname = "idx_" + tableName + "_lookup";
                 sql +=
                   db.getCreateIndexStatement(
-                    schemaName, tableName, indexname, idx_fields, false, false, false, true );
+                    schemaTable, indexname, idx_fields, false, false, false, true );
               }
 
               // (Bitmap) index on technical key
               idx_fields = new String[] { keyField };
               if ( !Const.isEmpty( keyField ) ) {
-                if ( !db.checkIndexExists( schemaName, tableName, idx_fields ) ) {
+                if ( !db.checkIndexExists( schemaTable, idx_fields ) ) {
                   String indexname = "idx_" + tableName + "_tk";
                   sql +=
                     db.getCreateIndexStatement(
-                      schemaName, tableName, indexname, idx_fields, true, false, true, true );
+                      schemaTable, indexname, idx_fields, true, false, true, true );
                 }
               } else {
                 retval.setError( BaseMessages.getString(

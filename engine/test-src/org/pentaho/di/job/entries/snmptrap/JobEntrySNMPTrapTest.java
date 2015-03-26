@@ -26,9 +26,25 @@ import static java.util.Arrays.asList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.BeforeClass;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
 
 public class JobEntrySNMPTrapTest extends JobEntryLoadSaveTestSupport<JobEntrySNMPTrap> {
+
+  @BeforeClass
+  public static void beforeClass() throws KettleException {
+    PluginRegistry.addPluginType( TwoWayPasswordEncoderPluginType.getInstance() );
+    PluginRegistry.init();
+    String passwordEncoderPluginID =
+        Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGIN ), "Kettle" );
+    Encr.init( passwordEncoderPluginID );
+  }
 
   @Override
   protected Class<JobEntrySNMPTrap> getJobEntryClass() {

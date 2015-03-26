@@ -22,8 +22,7 @@
 
 package org.pentaho.di.trans.steps.propertyinput;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.List;
@@ -321,6 +320,7 @@ public class PropertyInput extends BaseStep implements StepInterface {
   }
 
   private boolean openNextFile() {
+    InputStream fis = null;
     try {
       if ( !meta.isFileField() ) {
         if ( data.filenr >= data.files.nrOfFiles() ) { // finished processing!
@@ -433,21 +433,16 @@ public class PropertyInput extends BaseStep implements StepInterface {
         addResultFile( resultFile );
       }
 
-      File f = new File( KettleVFS.getFilename( data.file ) );
+      fis = data.file.getContent().getInputStream();
       if ( data.propfiles ) {
         // load properties file
         data.pro = new Properties();
-        FileInputStream fis = new FileInputStream( f );
-        try {
-          data.pro.load( fis );
-        } finally {
-          BaseStep.closeQuietly( fis );
-        }
+        data.pro.load( fis );
         data.it = data.pro.keySet().iterator();
       } else {
 
         // load INI file
-        data.wini = new Wini( f );
+        data.wini = new Wini( fis );
         if ( !Const.isEmpty( data.realEncoding ) ) {
           data.wini.getConfig().setFileEncoding( Charset.forName( data.realEncoding ) );
         }
@@ -477,6 +472,8 @@ public class PropertyInput extends BaseStep implements StepInterface {
       stopAll();
       setErrors( 1 );
       return false;
+    } finally {
+      BaseStep.closeQuietly( fis );
     }
     return true;
   }

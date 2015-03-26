@@ -2,6 +2,7 @@ package org.pentaho.di.core.xml;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.pentaho.di.core.xml.XMLHandler.buildCDATA;
 import static org.pentaho.di.core.xml.XMLHandler.openTag;
@@ -43,5 +44,17 @@ public class XMLHandlerUnitTest {
     StringBuilder builder = new StringBuilder( "qwe" );
     buildCDATA( builder, "rty" );
     assertEquals( "qwe<![CDATA[rty]]>", builder.toString() );
+  }
+
+  @Test
+  public void timestamp2stringTest() {
+    String actual = XMLHandler.timestamp2string( null );
+    assertNull( actual );
+  }
+
+  @Test
+  public void date2stringTest() {
+    String actual = XMLHandler.date2string( null );
+    assertNull( actual );
   }
 }

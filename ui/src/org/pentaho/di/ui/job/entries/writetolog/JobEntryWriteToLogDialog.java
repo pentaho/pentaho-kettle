@@ -283,8 +283,8 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
     wName.setText( Const.nullToEmpty( jobEntry.getName() ) );
     wLogMessage.setText( Const.nullToEmpty( jobEntry.getLogMessage() ) );
     wLogSubject.setText( Const.nullToEmpty( jobEntry.getLogSubject() ) );
-    if ( jobEntry.entryLogLevel != null ) {
-      wLoglevel.select( jobEntry.entryLogLevel.getLevel() );
+    if ( jobEntry.getEntryLogLevel() != null ) {
+      wLoglevel.select( jobEntry.getEntryLogLevel().getLevel() );
     }
 
     wName.selectAll();
@@ -309,7 +309,7 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
     jobEntry.setLogMessage( wLogMessage.getText() );
     jobEntry.setLogSubject( wLogSubject.getText() );
     if ( wLoglevel.getSelectionIndex() != -1 ) {
-      jobEntry.entryLogLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
+      jobEntry.setEntryLogLevel( LogLevel.values()[wLoglevel.getSelectionIndex()] );
     }
     dispose();
   }

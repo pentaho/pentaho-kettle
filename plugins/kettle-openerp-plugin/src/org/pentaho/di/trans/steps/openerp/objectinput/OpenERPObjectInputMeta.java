@@ -49,9 +49,9 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 @Step( id = "OpenERPObjectInput", image = "OpenERPObjectInput.png",
-    i18nPackageName = "org.pentaho.di.trans.steps.openerp.objectinput", name = "OpenERPObjectInput.TransName",
-    description = "OpenERPObjectInput.TransDescription",
-    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.OpenERP" )
+  i18nPackageName = "org.pentaho.di.trans.steps.openerp.objectinput", name = "OpenERPObjectInput.TransName",
+  description = "OpenERPObjectInput.TransDescription",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.OpenERP" )
 public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   private DatabaseMeta databaseMeta;
@@ -61,11 +61,12 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
   private ArrayList<FieldMapping> mappings = new ArrayList<FieldMapping>();
 
   public void getFields( final RowMetaInterface row, final String origin, final RowMetaInterface[] info,
-      final StepMeta nextStep, final VariableSpace space, Repository repository, IMetaStore metaStore )
+                         final StepMeta nextStep, final VariableSpace space, Repository repository, IMetaStore metaStore )
     throws KettleStepException {
 
-    if ( databaseMeta == null )
+    if ( databaseMeta == null ) {
       throw new KettleStepException( "There is no OpenERP database server connection defined" );
+    }
 
     final OpenERPHelper helper = new OpenERPHelper( databaseMeta );
     try {
@@ -87,7 +88,7 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-      TransMeta transMeta, Trans trans ) {
+                                TransMeta transMeta, Trans trans ) {
     return new OpenERPObjectInput( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -104,7 +105,7 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
     StringBuffer retval = new StringBuffer();
 
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "connection", this.databaseMeta == null ? "" : this.databaseMeta.getName() ) );
+      XMLHandler.addTagValue( "connection", this.databaseMeta == null ? "" : this.databaseMeta.getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "modelName", this.modelName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "readBatchSize", this.readBatchSize ) );
 

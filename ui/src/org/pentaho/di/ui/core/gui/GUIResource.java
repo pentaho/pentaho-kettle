@@ -287,6 +287,8 @@ public class GUIResource {
 
   private Image imageWarning;
 
+  private Image imageWarning32;
+
   private Image imageVersionBrowser;
 
   private Image imageNew;
@@ -349,6 +351,15 @@ public class GUIResource {
   private Image imageHadoop;
 
   private Image imageDropHere;
+
+  private Image imageAddAll;
+
+  private Image imageAddSingle;
+
+  private Image imageRemoveAll;
+
+  private Image imageRemoveSingle;
+
 
   /**
    * GUIResource also contains the clipboard as it has to be allocated only once! I don't want to put it in a separate
@@ -531,6 +542,7 @@ public class GUIResource {
       imageErrorHop.dispose();
       imageInfoHop.dispose();
       imageWarning.dispose();
+      imageWarning32.dispose();
       imageVersionBrowser.dispose();
       imageExpandAll.dispose();
       imageSearchSmall.dispose();
@@ -565,6 +577,10 @@ public class GUIResource {
       imageHelpWeb.dispose();
       imageHadoop.dispose();
       imageDropHere.dispose();
+      imageAddAll.dispose();
+      imageAddSingle.dispose();
+      imageRemoveAll.dispose();
+      imageRemoveSingle.dispose();
 
       disposeImage( imageNoteSmall );
       disposeImage( imageColor );
@@ -907,6 +923,9 @@ public class GUIResource {
     // "ui/images/warning.png;
     imageWarning = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Warning_image" ) );
 
+    // "ui/images/warning_32.png;
+    imageWarning32 = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Warning32_image" ) );
+
     // "ui/images/version-history.png;
     imageVersionBrowser =
       ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "VersionBrowser_image" ) );
@@ -991,6 +1010,18 @@ public class GUIResource {
 
     // "ui/images/drop_here.png
     imageDropHere = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "DropHere_image" ) );
+
+    // "ui/images/add_all.png
+    imageAddAll = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "AddAll_image" ) );
+
+    // "ui/images/add_single.png
+    imageAddSingle = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "AddSingle_image" ) );
+
+    // "ui/images/remove_all.png
+    imageRemoveAll = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "RemoveAll_image" ) );
+
+    // "ui/images/remove_single.png
+    imageRemoveSingle = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "RemoveSingle_image" ) );
 
     imageEmpty16x16 = new Image( display, 16, 16 );
 
@@ -1944,6 +1975,10 @@ public class GUIResource {
     return imageWarning;
   }
 
+  public Image getImageWarning32() {
+    return imageWarning32;
+  }
+
   public Image getImageVersionBrowser() {
     return imageVersionBrowser;
   }
@@ -2105,6 +2140,38 @@ public class GUIResource {
 
   public Image getImageDropHere() {
     return imageDropHere;
+  }
+
+  public void setImageAddAll( Image imageAddAll ) {
+    this.imageAddAll = imageAddAll;
+  }
+
+  public Image getImageAddAll() {
+    return imageAddAll;
+  }
+
+  public void setImageAddSingle( Image imageAddSingle ) {
+    this.imageAddSingle = imageAddSingle;
+  }
+
+  public Image getImageAddSingle() {
+    return imageAddSingle;
+  }
+
+  public void setImageRemoveAll( Image imageRemoveAll ) {
+    this.imageRemoveAll = imageRemoveAll;
+  }
+
+  public Image getImageRemoveAll() {
+    return imageRemoveAll;
+  }
+
+  public void setImageRemoveSingle( Image imageRemoveSingle ) {
+    this.imageRemoveSingle = imageRemoveSingle;
+  }
+
+  public Image getImageRemoveSingle() {
+    return imageRemoveSingle;
   }
 
 }

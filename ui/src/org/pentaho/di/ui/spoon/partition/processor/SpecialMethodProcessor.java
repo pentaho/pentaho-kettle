@@ -16,7 +16,8 @@ public class SpecialMethodProcessor extends AbstractMethodProcessor {
   @Override
   public void schemaSelection( PartitionSettings settings, Shell shell, SpoonDelegates delegates )
     throws KettleException {
-    String schema = super.askForSchema( settings.getSchemaNames(), shell, settings.getDefaultSelectedSchemaIndex() );
+    String schema =
+      super.askForSchema( settings.getSchemaNamesArray(), shell, settings.getDefaultSelectedSchemaIndex() );
     super.processForKnownSchema( schema, settings );
     if ( !StringUtil.isEmpty( schema ) ) {
       askForField( settings, delegates );

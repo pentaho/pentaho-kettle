@@ -438,7 +438,6 @@ public class ValueDataUtil {
         } else {
           return Boolean.valueOf( valueA.booleanValue() || valueB.booleanValue() );
         }
-        
       }
       case ValueMetaInterface.TYPE_BIGNUMBER: {
         BigDecimal valueA = metaA.getBigNumber( dataA );

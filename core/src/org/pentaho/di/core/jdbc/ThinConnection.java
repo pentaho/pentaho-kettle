@@ -77,16 +77,9 @@ public class ThinConnection implements Connection {
     this.url = url;
     this.username = username;
     this.password = password;
-
-    parseUrl();
   }
 
-  private void parseUrl() throws SQLException {
-
-    if ( !url.startsWith( ThinDriver.BASE_URL ) ) {
-      throw new SQLException( "Invalid url for this driver: " + url + ", not starting with " + ThinDriver.BASE_URL );
-    }
-
+  public void testConnection() throws SQLException {
     // Example URLs :
     //
     // jdbc:pdi://slaveserver:8181/kettle/?webappname=pdi&proxyserver=proxy1&parameter_area=EAST

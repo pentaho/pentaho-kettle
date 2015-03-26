@@ -1,13 +1,16 @@
 package org.pentaho.di.ui.spoon.partition;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
+import org.pentaho.di.ui.spoon.PartitionSchemasProvider;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,18 +18,18 @@ import java.util.List;
  */
 public class PartitionSettings {
 
-  private StepMeta stepMeta;
-  private TransMeta transMeta;
-  private String[] options;
-  private String[] codes;
-  private String[] schemaNames;
-  private StepMeta before;
-  private StepMeta after;
+  private final StepMeta stepMeta;
+  private final TransMeta transMeta;
+  private final PartitionSchemasProvider schemasProvider;
+  private final String[] options;
+  private final String[] codes;
+  private final StepMeta before;
 
-  public PartitionSettings( int exactSize, TransMeta transMeta, StepMeta stepMeta ) {
+  public PartitionSettings( int exactSize, TransMeta transMeta, StepMeta stepMeta,
+                            PartitionSchemasProvider schemasProvider ) {
     this.transMeta = transMeta;
     this.stepMeta = stepMeta;
-    this.schemaNames = this.transMeta.getPartitionSchemasNames();
+    this.schemasProvider = schemasProvider;
     this.options = new String[ exactSize ];
     this.codes = new String[ exactSize ];
     this.before = (StepMeta) stepMeta.clone();
@@ -54,8 +57,14 @@ public class PartitionSettings {
   }
 
   public int getDefaultSelectedSchemaIndex() {
+    List<String> schemaNames;
+    try {
+      schemaNames = schemasProvider.getPartitionSchemasNames( transMeta );
+    } catch ( KettleException e ) {
+      schemaNames = Collections.emptyList();
+    }
     int defaultSelectedSchemaIndex = 0;
-    if ( stepMeta.getStepPartitioningMeta().getPartitionSchema() != null && schemaNames.length > 0 ) {
+    if ( stepMeta.getStepPartitioningMeta().getPartitionSchema() != null && !schemaNames.isEmpty() ) {
       defaultSelectedSchemaIndex =
         Const.indexOfString( stepMeta.getStepPartitioningMeta().getPartitionSchema().getName(), schemaNames );
     }
@@ -76,24 +85,29 @@ public class PartitionSettings {
     return options;
   }
 
-  public void setOptions( String[] options ) {
-    this.options = options;
-  }
-
   public String[] getCodes() {
     return codes;
   }
 
-  public void setCodes( String[] codes ) {
-    this.codes = codes;
+  public List<String> getSchemaNames() {
+    try {
+      return schemasProvider.getPartitionSchemasNames( transMeta );
+    } catch ( KettleException e ) {
+      return Collections.emptyList();
+    }
   }
 
-  public String[] getSchemaNames() {
-    return schemaNames;
+  public String[] getSchemaNamesArray() {
+    List<String> schemas = getSchemaNames();
+    return schemas.toArray( new String[ schemas.size() ] );
   }
 
-  public void setSchemaNames( String[] schemaNames ) {
-    this.schemaNames = schemaNames;
+  public List<PartitionSchema> getSchemas() {
+    try {
+      return schemasProvider.getPartitionSchemas( transMeta );
+    } catch ( KettleException e ) {
+      return Collections.emptyList();
+    }
   }
 
   public StepMeta getStepMeta() {

@@ -24,7 +24,6 @@ package org.pentaho.di.trans.steps.orabulkloader;
 
 import java.util.List;
 
-import org.drools.util.StringUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -339,22 +338,22 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
 
       commitSize = XMLHandler.getTagValue( stepnode, "commit" );
-      if ( StringUtils.isEmpty( commitSize ) ) {
+      if ( Const.isEmpty( commitSize ) ) {
         commitSize = Integer.toString( DEFAULT_COMMIT_SIZE );
       }
 
       bindSize = XMLHandler.getTagValue( stepnode, "bind_size" );
-      if ( StringUtils.isEmpty( bindSize ) ) {
+      if ( Const.isEmpty( bindSize ) ) {
         bindSize = Integer.toString( DEFAULT_BIND_SIZE );
       }
 
       readSize = XMLHandler.getTagValue( stepnode, "read_size" );
-      if ( StringUtils.isEmpty( readSize ) ) {
+      if ( Const.isEmpty( readSize ) ) {
         readSize = Integer.toString( DEFAULT_READ_SIZE );
       }
 
       maxErrors = XMLHandler.getTagValue( stepnode, "errors" );
-      if ( StringUtils.isEmpty( maxErrors ) ) {
+      if ( Const.isEmpty( maxErrors ) ) {
         maxErrors = Integer.toString( DEFAULT_MAX_ERRORS );
       }
 

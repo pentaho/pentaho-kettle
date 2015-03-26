@@ -65,8 +65,15 @@ public class LoggingRegistry {
       LoggingObject loggingSource = new LoggingObject( object );
 
       LoggingObjectInterface found = findExistingLoggingSource( loggingSource );
-      if ( ( found != null ) && ( found.getParent() != null ) ) {
-        return found.getLogChannelId();
+      if ( found != null ) {
+        LoggingObjectInterface foundParent = found.getParent();
+        LoggingObjectInterface loggingSourceParent = loggingSource.getParent();
+        if ( foundParent != null && loggingSourceParent != null ) {
+          String foundParentLogChannelId = foundParent.getLogChannelId();
+          if ( foundParentLogChannelId != null && foundParentLogChannelId.equals( loggingSourceParent.getLogChannelId() ) ) {
+            return foundParentLogChannelId;
+          }
+        }
       }
 
       String logChannelId = UUID.randomUUID().toString();

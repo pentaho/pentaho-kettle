@@ -35,15 +35,6 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.xml.XMLHandler;
 
-/**
- * This servlet allows a client (TransSplitter in our case) to ask for a port number.<br>
- * This port number will be allocated in such a way that the port number is unique for a given hostname.<br>
- * This in turn will ensure that all the slaves will use valid port numbers, even if multiple slaves run on the same
- * host.
- *
- * @author matt
- *
- */
 public class NextSequenceValueServlet extends BaseHttpServlet implements CartePluginInterface {
   private static final long serialVersionUID = 3634806745372015720L;
 
@@ -64,6 +55,87 @@ public class NextSequenceValueServlet extends BaseHttpServlet implements CartePl
     super( transformationMap );
   }
 
+  /**
+<div id="mindtouch">
+    <h1>/kettle/nextSequence</h1>
+    <a name="GET"></a>
+    <h2>GET</h2>
+    <p>Increments specified pre-configured sequence.
+  Method is used for reserving a number of IDs and incrementing a sequence pre-configured in Carte server configuration 
+  by specified amount. If no increment value provided 10000 is used by default.</p>
+    
+    <p><b>Example Request:</b><br />
+    <pre function="syntax.xml">
+    GET /kettle/nextSequence?name=test_seq
+    </pre>
+    
+    </p>
+    <h3>Parameters</h3>
+    <table class="pentaho-table">
+    <tbody>
+    <tr>
+      <th>name</th>
+      <th>description</th>
+      <th>type</th>
+    </tr>
+    <tr>
+    <td>name</td>
+    <td>name of the sequence specified in Carte configuration file.</td>
+    <td>query</td>
+    </tr>
+    <tr>
+    <td>increment</td>
+    <td>(optional) parameter used for incrementing sequence. If no parameter specified
+  10000 is used by default.</td>
+    <td>integer, optional</td>
+    </tr>
+    </tbody>
+    </table>
+  
+  <h3>Response Body</h3>
+
+  <table class="pentaho-table">
+    <tbody>
+      <tr>
+        <td align="right">text:</td>
+        <td>HTML</td>
+      </tr>
+      <tr>
+        <td align="right">media types:</td>
+        <td>text/xml</td>
+      </tr>
+    </tbody>
+  </table>
+    <p>Response XML containing sequence value and the increment value used.</p>
+        
+    <p><b>Example Response:</b></p>
+  <pre function="syntax.xml">
+  <seq><value>570000</value><increment>10000</increment></seq>
+  </pre>
+
+    <h3>Status Codes</h3>
+    <table class="pentaho-table">
+  <tbody>
+    <tr>
+      <th>code</th>
+      <th>description</th>
+    </tr>
+    <tr>
+      <td>200</td>
+      <td>Request was processed.</td>
+    </tr>
+    <tr>
+      <td>404</td>
+      <td>If the sequence was not found or error occurred during allocation</td>
+    </tr>
+    <tr>
+      <td>500</td>
+      <td>Internal server error occurs during request processing.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  */
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
     IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {

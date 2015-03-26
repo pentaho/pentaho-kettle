@@ -51,9 +51,9 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 @Step( id = "PaloCellOutput", image = "PaloCellOutput.png",
-    i18nPackageName = "org.pentaho.di.trans.steps.palo.celloutput", name = "PaloCellOutput.TransName",
-    description = "PaloCellOutput.TransDescription",
-    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo" )
+  i18nPackageName = "org.pentaho.di.trans.steps.palo.celloutput", name = "PaloCellOutput.TransName",
+  description = "PaloCellOutput.TransDescription",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo" )
 public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   private DatabaseMeta databaseMeta;
@@ -89,8 +89,7 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   /**
-   * @param database
-   *          The database to set.
+   * @param database The database to set.
    */
   public final void setDatabaseMeta( final DatabaseMeta database ) {
     this.databaseMeta = database;
@@ -120,7 +119,7 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
       try {
         enableDimensionCache = XMLHandler.getTagValue( stepnode, "enableDimensionCache" ).equals( "Y" ) ? true : false;
         preloadDimensionCache =
-            XMLHandler.getTagValue( stepnode, "preloadDimensionCache" ).equals( "Y" ) ? true : false;
+          XMLHandler.getTagValue( stepnode, "preloadDimensionCache" ).equals( "Y" ) ? true : false;
         commitSize = Integer.parseInt( XMLHandler.getTagValue( stepnode, "commitSize" ) );
 
       } catch ( Exception e ) {
@@ -169,7 +168,7 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
     StringBuffer retval = new StringBuffer();
 
     retval.append( "    " ).append(
-        XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
+      XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "cube", this.cube ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "measuretype", measureType ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "updateMode", updateMode ) );
@@ -196,10 +195,11 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
     if ( measureField.getDimensionName() != "" ) {
       retval.append( "      <measure>" ).append( Const.CR );
       retval.append( "        " ).append( XMLHandler.addTagValue( "measurename", measureField.getDimensionName() ) );
-      if ( measureField.getFieldName() == "" )
+      if ( measureField.getFieldName() == "" ) {
         retval.append( "        " ).append( XMLHandler.addTagValue( "measurefieldname", "CHOOSE FIELD" ) );
-      else
+      } else {
         retval.append( "        " ).append( XMLHandler.addTagValue( "measurefieldname", measureField.getFieldName() ) );
+      }
       retval.append( "        " ).append( XMLHandler.addTagValue( "measurefieldtype", measureField.getFieldType() ) );
       retval.append( "      </measure>" ).append( Const.CR );
     }
@@ -223,8 +223,9 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
         this.enableDimensionCache = rep.getStepAttributeBoolean( idStep, "enableDimensionCache" );
         this.preloadDimensionCache = rep.getStepAttributeBoolean( idStep, "preloadDimensionCache" );
         this.commitSize = (int) rep.getStepAttributeInteger( idStep, "commitSize" );
-        if ( this.commitSize <= 0 )
+        if ( this.commitSize <= 0 ) {
           this.setCommitSize( 1000 );
+        }
       } catch ( Exception e ) {
         enableDimensionCache = false;
         preloadDimensionCache = false;
@@ -280,8 +281,9 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   public final void check( final List<CheckResultInterface> remarks, final TransMeta transMeta,
-      final StepMeta stepMeta, final RowMetaInterface prev, final String input[], final String output[],
-      final RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore ) {
+                           final StepMeta stepMeta, final RowMetaInterface prev,
+                           final String[] input, final String[] output, final RowMetaInterface info,
+                           VariableSpace space, Repository repository, IMetaStore metaStore ) {
 
     CheckResult cr;
 
@@ -319,14 +321,14 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
           for ( DimensionField field : this.fields ) {
             if ( Const.isEmpty( field.getFieldName() ) ) {
               cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Input field for dimension "
-                      + field.getDimensionName() + " is empty.", stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Input field for dimension "
+                  + field.getDimensionName() + " is empty.", stepMeta );
               remarks.add( cr );
             }
             if ( Const.isEmpty( field.getFieldType() ) ) {
               cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Input field type for dimension "
-                      + field.getDimensionName() + " is empty.", stepMeta );
+                new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Input field type for dimension "
+                  + field.getDimensionName() + " is empty.", stepMeta );
               remarks.add( cr );
             }
           }
@@ -340,15 +342,15 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
       }
     } else {
       cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use",
-              stepMeta );
+        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, "Please select or create a connection to use",
+          stepMeta );
       remarks.add( cr );
     }
 
   }
 
   public final StepInterface getStep( final StepMeta stepMeta, final StepDataInterface stepDataInterface,
-      final int cnr, final TransMeta transMeta, final Trans trans ) {
+                                      final int cnr, final TransMeta transMeta, final Trans trans ) {
 
     return new PaloCellOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
@@ -363,7 +365,7 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
 
   public final DatabaseMeta[] getUsedDatabaseConnections() {
     if ( databaseMeta != null ) {
-      return new DatabaseMeta[] { databaseMeta };
+      return new DatabaseMeta[]{ databaseMeta };
     } else {
       return super.getUsedDatabaseConnections();
     }
@@ -374,8 +376,7 @@ public class PaloCellOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   /**
-   * @param cube
-   *          the cube name to set
+   * @param cube the cube name to set
    */
   public void setCube( String cube ) {
     this.cube = cube;

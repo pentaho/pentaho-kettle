@@ -118,9 +118,9 @@ public class DenormaliserAggregationsTest {
     // create rmi for one string and 2 integers
     RowMetaInterface rmi = new RowMeta();
     List<ValueMetaInterface> list = new ArrayList<ValueMetaInterface>();
-    list.add( new ValueMetaString() );
-    list.add( new ValueMetaInteger() );
-    list.add( new ValueMetaInteger() );
+    list.add( new ValueMetaString( "a" ) );
+    list.add( new ValueMetaInteger( "b" ) );
+    list.add( new ValueMetaInteger( "d" ) );
     rmi.setValueMetaList( list );
 
     // denormalizer key field will be String 'Junit'

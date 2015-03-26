@@ -27,7 +27,10 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import java.io.ByteArrayOutputStream;
@@ -35,9 +38,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.List;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -49,6 +53,8 @@ public class ExcelWriterStepTest {
   private HSSFWorkbook wb;
   private StepMockHelper<ExcelWriterStepMeta, ExcelWriterStepData> mockHelper;
   private ExcelWriterStep step;
+
+  private ExcelWriterStepMeta stepMeta;
 
   @Before
   public void setUp() throws Exception {
@@ -62,6 +68,8 @@ public class ExcelWriterStepTest {
     step =
       new ExcelWriterStep(
         mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+
+    stepMeta = new ExcelWriterStepMeta();
   }
 
   @After
@@ -93,6 +101,126 @@ public class ExcelWriterStepTest {
     } finally {
       System.setErr( err );
     }
+  }
+
+  @Test
+  public void testTopLevelMetadataEntries() {
+
+    try {
+      List<StepInjectionMetaEntry> entries =
+        stepMeta.getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
+
+      String masterKeys = "FIELDS";
+
+      for ( StepInjectionMetaEntry entry : entries ) {
+        String key = entry.getKey();
+        assertTrue( masterKeys.contains( key ) );
+        masterKeys = masterKeys.replace( key, "" );
+
+      }
+
+      assertTrue( masterKeys.trim().length() == 0 );
+
+    } catch ( KettleException e ) {
+      fail( e.getMessage() );
+    }
+
+  }
+
+  @Test
+  public void testChildLevelMetadataEntries() {
+
+    try {
+      List<StepInjectionMetaEntry> entries =
+        stepMeta.getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
+
+      String childKeys = "NAME TYPE FORMAT STYLECELL FIELDTITLE TITLESTYLE "
+        + "FORMULA HYPERLINKFIELD CELLCOMMENT COMMENTAUTHOR";
+
+      StepInjectionMetaEntry mappingEntry = null;
+
+      for ( StepInjectionMetaEntry entry : entries ) {
+        String key = entry.getKey();
+        if ( key.equals( "FIELDS" ) ) {
+          mappingEntry = entry;
+          break;
+        }
+      }
+
+      assertNotNull( mappingEntry );
+
+      List<StepInjectionMetaEntry> fieldAttributes = mappingEntry.getDetails().get( 0 ).getDetails();
+
+      for ( StepInjectionMetaEntry attribute : fieldAttributes ) {
+        String key = attribute.getKey();
+        assertTrue( childKeys.contains( key ) );
+        childKeys = childKeys.replace( key, "" );
+
+      }
+
+      assertTrue( childKeys.trim().length() == 0 );
+
+    } catch ( KettleException e ) {
+      fail( e.getMessage() );
+    }
+
+  }
+
+  @Test
+  public void testInjection() {
+
+    ExcelWriterStepMeta meta = new ExcelWriterStepMeta();
+
+    try {
+      List<StepInjectionMetaEntry> entries =
+        stepMeta.getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
+
+      for ( StepInjectionMetaEntry entry : entries ) {
+        switch ( entry.getValueType() ) {
+          case ValueMetaInterface.TYPE_STRING:
+            entry.setValue( "new_".concat( entry.getKey() ) );
+            break;
+          case ValueMetaInterface.TYPE_BOOLEAN:
+            entry.setValue( Boolean.TRUE );
+            break;
+          default:
+            break;
+        }
+
+        if ( !entry.getDetails().isEmpty() ) {
+
+          List<StepInjectionMetaEntry> childEntries = entry.getDetails().get( 0 ).getDetails();
+          for ( StepInjectionMetaEntry childEntry : childEntries ) {
+            switch ( childEntry.getValueType() ) {
+              case ValueMetaInterface.TYPE_STRING:
+                childEntry.setValue( "new_".concat( childEntry.getKey() ) );
+                break;
+              case ValueMetaInterface.TYPE_BOOLEAN:
+                childEntry.setValue( Boolean.TRUE );
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      }
+
+      stepMeta.getStepMetaInjectionInterface().injectStepMetadataEntries( entries );
+
+      assertEquals( "Cell comment not properly injected... ", "new_CELLCOMMENT", stepMeta.getOutputFields()[0].getCommentField() );
+      assertEquals( "Format not properly injected... ", "new_FORMAT", stepMeta.getOutputFields()[0].getFormat() );
+      assertEquals( "Hyperlink not properly injected... ", "new_HYPERLINKFIELD", stepMeta.getOutputFields()[0].getHyperlinkField() );
+      assertEquals( "Name not properly injected... ", "new_NAME", stepMeta.getOutputFields()[0].getName() );
+      assertEquals( "Style cell not properly injected... ", "new_STYLECELL", stepMeta.getOutputFields()[0].getStyleCell() );
+      assertEquals( "Title not properly injected... ", "new_FIELDTITLE", stepMeta.getOutputFields()[0].getTitle() );
+      assertEquals( "Title style cell not properly injected... ", "new_TITLESTYLE", stepMeta.getOutputFields()[0].getTitleStyleCell() );
+      assertEquals( "Type not properly injected... ", "-", stepMeta.getOutputFields()[0].getTypeDesc() );
+      assertEquals( "Comment author not properly injected... ", "new_COMMENTAUTHOR", stepMeta.getOutputFields()[0].getCommentAuthorField() );
+
+    } catch ( KettleException e ) {
+      fail( e.getMessage() );
+    }
+
   }
 
   private HSSFWorkbook createWorkbook( File file ) throws Exception {

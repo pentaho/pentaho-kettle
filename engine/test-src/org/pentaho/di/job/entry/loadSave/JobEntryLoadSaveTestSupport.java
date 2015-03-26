@@ -40,7 +40,7 @@ import static org.junit.Assert.assertTrue;
 @Ignore
 public abstract class JobEntryLoadSaveTestSupport<T extends JobEntryInterface> {
 
-  private LoadSaveTester tester;
+  private LoadSaveTester<T> tester;
 
   @Before
   public void setUp() throws Exception {
@@ -54,7 +54,7 @@ public abstract class JobEntryLoadSaveTestSupport<T extends JobEntryInterface> {
 
     assertTrue( !commonAttributes.isEmpty() || !( xmlAttributes.isEmpty() || repoAttributes.isEmpty() ) );
 
-    tester = new LoadSaveTester( getJobEntryClass(), commonAttributes, xmlAttributes, repoAttributes, getters, setters,
+    tester = new LoadSaveTester<T>( getJobEntryClass(), commonAttributes, xmlAttributes, repoAttributes, getters, setters,
       attributeValidators, typeValidators );
   }
 

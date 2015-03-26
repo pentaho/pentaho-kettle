@@ -29,6 +29,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -164,7 +165,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
     retval.append( "      " ).append( XMLHandler.addTagValue( "nrretry", nrretry ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "targettype", targettype ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "user", user ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "passphrase", passphrase ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "passphrase" , Encr.encryptPasswordIfNotUsingVariables( passphrase ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "engineid", engineid ) );
     return retval.toString();
   }
@@ -182,7 +183,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
       nrretry = XMLHandler.getTagValue( entrynode, "nrretry" );
       targettype = XMLHandler.getTagValue( entrynode, "targettype" );
       user = XMLHandler.getTagValue( entrynode, "user" );
-      passphrase = XMLHandler.getTagValue( entrynode, "passphrase" );
+      passphrase = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( entrynode, "passphrase" ) );
       engineid = XMLHandler.getTagValue( entrynode, "engineid" );
 
     } catch ( KettleXMLException xe ) {
@@ -202,7 +203,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
       nrretry = rep.getJobEntryAttributeString( id_jobentry, "nrretry" );
       targettype = rep.getJobEntryAttributeString( id_jobentry, "targettype" );
       user = rep.getJobEntryAttributeString( id_jobentry, "user" );
-      passphrase = rep.getJobEntryAttributeString( id_jobentry, "passphrase" );
+      passphrase = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "passphrase" ) );
       engineid = rep.getJobEntryAttributeString( id_jobentry, "engineid" );
 
     } catch ( KettleException dbe ) {
@@ -222,7 +223,7 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
       rep.saveJobEntryAttribute( id_job, getObjectId(), "nrretry", nrretry );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "targettype", targettype );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "user", user );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "passphrase", passphrase );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "passphrase", Encr.encryptPasswordIfNotUsingVariables( passphrase ) );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "engineid", engineid );
 
     } catch ( KettleDatabaseException dbe ) {

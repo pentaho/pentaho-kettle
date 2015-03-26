@@ -254,7 +254,7 @@ public class TableOutput extends BaseStep implements StepInterface {
       data.db.setValues( data.insertRowMeta, insertRowData, insertStatement );
       data.db.insertRow( insertStatement, data.batchMode, false ); // false: no commit, it is handled in this step
                                                                    // different
-      if ( log.isRowLevel() ) {
+      if ( isRowLevel() ) {
         logRowlevel( "Written row: " + data.insertRowMeta.getString( insertRowData ) );
       }
 
@@ -280,7 +280,7 @@ public class TableOutput extends BaseStep implements StepInterface {
       //
 
       if ( ( data.commitSize > 0 ) && ( ( commitCounter % data.commitSize ) == 0 ) ) {
-        if ( data.batchMode ) {
+        if ( data.db.getUseBatchInsert( data.batchMode ) ) {
           try {
             insertStatement.executeBatch();
             data.db.commit();
@@ -343,7 +343,7 @@ public class TableOutput extends BaseStep implements StepInterface {
       }
     } catch ( KettleDatabaseException dbe ) {
       if ( getStepMeta().isDoingErrorHandling() ) {
-        if ( log.isRowLevel() ) {
+        if ( isRowLevel() ) {
           logRowlevel( "Written row to error handling : " + getInputRowMeta().getString( r ) );
         }
 
@@ -420,6 +420,10 @@ public class TableOutput extends BaseStep implements StepInterface {
     }
 
     return outputRowData;
+  }
+
+  public boolean isRowLevel() {
+    return log.isRowLevel();
   }
 
   private void processBatchException( String errorMessage, int[] updateCounts, List<Exception> exceptionsList ) throws KettleException {
@@ -633,4 +637,11 @@ public class TableOutput extends BaseStep implements StepInterface {
     return data;
   }
 
+  protected void setMeta( TableOutputMeta meta ) {
+    this.meta = meta;
+  }
+
+  protected void setData( TableOutputData data ) {
+    this.data = data;
+  }
 }

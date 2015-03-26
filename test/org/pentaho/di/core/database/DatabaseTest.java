@@ -22,16 +22,19 @@
 
 package org.pentaho.di.core.database;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -42,7 +45,6 @@ import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
@@ -60,12 +62,16 @@ import org.pentaho.di.trans.TransMeta;
  */
 public class DatabaseTest {
 
-  LoggingObjectInterface log = new SimpleLoggingObject( "junit", LoggingObjectType.GENERAL, null );
-  DatabaseMeta databaseMysqlMeta = new DatabaseMeta( "junit_db", "Mysql", "JDBC", null, "stub:stub", null, null, null );
-  RowMetaInterface params = Mockito.mock( RowMetaInterface.class );
-  Object[] data = new Object[] {};
+  private static final int COUNT_OF_STEPS_WITH_DATABASE = 10;
 
-  PreparedStatement ps;
+  private LoggingObjectInterface log = new SimpleLoggingObject( "junit", LoggingObjectType.GENERAL, null );
+  DatabaseMeta databaseMysqlMeta = new DatabaseMeta( "junit_db", "Mysql", "JDBC", null, "stub:stub", null, null, null );
+
+  private RowMetaInterface params = Mockito.mock( RowMetaInterface.class );
+
+  private Object[] data = new Object[] {};
+
+  private PreparedStatement ps;
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -87,6 +93,7 @@ public class DatabaseTest {
    */
   @Test
   public void testOpenQueryFetchSizeNotSet() throws KettleDatabaseException, SQLException {
+
     Database db = Mockito.spy( new MockDatabase( log, databaseMysqlMeta, 5 ) );
     try {
       db.openQuery( ps, params, data );
@@ -103,8 +110,8 @@ public class DatabaseTest {
    */
   @Test
   public void testOpenQueryFetchSizeSet() throws SQLException {
-    DatabaseMeta databaseMysqlMeta = new DatabaseMeta();
-    Database db = Mockito.spy( new MockDatabase( log, databaseMysqlMeta, 5 ) );
+    DatabaseMeta emptyMeta = new DatabaseMeta();
+    Database db = Mockito.spy( new MockDatabase( log, emptyMeta, 5 ) );
     try {
       db.openQuery( ps, params, data );
     } catch ( KettleDatabaseException e ) {
@@ -131,62 +138,11 @@ public class DatabaseTest {
     Mockito.verify( ps, Mockito.times( 1 ) ).setFetchSize( Mockito.anyInt() );
   }
 
-  public static final String[] databasesXML = {
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<connection>" + "<name>db</name>" + "<server>127.0.0.1</server>"
-        + "<type>H2</type>" + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>"
-        + "<username>sa</username>" + "<password></password>" + "</connection>",
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "  <connection>\n" + "    <name>db_pool</name>\n"
-        + "    <server>127.0.0.1</server>\n" + "    <type>H2</type>\n" + "    <access>Native</access>\n"
-        + "    <database>mem:db</database>\n" + "    <port></port>\n" + "    <username>sa</username>\n"
-        + "    <password></password>\n" + "    <attributes>\n"
-        + "      <attribute><code>INITIAL_POOL_SIZE</code><attribute>5</attribute></attribute>\n"
-        + "      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>\n"
-        + "      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>\n"
-        + "      <attribute><code>USE_POOLING</code><attribute>Y</attribute></attribute>\n" + "    </attributes>\n"
-        + "  </connection>" };
-
-  public Database setupDatabase() throws Exception {
-    Database database = null;
-
-    TransMeta transMeta = getTransMeta();
-
-    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
-
-    database = new Database( transMeta, dbInfo );
-    database.connect();
-
-    return database;
-  }
-
-  private TransMeta getTransMeta() throws KettleException {
-    KettleEnvironment.init();
-
-    //
-    // Create a new transformation...
-    //
-    TransMeta transMeta = new TransMeta();
-    transMeta.setName( "transname" );
-
-    // Add the database connections
-    for ( int i = 0; i < databasesXML.length; i++ ) {
-      DatabaseMeta databaseMeta = new DatabaseMeta( databasesXML[i] );
-      transMeta.addDatabase( databaseMeta );
-    }
-    return transMeta;
-  }
-
-  public Database setupPoolingDatabaseWOConnect() throws Exception {
-    Database database = null;
-    TransMeta transMeta = getTransMeta();
-    DatabaseMeta dbInfo = transMeta.findDatabase( "db_pool" );
-    database = new Database( transMeta, dbInfo );
-    return database;
-  }
-
   @Test
   public void testDatabaseCasing() throws Exception {
     String tableName = "mIxCaSiNG";
     Database db = setupDatabase();
+    db.connect();
 
     RowMetaInterface rm = new RowMeta();
 
@@ -219,13 +175,8 @@ public class DatabaseTest {
 
   @Test
   public void testQuoting() throws Exception {
-    Database database = null;
-
-    TransMeta transMeta = getTransMeta();
-
-    DatabaseMeta dbInfo = transMeta.findDatabase( "db" );
-
-    database = new Database( transMeta, dbInfo );
+    Database database = setupDatabase();
+    DatabaseMeta dbInfo = database.getDatabaseMeta();
     database.connect();
 
     assertNull( dbInfo.quoteField( null ) );
@@ -287,6 +238,94 @@ public class DatabaseTest {
 
     db.disconnect();
   }
+
+  @Test
+  public void testNonPooledAndPooledNormalConnect() throws Exception {
+    ExecutorService executorService = Executors.newFixedThreadPool( COUNT_OF_STEPS_WITH_DATABASE );
+
+    List<Callable<Connection>> tasks = new ArrayList<Callable<Connection>>();
+    for ( int i = 0; i < COUNT_OF_STEPS_WITH_DATABASE; i++ ) {
+      tasks.add(
+          new Callable<Connection>() {
+            @Override
+            public Connection call() throws Exception {
+              Database db = setupDatabase();
+              db.normalConnect( null );
+              return db.getConnection();
+            }
+          }
+      );
+      tasks.add(
+          new Callable<Connection>() {
+            @Override
+            public Connection call() throws Exception {
+              Database db2 = setupPoolingDatabaseWOConnect();
+              db2.normalConnect( null );
+              return db2.getConnection();
+            }
+          }
+      );
+    }
+    List<Future<Connection>> futures = executorService.invokeAll( tasks );
+    for ( Future<Connection> future : futures ) {
+      assertNotNull( future.get() );
+    }
+  }
+
+  public Database setupPoolingDatabaseWOConnect() throws Exception {
+    // Create a new transformation...
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "transname"  );
+    DatabaseMeta dbInfo = new DatabaseMeta(
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<connection>\n"
+            + "<name>db_pool</name>\n"
+            + "<server>127.0.0.1</server>\n"
+            + "<type>H2</type>\n"
+            + "<access>Native</access>\n"
+            + "<database>mem:db</database>\n"
+            + "<port></port>\n"
+            + "<username>sa</username>\n"
+            + "<password></password>\n"
+            + "<attributes>\n"
+            + "<attribute><code>INITIAL_POOL_SIZE</code><attribute>5</attribute></attribute>\n"
+            + "<attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>\n"
+            + "<attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>\n"
+            + "<attribute><code>USE_POOLING</code><attribute>Y</attribute></attribute>\n"
+            + "</attributes>\n"
+            + "</connection>" );
+    // Add the database connections
+    transMeta.addDatabase( dbInfo );
+
+    Database database = new Database( transMeta, dbInfo );
+    return database;
+  }
+
+  public Database setupDatabase() throws Exception {
+
+    // Create a new transformation...
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "transname"  );
+    // Add the database connections
+    DatabaseMeta databaseMeta = new DatabaseMeta(
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+            + "<connection>"
+            + "<name>db</name>"
+            + "<server>127.0.0.1</server>"
+            + "<type>H2</type>"
+            + "<access>Native</access>"
+            + "<database>mem:db</database>"
+            + "<port></port>"
+            + "<username>sa</username>"
+            + "<password></password>"
+            + "</connection>" );
+    transMeta.addDatabase( databaseMeta );
+
+    Database database = new Database( transMeta, databaseMeta );
+
+    return database;
+  }
+
 
   private void fillDbInBatch( String tableName, Database db, int insertSize ) throws SQLException,
     KettleDatabaseException {

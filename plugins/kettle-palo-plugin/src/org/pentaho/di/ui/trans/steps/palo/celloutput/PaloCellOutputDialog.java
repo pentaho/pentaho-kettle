@@ -67,8 +67,8 @@ import org.pentaho.di.ui.trans.steps.palo.cellinput.PaloCellInputDialog;
 
 public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = PaloCellOutputMeta.class; // for i18n purposes,
-                                                          // needed by
-                                                          // Translator2!!
+  // needed by
+  // Translator2!!
 
   public static void main( String[] args ) {
     try {
@@ -266,8 +266,8 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     };
 
     colinf =
-        new ColumnInfo[] { new ColumnInfo( getLocalizedColumn( 0 ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-          new ColumnInfo( getLocalizedColumn( 1 ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, true ), };
+      new ColumnInfo[]{ new ColumnInfo( getLocalizedColumn( 0 ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo( getLocalizedColumn( 1 ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{ }, true ), };
 
     tableViewFields = new TableView( null, shell, SWT.NONE | SWT.BORDER, colinf, 10, true, lsMod, props );
 
@@ -301,7 +301,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     buttonCancel = new Button( shell, SWT.CENTER );
     buttonOk.setText( BaseMessages.getString( "System.Button.OK" ) );
     buttonCancel.setText( BaseMessages.getString( "System.Button.Cancel" ) );
-    setButtonPositions( new Button[] { buttonOk, buttonCancel }, margin, null );
+    setButtonPositions( new Button[]{ buttonOk, buttonCancel }, margin, null );
 
     buttonGetFields.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -381,8 +381,9 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     PaloCellInputDialog.showPaloLibWarningDialog( shell );
 
     while ( !shell.isDisposed() ) {
-      if ( !display.readAndDispatch() )
+      if ( !display.readAndDispatch() ) {
         display.sleep();
+      }
     }
     return stepname;
   }
@@ -425,12 +426,14 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
   }
 
   private void fillStoredData() {
-    if ( stepname != null )
+    if ( stepname != null ) {
       textStepName.setText( stepname );
+    }
 
     int index = addConnectionLine.indexOf( meta.getDatabaseMeta() != null ? meta.getDatabaseMeta().getName() : "" );
-    if ( index >= 0 )
+    if ( index >= 0 ) {
       addConnectionLine.select( index );
+    }
 
     if ( meta.getCube() != null ) {
       comboCube.add( meta.getCube() );
@@ -452,12 +455,13 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     buttonPreloadDimensionCache.setSelection( meta.getPreloadDimensionCache() );
     buttonPreloadDimensionCache.setEnabled( buttonEnableDimensionCache.getSelection() );
 
-    comboMeasureType.setItems( new String[] { "Numeric", "String" } );
+    comboMeasureType.setItems( new String[]{ "Numeric", "String" } );
     comboMeasureType.select( 0 );
     if ( meta.getMeasureType() != null ) {
       int indexType = comboMeasureType.indexOf( meta.getMeasureType() );
-      if ( indexType >= 0 )
+      if ( indexType >= 0 ) {
         comboMeasureType.select( indexType );
+      }
     }
 
     tableViewFields.table.removeAll();
@@ -474,9 +478,10 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
       fieldNameList = Arrays.asList( r.getFieldNames() );
       Collections.sort( fieldNameList );
     } catch ( Exception e ) {
+      // ignore
     }
     tableViewFields.setColumnInfo( 1, new ColumnInfo( "Field", ColumnInfo.COLUMN_TYPE_CCOMBO, ( fieldNameList == null
-        ? null : fieldNameList.toArray( new String[0] ) ), true ) );
+      ? null : fieldNameList.toArray( new String[0] ) ), true ) );
 
     if ( meta.getMeasure() != null ) {
       final TableItem item = new TableItem( tableViewFields.table, SWT.NONE );
@@ -507,15 +512,16 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
           List<String> cubes = data.helper.getCubesNames();
           Collections.sort( cubes, new PaloNameComparator() );
           for ( String cubeName : cubes ) {
-            if ( comboCube.indexOf( cubeName ) == -1 )
+            if ( comboCube.indexOf( cubeName ) == -1 ) {
               comboCube.add( cubeName );
+            }
           }
           data.helper.disconnect();
         }
       }
     } catch ( Exception ex ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "PaloCellOutputDialog.RetreiveCubesErrorTitle" ),
-          BaseMessages.getString( PKG, "PaloCellOutputDialog.RetreiveCubesError" ), ex );
+        BaseMessages.getString( PKG, "PaloCellOutputDialog.RetreiveCubesError" ), ex );
     }
   }
 
@@ -525,8 +531,8 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
       List<String> fieldNameList = Arrays.asList( r.getFieldNames() );
       Collections.sort( fieldNameList );
       colinf[1] =
-          new ColumnInfo( getLocalizedColumn( 1 ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-              fieldNameList.toArray( new String[0] ), true );
+        new ColumnInfo( getLocalizedColumn( 1 ), ColumnInfo.COLUMN_TYPE_CCOMBO,
+          fieldNameList.toArray( new String[0] ), true );
     }
   }
 
@@ -561,16 +567,21 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
         tableViewFields.setReadonly( true );
 
       } else {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-            .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), new Exception( BaseMessages.getString( PKG,
-            "PaloCellOutputDialog.SelectCubeFirstError" ) ) );
+        new ErrorDialog(
+          shell,
+          BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ),
+          BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Message" ),
+          new Exception( BaseMessages.getString( PKG, "PaloCellOutputDialog.SelectCubeFirstError" ) ) );
       }
 
       this.fillPreviousFieldTableViewColumn();
 
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+      new ErrorDialog(
+        shell,
+        BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ),
+        BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Message" ),
+        ke );
     }
   }
 
@@ -593,8 +604,11 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
       getInfo( this.meta );
       dispose();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "PaloCellOutputDialog.FailedToSaveDataErrorTitle" ),
-          BaseMessages.getString( PKG, "PaloCellOutputDialog.FailedToSaveDataError" ), e );
+      new ErrorDialog(
+        shell,
+        BaseMessages.getString( PKG, "PaloCellOutputDialog.FailedToSaveDataErrorTitle" ),
+        BaseMessages.getString( PKG, "PaloCellOutputDialog.FailedToSaveDataError" ),
+        e );
     }
   }
 
@@ -603,10 +617,15 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     List<DimensionField> fields = new ArrayList<DimensionField>();
 
     if ( this.updateOptions.getCode( comboUpdateMode.getText() ) == "ADD"
-        && this.splashOptions.getCode( comboSplashMode.getText() ) == "SET" ) {
-      throw new KettleException( BaseMessages.getString( PKG, "PaloCellOutputDialog.UpdateSplashError", BaseMessages
-          .getString( PKG, "PaloCellOutputDialog.UpdateMode" ), comboUpdateMode.getText(), BaseMessages.getString( PKG,
-          "PaloCellOutputDialog.SplashMode" ), comboSplashMode.getText() ) );
+      && this.splashOptions.getCode( comboSplashMode.getText() ) == "SET" ) {
+      throw new KettleException(
+        BaseMessages.getString( PKG, "PaloCellOutputDialog.UpdateSplashError",
+          BaseMessages.getString( PKG, "PaloCellOutputDialog.UpdateMode" ),
+          comboUpdateMode.getText(),
+          BaseMessages.getString( PKG, "PaloCellOutputDialog.SplashMode" ),
+          comboSplashMode.getText()
+        )
+      );
     }
 
     try {
@@ -618,17 +637,18 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     for ( int i = 0; i < tableViewFields.table.getItemCount(); i++ ) {
 
       DimensionField field =
-          new DimensionField( tableViewFields.table.getItem( i ).getText( 1 ), tableViewFields.table.getItem( i )
-              .getText( 2 ), ""// tableViewFields.table.getItem(i).getText(3)
-          );
+        new DimensionField( tableViewFields.table.getItem( i ).getText( 1 ), tableViewFields.table.getItem( i )
+          .getText( 2 ), ""// tableViewFields.table.getItem(i).getText(3)
+        );
 
       if ( i != tableViewFields.table.getItemCount() - 1 ) {
         // if(tableViewFields.table.getItem(i).getText(3)!="String")
         // throw new
         // KettleException("Dimension input field must be from String type");
         fields.add( field );
-      } else
+      } else {
         myMeta.setMeasureField( field );
+      }
     }
 
     myMeta.setCube( this.comboCube.getText() );
@@ -640,10 +660,11 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     myMeta.setDatabaseMeta( transMeta.findDatabase( addConnectionLine.getText() ) );
     myMeta.setCommitSize( Integer.parseInt( this.textCommitSize.getText() ) );
     myMeta.setEnableDimensionCache( this.buttonEnableDimensionCache.getSelection() );
-    if ( this.buttonEnableDimensionCache.getSelection() )
+    if ( this.buttonEnableDimensionCache.getSelection() ) {
       myMeta.setPreloadDimensionCache( this.buttonPreloadDimensionCache.getSelection() );
-    else
+    } else {
       myMeta.setPreloadDimensionCache( false );
+    }
     myMeta.setChanged( true );
 
   }

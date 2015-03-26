@@ -105,9 +105,9 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
     props = PropsUI.getInstance();
     this.jobEntry = (PaloCubeCreate) jobEntryInt;
 
-    if ( this.jobEntry.getName() == null )
+    if ( this.jobEntry.getName() == null ) {
       this.jobEntry.setName( jobEntryInt.getName() );
-
+    }
     this.jobMeta = jobMeta;
   }
 
@@ -262,8 +262,9 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 
     shell.open();
     while ( !shell.isDisposed() ) {
-      if ( !display.readAndDispatch() )
+      if ( !display.readAndDispatch() ) {
         display.sleep();
+      }
     }
     return jobEntry;
   }
@@ -316,27 +317,29 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    if ( jobEntry.getName() != null )
+    if ( jobEntry.getName() != null ) {
       textStepName.setText( jobEntry.getName() );
+    }
     textStepName.selectAll();
 
     int index =
         addConnectionLine.indexOf( jobEntry.getDatabaseMeta() != null ? jobEntry.getDatabaseMeta().getName() : "" );
-    if ( index >= 0 )
+    if ( index >= 0 ) {
       addConnectionLine.select( index );
-
-    if ( jobEntry.getCubeName() != null )
+    }
+    if ( jobEntry.getCubeName() != null ) {
       textCubeName.setText( jobEntry.getCubeName() );
-
+    }
     tableViewFields.table.removeAll();
 
-    if ( jobEntry.getDimensionNames() != null && jobEntry.getDimensionNames().size() > 0 )
-      for ( String dimensionName : jobEntry.getDimensionNames() )
+    if ( jobEntry.getDimensionNames() != null && jobEntry.getDimensionNames().size() > 0 ) {
+      for ( String dimensionName : jobEntry.getDimensionNames() ) {
         tableViewFields.add( dimensionName );
-
-    if ( tableViewFields.table.getItemCount() == 0 )
+      }
+    }
+    if ( tableViewFields.table.getItemCount() == 0 ) {
       tableViewFields.add( "" );
-
+    }
     tableViewFields.setRowNums();
 
   }
@@ -351,9 +354,9 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
     tableViewFields.removeEmptyRows();
     List<String> dimensionNames = new ArrayList<String>();
 
-    for ( int i = 0; i < tableViewFields.table.getItemCount(); i++ )
+    for ( int i = 0; i < tableViewFields.table.getItemCount(); i++ ) {
       dimensionNames.add( tableViewFields.table.getItem( i ).getText( 1 ) );
-
+    }
     jobEntry.setName( textStepName.getText() );
     jobEntry.setDatabaseMeta( DatabaseMeta.findDatabase( jobMeta.getDatabases(), addConnectionLine.getText() ) );
     jobEntry.setCubeName( textCubeName.getText() );

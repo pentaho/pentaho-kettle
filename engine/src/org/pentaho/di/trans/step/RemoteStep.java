@@ -27,16 +27,26 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.spec.InvalidKeySpecException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.CertificateGenEncryptUtil;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -94,6 +104,11 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 
   private int bufferSize;
   private boolean compressingStreams;
+
+  private boolean encryptingStreams;
+  private byte[] key;
+  private CipherInputStream cipherInputStream;
+  private CipherOutputStream cipherOutputStream;
 
   private GZIPOutputStream gzipOutputStream;
 
@@ -181,7 +196,12 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
         throw new RuntimeException( "Unexpected error encountered, probably encoding/decoding base64 data", e );
       }
     }
-
+    xml.append( XMLHandler.addTagValue( "encrypted_streams", encryptingStreams, false ) );
+    try {
+      xml.append( XMLHandler.addTagValue( "key", key ) );
+    } catch ( Exception ex ) {
+      baseStep.logError( "Unable to parse key", ex );
+    }
     xml.append( XMLHandler.closeTag( XML_TAG ) );
     return xml.toString();
   }
@@ -208,6 +228,8 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
     } else {
       rowMeta = new RowMeta( rowMetaNode );
     }
+    encryptingStreams = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "encrypted_streams" ) );
+    key = XMLHandler.stringToBinary( XMLHandler.getTagValue( node, "key" ) );
   }
 
   @Override
@@ -327,19 +349,44 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
           socket = serverSocket.accept();
 
           // Create the output stream...
+          OutputStream socketOut = socket.getOutputStream();
+
           if ( compressingStreams ) {
-            gzipOutputStream = new GZIPOutputStream( socket.getOutputStream(), 50000 );
+            gzipOutputStream = new GZIPOutputStream( socketOut, 50000 );
             bufferedOutputStream = new BufferedOutputStream( gzipOutputStream, bufferSize );
           } else {
-            bufferedOutputStream = new BufferedOutputStream( socket.getOutputStream(), bufferSize );
+            bufferedOutputStream = new BufferedOutputStream( socketOut, bufferSize );
           }
-          outputStream = new DataOutputStream( bufferedOutputStream );
+          socketOut = bufferedOutputStream;
+          if ( encryptingStreams && key != null ) {
+            byte[] transKey = baseStep.getTransMeta().getKey();
+            Key unwrappedKey = null;
+            try {
+              unwrappedKey = CertificateGenEncryptUtil.decodeTransmittedKey( transKey, key,
+                baseStep.getTransMeta().isPrivateKey() );
+            } catch ( InvalidKeyException ex ) {
+              baseStep.logError( "Invalid key was received", ex );
+            } catch ( InvalidKeySpecException ex ) {
+              baseStep.logError( "Invalid key specification was received. Most probably public key was "
+                  + "sent instead of private or vice versa", ex );
+            } catch ( Exception ex ) {
+              baseStep.logError( "Error occurred during encryption initialization", ex );
+            }
+            try {
+              Cipher decryptionCip = CertificateGenEncryptUtil.initDecryptionCipher( unwrappedKey, key );
+              socketOut = cipherOutputStream = new CipherOutputStream( bufferedOutputStream, decryptionCip );
+            } catch ( InvalidKeyException ex ) {
+              baseStep.logError( "Invalid key was received", ex );
+            } catch ( Exception ex ) {
+              baseStep.logError( "Error occurred during encryption initialization", ex );
+            }
+          }
+          outputStream = new DataOutputStream( socketOut );
 
           baseStep.logBasic( "Server socket accepted for port ["
             + port + "], reading from server " + targetSlaveServerName );
 
           // get a row of data...
-          //
           Object[] rowData = baseStep.getRowFrom( rowSet );
           if ( rowData != null ) {
             rowSet.getRowMeta().writeMeta( outputStream );
@@ -388,6 +435,9 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
             if ( outputStream != null ) {
               outputStream.flush();
               outputStream.close();
+              if ( cipherOutputStream != null ) {
+                cipherOutputStream.close();
+              }
               bufferedOutputStream.close();
               if ( gzipOutputStream != null ) {
                 gzipOutputStream.close();
@@ -401,6 +451,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
           outputStream = null;
           bufferedOutputStream = null;
           gzipOutputStream = null;
+          cipherOutputStream = null;
 
           //
           // Now we can't close the server socket.
@@ -444,6 +495,10 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
           gzipInputStream.close();
           gzipInputStream = null;
         }
+        if ( cipherInputStream != null ) {
+          cipherInputStream.close();
+          cipherInputStream = null;
+        }
         if ( inputStream != null ) {
           inputStream.close();
           inputStream = null;
@@ -455,6 +510,10 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
         if ( bufferedOutputStream != null ) {
           bufferedOutputStream.close();
           bufferedOutputStream = null;
+        }
+        if ( cipherOutputStream != null ) {
+          cipherOutputStream.close();
+          cipherOutputStream = null;
         }
         if ( outputStream != null ) {
           outputStream.close();
@@ -518,13 +577,39 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 
         connected = true;
 
+        InputStream socketStream = socket.getInputStream();
         if ( compressingStreams ) {
-          gzipInputStream = new GZIPInputStream( socket.getInputStream() );
+          gzipInputStream = new GZIPInputStream( socketStream );
           bufferedInputStream = new BufferedInputStream( gzipInputStream, bufferSize );
         } else {
-          bufferedInputStream = new BufferedInputStream( socket.getInputStream(), bufferSize );
+          bufferedInputStream = new BufferedInputStream( socketStream, bufferSize );
         }
-        inputStream = new DataInputStream( bufferedInputStream );
+        socketStream = bufferedInputStream;
+
+        if ( encryptingStreams && key != null ) {
+          byte[] transKey = baseStep.getTransMeta().getKey();
+          Key unwrappedKey = null;
+          try {
+            unwrappedKey = CertificateGenEncryptUtil.decodeTransmittedKey( transKey, key,
+              baseStep.getTransMeta().isPrivateKey() );
+          } catch ( InvalidKeyException ex ) {
+            baseStep.logError( "Invalid key was received", ex );
+          } catch ( InvalidKeySpecException ex ) {
+            baseStep.logError( "Invalid key specification was received. Most probably public key was "
+                + "sent instead of private or vice versa", ex );
+          } catch ( Exception ex ) {
+            baseStep.logError( "Error occurred during encryption initialization", ex );
+          }
+          try {
+            Cipher decryptionCip = CertificateGenEncryptUtil.initDecryptionCipher( unwrappedKey, key );
+            socketStream = cipherInputStream = new CipherInputStream( bufferedInputStream, decryptionCip );
+          } catch ( InvalidKeyException ex ) {
+            baseStep.logError( "Invalid key was received", ex );
+          } catch ( Exception ex ) {
+            baseStep.logError( "Error occurred during encryption initialization", ex );
+          }
+        }
+        inputStream = new DataInputStream( socketStream );
 
         lastException = null;
       } catch ( Exception e ) {
@@ -658,6 +743,14 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
             }
             inputStream = null;
           }
+          if ( cipherInputStream != null ) {
+            try {
+              cipherInputStream.close();
+            } catch ( Exception e ) {
+              baseStep.logError( "Error closing input stream on socket connection to remote step", e );
+            }
+          }
+          cipherInputStream = null;
           if ( bufferedInputStream != null ) {
             try {
               bufferedInputStream.close();
@@ -848,4 +941,21 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
   public void setRowMeta( RowMetaInterface rowMeta ) {
     this.rowMeta = rowMeta;
   }
+
+  public boolean isEncryptingStreams() {
+    return encryptingStreams;
+  }
+
+  public void setEncryptingStreams( boolean encryptingStreams ) {
+    this.encryptingStreams = encryptingStreams;
+  }
+
+  public byte[] getKey() {
+    return key;
+  }
+
+  public void setKey( byte[] key ) {
+    this.key = key;
+  }
+
 }

@@ -422,7 +422,7 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
         final String value = attributes.get( key );
         if ( key != null && value != null ) {
           repository.connectionDelegate.insertStepAttribute( transformationId, stepId, 0, STEP_ATTRIBUTE_PREFIX
-            + groupName + '\t' + value, 0, value );
+            + groupName + '\t' + key, 0, value );
         }
       }
     }

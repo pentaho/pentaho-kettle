@@ -22,7 +22,7 @@ public abstract class CompressionOutputStream extends OutputStream {
     return compressionProvider;
   }
 
-  public void addEntry( Object entry ) throws IOException {
+  public void addEntry( String filename, String extension ) throws IOException {
     // Default no-op behavior
   }
 

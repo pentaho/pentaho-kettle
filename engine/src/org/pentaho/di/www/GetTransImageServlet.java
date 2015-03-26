@@ -51,6 +51,77 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
 
   public static final String CONTEXT_PATH = "/kettle/transImage";
 
+  /**
+<div id="mindtouch">
+    <h1>/kettle/transImage</h1>
+    <a name="GET"></a>
+    <h2>GET</h2>
+    <p>Generates PNG image of the specified transformation currently present on Carte server.
+  Transformation name and Carte transformation ID (optional) are used for specifying which
+  transformation to get information for. Response is a binary of the PNG image.</p>
+    
+    <p><b>Example Request:</b><br />
+    <pre function="syntax.xml">
+    GET /kettle/transImage?name=dummy-trans
+    </pre>
+    
+    </p>
+    <h3>Parameters</h3>
+    <table class="pentaho-table">
+    <tbody>
+    <tr>
+      <th>name</th>
+      <th>description</th>
+      <th>type</th>
+    </tr>
+    <tr>
+    <td>name</td>
+    <td>Name of the transformation to be used for image generation.</td>
+    <td>query</td>
+    </tr>
+    <tr>
+    <td>id</td>
+    <td>Carte id of the transformation to be used for image generation.</td>
+    <td>query, optional</td>
+    </tr>
+    </tbody>
+    </table>
+  
+  <h3>Response Body</h3>
+
+  <table class="pentaho-table">
+    <tbody>
+      <tr>
+        <td align="right">binary streak:</td>
+        <td>image</td>
+      </tr>
+      <tr>
+        <td align="right">media types:</td>
+        <td>image/png</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>A binary PNG image or empty response is presented if no transformation is found.</p>
+    
+    <h3>Status Codes</h3>
+    <table class="pentaho-table">
+  <tbody>
+    <tr>
+      <th>code</th>
+      <th>description</th>
+    </tr>
+    <tr>
+      <td>200</td>
+      <td>Request was processed.</td>
+    </tr>
+    <tr>
+      <td>500</td>
+      <td>Internal server error occurs during request processing.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  */
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
     IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {

@@ -73,11 +73,11 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
   public static final String STRING_PALO_LIB_WARNING_PARAMETER = "PaloLibWarning";
 
   private static Class<?> PKG = PaloCellInputMeta.class; // for
-                                                         // i18n
-                                                         // purposes,
-                                                         // needed
-                                                         // by
-                                                         // Translator2!!
+  // i18n
+  // purposes,
+  // needed
+  // by
+  // Translator2!!
 
   private final PaloCellInputMeta meta;
 
@@ -183,11 +183,11 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
       }
     };
     colinf =
-        new ColumnInfo[] {
-          new ColumnInfo( getLocalizedColumn( 0 ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
-          new ColumnInfo( getLocalizedColumn( 1 ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
-          new ColumnInfo( getLocalizedColumn( 2 ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "String", "Number" },
-              true ) };
+      new ColumnInfo[]{
+        new ColumnInfo( getLocalizedColumn( 0 ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+        new ColumnInfo( getLocalizedColumn( 1 ), ColumnInfo.COLUMN_TYPE_TEXT, false ),
+        new ColumnInfo( getLocalizedColumn( 2 ), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{ "String", "Number" },
+          true ) };
 
     tableViewFields = new TableView( null, shell, SWT.FILL | SWT.BORDER, colinf, 10, true, lsMod, props );
 
@@ -223,7 +223,7 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
     buttonPreview.setText( BaseMessages.getString( "System.Button.Preview" ) );
     buttonCancel.setText( BaseMessages.getString( "System.Button.Cancel" ) );
 
-    setButtonPositions( new Button[] { buttonOk, buttonPreview, buttonCancel }, margin, null );
+    setButtonPositions( new Button[]{ buttonOk, buttonPreview, buttonCancel }, margin, null );
 
     buttonGetDimensions.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -296,19 +296,22 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
     showPaloLibWarningDialog( shell );
 
     while ( !shell.isDisposed() ) {
-      if ( !display.readAndDispatch() )
+      if ( !display.readAndDispatch() ) {
         display.sleep();
+      }
     }
     return stepname;
   }
 
   private void fillStoredData() {
-    if ( stepname != null )
+    if ( stepname != null ) {
       textStepName.setText( stepname );
+    }
 
     int index = addConnectionLine.indexOf( meta.getDatabaseMeta() != null ? meta.getDatabaseMeta().getName() : "" );
-    if ( index >= 0 )
+    if ( index >= 0 ) {
       addConnectionLine.select( index );
+    }
 
     tableViewFields.table.removeAll();
     if ( meta.getFields().size() > 0 ) {
@@ -324,18 +327,21 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
       comboCube.select( 0 );
     }
 
-    comboMeasureType.setItems( new String[] { "String", "Number" } );
+    comboMeasureType.setItems( new String[]{ "String", "Number" } );
     if ( meta.getCubeMeasure() != null ) {
       if ( meta.getCubeMeasure().getFieldType() != null ) {
         int indexType = comboMeasureType.indexOf( meta.getCubeMeasure().getFieldType() );
-        if ( indexType >= 0 )
+        if ( indexType >= 0 ) {
           comboMeasureType.select( indexType );
+        }
       }
     }
 
-    if ( meta.getCubeMeasure() != null )
-      if ( meta.getCubeMeasure().getFieldName() != null )
+    if ( meta.getCubeMeasure() != null ) {
+      if ( meta.getCubeMeasure().getFieldName() != null ) {
         textMeasureName.setText( meta.getCubeMeasure().getFieldName() );
+      }
+    }
 
   }
 
@@ -390,13 +396,17 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
           }
         }
       } else {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-            .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), new Exception( BaseMessages.getString( PKG,
-            "PaloCellInputDialog.SelectCubeFirstError" ) ) );
+        new ErrorDialog(
+          shell,
+          BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ),
+          BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Message" ),
+          new Exception( BaseMessages.getString( PKG, "PaloCellInputDialog.SelectCubeFirstError" ) ) );
       }
     } catch ( KettleException ke ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+      new ErrorDialog(
+        shell,
+        BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ),
+        BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
   }
 
@@ -418,15 +428,16 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
           List<String> cubes = data.helper.getCubesNames();
           Collections.sort( cubes, new PaloNameComparator() );
           for ( String cubeName : cubes ) {
-            if ( comboCube.indexOf( cubeName ) == -1 )
+            if ( comboCube.indexOf( cubeName ) == -1 ) {
               comboCube.add( cubeName );
+            }
           }
           data.helper.disconnect();
         }
       }
     } catch ( Exception ex ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "PaloCellInputDialog.RetreiveCubesErrorTitle" ),
-          BaseMessages.getString( PKG, "PaloCellInputDialog.RetreiveCubesError" ), ex );
+        BaseMessages.getString( PKG, "PaloCellInputDialog.RetreiveCubesError" ), ex );
     }
   }
 
@@ -442,7 +453,7 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
       dispose();
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "PaloCellInputDialog.FailedToSaveDataErrorTitle" ),
-          BaseMessages.getString( PKG, "PaloCellInputDialog.FailedToSaveDataError" ), e );
+        BaseMessages.getString( PKG, "PaloCellInputDialog.FailedToSaveDataError" ), e );
     }
   }
 
@@ -451,13 +462,19 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
 
     if ( "Y".equalsIgnoreCase( props.getCustomParameter( STRING_PALO_LIB_WARNING_PARAMETER, "Y" ) ) ) {
       MessageDialogWithToggle md =
-          new MessageDialogWithToggle( shell, BaseMessages.getString( PKG,
-              "PaloCellInputDialog.PaloLibWarningDialog.DialogTitle" ), null, BaseMessages.getString( PKG,
-              "PaloCellInputDialog.PaloLibWarningDialog.DialogMessage", Const.CR )
-              + Const.CR, MessageDialog.WARNING, new String[] { BaseMessages.getString( PKG,
-              "PaloCellInputDialog.PaloLibWarningDialog.Option1" ) }, 0, BaseMessages.getString( PKG,
-              "PaloCellInputDialog.PaloLibWarningDialog.Option2" ), "N".equalsIgnoreCase( props.getCustomParameter(
-              STRING_PALO_LIB_WARNING_PARAMETER, "Y" ) ) );
+        new MessageDialogWithToggle(
+          shell,
+          BaseMessages.getString( PKG, "PaloCellInputDialog.PaloLibWarningDialog.DialogTitle" ),
+          null,
+          BaseMessages.getString( PKG, "PaloCellInputDialog.PaloLibWarningDialog.DialogMessage", Const.CR )
+            + Const.CR,
+          MessageDialog.WARNING,
+          new String[]{ BaseMessages.getString( PKG, "PaloCellInputDialog.PaloLibWarningDialog.Option1" ) },
+          0,
+          BaseMessages.getString( PKG, "PaloCellInputDialog.PaloLibWarningDialog.Option2" ),
+          "N".equalsIgnoreCase( props.getCustomParameter( STRING_PALO_LIB_WARNING_PARAMETER, "Y" )
+          )
+        );
       MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       md.open();
       props.setCustomParameter( STRING_PALO_LIB_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );
@@ -472,8 +489,8 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
 
     for ( int i = 0; i < tableViewFields.table.getItemCount(); i++ ) {
       DimensionField field =
-          new DimensionField( tableViewFields.table.getItem( i ).getText( 1 ), tableViewFields.table.getItem( i )
-              .getText( 2 ), tableViewFields.table.getItem( i ).getText( 3 ) );
+        new DimensionField( tableViewFields.table.getItem( i ).getText( 1 ), tableViewFields.table.getItem( i )
+          .getText( 2 ), tableViewFields.table.getItem( i ).getText( 3 ) );
       fields.add( field );
     }
     myMeta.setDatabaseMeta( transMeta.findDatabase( addConnectionLine.getText() ) );
@@ -491,27 +508,28 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
         throw new KettleException( "Fields must be defined to do a preview" );
       } else {
         for ( DimensionField field : oneMeta.getFields() ) {
-          if ( Const.isEmpty( field.getFieldType() ) )
+          if ( Const.isEmpty( field.getFieldType() ) ) {
             throw new KettleException( "All fields must have an output type to do the preview" );
+          }
         }
       }
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Title" ),
-          BaseMessages.getString( PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Message" ), e );
+        BaseMessages.getString( PKG, "RowGeneratorDialog.Illegal.Dialog.Settings.Message" ), e );
       return;
     }
 
     TransMeta previewMeta =
-        TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, textStepName.getText() );
+      TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, textStepName.getText() );
 
     EnterNumberDialog numberDialog =
-        new EnterNumberDialog( shell, 500, BaseMessages.getString( PKG, "System.Dialog.EnterPreviewSize.Title" ),
-            BaseMessages.getString( PKG, "System.Dialog.EnterPreviewSize.Message" ) );
+      new EnterNumberDialog( shell, 500, BaseMessages.getString( PKG, "System.Dialog.EnterPreviewSize.Title" ),
+        BaseMessages.getString( PKG, "System.Dialog.EnterPreviewSize.Message" ) );
     int previewSize = numberDialog.open();
     if ( previewSize > 0 ) {
       TransPreviewProgressDialog progressDialog =
-          new TransPreviewProgressDialog( shell, previewMeta, new String[] { textStepName.getText() },
-              new int[] { previewSize } );
+        new TransPreviewProgressDialog( shell, previewMeta, new String[]{ textStepName.getText() },
+          new int[]{ previewSize } );
       progressDialog.open();
 
       Trans trans = progressDialog.getTrans();
@@ -520,17 +538,17 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
       if ( !progressDialog.isCancelled() ) {
         if ( trans.getResult() != null && trans.getResult().getNrErrors() > 0 ) {
           EnterTextDialog etd =
-              new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
-                  BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
+            new EnterTextDialog( shell, BaseMessages.getString( PKG, "System.Dialog.PreviewError.Title" ),
+              BaseMessages.getString( PKG, "System.Dialog.PreviewError.Message" ), loggingText, true );
           etd.setReadOnly();
           etd.open();
         }
       }
 
       PreviewRowsDialog prd =
-          new PreviewRowsDialog( shell, transMeta, SWT.NONE, textStepName.getText(), progressDialog
-              .getPreviewRowsMeta( textStepName.getText() ), progressDialog.getPreviewRows( textStepName.getText() ),
-              loggingText );
+        new PreviewRowsDialog( shell, transMeta, SWT.NONE, textStepName.getText(), progressDialog
+          .getPreviewRowsMeta( textStepName.getText() ), progressDialog.getPreviewRows( textStepName.getText() ),
+          loggingText );
       prd.open();
     }
   }

@@ -107,10 +107,11 @@ import org.pentaho.di.repository.RepositoryDirectory;
  *
  * @author Matt
  * @since 05-04-2003
- *
  */
 public class Database implements VariableSpace, LoggingObjectInterface {
-  /** for i18n purposes, needed by Translator2!! */
+  /**
+   * for i18n purposes, needed by Translator2!!
+   */
   private static final Class<?> PKG = Database.class;
 
   private static final Map<String, Set<String>> registeredDrivers = new HashMap<String, Set<String>>();
@@ -166,8 +167,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Construct a new Database Connection
    *
-   * @param databaseMeta
-   *          The Database Connection Info to construct the connection with.
+   * @param databaseMeta The Database Connection Info to construct the connection with.
    * @deprecated Please specify the parent object so that we can see which object is initiating a database connection
    */
   @Deprecated
@@ -202,8 +202,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Construct a new Database Connection
    *
-   * @param databaseMeta
-   *          The Database Connection Info to construct the connection with.
+   * @param databaseMeta The Database Connection Info to construct the connection with.
    */
   public Database( LoggingObjectInterface parentObject, DatabaseMeta databaseMeta ) {
     this.parentLoggingObject = parentObject;
@@ -237,7 +236,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * This implementation is NullPointerException subject, and
    * may not follow fundamental equals contract.
-   *
+   * <p/>
    * Databases equality is based on {@link DatabaseMeta} equality.
    */
   @Override
@@ -295,8 +294,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Open the database connection.
    *
-   * @throws KettleDatabaseException
-   *           if something went wrong.
+   * @throws KettleDatabaseException if something went wrong.
    */
   public void connect() throws KettleDatabaseException {
     connect( null );
@@ -305,10 +303,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Open the database connection.
    *
-   * @param partitionId
-   *          the partition ID in the cluster to connect to.
-   * @throws KettleDatabaseException
-   *           if something went wrong.
+   * @param partitionId the partition ID in the cluster to connect to.
+   * @throws KettleDatabaseException if something went wrong.
    */
   public void connect( String partitionId ) throws KettleDatabaseException {
     connect( null, partitionId );
@@ -348,8 +344,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         } else {
           connection = lookup.getConnection();
           lookup.setOpened( lookup.getOpened() + 1 ); // if this counter hits 0
-                                                      // again, close the
-                                                      // connection.
+          // again, close the
+          // connection.
           copy = lookup.getOpened();
         }
 
@@ -376,10 +372,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Open the database connection.
    *
-   * @param partitionId
-   *          the partition ID in the cluster to connect to.
-   * @throws KettleDatabaseException
-   *           if something went wrong.
+   * @param partitionId the partition ID in the cluster to connect to.
+   * @throws KettleDatabaseException if something went wrong.
    */
   public void normalConnect( String partitionId ) throws KettleDatabaseException {
     if ( databaseMeta == null ) {
@@ -389,22 +383,18 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     try {
       // First see if we use connection pooling...
       //
-      if ( databaseMeta.isUsingConnectionPool() && // default = false for
-                                                   // backward compatibility
-        databaseMeta.getAccessType() != DatabaseMeta.TYPE_ACCESS_JNDI // JNDI
-                                                                      // does
-                                                                      // pooling
-                                                                      // on
-                                                                      // it's
-                                                                      // own.
-      ) {
+      // isUsingConnectionPool defaults to false for backward compatibility
+      //
+      // JNDI does pooling on it's own.
+
+      if ( databaseMeta.isUsingConnectionPool() && databaseMeta.getAccessType() != DatabaseMeta.TYPE_ACCESS_JNDI ) {
         try {
           this.connection = ConnectionPoolUtil.getConnection( log, databaseMeta, partitionId );
           if ( getConnection().getAutoCommit() != isAutoCommit() ) {
             setAutoCommit( isAutoCommit() );
           }
         } catch ( Exception e ) {
-          throw new KettleDatabaseException( "Error occured while trying to connect to the database", e );
+          throw new KettleDatabaseException( "Error occurred while trying to connect to the database", e );
         }
       } else {
         connectUsingClass( databaseMeta.getDriverClass(), partitionId );
@@ -424,7 +414,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         }
       }
     } catch ( Exception e ) {
-      throw new KettleDatabaseException( "Error occured while trying to connect to the database", e );
+      throw new KettleDatabaseException( "Error occurred while trying to connect to the database", e );
     }
   }
 
@@ -456,8 +446,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Connect using the correct classname
    *
-   * @param classname
-   *          for example "org.gjt.mm.mysql.Driver"
+   * @param classname for example "org.gjt.mm.mysql.Driver"
    * @return true if the connect was successful, false if something went wrong.
    */
   private void connectUsingClass( String classname, String partitionId ) throws KettleDatabaseException {
@@ -640,8 +629,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Only for unique connections usage, typically you use disconnect() to disconnect() from the database.
    *
-   * @throws KettleDatabaseException
-   *           in case there is an error during connection close.
+   * @throws KettleDatabaseException in case there is an error during connection close.
    */
   public synchronized void closeConnectionOnly() throws KettleDatabaseException {
     try {
@@ -681,8 +669,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Cancel an open/running SQL statement
    *
-   * @param statement
-   *          the statement to cancel
+   * @param statement the statement to cancel
    * @throws KettleDatabaseException
    */
   public void cancelStatement( Statement statement ) throws KettleDatabaseException {
@@ -701,8 +688,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Specify after how many rows a commit needs to occur when inserting or updating values.
    *
-   * @param commsize
-   *          The number of rows to wait before doing a commit on the connection.
+   * @param commsize The number of rows to wait before doing a commit on the connection.
    */
   public void setCommit( int commsize ) {
     commitsize = commsize;
@@ -773,6 +759,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   /**
    * This methods may be removed in future.
+   *
    * @param logTable
    * @throws KettleDatabaseException
    */
@@ -782,6 +769,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   /**
    * This methods may be removed in future.
+   *
    * @param force
    * @param logTable
    * @throws KettleDatabaseException
@@ -852,12 +840,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Prepare inserting values into a table, using the fields & values in a Row
    *
-   * @param rowMeta
-   *          The row metadata to determine which values need to be inserted
-   * @param table
-   *          The name of the table in which we want to insert rows
-   * @throws KettleDatabaseException
-   *           if something went wrong.
+   * @param rowMeta The row metadata to determine which values need to be inserted
+   * @param table   The name of the table in which we want to insert rows
+   * @throws KettleDatabaseException if something went wrong.
    */
   public void prepareInsert( RowMetaInterface rowMeta, String tableName ) throws KettleDatabaseException {
     prepareInsert( rowMeta, null, tableName );
@@ -866,14 +851,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Prepare inserting values into a table, using the fields & values in a Row
    *
-   * @param rowMeta
-   *          The metadata row to determine which values need to be inserted
-   * @param schemaName
-   *          The name of the schema in which we want to insert rows
-   * @param tableName
-   *          The name of the table in which we want to insert rows
-   * @throws KettleDatabaseException
-   *           if something went wrong.
+   * @param rowMeta    The metadata row to determine which values need to be inserted
+   * @param schemaName The name of the schema in which we want to insert rows
+   * @param tableName  The name of the table in which we want to insert rows
+   * @throws KettleDatabaseException if something went wrong.
    */
   public void prepareInsert( RowMetaInterface rowMeta, String schemaName, String tableName ) throws KettleDatabaseException {
     if ( rowMeta.size() == 0 ) {
@@ -891,8 +872,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Prepare a statement to be executed on the database. (does not return generated keys)
    *
-   * @param sql
-   *          The SQL to be prepared
+   * @param sql The SQL to be prepared
    * @return The PreparedStatement object.
    * @throws KettleDatabaseException
    */
@@ -903,16 +883,14 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Prepare a statement to be executed on the database.
    *
-   * @param sql
-   *          The SQL to be prepared
-   * @param returnKeys
-   *          set to true if you want to return generated keys from an insert statement
+   * @param sql        The SQL to be prepared
+   * @param returnKeys set to true if you want to return generated keys from an insert statement
    * @return The PreparedStatement object.
    * @throws KettleDatabaseException
    */
   public PreparedStatement prepareSQL( String sql, boolean returnKeys ) throws KettleDatabaseException {
     try {
-      if ( returnKeys ) {
+      if ( returnKeys && databaseMeta.supportsAutoGeneratedKeys() ) {
         return connection.prepareStatement( databaseMeta.stripCR( sql ), Statement.RETURN_GENERATED_KEYS );
       } else {
         return connection.prepareStatement( databaseMeta.stripCR( sql ) );
@@ -1054,11 +1032,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
-   * @param ps
-   *          The prepared insert statement to use
+   * @param ps The prepared insert statement to use
    * @return The generated keys in auto-increment fields
-   * @throws KettleDatabaseException
-   *           in case something goes wrong retrieving the keys.
+   * @throws KettleDatabaseException in case something goes wrong retrieving the keys.
    */
   public RowMetaAndData getGeneratedKeys( PreparedStatement ps ) throws KettleDatabaseException {
     ResultSet keys = null;
@@ -1184,27 +1160,31 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Insert a row into the database using a prepared statement that has all values set.
    *
-   * @param ps
-   *          The prepared statement
-   * @param batch
-   *          True if you want to use batch inserts (size = commit size)
+   * @param ps    The prepared statement
+   * @param batch True if you want to use batch inserts (size = commit size)
    * @return true if the rows are safe: if batch of rows was sent to the database OR if a commit was done.
    * @throws KettleDatabaseException
    */
   public boolean insertRow( PreparedStatement ps, boolean batch ) throws KettleDatabaseException {
     return insertRow( ps, batch, true );
   }
+  
+  public boolean getUseBatchInsert( boolean batch ) throws KettleDatabaseException {
+    try {
+      return batch && getDatabaseMetaData().supportsBatchUpdates() &&
+          databaseMeta.supportsBatchUpdates() && Const.isEmpty( connectionGroup );
+    } catch ( SQLException e ) {
+      throw createKettleDatabaseBatchException( "Error determining whether to use batch", e );
+    }
+  }
 
   /**
    * Insert a row into the database using a prepared statement that has all values set.
    *
-   * @param ps
-   *          The prepared statement
-   * @param batch
-   *          True if you want to use batch inserts (size = commit size)
-   * @param handleCommit
-   *          True if you want to handle the commit here after the commit size (False e.g. in case the step handles
-   *          this, see TableOutput)
+   * @param ps           The prepared statement
+   * @param batch        True if you want to use batch inserts (size = commit size)
+   * @param handleCommit True if you want to handle the commit here after the commit size (False e.g. in case the step handles
+   *                     this, see TableOutput)
    * @return true if the rows are safe: if batch of rows was sent to the database OR if a commit was done.
    * @throws KettleDatabaseException
    */
@@ -1218,10 +1198,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       // back on certain databases.
       // That's why we disable the batch insert in that case.
       //
-      boolean useBatchInsert =
-        batch
-          && getDatabaseMetaData().supportsBatchUpdates() && databaseMeta.supportsBatchUpdates()
-          && Const.isEmpty( connectionGroup );
+      boolean useBatchInsert = getUseBatchInsert( batch );
 
       //
       // Add support for batch inserts...
@@ -1241,7 +1218,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       written++;
 
       if ( handleCommit ) { // some steps handle the commit themselves (see e.g.
-                            // TableOutput step)
+        // TableOutput step)
         if ( !isAutoCommit() && ( written % commitsize ) == 0 ) {
           if ( useBatchInsert ) {
             isBatchUpdate = true;
@@ -1276,8 +1253,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Clears batch of insert prepared statement
    *
-   * @deprecated
    * @throws KettleDatabaseException
+   * @deprecated
    */
   @Deprecated
   public void clearInsertBatch() throws KettleDatabaseException {
@@ -1325,12 +1302,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Close the prepared statement of the insert statement.
    *
-   * @param ps
-   *          The prepared statement to empty and close.
-   * @param batch
-   *          true if you are using batch processing
-   * @param psBatchCounter
-   *          The number of rows on the batch queue
+   * @param ps             The prepared statement to empty and close.
+   * @param batch          true if you are using batch processing
+   * @param psBatchCounter The number of rows on the batch queue
    * @throws KettleDatabaseException
    */
   public void emptyAndCommit( PreparedStatement ps, boolean batch, int batchCounter ) throws KettleDatabaseException {
@@ -1402,14 +1376,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Close the prepared statement of the insert statement.
    *
-   * @param ps
-   *          The prepared statement to empty and close.
-   * @param batch
-   *          true if you are using batch processing (typically true for this method)
-   * @param psBatchCounter
-   *          The number of rows on the batch queue
+   * @param ps             The prepared statement to empty and close.
+   * @param batch          true if you are using batch processing (typically true for this method)
+   * @param psBatchCounter The number of rows on the batch queue
    * @throws KettleDatabaseException
-   *
    * @deprecated use emptyAndCommit() instead (pass in the number of rows left in the batch)
    */
   @Deprecated
@@ -1455,11 +1425,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Execute an SQL statement on the database connection (has to be open)
    *
-   * @param sql
-   *          The SQL to execute
+   * @param sql The SQL to execute
    * @return a Result object indicating the number of lines read, deleted, inserted, updated, ...
-   * @throws KettleDatabaseException
-   *           in case anything goes wrong.
+   * @throws KettleDatabaseException in case anything goes wrong.
    */
   public Result execStatement( String sql ) throws KettleDatabaseException {
     return execStatement( sql, null, null );
@@ -1474,7 +1442,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     // double-dash or a multiline comment appears
     // in a single-quoted string, it will be treated as a string instead of
     // comments.
-    String sql = SqlCommentScrubber.removeComments( rawsql ).trim();
+    String sql = SqlScriptParser.getInstance().removeComments( rawsql ).trim();
     try {
       boolean resultSet;
       int count;
@@ -1524,18 +1492,16 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   /**
    * Execute a series of SQL statements, separated by ;
-   *
+   * <p/>
    * We are already connected...
-   *
+   * <p/>
    * Multiple statements have to be split into parts We use the ";" to separate statements...
-   *
+   * <p/>
    * We keep the results in Result object from Jobs
    *
-   * @param script
-   *          The SQL script to be execute
-   * @throws KettleDatabaseException
-   *           In case an error occurs
+   * @param script The SQL script to be execute
    * @return A result with counts of the number or records updates, inserted, deleted or read.
+   * @throws KettleDatabaseException In case an error occurs
    */
   public Result execStatements( String script ) throws KettleDatabaseException {
     return execStatements( script, null, null );
@@ -1543,87 +1509,82 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   /**
    * Execute a series of SQL statements, separated by ;
-   *
+   * <p/>
    * We are already connected...
-   *
+   * <p/>
    * Multiple statements have to be split into parts We use the ";" to separate statements...
-   *
+   * <p/>
    * We keep the results in Result object from Jobs
    *
-   * @param script
-   *          The SQL script to be execute
-   * @param params
-   *          Parameters Meta
-   * @param data
-   *          Parameters value
-   * @throws KettleDatabaseException
-   *           In case an error occurs
+   * @param script The SQL script to be execute
+   * @param params Parameters Meta
+   * @param data   Parameters value
    * @return A result with counts of the number or records updates, inserted, deleted or read.
+   * @throws KettleDatabaseException In case an error occurs
    */
   public Result execStatements( String script, RowMetaInterface params, Object[] data ) throws KettleDatabaseException {
     Result result = new Result();
 
-    // Deleting all the single-line and multi-line comments from the string
-    String all = SqlCommentScrubber.removeComments( script ); // scrubDoubleHyphenComments(script);
-
-    String[] statements = all.split( ";" );
-    String stat;
+    List<String> statements = SqlScriptParser.getInstance().split( script );
     int nrstats = 0;
 
-    for ( int i = 0; i < statements.length; i++ ) {
+    if ( statements != null ) {
+      for ( String stat : statements ) {
+        // Deleting all the single-line and multi-line comments from the string
+        stat = SqlScriptParser.getInstance().removeComments( stat );
 
-      stat = statements[i];
-      if ( !Const.onlySpaces( stat ) ) {
-        String sql = Const.trim( stat );
-        if ( sql.toUpperCase().startsWith( "SELECT" ) ) {
-          // A Query
-          if ( log.isDetailed() ) {
-            log.logDetailed( "launch SELECT statement: " + Const.CR + sql );
-          }
-
-          nrstats++;
-          ResultSet rs = null;
-          try {
-            rs = openQuery( sql, params, data );
-            if ( rs != null ) {
-              Object[] row = getRow( rs );
-              while ( row != null ) {
-                result.setNrLinesRead( result.getNrLinesRead() + 1 );
-                if ( log.isDetailed() ) {
-                  log.logDetailed( rowMeta.getString( row ) );
-                }
-                row = getRow( rs );
-              }
-
-            } else {
-              if ( log.isDebug() ) {
-                log.logDebug( "Error executing query: " + Const.CR + sql );
-              }
+        if ( !Const.onlySpaces( stat ) ) {
+          String sql = Const.trim( stat );
+          if ( sql.toUpperCase().startsWith( "SELECT" ) ) {
+            // A Query
+            if ( log.isDetailed() ) {
+              log.logDetailed( "launch SELECT statement: " + Const.CR + sql );
             }
-          } catch ( KettleValueException e ) {
-            throw new KettleDatabaseException( e ); // just pass the error
-                                                    // upwards.
-          } finally {
+
+            nrstats++;
+            ResultSet rs = null;
             try {
+              rs = openQuery( sql, params, data );
               if ( rs != null ) {
-                rs.close();
+                Object[] row = getRow( rs );
+                while ( row != null ) {
+                  result.setNrLinesRead( result.getNrLinesRead() + 1 );
+                  if ( log.isDetailed() ) {
+                    log.logDetailed( rowMeta.getString( row ) );
+                  }
+                  row = getRow( rs );
+                }
+
+              } else {
+                if ( log.isDebug() ) {
+                  log.logDebug( "Error executing query: " + Const.CR + sql );
+                }
               }
-            } catch ( SQLException ex ) {
-              if ( log.isDebug() ) {
-                log.logDebug( "Error closing query: " + Const.CR + sql );
+            } catch ( KettleValueException e ) {
+              throw new KettleDatabaseException( e ); // just pass the error
+              // upwards.
+            } finally {
+              try {
+                if ( rs != null ) {
+                  rs.close();
+                }
+              } catch ( SQLException ex ) {
+                if ( log.isDebug() ) {
+                  log.logDebug( "Error closing query: " + Const.CR + sql );
+                }
               }
             }
-          }
-        } else {
-          // any kind of statement
-          if ( log.isDetailed() ) {
-            log.logDetailed( "launch DDL statement: " + Const.CR + sql );
-          }
+          } else {
+            // any kind of statement
+            if ( log.isDetailed() ) {
+              log.logDetailed( "launch DDL statement: " + Const.CR + sql );
+            }
 
-          // A DDL statement
-          nrstats++;
-          Result res = execStatement( sql, params, data );
-          result.add( res );
+            // A DDL statement
+            nrstats++;
+            Result res = execStatement( sql, params, data );
+            result.add( res );
+          }
         }
       }
     }
@@ -1642,14 +1603,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Open a query on the database with a set of parameters stored in a Kettle Row
    *
-   * @param sql
-   *          The SQL to launch with question marks (?) as placeholders for the parameters
-   * @param params
-   *          The parameters or null if no parameters are used.
-   * @data the parameter data to open the query with
+   * @param sql    The SQL to launch with question marks (?) as placeholders for the parameters
+   * @param params The parameters or null if no parameters are used.
    * @return A JDBC ResultSet
-   * @throws KettleDatabaseException
-   *           when something goes wrong with the query.
+   * @throws KettleDatabaseException when something goes wrong with the query.
+   * @data the parameter data to open the query with
    */
   public ResultSet openQuery( String sql, RowMetaInterface params, Object[] data ) throws KettleDatabaseException {
     return openQuery( sql, params, data, ResultSet.FETCH_FORWARD );
@@ -1660,7 +1618,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public ResultSet openQuery( String sql, RowMetaInterface params, Object[] data, int fetch_mode,
-    boolean lazyConversion ) throws KettleDatabaseException {
+                              boolean lazyConversion ) throws KettleDatabaseException {
     ResultSet res;
 
     // Create a Statement
@@ -1739,8 +1697,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   private boolean canWeSetFetchSize( Statement statement ) throws SQLException {
     return databaseMeta.isFetchSizeSupported()
       && ( statement.getMaxRows() > 0
-        || databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta
-        || ( databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults() ) );
+      || databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta
+      || ( databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults() ) );
   }
 
   public ResultSet openQuery( PreparedStatement ps, RowMetaInterface params, Object[] data ) throws KettleDatabaseException {
@@ -1815,10 +1773,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * See if the table specified exists by reading
    *
-   * @param tablename
-   *          The name of the table to check.<br>
-   *          This is supposed to be the properly quoted name of the table or the complete schema-table name
-   *          combination.
+   * @param tablename The name of the table to check.<br>
+   *                  This is supposed to be the properly quoted name of the table or the complete schema-table name
+   *                  combination.
    * @return true if the table exists, false if it doesn't.
    */
   public boolean checkTableExists( String tablename ) throws KettleDatabaseException {
@@ -1857,12 +1814,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * See if the column specified exists by reading
    *
-   * @param columnname
-   *          The name of the column to check.
-   * @param tablename
-   *          The name of the table to check.<br>
-   *          This is supposed to be the properly quoted name of the table or the complete schema-table name
-   *          combination.
+   * @param columnname The name of the column to check.
+   * @param tablename  The name of the table to check.<br>
+   *                   This is supposed to be the properly quoted name of the table or the complete schema-table name
+   *                   combination.
    * @return true if the table exists, false if it doesn't.
    */
   public boolean checkColumnExists( String columnname, String tablename ) throws KettleDatabaseException {
@@ -1889,8 +1844,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Check whether the sequence exists, Oracle only!
    *
-   * @param sequenceName
-   *          The name of the sequence
+   * @param sequenceName The name of the sequence
    * @return true if the sequence exists.
    */
   public boolean checkSequenceExists( String sequenceName ) throws KettleDatabaseException {
@@ -1900,8 +1854,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Check whether the sequence exists, Oracle only!
    *
-   * @param sequenceName
-   *          The name of the sequence
+   * @param sequenceName The name of the sequence
    * @return true if the sequence exists.
    */
   public boolean checkSequenceExists( String schemaName, String sequenceName ) throws KettleDatabaseException {
@@ -1936,10 +1889,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Check if an index on certain fields in a table exists.
    *
-   * @param tableName
-   *          The table on which the index is checked
-   * @param idx_fields
-   *          The fields on which the indexe is checked
+   * @param tableName  The table on which the index is checked
+   * @param idx_fields The fields on which the indexe is checked
    * @return True if the index exists
    */
   public boolean checkIndexExists( String tableName, String[] idx_fields ) throws KettleDatabaseException {
@@ -1949,10 +1900,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Check if an index on certain fields in a table exists.
    *
-   * @param tablename
-   *          The table on which the index is checked
-   * @param idx_fields
-   *          The fields on which the indexe is checked
+   * @param tablename  The table on which the index is checked
+   * @param idx_fields The fields on which the indexe is checked
    * @return True if the index exists
    */
   public boolean checkIndexExists( String schemaName, String tableName, String[] idx_fields ) throws KettleDatabaseException {
@@ -1969,12 +1918,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public String getCreateIndexStatement( String tablename, String indexname, String[] idx_fields, boolean tk,
-    boolean unique, boolean bitmap, boolean semi_colon ) {
+                                         boolean unique, boolean bitmap, boolean semi_colon ) {
     return getCreateIndexStatement( null, tablename, indexname, idx_fields, tk, unique, bitmap, semi_colon );
   }
 
   public String getCreateIndexStatement( String schemaname, String tablename, String indexname,
-    String[] idx_fields, boolean tk, boolean unique, boolean bitmap, boolean semi_colon ) {
+                                         String[] idx_fields, boolean tk, boolean unique, boolean bitmap, boolean semi_colon ) {
     String cr_index = "";
     DatabaseInterface databaseInterface = databaseMeta.getDatabaseInterface();
 
@@ -2016,25 +1965,25 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public String getCreateSequenceStatement( String sequence, long start_at, long increment_by, long max_value,
-    boolean semi_colon ) {
+                                            boolean semi_colon ) {
     return getCreateSequenceStatement(
       null, sequence, Long.toString( start_at ), Long.toString( increment_by ), Long.toString( max_value ),
       semi_colon );
   }
 
   public String getCreateSequenceStatement( String sequence, String start_at, String increment_by,
-    String max_value, boolean semi_colon ) {
+                                            String max_value, boolean semi_colon ) {
     return getCreateSequenceStatement( null, sequence, start_at, increment_by, max_value, semi_colon );
   }
 
   public String getCreateSequenceStatement( String schemaName, String sequence, long start_at, long increment_by,
-    long max_value, boolean semi_colon ) {
+                                            long max_value, boolean semi_colon ) {
     return getCreateSequenceStatement( schemaName, sequence, Long.toString( start_at ), Long
       .toString( increment_by ), Long.toString( max_value ), semi_colon );
   }
 
   public String getCreateSequenceStatement( String schemaName, String sequenceName, String start_at,
-    String increment_by, String max_value, boolean semi_colon ) {
+                                            String increment_by, String max_value, boolean semi_colon ) {
     String cr_seq = "";
 
     if ( Const.isEmpty( sequenceName ) ) {
@@ -2044,12 +1993,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     if ( databaseMeta.supportsSequences() ) {
       String schemaSequence = databaseMeta.getQuotedSchemaTableCombination( schemaName, sequenceName );
       cr_seq += "CREATE SEQUENCE " + schemaSequence + " " + Const.CR; // Works
-                                                                      // for
-                                                                      // both
-                                                                      // Oracle
-                                                                      // and
-                                                                      // PostgreSQL
-                                                                      // :-)
+      // for
+      // both
+      // Oracle
+      // and
+      // PostgreSQL
+      // :-)
       cr_seq += "START WITH " + start_at + " " + Const.CR;
       cr_seq += "INCREMENT BY " + increment_by + " " + Const.CR;
       if ( max_value != null ) {
@@ -2057,7 +2006,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         // AS400
         //
         if ( databaseMeta.supportsSequenceNoMaxValueOption() && max_value.trim().equals( "-1" ) ) {
-          cr_seq += "NOMAXVALUE" + Const.CR;
+          cr_seq += databaseMeta.getSequenceNoMaxValueOption() + Const.CR;
         } else {
           // set the max value
           cr_seq += "MAXVALUE " + max_value + Const.CR;
@@ -2146,7 +2095,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   private RowMetaInterface getQueryFieldsFallback( String sql, boolean param, RowMetaInterface inform,
-    Object[] data ) throws KettleDatabaseException {
+                                                   Object[] data ) throws KettleDatabaseException {
     RowMetaInterface fields;
 
     try {
@@ -2154,7 +2103,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         // Hack for MSSQL jtds 1.2 when using xxx NOT IN yyy we have to use a
         // prepared statement (see BugID 3214)
         && ( databaseMeta.getDatabaseInterface() instanceof MSSQLServerDatabaseMeta || databaseMeta
-          .getDatabaseInterface() instanceof KettleDatabaseMeta ) )
+        .getDatabaseInterface() instanceof KettleDatabaseMeta ) )
         || databaseMeta.getDatabaseInterface().supportsResultSetMetadataRetrievalOnly() ) {
         sel_stmt = connection.createStatement( ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY );
 
@@ -2190,7 +2139,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           setValues( par, data, ps );
         }
         ResultSet r = ps.executeQuery();
-        fields = getRowInfo( ps.getMetaData(), false, false );
+        ResultSetMetaData metadata = ps.getMetaData();
+        // If the PreparedStatement can't get us the metadata, try using the ResultSet's metadata
+        if( metadata == null ) {
+          metadata = r.getMetaData();
+        }
+        fields = getRowInfo( metadata, false, false );
         r.close();
         ps.close();
       }
@@ -2223,12 +2177,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Build the row using ResultSetMetaData rsmd
    *
-   * @param rm
-   *          The resultset metadata to inquire
-   * @param ignoreLength
-   *          true if you want to ignore the length (workaround for MySQL bug/problem)
-   * @param lazyConversion
-   *          true if lazy conversion needs to be enabled where possible
+   * @param rm             The resultset metadata to inquire
+   * @param ignoreLength   true if you want to ignore the length (workaround for MySQL bug/problem)
+   * @param lazyConversion true if lazy conversion needs to be enabled where possible
    */
   private RowMetaInterface getRowInfo( ResultSetMetaData rm, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException {
     try {
@@ -2256,7 +2207,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   private ValueMetaInterface getValueFromSQLType( ResultSetMetaData rm, int i, boolean ignoreLength,
-    boolean lazyConversion ) throws KettleDatabaseException, SQLException {
+                                                  boolean lazyConversion ) throws KettleDatabaseException, SQLException {
     // TODO If we do lazy conversion, we need to find out about the encoding
     //
 
@@ -2348,8 +2299,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Get a row from the resultset. Do not use lazy conversion
    *
-   * @param rs
-   *          The resultset to get the row from
+   * @param rs The resultset to get the row from
    * @return one row or null if no row was found on the resultset or if an error occurred.
    */
   public Object[] getRow( ResultSet rs ) throws KettleDatabaseException {
@@ -2359,10 +2309,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Get a row from the resultset.
    *
-   * @param rs
-   *          The resultset to get the row from
-   * @param lazyConversion
-   *          set to true if strings need to have lazy conversion enabled
+   * @param rs             The resultset to get the row from
+   * @param lazyConversion set to true if strings need to have lazy conversion enabled
    * @return one row or null if no row was found on the resultset or if an error occurred.
    */
   public Object[] getRow( ResultSet rs, boolean lazyConversion ) throws KettleDatabaseException {
@@ -2383,8 +2331,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Get a row from the resultset.
    *
-   * @param rs
-   *          The resultset to get the row from
+   * @param rs The resultset to get the row from
    * @return one row or null if no row was found on the resultset or if an error occurred.
    */
   public Object[] getRow( ResultSet rs, ResultSetMetaData dummy, RowMetaInterface rowInfo ) throws KettleDatabaseException {
@@ -2431,23 +2378,23 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public void setLookup( String table, String[] codes, String[] condition, String[] gets, String[] rename,
-    String orderby ) throws KettleDatabaseException {
+                         String orderby ) throws KettleDatabaseException {
     setLookup( table, codes, condition, gets, rename, orderby, false );
   }
 
   public void setLookup( String schema, String table, String[] codes, String[] condition, String[] gets,
-    String[] rename, String orderby ) throws KettleDatabaseException {
+                         String[] rename, String orderby ) throws KettleDatabaseException {
     setLookup( schema, table, codes, condition, gets, rename, orderby, false );
   }
 
   public void setLookup( String tableName, String[] codes, String[] condition, String[] gets, String[] rename,
-    String orderby, boolean checkForMultipleResults ) throws KettleDatabaseException {
+                         String orderby, boolean checkForMultipleResults ) throws KettleDatabaseException {
     setLookup( null, tableName, codes, condition, gets, rename, orderby, checkForMultipleResults );
   }
 
   // Lookup certain fields in a table
   public void setLookup( String schemaName, String tableName, String[] codes, String[] condition, String[] gets,
-    String[] rename, String orderby, boolean checkForMultipleResults ) throws KettleDatabaseException {
+                         String[] rename, String orderby, boolean checkForMultipleResults ) throws KettleDatabaseException {
     try {
       log.snap( Metrics.METRIC_DATABASE_SET_LOOKUP_START, databaseMeta.getName() );
 
@@ -2507,7 +2454,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   // Lookup certain fields in a table
   public boolean prepareUpdate( String schemaName, String tableName, String[] codes, String[] condition,
-    String[] sets ) {
+                                String[] sets ) {
     try {
       log.snap( Metrics.METRIC_DATABASE_PREPARE_UPDATE_START, databaseMeta.getName() );
 
@@ -2561,8 +2508,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Prepare a delete statement by giving it the tablename, fields and conditions to work with.
    *
-   * @param table
-   *          The table-name to delete in
+   * @param table     The table-name to delete in
    * @param codes
    * @param condition
    * @return true when everything went OK, false when something went wrong.
@@ -2574,10 +2520,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Prepare a delete statement by giving it the tablename, fields and conditions to work with.
    *
-   * @param schemaName
-   *          the schema-name to delete in
-   * @param tableName
-   *          The table-name to delete in
+   * @param schemaName the schema-name to delete in
+   * @param tableName  The table-name to delete in
    * @param codes
    * @param condition
    * @return true when everything went OK, false when something went wrong.
@@ -2623,7 +2567,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public void setProcLookup( String proc, String[] arg, String[] argdir, int[] argtype, String returnvalue,
-    int returntype ) throws KettleDatabaseException {
+                             int returntype ) throws KettleDatabaseException {
     try {
       log.snap( Metrics.METRIC_DATABASE_PREPARE_DBPROC_START, databaseMeta.getName() );
       String sql;
@@ -2768,17 +2712,16 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public DatabaseMetaData getDatabaseMetaData() throws KettleDatabaseException {
-    try {
-      log.snap( Metrics.METRIC_DATABASE_GET_DBMETA_START, databaseMeta.getName() );
-      if ( dbmd == null ) {
+    if ( dbmd == null ) {
+      try {
+        log.snap( Metrics.METRIC_DATABASE_GET_DBMETA_START, databaseMeta.getName() );
         dbmd = connection.getMetaData(); // Only get the metadata once!
+      } catch ( Exception e ) {
+        throw new KettleDatabaseException( "Unable to get database metadata from this database connection", e );
+      } finally {
+        log.snap( Metrics.METRIC_DATABASE_GET_DBMETA_STOP, databaseMeta.getName() );
       }
-    } catch ( Exception e ) {
-      throw new KettleDatabaseException( "Unable to get database metadata from this database connection", e );
-    } finally {
-      log.snap( Metrics.METRIC_DATABASE_GET_DBMETA_STOP, databaseMeta.getName() );
     }
-
     return dbmd;
   }
 
@@ -2791,7 +2734,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public String getDDL( String tableName, RowMetaInterface fields, String tk, boolean use_autoinc, String pk,
-    boolean semicolon ) throws KettleDatabaseException {
+                        boolean semicolon ) throws KettleDatabaseException {
     String retval;
 
     // First, check for reserved SQL in the input row r...
@@ -2810,24 +2753,17 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Generates SQL
    *
-   * @param tableName
-   *          the table name or schema/table combination: this needs to be quoted properly in advance.
-   * @param fields
-   *          the fields
-   * @param tk
-   *          the name of the technical key field
-   * @param use_autoinc
-   *          true if we need to use auto-increment fields for a primary key
-   * @param pk
-   *          the name of the primary/technical key field
-   * @param semicolon
-   *          append semicolon to the statement
-   * @param pkc
-   *          primary key composite ( name of the key fields)
+   * @param tableName   the table name or schema/table combination: this needs to be quoted properly in advance.
+   * @param fields      the fields
+   * @param tk          the name of the technical key field
+   * @param use_autoinc true if we need to use auto-increment fields for a primary key
+   * @param pk          the name of the primary/technical key field
+   * @param semicolon   append semicolon to the statement
+   * @param pkc         primary key composite ( name of the key fields)
    * @return the SQL needed to create the specified table and fields.
    */
   public String getCreateTableStatement( String tableName, RowMetaInterface fields, String tk,
-    boolean use_autoinc, String pk, boolean semicolon ) {
+                                         boolean use_autoinc, String pk, boolean semicolon ) {
     StringBuilder retval = new StringBuilder( "CREATE TABLE " );
 
     retval.append( tableName + Const.CR );
@@ -2863,7 +2799,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
     if ( pk == null && tk == null && databaseMeta.getDatabaseInterface() instanceof NeoviewDatabaseMeta ) {
       retval.append( "NO PARTITION" ); // use this as a default when no pk/tk is
-                                       // there, otherwise you get an error
+      // there, otherwise you get an error
     }
 
     if ( semicolon ) {
@@ -2874,7 +2810,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public String getAlterTableStatement( String tableName, RowMetaInterface fields, String tk, boolean use_autoinc,
-    String pk, boolean semicolon ) throws KettleDatabaseException {
+                                        String pk, boolean semicolon ) throws KettleDatabaseException {
     String retval = "";
 
     // Get the fields that are in the table now:
@@ -2975,8 +2911,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Execute a query and return at most one row from the resultset
    *
-   * @param sql
-   *          The SQL for the query
+   * @param sql The SQL for the query
    * @return one Row with data or null if nothing was found.
    */
   public RowMetaAndData getOneRow( String sql ) throws KettleDatabaseException {
@@ -3300,7 +3235,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       RowMetaInterface r = new RowMeta();
       r.addValueMeta( new ValueMeta( "TRANSNAME", ValueMetaInterface.TYPE_STRING ) );
-      setValues( r, new Object[] { name } );
+      setValues( r, new Object[]{ name } );
 
       ResultSet res = pstmt.executeQuery();
       if ( res != null ) {
@@ -3322,7 +3257,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public synchronized Long getNextValue( Hashtable<String, Counter> counters, String schemaName, String tableName,
-    String val_key ) throws KettleDatabaseException {
+                                         String val_key ) throws KettleDatabaseException {
     Long nextValue = null;
 
     String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
@@ -3385,13 +3320,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Reads the result of an SQL query into an ArrayList
    *
-   * @param sql
-   *          The SQL to launch
-   * @param limit
-   *          <=0 means unlimited, otherwise this specifies the maximum number of rows read.
+   * @param sql   The SQL to launch
+   * @param limit <=0 means unlimited, otherwise this specifies the maximum number of rows read.
    * @return An ArrayList of rows.
-   * @throws KettleDatabaseException
-   *           if something goes wrong.
+   * @throws KettleDatabaseException if something goes wrong.
    */
   public List<Object[]> getRows( String sql, int limit ) throws KettleDatabaseException {
     return getRows( sql, limit, null );
@@ -3400,15 +3332,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Reads the result of an SQL query into an ArrayList
    *
-   * @param sql
-   *          The SQL to launch
-   * @param limit
-   *          <=0 means unlimited, otherwise this specifies the maximum number of rows read.
-   * @param monitor
-   *          The progress monitor to update while getting the rows.
+   * @param sql     The SQL to launch
+   * @param limit   <=0 means unlimited, otherwise this specifies the maximum number of rows read.
+   * @param monitor The progress monitor to update while getting the rows.
    * @return An ArrayList of rows.
-   * @throws KettleDatabaseException
-   *           if something goes wrong.
+   * @throws KettleDatabaseException if something goes wrong.
    */
   public List<Object[]> getRows( String sql, int limit, ProgressMonitorListener monitor ) throws KettleDatabaseException {
 
@@ -3418,26 +3346,18 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Reads the result of an SQL query into an ArrayList.
    *
-   * @param sql
-   *          The SQL to launch
-   * @param params
-   *          The types of any parameters to be passed to the query
-   * @param data
-   *          The values of any parameters to be passed to the query
-   * @param fetch_mode
-   *          The fetch mode for the query (ResultSet.FETCH_FORWARD, e.g.)
-   * @param lazyConversion
-   *          Whether to perform lazy conversion of the values
-   * @param limit
-   *          <=0 means unlimited, otherwise this specifies the maximum number of rows read.
-   * @param monitor
-   *          The progress monitor to update while getting the rows.
+   * @param sql            The SQL to launch
+   * @param params         The types of any parameters to be passed to the query
+   * @param data           The values of any parameters to be passed to the query
+   * @param fetch_mode     The fetch mode for the query (ResultSet.FETCH_FORWARD, e.g.)
+   * @param lazyConversion Whether to perform lazy conversion of the values
+   * @param limit          <=0 means unlimited, otherwise this specifies the maximum number of rows read.
+   * @param monitor        The progress monitor to update while getting the rows.
    * @return An ArrayList of rows.
-   * @throws KettleDatabaseException
-   *           if something goes wrong.
+   * @throws KettleDatabaseException if something goes wrong.
    */
   public List<Object[]> getRows( String sql, RowMetaInterface params, Object[] data, int fetch_mode,
-    boolean lazyConversion, int limit, ProgressMonitorListener monitor ) throws KettleDatabaseException {
+                                 boolean lazyConversion, int limit, ProgressMonitorListener monitor ) throws KettleDatabaseException {
     if ( monitor != null ) {
       monitor.setTaskName( "Opening query..." );
     }
@@ -3449,15 +3369,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Reads the result of a ResultSet into an ArrayList
    *
-   * @param rset
-   *          the ResultSet to read out
-   * @param limit
-   *          <=0 means unlimited, otherwise this specifies the maximum number of rows read.
-   * @param monitor
-   *          The progress monitor to update while getting the rows.
+   * @param rset    the ResultSet to read out
+   * @param limit   <=0 means unlimited, otherwise this specifies the maximum number of rows read.
+   * @param monitor The progress monitor to update while getting the rows.
    * @return An ArrayList of rows.
-   * @throws KettleDatabaseException
-   *           if something goes wrong.
+   * @throws KettleDatabaseException if something goes wrong.
    */
   public List<Object[]> getRows( ResultSet rset, int limit, ProgressMonitorListener monitor ) throws KettleDatabaseException {
     try {
@@ -3503,25 +3419,18 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Get the first rows from a table (for preview)
    *
-   * @param table_name
-   *          The table name (or schema/table combination): this needs to be quoted properly
-   * @param limit
-   *          limit <=0 means unlimited, otherwise this specifies the maximum number of rows read.
-   * @param monitor
-   *          The progress monitor to update while getting the rows.
+   * @param table_name The table name (or schema/table combination): this needs to be quoted properly
+   * @param limit      limit <=0 means unlimited, otherwise this specifies the maximum number of rows read.
+   * @param monitor    The progress monitor to update while getting the rows.
    * @return An ArrayList of rows.
-   * @throws KettleDatabaseException
-   *           in case something goes wrong
+   * @throws KettleDatabaseException in case something goes wrong
    */
   public List<Object[]> getFirstRows( String table_name, int limit, ProgressMonitorListener monitor ) throws KettleDatabaseException {
     String sql = "SELECT";
     if ( databaseMeta.getDatabaseInterface() instanceof NeoviewDatabaseMeta ) {
       sql += " [FIRST " + limit + "]";
-    } else if ( databaseMeta.getDatabaseInterface() instanceof SybaseIQDatabaseMeta ) // improve
-                                                                                      // support
-                                                                                      // Sybase
-                                                                                      // IQ
-    {
+    } else if ( databaseMeta.getDatabaseInterface() instanceof SybaseIQDatabaseMeta ) {
+      // improve support for Sybase IQ
       sql += " TOP " + limit + " ";
     }
     sql += " * FROM " + table_name;
@@ -3982,8 +3891,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Lock a tables in the database for write operations
    *
-   * @param tableNames
-   *          The tables to lock. These need to be the appropriately quoted fully qualified (schema+table) names.
+   * @param tableNames The tables to lock. These need to be the appropriately quoted fully qualified (schema+table) names.
    * @throws KettleDatabaseException
    */
   public void lockTables( String[] tableNames ) throws KettleDatabaseException {
@@ -4002,8 +3910,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Unlock certain tables in the database for write operations
    *
-   * @param tableNames
-   *          The tables to unlock
+   * @param tableNames The tables to unlock
    * @throws KettleDatabaseException
    */
   public void unlockTables( String[] tableNames ) throws KettleDatabaseException {
@@ -4034,8 +3941,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
-   * @param opened
-   *          the opened to set
+   * @param opened the opened to set
    */
   public void setOpened( int opened ) {
     this.opened = opened;
@@ -4049,8 +3955,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
-   * @param connectionGroup
-   *          the connectionGroup to set
+   * @param connectionGroup the connectionGroup to set
    */
   public void setConnectionGroup( String connectionGroup ) {
     this.connectionGroup = connectionGroup;
@@ -4064,8 +3969,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
-   * @param partitionId
-   *          the partitionId to set
+   * @param partitionId the partitionId to set
    */
   public void setPartitionId( String partitionId ) {
     this.partitionId = partitionId;
@@ -4079,8 +3983,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
-   * @param copy
-   *          the copy to set
+   * @param copy the copy to set
    */
   public void setCopy( int copy ) {
     this.copy = copy;
@@ -4171,7 +4074,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public RowMetaAndData callProcedure( String[] arg, String[] argdir, int[] argtype, String resultname,
-    int resulttype ) throws KettleDatabaseException {
+                                       int resulttype ) throws KettleDatabaseException {
     RowMetaAndData ret;
     try {
       boolean moreResults = cstmt.execute();
@@ -4323,8 +4226,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Return SQL CREATION statement for a Table
    *
-   * @param tableName
-   *          The table to create
+   * @param tableName The table to create
    * @throws KettleDatabaseException
    */
 
@@ -4342,10 +4244,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Return SQL TRUNCATE statement for a Table
    *
-   * @param schema
-   *          The schema
-   * @param tableNameWithSchema
-   *          The table to create
+   * @param schema              The schema
+   * @param tableNameWithSchema The table to create
    * @throws KettleDatabaseException
    */
   public String getDDLTruncateTable( String schema, String tablename ) throws KettleDatabaseException {
@@ -4364,17 +4264,15 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Return SQL statement (INSERT INTO TableName ...
    *
-   * @param schemaName
-   *          tableName The schema
+   * @param schemaName tableName The schema
    * @param tableName
    * @param fields
-   * @param dateFormat
-   *          date format of field
+   * @param dateFormat date format of field
    * @throws KettleDatabaseException
    */
 
   public String getSQLOutput( String schemaName, String tableName, RowMetaInterface fields, Object[] r,
-    String dateFormat ) throws KettleDatabaseException {
+                              String dateFormat ) throws KettleDatabaseException {
     StringBuffer ins = new StringBuffer( 128 );
 
     try {
@@ -4620,8 +4518,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
-   * @param containerObjectId
-   *          the execution container Object id to set
+   * @param containerObjectId the execution container Object id to set
    */
   public void setContainerObjectId( String containerObjectId ) {
     this.containerObjectId = containerObjectId;
@@ -4643,8 +4540,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
-   * @param nrExecutedCommits
-   *          the nrExecutedCommits to set
+   * @param nrExecutedCommits the nrExecutedCommits to set
    */
   public void setNrExecutedCommits( int nrExecutedCommits ) {
     this.nrExecutedCommits = nrExecutedCommits;
@@ -4653,12 +4549,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Execute an SQL statement inside a file on the database connection (has to be open)
    *
-   * @param sql
-   *          The file that contains SQL to execute
-   * @sendSinglestatement send one statement
+   * @param sql The file that contains SQL to execute
    * @return a Result object indicating the number of lines read, deleted, inserted, updated, ...
-   * @throws KettleDatabaseException
-   *           in case anything goes wrong.
+   * @throws KettleDatabaseException in case anything goes wrong.
+   * @sendSinglestatement send one statement
    */
   public Result execStatementsFromFile( String filename, boolean sendSinglestatement ) throws KettleException {
     FileObject sqlFile = null;

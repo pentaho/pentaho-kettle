@@ -885,7 +885,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       //
       String line =
         TextFileInput.getLine(
-          log, reader, encodingType, TextFileInputMeta.FILE_FORMAT_MIXED, new StringBuilder( 1000 ) );
+          log, reader, encodingType, TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder( 1000 ) );
 
       // Split the string, header or data into parts...
       //

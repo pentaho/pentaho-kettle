@@ -73,4 +73,8 @@ public class UIRepositoryUser extends XulEventSourceAdapter implements IUIUser {
     return getName();
   }
 
+  @Override
+  public int compareTo( IUIUser o ) {
+    return user.getLogin().compareTo( o.getUserInfo().getLogin() );
+  }
 }

@@ -68,6 +68,8 @@ public class PDI5436Test {
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         smh.logChannelInterface );
     when( smh.trans.isRunning() ).thenReturn( true );
+        
+    
   }
 
   private RowMeta mockInputRowMeta() {
@@ -108,6 +110,7 @@ public class PDI5436Test {
     doReturn( new String[] { "value" } ).when( stepMeta ).getReturnValueField();
     doReturn( new String[] { "" } ).when( stepMeta ).getReturnValueDefault();
     doReturn( new int[] { ValueMetaInterface.TYPE_STRING } ).when( stepMeta ).getReturnValueDefaultType();
+    when( stepMeta.getStreamKeyField2() ).thenReturn( new String[]{ "a", "b", "c" } );
 
     return stepMeta;
   }

@@ -898,21 +898,21 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
             if ( !Const.isEmpty( technicalKeyField ) ) {
               String[] techKeyArr = new String[] { technicalKeyField };
-              if ( !db.checkIndexExists( schemaName, tablename, techKeyArr ) ) {
+              if ( !db.checkIndexExists( schemaTable, techKeyArr ) ) {  
                 String indexname = "idx_" + tablename + "_pk";
                 cr_uniq_index =
-                  db.getCreateIndexStatement(
-                    schemaName, tablename, indexname, techKeyArr, true, true, false, true );
+                    db.getCreateIndexStatement(
+                        schemaTable, indexname, techKeyArr, true, true, false, true );
                 cr_uniq_index += Const.CR;
               }
             }
 
             // OK, now get the create lookup index statement...
-            if ( !Const.isEmpty( idx_fields ) && !db.checkIndexExists( schemaName, tablename, idx_fields ) ) {
+            if ( !Const.isEmpty( idx_fields ) && !db.checkIndexExists( schemaTable, idx_fields ) ) {
               String indexname = "idx_" + tablename + "_lookup";
               cr_index =
-                db.getCreateIndexStatement(
-                  schemaName, tablename, indexname, idx_fields, false, false, false, true );
+                  db.getCreateIndexStatement(
+                    schemaTable, indexname, idx_fields, false, false, false, true );
               cr_index += Const.CR;
             }
 

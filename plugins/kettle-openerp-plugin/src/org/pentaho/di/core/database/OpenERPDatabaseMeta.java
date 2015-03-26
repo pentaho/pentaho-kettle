@@ -23,7 +23,7 @@ import org.pentaho.di.core.plugins.DatabaseMetaPlugin;
 public class OpenERPDatabaseMeta extends GenericDatabaseMeta implements DatabaseInterface {
 
   public int[] getAccessTypeList() {
-    return new int[] { DatabaseMeta.TYPE_ACCESS_PLUGIN, };
+    return new int[]{ DatabaseMeta.TYPE_ACCESS_PLUGIN, };
   }
 
   public int getDefaultDatabasePort() {

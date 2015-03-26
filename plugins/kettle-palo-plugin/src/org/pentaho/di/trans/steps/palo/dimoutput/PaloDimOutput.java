@@ -40,7 +40,7 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
   private ConsolidationCollection consolidations;
 
   public PaloDimOutput( final StepMeta stepMeta, final StepDataInterface stepDataInterface, final int copyNr,
-      final TransMeta transMeta, final Trans trans ) {
+                        final TransMeta transMeta, final Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -66,9 +66,10 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
         /* Get data field index */
         String dataFieldName = meta.getLevels().get( i ).getFieldName();
         int numRow = getInputRowMeta().indexOfValue( dataFieldName );
-        if ( numRow < 0 )
+        if ( numRow < 0 ) {
           throw new KettleException( "DimOutput: failed to find input row meta for ".concat( meta.getLevels().get( i )
-              .getLevelName() ) );
+            .getLevelName() ) );
+        }
         data.indexes[i * 2] = numRow;
         this.logDebug( meta.getLevels().get( i ).getLevelName() + " has index: " + numRow );
 
@@ -79,18 +80,19 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
           this.logDebug( "Consolidation factor was left to the default" );
         } else {
           numRow = getInputRowMeta().indexOfValue( consolidationFieldName );
-          if ( numRow < 0 )
+          if ( numRow < 0 ) {
             throw new KettleException( "DimOutput: failed to find input row meta for ".concat( meta.getLevels().get( i )
-                .getConsolidationFieldName() ) );
+              .getConsolidationFieldName() ) );
+          }
           this.logDebug( meta.getLevels().get( i ).getConsolidationFieldName() + " has index: " + numRow );
         }
         data.indexes[( i * 2 ) + 1] = numRow;
       }
       data.helper.manageDimension( meta.getDimension(), meta.getCreateNewDimension(), meta.getClearDimension(), meta
-          .getClearConsolidations(), meta.getRecreateDimension() );
+        .getClearConsolidations(), meta.getRecreateDimension() );
       try {
         data.helper.loadDimensionCache( meta.getDimension(), meta.getEnableElementCache(), meta
-            .getPreloadElementCache() );
+          .getPreloadElementCache() );
       } catch ( Exception e ) {
         throw new KettleException( "Failed to load cache", e );
       }
@@ -104,16 +106,18 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
         ConsolidationElement parent = null;
         for ( int i = 0; i < data.indexes.length; i++ ) {
           if ( i % 2 == 0 ) {
-            if ( r[data.indexes[i]] == null )
+            if ( r[data.indexes[i]] == null ) {
               continue;
+            }
 
             data.elementNamesBatch.add( r[data.indexes[i]].toString() );
           } else {
             /* Default weight to 1 if it was left to default */
             double consolidation_factor = 1;
-            if ( data.indexes[i] >= 0 )
+            if ( data.indexes[i] >= 0 ) {
               consolidation_factor =
-                  Double.parseDouble( ( r[data.indexes[i]] == null ? 0 : r[data.indexes[i]] ).toString() );
+                Double.parseDouble( ( r[data.indexes[i]] == null ? 0 : r[data.indexes[i]] ).toString() );
+            }
 
             ConsolidationElement child = null;
 
@@ -122,11 +126,13 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
               if ( !this.consolidations.hasConsolidationElement( elementName ) ) {
                 child = new ConsolidationElement( elementName );
                 this.consolidations.add( child );
-              } else
+              } else {
                 child = this.consolidations.getConsolidationElement( elementName );
+              }
 
-              if ( parent != null )
+              if ( parent != null ) {
                 parent.addChild( child, consolidation_factor );
+              }
             }
 
             parent = child;
@@ -134,8 +140,9 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
         }
 
         // Should probably make this a parameter on the dialog
-        if ( data.elementNamesBatch.size() % 100 == 0 )
+        if ( data.elementNamesBatch.size() % 100 == 0 ) {
           commitBatch();
+        }
 
       } catch ( Exception e ) {
         throw new KettleException( "Failed to add row to the row buffer", e );
@@ -145,14 +152,15 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
     // this also waits for a previous step to be finished.
     if ( r == null ) { // no more input to be expected...
       try {
-        if ( data.elementNamesBatch.size() > 0 )
+        if ( data.elementNamesBatch.size() > 0 ) {
           commitBatch();
+        }
 
         // Because we add rows in bulk, the dimension cache isn't complete. It only keeps a list
         // of added items for validation. If the cache must be pre-loaded, pre-load it now.
         data.helper.clearDimensionCache();
         data.helper.loadDimensionCache( meta.getDimension(), meta.getEnableElementCache(), meta
-            .getPreloadElementCache() );
+          .getPreloadElementCache() );
 
         // if it's the last row create the dimension
         this.logBasic( "All rows have been added. Looking for consolidations" );
