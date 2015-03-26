@@ -188,6 +188,7 @@ public class Formula extends BaseStep implements StepInterface {
               }
             } else {
               data.returnType[i] = FormulaData.RETURN_TYPE_STRING;
+              fn.setNeedDataConversion( fn.getValueType() != ValueMetaInterface.TYPE_STRING );
             }
           }
 
