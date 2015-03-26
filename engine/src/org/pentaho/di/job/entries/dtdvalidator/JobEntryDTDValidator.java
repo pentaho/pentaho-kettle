@@ -123,7 +123,7 @@ public class JobEntryDTDValidator extends JobEntryBase implements Cloneable, Job
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException {
     try {
       rep.saveJobEntryAttribute( id_job, getObjectId(), "xmlfilename", xmlfilename );
-      rep.saveJobEntryAttribute( id_job, getObjectId(), "DTDfilename", dtdfilename );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "dtdfilename", dtdfilename );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "dtdintern", dtdintern );
     } catch ( KettleDatabaseException dbe ) {
       throw new KettleException( "Unable to save job entry of type 'DTDvalidator' to the repository for id_job="
