@@ -76,7 +76,15 @@ public class KettleDatabaseRepositoryTest extends TestCase {
       //
       repository.connect( "admin", "admin" );
       assertTrue( repository.isConnected() );
-
+      
+      // Test database save
+      DatabaseMeta dataBaseForSave = new DatabaseMeta("H2Test", "H2", "JDBC", null, filename, null, null, null );   
+      repository.save( dataBaseForSave, "User creates new database" );
+      //load new database from repository by generated id on save step
+      DatabaseMeta loadedDataBase = repository.loadDatabaseMeta( dataBaseForSave.getObjectId(), "User creates new database" );
+      
+      assertEquals("Database object before save and after load form database is diffenert", dataBaseForSave, loadedDataBase );
+      
       // Test loading the directory tree
       tree = repository.loadRepositoryDirectoryTree();
       assertNotNull( tree );
