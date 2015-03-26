@@ -386,7 +386,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
   public void truncate() throws KettleException {
     String cmd;
     String table = data.schemaTable;
-    String truncateStatement = meta.getDatabaseMeta().getTruncateTableStatement( null, table );
+    String truncateStatement = meta.getDatabaseMeta().getTruncateTableStatement( environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTableName() ));
     if ( truncateStatement == null ) {
       throw new KettleException( "Truncate table is not supported!" );
     }
@@ -498,13 +498,6 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
       data.out.writeLine( "" );
 
       // again...
-      error = data.in.waitForPrompt();
-      if ( error != null ) {
-        throw new KettleException( "Error loading data: " + error );
-      }
-      data.out.writeLine( "" );
-
-      // and again, making sure we commit all the records
       error = data.in.waitForPrompt();
       if ( error != null ) {
         throw new KettleException( "Error loading data: " + error );

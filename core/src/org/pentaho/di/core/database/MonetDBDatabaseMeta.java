@@ -344,15 +344,13 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         if ( length > getMaxVARCHARLength() ) {
           retval.append( "CLOB" );
         } else {
-          retval.append( "VARCHAR(" );
           if ( length > 0 ) {
+            retval.append( "VARCHAR(" );
             retval.append( length );
+            retval.append( ")" );
           } else {
-            if ( safeMode ) {
-              retval.append( DEFAULT_VARCHAR_LENGTH );
-            }
+            retval.append( "STRING" );
           }
-          retval.append( ")" );
         }
         break;
       default:
