@@ -18,9 +18,15 @@ import java.util.Map;
  */
 public class BasePluginTypeExposer {
   private BasePluginType pluginType;
+  private Object target;
+  private String packageName;
+  private final String altPackageName;
 
-  public BasePluginTypeExposer(BasePluginType pluginType) {
+  public BasePluginTypeExposer(BasePluginType pluginType, Object target ) {
+    this.target = target;
     this.pluginType = pluginType;
+
+    altPackageName = target.getClass().getPackage().getName();
   }
 
   public String extractID( Annotation annotation ) {
@@ -28,15 +34,22 @@ public class BasePluginTypeExposer {
   }
 
   public String extractName( Annotation annotation ) {
-    return pluginType.extractName( annotation );
+    String name = pluginType.extractName( annotation );
+    packageName = extractI18nPackageName( annotation );
+    return BasePluginType.getTranslation( name, packageName, altPackageName, target.getClass() );
+
   }
 
   public String extractDesc( Annotation annotation ) {
-    return pluginType.extractDesc( annotation );
+    String desc = pluginType.extractDesc( annotation );
+    packageName = extractI18nPackageName( annotation );
+    return BasePluginType.getTranslation( desc, packageName, altPackageName, target.getClass() );
   }
 
   public String extractCategory( Annotation annotation ) {
-    return pluginType.extractCategory( annotation );
+    String category = pluginType.extractCategory( annotation );
+    packageName = extractI18nPackageName( annotation );
+    return BasePluginType.getTranslation( category, packageName, altPackageName, target.getClass() );
   }
 
   public String extractImageFile( Annotation annotation ) {
