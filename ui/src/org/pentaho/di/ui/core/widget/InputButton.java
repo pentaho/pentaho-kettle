@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,27 +19,31 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.i18n;
 
-public class PackageMessages {
+package org.pentaho.di.ui.core.widget;
 
-  private final Class<?> packageClass;
-  private final String prefix;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.pentaho.di.ui.core.FormDataBuilder;
+import org.pentaho.di.ui.core.WidgetUtils;
 
-  public PackageMessages( final Class<?> packageClass ) {
-    this( packageClass, null );
+public class InputButton extends Composite {
+  private Button button;
+
+  public InputButton( Composite composite, int width ) {
+    super( composite, SWT.NONE );
+    WidgetUtils.setFormLayout( this, 0 );
+
+    button = new Button( this, SWT.PUSH );
+    button.setLayoutData( new FormDataBuilder().right().bottom().width( width ).result() );   
   }
 
-  public PackageMessages( final Class<?> packageClass, String prefix ) {
-    this.packageClass = packageClass;
-    this.prefix = prefix == null ? packageClass.getSimpleName() + "." : prefix;
+  public void setText( String text ) {
+    button.setText( text );
   }
 
-  public String getString( final String key, final String... parameters ) {
-    return getString( prefix, key, parameters );
-  }
-
-  public String getString( final String prefix, final String key, final String... parameters ) {
-    return BaseMessages.getString( packageClass, prefix + key, parameters );
+  public Button getButton() {
+    return button;
   }
 }

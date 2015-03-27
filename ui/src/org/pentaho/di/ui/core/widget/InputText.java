@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,27 +19,21 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.i18n;
 
-public class PackageMessages {
+package org.pentaho.di.ui.core.widget;
 
-  private final Class<?> packageClass;
-  private final String prefix;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.variables.VariableSpace;
 
-  public PackageMessages( final Class<?> packageClass ) {
-    this( packageClass, null );
+public class InputText extends Input<Text> {
+  public InputText( VariableSpace space, Composite composite, int width1, int width2 ) {
+    super( space, composite, width1, width2 );
   }
 
-  public PackageMessages( final Class<?> packageClass, String prefix ) {
-    this.packageClass = packageClass;
-    this.prefix = prefix == null ? packageClass.getSimpleName() + "." : prefix;
-  }
-
-  public String getString( final String key, final String... parameters ) {
-    return getString( prefix, key, parameters );
-  }
-
-  public String getString( final String prefix, final String key, final String... parameters ) {
-    return BaseMessages.getString( packageClass, prefix + key, parameters );
+  @Override
+  protected void initText( VariableSpace space, Composite composite, int flags ) {
+    input = new Text( this, SWT.LEFT | SWT.SINGLE | SWT.BORDER );
   }
 }
