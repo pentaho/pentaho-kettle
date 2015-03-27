@@ -69,60 +69,60 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 <project name="subfloor" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
   <description>
-    -------------------------------------------------------------------------------
-    subfloor.xml provides tasks needed to perform a project build.
-    It is typically not used directly but imported by each project's build.xml
-    file. The build.xml file can override tasks when customization is required.
+-------------------------------------------------------------------------------
+     subfloor.xml provides tasks needed to perform a project build.
+     It is typically not used directly but imported by each project's build.xml
+     file.  The build.xml file can override tasks when customization is required.
 
-    MAIN TARGETS
-    ============
-    * clean / clean-all :
+MAIN TARGETS
+============
+  * clean / clean-all :
     remove all artifacts of the build, clean-all adds the removal
     of any library or jar dependencies downloaded as part of the build
 
-    * resolve :
+  * resolve :
     download/refresh library or jar dependencies needed for the build (uses Apache IVY)
 
-    * compile :
+  * compile :
     run javac on the project's source
 
-    * jar :
+  * jar :
     creates a jar file
 
-    * dist :
+  * dist :
     creates all project distributables
 
-    * test :
+  * test :
     runs JUnit tests from your project's test source
 
-    SPECIAL TARGETS
-    ============
-    * publish-local :
+SPECIAL TARGETS
+============
+  * publish-local :
     builds a jar for your project and registers it with the local artifact repository isolated
-    to your machine at $HOME/.ivy2/local. Further executions of the the resolve target by this
+    to your machine at $HOME/.ivy2/local.  Further executions of the the resolve target by this
     or other projects will find your published jar.
 
-    * ivy-clean* :
+  * ivy-clean* :
     this family of targets helps reset your IVY environment in the event that you are having
     difficulty resolving dependencies
 
-    TYPICAL TARGET SEQUENCE
-    ============
-    * clean-all resolve dist :
-    a good start to build all project distributables from scratch. Note that jar dependencies
-    will not be downloaded unless you explicitly run the resolve target. We made the resolution
+TYPICAL TARGET SEQUENCE
+============
+  * clean-all resolve dist :
+    a good start to build all project distributables from scratch.  Note that jar dependencies
+    will not be downloaded unless you explicitly run the resolve target.  We made the resolution
     and retrieval completely discretionary since there are many situations in which
     you will not want to get or refresh dependencies, e.g. if you are offline with no Internet
-    access. In such case, you could just run "dist" if the set of jars you already have are
+    access.  In such case, you could just run "dist" if the set of jars you already have are
     sufficient.
 
   </description>
 
   <!-- Load the properties files in the proper order -->
   <property file="override.properties"
-            description="Properties customized for your development environment belong in this file.  This file will never be checked into the SCM."/>
+            description="Properties customized for your development environment belong in this file.  This file will never be checked into the SCM." />
   <property file="build.properties"
-            description="Properties customized for your particular project belong in this file."/>
+            description="Properties customized for your particular project belong in this file." />
 
   <!-- =================================================================================
        Property Defaults
@@ -130,237 +130,235 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        =================================================================================-->
 
   <!-- Project meta properties -->
-  <property name="impl.vendor" value="Pentaho Corporation" description="Jar file metadata describing the jar's vendor"/>
+  <property name="impl.vendor" value="Pentaho Corporation" description="Jar file metadata describing the jar's vendor" />
   <property name="impl.productID"
             value=""
-            description="Jar file metadata indicating the product ID (this is not the revision)"/>
+            description="Jar file metadata indicating the product ID (this is not the revision)" />
 
   <!-- Compile properties -->
-  <property name="src.dir" value="${basedir}/src" description="Project source code directory"/>
-  <property name="bin.dir" value="${basedir}/bin" description="Base directory for all non-dist build output"/>
+  <property name="src.dir" value="${basedir}/src" description="Project source code directory" />
+  <property name="bin.dir" value="${basedir}/bin" description="Base directory for all non-dist build output" />
   <property name="classes.dir"
             value="${bin.dir}/classes"
-            description="Classes compiled from project source code are placed here"/>
+            description="Classes compiled from project source code are placed here" />
   <property name="lib.dir"
             value="${basedir}/lib"
-            description="Directory that hosts Jar files required to compile project source.  (IVY will populate this directory with required jars)"/>
+            description="Directory that hosts Jar files required to compile project source.  (IVY will populate this directory with required jars)" />
   <property name="devlib.dir"
             value="${basedir}/dev-lib"
-            description="Directory for developer to place development Jar files (not affected by clean targets)"/>
+            description="Directory for developer to place development Jar files (not affected by clean targets)" />
 
   <!-- Compiler properties (passed directly to javac ant target) -->
   <property name="javac.debug"
             value="true"
-            description="Indicates whether source should be compiled with debug information (passed to javac ant task)."/>
+            description="Indicates whether source should be compiled with debug information (passed to javac ant task)." />
   <property name="javac.deprecation"
             value="true"
-            description="Indicates whether source should be compiled with deprecation information"/>
-  <property name="javac.source" value="6" description="Provide source compatibility with specified release"/>
-  <property name="javac.target" value="6" description="Generate class files for specific VM version"/>
-  <property name="javac.maxmemory" value="256M" description="Max memory alloted to java compile"/>
-  <property name="javac.xlint" value="-Xlint:all"/>
+            description="Indicates whether source should be compiled with deprecation information" />
+  <property name="javac.source" value="6" description="Provide source compatibility with specified release" />
+  <property name="javac.target" value="6" description="Generate class files for specific VM version" />
+  <property name="javac.maxmemory" value="256M" description="Max memory alloted to java compile" />
+  <property name="javac.xlint" value="-Xlint:all" />
 
   <!-- Third party Ant tasks and tools properties -->
   <property name="subfloor.resources.dir"
             value="${user.home}/.subfloor"
-            description="Base dir for runtime jars that are required exclusively by the build process"/>
+            description="Base dir for runtime jars that are required exclusively by the build process" />
   <property name="subfloor.tmp.dir"
             value="${subfloor.resources.dir}/tmp"
-            description="Temporary space where files are prepared for installation"/>
+            description="Temporary space where files are prepared for installation" />
   <property name="antcontrib.build.cache.dir"
             value="${subfloor.resources.dir}/ant-contrib"
-            description="Directory where the Ant-Contrib jar (and dependencies) is placed after it is auto-downloaded by the build"/>
+            description="Directory where the Ant-Contrib jar (and dependencies) is placed after it is auto-downloaded by the build" />
   <property name="svnant.use-javahl"
             value="false"
-            description="Prefer JNI JavaHL binding over the command line client for native svn support"/>
+            description="Prefer JNI JavaHL binding over the command line client for native svn support" />
   <property name="svnant.use-svnkit"
             value="true"
-            description="Prefer SVNKit binding over the command line client for native svn support (defaults to true)"/>
+            description="Prefer SVNKit binding over the command line client for native svn support (defaults to true)" />
   <property name="ivy.url"
             value="http://nexus.pentaho.org/content/groups/omni/org/apache/ivy/ivy/2.3.0/ivy-2.3.0.jar"
-            description="The URL to the current release of Apache IVY"/>
+            description="The URL to the current release of Apache IVY" />
 
   <!-- Enunciate properties -->
-  <property name="enunciate.home" value="${basedir}/enunciate"/>
-  <property name="enunciate.bin.dir" value="${bin.dir}/enunciate"/>
+  <property name="enunciate.home" value="${basedir}/enunciate" />
+  <property name="enunciate.bin.dir" value="${bin.dir}/enunciate" />
 
 
   <!-- Test properties -->
-  <property name="junit.base.dir" value="${basedir}"
-            description="Directory in which the junit test VM will be invoked"/>
-  <property name="testsrc.dir" value="${basedir}/test-src" description="Directory that hosts the test source files"/>
+  <property name="junit.base.dir" value="${basedir}" description="Directory in which the junit test VM will be invoked" />
+  <property name="testsrc.dir" value="${basedir}/test-src" description="Directory that hosts the test source files" />
   <property name="testlib.dir"
             value="${basedir}/test-lib"
-            description="Directory for jar files needed during unit testing"/>
+            description="Directory for jar files needed during unit testing" />
   <property name="testbin.dir"
             value="${bin.dir}/test"
-            description="Base directory for all compiler generated test output"/>
+            description="Base directory for all compiler generated test output" />
   <property name="testclasses.dir"
             value="${testbin.dir}/classes"
-            description="Classes compiled from project test code are placed here"/>
+            description="Classes compiled from project test code are placed here" />
   <property name="testreports.dir"
             value="${bin.dir}/reports/test"
-            description="Base directory that holds all unit test report files"/>
+            description="Base directory that holds all unit test report files" />
   <property name="testreports.xml.dir"
             value="${testreports.dir}/xml"
-            description="Unit test xml reports are placed here"/>
+            description="Unit test xml reports are placed here" />
   <property name="testreports.html.dir"
             value="${testreports.dir}/html"
-            description="Unit test html reports are placed here"/>
-  <property name="junit.haltonfailure" value="no" description="Fail the build if a test fails"/>
-  <property name="junit.haltonerror" value="no" description="Fail the build if a error occurs"/>
-  <property name="junit.maxmemory" value="256M" description="Heap size when Junit is run in fork mode"/>
+            description="Unit test html reports are placed here" />
+  <property name="junit.haltonfailure" value="no" description="Fail the build if a test fails" />
+  <property name="junit.haltonerror" value="no" description="Fail the build if a error occurs" />
+  <property name="junit.maxmemory" value="256M" description="Heap size when Junit is run in fork mode" />
   <property name="junit.forkmode"
             value="perTest"
             description="Defines whether JUnit forks a new JVM for each test. Use 'once' for faster test runs, and 'perTest' for complete tests."/>
-  <property name="headless.unittest" value="true" description="Runs the unit tests in headless mode"/>
+  <property name="headless.unittest" value="true" description="Runs the unit tests in headless mode" />
 
   <!-- Code Coverage properties -->
   <property name="instrumented.classes.dir"
             value="${testbin.dir}/instrumented-classes"
-            description="Directory where instrumented project classes are placed for use by code coverage utility"/>
+            description="Directory where instrumented project classes are placed for use by code coverage utility" />
   <property name="jacoco.version"
             value="0.7.2.201409121644"
-            description="The version of jacoco to use for code coverage"/>
+            description="The version of jacoco to use for code coverage" />
   <property name="cobertura.version"
             value="2.0.3"
-            description="The version of cobertura to use for code coverage"/>
+            description="The version of cobertura to use for code coverage" />
   <property name="cobertura.data.dir"
             value="${testbin.dir}/cobertura-bin"
-            description="Temporary data directory used by Cobertura"/>
+            description="Temporary data directory used by Cobertura" />
   <property name="coberturareports.dir"
             value="${bin.dir}/reports/cobertura"
-            description="Base directory for all generated Cobertura code coverage reports"/>
+            description="Base directory for all generated Cobertura code coverage reports" />
   <property name="coberturareports.xml.dir"
             value="${coberturareports.dir}/xml"
-            description="Cobertura xml reports are placed here"/>
+            description="Cobertura xml reports are placed here" />
   <property name="coberturareports.html.dir"
             value="${coberturareports.dir}/html"
-            description="Cobertura html reports are placed here"/>
+            description="Cobertura html reports are placed here" />
 
   <!-- Javadoc properties -->
   <property name="javadoc.dir"
             value="${bin.dir}/javadoc"
-            description="Directory where generated javadoc will be placed"/>
+            description="Directory where generated javadoc will be placed" />
   <property name="javadoc.packagenames"
             value="org.mypackagename.*"
-            description="This property is passed to the packagenames property of the javadoc ant task.  You should customize this for your project."/>
-  <property name="javadoc.zip.filename" value="${ivy.artifact.id}-${project.revision}-javadoc.zip"/>
-  <property name="javadoc.tar.filename" value="${ivy.artifact.id}-${project.revision}-javadoc.tar.gz"/>
+            description="This property is passed to the packagenames property of the javadoc ant task.  You should customize this for your project." />
+  <property name="javadoc.zip.filename" value="${ivy.artifact.id}-${project.revision}-javadoc.zip" />
+  <property name="javadoc.tar.filename" value="${ivy.artifact.id}-${project.revision}-javadoc.tar.gz" />
 
   <!-- Distribution and Assembly properties -->
   <property name="dist.dir"
             value="${basedir}/dist"
-            description="Base directory for all project artifacts (jar, zip, tar.gz, etc...)"/>
+            description="Base directory for all project artifacts (jar, zip, tar.gz, etc...)" />
   <property name="license.dir"
             value="${basedir}"
-            description="Base directory where this project's license files reside"/>
+            description="Base directory where this project's license files reside" />
   <property name="res.dir"
             value="${basedir}/res"
-            description="Directory that holds resources not included in the source tree"/>
-  <property name="source.zip.filename" value="${ivy.artifact.id}-${project.revision}-sources.zip"/>
-  <property name="source.tar.filename" value="${ivy.artifact.id}-${project.revision}-sources.tar.gz"/>
-  <property name="source.publish" value="true"/>
+            description="Directory that holds resources not included in the source tree" />
+  <property name="source.zip.filename" value="${ivy.artifact.id}-${project.revision}-sources.zip" />
+  <property name="source.tar.filename" value="${ivy.artifact.id}-${project.revision}-sources.tar.gz" />
+  <property name="source.publish" value="true" />
 
   <!-- Ivy properties -->
   <property name="ivy.settingsurl"
             value="file:${basedir}/ivysettings.xml"
-            description="URL to the (common) ivysettings.xml.  This file is required by the build to configure IVY.  Note you must escape the ':' if this property exists in a .properties file"/>
+            description="URL to the (common) ivysettings.xml.  This file is required by the build to configure IVY.  Note you must escape the ':' if this property exists in a .properties file" />
   <property name="ivyfile"
             value="ivy.xml"
-            description="The name of the IVY xml file defining your project's dependencies"/>
+            description="The name of the IVY xml file defining your project's dependencies" />
   <property name="ivy.artifact.group"
             value="mycompanyname"
-            description="IVY metadata describing the originating company or organization"/>
+            description="IVY metadata describing the originating company or organization" />
   <property name="ivy.artifact.pomfile"
             value="${dist.dir}/pom.xml"
-            description="The path to the Maven pom file to deploy with the artifact"/>
+            description="The path to the Maven pom file to deploy with the artifact" />
   <property name="ivy.artifact.ivyfilename"
             value="ivy.xml"
-            description="The name of the IVY xml file to deploy with the artifact"/>
+            description="The name of the IVY xml file to deploy with the artifact" />
   <property name="ivy.artifact.ivypathname"
             value="${dist.dir}/ivy.xml"
-            description="The full path to the IVY xml file to deploy with the artifact"/>
+            description="The full path to the IVY xml file to deploy with the artifact" />
   <property name="ivy.reports.dir"
             value="${bin.dir}/reports/ivy"
-            description="Base directory that holds all IVY dependency report files"/>
-  <property name="ivy.configs" value="*" description="Set of configs used for IVY reporting and checking operations"/>
-  <property name="ivy.use.symlinks" value="true"
-            description="Flag indicating if Ivy should create symlinks when retrieving artifacts."/>
+            description="Base directory that holds all IVY dependency report files" />
+  <property name="ivy.configs" value="*" description="Set of configs used for IVY reporting and checking operations" />
+  <property name="ivy.use.symlinks" value="true" description="Flag indicating if Ivy should create symlinks when retrieving artifacts."/>
 
   <!-- Tattletale properties -->
   <property name="tattletale.url"
             value="http://repo.pentaho.org/artifactory/repo/jboss/tattletale/1.1.2.Final/tattletale-1.1.2.Final.zip"
-            description="The URL from which to download tattletale"/>
+            description="The URL from which to download tattletale" />
   <property name="tattletale.classname"
             value="org.jboss.tattletale.ant.ReportTask"
-            description="The name of the class which will run the tattletale reports"/>
+            description="The name of the class which will run the tattletale reports" />
   <property name="tattletale.reports.dir"
             value="${bin.dir}/reports/tattletale"
-            description="Base directory that holds the output of the tattletale reports"/>
+            description="Base directory that holds the output of the tattletale reports" />
   <property name="tattletale.configfile"
             value=""
-            description="The configuration file for the tattletale report"/>
+            description="The configuration file for the tattletale report" />
 
   <!-- Sonar properties -->
 
-  <property name="sonar-ant-task-version" value="2.2"/>
+  <property name="sonar-ant-task-version" value="2.2" />
   <property name="sonar.classname" value="org.sonar.ant.SonarTask"/>
-  <property name="sonar.hostname" value="10.177.176.23"/>
-  <property name="sonar.port" value="9000"/>
-  <property name="sonar.host.url" value="http://${sonar.hostname}:${sonar.port}"/>
-  <property name="sonar.jdbc.username" value="sonar"/>
-  <property name="sonar.jdbc.password" value=""/>
-  <property name="sonar.jdbc.dbname" value="sonar"/>
-  <property name="sonar.jdbc.url" value="jdbc:postgresql://${sonar.hostname}/${sonar.jdbc.dbname}"/>
-  <property name="sonar.jdbc.driverClassName" value="org.postgresql.Driver"/>
-  <property name="sonar.sourceEncoding" value="UTF-8"/>
-  <property name="sonar.java.coveragePlugin" value="jacoco"/>
+  <property name="sonar.hostname" value="10.177.176.23" />
+  <property name="sonar.port" value="9000" />
+  <property name="sonar.host.url" value="http://${sonar.hostname}:${sonar.port}" />
+  <property name="sonar.jdbc.username" value="sonar" />
+  <property name="sonar.jdbc.password" value="" />
+  <property name="sonar.jdbc.dbname" value="sonar" />
+  <property name="sonar.jdbc.url" value="jdbc:postgresql://${sonar.hostname}/${sonar.jdbc.dbname}" />
+  <property name="sonar.jdbc.driverClassName" value="org.postgresql.Driver" />
+  <property name="sonar.sourceEncoding" value="UTF-8" />
+  <property name="sonar.java.coveragePlugin" value="jacoco" />
 
-  <!-- Maven properties -->
-  <property name="maven.options" value="-q"/>
+   <!-- Maven properties -->
+   <property name="maven.options" value="-q" />
 
   <!-- Load the manifest file (if any) as a properties file -->
   <property name="dist.manifest.file"
             value="${dist.dir}/MANIFEST.MF"
-            description="The manifest file that will be generated as part of the build"/>
+            description="The manifest file that will be generated as part of the build" />
   <property name="manifest.file"
             value="${res.dir}/META-INF/MANIFEST.MF"
-            description="The location of the MANIFEST.MF file for this application."/>
+            description="The location of the MANIFEST.MF file for this application." />
   <property file="${manifest.file}"
-            description="Loads the manifest information from the manifest file as a properties file."/>
+            description="Loads the manifest information from the manifest file as a properties file." />
 
   <!-- Checkstyle Properties -->
   <property name="checkstyle.version"
             value="5.7"
-            description="The version of CheckStyle to use for coding standards"/>
+            description="The version of CheckStyle to use for coding standards" />
   <property name="checkstyle.dir"
-            value="${basedir}/checkstyle"/>
+            value="${basedir}/checkstyle" />
   <property name="checkstyle.lib.dir"
-            value="${checkstyle.dir}/lib"/>
+            value="${checkstyle.dir}/lib" />
   <property name="checkstyle.reports.dir"
-            value="${checkstyle.dir}/reports"/>
+            value="${checkstyle.dir}/reports" />
   <property name="checkstyle.config.url"
-            value="http://ci.pentaho.com/job/pentaho-coding-standards/lastSuccessfulBuild/artifact/pentaho_checkStyle.xml"/>
+            value="http://ci.pentaho.com/job/pentaho-coding-standards/lastSuccessfulBuild/artifact/pentaho_checkStyle.xml" />
   <property name="checkstyle.suppressions.url"
-            value="http://ci.pentaho.com/job/pentaho-coding-standards/lastSuccessfulBuild/artifact/suppressions.xml"/>
+            value="http://ci.pentaho.com/job/pentaho-coding-standards/lastSuccessfulBuild/artifact/suppressions.xml" />
   <property name="checkstyle.stylesheet.url"
-            value="http://ci.pentaho.com/job/pentaho-coding-standards/lastSuccessfulBuild/artifact/checkstyle-noframes-sorted.xsl"/>
+            value="http://ci.pentaho.com/job/pentaho-coding-standards/lastSuccessfulBuild/artifact/checkstyle-noframes-sorted.xsl" />
   <property name="checkstyle.config.file"
-            value="${checkstyle.dir}/pentaho_checkStyle.xml"/>
+            value="${checkstyle.dir}/pentaho_checkStyle.xml" />
   <property name="checkstyle.suppressions.file"
-            value="${checkstyle.dir}/suppressions.xml"/>
+            value="${checkstyle.dir}/suppressions.xml" />
   <property name="checkstyle.stylesheet.file"
-            value="${checkstyle.dir}/checkstyle-noframes-sorted.xsl"/>
+            value="${checkstyle.dir}/checkstyle-noframes-sorted.xsl" />
 
   <!-- Set the project revision number to the value in the manifest file (if it has not
        been specified in the properties file -->
   <property name="project.revision"
             value="${Implementation-Version}"
-            description="Sets the version number of the project based on the Implementation-Version found in the manifest file (if one is supplied and nothing is specified in the build.properties)"/>
+            description="Sets the version number of the project based on the Implementation-Version found in the manifest file (if one is supplied and nothing is specified in the build.properties)" />
   <fail message="A project revision number has not been determined!">
     <condition>
-      <matches string="${project.revision}" pattern="\$\{.*\}"/>
+      <matches string="${project.revision}" pattern="\$\{.*\}" />
     </condition>
   </fail>
 
@@ -368,15 +366,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        been specified in the properties file -->
   <property name="impl.title"
             value="${Implementation-Title}"
-            description="Sets the title of the project based on the Implementation-Title found in the manifest file (if one is supplied and nothing is specified in the build.properties)"/>
+            description="Sets the title of the project based on the Implementation-Title found in the manifest file (if one is supplied and nothing is specified in the build.properties)" />
   <fail message="A project title has not been determined!">
     <condition>
-      <matches string="${impl.title}" pattern="\$\{.*\}"/>
+      <matches string="${impl.title}" pattern="\$\{.*\}" />
     </condition>
   </fail>
 
   <!-- Build Mode properties -->
-  <property name="release" value="false" description="Set this to true if you want to generate a release artifact"/>
+  <property name="release" value="false" description="Set this to true if you want to generate a release artifact" />
 
   <!-- Ivy should only use symlinks if we're not in release mode -->
   <condition property="ivy.use.symlinks.internal">
@@ -388,48 +386,48 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   <!-- Set the os property -->
   <condition property="isLinux">
-    <os family="unix"/>
+    <os family="unix" />
   </condition>
   <condition property="isWindows">
-    <os family="windows"/>
+    <os family="windows" />
   </condition>
   <condition property="isMac">
-    <os family="mac"/>
+    <os family="mac" />
   </condition>
 
   <condition property="os.classifier" value="win">
-    <os family="windows"/>
+    <os family="windows" />
   </condition>
   <condition property="os.classifier" value="mac">
-    <os family="mac"/>
+    <os family="mac" />
   </condition>
   <condition property="os.classifier" value="linux">
-    <os family="unix"/>
+    <os family="unix" />
   </condition>
-  <property name="os.classifier" value="unsupported"/>
+  <property name="os.classifier" value="unsupported" />
 
   <!-- Setup the compile classpath -->
   <path id="classpath">
     <fileset dir="${devlib.dir}">
-      <include name="**/*.jar"/>
+      <include name="**/*.jar" />
     </fileset>
     <fileset dir="${lib.dir}">
-      <include name="**/*.jar"/>
+      <include name="**/*.jar" />
     </fileset>
   </path>
 
   <!-- Setup the classpath used for testing -->
   <path id="test.classpath">
-    <pathelement path="${testclasses.dir}"/>
-    <pathelement path="${classes.dir}"/>
+    <pathelement path="${testclasses.dir}" />
+    <pathelement path="${classes.dir}" />
     <fileset dir="${devlib.dir}">
-      <include name="**/*.jar"/>
+      <include name="**/*.jar" />
     </fileset>
     <fileset dir="${testlib.dir}">
-      <include name="**/*.jar"/>
+      <include name="**/*.jar" />
     </fileset>
     <fileset dir="${lib.dir}">
-      <include name="**/*.jar"/>
+      <include name="**/*.jar" />
     </fileset>
   </path>
 
@@ -439,7 +437,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       The target that is run if no target is given
       ====================================================================-->
-  <target name="default" depends="build"/>
+  <target name="default" depends="build" />
 
 
   <!--=======================================================================
@@ -447,7 +445,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Runs a typical build process to create the project locally
       ====================================================================-->
-  <target name="build" depends="clean-all,resolve,cobertura,dist-source,dist"/>
+  <target name="build" depends="clean-all,resolve,cobertura,dist-source,dist" />
 
 
   <!--=======================================================================
@@ -455,7 +453,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Runs a typical build process (cobertura+sonar)
       ====================================================================-->
-  <target name="build-sonar" depends="clean-all,resolve,sonar,dist-source,dist"/>
+  <target name="build-sonar" depends="clean-all,resolve,sonar,dist-source,dist" />
 
 
   <!--=======================================================================
@@ -463,7 +461,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Runs a typical build process to create the project locally (no testing)
       ====================================================================-->
-  <target name="build-testless" depends="clean-all,resolve,dist-source,dist"/>
+  <target name="build-testless" depends="clean-all,resolve,dist-source,dist" />
 
 
   <!--=======================================================================
@@ -472,7 +470,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Runs a typical continuous integration build including project dist,
       test, and coverage artifacts
       ====================================================================-->
-  <target name="continuous" depends="build,publish"/>
+  <target name="continuous" depends="build,publish" />
 
 
   <!--=======================================================================
@@ -481,7 +479,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Runs a typical continuous integration build including project dist,
       and coverage artifacts
       ====================================================================-->
-  <target name="continuous-testless" depends="build-testless,publish"/>
+  <target name="continuous-testless" depends="build-testless,publish" />
 
   <!--=======================================================================
       continuous-sonar
@@ -492,7 +490,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Cobertura coverage was always pushed to Sonar by using the Jenkins
       Sonar plugin
       ====================================================================-->
-  <target name="continuous-sonar" depends="build-sonar, publish"/>
+  <target name="continuous-sonar" depends="build-sonar, publish" />
 
 
   <!--=======================================================================
@@ -504,40 +502,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <taskdef resource="net/sf/antcontrib/antlib.xml">
       <classpath>
         <fileset dir="${antcontrib.build.cache.dir}">
-          <include name="*.jar"/>
+          <include name="*.jar" />
         </fileset>
       </classpath>
     </taskdef>
-  </target>
-
-
-  <!--=======================================================================
-      junit.exists-check
-
-      Set junit.available if junit Test class in the classpath or if
-      the junit jar is in the testlib.dir or lib.dir
-      ====================================================================-->
-  <target name="junit.exists-check" unless="junit.available">
-    <condition property="junit.available">
-      <or>
-        <!-- In the ant classpath? -->
-        <available classname="org.junit.Test"/>
-        <and>
-          <!-- In the test-lib dir? -->
-          <available file="${testlib.dir}"/>
-          <available classname="org.junit.runner.JUnitCore">
-            <classpath>
-              <fileset dir="${testlib.dir}">
-                <include name="**/junit*.jar"/>
-              </fileset>
-              <fileset dir="${lib.dir}">
-                <include name="**/junit*.jar"/>
-              </fileset>
-            </classpath>
-          </available>
-        </and>
-      </or>
-    </condition>
   </target>
 
 
@@ -549,17 +517,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <target name="antcontrib.download-check">
     <condition property="antcontrib.available">
       <and>
-        <available file="${antcontrib.build.cache.dir}"/>
+        <available file="${antcontrib.build.cache.dir}" />
         <available classname="net.sf.antcontrib.logic.IfTask">
           <classpath>
             <fileset dir="${antcontrib.build.cache.dir}">
-              <include name="*.jar"/>
+              <include name="*.jar" />
             </fileset>
           </classpath>
         </available>
       </and>
     </condition>
-    <antcall target="antcontrib.download"/>
+    <antcall target="antcontrib.download" />
   </target>
 
 
@@ -569,18 +537,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Fetches ant-contrib from sourceforge
       ====================================================================-->
   <target name="antcontrib.download" unless="antcontrib.available">
-    <mkdir dir="${subfloor.tmp.dir}"/>
+    <mkdir dir="${subfloor.tmp.dir}" />
     <get src="http://downloads.sourceforge.net/ant-contrib/ant-contrib-1.0b3-bin.zip"
          dest="${subfloor.tmp.dir}/antcontrib.zip"
-         usetimestamp="true"/>
+         usetimestamp="true" />
     <unzip src="${subfloor.tmp.dir}/antcontrib.zip" dest="${subfloor.tmp.dir}">
       <patternset>
-        <include name="**/*.jar"/>
+        <include name="**/*.jar" />
       </patternset>
     </unzip>
     <copy todir="${antcontrib.build.cache.dir}">
       <fileset dir="${subfloor.tmp.dir}/ant-contrib">
-        <include name="**/*.jar"/>
+        <include name="**/*.jar" />
       </fileset>
     </copy>
   </target>
@@ -593,11 +561,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       a build.
       ====================================================================-->
   <target name="init">
-    <mkdir dir="${classes.dir}"/>
-    <mkdir dir="${dist.dir}"/>
-    <mkdir dir="${lib.dir}"/>
-    <mkdir dir="${devlib.dir}"/>
-    <mkdir dir="${testlib.dir}"/>
+    <mkdir dir="${classes.dir}" />
+    <mkdir dir="${dist.dir}" />
+    <mkdir dir="${lib.dir}" />
+    <mkdir dir="${devlib.dir}" />
+    <mkdir dir="${testlib.dir}" />
   </target>
 
 
@@ -608,17 +576,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     ====================================================================-->
   <target name="install-svnant" depends="install-ivy">
     <if>
-      <istrue value="${svnant.isinstalled}"/>
+      <istrue value="${svnant.isinstalled}" />
       <then>
-        <echo message="Skipping SVN ANT install.  SVN ANT has already been configured by the build"/>
+        <echo message="Skipping SVN ANT install.  SVN ANT has already been configured by the build" />
       </then>
       <else>
         <taskdef-with-ivy organisation="tigris"
                           module="svnant"
                           revision="1.3.0"
                           resource="org/tigris/subversion/svnant/svnantlib.xml"
-                          classname="org.tigris.subversion.svnant.SvnTask"/>
-        <property name="svnant.isinstalled" value="true"/>
+                          classname="org.tigris.subversion.svnant.SvnTask" />
+        <property name="svnant.isinstalled" value="true" />
       </else>
     </if>
   </target>
@@ -631,9 +599,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         ====================================================================-->
   <target name="test-svnant" depends="install-svnant">
     <svn javahl="${svnant.use-javahl}" svnkit="${svnant.use-svnkit}">
-      <wcVersion path="."/>
+      <wcVersion path="." />
     </svn>
-    <echo message="Subversion repository url: ${repository.url}"/>
+    <echo message="Subversion repository url: ${repository.url}" />
   </target>
 
 
@@ -645,9 +613,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <target name="svn-revision" depends="install-svnant">
 
     <svn javahl="${svnant.use-javahl}" svnkit="${svnant.use-svnkit}">
-      <status path="." revisionProperty="svn.revision"/>
+      <status path="." revisionProperty="svn.revision" />
     </svn>
-    <echo message="Subversion repository revision: ${svn.revision}"/>
+    <echo message="Subversion repository revision: ${svn.revision}" />
   </target>
 
 
@@ -659,13 +627,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         ====================================================================-->
   <target name="set-build.id" unless="build.id" depends="install-antcontrib">
     <if>
-      <istrue value="${release}"/>
+      <istrue value="${release}" />
       <then>
-        <antcallback target="svn-revision" return="svn.revision"/>
-        <property name="build.id" value="${svn.revision}"/>
+        <antcallback target="svn-revision" return="svn.revision" />
+        <property name="build.id" value="${svn.revision}" />
       </then>
       <else>
-        <property name="build.id" value="development"/>
+        <property name="build.id" value="development" />
       </else>
     </if>
   </target>
@@ -677,22 +645,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    ===================================================================================-->
   <target name="version-properties" depends="set-build.id">
     <tstamp>
-      <format property="build.time" pattern="yyyy/MM/dd hh:mm aa"/>
+      <format property="build.time" pattern="yyyy/MM/dd hh:mm aa" />
     </tstamp>
     <propertyfile file="version.properties" comment="Release Build version info">
-      <entry key="release.major.number" value="${release.major.number}"/>
-      <entry key="release.minor.number" value="${release.minor.number}"/>
-      <entry key="release.milestone.number" value="${release.milestone.number}"/>
-      <entry key="release.candidate.token" value="${release.candidate.token}"/>
-      <entry key="impl.vendor" value="${impl.vendor}"/>
+      <entry key="release.major.number" value="${release.major.number}" />
+      <entry key="release.minor.number" value="${release.minor.number}" />
+      <entry key="release.milestone.number" value="${release.milestone.number}" />
+      <entry key="release.candidate.token" value="${release.candidate.token}" />
+      <entry key="impl.vendor" value="${impl.vendor}" />
       <entry key="impl.version"
-             value="${release.major.number}.${release.minor.number}.${release.milestone.number}.${build.id}"/>
-      <entry key="impl.title" value="${impl.title}"/>
-      <entry key="buildDate" value="${build.time}"/>
-      <entry key="svn.revision" value="${build.id}"/>
-      <entry key="release.build.number" default="0" type="int" operation="+" value="1" pattern="0000"/>
+             value="${release.major.number}.${release.minor.number}.${release.milestone.number}.${build.id}" />
+      <entry key="impl.title" value="${impl.title}" />
+      <entry key="buildDate" value="${build.time}" />
+      <entry key="svn.revision" value="${build.id}" />
+      <entry key="release.build.number" default="0" type="int" operation="+" value="1" pattern="0000" />
     </propertyfile>
-    <property file="${basedir}/version.properties"/>
+    <property file="${basedir}/version.properties" />
   </target>
 
 
@@ -703,21 +671,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="install-ivy" depends="install-antcontrib">
     <if>
-      <istrue value="${ivy.isinstalled}"/>
+      <istrue value="${ivy.isinstalled}" />
       <then>
-        <echo message="Skipping IVY install.  IVY has already been configured by the build"/>
+        <echo message="Skipping IVY install.  IVY has already been configured by the build" />
       </then>
       <else>
-        <download-antlib name="ivy" url="${ivy.url}" classname="org.apache.ivy.ant.IvyTask" extension="jar"/>
+        <download-antlib name="ivy" url="${ivy.url}" classname="org.apache.ivy.ant.IvyTask" extension="jar" />
         <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant">
           <classpath>
             <fileset dir="${subfloor.resources.dir}/ivy">
-              <include name="*.jar"/>
+              <include name="*.jar" />
             </fileset>
           </classpath>
         </taskdef>
-        <ivy:settings url="${ivy.settingsurl}"/>
-        <property name="ivy.isinstalled" value="true"/>
+        <ivy:settings url="${ivy.settingsurl}" />
+        <property name="ivy.isinstalled" value="true" />
       </else>
     </if>
   </target>
@@ -731,26 +699,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="ivy.check-releasable" depends="install-ivy, install-antcontrib">
     <if>
-      <istrue value="${release}"/>
+      <istrue value="${release}" />
       <then>
         <sequential>
-          <ivy:artifactproperty conf="${ivy.configs}" name="dep.[module]/[artifact]-[revision]" value="[revision]"/>
+          <ivy:artifactproperty conf="${ivy.configs}" name="dep.[module]/[artifact]-[revision]" value="[revision]" />
 
-          <propertyselector property="violators" match="dep\..*SNAPSHOT.*" select="\0" casesensitive="false"/>
+          <propertyselector property="violators" match="dep\..*SNAPSHOT.*" select="\0" casesensitive="false" />
 
           <fail if="violators"
-                message="Release not possible, you have dependencies on non-released artifacts: ${violators}"/>
+                message="Release not possible, you have dependencies on non-released artifacts: ${violators}" />
         </sequential>
       </then>
     </if>
   </target>
 
 
-  <!--=======================================================================
-        install-checkstyle
+<!--=======================================================================
+      install-checkstyle
 
-        Fetches and installs CheckStyle resources for use by checkstyle targets
-        ====================================================================-->
+      Fetches and installs CheckStyle resources for use by checkstyle targets
+      ====================================================================-->
   <target name="install-checkstyle" depends="install-ivy">
     <ivy:resolve inline="true"
                  keep="true"
@@ -758,10 +726,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                  module="checkstyle"
                  revision="${checkstyle.version}"
                  conf="default"
-                 transitive="true"/>
+                 transitive="true" />
 
-    <ivy:retrieve conf="default" pattern="${checkstyle.lib.dir}/[module]-[revision](-[classifier]).[ext]"/>
-    <ivy:cachepath pathid="checkstyle.classpath"/>
+    <ivy:retrieve conf="default" pattern="${checkstyle.lib.dir}/[module]-[revision](-[classifier]).[ext]" />
+    <ivy:cachepath pathid="checkstyle.classpath" />
   </target>
 
 
@@ -774,13 +742,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="resolve"
           depends="resolve-default, resolve-test, ivy.check-releasable"
-          description="Retrieves all the dependent libraries"/>
+          description="Retrieves all the dependent libraries" />
 
   <target name="resolve-init" unless="resolve-init.skip" depends="install-ivy">
     <!-- If this is the 1st time through resolve-init, then we need to clean up the jars
 -->
-    <antcall target="clean-jars"/>
-    <property name="resolve-init.skip" value=""/>
+    <antcall target="clean-jars" />
+    <property name="resolve-init.skip" value="" />
   </target>
 
   <target name="resolve-default" depends="resolve-default.default,resolve-default.composite"/>
@@ -796,40 +764,35 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <target name="resolve-default.composite" depends="install-antcontrib,resolve-init" if="ivy.default.sub-configs">
     <for list="${ivy.default.sub-configs}" param="conf">
       <sequential>
-        <ivy:resolve file="${ivyfile}" conf="default_@{conf}"/>
-        <ivy:retrieve conf="default_@{conf}" pattern="${lib.dir}/@{conf}/[module]-[revision](-[classifier]).[ext]"
-                      symlink="${ivy.use.symlinks.internal}"/>
+        <ivy:resolve file="${ivyfile}" conf="default_@{conf}" />
+        <ivy:retrieve conf="default_@{conf}" pattern="${lib.dir}/@{conf}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
       </sequential>
     </for>
   </target>
 
   <target name="resolve-default.default" depends="resolve-init" unless="ivy.default.sub-configs">
-    <ivy:resolve file="${ivyfile}" conf="default"/>
-    <ivy:retrieve conf="default" pattern="${lib.dir}/[module]-[revision](-[classifier]).[ext]"
-                  symlink="${ivy.use.symlinks.internal}"/>
+    <ivy:resolve file="${ivyfile}" conf="default" />
+    <ivy:retrieve conf="default" pattern="${lib.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
   </target>
 
   <target name="resolve-test" depends="resolve-init">
-    <ivy:resolve file="${ivyfile}" conf="test"/>
-    <ivy:retrieve conf="test" pattern="${testlib.dir}/[module]-[revision](-[classifier]).[ext]"
-                  symlink="${ivy.use.symlinks.internal}"/>
+    <ivy:resolve file="${ivyfile}" conf="test" />
+    <ivy:retrieve conf="test" pattern="${testlib.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
   </target>
 
   <target name="resolve-enunciate" depends="resolve-init">
-    <ivy:resolve file="${ivyfile}" conf="enunciate"/>
-    <ivy:retrieve conf="enunciate" pattern="${basedir}/enunciate/lib/[module]-[revision](-[classifier]).[ext]"/>
+    <ivy:resolve file="${ivyfile}" conf="enunciate" />
+    <ivy:retrieve conf="enunciate" pattern="${basedir}/enunciate/lib/[module]-[revision](-[classifier]).[ext]" />
   </target>
 
   <target name="resolve-codegen" depends="resolve-init">
-    <ivy:resolve file="${ivyfile}" conf="codegen"/>
-    <ivy:retrieve conf="codegen" pattern="${lib.dir}/[module]-[revision](-[classifier]).[ext]"
-                  symlink="${ivy.use.symlinks.internal}"/>
+    <ivy:resolve file="${ivyfile}" conf="codegen" />
+    <ivy:retrieve conf="codegen" pattern="${lib.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
   </target>
 
   <target name="resolve-runtime" depends="resolve-init">
-    <ivy:resolve file="${ivyfile}" conf="runtime"/>
-    <ivy:retrieve conf="runtime" pattern="${lib.dir}/[module]-[revision](-[classifier]).[ext]"
-                  symlink="${ivy.use.symlinks.internal}"/>
+    <ivy:resolve file="${ivyfile}" conf="runtime" />
+    <ivy:retrieve conf="runtime" pattern="${lib.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
   </target>
 
 
@@ -841,7 +804,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       WARNING: this will affect all IVY projects, not just the current workspace
       ====================================================================-->
   <target name="ivy-clean-cache" depends="install-ivy">
-    <ivy:cleancache/>
+    <ivy:cleancache />
   </target>
 
 
@@ -854,7 +817,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       currently referencing a locally published dependency
       ====================================================================-->
   <target name="ivy-clean-local" depends="install-ivy">
-    <delete dir="${ivy.local.default.root}/"/>
+    <delete dir="${ivy.local.default.root}/" />
   </target>
 
 
@@ -866,24 +829,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       currently referencing a locally published dependency
       ====================================================================-->
   <target name="ivy-clean-pentaho" depends="install-ivy">
-    <mkdir dir="${ivy.local.default.root}"/>
+    <mkdir dir="${ivy.local.default.root}" />
     <!-- just in case it doesn't exist -->
     <for param="dir">
       <path>
-        <dirset dir="${ivy.local.default.root}" includes="*${ivy.clean.pattern}*"/>
-        <dirset dir="${ivy.default.ivy.user.dir}/cache" includes="*${ivy.clean.pattern}*"/>
+        <dirset dir="${ivy.local.default.root}" includes="*${ivy.clean.pattern}*" />
+        <dirset dir="${ivy.default.ivy.user.dir}/cache" includes="*${ivy.clean.pattern}*" />
       </path>
       <sequential>
-        <delete dir="@{dir}" includeemptydirs="true"/>
+        <delete dir="@{dir}" includeemptydirs="true" />
       </sequential>
     </for>
     <for param="file">
       <path>
-        <fileset dir="${ivy.local.default.root}" includes="*${ivy.clean.pattern}*"/>
-        <fileset dir="${ivy.default.ivy.user.dir}/cache" includes="*${ivy.clean.pattern}*"/>
+        <fileset dir="${ivy.local.default.root}" includes="*${ivy.clean.pattern}*" />
+        <fileset dir="${ivy.default.ivy.user.dir}/cache" includes="*${ivy.clean.pattern}*" />
       </path>
       <sequential>
-        <delete file="@{file}"/>
+        <delete file="@{file}" />
       </sequential>
     </for>
   </target>
@@ -895,8 +858,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Generates an IVY dependency report for this project.
       ====================================================================-->
   <target name="ivy-report" depends="install-ivy">
-    <ivy:resolve file="${ivyfile}" conf="${ivy.configs}"/>
-    <ivy:report xml="true" todir="${ivy.reports.dir}"/>
+    <ivy:resolve file="${ivyfile}" conf="${ivy.configs}" />
+    <ivy:report xml="true" todir="${ivy.reports.dir}" />
   </target>
 
 
@@ -909,7 +872,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="publish-local-nojar" depends="install-ivy,publish-local-nojar.internal">
     <if>
-      <equals arg1="${tests.publish}" arg2="true"/>
+      <equals arg1="${tests.publish}" arg2="true" />
       <then>
         <antcall target="publish-local-nojar.internal">
           <param name="ivy.artifact.id" value="${ivy.artifact.id}-test"/>
@@ -927,10 +890,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </target>
 
   <target name="publish-local-nojar.internal" depends="install-ivy">
-    <ivy:resolve file="${ivy.artifact.ivyfilename}"/>
-    <ivy:publish resolver="local" pubrevision="${project.revision}" overwrite="true" forcedeliver="true"
-                 warnonmissing="yes" haltonmissing="no">
-      <artifacts pattern="${dist.dir}/[artifact]-[revision](-[classifier]).[ext]"/>
+    <ivy:resolve file="${ivy.artifact.ivyfilename}" />
+    <ivy:publish resolver="local" pubrevision="${project.revision}" overwrite="true" forcedeliver="true" warnonmissing="yes" haltonmissing="no">
+      <artifacts pattern="${dist.dir}/[artifact]-[revision](-[classifier]).[ext]" />
     </ivy:publish>
   </target>
 
@@ -943,7 +905,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="publish-local"
           depends="dist, dist-source, publish-local-nojar"
-          description="Builds and publishes the jar file to the local repository"/>
+          description="Builds and publishes the jar file to the local repository" />
 
 
   <!--=======================================================================
@@ -963,7 +925,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="publish-nojar" depends="install-antcontrib,create-pom,ivy.deliver,publish-nojar.internal">
     <if>
-      <equals arg1="${tests.publish}" arg2="true"/>
+      <equals arg1="${tests.publish}" arg2="true" />
       <then>
         <antcall target="publish-nojar.internal">
           <param name="ivy.artifact.id" value="${ivy.artifact.id}-test"/>
@@ -974,27 +936,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   <target name="publish-nojar.internal" depends="install-antcontrib,create-pom,ivy.deliver">
     <antcall target="maven-publish-dependencies">
-      <param name="publish.groupId" value="${ivy.artifact.group}"/>
-      <param name="publish.artifactId" value="${ivy.artifact.id}"/>
-      <param name="publish.version" value="${project.revision}"/>
-      <param name="publish.file" value="${ivy.artifact.ivypathname}"/>
+      <param name="publish.groupId" value="${ivy.artifact.group}" />
+      <param name="publish.artifactId" value="${ivy.artifact.id}" />
+      <param name="publish.version" value="${project.revision}" />
+      <param name="publish.file" value="${ivy.artifact.ivypathname}" />
     </antcall>
 
     <if>
-      <equals arg1="${source.publish}" arg2="true"/>
-      <then>
-        <antcall target="maven-publish-sources">
-          <param name="publish.groupId" value="${ivy.artifact.group}"/>
-          <param name="publish.artifactId" value="${ivy.artifact.id}"/>
-          <param name="publish.version" value="${project.revision}"/>
-          <param name="publish.file" value="${dist.dir}/${ivy.artifact.id}-${project.revision}-sources.jar"/>
-        </antcall>
-      </then>
+      <equals arg1="${source.publish}" arg2="true" />
+        <then>
+          <antcall target="maven-publish-sources">
+            <param name="publish.groupId" value="${ivy.artifact.group}" />
+            <param name="publish.artifactId" value="${ivy.artifact.id}" />
+            <param name="publish.version" value="${project.revision}" />
+            <param name="publish.file" value="${dist.dir}/${ivy.artifact.id}-${project.revision}-sources.jar" />
+          </antcall>
+        </then>
     </if>
 
     <antcall target="maven-publish-artifact">
-      <param name="publish.pomFile" value="${ivy.artifact.pomfile}"/>
-      <param name="publish.file" value="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar"/>
+      <param name="publish.pomFile" value="${ivy.artifact.pomfile}" />
+      <param name="publish.file" value="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
     </antcall>
 
     <antcall target="maven-publish.post"/>
@@ -1011,7 +973,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Creates a publishable version of the ivy dependencies file, ivy.xml
         ====================================================================-->
   <target name="ivy.deliver" depends="resolve">
-    <ivy:deliver conf="*(public)" deliverpattern="${dist.dir}/ivy.xml"/>
+    <ivy:deliver conf="*(public)" deliverpattern="${dist.dir}/ivy.xml" />
   </target>
 
 
@@ -1025,39 +987,39 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <fail message="No file found at: ${publish.file}">
         <condition>
           <not>
-            <available file="${publish.file}"/>
+            <available file="${publish.file}" />
           </not>
         </condition>
       </fail>
-      <echo message="Publishing ${publish.file} to ${ivy.repository.publish}..."/>
+      <echo message="Publishing ${publish.file} to ${ivy.repository.publish}..." />
       <if>
-        <isset property="isWindows"/>
+        <isset property="isWindows" />
         <then>
           <exec executable="cmd" failonerror="true">
-            <arg value="/c"/>
-            <arg value="mvn.bat"/>
-            <arg value="deploy:deploy-file"/>
-            <arg value="-DrepositoryId=${ivy.repository.id}"/>
-            <arg value="-Durl=${ivy.repository.publish}"/>
-            <arg value="-DgroupId=${publish.groupId}"/>
-            <arg value="-DartifactId=${publish.artifactId}"/>
-            <arg value="-Dversion=${publish.version}"/>
-            <arg value="-Dpackaging=ivy.xml"/>
-            <arg value="-Dfile=${publish.file}"/>
-            <arg value="${maven.options}"/>
+            <arg value="/c" />
+            <arg value="mvn.bat" />
+            <arg value="deploy:deploy-file" />
+            <arg value="-DrepositoryId=${ivy.repository.id}" />
+            <arg value="-Durl=${ivy.repository.publish}" />
+            <arg value="-DgroupId=${publish.groupId}" />
+            <arg value="-DartifactId=${publish.artifactId}" />
+            <arg value="-Dversion=${publish.version}" />
+            <arg value="-Dpackaging=ivy.xml" />
+            <arg value="-Dfile=${publish.file}" />
+            <arg value="${maven.options}" />
           </exec>
         </then>
         <else>
           <exec executable="mvn" failonerror="true">
-            <arg value="deploy:deploy-file"/>
-            <arg value="-DrepositoryId=${ivy.repository.id}"/>
-            <arg value="-Durl=${ivy.repository.publish}"/>
-            <arg value="-DgroupId=${publish.groupId}"/>
-            <arg value="-DartifactId=${publish.artifactId}"/>
-            <arg value="-Dversion=${publish.version}"/>
-            <arg value="-Dpackaging=ivy.xml"/>
-            <arg value="-Dfile=${publish.file}"/>
-            <arg value="${maven.options}"/>
+            <arg value="deploy:deploy-file" />
+            <arg value="-DrepositoryId=${ivy.repository.id}" />
+            <arg value="-Durl=${ivy.repository.publish}" />
+            <arg value="-DgroupId=${publish.groupId}" />
+            <arg value="-DartifactId=${publish.artifactId}" />
+            <arg value="-Dversion=${publish.version}" />
+            <arg value="-Dpackaging=ivy.xml" />
+            <arg value="-Dfile=${publish.file}" />
+            <arg value="${maven.options}" />
           </exec>
         </else>
       </if>
@@ -1075,33 +1037,33 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <fail message="No file found at: ${publish.file}">
         <condition>
           <not>
-            <available file="${publish.file}"/>
+            <available file="${publish.file}" />
           </not>
         </condition>
       </fail>
-      <echo message="Publishing ${publish.file} to ${ivy.repository.publish}..."/>
+      <echo message="Publishing ${publish.file} to ${ivy.repository.publish}..." />
       <if>
-        <isset property="isWindows"/>
+        <isset property="isWindows" />
         <then>
           <exec executable="cmd" failonerror="true">
-            <arg value="/c"/>
-            <arg value="mvn.bat"/>
-            <arg value="deploy:deploy-file"/>
-            <arg value="-DrepositoryId=${ivy.repository.id}"/>
-            <arg value="-Durl=${ivy.repository.publish}"/>
-            <arg value="-DpomFile=${publish.pomFile}"/>
-            <arg value="-Dfile=${publish.file}"/>
-            <arg value="${maven.options}"/>
+            <arg value="/c" />
+            <arg value="mvn.bat" />
+            <arg value="deploy:deploy-file" />
+            <arg value="-DrepositoryId=${ivy.repository.id}" />
+            <arg value="-Durl=${ivy.repository.publish}" />
+            <arg value="-DpomFile=${publish.pomFile}" />
+            <arg value="-Dfile=${publish.file}" />
+            <arg value="${maven.options}" />
           </exec>
         </then>
         <else>
           <exec executable="mvn" failonerror="true">
-            <arg value="deploy:deploy-file"/>
-            <arg value="-DrepositoryId=${ivy.repository.id}"/>
-            <arg value="-Durl=${ivy.repository.publish}"/>
-            <arg value="-DpomFile=${publish.pomFile}"/>
-            <arg value="-Dfile=${publish.file}"/>
-            <arg value="${maven.options}"/>
+            <arg value="deploy:deploy-file" />
+            <arg value="-DrepositoryId=${ivy.repository.id}" />
+            <arg value="-Durl=${ivy.repository.publish}" />
+            <arg value="-DpomFile=${publish.pomFile}" />
+            <arg value="-Dfile=${publish.file}" />
+            <arg value="${maven.options}" />
           </exec>
         </else>
       </if>
@@ -1119,41 +1081,41 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <fail message="No file found at: ${publish.file}">
         <condition>
           <not>
-            <available file="${publish.file}"/>
+            <available file="${publish.file}" />
           </not>
         </condition>
       </fail>
-      <echo message="Publishing ${publish.file} to ${ivy.repository.publish}..."/>
+      <echo message="Publishing ${publish.file} to ${ivy.repository.publish}..." />
       <if>
-        <isset property="isWindows"/>
+        <isset property="isWindows" />
         <then>
           <exec executable="cmd" failonerror="true">
-            <arg value="/c"/>
-            <arg value="mvn.bat"/>
-            <arg value="deploy:deploy-file"/>
-            <arg value="-DrepositoryId=${ivy.repository.id}"/>
-            <arg value="-Durl=${ivy.repository.publish}"/>
-            <arg value="-DgroupId=${publish.groupId}"/>
-            <arg value="-DartifactId=${publish.artifactId}"/>
-            <arg value="-Dversion=${publish.version}"/>
-            <arg value="-DgeneratePom=true"/>
-            <arg value="-Dpackaging=java-source"/>
-            <arg value="-Dfile=${publish.file}"/>
-            <arg value="${maven.options}"/>
+            <arg value="/c" />
+            <arg value="mvn.bat" />
+            <arg value="deploy:deploy-file" />
+            <arg value="-DrepositoryId=${ivy.repository.id}" />
+            <arg value="-Durl=${ivy.repository.publish}" />
+            <arg value="-DgroupId=${publish.groupId}" />
+            <arg value="-DartifactId=${publish.artifactId}" />
+            <arg value="-Dversion=${publish.version}" />
+            <arg value="-DgeneratePom=true" />
+            <arg value="-Dpackaging=java-source" />
+            <arg value="-Dfile=${publish.file}" />
+            <arg value="${maven.options}" />
           </exec>
         </then>
         <else>
           <exec executable="mvn" failonerror="true">
-            <arg value="deploy:deploy-file"/>
-            <arg value="-DrepositoryId=${ivy.repository.id}"/>
-            <arg value="-Durl=${ivy.repository.publish}"/>
-            <arg value="-DgroupId=${publish.groupId}"/>
-            <arg value="-DartifactId=${publish.artifactId}"/>
-            <arg value="-Dversion=${publish.version}"/>
-            <arg value="-DgeneratePom=true"/>
-            <arg value="-Dpackaging=java-source"/>
-            <arg value="-Dfile=${publish.file}"/>
-            <arg value="${maven.options}"/>
+            <arg value="deploy:deploy-file" />
+            <arg value="-DrepositoryId=${ivy.repository.id}" />
+            <arg value="-Durl=${ivy.repository.publish}" />
+            <arg value="-DgroupId=${publish.groupId}" />
+            <arg value="-DartifactId=${publish.artifactId}" />
+            <arg value="-Dversion=${publish.version}" />
+            <arg value="-DgeneratePom=true" />
+            <arg value="-Dpackaging=java-source" />
+            <arg value="-Dfile=${publish.file}" />
+            <arg value="${maven.options}" />
           </exec>
         </else>
       </if>
@@ -1168,8 +1130,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="create-pom" depends="install-ivy">
     <ivy:makepom ivyfile="${ivyfile}" pomfile="${dist.dir}/pom.xml">
-      <mapping conf="default" scope="compile"/>
-      <mapping conf="runtime" scope="runtime"/>
+      <mapping conf="default" scope="compile" />
+      <mapping conf="runtime" scope="runtime" />
     </ivy:makepom>
   </target>
 
@@ -1181,8 +1143,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       using the ivy dependencies.
       ====================================================================-->
   <target name="clean-jars">
-    <delete dir="${lib.dir}"/>
-    <delete dir="${testlib.dir}"/>
+    <delete dir="${lib.dir}" />
+    <delete dir="${testlib.dir}" />
   </target>
 
 
@@ -1194,8 +1156,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <target name="clean"
           description="Cleans all the files generated from a build with the exception of IVY-downloaded jars (see clean-all)"
           depends="clean-tests, clean-cobertura, clean-sonar, clean-javadoc, clean-dist">
-    <delete dir="${classes.dir}"/>
-    <delete dir="${bin.dir}"/>
+    <delete dir="${classes.dir}" />
+    <delete dir="${bin.dir}" />
   </target>
 
 
@@ -1205,7 +1167,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Removes all dist artifacts
       ====================================================================-->
   <target name="clean-dist">
-    <delete dir="${dist.dir}"/>
+    <delete dir="${dist.dir}" />
   </target>
 
   <!--=======================================================================
@@ -1214,7 +1176,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Removes all checkstyle artifacts
       ====================================================================-->
   <target name="clean-checkstyle">
-    <delete dir="${checkstyle.dir}"/>
+    <delete dir="${checkstyle.dir}" />
   </target>
 
 
@@ -1225,8 +1187,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       in the workspace's lib dirs as well as all the files
       generated from the build process.
       ====================================================================-->
-  <target name="clean-all" depends="clean,clean-jars,clean-checkstyle"
-          description="Cleans all the generated and dependency files"/>
+  <target name="clean-all" depends="clean,clean-jars,clean-checkstyle" description="Cleans all the generated and dependency files" />
 
 
   <!--=======================================================================
@@ -1236,7 +1197,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="copy-license-lgpl" if="lgpl-license-avail">
     <copy todir="${classes.dir}/META-INF">
-      <fileset dir="${license.dir}" includes="lgpl-2.1.txt"/>
+      <fileset dir="${license.dir}" includes="lgpl-2.1.txt" />
     </copy>
   </target>
 
@@ -1249,7 +1210,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="copy-license-gpl" if="gpl-license-avail">
     <copy todir="${classes.dir}/META-INF">
-      <fileset dir="${license.dir}" includes="gpl-2.0.txt"/>
+      <fileset dir="${license.dir}" includes="gpl-2.0.txt" />
     </copy>
   </target>
 
@@ -1272,7 +1233,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="compile"
           depends="init, compile.pre, compile.compile, compile.src_copy, compile.res_copy, compile.lic_copy, compile.post"
-          description="Performs all the steps to prepare the bin directory with a complete compilation"/>
+          description="Performs all the steps to prepare the bin directory with a complete compilation" />
 
 
   <!--=======================================================================
@@ -1280,7 +1241,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Prepares to perform the compile.
       ====================================================================-->
-  <target name="compile.pre"/>
+  <target name="compile.pre" />
 
 
   <!--=======================================================================
@@ -1298,10 +1259,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
            target="${javac.target}"
            encoding="UTF-8">
       <classpath>
-        <path refid="classpath"/>
+        <path refid="classpath" />
       </classpath>
-      <src path="${src.dir}"/>
-      <compilerarg value="${javac.xlint}"/>
+      <src path="${src.dir}" />
+      <compilerarg value="${javac.xlint}" />
     </javac>
   </target>
 
@@ -1315,21 +1276,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="compile.res_copy" depends="install-antcontrib">
     <if>
-      <available file="${res.dir}"/>
+      <available file="${res.dir}" />
       <then>
         <copy todir="${classes.dir}">
-          <fileset dir="${res.dir}"/>
+          <fileset dir="${res.dir}" />
         </copy>
       </then>
     </if>
 
     <if>
       <not>
-        <isset property="jar.include.source"/>
+        <isset property="jar.include.source" />
       </not>
       <then>
         <copy todir="${classes.dir}" flatten="false">
-          <fileset dir="${src.dir}" excludes="**/*.java"/>
+          <fileset dir="${src.dir}" excludes="**/*.java" />
         </copy>
       </then>
     </if>
@@ -1345,7 +1306,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="compile.src_copy" depends="init" if="jar.include.source">
     <copy todir="${classes.dir}" flatten="false">
-      <fileset dir="${src.dir}"/>
+      <fileset dir="${src.dir}" />
     </copy>
   </target>
 
@@ -1357,13 +1318,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="compile.lic_copy" depends="init">
     <condition property="lgpl-license-avail">
-      <available file="${license.dir}/lgpl-2.1.txt"/>
+      <available file="${license.dir}/lgpl-2.1.txt" />
     </condition>
-    <antcall target="copy-license-lgpl"/>
+    <antcall target="copy-license-lgpl" />
     <condition property="gpl-license-avail">
-      <available file="${license.dir}/gpl-2.0.txt"/>
+      <available file="${license.dir}/gpl-2.0.txt" />
     </condition>
-    <antcall target="copy-license-gpl"/>
+    <antcall target="copy-license-gpl" />
   </target>
 
 
@@ -1372,7 +1333,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Performs any needed post-compile tasks
       ====================================================================-->
-  <target name="compile.post"/>
+  <target name="compile.post" />
 
 
   <!--=======================================================================
@@ -1390,7 +1351,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <!-- it will get executed no matter what the value of tests.publish is      -->
   <target name="jar.test"
           if="tests.publish">
-    <antcall target="compile-tests"/>
+    <antcall target="compile-tests" />
     <jar destfile="${dist.dir}/${ivy.artifact.id}-test-${project.revision}.jar" manifest="${dist.manifest.file}">
       <fileset dir="${testclasses.dir}"/>
     </jar>
@@ -1399,7 +1360,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <target name="jar.main"
           depends="compile,set-build.id,generate.manifest">
     <jar destfile="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" manifest="${dist.manifest.file}">
-      <fileset dir="${classes.dir}"/>
+      <fileset dir="${classes.dir}" />
     </jar>
   </target>
 
@@ -1410,15 +1371,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       an existing manifest file if one is specified.
       ====================================================================-->
   <target name="generate.manifest" depends="init,set-build.id">
-    <delete file="${dist.manifest.file}"/>
-    <touch file="${dist.manifest.file}"/>
-    <copy file="${manifest.file}" tofile="${dist.manifest.file}" overwrite="true" failonerror="false"/>
+    <delete file="${dist.manifest.file}" />
+    <touch file="${dist.manifest.file}" />
+    <copy file="${manifest.file}" tofile="${dist.manifest.file}" overwrite="true" failonerror="false" />
 
     <manifest file="${dist.manifest.file}" mode="update">
-      <attribute name="Implementation-Title" value="${impl.title}"/>
-      <attribute name="Implementation-Version" value="${project.revision}.${build.id}"/>
-      <attribute name="Implementation-Vendor" value="${impl.vendor}"/>
-      <attribute name="Implementation-ProductID" value="${impl.productID}"/>
+      <attribute name="Implementation-Title" value="${impl.title}" />
+      <attribute name="Implementation-Version" value="${project.revision}.${build.id}" />
+      <attribute name="Implementation-Vendor" value="${impl.vendor}" />
+      <attribute name="Implementation-ProductID" value="${impl.productID}" />
     </manifest>
   </target>
 
@@ -1428,7 +1389,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Generates zip and targz distributions of the javadoc
       ====================================================================-->
-  <target name="dist-source" depends="source.jar, source.zip, source.targz"/>
+  <target name="dist-source" depends="source.jar, source.zip, source.targz" />
 
 
   <!--=======================================================================
@@ -1437,11 +1398,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Creates a jar of the project source for distribution
       ====================================================================-->
   <target name="source.jar" depends="init,install-antcontrib">
-    <jar jarfile="${dist.dir}/${ivy.artifact.id}-${project.revision}-sources.jar" basedir="${src.dir}"/>
+    <jar jarfile="${dist.dir}/${ivy.artifact.id}-${project.revision}-sources.jar" basedir="${src.dir}" />
     <if>
-      <equals arg1="${tests.publish}" arg2="true"/>
+      <equals arg1="${tests.publish}" arg2="true" />
       <then>
-        <jar jarfile="${dist.dir}/${ivy.artifact.id}-test-${project.revision}-sources.jar" basedir="${src.dir}"/>
+        <jar jarfile="${dist.dir}/${ivy.artifact.id}-test-${project.revision}-sources.jar" basedir="${src.dir}" />
       </then>
     </if>
   </target>
@@ -1452,7 +1413,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Creates a zip of the project source for distribution
       ====================================================================-->
   <target name="source.zip" depends="init">
-    <jar jarfile="${dist.dir}/${source.zip.filename}" basedir="${src.dir}"/>
+    <jar jarfile="${dist.dir}/${source.zip.filename}" basedir="${src.dir}" />
   </target>
 
   <!--=======================================================================
@@ -1461,7 +1422,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Creates a gzipped tar of the project source for distribution
       ====================================================================-->
   <target name="source.targz" depends="init">
-    <tar compression="gzip" destfile="${dist.dir}/${source.tar.filename}" basedir="${src.dir}"/>
+    <tar compression="gzip" destfile="${dist.dir}/${source.tar.filename}" basedir="${src.dir}" />
   </target>
 
 
@@ -1471,7 +1432,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Removes all files related to tests
       ====================================================================-->
   <target name="clean-tests">
-    <delete dir="${testbin.dir}"/>
+    <delete dir="${testbin.dir}" />
   </target>
 
 
@@ -1480,9 +1441,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Compiles project test source
       ====================================================================-->
-  <target name="init-tests" depends="clean-tests,junit.exists-check">
-    <mkdir dir="${testclasses.dir}"/>
-    <mkdir dir="${testsrc.dir}"/>
+  <target name="init-tests" depends="clean-tests">
+    <mkdir dir="${testclasses.dir}" />
+    <mkdir dir="${testsrc.dir}" />
   </target>
 
 
@@ -1498,15 +1459,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
            source="${javac.source}"
            target="${javac.target}"
            fork="true"
-           encoding="UTF-8">
-      <src path="${testsrc.dir}"/>
-      <classpath refid="test.classpath"/>
+            encoding="UTF-8">
+      <src path="${testsrc.dir}" />
+      <classpath refid="test.classpath" />
     </javac>
 
-    <!-- Copy the non-java files from the source directory to the test classes directory -->
+    <!-- Copy the non-java files from the source directory to the test classes directory
+-->
     <copy todir="${testclasses.dir}">
       <fileset dir="${testsrc.dir}">
-        <exclude name="**/*.java"/>
+        <exclude name="**/*.java" />
       </fileset>
     </copy>
   </target>
@@ -1526,28 +1488,28 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
            haltonfailure="${junit.haltonfailure}"
            haltonerror="${junit.haltonerror}"
            printsummary="yes">
-      <sysproperty key="java.awt.headless" value="${headless.unittest}"/>
+      <sysproperty key="java.awt.headless" value="${headless.unittest}" />
 
       <syspropertyset>
-        <propertyref prefix="junit.sysprop."/>
+        <propertyref prefix="junit.sysprop." />
         <mapper type="glob" from="junit.sysprop.*" to="*"/>
       </syspropertyset>
 
-      <classpath refid="test.classpath"/>
-      <formatter type="xml"/>
-      <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase"/>
+      <classpath refid="test.classpath" />
+      <formatter type="xml" />
+      <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase" />
       <batchtest fork="yes" todir="${testreports.xml.dir}" unless="testcase">
         <fileset dir="${testsrc.dir}" casesensitive="yes">
-          <include name="**/*Test.java"/>
+          <include name="**/*Test.java" />
         </fileset>
       </batchtest>
     </junit>
 
     <junitreport todir="${testreports.html.dir}">
       <fileset dir="${testreports.xml.dir}">
-        <include name="TEST-*.xml"/>
+        <include name="TEST-*.xml" />
       </fileset>
-      <report format="frames" todir="${testreports.html.dir}"/>
+      <report format="frames" todir="${testreports.html.dir}" />
     </junitreport>
   </target>
 
@@ -1558,8 +1520,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     Remove all xml and html JUnit test reports
     ====================================================================-->
   <target name="clean-test-reports">
-    <delete dir="${testreports.xml.dir}"/>
-    <delete dir="${testreports.html.dir}"/>
+    <delete dir="${testreports.xml.dir}" />
+    <delete dir="${testreports.html.dir}" />
   </target>
 
 
@@ -1569,8 +1531,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     Prepare directories for JUnit test reports
     ====================================================================-->
   <target name="init-test-reports" depends="clean-test-reports">
-    <mkdir dir="${testreports.xml.dir}"/>
-    <mkdir dir="${testreports.html.dir}"/>
+    <mkdir dir="${testreports.xml.dir}" />
+    <mkdir dir="${testreports.html.dir}" />
   </target>
 
   <!--=======================================================================
@@ -1578,7 +1540,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Creates a distribution of this project
       ====================================================================-->
-  <target name="dist" depends="jar" description="Creates a distribution"/>
+  <target name="dist" depends="jar" description="Creates a distribution" />
 
 
   <!--=======================================================================
@@ -1623,35 +1585,35 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
              packagenames="${javadoc.packagenames}"
              sourcepath="${src.dir}"
              doctitle="${impl.title} documentation">
-      <link href="http://docs.oracle.com/javase/6/docs/api/"/>
-      <classpath refid="classpath"/>
+      <link href="http://docs.oracle.com/javase/6/docs/api/" />
+      <classpath refid="classpath" />
     </javadoc>
   </target>
 
 
   <!--=======================================================================
-  enunciate
+	enunciate
 
-  Generates enunciate documentation for the resoruce
-  classes comprising the BIServer REST api
+	Generates enunciate documentation for the resoruce
+	classes comprising the BIServer REST api
   ====================================================================-->
   <target name="enunciate" depends="resolve-enunciate">
     <path id="enunciate.classpath">
       <fileset dir="${lib.dir}">
-        <include name="*.jar"/>
-        <exclude name="saxon*.jar"/>
+        <include name="*.jar" />
+      	<exclude name="saxon*.jar" />
       </fileset>
-      <dirset dir="${classes.dir}"/>
+      <dirset dir="${classes.dir}" />
       <fileset dir="${dist.dir}">
-        <include name="*.jar"/>
+        <include name="*.jar" />
       </fileset>
       <fileset dir="${enunciate.home}/lib">
-        <include name="*.jar"/>
+        <include name="*.jar" />
       </fileset>
     </path>
 
     <taskdef name="enunciate" classname="org.codehaus.enunciate.main.EnunciateTask">
-      <classpath refid="enunciate.classpath"/>
+      <classpath refid="enunciate.classpath" />
     </taskdef>
 
     <enunciate dir="${basedir}/src"
@@ -1661,11 +1623,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                buildDir="${enunciate.bin.dir}/build"
                packageDir="${enunciate.bin.dir}/package"
                verbose="true">
-      <include name="**/*.java"/>
+      <include name="**/*.java" />
       <!-- have to exclude class that contains jersey multipart endpoint until http://jira.codehaus.org/browse/ENUNCIATE-537 is fixed -->
 
-      <classpath refid="enunciate.classpath"/>
-      <export artifactId="docs" destination="${dist.dir}/${enunciate.packagename}.zip"/>
+      <classpath refid="enunciate.classpath" />
+      <export artifactId="docs" destination="${dist.dir}/${enunciate.packagename}.zip" />
     </enunciate>
   </target>
 
@@ -1674,7 +1636,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Generates zip and targz distributions of the javadoc
       ====================================================================-->
-  <target name="dist-javadoc" depends="javadoc.zip, javadoc.targz"/>
+  <target name="dist-javadoc" depends="javadoc.zip, javadoc.targz" />
 
 
   <!--=======================================================================
@@ -1684,7 +1646,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Use clean-dist to remove artifacts from the dist.dir.
       ====================================================================-->
   <target name="clean-javadoc">
-    <delete dir="${javadoc.dir}"/>
+    <delete dir="${javadoc.dir}" />
   </target>
 
 
@@ -1694,7 +1656,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Creates directories for javadoc process
       ====================================================================-->
   <target name="javadoc.init" depends="clean-javadoc">
-    <mkdir dir="${javadoc.dir}"/>
+    <mkdir dir="${javadoc.dir}" />
   </target>
 
 
@@ -1707,7 +1669,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <jar jarfile="${dist.dir}/${javadoc.zip.filename}"
          basedir="${javadoc.dir}"
          includes="**/*"
-         excludes="**/Thumbs.db"/>
+         excludes="**/Thumbs.db" />
   </target>
 
 
@@ -1721,8 +1683,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          destfile="${dist.dir}/${javadoc.tar.filename}"
          basedir="${javadoc.dir}"
          includes="**/*"
-         excludes="**/Thumbs.db"/>
+         excludes="**/Thumbs.db" />
   </target>
+
 
 
   <!--=======================================================================
@@ -1731,108 +1694,96 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Downloads and installs Jacoco ant tasks
       ====================================================================-->
   <target name="install-jacoco" depends="install-ivy">
-    <taskdef-with-ivy organisation="org.jacoco" module="org.jacoco.ant" revision="${jacoco.version}"
-                      resource="org/jacoco/ant/antlib.xml" classname="org.jacoco.ant.CoverageTask"/>
+    <taskdef-with-ivy organisation="org.jacoco" module="org.jacoco.ant" revision="${jacoco.version}" resource="org/jacoco/ant/antlib.xml" classname="org.jacoco.ant.CoverageTask" />
   </target>
 
   <!--=======================================================================
-      jacoco-test-coverage
+			jacoco-test-coverage
 
       Compiles and runs all the tests for the project
       ====================================================================-->
-  <target name="jacoco" depends="install-jacoco,compile,compile-tests, init-test-reports"
-          description="Compiles and runs unit tests with Jacoco code coverage." if="junit.available">
+  <target name="jacoco" depends="install-jacoco,compile,compile-tests, init-test-reports" description="Compiles and runs unit tests with Jacoco code coverage.">
 
-
-    <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
-      <classpath>
-        <path refid="classpath"/>
-        <path refid="test.classpath"/>
-      </classpath>
-    </taskdef>
-
-    <path id="tests.path" cache="true">
-      <path refid="base.path"/>
-      <pathelement location="testclasses"/>
-    </path>
-
+		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+				<classpath>
+						<path refid="classpath"/>
+				</classpath>
+		</taskdef>
 
     <path id="jacoco.classpath">
       <fileset dir="${subfloor.resources.dir}/org.jacoco.ant-${jacoco.version}">
-        <include name="*.jar"/>
+        <include name="*.jar" />
       </fileset>
     </path>
 
-    <!-- Import the JaCoCo Ant Task -->
-    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-      <classpath>
-        <path refid="jacoco.classpath"/>
-      </classpath>
-    </taskdef>
+		<!-- Import the JaCoCo Ant Task -->
+		<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+				<classpath>
+						<path refid="jacoco.classpath"/>
+				</classpath>
+		</taskdef>
 
     <property name="jacoco.report.dir" location="${bin.dir}/reports/jacoco"/>
     <property name="jacoco.execfile.path" location="${jacoco.report.dir}/jacoco.exec"/>
 
-    <!-- Run unit tests, adding the JaCoCo agent -->
-    <jacoco:coverage destfile="${jacoco.execfile.path}" xmlns:jacoco="antlib:org.jacoco.ant">
+		<!-- Run unit tests, adding the JaCoCo agent -->
+		<jacoco:coverage destfile="${jacoco.execfile.path}" xmlns:jacoco="antlib:org.jacoco.ant">
 
-      <junit maxmemory="${junit.maxmemory}"
-             dir="${junit.base.dir}"
-             fork="yes"
-             forkmode="${junit.forkmode}"
-             failureProperty="test.failed"
-             haltonfailure="${junit.haltonfailure}"
-             haltonerror="${junit.haltonerror}"
-             printsummary="yes">
-        <sysproperty key="java.awt.headless" value="${headless.unittest}"/>
+			<junit maxmemory="${junit.maxmemory}"
+						 dir="${junit.base.dir}"
+						 fork="yes"
+						 forkmode="${junit.forkmode}"
+						 failureProperty="test.failed"
+						 haltonfailure="${junit.haltonfailure}"
+						 haltonerror="${junit.haltonerror}"
+						 printsummary="yes">
+				<sysproperty key="java.awt.headless" value="${headless.unittest}" />
 
-        <syspropertyset>
-          <propertyref prefix="junit.sysprop."/>
-          <mapper type="glob" from="junit.sysprop.*" to="*"/>
-        </syspropertyset>
+				<syspropertyset>
+					<propertyref prefix="junit.sysprop." />
+					<mapper type="glob" from="junit.sysprop.*" to="*"/>
+				</syspropertyset>
 
-        <classpath refid="test.classpath"/>
-        <classpath refid="jacoco.classpath"/>
-
-        <formatter type="xml"/>
-        <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase"/>
-        <batchtest fork="yes" todir="${testreports.xml.dir}" unless="testcase">
-          <fileset dir="${testsrc.dir}" casesensitive="yes">
-            <include name="**/*Test.java"/>
-          </fileset>
-        </batchtest>
-      </junit>
-    </jacoco:coverage>
+				<classpath refid="test.classpath" />
+				<classpath refid="jacoco.classpath" />
+				<formatter type="xml" />
+				<test name="${testcase}" todir="${testreports.xml.dir}" if="testcase" />
+				<batchtest fork="yes" todir="${testreports.xml.dir}" unless="testcase">
+					<fileset dir="${testsrc.dir}" casesensitive="yes">
+						<include name="**/*Test.java" />
+					</fileset>
+				</batchtest>
+			</junit>
+		</jacoco:coverage>
 
     <if>
-      <!-- if there is no exec file (no tests or faulty tests), cannot gen report -->
-      <available file="${jacoco.execfile.path}" property="jacoco.exec.file.found"/>
-      <then>
-        <jacoco:report xmlns:jacoco="antlib:org.jacoco.ant">
-          <executiondata>
-            <file file="${jacoco.execfile.path}"/>
-          </executiondata>
-          <structure name="${ivy.artifact.id}">
-            <classfiles>
-              <fileset dir="${classes.dir}"/>
-            </classfiles>
-            <sourcefiles encoding="UTF-8">
-              <fileset dir="${src.dir}"/>
-            </sourcefiles>
-          </structure>
-          <html destdir="${jacoco.report.dir}"/>
-          <csv destfile="${jacoco.report.dir}/report.csv"/>
-          <xml destfile="${jacoco.report.dir}/report.xml"/>
-        </jacoco:report>
-      </then>
-    </if>
+			<available file="${jacoco.execfile.path}" property="jacoco.exec.file.found"/>
+			<then>
+				<jacoco:report xmlns:jacoco="antlib:org.jacoco.ant">
+					<executiondata>
+					<file file="${jacoco.execfile.path}"/>
+					</executiondata>
+					<structure name="${ivy.artifact.id}">
+						<classfiles>
+							<fileset dir="${classes.dir}"/>
+						</classfiles>
+						<sourcefiles encoding="UTF-8">
+							<fileset dir="${src.dir}"/>
+						</sourcefiles>
+					</structure>
+					<html destdir="${jacoco.report.dir}"/>
+					<csv destfile="${jacoco.report.dir}/report.csv"/>
+					<xml destfile="${jacoco.report.dir}/report.xml"/>
+				</jacoco:report>
+			</then>
+		</if>
 
-    <junitreport todir="${testreports.html.dir}">
-      <fileset dir="${testreports.xml.dir}">
-        <include name="TEST-*.xml"/>
-      </fileset>
-      <report format="frames" todir="${testreports.html.dir}"/>
-    </junitreport>
+		<junitreport todir="${testreports.html.dir}">
+			<fileset dir="${testreports.xml.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${testreports.html.dir}" />
+		</junitreport>
 
   </target>
 
@@ -1843,7 +1794,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="cobertura"
           description="Runs tests in an instrumented environment and produces Cobertura test coverage reports"
-          depends="clean-cobertura,install-cobertura,compile,compile-tests,test,cobertura.instrument-classes,cobertura.test-instrumented,cobertura.xml-report,cobertura.html-report"/>
+          depends="clean-cobertura,install-cobertura,compile,compile-tests,test,cobertura.instrument-classes,cobertura.test-instrumented,cobertura.xml-report,cobertura.html-report" />
 
 
   <!--=======================================================================
@@ -1853,14 +1804,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="cobertura.instrument-classes" depends="cobertura.clean-instrumented-classes,install-cobertura,compile">
     <cobertura-instrument todir="${instrumented.classes.dir}" datafile="${cobertura.data.dir}/cobertura.ser">
-      <ignore regex="org.apache.log4j.*"/>
+      <ignore regex="org.apache.log4j.*" />
       <fileset dir="${classes.dir}">
         <!--
           Instrument all the application classes, but
           don't instrument the test classes.
         -->
-        <include name="**/*.class"/>
-        <exclude name="**/*Test.class"/>
+        <include name="**/*.class" />
+        <exclude name="**/*Test.class" />
       </fileset>
     </cobertura-instrument>
   </target>
@@ -1872,8 +1823,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Downloads and installs Cobertura ant tasks
       ====================================================================-->
   <target name="install-cobertura" depends="install-ivy">
-    <taskdef-with-ivy organisation="net.sourceforge.cobertura" module="cobertura" revision="${cobertura.version}"
-                      resource="tasks.properties" classname="net.sourceforge.cobertura.ant.InstrumentTask"/>
+    <taskdef-with-ivy organisation="net.sourceforge.cobertura" module="cobertura" revision="${cobertura.version}" resource="tasks.properties" classname="net.sourceforge.cobertura.ant.InstrumentTask"/>
   </target>
 
 
@@ -1883,7 +1833,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Removes all files created by Cobertura code coverage utility
       ====================================================================-->
   <target name="clean-cobertura" depends="cobertura.clean-instrumented-classes,cobertura.clean-coverage-reports">
-    <delete dir="${cobertura.data.dir}"/>
+    <delete dir="${cobertura.data.dir}" />
   </target>
 
   <!--=======================================================================
@@ -1892,7 +1842,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Removes the temporary file location for sonar files
       ====================================================================-->
   <target name="clean-sonar">
-    <delete dir="${basedir}/.sonar"/>
+    <delete dir="${basedir}/.sonar" />
   </target>
 
 
@@ -1902,7 +1852,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     Remove the instrumented classes used by Cobertura
     ====================================================================-->
   <target name="cobertura.clean-instrumented-classes">
-    <delete dir="${instrumented.classes.dir}"/>
+    <delete dir="${instrumented.classes.dir}" />
   </target>
 
 
@@ -1912,9 +1862,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     Remove all xml and html Cobertura coverage reports
     ====================================================================-->
   <target name="cobertura.clean-coverage-reports">
-    <delete dir="${coberturareports.xml.dir}"/>
-    <delete dir="${coberturareports.html.dir}"/>
-    <delete dir="${coberturareports.dir}"/>
+    <delete dir="${coberturareports.xml.dir}" />
+    <delete dir="${coberturareports.html.dir}" />
+    <delete dir="${coberturareports.dir}" />
   </target>
 
 
@@ -1925,10 +1875,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ====================================================================-->
   <target name="cobertura.test-instrumented"
           depends="init-test-reports,install-cobertura,compile,compile-tests,cobertura.instrument-classes">
-    <mkdir dir="${instrumented.classes.dir}"/>
+    <mkdir dir="${instrumented.classes.dir}" />
     <path id="cobertura.classpath">
       <fileset dir="${subfloor.resources.dir}/cobertura-${cobertura.version}">
-        <include name="*.jar"/>
+        <include name="*.jar" />
       </fileset>
     </path>
     <junit fork="yes"
@@ -1938,13 +1888,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
            failureProperty="test.failed"
            haltonerror="${junit.haltonerror}"
            haltonfailure="${junit.haltonfailure}">
-      <sysproperty key="java.awt.headless" value="${headless.unittest}"/>
+      <sysproperty key="java.awt.headless" value="${headless.unittest}" />
 
       <!-- Specify the name of the coverage data file to use. -->
-      <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.data.dir}/cobertura.ser"/>
+      <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.data.dir}/cobertura.ser" />
 
       <syspropertyset>
-        <propertyref prefix="junit.sysprop."/>
+        <propertyref prefix="junit.sysprop." />
         <mapper type="glob" from="junit.sysprop.*" to="*"/>
       </syspropertyset>
 
@@ -1952,24 +1902,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Note the classpath order: instrumented classes are before the
         original (uninstrumented) classes.  This is important.
       -->
-      <classpath location="${instrumented.classes.dir}"/>
-      <classpath refid="test.classpath"/>
-      <classpath refid="cobertura.classpath"/>
+      <classpath location="${instrumented.classes.dir}" />
+      <classpath refid="test.classpath" />
+      <classpath refid="cobertura.classpath" />
 
-      <formatter type="xml"/>
-      <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase"/>
+      <formatter type="xml" />
+      <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase" />
       <batchtest todir="${testreports.xml.dir}" unless="testcase">
         <fileset dir="${testsrc.dir}" casesensitive="yes">
-          <include name="**/*Test.java"/>
+          <include name="**/*Test.java" />
         </fileset>
       </batchtest>
     </junit>
 
     <junitreport todir="${testreports.html.dir}">
       <fileset dir="${testreports.xml.dir}">
-        <include name="TEST-*.xml"/>
+        <include name="TEST-*.xml" />
       </fileset>
-      <report format="frames" todir="${testreports.html.dir}"/>
+      <report format="frames" todir="${testreports.html.dir}" />
     </junitreport>
   </target>
 
@@ -1982,7 +1932,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <target name="cobertura.xml-report" depends="cobertura.test-instrumented">
     <cobertura-report destdir="${coberturareports.xml.dir}" datafile="${cobertura.data.dir}/cobertura.ser" format="xml">
       <fileset dir="${src.dir}">
-        <include name="**/*.java"/>
+        <include name="**/*.java" />
       </fileset>
     </cobertura-report>
   </target>
@@ -1998,7 +1948,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                       datafile="${cobertura.data.dir}/cobertura.ser"
                       format="html">
       <fileset dir="${src.dir}">
-        <include name="**/*.java"/>
+        <include name="**/*.java" />
       </fileset>
     </cobertura-report>
   </target>
@@ -2009,8 +1959,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Fetches and installs Pentaho Ant tasks
       ====================================================================-->
   <target name="install-pentaho-ant-tasks" depends="install-ivy">
-    <taskdef-with-ivy task-name="dot-classpath" classname="org.pentaho.anttasks.DotClasspath" organisation="pentaho"
-                      module="pentaho-ant-tasks" revision="1.1"/>
+    <taskdef-with-ivy task-name="dot-classpath" classname="org.pentaho.anttasks.DotClasspath" organisation="pentaho" module="pentaho-ant-tasks" revision="1.1" />
   </target>
 
   <!--=======================================================================
@@ -2024,13 +1973,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <!-- Include all lib dirs -->
       <classpath>
         <fileset dir="${devlib.dir}">
-          <include name="*.jar"/>
+          <include name="*.jar" />
         </fileset>
         <fileset dir="${testlib.dir}">
-          <include name="*.jar"/>
+          <include name="*.jar" />
         </fileset>
         <fileset dir="${lib.dir}">
-          <include name="*.jar"/>
+          <include name="*.jar" />
         </fileset>
       </classpath>
     </dot-classpath>
@@ -2055,26 +2004,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <macrodef name="taskdef-with-ivy">
     <attribute name="task-name"
                description="Name to give the new Ant task (only used if resource is not set)"
-               default="unset"/>
-    <attribute name="organisation" description="Artifact organization"/>
-    <attribute name="module" description="Artifact module"/>
-    <attribute name="revision" description="Artifact revision"/>
+               default="unset" />
+    <attribute name="organisation" description="Artifact organization" />
+    <attribute name="module" description="Artifact module" />
+    <attribute name="revision" description="Artifact revision" />
     <attribute name="classname"
-               description="Classname for the Ant task.  Used during taskdef and to check if we already have the libraries."/>
+               description="Classname for the Ant task.  Used during taskdef and to check if we already have the libraries." />
     <attribute name="resource"
                description="(optional) Resource defining the Ant task.  Used during taskdef"
-               default="unset"/>
+               default="unset" />
     <sequential>
-      <mkdir dir="${subfloor.resources.dir}/@{module}-@{revision}/"/>
+      <mkdir dir="${subfloor.resources.dir}/@{module}-@{revision}/" />
       <!-- if the library does not exist, we must download it -->
       <if>
         <not>
           <and>
-            <available file="${subfloor.resources.dir}/@{module}-@{revision}"/>
+            <available file="${subfloor.resources.dir}/@{module}-@{revision}" />
             <available classname="@{classname}">
               <classpath>
                 <fileset dir="${subfloor.resources.dir}/@{module}-@{revision}">
-                  <include name="*.jar"/>
+                  <include name="*.jar" />
                 </fileset>
               </classpath>
             </available>
@@ -2082,32 +2031,32 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </not>
         <then>
           <ivy:retrieve inline="true"
-                        conf="default"
+              conf="default"
                         organisation="@{organisation}"
                         module="@{module}"
                         revision="@{revision}"
-                        pattern="${subfloor.resources.dir}/@{module}-@{revision}/[module]-__-[revision](-[classifier]).[ext]"/>
+                        pattern="${subfloor.resources.dir}/@{module}-@{revision}/[module]-__-[revision](-[classifier]).[ext]" />
           <!-- in case the artifact pulls in an ant jar, remove it. they cause runtime conflicts -->
           <delete>
             <fileset dir="${subfloor.resources.dir}/@{module}-@{revision}">
-              <include name="ant-__-*.jar"/>
-              <include name="ant-launcher-__-*.jar"/>
+              <include name="ant-__-*.jar" />
+              <include name="ant-launcher-__-*.jar" />
             </fileset>
           </delete>
         </then>
       </if>
       <path id="taskdef.classpath">
         <fileset dir="${subfloor.resources.dir}/@{module}-@{revision}">
-          <include name="*.jar"/>
+          <include name="*.jar" />
         </fileset>
       </path>
       <if>
-        <equals arg1="@{resource}" arg2="unset"/>
+        <equals arg1="@{resource}" arg2="unset" />
         <then>
-          <taskdef classpathref="taskdef.classpath" name="@{task-name}" classname="@{classname}"/>
+          <taskdef classpathref="taskdef.classpath" name="@{task-name}" classname="@{classname}" />
         </then>
         <else>
-          <taskdef classpathref="taskdef.classpath" resource="@{resource}"/>
+          <taskdef classpathref="taskdef.classpath" resource="@{resource}" />
         </else>
       </if>
     </sequential>
@@ -2130,21 +2079,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                   (defaults to zip)
       ====================================================================-->
   <macrodef name="download-antlib">
-    <attribute name="name"/>
-    <attribute name="url"/>
-    <attribute name="classname"/>
-    <attribute name="extension" default="zip"/>
+    <attribute name="name" />
+    <attribute name="url" />
+    <attribute name="classname" />
+    <attribute name="extension" default="zip" />
     <sequential>
-      <mkdir dir="${subfloor.resources.dir}/@{name}/"/>
+      <mkdir dir="${subfloor.resources.dir}/@{name}/" />
       <!-- if the library does not exist, we must download it -->
       <if>
         <not>
           <and>
-            <available file="${subfloor.resources.dir}/@{name}"/>
+            <available file="${subfloor.resources.dir}/@{name}" />
             <available classname="@{classname}">
               <classpath>
                 <fileset dir="${subfloor.resources.dir}/@{name}">
-                  <include name="**/*.jar"/>
+                  <include name="**/*.jar" />
                 </fileset>
               </classpath>
             </available>
@@ -2153,18 +2102,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <then>
           <!-- if it is a zip file, unzip it ... otherwise if a jar, just download it -->
           <if>
-            <equals arg1="zip" arg2="@{extension}"/>
+            <equals arg1="zip" arg2="@{extension}" />
             <then>
               <!-- download the source file to a temp directory -->
-              <echo message="downloading library @{name} [@{name}.@{extension} from @{url}]"/>
-              <mkdir dir="${subfloor.tmp.dir}"/>
-              <get src="@{url}" dest="${subfloor.tmp.dir}/@{name}.@{extension}" usetimestamp="true"/>
+              <echo message="downloading library @{name} [@{name}.@{extension} from @{url}]" />
+              <mkdir dir="${subfloor.tmp.dir}" />
+              <get src="@{url}" dest="${subfloor.tmp.dir}/@{name}.@{extension}" usetimestamp="true" />
               <unzip src="${subfloor.tmp.dir}/@{name}.@{extension}"
                      dest="${subfloor.resources.dir}/@{name}"
-                     overwrite="true"/>
+                     overwrite="true" />
             </then>
             <else>
-              <get src="@{url}" dest="${subfloor.resources.dir}/@{name}/@{name}.@{extension}" usetimestamp="true"/>
+              <get src="@{url}" dest="${subfloor.resources.dir}/@{name}/@{name}.@{extension}" usetimestamp="true" />
             </else>
           </if>
         </then>
@@ -2179,9 +2128,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     ====================================================================-->
   <target name="install-tattletale" depends="install-antcontrib">
     <if>
-      <istrue value="${tattletale.isinstalled}"/>
+      <istrue value="${tattletale.isinstalled}" />
       <then>
-        <echo message="Skipping TATTLETALE install.  TATTLETALE has already been configured by the build"/>
+        <echo message="Skipping TATTLETALE install.  TATTLETALE has already been configured by the build" />
       </then>
       <else>
         <download-antlib name="tattletale"
@@ -2192,12 +2141,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <taskdef name="tattletale.report" classname="${tattletale.classname}">
           <classpath>
             <fileset dir="${subfloor.resources.dir}/tattletale">
-              <include name="*.jar"/>
+              <include name="*.jar" />
             </fileset>
           </classpath>
         </taskdef>
 
-        <property name="tattletale.isinstalled" value="true"/>
+        <property name="tattletale.isinstalled" value="true" />
       </else>
     </if>
   </target>
@@ -2211,78 +2160,76 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <tattletale.report source="${basedir}" destination="${tattletale.reports.dir}"/>
   </target>
 
-  <!--=======================================================================
-      install-sonar
+<!--=======================================================================
+    install-sonar
 
-      (Fetches and) installs SONAR ant plugin for use by this ant script
-      ====================================================================-->
+    (Fetches and) installs SONAR ant plugin for use by this ant script
+    ====================================================================-->
   <target name="install-sonar" depends="install-antcontrib">
-    <taskdef-with-ivy organisation="org.codehaus.sonar-plugins" module="sonar-ant-task"
-                      revision="${sonar-ant-task-version}" resource="org/sonar/ant/antlib.xml"
-                      classname="${sonar.classname}"/>
+    <taskdef-with-ivy organisation="org.codehaus.sonar-plugins" module="sonar-ant-task" revision="${sonar-ant-task-version}" resource="org/sonar/ant/antlib.xml" classname="${sonar.classname}" />
   </target>
 
-  <!--=======================================================================
-  sonar
+    <!--=======================================================================
+    sonar
 
-  Execute the sonar analysis and publish to a sonar server specified by:
-  sonar.jdbc.url
-  sonar.jdbc.driverClassName
-  sonar.jdbc.username
-  sonar.jdbc.password
-  sonar.host.url
+    Execute the sonar analysis and publish to a sonar server specified by:
+    sonar.jdbc.url
+    sonar.jdbc.driverClassName
+    sonar.jdbc.username
+    sonar.jdbc.password
+    sonar.host.url
 
-  At this time, the defaults will work for everything except
-  sonar.jdbc.password which is is empty by default.
+    At this time, the defaults will work for everything except
+    sonar.jdbc.password which is is empty by default.
 
-  Also, SCM_BRANCH is a required parameter.
-  ====================================================================-->
+    Also, SCM_BRANCH is a required parameter.
+    ====================================================================-->
   <target name="sonar" depends="install-sonar, jacoco ">
 
-    <path id="sonar.classpath">
+   <path id="sonar.classpath">
       <fileset dir="${subfloor.resources.dir}/sonar-ant-task-${sonar-ant-task-version}">
-        <include name="*.jar"/>
+        <include name="*.jar" />
       </fileset>
     </path>
 
-    <!-- Import the Sonar Ant Task -->
-    <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
-      <classpath>
-        <path refid="sonar.classpath"/>
-      </classpath>
-    </taskdef>
+		<!-- Import the Sonar Ant Task -->
+		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+				<classpath>
+						<path refid="sonar.classpath"/>
+				</classpath>
+		</taskdef>
 
 
-    <property name="sonar.host.url" value="${sonar.host.url}"/>
-    <property name="sonar.jdbc.url" value="${sonar.jdbc.url}"/>
-    <property name="sonar.jdbc.driverClassName" value="${sonar.jdbc.driverClassName}"/>
+    <property name="sonar.host.url" value="${sonar.host.url}" />
+    <property name="sonar.jdbc.url" value="${sonar.jdbc.url}" />
+    <property name="sonar.jdbc.driverClassName" value="${sonar.jdbc.driverClassName}" />
     <!-- the username and password of your database -->
-    <property name="sonar.jdbc.username" value="${sonar.jdbc.username}"/>
-    <property name="sonar.jdbc.password" value="${sonar.jdbc.password}"/>
+    <property name="sonar.jdbc.username" value="${sonar.jdbc.username}" />
+    <property name="sonar.jdbc.password" value="${sonar.jdbc.password}" />
 
-    <property name="sonar.branch" value="${SCM_BRANCH}"/>
-    <property name="sonar.projectKey" value="${ivy.artifact.group}:${ivy.artifact.id}"/>
-    <property name="sonar.projectName" value="${ivy.artifact.id}"/>
-    <property name="sonar.projectVersion" value="${project.revision}"/>
-    <property name="sonar.language" value="java"/>
-    <property name="sonar.sources" value="${src.dir}"/>
-    <property name="sonar.java.binaries" value="${classes.dir}"/>
-    <property name="sonar.java.libraries" value="${lib.dir}"/>
-    <property name="sonar.sourceEncoding" value="${sonar.sourceEncoding}"/>
-    <property name="sonar.tests" value="${testsrc.dir}"/>
-    <property name="sonar.java.coveragePlugin" value="${sonar.java.coveragePlugin}"/>
-    <if>
-      <equals arg1="${sonar.java.coveragePlugin}" arg2="cobertura"/>
-      <then>
-        <property name="sonar.cobertura.reportPath" value="${coberturareports.xml.dir}/coverage.xml"/>
-      </then>
-      <else>
-        <property name="sonar.jacoco.reportPath" value="${jacoco.execfile.path}"/>
-      </else>
-    </if>
-    <property name="sonar.junit.reportsPath" value="${testreports.xml.dir}"/>
+    <property name="sonar.branch" value="${SCM_BRANCH}" />
+		<property name="sonar.projectKey" value="${ivy.artifact.group}:${ivy.artifact.id}" />
+		<property name="sonar.projectName" value="${ivy.artifact.id}" />
+		<property name="sonar.projectVersion" value="${project.revision}" />
+		<property name="sonar.language" value="java" />
+		<property name="sonar.sources" value="${src.dir}" />
+		<property name="sonar.java.binaries" value="${classes.dir}" />
+		<property name="sonar.java.libraries" value="${lib.dir}" />
+		<property name="sonar.sourceEncoding" value="${sonar.sourceEncoding}" />
+    <property name="sonar.tests" value="${testsrc.dir}" />
+    <property name="sonar.java.coveragePlugin" value="${sonar.java.coveragePlugin}" />
+		<if>
+			<equals arg1="${sonar.java.coveragePlugin}" arg2="cobertura" />
+			<then>
+				<property name="sonar.cobertura.reportPath" value="${coberturareports.xml.dir}/coverage.xml" />
+			</then>
+			<else>
+				<property name="sonar.jacoco.reportPath" value="${jacoco.execfile.path}" />
+			</else>
+		</if>
+    <property name="sonar.junit.reportsPath"  value="${testreports.xml.dir}" />
 
-    <sonar:sonar xmlns:sonar="antlib:org.sonar.ant"/>
+  	<sonar:sonar xmlns:sonar="antlib:org.sonar.ant"/>
 
   </target>
 
@@ -2297,19 +2244,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <mkdir dir="${checkstyle.dir}/lib"/>
 
     <taskdef resource="checkstyletask.properties">
-      <classpath refid="checkstyle.classpath"/>
+      <classpath refid="checkstyle.classpath" />
     </taskdef>
 
     <get usetimestamp="true" src="${checkstyle.config.url}" dest="${checkstyle.config.file}"/>
     <get usetimestamp="true" src="${checkstyle.suppressions.url}" dest="${checkstyle.suppressions.file}"/>
 
     <mkdir dir="${checkstyle.reports.dir}/xml"/>
-    <checkstyle config="${checkstyle.config.file}" failonviolation="false">
-      <property key="samedir" value="${checkstyle.dir}"/>
-      <fileset dir="${src.dir}" includes="**/*.java"/>
-      <fileset dir="${testsrc.dir}" includes="**/*.java" erroronmissingdir="false"/>
-      <formatter type="xml" tofile="${checkstyle.reports.dir}/xml/checkstyle-result.xml"/>
-    </checkstyle>
+      <checkstyle config="${checkstyle.config.file}" failonviolation="false">
+        <property key="samedir" value="${checkstyle.dir}"/>
+        <fileset dir="${src.dir}" includes="**/*.java"/>
+        <fileset dir="${testsrc.dir}" includes="**/*.java" erroronmissingdir="false"/>
+        <formatter type="xml" tofile="${checkstyle.reports.dir}/xml/checkstyle-result.xml"/>
+      </checkstyle>
   </target>
 
   <!--
