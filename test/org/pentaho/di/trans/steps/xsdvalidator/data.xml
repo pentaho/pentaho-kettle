@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stockquotes>
+  <quote>
+    <symbol>FOO</symbol>
+    <volume>12345</volume>
+    <lastTrade>
+      <price>2.5</price>
+      <date>20150615</date>
+    </lastTrade>
+    <change>
+      <dollar>1.25</dollar>
+      <percent>0.5</percent>
+      <positive>true</positive>
+    </change>
+  </quote>
+</stockquotes>
