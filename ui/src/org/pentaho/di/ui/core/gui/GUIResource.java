@@ -2205,7 +2205,9 @@ public class GUIResource {
   public Image getImage( String location ) {
     Image image = imageMap.get( location );
     if ( image == null ) {
-      image = ImageUtil.getImage( display, location );
+      SwtUniversalImage svg = SwtSvgImageUtil.getImage( display, location );
+      image = new Image( display, svg.getAsBitmapForSize( display, 16, 16 ), SWT.IMAGE_COPY );
+      svg.dispose();
       imageMap.put( location, image );
     }
     return image;
