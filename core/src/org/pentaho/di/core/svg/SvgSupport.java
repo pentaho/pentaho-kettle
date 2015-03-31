@@ -32,11 +32,26 @@ import org.w3c.dom.Document;
  * Class for base SVG images processing.
  */
 public class SvgSupport {
-  private static final SAXSVGDocumentFactory SVG_FACTORY;
-
-  static {
-    String parser = XMLResourceDescriptor.getXMLParserClassName();
-    SVG_FACTORY = new SAXSVGDocumentFactory( parser );
+  
+  private static final String SVG_EXTENSION = ".svg";
+  
+  private static final String PNG_EXTENSION = ".png";
+  
+  private static final String PARSER = XMLResourceDescriptor.getXMLParserClassName();
+  
+  private static final ThreadLocal<SAXSVGDocumentFactory> SVG_FACTORY_THREAD_LOCAL = new ThreadLocal<SAXSVGDocumentFactory>();
+  
+  private static SAXSVGDocumentFactory createFactory() {
+    return new SAXSVGDocumentFactory( PARSER );
+  }
+  
+  private static SAXSVGDocumentFactory getSvgFactory() {
+    SAXSVGDocumentFactory factory = SVG_FACTORY_THREAD_LOCAL.get();
+    if ( factory == null ) {
+      factory = createFactory();
+      SVG_FACTORY_THREAD_LOCAL.set( factory );
+    }
+    return factory;
   }
 
   public static boolean isSvgEnabled() {
@@ -47,7 +62,7 @@ public class SvgSupport {
    * Load SVG from file.
    */
   public static SvgImage loadSvgImage( InputStream in ) throws Exception {
-    Document document = SVG_FACTORY.createDocument( null, in );
+    Document document = getSvgFactory().createDocument( null, in );
     return new SvgImage( document );
   }
 
@@ -55,7 +70,7 @@ public class SvgSupport {
    * Check by file name if image is SVG.
    */
   public static boolean isSvgName( String name ) {
-    return name.toLowerCase().endsWith( ".svg" );
+    return name.toLowerCase().endsWith( SVG_EXTENSION );
   }
 
   /**
@@ -63,7 +78,7 @@ public class SvgSupport {
    */
   public static String toPngName( String name ) {
     if ( isSvgName( name ) ) {
-      name = name.substring( 0, name.length() - 4 ) + ".png";
+      name = name.substring( 0, name.length() - 4 ) + PNG_EXTENSION;
     }
     return name;
   }
@@ -72,7 +87,7 @@ public class SvgSupport {
    * Check by file name if image is PNG.
    */
   public static boolean isPngName( String name ) {
-    return name.toLowerCase().endsWith( ".png" );
+    return name.toLowerCase().endsWith( PNG_EXTENSION );
   }
 
   /**
@@ -80,7 +95,7 @@ public class SvgSupport {
    */
   public static String toSvgName( String name ) {
     if ( isPngName( name ) ) {
-      name = name.substring( 0, name.length() - 4 ) + ".svg";
+      name = name.substring( 0, name.length() - 4 ) + SVG_EXTENSION;
     }
     return name;
   }
