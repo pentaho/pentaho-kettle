@@ -122,6 +122,9 @@ public class SwingGC implements GCInterface {
   protected Color lightGray;
   protected Color darkGray;
   protected Color lightBlue;
+  protected Color crystal;
+  protected Color hopDefault;
+  protected Color hopOK;
 
   private Graphics2D gc;
 
@@ -200,6 +203,9 @@ public class SwingGC implements GCInterface {
     this.lightGray = new Color( 200, 200, 200 );
     this.darkGray = new Color( 80, 80, 80 );
     this.lightBlue = new Color( 135, 206, 250 ); // light sky blue
+    this.crystal = new Color( 61, 99, 128 );
+    this.hopDefault = new Color( 61, 99, 128 );
+    this.hopOK = new Color( 12, 178, 15 );
 
     imageLocked = getImageIcon( BasePropertyHandler.getProperty( "Locked_image" ) );
     imageStepError = getImageIcon( BasePropertyHandler.getProperty( "StepErrorLines_image" ) );
@@ -574,6 +580,12 @@ public class SwingGC implements GCInterface {
         return darkGray;
       case LIGHTBLUE:
         return lightBlue;
+      case CRYSTAL:
+        return crystal;
+      case HOP_DEFAULT:
+        return hopDefault;
+      case HOP_OK:
+        return hopOK;
       default:
         break;
     }
