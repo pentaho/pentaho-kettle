@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
@@ -58,9 +59,9 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.spoon.SpoonUiExtenderPluginInterface;
 import org.pentaho.di.ui.spoon.SpoonUiExtenderPluginType;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class TransPreviewDialog {
   private static Class<?> PKG = PreviewRowsDialog.class; // for i18n purposes, needed by Translator2!!
@@ -267,8 +268,16 @@ public class TransPreviewDialog {
   public void dispose() {
     props.setScreen( new WindowProperty( shell ) );
     bounds = shell.getBounds();
-    hscroll = wFields.getHorizontalBar().getSelection();
-    vscroll = wFields.getVerticalBar().getSelection();
+    if ( wFields != null ) {
+      ScrollBar hScrollBar = wFields.getHorizontalBar();
+      if ( hScrollBar != null ) {
+        hscroll = hScrollBar.getSelection();
+      }
+      ScrollBar vScrollBar = wFields.getVerticalBar();
+      if ( vScrollBar != null ) {
+        vscroll = vScrollBar.getSelection();
+      }
+    }
     shell.dispose();
   }
 
