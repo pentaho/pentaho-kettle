@@ -638,6 +638,15 @@ public class PropsUI extends Props {
     return new RGB( r, g, b );
   }
 
+  public boolean isSVGEnabled() {
+    String enabled = properties.getProperty( STRING_SVG_ENABLED, YES );
+    return YES.equalsIgnoreCase( enabled ); // Default: svg is enabled
+  }
+
+  public void setSVGEnabled( boolean svg ) {
+    properties.setProperty( STRING_SVG_ENABLED, svg ? YES : NO );
+  }
+
   public void setIconSize( int size ) {
     properties.setProperty( STRING_ICON_SIZE, "" + size );
   }
@@ -814,7 +823,7 @@ public class PropsUI extends Props {
   }
 
   public boolean isAntiAliasingEnabled() {
-    String anti = properties.getProperty( STRING_ANTI_ALIASING, NO );
+    String anti = properties.getProperty( STRING_ANTI_ALIASING, YES );
     return YES.equalsIgnoreCase( anti ); // Default: don't do anti-aliasing
   }
 
@@ -862,7 +871,6 @@ public class PropsUI extends Props {
     GUIResource gui = GUIResource.getInstance();
     Font font = null;
     Color background = null;
-    // Color tabColor = null;
 
     switch ( style ) {
       case WIDGET_STYLE_DEFAULT:
@@ -887,17 +895,15 @@ public class PropsUI extends Props {
         background = gui.getColorBackground();
         font = gui.getFontGraph();
         break;
+      case WIDGET_STYLE_TOOLBAR:
+        background = GUIResource.getInstance().getColorDemoGray();
+        break;
       case WIDGET_STYLE_TAB:
-        background = gui.getColorBackground();
-        // font = gui.getFontDefault();
+        background = GUIResource.getInstance().getColorWhite();
         CTabFolder tabFolder = (CTabFolder) control;
         tabFolder.setSimple( false );
-        tabFolder.setBorderVisible( false );
-
-        // Set a small vertical gradient
-        tabFolder.setSelectionBackground( new Color[] {
-          display.getSystemColor( SWT.COLOR_WIDGET_NORMAL_SHADOW ),
-          display.getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ), }, new int[] { 55, }, true );
+        tabFolder.setBorderVisible( true );
+        tabFolder.setSelectionBackground( GUIResource.getInstance().getColorTab() );
         break;
       default:
         background = gui.getColorBackground();

@@ -81,13 +81,14 @@ public class Props implements Cloneable {
   public static final String STRING_GRAPH_COLOR_G = "GraphColorG";
   public static final String STRING_GRAPH_COLOR_B = "GraphColorB";
 
-  public static final String STRING_TAB_COLOR_R = "TabColorR";
-  public static final String STRING_TAB_COLOR_G = "TabColorG";
-  public static final String STRING_TAB_COLOR_B = "TabColorB";
+  public static final String STRING_TAB_COLOR_R = "TabColorR54";
+  public static final String STRING_TAB_COLOR_G = "TabColorG54";
+  public static final String STRING_TAB_COLOR_B = "TabColorB54";
 
+  public static final String STRING_SVG_ENABLED = "EnableSVG";
   public static final String STRING_ICON_SIZE = "IconSize";
   public static final String STRING_LINE_WIDTH = "LineWidth";
-  public static final String STRING_SHADOW_SIZE = "ShadowSize";
+  public static final String STRING_SHADOW_SIZE = "ShadowSize54";
   public static final String STRING_LOG_LEVEL = "LogLevel";
   public static final String STRING_LOG_FILTER = "LogFilter";
   public static final String STRING_MIDDLE_PCT = "MiddlePct";
@@ -123,9 +124,9 @@ public class Props implements Cloneable {
 
   public static final String STRING_ONLY_ACTIVE_STEPS = "OnlyActiveSteps";
   public static final String STRING_START_SHOW_REPOSITORIES = "ShowRepositoriesAtStartup";
-  public static final String STRING_ANTI_ALIASING = "EnableAntiAliasing";
+  public static final String STRING_ANTI_ALIASING = "EnableAntiAliasing54";
   public static final String STRING_SHOW_EXIT_WARNING = "ShowExitWarning";
-  public static final String STRING_SHOW_OS_LOOK = "ShowOSLook";
+  public static final String STRING_SHOW_OS_LOOK = "ShowOSLook54";
   public static final String STRING_LAST_ARGUMENT = "LastArgument";
 
   public static final String STRING_ARGUMENT_NAME_PREFIX = "Argument ";
@@ -168,6 +169,7 @@ public class Props implements Cloneable {
   public static final int WIDGET_STYLE_NOTEPAD = 3;
   public static final int WIDGET_STYLE_GRAPH = 4;
   public static final int WIDGET_STYLE_TAB = 5;
+  public static final int WIDGET_STYLE_TOOLBAR = 6;
 
   /**
    * Initialize the properties: load from disk.

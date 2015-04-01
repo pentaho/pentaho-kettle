@@ -70,7 +70,6 @@ import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
-import org.pentaho.ui.xul.XulLoader;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.impl.XulEventHandler;
@@ -198,7 +197,8 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
   private void addToolBar() {
     try {
-      XulLoader loader = new KettleXulLoader();
+      KettleXulLoader loader = new KettleXulLoader();
+      loader.setIconsSize( 16, 16 );
       loader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
       ResourceBundle bundle = new XulSpoonResourceBundle( Spoon.class );
       XulDomContainer xulDomContainer = loader.loadXul( XUL_FILE_TRANS_GRID_TOOLBAR, bundle );
@@ -211,6 +211,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
       fetchAllButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById( "fetch-all-history" );
 
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
+      spoon.props.setLook( swtToolBar, Props.WIDGET_STYLE_TOOLBAR );
       swtToolBar.layout( true, true );
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );

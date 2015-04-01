@@ -45,5 +45,14 @@
 
     <dependency org="junit"               name="junit"               rev="4.7"              transitive="false" conf="test->default"/>
     <dependency org="org.mockito"         name="mockito-all"         rev="1.9.5"            transitive="false" conf="test->default"/>
+
+    <dependency org="org.apache.xmlgraphics" name="batik-bridge" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-css" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-dom" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-gvt" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-svg-dom" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-transcoder" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-codec" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-util" rev="${dependency.batik.revision}" transitive="false"/>
   </dependencies>
 </ivy-module>

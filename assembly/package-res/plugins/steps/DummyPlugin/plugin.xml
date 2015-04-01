@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <plugin
    id="DummyPlugin"
-   iconfile="DPL.png"
+   iconfile="DPL.svg"
    description="Dummy Plugin"
    tooltip="This is a dummy plugin test step"
    category="Transform"
