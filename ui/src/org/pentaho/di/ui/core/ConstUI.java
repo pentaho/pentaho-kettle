@@ -100,17 +100,17 @@ public class ConstUI {
   /**
    * The default red-component of the tab selected color
    */
-  public static final int COLOR_TAB_RED = 200;
+  public static final int COLOR_TAB_RED = 240;
 
   /**
    * The default green-component of the tab selected color
    */
-  public static final int COLOR_TAB_GREEN = 200;
+  public static final int COLOR_TAB_GREEN = 240;
 
   /**
    * The default blue-component of the tab selected color
    */
-  public static final int COLOR_TAB_BLUE = 255;
+  public static final int COLOR_TAB_BLUE = 240;
 
   /**
    * the default canvas refresh interval for running transformations

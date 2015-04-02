@@ -871,7 +871,6 @@ public class PropsUI extends Props {
     GUIResource gui = GUIResource.getInstance();
     Font font = null;
     Color background = null;
-    // Color tabColor = null;
 
     switch ( style ) {
       case WIDGET_STYLE_DEFAULT:
@@ -901,11 +900,10 @@ public class PropsUI extends Props {
         break;
       case WIDGET_STYLE_TAB:
         background = GUIResource.getInstance().getColorWhite();
-        // font = gui.getFontDefault();
         CTabFolder tabFolder = (CTabFolder) control;
         tabFolder.setSimple( false );
         tabFolder.setBorderVisible( true );
-        tabFolder.setSelectionBackground( GUIResource.getInstance().getColorDemoGray() );
+        tabFolder.setSelectionBackground( GUIResource.getInstance().getColorTab() );
         break;
       default:
         background = gui.getColorBackground();

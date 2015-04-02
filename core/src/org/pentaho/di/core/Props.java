@@ -81,9 +81,9 @@ public class Props implements Cloneable {
   public static final String STRING_GRAPH_COLOR_G = "GraphColorG";
   public static final String STRING_GRAPH_COLOR_B = "GraphColorB";
 
-  public static final String STRING_TAB_COLOR_R = "TabColorR";
-  public static final String STRING_TAB_COLOR_G = "TabColorG";
-  public static final String STRING_TAB_COLOR_B = "TabColorB";
+  public static final String STRING_TAB_COLOR_R = "TabColorR54";
+  public static final String STRING_TAB_COLOR_G = "TabColorG54";
+  public static final String STRING_TAB_COLOR_B = "TabColorB54";
 
   public static final String STRING_SVG_ENABLED = "EnableSVG";
   public static final String STRING_ICON_SIZE = "IconSize";
@@ -126,7 +126,7 @@ public class Props implements Cloneable {
   public static final String STRING_START_SHOW_REPOSITORIES = "ShowRepositoriesAtStartup";
   public static final String STRING_ANTI_ALIASING = "EnableAntiAliasing54";
   public static final String STRING_SHOW_EXIT_WARNING = "ShowExitWarning";
-  public static final String STRING_SHOW_OS_LOOK = "ShowOSLook";
+  public static final String STRING_SHOW_OS_LOOK = "ShowOSLook54";
   public static final String STRING_LAST_ARGUMENT = "LastArgument";
 
   public static final String STRING_ARGUMENT_NAME_PREFIX = "Argument ";
