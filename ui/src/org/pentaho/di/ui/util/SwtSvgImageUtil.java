@@ -47,7 +47,8 @@ import org.pentaho.di.core.vfs.KettleVFS;
 public class SwtSvgImageUtil {
 
   private static FileObject base;
-
+  private static final String NO_IMAGE = "ui/images/no_image.svg";
+  
   static {
     try {
       base = KettleVFS.getInstance().getFileSystemManager().resolveFile( System.getProperty( "user.dir" ) );
@@ -74,39 +75,8 @@ public class SwtSvgImageUtil {
     if ( result == null ) {
       result = loadFromBasedVFS( display, SvgSupport.toPngName( location ) );
     }
-
     if ( result == null ) {
-      throw new RuntimeException( "Unable to load image with name [" + location + "]" );
-    }
-    return result;
-  }
-
-  /**
-   * Load image from several sources.
-   */
-  private static SwtUniversalImage getImage( Display display, Class<?> resourceClass, String filename ) {
-    SwtUniversalImage result = null;
-    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
-      result = loadFromClass( display, resourceClass, filename );
-    }
-    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
-      result = loadFromClass( display, resourceClass, "/" + filename );
-    }
-    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
-      result = loadFromSimpleVFS( display, filename );
-    }
-    if ( result == null ) {
-      result = loadFromClass( display, resourceClass, SvgSupport.toPngName( filename ) );
-    }
-    if ( result == null ) {
-      result = loadFromClass( display, resourceClass, "/" + SvgSupport.toPngName( filename ) );
-    }
-    if ( result == null ) {
-      result = loadFromSimpleVFS( display, SvgSupport.toPngName( filename ) );
-    }
-
-    if ( result == null ) {
-      throw new RuntimeException( "Unable to load image with name [" + filename + "]" );
+      result = getImageAsResource( display, NO_IMAGE );
     }
     return result;
   }
@@ -134,9 +104,8 @@ public class SwtSvgImageUtil {
     if ( result == null ) {
       result = loadFromSimpleVFS( display, SvgSupport.toPngName( filename ) );
     }
-
     if ( result == null ) {
-      throw new RuntimeException( "Unable to load image with name [" + filename + "]" );
+      result = getUniversalImage( display, classLoader, NO_IMAGE );
     }
     return result;
   }
@@ -158,26 +127,10 @@ public class SwtSvgImageUtil {
     if ( result == null ) {
       result = loadFromCurrentClasspath( display, SvgSupport.toPngName( location ) );
     }
-
     if ( result == null ) {
-      throw new RuntimeException( "Unable to load image with name [" + location + "]" );
+      result = getImage( display, NO_IMAGE );
     }
     return result;
-  }
-
-  /**
-   * Internal image loading by Class.getResourceAsStream.
-   */
-  private static SwtUniversalImage loadFromClass( Display display, Class<?> resourceClass, String location ) {
-    InputStream s = resourceClass.getResourceAsStream( location );
-    if ( s == null ) {
-      return null;
-    }
-    try {
-      return loadImage( display, s, location );
-    } finally {
-      IOUtils.closeQuietly( s );
-    }
   }
 
   /**
