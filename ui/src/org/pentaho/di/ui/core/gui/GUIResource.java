@@ -866,7 +866,7 @@ public class GUIResource {
     imageSpoon = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_image" ), 0 );
 
     // "ui/images/spoon_highres.png"
-    imageSpoonHigh = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_image_high" ), 128 );
+    imageSpoonHigh = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "spoon_image_high" ) );
 
     // "ui/images/chef.png"
     imageJob = loadAsResource( display, BasePropertyHandler.getProperty( "Chef_image" ), ConstUI.ICON_SIZE );
