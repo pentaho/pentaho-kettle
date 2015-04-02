@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2012 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -228,5 +228,19 @@ public class MappingTest extends TestCase {
     StepIOMetaInterface ioMeta = loadedMappingMeta.getStepIOMeta();
     assertEquals("Expected a single Info Stream", 1, ioMeta.getInfoStreams().size()); 
     assertEquals("Expected a single Info Step", 1, loadedMappingMeta.getInfoSteps().length);     
+  }
+
+  public void testMapping_WhenSharingPreviousStepWithAnother() throws Exception {
+    KettleEnvironment.init();
+
+    TransMeta transMeta = new TransMeta( "testfiles/org/pentaho/di/trans/steps/mapping/pdi-13435/PDI-13435-main.ktr" );
+    transMeta.setTransformationType( TransMeta.TransformationType.Normal );
+
+    Trans trans = new Trans( transMeta );
+    trans.prepareExecution( null );
+    trans.startThreads();
+    trans.waitUntilFinished();
+
+    assertEquals( 0, trans.getErrors() );
   }
 }
