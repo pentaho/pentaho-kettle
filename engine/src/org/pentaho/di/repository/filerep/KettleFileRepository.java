@@ -941,7 +941,7 @@ public class KettleFileRepository extends AbstractRepository {
       RepositoryDirectoryInterface directory = tree.findDirectory( idDirectory );
       String folderName = calcDirectoryName( directory );
       FileObject folder = KettleVFS.getFileObject( folderName );
-      
+
       for ( FileObject child : folder.getChildren() ) {
         if ( child.getType().equals( FileType.FILE ) ) {
           if ( !child.isHidden() || !repositoryMeta.isHidingHiddenFiles() ) {
