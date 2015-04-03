@@ -116,7 +116,13 @@ public class SqlScriptParser {
           }
           break;
         case STRING:
-          if ( ch == '\\' && nextCh == currentStringChar ) {
+          if ( ch == '\\' && nextCh == '\\' ) {
+            /*
+             * The user is hard-coding a backslash into the string.
+             * Pass the hard-coded backslash through, and skip over the real backslash on the next loop
+             */
+            i++;
+          } else if ( ch == '\\' && nextCh == currentStringChar ) {
             /*
              * The user is hard-coding a quote character into the string.
              * Pass the hard-coded quote character through, and skip over the quote on next loop
