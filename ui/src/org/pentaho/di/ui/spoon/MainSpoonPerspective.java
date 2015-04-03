@@ -31,19 +31,24 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
+import org.pentaho.di.ui.util.ImageUtil;
+import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.impl.DefaultXulOverlay;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
 
-public class MainSpoonPerspective implements SpoonPerspective {
+public class MainSpoonPerspective extends AbstractSpoonPerspective {
 
   public static final String ID = "001-spoon-jobs";
 
@@ -67,15 +72,13 @@ public class MainSpoonPerspective implements SpoonPerspective {
   }
 
   public InputStream getPerspectiveIcon() {
-    File f = new File( "ui/images/transformation.png" );
-    try {
-      return new FileInputStream( f );
-    } catch ( FileNotFoundException e ) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return null;
+    return ImageUtil.getImageInputStream( Display.getCurrent(), "ui/images/transformation.svg" );
   }
+  
+  public Image getIcon() {
+    SwtUniversalImage image = SwtSvgImageUtil.getUniversalImage( Display.getCurrent(), getClass().getClassLoader(), "ui/images/transformation.svg" );
+    return image.getAsBitmapForSize( Display.getCurrent(), 16, 16 );
+  }  
 
   public Composite getUI() {
     return ui;

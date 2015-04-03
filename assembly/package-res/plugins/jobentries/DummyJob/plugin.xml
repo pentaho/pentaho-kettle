@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <plugin
    id="DummyJob"
-   iconfile="DPL.png"
+   iconfile="DPL.svg"
    description="Dummy Job Entry"
    tooltip="This is a dummy plugin test job entry"
    category="General"

@@ -38,9 +38,18 @@ public class BasePainter {
 
   protected static final int MINI_ICON_SIZE = 16;
   protected static final int MINI_ICON_MARGIN = 5;
-  protected static final int MINI_ICON_TRIANGLE_BASE = 10;
-  protected static final int MINI_ICON_DISTANCE = 7;
+  protected static final int MINI_ICON_TRIANGLE_BASE = 20;
+  protected static final int MINI_ICON_DISTANCE = 4;
   protected static final int MINI_ICON_SKEW = 0;
+  
+  protected static final int CONTENT_MENU_INDENT = 4; 
+  
+  protected static final int CORNER_RADIUS_5 = 10;
+  protected static final int CORNER_RADIUS_4 = 8;
+  protected static final int CORNER_RADIUS_3 = 6;
+  protected static final int CORNER_RADIUS_2 = 4;
+  
+  protected static final float FACTOR_1_TO_1 = 1.0f;
 
   protected Point area;
 
@@ -205,6 +214,14 @@ public class BasePainter {
     if ( !shadow ) {
       areaOwners.add( new AreaOwner( AreaType.NOTE, note.x, note.y, width, height, offset, subject, notePadMeta ) );
     }
+  }
+  
+  protected int translateTo1To1( int value ) {
+    return Math.round( value / magnification );
+  }
+  
+  protected int translateToCurrentScale( int value ) {
+    return Math.round( value * magnification );
   }
 
   protected Point real2screen( int x, int y ) {

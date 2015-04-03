@@ -1,17 +1,17 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="stretch">
 
   <toolbar id="nav-toolbar" mode="icons">
-    <toolbarbutton id="refresh-history" label="${TransHistory.Button.Refresh}" image="images/refresh.png"
+    <toolbarbutton id="refresh-history" label="${TransHistory.Button.Refresh}" image="images/refresh.svg"
       tooltiptext="${TransHistory.Button.Refresh}" onclick="transhistory.refreshHistory()"/>
-    <toolbarbutton id="replay-history" label="${TransHistory.Button.Replay}" image="images/replay.png"
+    <toolbarbutton id="replay-history" label="${TransHistory.Button.Replay}" image="images/replay.svg"
       tooltiptext="${TransHistory.Button.Replay}" onclick="transhistory.replayHistory()" />
     <toolbarseparator />
-    <toolbarbutton id="clear-history" label="${TransHistory.Button.Clear}" image="images/clear-log.png"
+    <toolbarbutton id="clear-history" label="${TransHistory.Button.Clear}" image="images/trash.svg"
       tooltiptext="${TransHistory.Button.Clear}" onclick="transhistory.clearLogTable()" />
     <toolbarseparator />
-    <toolbarbutton id="fetch-next-batch-history" label="${TransHistory.Button.FetchNextBatch}" image="images/history_get_next.png"
+    <toolbarbutton id="fetch-next-batch-history" label="${TransHistory.Button.FetchNextBatch}" image="images/history_get_next.svg"
       tooltiptext="${TransHistory.Button.FetchNextBatch}" onclick="transhistory.fetchNextBatch()" />
-    <toolbarbutton id="fetch-all-history" label="${TransHistory.Button.FetchAll}" image="images/history_get_all.png"
+    <toolbarbutton id="fetch-all-history" label="${TransHistory.Button.FetchAll}" image="images/history_get_all.svg"
       tooltiptext="${TransHistory.Button.FetchAll}" onclick="transhistory.fetchAll()" />
   </toolbar>
 

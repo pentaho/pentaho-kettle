@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -150,7 +151,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     }
 
     transPreviewTab = new CTabItem( transGraph.extraViewTabFolder, SWT.NONE );
-    transPreviewTab.setImage( GUIResource.getInstance().getImageTable() );
+    transPreviewTab.setImage( GUIResource.getInstance().getImagePreview() );
     transPreviewTab.setText( BaseMessages.getString( PKG, "Spoon.TransGraph.PreviewTab.Name" ) );
 
     transPreviewComposite = new Composite( transGraph.extraViewTabFolder, SWT.NONE );
@@ -200,6 +201,7 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
       xulDomContainer.addEventHandler( this );
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById( "nav-toolbar" );
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
+      spoon.props.setLook( swtToolBar, Props.WIDGET_STYLE_TOOLBAR );
       swtToolBar.layout( true, true );
       swtToolBar.pack();
 

@@ -20,7 +20,6 @@
   <dependencies defaultconf="dev->default">
     <dependency org="commons-io" name="commons-io" rev="1.4" transitive="false"/>
     <dependency org="commons-vfs" name="commons-vfs" rev="20100924-pentaho" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-xml" rev="1.7" transitive="false"/>
                 
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>  
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
