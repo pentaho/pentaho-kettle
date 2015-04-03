@@ -698,9 +698,9 @@ public class GUIResource {
       try {
         ClassLoader classLoader = registry.getClassLoader( steps.get( i ) );
         image = SwtSvgImageUtil.getUniversalImage( display, classLoader, filename );
-      } catch ( Exception e ) {
+      } catch ( Throwable t ) {
         log.logError( "Unable to find required step image file or image format not supported (e.g. interlaced) ["
-            + filename + " : ", e );
+            + filename + " : ", t );
         Image img = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         GC gc = new GC( img );
         gc.drawRectangle( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
@@ -1188,9 +1188,9 @@ public class GUIResource {
       try {
         ClassLoader classLoader = registry.getClassLoader( plugin );
         image = SwtSvgImageUtil.getUniversalImage( display, classLoader, filename );
-      } catch ( Exception e ) {
+      } catch ( Throwable t ) {
         log.logError( "Unable to find required job entry image file ["
-          + filename + "] for id [" + plugin.getIds()[0] + "] : " + e.toString() );
+          + filename + "] for id [" + plugin.getIds()[0] + "] : " + t.toString() );
         Image img = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         GC gc = new GC( img );
         gc.drawRectangle( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
