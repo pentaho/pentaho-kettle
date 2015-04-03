@@ -1386,7 +1386,7 @@ public class EnterOptionsDialog extends Dialog {
     props.setLook( autoCollapseLbl );
     FormData fdautoCollapse = new FormData();
     fdautoCollapse.left = new FormAttachment( 0, 0 );
-    fdautoCollapse.top = new FormAttachment( wlClearCustom, margin );
+    fdautoCollapse.top = new FormAttachment( wlClearCustom, margin + 8 );
     fdautoCollapse.right = new FormAttachment( middle, -margin );
     autoCollapseLbl.setLayoutData( fdautoCollapse );
     autoCollapseBtn = new Button( wGeneralComp, SWT.CHECK );
@@ -1394,7 +1394,7 @@ public class EnterOptionsDialog extends Dialog {
     autoCollapseBtn.setSelection( props.getAutoCollapseCoreObjectsTree() );
     FormData helpautoCollapse = new FormData();
     helpautoCollapse.left = new FormAttachment( middle, 0 );
-    helpautoCollapse.top = new FormAttachment( wlClearCustom, margin );
+    helpautoCollapse.top = new FormAttachment( wlClearCustom, margin + 8 );
     helpautoCollapse.right = new FormAttachment( 100, 0 );
     autoCollapseBtn.setLayoutData( helpautoCollapse );
 
@@ -1404,7 +1404,7 @@ public class EnterOptionsDialog extends Dialog {
     props.setLook( tooltipLbl );
     FormData fdlToolTipData = new FormData();
     fdlToolTipData.left = new FormAttachment( 0, 0 );
-    fdlToolTipData.top = new FormAttachment( autoCollapseLbl, margin );
+    fdlToolTipData.top = new FormAttachment( autoCollapseBtn, margin );
     fdlToolTipData.right = new FormAttachment( middle, -margin );
     tooltipLbl.setLayoutData( fdlToolTipData );
     tooltipBtn = new Button( wGeneralComp, SWT.CHECK );
@@ -1412,7 +1412,7 @@ public class EnterOptionsDialog extends Dialog {
     tooltipBtn.setSelection( props.showToolTips() );
     FormData toolTipBtnData = new FormData();
     toolTipBtnData.left = new FormAttachment( middle, 0 );
-    toolTipBtnData.top = new FormAttachment( autoCollapseLbl, margin );
+    toolTipBtnData.top = new FormAttachment( autoCollapseBtn, margin );
     toolTipBtnData.right = new FormAttachment( 100, 0 );
     tooltipBtn.setLayoutData( toolTipBtnData );
 
