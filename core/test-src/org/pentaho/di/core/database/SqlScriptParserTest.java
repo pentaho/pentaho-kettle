@@ -29,6 +29,8 @@ public class SqlScriptParserTest {
       "CREATE TABLE test1 (col1 STRING) TBLPROPERTIES ('prop1' = 'my\\\"value')" );
     testSplit( "SELECT \"test\\\";SELECT 1", "SELECT \"test\\\";SELECT 1" );
     testSplit( "SELECT 'test\\';SELECT 1", "SELECT 'test\\';SELECT 1" );
+    testSplit( "create table pdi13654 (col1 string) TBLPROPERTIES (\"quoteChar\"=\"\\\"\", \"escapeChar\"=\"\\\\\");SELECT 1",
+      "create table pdi13654 (col1 string) TBLPROPERTIES (\"quoteChar\"=\"\\\"\", \"escapeChar\"=\"\\\\\")", "SELECT 1" );
   }
 
   private void testSplit( String sql, String... result ) {
