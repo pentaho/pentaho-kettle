@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -47,7 +48,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 public class SwtSvgImageUtil {
 
   private static FileObject base;
-  private static final String NO_IMAGE = "ui/images/no_image.svg";
+  private static final String NO_IMAGE = "ui" + File.separator + "images" + File.separator + "no_image.svg";
   
   static {
     try {
@@ -85,25 +86,43 @@ public class SwtSvgImageUtil {
    * Load image from several sources.
    */
   public static SwtUniversalImage getUniversalImage( Display display, ClassLoader classLoader, String filename ) {
-    SwtUniversalImage result = null;
-    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
-      result = loadFromClassLoader( display, classLoader, filename );
+
+    if ( !SvgSupport.isSvgEnabled() ) {
+      filename = SvgSupport.toPngName( filename );
     }
-    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
-      result = loadFromClassLoader( display, classLoader, "/" + filename );
-    }
-    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
-      result = loadFromSimpleVFS( display, filename );
-    }
+
+    SwtUniversalImage result = loadFromClassLoader( display, classLoader, filename );
     if ( result == null ) {
-      result = loadFromClassLoader( display, classLoader, SvgSupport.toPngName( filename ) );
+      result = loadFromClassLoader( display, classLoader, File.separator + filename );
+      if ( result == null ) {
+        result = loadFromClassLoader( display, classLoader, "ui" + File.separator + "images" + File.separator + filename );
+        if ( result == null ) {
+          result = loadFromSimpleVFS( display, filename );
+          if ( result == null ) {
+            result = loadFromSimpleVFS( display, File.separator + filename );
+            if ( result == null ) {
+              result = loadFromSimpleVFS( display, "ui" + File.separator + "images" + File.separator + filename );
+              if ( result == null ) {
+                result = loadFromCurrentClasspath( display, filename );
+                if ( result == null ) {
+                  result = loadFromCurrentClasspath( display, File.separator + filename );
+                  if ( result == null ) {
+                    result = loadFromCurrentClasspath( display, "ui" + File.separator + "images" + File.separator + filename );
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
-    if ( result == null ) {
-      result = loadFromClassLoader( display, classLoader, "/" + SvgSupport.toPngName( filename ) );
+
+    // if we haven't loaded SVG attempt to use PNG 
+    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
+      result = getUniversalImage( display, classLoader, SvgSupport.toPngName( filename ) );
     }
-    if ( result == null ) {
-      result = loadFromSimpleVFS( display, SvgSupport.toPngName( filename ) );
-    }
+
+    // if we can't load PNG, use default "no_image" graphic
     if ( result == null ) {
       result = getUniversalImage( display, classLoader, NO_IMAGE );
     }
