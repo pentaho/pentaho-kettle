@@ -1401,6 +1401,11 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     boolean retval = false;
     String realServername = null;
     try {
+      //If FTP encoding setting changes, then close the existing connection, with new code to connect again
+      //(若ftp编码设置变化，则关闭现有连接，重新以新编码连接)
+      if( ftpclient != null && ftpclient.connected() && !ftpclient.getControlEncoding().equals(wControlEncoding.getText())){
+    	  closeFTPConnection();
+      }
       if ( ftpclient == null || !ftpclient.connected() ) {
         // Create ftp client to host:port ...
         ftpclient = new FTPClient();
@@ -1419,6 +1424,9 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
           }
         }
 
+        //Use specified by the user code to connect FTP, avoid file failed test in Chinese
+        //使用用户指定的编码连接ftp，避免中文文件检测失败
+        ftpclient.setControlEncoding(wControlEncoding.getText());
         // login to ftp host ...
         ftpclient.connect();
         String realUsername =
