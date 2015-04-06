@@ -37,7 +37,7 @@
           command="spoon.importFile()" />
         <menu id="file-export" label="${Spoon.Menu.File.Export.Popup}" >
           <menupopup id="export-popup">
-          	<menuitem id="file-export-to-xml" label="${Spoon.Menu.File.Export}" command="spoon.exportXMLFile()" />
+            <menuitem id="file-export-to-xml" label="${Spoon.Menu.File.Export}" command="spoon.exportXMLFile()" />
             <menuitem id="file-export-all-to-xml" label="${Spoon.Menu.File.ExportAll}" command="spoon.exportAllXMLFile()" />
             <!--
             <menuitem id="file-save-as-vfs" label="${Spoon.Menu.File.SaveAsVFS}" command="spoon.saveXMLFileToVfs()" disabled="false" />                 
@@ -144,7 +144,7 @@
           </menupopup>
         </menu>
         <menu id="repository" label="${Spoon.Menu.Repository}">
-      	  <menupopup id="repository-popup">
+          <menupopup id="repository-popup">
             <menuitem id="repository-connect" acceltext="CTRL-R" accesskey="ctrl-r"
               label="${Spoon.Menu.Repository.ConnectToRepository}" command="spoon.openRepository()" />
             <menuitem id="repository-disconnect" acceltext="CTRL-D" accesskey="ctrl-d" disabled="true"
@@ -157,7 +157,7 @@
             <menuseparator />
             <menuitem id="repository-export-all" label="${Spoon.Menu.Repository.ExportAll}" command="spoon.exportRepositoryAll()" />
             <menuitem id="repository-import-directory" label="${Spoon.Menu.Repository.ImportFiles}" command="spoon.importDirectoryToRepository()" />            
-      	  </menupopup>
+          </menupopup>
         </menu>
         <menu id="wizard" label="${Spoon.Menu.Wizard}">
           <menupopup id="wizard-popup">
@@ -169,7 +169,10 @@
               command="spoon.ripDBWizard()" />
           </menupopup>
         </menu>
-        <menuitem id="authentication" label="${Spoon.Menu.Authentication}" command="spoon.showAuthenticationOptions()" />
+        <!-- 
+        Menu item is blocked until Authentication feature will not be implemented. 
+        <menuitem id="authentication" label="${Spoon.Menu.Authentication}" command="spoon.showAuthenticationOptions()" 
+        /> -->
         <menuseparator />
         <menuitem id="edit-options" label="${Spoon.Menu.Edit.Options}" command="spoon.editOptions()" />
       </menupopup>
@@ -248,7 +251,7 @@
     <menuitem id="database-inst-share" label="${Spoon.Menu.Popup.CONNECTIONS.Share}" command="spoon.shareObject('database-inst-share')" />
     <menuitem id="database-inst-explore" label="${Spoon.Menu.Popup.CONNECTIONS.Explore}" command="spoon.exploreDB()" />
     <menuseparator />
-  	<menuitem id="database-inst-dependancy" label="${Spoon.Menu.Popup.CONNECTIONS.ShowDependancies}" command="spoon.displayDbDependancies()" />
+    <menuitem id="database-inst-dependancy" label="${Spoon.Menu.Popup.CONNECTIONS.ShowDependancies}" command="spoon.displayDbDependancies()" />
   </menupopup>
 
   <menupopup id="step-inst">
