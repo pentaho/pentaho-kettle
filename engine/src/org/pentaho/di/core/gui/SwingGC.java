@@ -129,6 +129,9 @@ public class SwingGC implements GCInterface {
   private Graphics2D gc;
 
   private int iconsize;
+  
+  //TODO should be changed to PropsUI usage
+  private int small_icon_size = 16;
 
   private Map<String, SwingUniversalImage> stepImages;
   private Map<String, SwingUniversalImage> entryImages;
@@ -330,25 +333,26 @@ public class SwingGC implements GCInterface {
     gc.drawLine( x + xOffset, y + yOffset, x2 + xOffset, y2 + yOffset );
   }
 
+  @Override
   public void drawImage( EImage image, int locationX, int locationY, float magnification ) {
 
     SwingUniversalImage img = getNativeImage( image );
 
-    drawImage( img, locationX, locationY );
+    drawImage( img, locationX, locationY, small_icon_size );
 
     // gc.drawImage(img, locationX+xOffset, locationY+yOffset, observer);
 
   }
-  
+
   @Override
   public void drawImage( EImage image, int x, int y, float magnification, double angle ) {
     SwingUniversalImage img = getNativeImage( image );
-    drawImage( img, x, y, angle );
+    drawImage( img, x, y, angle, small_icon_size );
   }
 
-  public void drawImage( SwingUniversalImage image, int locationX, int locationY ) {
+  private void drawImage( SwingUniversalImage image, int locationX, int locationY, int imageSize ) {
     if ( isDrawingPixelatedImages() && image.isBitmap()) {
-      BufferedImage img=image.getAsBitmapForSize( iconsize, iconsize );
+      BufferedImage img=image.getAsBitmapForSize( imageSize, imageSize );
       ColorModel cm = img.getColorModel();
       Raster raster = img.getRaster();
 
@@ -366,14 +370,14 @@ public class SwingGC implements GCInterface {
       }
     } else {
       gc.setBackground( Color.white );
-      gc.clearRect( locationX, locationY, iconsize, iconsize );
-      image.drawToGraphics( gc, locationX, locationY, iconsize, iconsize );
+      gc.clearRect( locationX, locationY, imageSize, imageSize );
+      image.drawToGraphics( gc, locationX, locationY, imageSize, imageSize );
     }
   }
 
-  public void drawImage( SwingUniversalImage image, int centerX, int centerY, double angle ) {
-    if ( isDrawingPixelatedImages() && image.isBitmap()) {
-      BufferedImage img =  image.getAsBitmapForSize( iconsize, iconsize, angle );
+  private void drawImage( SwingUniversalImage image, int centerX, int centerY, double angle, int imageSize ) {
+    if ( isDrawingPixelatedImages() && image.isBitmap() ) {
+      BufferedImage img =  image.getAsBitmapForSize( imageSize, imageSize, angle );
       ColorModel cm = img.getColorModel();
       Raster raster = img.getRaster();
 
@@ -393,13 +397,13 @@ public class SwingGC implements GCInterface {
       }
     } else {
       gc.setBackground( Color.white );
-      gc.clearRect( centerX, centerY, iconsize, iconsize );
-      image.drawToGraphics( gc, centerX, centerY, iconsize, iconsize, angle );
+      gc.clearRect( centerX, centerY, imageSize, imageSize );
+      image.drawToGraphics( gc, centerX, centerY, imageSize, imageSize, angle );
     }
   }
 
   public Point getImageBounds( EImage image, float magnification ) {
-    return new Point( iconsize, iconsize );
+    return new Point( small_icon_size, small_icon_size );
   }
 
   public static final SwingUniversalImage getNativeImage( EImage image ) {
@@ -678,7 +682,7 @@ public class SwingGC implements GCInterface {
     SwingUniversalImage im = stepImages.get( steptype );
     if ( im != null ) { // Draw the icon!
 
-      drawImage( im, x + xOffset, y + xOffset );
+      drawImage( im, x + xOffset, y + xOffset, iconsize );
 
       // gc.drawImage(im, x+xOffset, y+yOffset, observer);
     }
@@ -708,7 +712,7 @@ public class SwingGC implements GCInterface {
       return;
     }
 
-    drawImage( image, x + xOffset, y + xOffset );
+    drawImage( image, x + xOffset, y + xOffset, iconsize );
     // gc.drawImage(image, x+xOffset, y+yOffset, observer);
   }
 
