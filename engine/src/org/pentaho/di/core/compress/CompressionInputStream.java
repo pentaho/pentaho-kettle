@@ -35,4 +35,14 @@ public abstract class CompressionInputStream extends InputStream {
   public int read() throws IOException {
     return delegate.read();
   }
+
+  @Override
+  public int read( byte[] b ) throws IOException {
+    return delegate.read( b );
+  }
+
+  @Override
+  public int read( byte[] b, int off, int len ) throws IOException {
+    return delegate.read( b, off, len );
+  }
 }
