@@ -745,7 +745,7 @@ public class TransPainter extends BasePainter {
       //
       int xError = ( x + iconsize ) - ( MINI_ICON_SIZE / 2 );
       int yError = ( y + iconsize ) - ( MINI_ICON_SIZE / 2 );
-      Point ib = gc.getImageBounds( EImage.STEP_ERROR, magnification );
+      Point ib = gc.getImageBounds( EImage.STEP_ERROR );
       gc.drawImage( EImage.STEP_ERROR, xError, yError, magnification );
       if ( !shadow ) {
         areaOwners.add( new AreaOwner(
@@ -773,7 +773,7 @@ public class TransPainter extends BasePainter {
       int totalIconsWidth = 0;
       int totalWidth = 2 * MINI_ICON_MARGIN;
       for ( EImage miniIcon : miniIcons ) {
-        Point bounds = gc.getImageBounds( miniIcon, magnification );
+        Point bounds = gc.getImageBounds( miniIcon );
         totalWidth += bounds.x + MINI_ICON_MARGIN;
         totalIconsWidth += bounds.x + MINI_ICON_MARGIN;
         if ( bounds.y > totalHeight ) {
@@ -834,7 +834,7 @@ public class TransPainter extends BasePainter {
       
       for ( int i = 0; i < miniIcons.length; i++ ) {
         EImage miniIcon = miniIcons[i];
-        Point bounds = gc.getImageBounds( miniIcon, magnification );
+        Point bounds = gc.getImageBounds( miniIcon );
         boolean enabled = false;
         switch ( i ) {
           case 0: // INPUT
@@ -1098,7 +1098,7 @@ public class TransPainter extends BasePainter {
         StreamInterface targetStream = ioMeta.findTargetStream( ts );
         if ( targetStream != null ) {
           EImage hopsIcon = BasePainter.getStreamIconImage( targetStream.getStreamIcon() );
-          Point bounds = gc.getImageBounds( hopsIcon, magnification );
+          Point bounds = gc.getImageBounds( hopsIcon );
           gc.drawImage( hopsIcon, mx, my, magnification );
           if ( !shadow ) {
             areaOwners.add( new AreaOwner(
@@ -1112,7 +1112,7 @@ public class TransPainter extends BasePainter {
         //
         EImage eImage = fs.getRowDistribution().getDistributionImage();
         if ( eImage != null ) {
-          Point bounds = gc.getImageBounds( eImage, magnification );
+          Point bounds = gc.getImageBounds( eImage );
           gc.drawImage( eImage, mx, my, magnification );
 
           if ( !shadow ) {
@@ -1126,7 +1126,7 @@ public class TransPainter extends BasePainter {
 
         // Draw the copy icon on the hop
         //
-        Point bounds = gc.getImageBounds( EImage.COPY_ROWS, magnification );
+        Point bounds = gc.getImageBounds( EImage.COPY_ROWS );
         gc.drawImage( EImage.COPY_ROWS, mx, my, magnification );
 
         if ( !shadow ) {
@@ -1137,7 +1137,7 @@ public class TransPainter extends BasePainter {
       }
 
       if ( errorHop ) {
-        Point bounds = gc.getImageBounds( EImage.COPY_ROWS, magnification );
+        Point bounds = gc.getImageBounds( EImage.COPY_ROWS );
         gc.drawImage( EImage.FALSE, mx, my, magnification );
         if ( !shadow ) {
           areaOwners.add( new AreaOwner( AreaType.HOP_ERROR_ICON, mx, my, bounds.x, bounds.y, offset, fs, ts ) );
@@ -1150,7 +1150,7 @@ public class TransPainter extends BasePainter {
 
       if ( ( candidateHopType == StreamType.INFO && ts.equals( endHopStep ) && fs.equals( startHopStep ) )
         || Const.indexOfString( fs.getName(), infoStepnames ) >= 0 ) {
-        Point bounds = gc.getImageBounds( EImage.INFO, magnification );
+        Point bounds = gc.getImageBounds( EImage.INFO );
         gc.drawImage( EImage.INFO, mx, my, magnification );
         if ( !shadow ) {
           areaOwners.add( new AreaOwner( AreaType.HOP_INFO_ICON, mx, my, bounds.x, bounds.y, offset, fs, ts ) );

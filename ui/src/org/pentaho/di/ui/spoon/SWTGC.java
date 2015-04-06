@@ -41,6 +41,7 @@ import org.eclipse.swt.graphics.Transform;
 import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.PrimitiveGCInterface.EImage;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.ConstUI;
@@ -76,6 +77,8 @@ public class SWTGC implements GCInterface {
   private int small_icon_size = ConstUI.SMALL_ICON_SIZE;
 
   private Map<String, SwtUniversalImage> images;
+  
+  private float currentMagnification = 1.0f;
 
   private List<Color> colors;
   private List<Font> fonts;
@@ -129,6 +132,11 @@ public class SWTGC implements GCInterface {
   public void drawLine( int x, int y, int x2, int y2 ) {
     gc.drawLine( x, y, x2, y2 );
   }
+  
+  @Override
+  public void drawImage( EImage image, int x, int y ) {
+    drawImage( image, x, y, currentMagnification );
+  }
 
   public void drawImage( EImage image, int x, int y, float magnification ) {
     Image img = getNativeImage( image ).getAsBitmapForSize( gc.getDevice(), Math.round( small_icon_size * magnification ),
@@ -151,7 +159,7 @@ public class SWTGC implements GCInterface {
     }
   }
 
-  public Point getImageBounds( EImage image, float magnification ) {
+  public Point getImageBounds( EImage image ) {
     return new Point( small_icon_size, small_icon_size );
   }
 
@@ -369,6 +377,7 @@ public class SWTGC implements GCInterface {
     transform.translate( translationX + shadowsize * magnification, translationY + shadowsize * magnification );
     transform.scale( magnification, magnification );
     gc.setTransform( transform );
+    currentMagnification = magnification;
   }
 
   public Point textExtent( String text ) {
@@ -422,6 +431,16 @@ public class SWTGC implements GCInterface {
 
     org.eclipse.swt.graphics.Rectangle bounds = image.getBounds();
     gc.drawImage( image, 0, 0, bounds.width, bounds.height, x, y, iconsize, iconsize );
+  }
+  
+  @Override
+  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
+    drawJobEntryIcon( x, y , jobEntryCopy, currentMagnification );
+  }
+
+  @Override
+  public void drawStepIcon( int x, int y, StepMeta stepMeta ) {
+    drawStepIcon( x, y, stepMeta, currentMagnification );
   }
 
   public void setAntialias( boolean antiAlias ) {
