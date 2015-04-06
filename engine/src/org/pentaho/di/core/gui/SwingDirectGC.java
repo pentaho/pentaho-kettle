@@ -126,6 +126,9 @@ public class SwingDirectGC implements GCInterface {
   private Graphics2D gc;
 
   private int iconsize;
+  
+  //TODO should be changed to PropsUI usage
+  private int small_icon_size = 16;
 
   private Map<String, SwingUniversalImage> stepImages;
   private Map<String, SwingUniversalImage> entryImages;
@@ -328,7 +331,7 @@ public class SwingDirectGC implements GCInterface {
 
     SwingUniversalImage img = getNativeImage( image );
 
-    drawImage( img, locationX, locationY );
+    drawImage( img, locationX, locationY, small_icon_size );
 
     // gc.drawImage(img, locationX+xOffset, locationY+yOffset, observer);
 
@@ -336,16 +339,16 @@ public class SwingDirectGC implements GCInterface {
 
   public void drawImage( EImage image, int locationX, int locationY, float magnification, double angle ) {
     SwingUniversalImage img = getNativeImage( image );
-    drawImage( img, locationX, locationY, angle );
+    drawImage( img, locationX, locationY, angle, small_icon_size );
   }
 
-  public void drawImage( SwingUniversalImage img, int locationX, int locationY ) {
+  private void drawImage( SwingUniversalImage img, int locationX, int locationY, int imageSize ) {
     if ( isDrawingPixelatedImages() && img.isBitmap() ) {
-      BufferedImage bi = new BufferedImage( iconsize, iconsize, BufferedImage.TYPE_INT_RGB );
+      BufferedImage bi = new BufferedImage( imageSize, imageSize, BufferedImage.TYPE_INT_RGB );
       Graphics2D g2 = (Graphics2D) bi.getGraphics();
       g2.setColor( Color.WHITE );
-      g2.fillRect( 0, 0, iconsize, iconsize );
-      g2.drawImage( img.getAsBitmapForSize( iconsize, iconsize ), 0, 0, observer );
+      g2.fillRect( 0, 0, imageSize, imageSize );
+      g2.drawImage( img.getAsBitmapForSize( imageSize, imageSize ), 0, 0, observer );
       g2.dispose();
 
       for ( int x = 0; x < bi.getWidth( observer ); x++ ) {
@@ -359,14 +362,14 @@ public class SwingDirectGC implements GCInterface {
       }
     } else {
       gc.setBackground( Color.white );
-      gc.clearRect( locationX, locationY, iconsize, iconsize );
-      img.drawToGraphics( gc, locationX, locationY, iconsize, iconsize );
+      gc.clearRect( locationX, locationY, imageSize, imageSize );
+      img.drawToGraphics( gc, locationX, locationY, imageSize, imageSize );
     }
   }
 
-  public void drawImage( SwingUniversalImage img, int centerX, int centerY, double angle ) {
+  private void drawImage( SwingUniversalImage img, int centerX, int centerY, double angle, int imageSize ) {
     if ( isDrawingPixelatedImages() && img.isBitmap() ) {
-      BufferedImage bi =  img.getAsBitmapForSize( iconsize, iconsize, angle );
+      BufferedImage bi =  img.getAsBitmapForSize( imageSize, imageSize, angle );
 
       int offx = centerX + xOffset - bi.getWidth() / 2;
       int offy = centerY + yOffset - bi.getHeight() / 2;
@@ -380,13 +383,13 @@ public class SwingDirectGC implements GCInterface {
       }
     } else {
       gc.setBackground( Color.white );
-      gc.clearRect( centerX, centerY, iconsize, iconsize );
-      img.drawToGraphics( gc, centerX, centerY, iconsize, iconsize, angle );
+      gc.clearRect( centerX, centerY, imageSize, imageSize );
+      img.drawToGraphics( gc, centerX, centerY, imageSize, imageSize, angle );
     }
   }
 
   public Point getImageBounds( EImage image, float magnification ) {
-    return new Point( iconsize, iconsize );
+    return new Point( small_icon_size, small_icon_size );
   }
 
   public static final SwingUniversalImage getNativeImage( EImage image ) {
@@ -660,7 +663,7 @@ public class SwingDirectGC implements GCInterface {
     SwingUniversalImage im = stepImages.get( steptype );
     if ( im != null ) { // Draw the icon!
 
-      drawImage( im, x + xOffset, y + xOffset );
+      drawImage( im, x + xOffset, y + xOffset, iconsize );
 
       // gc.drawImage(im, x+xOffset, y+yOffset, observer);
     }
@@ -690,7 +693,7 @@ public class SwingDirectGC implements GCInterface {
       return;
     }
 
-    drawImage( image, x + xOffset, y + xOffset );
+    drawImage( image, x + xOffset, y + xOffset, iconsize );
     // gc.drawImage(image, x+xOffset, y+yOffset, observer);
   }
 
