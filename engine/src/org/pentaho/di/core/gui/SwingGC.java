@@ -332,6 +332,11 @@ public class SwingGC implements GCInterface {
   public void drawLine( int x, int y, int x2, int y2 ) {
     gc.drawLine( x + xOffset, y + yOffset, x2 + xOffset, y2 + yOffset );
   }
+  
+  @Override
+  public void drawImage( EImage image, int x, int y ) {
+    drawImage( image, x, y, 0.0f );
+  }
 
   @Override
   public void drawImage( EImage image, int locationX, int locationY, float magnification ) {
@@ -402,7 +407,7 @@ public class SwingGC implements GCInterface {
     }
   }
 
-  public Point getImageBounds( EImage image, float magnification ) {
+  public Point getImageBounds( EImage image ) {
     return new Point( small_icon_size, small_icon_size );
   }
 
@@ -715,6 +720,16 @@ public class SwingGC implements GCInterface {
     drawImage( image, x + xOffset, y + xOffset, iconsize );
     // gc.drawImage(image, x+xOffset, y+yOffset, observer);
   }
+  
+  @Override
+  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
+    drawJobEntryIcon( x, y , jobEntryCopy, 1.0f );
+  }
+
+  @Override
+  public void drawStepIcon( int x, int y, StepMeta stepMeta ) {
+    drawStepIcon( x, y, stepMeta, 1.0f );
+  }
 
   public void setAntialias( boolean antiAlias ) {
     if ( antiAlias ) {
@@ -791,4 +806,5 @@ public class SwingGC implements GCInterface {
   public void drawImage( BufferedImage image, int x, int y ) {
     gc.drawImage( image, x, y, observer );
   }
+
 }

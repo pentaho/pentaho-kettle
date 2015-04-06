@@ -308,7 +308,7 @@ public class JobPainter extends BasePainter {
       int totalIconsWidth = 0;
       int totalWidth = 2 * MINI_ICON_MARGIN;
       for ( EImage miniIcon : miniIcons ) {
-        Point bounds = gc.getImageBounds( miniIcon, magnification );
+        Point bounds = gc.getImageBounds( miniIcon );
         totalWidth += bounds.x + MINI_ICON_MARGIN;
         totalIconsWidth += bounds.x + MINI_ICON_MARGIN;
         if ( bounds.y > totalHeight ) {
@@ -372,7 +372,7 @@ public class JobPainter extends BasePainter {
       
       for ( int i = 0; i < miniIcons.length; i++ ) {
         EImage miniIcon = miniIcons[i];
-        Point bounds = gc.getImageBounds( miniIcon, magnification );
+        Point bounds = gc.getImageBounds( miniIcon );
         boolean enabled = false;
         switch ( i ) {
           case 0: // INPUT
@@ -593,7 +593,7 @@ public class JobPainter extends BasePainter {
         }
       }
 
-      Point bounds = gc.getImageBounds( hopsIcon, magnification );
+      Point bounds = gc.getImageBounds( hopsIcon );
       gc.drawImage( hopsIcon, mx, my, magnification );
       if ( !shadow ) {
         areaOwners
