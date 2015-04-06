@@ -22,8 +22,6 @@
 
 package org.pentaho.di.ui.core.widget;
 
-import java.util.Arrays;
-
 import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
@@ -47,6 +45,8 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
+
+import java.util.Arrays;
 
 public class ControlSpaceKeyAdapter extends KeyAdapter {
 
@@ -129,7 +129,7 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
       Point location = GUIResource.calculateControlPosition( control );
 
       final Shell shell = new Shell( control.getShell(), SWT.NONE );
-      shell.setSize( bounds.width, 200 );
+      shell.setSize( bounds.width > 300 ? bounds.width : 300, 200 );
       shell.setLocation( location.x, location.y + bounds.height );
       shell.setLayout( new FillLayout() );
       final List list = new List( shell, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL );
