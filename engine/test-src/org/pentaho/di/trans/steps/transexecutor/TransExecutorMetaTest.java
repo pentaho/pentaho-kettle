@@ -6,8 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
@@ -20,6 +27,12 @@ import static org.mockito.Mockito.*;
 public class TransExecutorMetaTest {
 
   LoadSaveTester loadSaveTester;
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
+    PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
+    PluginRegistry.init( true );
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -115,6 +128,83 @@ public class TransExecutorMetaTest {
     meta.handleStreamSelection( stream );
 
     assertEquals( stream.getStepMeta(), meta.getExecutorsOutputStepMeta() );
+  }
+
+  @Test
+  public void testPrepareExecutionResultsFields() throws Exception {
+    TransExecutorMeta meta = new TransExecutorMeta();
+    meta = spy( meta );
+
+    RowMetaInterface row = mock( RowMetaInterface.class );
+    StepMeta nextStep = mock( StepMeta.class );
+
+    meta.setExecutionResultTargetStepMeta( nextStep );
+    meta.setExecutionTimeField( "time" );
+
+    StepMeta parent = mock( StepMeta.class );
+    doReturn( parent ).when( meta ).getParentStepMeta();
+    when( parent.getName() ).thenReturn( "parent step" );
+
+    meta.prepareExecutionResultsFields( row, nextStep );
+
+    // make sure we get the name of the parent step meta... used for the origin step
+    verify( parent ).getName();
+    ArgumentCaptor<ValueMetaInterface> argumentCaptor = ArgumentCaptor.forClass( ValueMetaInterface.class );
+    verify( row ).addValueMeta( argumentCaptor.capture() );
+    assertEquals( "parent step", argumentCaptor.getValue().getOrigin() );
+  }
+
+  @Test
+  public void testPrepareExecutionResultsFileFields() throws Exception {
+    TransExecutorMeta meta = new TransExecutorMeta();
+    meta = spy( meta );
+
+    RowMetaInterface row = mock( RowMetaInterface.class );
+    StepMeta nextStep = mock( StepMeta.class );
+
+    meta.setResultFilesTargetStepMeta( nextStep );
+    meta.setResultFilesFileNameField( "file_name" );
+
+    StepMeta parent = mock( StepMeta.class );
+    doReturn( parent ).when( meta ).getParentStepMeta();
+    when( parent.getName() ).thenReturn( "parent step" );
+
+    meta.prepareExecutionResultsFileFields( row, nextStep );
+
+    // make sure we get the name of the parent step meta... used for the origin step
+    verify( parent ).getName();
+    ArgumentCaptor<ValueMetaInterface> argumentCaptor = ArgumentCaptor.forClass( ValueMetaInterface.class );
+    verify( row ).addValueMeta( argumentCaptor.capture() );
+    assertEquals( "parent step", argumentCaptor.getValue().getOrigin() );
+  }
+
+  @Test
+  public void testPrepareResultsRowsFields() throws Exception {
+    TransExecutorMeta meta = new TransExecutorMeta();
+    String[] outputFieldNames = new String[] { "one", "two" };
+    int[] outputFieldTypes = new int[] { 0, 1 };
+    int[] outputFieldLength = new int[] { 4, 8 };
+    int[] outputFieldPrecision = new int[] { 2, 4 };
+
+    meta.setOutputRowsField( outputFieldNames );
+    meta.setOutputRowsType( outputFieldTypes );
+    meta.setOutputRowsLength( outputFieldLength );
+    meta.setOutputRowsPrecision( outputFieldPrecision );
+    meta = spy( meta );
+
+    RowMetaInterface row = mock( RowMetaInterface.class );
+
+    StepMeta parent = mock( StepMeta.class );
+    doReturn( parent ).when( meta ).getParentStepMeta();
+    when( parent.getName() ).thenReturn( "parent step" );
+
+    meta.prepareResultsRowsFields( row );
+
+    // make sure we get the name of the parent step meta... used for the origin step
+    verify( parent, times ( outputFieldNames.length ) ).getName();
+    ArgumentCaptor<ValueMetaInterface> argumentCaptor = ArgumentCaptor.forClass( ValueMetaInterface.class );
+    verify( row, times( outputFieldNames.length ) ).addValueMeta( argumentCaptor.capture() );
+    assertEquals( "parent step", argumentCaptor.getValue().getOrigin() );
   }
 
 
