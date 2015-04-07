@@ -1,15 +1,9 @@
 package org.pentaho.di.trans.steps.transexecutor;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -19,7 +13,16 @@ import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -43,16 +46,35 @@ public class TransExecutorMetaTest {
             "executionLogChannelIdField", "executionResultField", "executionNrErrorsField", "executionLinesReadField",
             "executionLinesWrittenField", "executionLinesInputField", "executionLinesOutputField",
             "executionLinesRejectedField", "executionLinesUpdatedField", "executionLinesDeletedField",
-            "executionExitStatusField" );
+            "executionExitStatusField", "outputRowsField", "outputRowsType", "outputRowsLength",
+            "outputRowsPrecision" );
 
     // executionResultTargetStepMeta -? (see for switch case meta)
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
+    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 1 );
+
+    // don't want the random value given by the default getTestObject...
+    IntLoadSaveValidator intValidator = spy( new IntLoadSaveValidator() );
+    doReturn( ValueMetaInterface.TYPE_INTEGER ).when( intValidator ).getTestObject();
+
+    FieldLoadSaveValidator<int[]> intArrayLoadSaveValidator =
+      new PrimitiveIntArrayLoadSaveValidator( intValidator, 1 );
+
+    attrValidatorMap.put( "outputRowsField", stringArrayLoadSaveValidator );
+    attrValidatorMap.put( "outputRowsType", intArrayLoadSaveValidator );
+    attrValidatorMap.put( "outputRowsLength", intArrayLoadSaveValidator );
+    attrValidatorMap.put( "outputRowsPrecision", intArrayLoadSaveValidator );
+
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
+    typeValidatorMap.put( int[].class.getCanonicalName(), new PrimitiveIntArrayLoadSaveValidator(
+      new IntLoadSaveValidator(), 1 ) );
     loadSaveTester =
         new LoadSaveTester( TransExecutorMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+
   }
 
   @Test

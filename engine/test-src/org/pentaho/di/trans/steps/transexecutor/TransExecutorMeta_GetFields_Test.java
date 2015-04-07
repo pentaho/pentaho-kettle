@@ -1,9 +1,12 @@
 package org.pentaho.di.trans.steps.transexecutor;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.trans.step.StepMeta;
 
 import static org.mockito.Mockito.*;
@@ -15,6 +18,12 @@ public class TransExecutorMeta_GetFields_Test {
   private StepMeta executionResult;
   private StepMeta resultFiles;
   private StepMeta outputRows;
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
+    PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
+    PluginRegistry.init( true );
+  }
 
   @Before
   public void setUp() {
@@ -37,6 +46,13 @@ public class TransExecutorMeta_GetFields_Test {
     meta.setOutputRowsType( new int[] { 0 } );
     meta.setOutputRowsLength( new int[] { 0 } );
     meta.setOutputRowsPrecision( new int[] { 0 } );
+
+    meta = spy( meta );
+
+    StepMeta parent = mock( StepMeta.class );
+    doReturn( parent ).when( meta ).getParentStepMeta();
+    when( parent.getName() ).thenReturn( "parent step" );
+
   }
 
   @Test

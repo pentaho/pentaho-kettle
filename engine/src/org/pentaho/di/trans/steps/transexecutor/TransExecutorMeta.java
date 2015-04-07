@@ -432,17 +432,17 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     executionLogChannelIdField = rep.getStepAttributeString( id_step, "execution_log_channelid_field" );
 
     outputRowsSourceStep = rep.getStepAttributeString( id_step, "result_rows_target_step" );
-    int nrFields = rep.countNrStepAttributes( id_step, "result_rows_field" );
+    int nrFields = rep.countNrStepAttributes( id_step, "result_rows_field_name" );
     outputRowsField = new String[ nrFields ];
     outputRowsType = new int[ nrFields ];
     outputRowsLength = new int[ nrFields ];
     outputRowsPrecision = new int[ nrFields ];
 
     for ( int i = 0; i < nrFields; i++ ) {
-      outputRowsField[ i ] = rep.getStepAttributeString( id_step, i, "result_rows_field" );
-      outputRowsType[ i ] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "result_rows_type" ) );
-      outputRowsLength[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_length" );
-      outputRowsPrecision[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_precision" );
+      outputRowsField[ i ] = rep.getStepAttributeString( id_step, i, "result_rows_field_name" );
+      outputRowsType[ i ] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "result_rows_field_type" ) );
+      outputRowsLength[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_field_length" );
+      outputRowsPrecision[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_field_precision" );
     }
 
     resultFilesTargetStep = rep.getStepAttributeString( id_step, F_RESULT_FILE_TARGET_STEP );
@@ -549,6 +549,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     if ( nextStep != null && executionResultTargetStepMeta != null ) {
       addFieldToRow( row, executionTimeField, ValueMetaInterface.TYPE_INTEGER, 15, 0 );
       addFieldToRow( row, executionResultField, ValueMetaInterface.TYPE_BOOLEAN );
+      addFieldToRow( row, executionNrErrorsField, ValueMetaInterface.TYPE_INTEGER, 9, 0 );
       addFieldToRow( row, executionLinesReadField, ValueMetaInterface.TYPE_INTEGER, 9, 0 );
       addFieldToRow( row, executionLinesWrittenField, ValueMetaInterface.TYPE_INTEGER, 9, 0 );
       addFieldToRow( row, executionLinesInputField, ValueMetaInterface.TYPE_INTEGER, 9, 0 );
@@ -560,6 +561,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
       addFieldToRow( row, executionExitStatusField, ValueMetaInterface.TYPE_INTEGER, 3, 0 );
       addFieldToRow( row, executionLogTextField, ValueMetaInterface.TYPE_STRING );
       addFieldToRow( row, executionLogChannelIdField, ValueMetaInterface.TYPE_STRING, 50, 0 );
+
     }
   }
 
