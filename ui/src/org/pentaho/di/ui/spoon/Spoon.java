@@ -819,6 +819,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       /* menuBar = (XulMenubar) */
       mainSpoonContainer.getDocumentRoot().getElementById( "spoon-menubar" );
       mainToolbar = (XulToolbar) mainSpoonContainer.getDocumentRoot().getElementById( "main-toolbar" );
+      props.setLook( (Control) mainToolbar.getManagedObject(), Props.WIDGET_STYLE_TOOLBAR );
+
       /* canvas = (XulVbox) */
       mainSpoonContainer.getDocumentRoot().getElementById( "trans-job-canvas" );
       deck = (SwtDeck) mainSpoonContainer.getDocumentRoot().getElementById( "canvas-deck" );
@@ -1872,36 +1874,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private void addTree() {
     mainComposite = new Composite( sashform, SWT.BORDER );
     mainComposite.setLayout( new FormLayout() );
+    props.setLook( mainComposite, Props.WIDGET_STYLE_TOOLBAR );
 
-    // int mainMargin = 4;
-
-    // TODO: add i18n keys
-    //
-    Label sep0 = new Label( mainComposite, SWT.SEPARATOR | SWT.HORIZONTAL );
-    sep0.setBackground( GUIResource.getInstance().getColorWhite() );
-    FormData fdSep0 = new FormData();
-    fdSep0.left = new FormAttachment( 0, 0 );
-    fdSep0.right = new FormAttachment( 100, 0 );
-    fdSep0.top = new FormAttachment( 0, 0 );
-    sep0.setLayoutData( fdSep0 );
-
-    // empty panel to correct background color.
-    Composite tabWrapper = new Composite( mainComposite, SWT.NONE );
-    tabWrapper.setLayout( new FormLayout() );
-    tabWrapper.setBackground( GUIResource.getInstance().getColorWhite() );
-
-    FormData fdTabWrapper = new FormData();
-    fdTabWrapper.left = new FormAttachment( 0, 0 );
-    fdTabWrapper.top = new FormAttachment( sep0, 0 );
-    fdTabWrapper.right = new FormAttachment( 100, 0 );
-    tabWrapper.setLayoutData( fdTabWrapper );
-
-    CTabFolder tabFolder = new CTabFolder( tabWrapper, SWT.HORIZONTAL );
+    CTabFolder tabFolder = new CTabFolder( mainComposite, SWT.HORIZONTAL );
     props.setLook( tabFolder, Props.WIDGET_STYLE_TAB );
 
     FormData fdTab = new FormData();
     fdTab.left = new FormAttachment( 0, 0 );
-    fdTab.top = new FormAttachment( sep0, 0 );
+    fdTab.top = new FormAttachment( mainComposite, 0 );
     fdTab.right = new FormAttachment( 100, 0 );
     fdTab.height = 0;
     tabFolder.setLayoutData( fdTab );
@@ -1921,7 +1901,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     FormData fdSep3 = new FormData();
     fdSep3.left = new FormAttachment( 0, 0 );
     fdSep3.right = new FormAttachment( 100, 0 );
-    fdSep3.top = new FormAttachment( tabWrapper, 0 );
+    fdSep3.top = new FormAttachment( tabFolder, 0 );
     sep3.setLayoutData( fdSep3 );
 
     selectionLabel = new Label( mainComposite, SWT.HORIZONTAL );
@@ -1935,7 +1915,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     selectionLabel.setLayoutData( fdsLabel );
 
     ToolBar treeTb = new ToolBar( mainComposite, SWT.HORIZONTAL | SWT.FLAT );
-    treeTb.setBackground( GUIResource.getInstance().getColorDemoGray() );
     props.setLook( treeTb, Props.WIDGET_STYLE_TOOLBAR );
     /*
     This contains a map with all the unnamed transformation (just a filename)
