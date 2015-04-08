@@ -7,14 +7,21 @@ import java.util.Random;
 public class ListLoadSaveValidator<ObjectType> implements
     FieldLoadSaveValidator<List<ObjectType>> {
   private final FieldLoadSaveValidator<ObjectType> validator;
+  private final Integer elements;
 
   public ListLoadSaveValidator( FieldLoadSaveValidator<ObjectType> fieldValidator ) {
     validator = fieldValidator;
+    elements = null;
+  }
+
+  public ListLoadSaveValidator( FieldLoadSaveValidator<ObjectType> fieldValidator, Integer elements ) {
+    validator = fieldValidator;
+    this.elements = elements;
   }
 
   @Override
   public List<ObjectType> getTestObject() {
-    int max = new Random().nextInt( 100 ) + 50;
+    int max = elements == null ? new Random().nextInt( 100 ) + 50 : elements;
     List<ObjectType> result = new ArrayList<ObjectType>( max );
     for ( int i = 0; i < max; i++ ) {
       result.add( validator.getTestObject() );
