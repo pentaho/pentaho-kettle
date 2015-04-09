@@ -386,9 +386,6 @@ public class SWTGC implements GCInterface {
   }
 
   public void drawStepIcon( int x, int y, StepMeta stepMeta, float magnification ) {
-    // Draw a blank rectangle to prevent alpha channel problems...
-    //
-    gc.fillRectangle( x, y, iconsize, iconsize );
     String steptype = stepMeta.getStepID();
     Image im =
         images.get( steptype ).getAsBitmapForSize( gc.getDevice(), Math.round( iconsize * magnification ),

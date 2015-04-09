@@ -216,8 +216,7 @@ public class JobPainter extends BasePainter {
     }
 
     int alpha = gc.getAlpha();
-    gc.setAlpha( 255 );
-    
+
     Point pt = jobEntryCopy.getLocation();
     if ( pt == null ) {
       pt = new Point( 50, 50 );
@@ -235,7 +234,7 @@ public class JobPainter extends BasePainter {
     }
 
     gc.setBackground( EColor.BACKGROUND );
-    gc.fillRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1 );
+    gc.fillRoundRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1, 7, 7 );
     gc.drawJobEntryIcon( x, y, jobEntryCopy, magnification );
     
     if ( !shadow ) {
