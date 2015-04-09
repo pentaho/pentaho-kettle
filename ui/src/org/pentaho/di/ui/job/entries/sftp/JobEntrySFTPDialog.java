@@ -1034,11 +1034,6 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
         mb.setMessage( BaseMessages.getString( PKG, "JobSFTP.FolderExists.OK", changeFTPFolder ) + Const.CR );
         mb.setText( BaseMessages.getString( PKG, "JobSFTP.FolderExists.Title.Ok" ) );
         mb.open();
-      } else {
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "JobSFTP.FolderExists.NOK", changeFTPFolder ) + Const.CR );
-        mb.setText( BaseMessages.getString( PKG, "JobSFTP.FolderExists.Title.Bad" ) );
-        mb.open();
       }
     }
   }

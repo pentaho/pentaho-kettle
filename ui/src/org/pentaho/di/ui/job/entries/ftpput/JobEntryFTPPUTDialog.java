@@ -1008,11 +1008,6 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.FolderExists.OK", remoteFoldername ) + Const.CR );
         mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.FolderExists.Title.Ok" ) );
         mb.open();
-      } else {
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.FolderExists.NOK", remoteFoldername ) + Const.CR );
-        mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.FolderExists.Title.Bad" ) );
-        mb.open();
       }
     }
   }
