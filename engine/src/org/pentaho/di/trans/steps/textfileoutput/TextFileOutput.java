@@ -441,14 +441,13 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   private List<Integer> getEnclosurePositions( byte[] str ) {
     List<Integer> positions = null;
     if ( data.binaryEnclosure != null && data.binaryEnclosure.length > 0 ) {
-      for ( int i = 0; i < str.length - data.binaryEnclosure.length + 1; i++ ) // +1 because otherwise we will not find
-                                                                               // it at the end
-      {
+      // +1 because otherwise we will not find it at the end
+      for ( int i = 0, len = str.length - data.binaryEnclosure.length + 1; i < len; i++) {
         // verify if on position i there is an enclosure
         //
         boolean found = true;
         for ( int x = 0; found && x < data.binaryEnclosure.length; x++ ) {
-          if ( str[i + x] != data.binaryEnclosure[x] ) {
+          if ( str[ i + x ] != data.binaryEnclosure[ x ] ) {
             found = false;
           }
         }
@@ -496,15 +495,17 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           if ( i > 0 && data.binarySeparator.length > 0 ) {
             data.writer.write( data.binarySeparator );
           }
-          if ( ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
+
+          boolean writeEnclosure =
+            ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
               || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( fieldName.getBytes(),
-                  data.binarySeparator, data.binaryEnclosure ) ) ) ) {
+              data.binarySeparator, data.binaryEnclosure ) ) );
+
+          if ( writeEnclosure ) {
             data.writer.write( data.binaryEnclosure );
           }
           data.writer.write( getBinaryString( fieldName ) );
-          if ( ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( fieldName.getBytes(),
-                  data.binarySeparator, data.binaryEnclosure ) ) ) ) {
+          if ( writeEnclosure ) {
             data.writer.write( data.binaryEnclosure );
           }
         }
@@ -517,15 +518,16 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           }
           ValueMetaInterface v = r.getValueMeta( i );
 
-          if ( ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
+          boolean writeEnclosure =
+            ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
               || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( v.getName().getBytes(),
-                  data.binarySeparator, data.binaryEnclosure ) ) ) ) {
+              data.binarySeparator, data.binaryEnclosure ) ) );
+
+          if ( writeEnclosure ) {
             data.writer.write( data.binaryEnclosure );
           }
           data.writer.write( getBinaryString( v.getName() ) );
-          if ( ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( v.getName().getBytes(),
-                  data.binarySeparator, data.binaryEnclosure ) ) ) ) {
+          if ( writeEnclosure ) {
             data.writer.write( data.binaryEnclosure );
           }
         }
