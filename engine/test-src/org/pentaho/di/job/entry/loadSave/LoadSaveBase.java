@@ -122,7 +122,7 @@ abstract class LoadSaveBase<T> {
         }
         if ( !( (Boolean) validatorMethod.invoke( validator, originalValue, value ) ) ) {
           throw new KettleException( "Attribute " + attribute + " started with value "
-            + validatorMap.get( attribute ).getTestObject() + " ended with value " + value );
+            + originalValue + " ended with value " + value );
         }
       } catch ( Exception e ) {
         throw new RuntimeException( "Error validating " + attribute, e );
