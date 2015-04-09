@@ -883,11 +883,6 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
         mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.FolderExists.OK", remoteFoldername ) + Const.CR );
         mb.setText( BaseMessages.getString( PKG, "JobFTPSPUT.FolderExists.Title.Ok" ) );
         mb.open();
-      } else {
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.FolderExists.NOK", remoteFoldername ) + Const.CR );
-        mb.setText( BaseMessages.getString( PKG, "JobFTPSPUT.FolderExists.Title.Bad" ) );
-        mb.open();
       }
     }
   }
