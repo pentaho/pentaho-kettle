@@ -157,7 +157,7 @@ public class SwingDirectGC implements GCInterface {
   private boolean drawingPixelatedImages;
 
   public SwingDirectGC( ImageObserver observer, Point area, int iconsize, int xOffset, int yOffset ) throws KettleException {
-    this.image = new BufferedImage( area.x, area.y, BufferedImage.TYPE_INT_RGB );
+    this.image = new BufferedImage( area.x, area.y, BufferedImage.TYPE_INT_ARGB );
     this.gc = image.createGraphics();
     this.observer = observer;
     this.stepImages = SwingGUIResource.getInstance().getStepImages();
@@ -350,7 +350,7 @@ public class SwingDirectGC implements GCInterface {
 
   private void drawImage( SwingUniversalImage img, int locationX, int locationY, int imageSize ) {
     if ( isDrawingPixelatedImages() && img.isBitmap() ) {
-      BufferedImage bi = new BufferedImage( imageSize, imageSize, BufferedImage.TYPE_INT_RGB );
+      BufferedImage bi = new BufferedImage( imageSize, imageSize, BufferedImage.TYPE_INT_ARGB );
       Graphics2D g2 = (Graphics2D) bi.getGraphics();
       g2.setColor( Color.WHITE );
       g2.fillRect( 0, 0, imageSize, imageSize );
@@ -662,16 +662,11 @@ public class SwingDirectGC implements GCInterface {
   }
 
   public void drawStepIcon( int x, int y, StepMeta stepMeta, float magnification ) {
-    // Draw a blank rectangle to prevent alpha channel problems...
-    //
-    gc.fillRect( x + xOffset, y + yOffset, iconsize, iconsize );
     String steptype = stepMeta.getStepID();
     SwingUniversalImage im = stepImages.get( steptype );
     if ( im != null ) { // Draw the icon!
 
       drawImage( im, x + xOffset, y + xOffset, iconsize );
-
-      // gc.drawImage(im, x+xOffset, y+yOffset, observer);
     }
   }
 

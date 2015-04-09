@@ -180,7 +180,7 @@ public class SwingGC implements GCInterface {
   }
 
   public SwingGC( ImageObserver observer, Point area, int iconsize, int xOffset, int yOffset ) throws KettleException {
-    this( new BufferedImage( area.x, area.y, BufferedImage.TYPE_INT_RGB ), null, observer,
+    this( new BufferedImage( area.x, area.y, BufferedImage.TYPE_INT_ARGB ), null, observer,
         area, iconsize, xOffset, yOffset );
   }
 
@@ -374,8 +374,6 @@ public class SwingGC implements GCInterface {
         }
       }
     } else {
-      gc.setBackground( Color.white );
-      gc.clearRect( locationX, locationY, imageSize, imageSize );
       image.drawToGraphics( gc, locationX, locationY, imageSize, imageSize );
     }
   }
@@ -401,8 +399,6 @@ public class SwingGC implements GCInterface {
         }
       }
     } else {
-      gc.setBackground( Color.white );
-      gc.clearRect( centerX, centerY, imageSize, imageSize );
       image.drawToGraphics( gc, centerX, centerY, imageSize, imageSize, angle );
     }
   }
@@ -680,16 +676,11 @@ public class SwingGC implements GCInterface {
   }
 
   public void drawStepIcon( int x, int y, StepMeta stepMeta, float magnification ) {
-    // Draw a blank rectangle to prevent alpha channel problems...
-    //
-    gc.fillRect( x + xOffset, y + yOffset, iconsize, iconsize );
     String steptype = stepMeta.getStepID();
     SwingUniversalImage im = stepImages.get( steptype );
     if ( im != null ) { // Draw the icon!
 
       drawImage( im, x + xOffset, y + xOffset, iconsize );
-
-      // gc.drawImage(im, x+xOffset, y+yOffset, observer);
     }
   }
 
