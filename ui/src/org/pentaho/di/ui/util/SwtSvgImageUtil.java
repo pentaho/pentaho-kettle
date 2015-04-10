@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.swt.graphics.Image;
@@ -64,11 +65,11 @@ public class SwtSvgImageUtil {
    */
   public static SwtUniversalImage getImageAsResource( Display display, String location ) {
     SwtUniversalImage result = null;
-    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( location ) ) {
-      result = loadFromCurrentClasspath( display, location );
+    if ( result == null && SvgSupport.isSvgEnabled() ) {
+      result = loadFromCurrentClasspath( display, SvgSupport.toSvgName( location ) );
     }
-    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( location ) ) {
-      result = loadFromBasedVFS( display, location );
+    if ( result == null && SvgSupport.isSvgEnabled() ) {
+      result = loadFromBasedVFS( display, SvgSupport.toSvgName( location ) );
     }
     if ( result == null ) {
       result = loadFromCurrentClasspath( display, SvgSupport.toPngName( location ) );
@@ -82,15 +83,7 @@ public class SwtSvgImageUtil {
     return result;
   }
 
-  /**
-   * Load image from several sources.
-   */
-  public static SwtUniversalImage getUniversalImage( Display display, ClassLoader classLoader, String filename ) {
-
-    if ( !SvgSupport.isSvgEnabled() ) {
-      filename = SvgSupport.toPngName( filename );
-    }
-
+  private static SwtUniversalImage getUniversalImageInternal( Display display, ClassLoader classLoader, String filename ) {
     SwtUniversalImage result = loadFromClassLoader( display, classLoader, filename );
     if ( result == null ) {
       result = loadFromClassLoader( display, classLoader, File.separator + filename );
@@ -116,10 +109,25 @@ public class SwtSvgImageUtil {
         }
       }
     }
+    return result;
+  }
+
+  /**
+   * Load image from several sources.
+   */
+  public static SwtUniversalImage getUniversalImage( Display display, ClassLoader classLoader, String filename ) {
+    if ( StringUtils.isBlank( filename ) ) {
+      throw new RuntimeException( "Filename not provided" );
+    }
+
+    SwtUniversalImage result = null;
+    if ( SvgSupport.isSvgEnabled() ) {
+      result = getUniversalImageInternal( display, classLoader, SvgSupport.toSvgName( filename ) );
+    }
 
     // if we haven't loaded SVG attempt to use PNG 
-    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( filename ) ) {
-      result = getUniversalImage( display, classLoader, SvgSupport.toPngName( filename ) );
+    if ( result == null ) {
+      result = getUniversalImageInternal( display, classLoader, SvgSupport.toPngName( filename ) );
     }
 
     // if we can't load PNG, use default "no_image" graphic
@@ -134,11 +142,11 @@ public class SwtSvgImageUtil {
    */
   public static SwtUniversalImage getImage( Display display, String location ) {
     SwtUniversalImage result = null;
-    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( location ) ) {
-      result = loadFromSimpleVFS( display, location );
+    if ( result == null && SvgSupport.isSvgEnabled() ) {
+      result = loadFromSimpleVFS( display, SvgSupport.toSvgName( location ) );
     }
-    if ( result == null && SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( location ) ) {
-      result = loadFromCurrentClasspath( display, location );
+    if ( result == null && SvgSupport.isSvgEnabled() ) {
+      result = loadFromCurrentClasspath( display, SvgSupport.toSvgName( location ) );
     }
     if ( result == null ) {
       result = loadFromSimpleVFS( display, SvgSupport.toPngName( location ) );
