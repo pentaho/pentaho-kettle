@@ -700,7 +700,7 @@ public class GUIResource {
         image = SwtSvgImageUtil.getUniversalImage( display, classLoader, filename );
       } catch ( Throwable t ) {
         log.logError( "Unable to find required step image file or image format not supported (e.g. interlaced) ["
-            + filename + " : ", t );
+            + filename + "] for plugin " + steps.get( i ), t );
         Image img = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         GC gc = new GC( img );
         gc.drawRectangle( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
