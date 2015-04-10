@@ -2708,7 +2708,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       writeString( outputStream, dateFormatLocale != null ? dateFormatLocale.toString() : null );
 
       // date time zone?
-      writeString( outputStream, dateFormatTimeZone != null ? dateFormatTimeZone.toString() : null );
+      writeString( outputStream, dateFormatTimeZone != null ? dateFormatTimeZone.getID() : null );
 
       // string to number conversion lenient?
       outputStream.writeBoolean( lenientStringToNumber );
