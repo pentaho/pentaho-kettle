@@ -3,6 +3,8 @@
  * Pentaho Data Integration
  *
  * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * 
+ * Copyright 2015 De Bortoli Wines Pty Limited (Australia)
  *
  *******************************************************************************
  *
@@ -23,10 +25,14 @@
 package org.pentaho.ui.database.event;
 
 import java.io.InputStream;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.DatabasePluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.ui.database.Messages;
 import org.pentaho.ui.xul.XulComponent;
@@ -50,11 +56,12 @@ public class FragmentHandler extends AbstractXulEventHandler {
   private XulListbox accessBox;
 
   private String packagePath = "org/pentaho/ui/database/";
+  private String packageName = "org.pentaho.ui.database.";
 
   public FragmentHandler() {
   }
 
-  private void loadDatabaseOptionsFragment( String fragmentUri ) throws XulException {
+  private void loadDatabaseOptionsFragment( String fragmentUri, ResourceBundle bundle ) throws XulException {
 
     XulComponent groupElement = document.getElementById( "database-options-box" );
     XulComponent parentElement = groupElement.getParent();
@@ -66,7 +73,7 @@ public class FragmentHandler extends AbstractXulEventHandler {
       // Get new group box fragment ...
       // This will effectively set up the SWT parent child relationship...
 
-      fragmentContainer = this.xulDomContainer.loadFragment( fragmentUri, Messages.getBundle() );
+      fragmentContainer = this.xulDomContainer.loadFragment( fragmentUri, bundle );
       XulComponent newGroup = fragmentContainer.getDocumentRoot().getFirstChild();
       parentElement.replaceChild( groupElement, newGroup );
 
@@ -132,7 +139,7 @@ public class FragmentHandler extends AbstractXulEventHandler {
     }
 
     try {
-      loadDatabaseOptionsFragment( fragment.toLowerCase() );
+      loadDatabaseOptionsFragment( fragment.toLowerCase(), getResourceBundle( database ) );
     } catch ( XulException e ) {
       // TODO should be reporting as an error dialog; need error dialog in XUL framework
       showMessage( Messages.getString( "FragmentHandler.USER.CANT_LOAD_OPTIONS", databaseName ) );
@@ -154,16 +161,56 @@ public class FragmentHandler extends AbstractXulEventHandler {
 
   private String getFragment( DatabaseInterface database, String dbName, String extension, String defaultFragment ) {
     String fragment;
+    InputStream in = null;
     if ( database.getXulOverlayFile() != null ) {
+      // Handle custom XUL file
       fragment = packagePath.concat( database.getXulOverlayFile() ).concat( extension );
+
+      ClassLoader loader = getPluginClassLoader( database );
+      in = loader.getResourceAsStream( fragment.toLowerCase() );
+      
+      if ( in != null ) {
+        xulDomContainer.registerClassLoader( loader );
+      }
+
     } else {
       fragment = packagePath.concat( dbName ).concat( extension );
+      in = getClass().getClassLoader().getResourceAsStream( fragment.toLowerCase() );
     }
-    InputStream in = getClass().getClassLoader().getResourceAsStream( fragment.toLowerCase() );
+    
     if ( in == null ) {
       fragment = packagePath.concat( defaultFragment );
     }
+    
     return fragment;
+  }
+  
+  private ResourceBundle getResourceBundle( DatabaseInterface database ) {
+    // Handle custom XUL resource bundle
+    if ( database.getXulOverlayFile() != null ) {
+      String bundleName = packageName.concat( database.getXulOverlayFile() ) ;
+      ResourceBundle bundle = ResourceBundle.getBundle( bundleName, Locale.getDefault(), getPluginClassLoader( database ) ); 
+      if ( bundle != null) {
+        return bundle; 
+      }
+    }
+
+    return Messages.getBundle();
+  }
+  
+  private ClassLoader getPluginClassLoader( DatabaseInterface database ) {
+    try {
+      PluginRegistry registry = PluginRegistry.getInstance();
+      PluginInterface plugin = registry.getPlugin( DatabasePluginType.class, database.getPluginId() );
+      
+      if ( plugin != null ) {
+        return registry.getClassLoader( plugin );
+      }
+    } catch ( KettlePluginException e ) {
+      System.out.println( "Error getting plugin class loader " + e.getMessage() );
+    }
+
+    return null;
   }
 
   public Object getData() {
