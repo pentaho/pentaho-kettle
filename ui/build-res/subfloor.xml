@@ -220,7 +220,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="${testbin.dir}/instrumented-classes"
             description="Directory where instrumented project classes are placed for use by code coverage utility"/>
   <property name="jacoco.version"
-            value="0.7.2.201409121644"
+            value="0.7.4.201502262128"
             description="The version of jacoco to use for code coverage"/>
   <property name="cobertura.version"
             value="2.0.3"
@@ -243,7 +243,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="${bin.dir}/javadoc"
             description="Directory where generated javadoc will be placed"/>
   <property name="javadoc.packagenames"
-            value="org.mypackagename.*"
+            value="org.pentaho.*"
             description="This property is passed to the packagenames property of the javadoc ant task.  You should customize this for your project."/>
   <property name="javadoc.zip.filename" value="${ivy.artifact.id}-${project.revision}-javadoc.zip"/>
   <property name="javadoc.tar.filename" value="${ivy.artifact.id}-${project.revision}-javadoc.tar.gz"/>
