@@ -140,7 +140,7 @@ capabilityManagerDialog.open();
     mainPanel.setLayout( new GridLayout( 1, false ) );
 
     Set<ICapability> allCapabilities = DefaultCapabilityManager.getInstance().getAllCapabilities();
-    SortedSet<ICapability> capabilitySortedSet = new TreeSet<>( allCapabilities );
+    SortedSet<ICapability> capabilitySortedSet = new TreeSet<ICapability>( allCapabilities );
 
     for ( final ICapability capability : capabilitySortedSet ) {
       final Button button = new Button( mainPanel, SWT.CHECK );
