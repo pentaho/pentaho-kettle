@@ -761,6 +761,7 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.insertupdate.InsertUpdateTest"
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.janino.JaninoStepTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.javafilter.JavaFilterTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.jsonoutput.JsonOutputTest"
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.mailvalidator.MailValidationTest"
