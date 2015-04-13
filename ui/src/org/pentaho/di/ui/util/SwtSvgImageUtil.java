@@ -49,7 +49,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 public class SwtSvgImageUtil {
 
   private static FileObject base;
-  private static final String NO_IMAGE = "ui" + File.separator + "images" + File.separator + "no_image.svg";
+  private static final String NO_IMAGE = "ui/images/no_image.svg";
   
   static {
     try {
@@ -63,21 +63,32 @@ public class SwtSvgImageUtil {
   /**
    * Load image from several sources.
    */
+  public static SwtUniversalImage getImageAsResourceInternal( Display display, String location ) {
+    SwtUniversalImage result = null;
+    if ( result == null ) {
+      result = loadFromCurrentClasspath( display, location );
+    }
+    if ( result == null ) {
+      result = loadFromBasedVFS( display, location );
+    }
+    if ( result == null ) {
+      result = loadFromSimpleVFS( display, location );
+    }
+    return result;
+  }
+
+  /**
+   * Load image from several sources.
+   */
   public static SwtUniversalImage getImageAsResource( Display display, String location ) {
     SwtUniversalImage result = null;
     if ( result == null && SvgSupport.isSvgEnabled() ) {
-      result = loadFromCurrentClasspath( display, SvgSupport.toSvgName( location ) );
-    }
-    if ( result == null && SvgSupport.isSvgEnabled() ) {
-      result = loadFromBasedVFS( display, SvgSupport.toSvgName( location ) );
+      result = getImageAsResourceInternal( display, SvgSupport.toSvgName( location ) );
     }
     if ( result == null ) {
-      result = loadFromCurrentClasspath( display, SvgSupport.toPngName( location ) );
+      result = getImageAsResourceInternal( display, SvgSupport.toPngName( location ) );
     }
-    if ( result == null ) {
-      result = loadFromBasedVFS( display, SvgSupport.toPngName( location ) );
-    }
-    if ( result == null ) {
+    if ( result == null && !location.equals( NO_IMAGE ) ) {
       result = getImageAsResource( display, NO_IMAGE );
     }
     return result;
@@ -86,26 +97,11 @@ public class SwtSvgImageUtil {
   private static SwtUniversalImage getUniversalImageInternal( Display display, ClassLoader classLoader, String filename ) {
     SwtUniversalImage result = loadFromClassLoader( display, classLoader, filename );
     if ( result == null ) {
-      result = loadFromClassLoader( display, classLoader, File.separator + filename );
+      result = loadFromClassLoader( display, classLoader, "/" + filename );
       if ( result == null ) {
-        result = loadFromClassLoader( display, classLoader, "ui" + File.separator + "images" + File.separator + filename );
+        result = loadFromClassLoader( display, classLoader, "ui/images/" + filename );
         if ( result == null ) {
-          result = loadFromSimpleVFS( display, filename );
-          if ( result == null ) {
-            result = loadFromSimpleVFS( display, File.separator + filename );
-            if ( result == null ) {
-              result = loadFromSimpleVFS( display, "ui" + File.separator + "images" + File.separator + filename );
-              if ( result == null ) {
-                result = loadFromCurrentClasspath( display, filename );
-                if ( result == null ) {
-                  result = loadFromCurrentClasspath( display, File.separator + filename );
-                  if ( result == null ) {
-                    result = loadFromCurrentClasspath( display, "ui" + File.separator + "images" + File.separator + filename );
-                  }
-                }
-              }
-            }
-          }
+          result = getImageAsResourceInternal( display, filename );
         }
       }
     }
@@ -116,6 +112,7 @@ public class SwtSvgImageUtil {
    * Load image from several sources.
    */
   public static SwtUniversalImage getUniversalImage( Display display, ClassLoader classLoader, String filename ) {
+
     if ( StringUtils.isBlank( filename ) ) {
       throw new RuntimeException( "Filename not provided" );
     }
@@ -132,7 +129,7 @@ public class SwtSvgImageUtil {
 
     // if we can't load PNG, use default "no_image" graphic
     if ( result == null ) {
-      result = getUniversalImage( display, classLoader, NO_IMAGE );
+      result = getImageAsResource( display, NO_IMAGE );
     }
     return result;
   }
@@ -141,23 +138,7 @@ public class SwtSvgImageUtil {
    * Load image from several sources.
    */
   public static SwtUniversalImage getImage( Display display, String location ) {
-    SwtUniversalImage result = null;
-    if ( result == null && SvgSupport.isSvgEnabled() ) {
-      result = loadFromSimpleVFS( display, SvgSupport.toSvgName( location ) );
-    }
-    if ( result == null && SvgSupport.isSvgEnabled() ) {
-      result = loadFromCurrentClasspath( display, SvgSupport.toSvgName( location ) );
-    }
-    if ( result == null ) {
-      result = loadFromSimpleVFS( display, SvgSupport.toPngName( location ) );
-    }
-    if ( result == null ) {
-      result = loadFromCurrentClasspath( display, SvgSupport.toPngName( location ) );
-    }
-    if ( result == null ) {
-      result = getImage( display, NO_IMAGE );
-    }
-    return result;
+    return getImageAsResource( display, location );
   }
 
   /**
