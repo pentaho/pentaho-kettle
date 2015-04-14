@@ -76,7 +76,7 @@ public class JobEntryFTPPUTLoadSaveTest extends JobEntryLoadSaveTestSupport<JobE
       "socksproxy_port", "getSocksProxyPort",
       "socksproxy_username", "getSocksProxyUsername",
       "socksproxy_password", "getSocksProxyPassword"
-      );
+    );
   }
 
   @Override

@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -133,7 +132,7 @@ public class RowMeta implements RowMetaInterface {
     valueIndexMap.clear();
     for ( int i = 0; i < this.valueMetaList.size(); i++ ) {
       ValueMetaInterface valueMeta = this.valueMetaList.get( i );
-      if( !Const.isEmpty( valueMeta.getName() ) ) {
+      if ( !Const.isEmpty( valueMeta.getName() ) ) {
         valueIndexMap.put( valueMeta.getName().toLowerCase(), i );
       }
     }
@@ -190,7 +189,7 @@ public class RowMeta implements RowMetaInterface {
         newMeta = renameValueMetaIfInRow( meta );
       }
       valueMetaList.add( index, newMeta );
-      if( !Const.isEmpty( newMeta.getName() ) ) {
+      if ( !Const.isEmpty( newMeta.getName() ) ) {
         valueIndexMap.put( newMeta.getName().toLowerCase(), index );
       }
     }
@@ -225,7 +224,7 @@ public class RowMeta implements RowMetaInterface {
     if ( valueMeta != null ) {
       valueMetaList.set( index, valueMeta );
       // add value meta to cache if name is not null
-      if( !Const.isEmpty( valueMeta.getName() ) ) {
+      if ( !Const.isEmpty( valueMeta.getName() ) ) {
         valueIndexMap.put( valueMeta.getName().toLowerCase(), index );
       }
     }
@@ -460,12 +459,12 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public int indexOfValue( String valueName ) {
-    if( valueName == null ) {
+    if ( valueName == null ) {
       return -1;
     }
     String key = valueName.toLowerCase();
     Integer index = valueIndexMap.get( key );
-    if( index != null ) {
+    if ( index != null ) {
       ValueMetaInterface value = valueMetaList.get( index );
       if ( !valueName.equalsIgnoreCase( value.getName() ) ) {
         index = null;

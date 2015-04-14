@@ -1206,7 +1206,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     // Remember the last position of the mouse for paste with keyboard
     //
     lastMove = real;
-    
+
     if ( iconoffset == null ) {
       iconoffset = new Point( 0, 0 );
     }
@@ -1526,8 +1526,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     // redraw();
   }
-  
-  private Image getImageFor(StreamInterface stream) {
+
+  private Image getImageFor( StreamInterface stream ) {
     Display disp = shell.getDisplay();
     SwtUniversalImage swtImage = SWTGC.getNativeImage( BasePainter.getStreamIconImage( stream.getStreamIcon() ) );
     return swtImage.getAsBitmapForSize( disp, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );

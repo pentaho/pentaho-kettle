@@ -282,7 +282,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
   /** The log channel interface. */
   protected LogChannelInterface log;
-  
+
   /** The list of StepChangeListeners */
   protected List<StepMetaChangeListenerInterface> stepChangeListeners;
 
@@ -899,8 +899,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     StepMetaInterface iface = removeStep.getStepMetaInterface();
     if ( iface instanceof StepMetaChangeListenerInterface ) {
       removeStepChangeListener( (StepMetaChangeListenerInterface) iface );
-    } 
-    
+    }
+
     steps.remove( i );
     changed_steps = true;
   }
@@ -967,7 +967,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   public int nrDependencies() {
     return dependencies.size();
   }
-  
+
   /**
    * Gets the number of stepChangeListeners in the transformation.
    * 
@@ -6146,7 +6146,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   public void saveMetaStoreObjects( Repository repository, IMetaStore metaStore ) throws MetaStoreException {
 
   }
-  
+
   public void addStepChangeListener( StepMetaChangeListenerInterface listener ) {
     stepChangeListeners.add( listener );
   }
@@ -6188,5 +6188,4 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       listener.onStepChange( this, oldMeta, newMeta );
     }
   }
-    
 }

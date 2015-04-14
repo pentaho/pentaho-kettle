@@ -368,9 +368,9 @@ public class SpoonPerspectiveManager {
           } finally {
             IOUtils.closeQuietly( in );
           }
-        }        
+        }
       }
-      
+
       XulVbox box = deck.createVBoxCard();
       box.setId( "perspective-" + per.getId() );
       box.setFlex( 1 );

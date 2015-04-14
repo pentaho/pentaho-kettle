@@ -40,11 +40,11 @@ public abstract class SwtUniversalImage {
   private Map<String, Image> cache = new TreeMap<String, Image>();
 
   @Deprecated
-  abstract protected Image renderSimple( Device device );
+  protected abstract Image renderSimple( Device device );
 
-  abstract protected Image renderSimple( Device device, int width, int height );
+  protected abstract Image renderSimple( Device device, int width, int height );
 
-  abstract protected Image renderRotated( Device device, int width, int height, double angleRadians );
+  protected abstract Image renderRotated( Device device, int width, int height, double angleRadians );
 
   public synchronized void dispose() {
     if ( cache == null ) {

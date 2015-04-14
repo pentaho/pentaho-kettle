@@ -68,10 +68,10 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 
   public OpenERPHelper( DatabaseMeta databaseMeta ) {
     openERPConnection =
-      new Session( databaseMeta.environmentSubstitute( databaseMeta.getHostname() ), Integer.parseInt( databaseMeta
-        .environmentSubstitute( databaseMeta.getDatabasePortNumberString() ) ), databaseMeta
-        .environmentSubstitute( databaseMeta.getDatabaseName() ), databaseMeta.environmentSubstitute( databaseMeta
-        .getUsername() ), databaseMeta.environmentSubstitute( databaseMeta.getPassword() ) );
+        new Session( databaseMeta.environmentSubstitute( databaseMeta.getHostname() ), Integer.parseInt( databaseMeta
+            .environmentSubstitute( databaseMeta.getDatabasePortNumberString() ) ), databaseMeta
+            .environmentSubstitute( databaseMeta.getDatabaseName() ), databaseMeta.environmentSubstitute( databaseMeta
+            .getUsername() ), databaseMeta.environmentSubstitute( databaseMeta.getPassword() ) );
   }
 
   public void StartSession() throws Exception {

@@ -1890,7 +1890,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     view.setControl( new Composite( tabFolder, SWT.NONE ) );
     view.setText( STRING_SPOON_MAIN_TREE );
     view.setImage( GUIResource.getInstance().getImageExploreSolutionSmall() );
-    
+
     design = new CTabItem( tabFolder, SWT.NONE );
     design.setText( STRING_SPOON_CORE_OBJECTS_TREE );
     design.setControl( new Composite( tabFolder, SWT.NONE ) );
@@ -1910,7 +1910,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( Const.isLinux() ) {
       fdsLabel.top = new FormAttachment( sep3, 10 );
     } else {
-      fdsLabel.top = new FormAttachment( sep3, 8 );      
+      fdsLabel.top = new FormAttachment( sep3, 8 );
     }
     selectionLabel.setLayoutData( fdsLabel );
 
@@ -5846,7 +5846,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
     return saved;
   }
-  
+
   // Put here to support testing, but you cannot instance Spoon from a
   // JUnit test case without a bunch of work. I abandoned the attempt to
   // create a Spoon test case to test this. mb
@@ -5949,7 +5949,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
     messageBuilder.append( outputStringDate );
     return messageBuilder;
-  }  
+  }
 
   public void helpAbout() {
     MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION | SWT.CENTER | SWT.SHEET );

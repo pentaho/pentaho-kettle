@@ -2232,8 +2232,8 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
    * @return ValueMetaInterface customized with the data base specific types
    */
   @Override
-  public ValueMetaInterface customizeValueFromSQLType( ValueMetaInterface v, java.sql.ResultSetMetaData rm, int index ) 
-    throws SQLException{
+  public ValueMetaInterface customizeValueFromSQLType( ValueMetaInterface v, java.sql.ResultSetMetaData rm, int index )
+    throws SQLException {
     return null;
   }
 }

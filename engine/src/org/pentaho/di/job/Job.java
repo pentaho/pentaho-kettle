@@ -95,7 +95,6 @@ import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.www.AddExportServlet;
-import org.pentaho.di.www.AddJobServlet;
 import org.pentaho.di.www.RegisterJobServlet;
 import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartJobServlet;

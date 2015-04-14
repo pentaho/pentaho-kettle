@@ -91,7 +91,7 @@ public class WebServerTest {
     when( sServer.getPassword() ).thenReturn( "cluster" );
     when( sServer.getUsername() ).thenReturn( "cluster" );
     webServer =
-        new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT, SHOULD_JOIN, null);
+        new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT, SHOULD_JOIN, null );
 
   }
 

@@ -68,7 +68,7 @@ public interface PrimitiveGCInterface {
   public void fillGradientRectangle( int x, int y, int width, int height, boolean vertical );
 
   public void drawImage( EImage image, int x, int y );
-  
+
   public void drawImage( EImage image, int x, int y, float magnification );
 
   public void drawImage( EImage image, int x, int y, float magnification, double angle );

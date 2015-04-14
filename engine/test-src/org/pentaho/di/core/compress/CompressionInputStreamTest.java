@@ -39,7 +39,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.pentaho.di.core.plugins.PluginRegistry;
 
 public class CompressionInputStreamTest {

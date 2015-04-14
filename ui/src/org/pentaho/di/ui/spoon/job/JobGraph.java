@@ -133,7 +133,6 @@ import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPainter;
-import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;

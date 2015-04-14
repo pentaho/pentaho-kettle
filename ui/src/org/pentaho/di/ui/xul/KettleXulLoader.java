@@ -42,7 +42,8 @@ import org.pentaho.ui.xul.swt.SwtXulLoader;
 public class KettleXulLoader extends SwtXulLoader {
 
   /** Icons size for SVG icons rasterization. */
-  private int iconWidth = 16, iconHeight = 16;
+  private int iconWidth = 16;
+  private int iconHeight = 16;
 
   public KettleXulLoader() throws XulException {
     parser.handlers.remove( "DIALOG" );

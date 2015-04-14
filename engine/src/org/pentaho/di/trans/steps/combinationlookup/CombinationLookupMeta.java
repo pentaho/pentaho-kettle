@@ -898,7 +898,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
             if ( !Const.isEmpty( technicalKeyField ) ) {
               String[] techKeyArr = new String[] { technicalKeyField };
-              if ( !db.checkIndexExists( schemaTable, techKeyArr ) ) {  
+              if ( !db.checkIndexExists( schemaTable, techKeyArr ) ) {
                 String indexname = "idx_" + tablename + "_pk";
                 cr_uniq_index =
                     db.getCreateIndexStatement(

@@ -80,7 +80,7 @@ public class RegisterPackageServlet extends BaseJobServlet {
       String fileUrl = MessageFormat.format( ZIP_CONT, archiveUrl, load );
       boolean isJob = TYPE_JOB.equalsIgnoreCase( request.getParameter( PARAMETER_TYPE ) );
       String resultId;
-      
+
       if ( isJob ) {
         Node node =
             getConfigNodeFromZIP( archiveUrl, Job.CONFIGURATION_IN_EXPORT_FILENAME, JobExecutionConfiguration.XML_TAG );
@@ -103,7 +103,7 @@ public class RegisterPackageServlet extends BaseJobServlet {
         Trans trans = createTrans( transConfiguration );
         resultId = trans.getContainerObjectId();
       }
-      
+
       return new WebResult( WebResult.STRING_OK, fileUrl, resultId );
     }
 

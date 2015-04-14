@@ -218,11 +218,11 @@ public class ValueMetaBaseTest {
     assertFalse( varbinaryValueMeta.isLargeTextField() );
 
   }
-  
+
   @Test
   public void testGetValueFromSQLTypeTypeOverride() throws Exception {
     final int varbinaryColumnIndex = 2;
-    
+
     ValueMetaBase valueMetaBase = new ValueMetaBase(),
         valueMetaBaseSpy = spy( valueMetaBase );
     DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
@@ -232,7 +232,7 @@ public class ValueMetaBaseTest {
     ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
     valueMetaBaseSpy.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
 
-    verify( databaseInterface, Mockito.times( 1 ) ).customizeValueFromSQLType( any( ValueMetaInterface.class),
+    verify( databaseInterface, Mockito.times( 1 ) ).customizeValueFromSQLType( any( ValueMetaInterface.class ),
         any( ResultSetMetaData.class ), anyInt() );
   }
 

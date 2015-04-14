@@ -50,7 +50,7 @@ public class TransStepLoadSaveTester<T extends StepMetaInterface> extends LoadSa
                                   Map<String, String> getterMap, Map<String, String> setterMap,
                                   Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap,
                                   Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorTypeMap ) {
-    super(clazz, commonAttributes, xmlAttributes, repoAttributes, getterMap, setterMap, fieldLoadSaveValidatorAttributeMap, fieldLoadSaveValidatorTypeMap );
+    super( clazz, commonAttributes, xmlAttributes, repoAttributes, getterMap, setterMap, fieldLoadSaveValidatorAttributeMap, fieldLoadSaveValidatorTypeMap );
   }
 
   public void testXmlRoundTrip() throws KettleException {

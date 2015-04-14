@@ -79,7 +79,7 @@ public class WebServer {
   private String passwordFile;
 
   private SslConfiguration sslConfig;
-  
+
   public WebServer( LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap,
       SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port,
       boolean join, String passwordFile ) throws Exception {

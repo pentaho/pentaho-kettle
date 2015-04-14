@@ -41,7 +41,6 @@ import org.eclipse.swt.graphics.Transform;
 import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.gui.PrimitiveGCInterface.EImage;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.ConstUI;
@@ -72,12 +71,12 @@ public class SWTGC implements GCInterface {
   private GC gc;
 
   private int iconsize;
-  
+
   //TODO should be changed to PropsUI usage
   private int small_icon_size = ConstUI.SMALL_ICON_SIZE;
 
   private Map<String, SwtUniversalImage> images;
-  
+
   private float currentMagnification = 1.0f;
 
   private List<Color> colors;
@@ -132,7 +131,7 @@ public class SWTGC implements GCInterface {
   public void drawLine( int x, int y, int x2, int y2 ) {
     gc.drawLine( x, y, x2, y2 );
   }
-  
+
   @Override
   public void drawImage( EImage image, int x, int y ) {
     drawImage( image, x, y, currentMagnification );
@@ -406,7 +405,7 @@ public class SWTGC implements GCInterface {
 
     int w = Math.round( iconsize * magnification );
     int h = Math.round( iconsize * magnification );
-    
+
     if ( jobEntryCopy.isSpecial() ) {
       if ( jobEntryCopy.isStart() ) {
         swtImage = GUIResource.getInstance().getSwtImageStart();
@@ -429,7 +428,7 @@ public class SWTGC implements GCInterface {
     org.eclipse.swt.graphics.Rectangle bounds = image.getBounds();
     gc.drawImage( image, 0, 0, bounds.width, bounds.height, x, y, iconsize, iconsize );
   }
-  
+
   @Override
   public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
     drawJobEntryIcon( x, y , jobEntryCopy, currentMagnification );
@@ -513,5 +512,4 @@ public class SWTGC implements GCInterface {
     gc.drawImage( swtImage, x, y );
     swtImage.dispose();
   }
-  
 }

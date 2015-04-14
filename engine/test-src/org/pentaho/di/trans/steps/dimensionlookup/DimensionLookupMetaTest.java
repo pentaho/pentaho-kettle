@@ -54,8 +54,8 @@ import org.pentaho.metastore.api.IMetaStore;
 
 
 public class DimensionLookupMetaTest {
-  
-  public static final String databaseXML = 
+
+  public static final String databaseXML =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
       + "<connection>" + "<name>lookup</name>" + "<server>127.0.0.1</server>" + "<type>H2</type>"
       + "<access>Native</access>" + "<database>mem:db</database>" + "<port></port>" + "<username>sa</username>"
@@ -96,7 +96,7 @@ public class DimensionLookupMetaTest {
         BaseMessages.getString( DimensionLookupMeta.class, "DimensionLookupMeta.Error.NoTechnicalKeySpecified" ) ) );
     }
   }
-  
+
   @Test
   public void testUseDefaultSchemaName() throws Exception {
     KettleEnvironment.init();

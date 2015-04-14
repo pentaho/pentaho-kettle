@@ -303,7 +303,7 @@ public class DatabaseUnitTest {
     verify( ps, never() ).addBatch();
     verify( ps ).executeUpdate();
   }
-  
+
   @Test
   public void testGetCreateSequenceStatement() throws Exception {
     DatabaseMeta dbMeta = mock( DatabaseMeta.class );
@@ -319,13 +319,13 @@ public class DatabaseUnitTest {
     db.getCreateSequenceStatement( "schemaName", "seq", "10", "1", "-1", false );
     verify( dbMeta, times( 1 ) ).getSequenceNoMaxValueOption();
   }
-  
+
   @Test
   public void testPrepareSQL() throws Exception {
     DatabaseMeta dbMeta = mock( DatabaseMeta.class );
 
     DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
-    
+
     Database db = new Database( mockLogger(), dbMeta );
     db.setConnection( mockConnection( dbMetaData ) );
     db.setCommit( 1 );

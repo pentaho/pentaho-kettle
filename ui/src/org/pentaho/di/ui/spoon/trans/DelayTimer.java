@@ -47,7 +47,7 @@ public class DelayTimer implements Runnable {
       return false;
     }
   };
-  
+
   private long start;
 
   public DelayTimer( int delayInMiliseconds ) {
@@ -61,8 +61,8 @@ public class DelayTimer implements Runnable {
     this( delayInMilliseconds );
     addDelayListener( delayListener );
   }
-  
-  public DelayTimer( int delayInMilliseconds, DelayListener delayListener, Callable<Boolean> prolonger) {
+
+  public DelayTimer( int delayInMilliseconds, DelayListener delayListener, Callable<Boolean> prolonger ) {
     this( delayInMilliseconds, delayListener );
     this.prolonger = prolonger;
   }
@@ -88,12 +88,11 @@ public class DelayTimer implements Runnable {
       delayListener.expired();
     }
   }
-  
+
   private boolean delayNotExpired() {
     return ( System.currentTimeMillis() - start ) < delayInMiliseconds;
   }
-  
-  
+
   private boolean needProlong() {
     try {
       return Boolean.valueOf( prolonger.call() );

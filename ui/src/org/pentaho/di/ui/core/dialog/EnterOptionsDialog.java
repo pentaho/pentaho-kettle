@@ -356,7 +356,7 @@ public class EnterOptionsDialog extends Dialog {
     fddFFont.right = new FormAttachment( 100, 0 );
     fddFFont.top = new FormAttachment( 0, nr * h + margin );
     fddFFont.bottom = new FormAttachment( 0, ( nr + 1 ) * h + margin );
-    
+
     wdFFont.setLayoutData( fddFFont );
     wdFFont.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {

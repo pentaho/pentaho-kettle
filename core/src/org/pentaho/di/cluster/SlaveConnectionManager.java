@@ -41,8 +41,8 @@ import javax.net.ssl.X509TrustManager;
  *
  */
 public class SlaveConnectionManager {
-  
-  private final static String SSL = "SSL";
+
+  private static final String SSL = "SSL";
 
   private static SlaveConnectionManager slaveConnectionManager;
 
@@ -75,7 +75,7 @@ public class SlaveConnectionManager {
   public void shutdown() {
     manager.shutdown();
   }
-  
+
   private static X509TrustManager getDefaultTrustManager() {
     return new X509TrustManager() {
       @Override

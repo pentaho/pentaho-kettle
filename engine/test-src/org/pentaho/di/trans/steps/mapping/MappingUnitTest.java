@@ -88,7 +88,7 @@ public class MappingUnitTest {
     assertThat( asList( targetSteps ), hasItems( is( copy1 ), is( copy2 ) ) );
   }
 
-  @Test(expected = KettleException.class)
+  @Test( expected = KettleException.class )
   public void pickupTargetStepsFor_OutputIsDefined_ThrowsExceptionIfFindsNone() throws Exception {
     MappingIODefinition definition = new MappingIODefinition( null, "non-existing" );
     mapping.pickupTargetStepsFor( definition );

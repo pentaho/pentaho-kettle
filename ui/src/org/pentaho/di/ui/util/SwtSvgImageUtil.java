@@ -22,7 +22,6 @@
 
 package org.pentaho.di.ui.util;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -50,7 +49,7 @@ public class SwtSvgImageUtil {
 
   private static FileObject base;
   private static final String NO_IMAGE = "ui/images/no_image.svg";
-  
+
   static {
     try {
       base = KettleVFS.getInstance().getFileSystemManager().resolveFile( System.getProperty( "user.dir" ) );

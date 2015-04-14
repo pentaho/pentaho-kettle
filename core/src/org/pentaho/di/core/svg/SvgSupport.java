@@ -32,19 +32,19 @@ import org.w3c.dom.Document;
  * Class for base SVG images processing.
  */
 public class SvgSupport {
-  
+
   private static final String SVG_EXTENSION = ".svg";
-  
+
   private static final String PNG_EXTENSION = ".png";
-  
+
   private static final String PARSER = XMLResourceDescriptor.getXMLParserClassName();
-  
+
   private static final ThreadLocal<SAXSVGDocumentFactory> SVG_FACTORY_THREAD_LOCAL = new ThreadLocal<SAXSVGDocumentFactory>();
-  
+
   private static SAXSVGDocumentFactory createFactory() {
     return new SAXSVGDocumentFactory( PARSER );
   }
-  
+
   private static SAXSVGDocumentFactory getSvgFactory() {
     SAXSVGDocumentFactory factory = SVG_FACTORY_THREAD_LOCAL.get();
     if ( factory == null ) {

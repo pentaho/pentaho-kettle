@@ -697,7 +697,7 @@ public class TransPainter extends BasePainter {
       gc.setForeground( EColor.CRYSTAL );
     }
     gc.drawRoundRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1, 8, 8 );
-    
+
     Point namePosition = getNamePosition( name, screen, iconsize );
 
     gc.setForeground( EColor.BLACK );
@@ -831,7 +831,7 @@ public class TransPainter extends BasePainter {
       //
       int xIcon = areaX + ( totalWidth - totalIconsWidth ) / 2 + MINI_ICON_MARGIN;
       int yIcon = areaY + 5 + nameExtent.y;
-      
+
       for ( int i = 0; i < miniIcons.length; i++ ) {
         EImage miniIcon = miniIcons[i];
         Point bounds = gc.getImageBounds( miniIcon );
@@ -1074,7 +1074,7 @@ public class TransPainter extends BasePainter {
     boolean q4 = Math.toDegrees( angle ) > 270 || Math.toDegrees( angle ) < 0;
 
     if ( q1 || q3 ) {
-      gc.drawImage( arrow, mx+1, my, magnification, angle );
+      gc.drawImage( arrow, mx + 1, my, magnification, angle );
     } else if ( q2 || q4 ) {
       gc.drawImage( arrow, mx, my, magnification, angle );
     }

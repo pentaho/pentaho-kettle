@@ -50,7 +50,7 @@ public class RegisterTransServlet extends BaseJobServlet {
     TransConfiguration transConfiguration = TransConfiguration.fromXML( xml );
 
     Trans trans = createTrans( transConfiguration );
-    
+
     String message = "Transformation '" + trans.getName() + "' was added to Carte with id " + trans.getContainerObjectId();
     return new WebResult( WebResult.STRING_OK, message, trans.getContainerObjectId() );
   }
