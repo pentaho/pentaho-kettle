@@ -35,5 +35,4 @@ public abstract class AbstractSpoonPerspective implements SpoonPerspective {
   public Image getIcon() {
     return null;
   }
-  
 }

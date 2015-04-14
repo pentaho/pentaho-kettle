@@ -127,7 +127,7 @@ public class SwingDirectGC implements GCInterface {
   private Graphics2D gc;
 
   private int iconsize;
-  
+
   //TODO should be changed to PropsUI usage
   private int small_icon_size = 16;
 
@@ -255,11 +255,13 @@ public class SwingDirectGC implements GCInterface {
       try {
         inputStream = new FileInputStream( fileName );
       } catch ( FileNotFoundException ex ) {
+        // no need to fail
       }
       if ( inputStream == null ) {
         try {
           inputStream = new FileInputStream( "/" + fileName );
         } catch ( FileNotFoundException ex ) {
+          // no need to fail
         }
       }
       if ( inputStream == null ) {
@@ -286,11 +288,13 @@ public class SwingDirectGC implements GCInterface {
       try {
         inputStream = new FileInputStream( fileName );
       } catch ( FileNotFoundException ex ) {
+        // no need to fail
       }
       if ( inputStream == null ) {
         try {
           inputStream = new FileInputStream( "/" + fileName );
         } catch ( FileNotFoundException ex ) {
+          // no need to fail
         }
       }
       if ( inputStream == null ) {
@@ -327,7 +331,7 @@ public class SwingDirectGC implements GCInterface {
   public void drawLine( int x, int y, int x2, int y2 ) {
     gc.drawLine( x + xOffset, y + yOffset, x2 + xOffset, y2 + yOffset );
   }
-  
+
   @Override
   public void drawImage( EImage image, int x, int y ) {
     drawImage( image, x, y, 0.0f );
@@ -697,7 +701,7 @@ public class SwingDirectGC implements GCInterface {
     drawImage( image, x + xOffset, y + xOffset, iconsize );
     // gc.drawImage(image, x+xOffset, y+yOffset, observer);
   }
-  
+
   @Override
   public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
     drawJobEntryIcon( x, y , jobEntryCopy, 1.0f );

@@ -22,9 +22,6 @@
 
 package org.pentaho.di.ui.spoon;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,11 +71,11 @@ public class MainSpoonPerspective extends AbstractSpoonPerspective {
   public InputStream getPerspectiveIcon() {
     return ImageUtil.getImageInputStream( Display.getCurrent(), "ui/images/transformation.svg" );
   }
-  
+
   public Image getIcon() {
     SwtUniversalImage image = SwtSvgImageUtil.getUniversalImage( Display.getCurrent(), getClass().getClassLoader(), "ui/images/transformation.svg" );
     return image.getAsBitmapForSize( Display.getCurrent(), 16, 16 );
-  }  
+  }
 
   public Composite getUI() {
     return ui;

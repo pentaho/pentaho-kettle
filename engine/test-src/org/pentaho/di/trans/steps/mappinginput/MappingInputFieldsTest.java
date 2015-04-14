@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -129,9 +128,9 @@ public class MappingInputFieldsTest {
     rm.addValueMeta( new ValueMeta( "number5", ValueMetaInterface.TYPE_INTEGER ) );
 
     in.putRow( rm, new Object[] { "str", new Integer( 100501 ), new Integer( 100502 ), new Integer( 100503 ),
-        new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );
+      new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );
     in.putRow( rm, new Object[] { "str_1", new Integer( 200501 ), new Integer( 200502 ), new Integer( 200503 ),
-        new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
+      new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
 
     step.getInputRowSets().add( in );
     step.getOutputRowSets().add( out );
@@ -251,9 +250,9 @@ public class MappingInputFieldsTest {
     rm.addValueMeta( new ValueMeta( "number5", ValueMetaInterface.TYPE_INTEGER ) );
 
     in.putRow( rm, new Object[] { "str", new Integer( 100501 ), new Integer( 100502 ), new Integer( 100503 ),
-        new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );
+      new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );
     in.putRow( rm, new Object[] { "str_1", new Integer( 200501 ), new Integer( 200502 ), new Integer( 200503 ),
-        new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
+      new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
 
     step.getInputRowSets().add( in );
     step.getOutputRowSets().add( out );

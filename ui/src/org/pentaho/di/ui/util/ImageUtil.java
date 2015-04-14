@@ -89,8 +89,8 @@ public class ImageUtil {
     } catch ( FileSystemException e ) {
       throw new RuntimeException( "Unable to load image with name [" + location + "]", e );
     }
-  }  
-  
+  }
+
   /**
    * TODO: Load splash and common images.
    */

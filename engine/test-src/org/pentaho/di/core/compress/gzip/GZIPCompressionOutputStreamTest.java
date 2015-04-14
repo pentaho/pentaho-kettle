@@ -89,7 +89,7 @@ public class GZIPCompressionOutputStreamTest {
     try {
       outStream.write( "This will throw an Exception if the stream is already closed".getBytes() );
       fail();
-    } catch (IOException e) {
+    } catch ( IOException e ) {
       //Success, The Output Stream was already closed
     }
   }

@@ -218,7 +218,8 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
     wConnection.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         activeSequence();
-      } } );
+      }
+    } );
 
     // Schema line...
     wlSchema = new Label( gDatabase, SWT.RIGHT );

@@ -179,37 +179,39 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
         BaseMessages.getString( PKG, "JobCopyFiles.Error.Exception.UnableLoadXML" ), xe );
     }
   }
-  
-  protected String loadSource ( Node fnode ) {
+
+  protected String loadSource( Node fnode ) {
     return XMLHandler.getTagValue( fnode, "source_filefolder" );
   }
-  
-  protected String loadDestination ( Node fnode ) {
+
+  protected String loadDestination( Node fnode ) {
     return XMLHandler.getTagValue( fnode, "destination_filefolder" );
   }
-  
-  protected void saveSource( StringBuilder retval, String source) {
-  } 
-  
-  protected void saveDestination( StringBuilder retval, String destination) {
+
+  protected void saveSource( StringBuilder retval, String source ) {
   }
-  
-  protected String loadSourceRep ( Repository rep, ObjectId id_jobentry, int a ) throws KettleException {
+
+  protected void saveDestination( StringBuilder retval, String destination ) {
+  }
+
+  protected String loadSourceRep( Repository rep, ObjectId id_jobentry, int a ) throws KettleException {
     return rep.getJobEntryAttributeString( id_jobentry, a, "source_filefolder" );
   }
-  
-  protected String loadDestinationRep ( Repository rep, ObjectId id_jobentry, int a ) throws KettleException {
+
+  protected String loadDestinationRep( Repository rep, ObjectId id_jobentry, int a ) throws KettleException {
     return rep.getJobEntryAttributeString( id_jobentry, a, "destination_filefolder" );
   }
-  
-  protected void saveSourceRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value ) throws KettleException {
-  } 
-  
-  protected void saveDestinationRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value ) throws KettleException {
+
+  protected void saveSourceRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value )
+    throws KettleException {
   }
-  
+
+  protected void saveDestinationRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value )
+    throws KettleException {
+  }
+
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
-    List<SlaveServer> slaveServers ) throws KettleException {
+      List<SlaveServer> slaveServers ) throws KettleException {
     try {
       copy_empty_folders = rep.getJobEntryAttributeBoolean( id_jobentry, "copy_empty_folders" );
       arg_from_previous = rep.getJobEntryAttributeBoolean( id_jobentry, "arg_from_previous" );
@@ -234,8 +236,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
         wildcard[a] = rep.getJobEntryAttributeString( id_jobentry, a, "wildcard" );
       }
     } catch ( KettleException dbe ) {
-
-
       throw new KettleException( BaseMessages.getString( PKG, "JobCopyFiles.Error.Exception.UnableLoadRep" )
         + id_jobentry, dbe );
     }
@@ -255,13 +255,10 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       // save the arguments...
       if ( source_filefolder != null ) {
         for ( int i = 0; i < source_filefolder.length; i++ ) {
-          
           saveSourceRep( rep, id_job, getObjectId(), i, source_filefolder[i] );
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "source_filefolder", source_filefolder[i] );
           saveDestinationRep( rep, id_job, getObjectId(), i, destination_filefolder[i] );
-          rep
-            .saveJobEntryAttribute(
-              id_job, getObjectId(), i, "destination_filefolder", destination_filefolder[i] );
+          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "destination_filefolder", destination_filefolder[i] );
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "wildcard", wildcard[i] );
         }
       }
@@ -297,9 +294,9 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
       if ( arg_from_previous ) {
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobCopyFiles.Log.ArgFromPrevious.Found", ( rows != null
-            ? rows.size() : 0 )
-            + "" ) );
+          logDetailed( BaseMessages.getString( PKG, "JobCopyFiles.Log.ArgFromPrevious.Found", ( rows != null ? rows
+              .size() : 0 )
+              + "" ) );
         }
       }
 
@@ -315,21 +312,19 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
           if ( !Const.isEmpty( vsourcefilefolder_previous ) && !Const.isEmpty( vdestinationfilefolder_previous ) ) {
             if ( isDetailed() ) {
-              logDetailed( BaseMessages.getString(
-                PKG, "JobCopyFiles.Log.ProcessingRow", vsourcefilefolder_previous,
-                vdestinationfilefolder_previous, vwildcard_previous ) );
+              logDetailed( BaseMessages.getString( PKG, "JobCopyFiles.Log.ProcessingRow", vsourcefilefolder_previous,
+                  vdestinationfilefolder_previous, vwildcard_previous ) );
             }
 
-            if ( !ProcessFileFolder(
-              vsourcefilefolder_previous, vdestinationfilefolder_previous, vwildcard_previous, parentJob, result ) ) {
+            if ( !ProcessFileFolder( vsourcefilefolder_previous, vdestinationfilefolder_previous, vwildcard_previous,
+                parentJob, result ) ) {
               // The copy process fail
               NbrFail++;
             }
           } else {
             if ( isDetailed() ) {
-              logDetailed( BaseMessages.getString(
-                PKG, "JobCopyFiles.Log.IgnoringRow", vsourcefilefolder[iteration],
-                vdestinationfilefolder[iteration], vwildcard[iteration] ) );
+              logDetailed( BaseMessages.getString( PKG, "JobCopyFiles.Log.IgnoringRow", vsourcefilefolder[iteration],
+                  vdestinationfilefolder[iteration], vwildcard[iteration] ) );
             }
           }
         }
@@ -340,21 +335,18 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
             // ok we can process this file/folder
 
             if ( isBasic() ) {
-              logBasic( BaseMessages.getString(
-                PKG, "JobCopyFiles.Log.ProcessingRow", vsourcefilefolder[i], vdestinationfilefolder[i],
-                vwildcard[i] ) );
+              logBasic( BaseMessages.getString( PKG, "JobCopyFiles.Log.ProcessingRow", vsourcefilefolder[i],
+                  vdestinationfilefolder[i], vwildcard[i] ) );
             }
 
-            if ( !ProcessFileFolder(
-              vsourcefilefolder[i], vdestinationfilefolder[i], vwildcard[i], parentJob, result ) ) {
+            if ( !ProcessFileFolder( vsourcefilefolder[i], vdestinationfilefolder[i], vwildcard[i], parentJob, result ) ) {
               // The copy process fail
               NbrFail++;
             }
           } else {
             if ( isDetailed() ) {
-              logDetailed( BaseMessages.getString(
-                PKG, "JobCopyFiles.Log.IgnoringRow", vsourcefilefolder[i], vdestinationfilefolder[i],
-                vwildcard[i] ) );
+              logDetailed( BaseMessages.getString( PKG, "JobCopyFiles.Log.IgnoringRow", vsourcefilefolder[i],
+                  vdestinationfilefolder[i], vwildcard[i] ) );
             }
           }
         }
@@ -375,8 +367,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     return result;
   }
 
-  private boolean ProcessFileFolder( String sourcefilefoldername, String destinationfilefoldername,
-    String wildcard, Job parentJob, Result result ) {
+  private boolean ProcessFileFolder( String sourcefilefoldername, String destinationfilefoldername, String wildcard,
+      Job parentJob, Result result ) {
     boolean entrystatus = false;
     FileObject sourcefilefolder = null;
     FileObject destinationfilefolder = null;

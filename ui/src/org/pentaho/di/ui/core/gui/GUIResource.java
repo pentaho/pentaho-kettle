@@ -128,11 +128,11 @@ public class GUIResource {
   private ManagedColor colorLightBlue;
 
   private ManagedColor colorCrystalTextPentaho;
-  
+
   private ManagedColor colorHopDefault;
-  
+
   private ManagedColor colorHopOK;
-  
+
   /* * * Fonts * * */
   private ManagedFont fontGraph;
 
@@ -168,13 +168,13 @@ public class GUIResource {
   private SwtUniversalImage imageConnection;
 
   private SwtUniversalImage imageConnectionTree;
-  
+
   private Image imageAdd;
 
   private Image imageTable;
 
   private SwtUniversalImage imagePreview;
-  
+
   private Image imageKeySmall;
 
   private Image imageColumnSmall;
@@ -238,7 +238,7 @@ public class GUIResource {
   private SwtUniversalImage errorArrow;
   private SwtUniversalImage disabledArrow;
   private SwtUniversalImage candidateArrow;
-  
+
   private Image imageUser;
 
   private Image imageProfil;
@@ -378,7 +378,6 @@ public class GUIResource {
 
   private Image imageRemoveSingle;
 
-
   /**
    * GUIResource also contains the clipboard as it has to be allocated only once! I don't want to put it in a separate
    * singleton just for this one member.
@@ -467,9 +466,9 @@ public class GUIResource {
     colorCrystalTextPentaho = new ManagedColor( display, 61, 99, 128 );
 
     colorHopDefault = new ManagedColor( display, 61, 99, 128 );
-    
+
     colorHopOK = new ManagedColor( display, 12, 178, 15 );
-    
+
     // Load all images from files...
     loadFonts();
     loadCommonImages();
@@ -611,7 +610,7 @@ public class GUIResource {
       errorArrow.dispose();
       disabledArrow.dispose();
       candidateArrow.dispose();
-      
+
       disposeImage( imageNoteSmall );
       disposeImage( imageColor );
       disposeImage( imageEditOptionButton );
@@ -674,7 +673,7 @@ public class GUIResource {
 
   /**
    * Load all step images from files.
-   *
+   * 
    */
   private void loadStepImages() {
     // imagesSteps.clear();
@@ -731,41 +730,39 @@ public class GUIResource {
 
     // Create a medium size version of the graph font
     FontData mediumFontData =
-      new FontData(
-        props.getGraphFont().getName(), (int) Math.round( props.getGraphFont().getHeight() * 1.2 ), props
-          .getGraphFont().getStyle() );
+        new FontData( props.getGraphFont().getName(), (int) Math.round( props.getGraphFont().getHeight() * 1.2 ), props
+            .getGraphFont().getStyle() );
     fontMedium = new ManagedFont( display, mediumFontData );
 
     // Create a medium bold size version of the graph font
     FontData mediumFontBoldData =
-      new FontData(
-        props.getGraphFont().getName(), (int) Math.round( props.getGraphFont().getHeight() * 1.2 ), props
-          .getGraphFont().getStyle()
-          | SWT.BOLD );
+        new FontData( props.getGraphFont().getName(), (int) Math.round( props.getGraphFont().getHeight() * 1.2 ), props
+            .getGraphFont().getStyle()
+            | SWT.BOLD );
     fontMediumBold = new ManagedFont( display, mediumFontBoldData );
 
     // Create a large version of the graph font
     FontData largeFontData =
-      new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() * 3, props
-        .getGraphFont().getStyle() );
+        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() * 3, props.getGraphFont()
+            .getStyle() );
     fontLarge = new ManagedFont( display, largeFontData );
 
     // Create a tiny version of the graph font
     FontData tinyFontData =
-      new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 2, props
-        .getGraphFont().getStyle() );
+        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 2, props.getGraphFont()
+            .getStyle() );
     fontTiny = new ManagedFont( display, tinyFontData );
 
     // Create a small version of the graph font
     FontData smallFontData =
-      new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 1, props
-        .getGraphFont().getStyle() );
+        new FontData( props.getGraphFont().getName(), props.getGraphFont().getHeight() - 1, props.getGraphFont()
+            .getStyle() );
     fontSmall = new ManagedFont( display, smallFontData );
 
     FontData boldFontData =
-      new FontData( props.getDefaultFontData().getName(), props.getDefaultFontData().getHeight(), props
-        .getDefaultFontData().getStyle()
-        | SWT.BOLD );
+        new FontData( props.getDefaultFontData().getName(), props.getDefaultFontData().getHeight(), props
+            .getDefaultFontData().getStyle()
+            | SWT.BOLD );
     fontBold = new ManagedFont( display, boldFontData );
   }
 
@@ -804,7 +801,7 @@ public class GUIResource {
 
     // "ui/images/preview.svg"
     imagePreview = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Preview_image" ) );
-    
+
     // "ui/images/schema.png"
     imageSchema = loadAsResource( display, BasePropertyHandler.getProperty( "Schema_image" ), ConstUI.SMALL_ICON_SIZE );
 
@@ -879,7 +876,7 @@ public class GUIResource {
 
     // "ui/images/variable.svg"
     imageVariable = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Variable_image" ) );
-    
+
     // "ui/images/edit_option.png"
     imageEditOptionButton =
         loadAsResource( display, BasePropertyHandler.getProperty( "EditOption_image" ), ConstUI.SMALL_ICON_SIZE );
@@ -1113,7 +1110,7 @@ public class GUIResource {
     //
 
     // "ui/images/wizard.png"
-    imageWizard = loadAsResource( display, BasePropertyHandler.getProperty( "Wizard_image" ),0 );
+    imageWizard = loadAsResource( display, BasePropertyHandler.getProperty( "Wizard_image" ), 0 );
 
     imageBanner =
         ImageUtil.makeImageTransparent( display, loadAsResource( display, BasePropertyHandler
@@ -1156,13 +1153,12 @@ public class GUIResource {
     candidateArrow =
         SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
             .getProperty( "candidateArrow_image" ) );
-    
-    
+
   }
 
   /**
    * Load all step images from files.
-   *
+   * 
    */
   private void loadJobEntryImages() {
     imagesJobentries = new Hashtable<String, SwtUniversalImage>();
@@ -1189,8 +1185,8 @@ public class GUIResource {
         ClassLoader classLoader = registry.getClassLoader( plugin );
         image = SwtSvgImageUtil.getUniversalImage( display, classLoader, filename );
       } catch ( Throwable t ) {
-        log.logError( "Unable to find required job entry image file ["
-          + filename + "] for id [" + plugin.getIds()[0] + "] : " + t.toString() );
+        log.logError( "Unable to find required job entry image file [" + filename + "] for id [" + plugin.getIds()[0]
+            + "] : " + t.toString() );
         Image img = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
         GC gc = new GC( img );
         gc.drawRectangle( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
@@ -1396,8 +1392,8 @@ public class GUIResource {
 
   public Image getImageClusterMedium() {
     return imageCluster.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
-  }  
-  
+  }
+
   /**
    * @return Returns the imageSlave.
    */
@@ -1411,7 +1407,7 @@ public class GUIResource {
   public Image getImageSlaveMedium() {
     return imageSlave.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
-  
+
   /**
    * @return Returns the imageConnection.
    */
@@ -1422,7 +1418,7 @@ public class GUIResource {
   public Image getImageConnectionTree() {
     return imageConnectionTree.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageConnection() {
     return imageConnection;
   }
@@ -1444,7 +1440,7 @@ public class GUIResource {
   public Image getImagePreview() {
     return imagePreview.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   /**
    * @return Returns the imageKeySmall.
    */
@@ -1525,7 +1521,7 @@ public class GUIResource {
   public SwtUniversalImage getSwtImageDummy() {
     return imageDummy;
   }
-  
+
   /**
    * @return Returns the imageHop.
    */
@@ -1585,7 +1581,7 @@ public class GUIResource {
   public SwtUniversalImage getSwtImageStart() {
     return imageStart;
   }
-  
+
   /**
    * @return Returns the imagesJobentries.
    */
@@ -1700,7 +1696,7 @@ public class GUIResource {
   public Image getImageTransTree() {
     return imageTransTree.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
-  
+
   public Image getImageUser() {
     return imageUser;
   }
@@ -1716,7 +1712,7 @@ public class GUIResource {
   public Image getImageFolderConnectionsMedium() {
     return imageTransGraph.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
-  
+
   public Image getImageJobGraph() {
     return imageJobGraph.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
@@ -1724,7 +1720,7 @@ public class GUIResource {
   public Image getImageJobTree() {
     return imageJobTree.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
-  
+
   public Image getEditOptionButton() {
     return imageEditOptionButton;
   }
@@ -1747,18 +1743,18 @@ public class GUIResource {
   public Image getImageArrow() {
     return imageArrow.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageArrow() {
     return imageArrow;
   }
-  
+
   /**
    * @return the imageArrow
    */
   public Image getImageFolder() {
     return imageFolder.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
-  
+
   /**
    * @return the imageDummySmall
    */
@@ -1786,7 +1782,7 @@ public class GUIResource {
   public Image getImageStartMedium() {
     return imageStart.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
-  
+
   /**
    * @return the imageBanner
    */
@@ -1872,7 +1868,7 @@ public class GUIResource {
   public Color getColorHopOK() {
     return colorHopOK.getColor();
   }
-  
+
   public void drawPentahoGradient( Display display, GC gc, Rectangle rect, boolean vertical ) {
     if ( !vertical ) {
       gc.setForeground( display.getSystemColor( SWT.COLOR_WIDGET_BACKGROUND ) );
@@ -1893,7 +1889,7 @@ public class GUIResource {
 
   /**
    * Generic popup with a toggle option
-   *
+   * 
    * @param dialogTitle
    * @param image
    * @param message
@@ -1905,7 +1901,7 @@ public class GUIResource {
    * @return
    */
   public Object[] messageDialogWithToggle( Shell shell, String dialogTitle, Image image, String message,
-    int dialogImageType, String[] buttonLabels, int defaultIndex, String toggleMessage, boolean toggleState ) {
+      int dialogImageType, String[] buttonLabels, int defaultIndex, String toggleMessage, boolean toggleState ) {
     int imageType = 0;
     switch ( dialogImageType ) {
       case Const.WARNING:
@@ -1916,8 +1912,8 @@ public class GUIResource {
     }
 
     MessageDialogWithToggle md =
-      new MessageDialogWithToggle(
-        shell, dialogTitle, image, message, imageType, buttonLabels, defaultIndex, toggleMessage, toggleState );
+        new MessageDialogWithToggle( shell, dialogTitle, image, message, imageType, buttonLabels, defaultIndex,
+            toggleMessage, toggleState );
     int idx = md.open();
     return new Object[] { Integer.valueOf( idx ), Boolean.valueOf( md.getToggleState() ) };
   }
@@ -1932,14 +1928,14 @@ public class GUIResource {
 
     /*
      * Point location = control.getLocation();
-     *
+     * 
      * Composite parent = control.getParent(); while (parent!=null) {
-     *
+     * 
      * Composite newParent = parent.getParent(); if (newParent!=null) { location.x+=parent.getLocation().x;
      * location.y+=parent.getLocation().y; } else { if (parent instanceof Shell) { // Top level shell. Shell shell =
      * (Shell)parent; Rectangle bounds = shell.getBounds(); Rectangle clientArea = shell.getClientArea(); location.x +=
      * bounds.width-clientArea.width; location.y += bounds.height-clientArea.height; } } parent = newParent; }
-     *
+     * 
      * return location;
      */
   }
@@ -2081,11 +2077,11 @@ public class GUIResource {
   public Image getImageCollapseAllMedium() {
     return imageCollapseAll.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
-  
+
   public Image getImageStepError() {
     return imageStepError.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageStepError() {
     return imageStepError;
   }
@@ -2093,7 +2089,7 @@ public class GUIResource {
   public Image getImageCopyHop() {
     return imageCopyHop.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageCopyHop() {
     return imageCopyHop;
   }
@@ -2101,7 +2097,7 @@ public class GUIResource {
   public Image getImageErrorHop() {
     return imageErrorHop.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageErrorHop() {
     return imageErrorHop;
   }
@@ -2109,7 +2105,7 @@ public class GUIResource {
   public Image getImageInfoHop() {
     return imageInfoHop.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageInfoHop() {
     return imageInfoHop;
   }
@@ -2133,7 +2129,7 @@ public class GUIResource {
   public Image getImageEdit() {
     return imageEdit.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageEdit() {
     return imageEdit;
   }
@@ -2165,7 +2161,7 @@ public class GUIResource {
   public Image getImageHopInput() {
     return imageHopInput.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageHopInput() {
     return imageHopInput;
   }
@@ -2173,7 +2169,7 @@ public class GUIResource {
   public Image getImageHopOutput() {
     return imageHopOutput.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageHopOutput() {
     return imageHopOutput;
   }
@@ -2181,7 +2177,7 @@ public class GUIResource {
   public Image getImageHopTarget() {
     return imageHopTarget.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageHopTarget() {
     return imageHopTarget;
   }
@@ -2189,7 +2185,7 @@ public class GUIResource {
   public Image getImageLocked() {
     return imageLocked.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageLocked() {
     return imageLocked;
   }
@@ -2198,7 +2194,7 @@ public class GUIResource {
    * Loads an image from a location once. The second time, the image comes from a cache. Because of this, it's important
    * to never dispose of the image you get from here. (easy!) The images are automatically disposed when the application
    * ends.
-   *
+   * 
    * @param location
    * @return
    */
@@ -2236,18 +2232,18 @@ public class GUIResource {
   public Image getImageTrue() {
     return imageTrue.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageTrue() {
     return imageTrue;
   }
-  
+
   /**
    * @return the imageFalse
    */
   public Image getImageFalse() {
     return imageFalse.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageFalse() {
     return imageFalse;
   }
@@ -2258,7 +2254,7 @@ public class GUIResource {
   public Image getImageContextMenu() {
     return imageContextMenu.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageContextMenu() {
     return imageContextMenu;
   }
@@ -2266,7 +2262,7 @@ public class GUIResource {
   public Image getImageParallelHop() {
     return imageParallelHop.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageParallelHop() {
     return imageParallelHop;
   }
@@ -2274,19 +2270,19 @@ public class GUIResource {
   public Image getImageUnconditionalHop() {
     return imageUnconditionalHop.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageUnconditionalHop() {
     return imageUnconditionalHop;
   }
-  
+
   public Image getImageBusy() {
     return imageBusy.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageBusy() {
     return imageBusy;
   }
-  
+
   public Image getImageEmpty16x16() {
     return imageEmpty16x16;
   }
@@ -2294,7 +2290,7 @@ public class GUIResource {
   public Image getImageInject() {
     return imageInject.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageInject() {
     return imageInject;
   }
@@ -2302,7 +2298,7 @@ public class GUIResource {
   public Image getImageBalance() {
     return imageBalance.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageBalance() {
     return imageBalance;
   }
@@ -2318,7 +2314,7 @@ public class GUIResource {
   public Image getImageCheckpoint() {
     return imageCheckpoint.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
-  
+
   public SwtUniversalImage getSwtImageCheckpoint() {
     return imageCheckpoint;
   }
@@ -2390,10 +2386,8 @@ public class GUIResource {
   public SwtUniversalImage getDisabledArrow() {
     return disabledArrow;
   }
-  
+
   public SwtUniversalImage getCandidateArrow() {
     return candidateArrow;
   }
-  
-  
 }

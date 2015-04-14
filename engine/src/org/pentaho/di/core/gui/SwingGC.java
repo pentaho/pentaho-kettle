@@ -129,7 +129,7 @@ public class SwingGC implements GCInterface {
   private Graphics2D gc;
 
   private int iconsize;
-  
+
   //TODO should be changed to PropsUI usage
   private int small_icon_size = 16;
 
@@ -260,11 +260,13 @@ public class SwingGC implements GCInterface {
       try {
         inputStream = new FileInputStream( fileName );
       } catch ( FileNotFoundException ex ) {
+        // no need to fail
       }
       if ( inputStream == null ) {
         try {
           inputStream = new FileInputStream( "/" + fileName );
         } catch ( FileNotFoundException ex ) {
+          // no need to fail
         }
       }
       if ( inputStream == null ) {
@@ -291,11 +293,13 @@ public class SwingGC implements GCInterface {
       try {
         inputStream = new FileInputStream( fileName );
       } catch ( FileNotFoundException ex ) {
+        // no need to fail
       }
       if ( inputStream == null ) {
         try {
           inputStream = new FileInputStream( "/" + fileName );
         } catch ( FileNotFoundException ex ) {
+          // no need to fail
         }
       }
       if ( inputStream == null ) {
@@ -332,7 +336,7 @@ public class SwingGC implements GCInterface {
   public void drawLine( int x, int y, int x2, int y2 ) {
     gc.drawLine( x + xOffset, y + yOffset, x2 + xOffset, y2 + yOffset );
   }
-  
+
   @Override
   public void drawImage( EImage image, int x, int y ) {
     drawImage( image, x, y, 0.0f );
@@ -356,8 +360,8 @@ public class SwingGC implements GCInterface {
   }
 
   private void drawImage( SwingUniversalImage image, int locationX, int locationY, int imageSize ) {
-    if ( isDrawingPixelatedImages() && image.isBitmap()) {
-      BufferedImage img=image.getAsBitmapForSize( imageSize, imageSize );
+    if ( isDrawingPixelatedImages() && image.isBitmap() ) {
+      BufferedImage img = image.getAsBitmapForSize( imageSize, imageSize );
       ColorModel cm = img.getColorModel();
       Raster raster = img.getRaster();
 
@@ -711,7 +715,7 @@ public class SwingGC implements GCInterface {
     drawImage( image, x + xOffset, y + xOffset, iconsize );
     // gc.drawImage(image, x+xOffset, y+yOffset, observer);
   }
-  
+
   @Override
   public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
     drawJobEntryIcon( x, y , jobEntryCopy, 1.0f );

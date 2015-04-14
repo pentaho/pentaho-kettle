@@ -653,5 +653,4 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       }
     }
   }
-  
 }

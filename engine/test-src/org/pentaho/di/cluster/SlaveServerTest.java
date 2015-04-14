@@ -130,18 +130,18 @@ public class SlaveServerTest {
     assertEquals( slaveServer.getUsername(), baseCredentials.getUserName() );
     assertEquals( slaveServer.getPassword(), baseCredentials.getPassword() );
   }
-  
+
   @Test
   public void testModifyingName() {
     slaveServer.setName( "test" );
     List<SlaveServer> list = new ArrayList<SlaveServer>();
     list.add( slaveServer );
-    
+
     SlaveServer slaveServer2 = spy( new SlaveServer() );
     slaveServer2.setName( "test" );
-    
+
     slaveServer2.verifyAndModifySlaveServerName( list, null );
-    
+
     assertTrue( !slaveServer.getName().equals( slaveServer2.getName() ) );
   }
 }

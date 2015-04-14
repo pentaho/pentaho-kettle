@@ -442,7 +442,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     List<Integer> positions = null;
     if ( data.binaryEnclosure != null && data.binaryEnclosure.length > 0 ) {
       // +1 because otherwise we will not find it at the end
-      for ( int i = 0, len = str.length - data.binaryEnclosure.length + 1; i < len; i++) {
+      for ( int i = 0, len = str.length - data.binaryEnclosure.length + 1; i < len; i++ ) {
         // verify if on position i there is an enclosure
         //
         boolean found = true;
@@ -497,9 +497,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           }
 
           boolean writeEnclosure =
-            ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( fieldName.getBytes(),
-              data.binarySeparator, data.binaryEnclosure ) ) );
+              ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
+                  || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( fieldName.getBytes(),
+                      data.binarySeparator, data.binaryEnclosure ) ) );
 
           if ( writeEnclosure ) {
             data.writer.write( data.binaryEnclosure );
@@ -519,9 +519,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           ValueMetaInterface v = r.getValueMeta( i );
 
           boolean writeEnclosure =
-            ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
-              || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( v.getName().getBytes(),
-              data.binarySeparator, data.binaryEnclosure ) ) );
+              ( meta.isEnclosureForced() && data.binaryEnclosure.length > 0 && v != null && v.isString() )
+                  || ( ( !meta.isEnclosureFixDisabled() && containsSeparatorOrEnclosure( v.getName().getBytes(),
+                      data.binarySeparator, data.binaryEnclosure ) ) );
 
           if ( writeEnclosure ) {
             data.writer.write( data.binaryEnclosure );

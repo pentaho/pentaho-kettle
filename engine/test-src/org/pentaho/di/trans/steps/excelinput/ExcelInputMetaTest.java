@@ -49,29 +49,31 @@ public class ExcelInputMetaTest {
             "rowNumberField", "shortFileFieldName", "extensionFieldName", "pathFieldName", "sizeFieldName",
             "hiddenFieldName", "lastModificationTimeFieldName", "uriNameFieldName", "rootUriNameFieldName" );
 
-    Map<String, String> getterMap = new HashMap<String, String>() {{
-      put( "excludeFileMask", "getExludeFileMask" );
-
-      put( "shortFileFieldName", "getShortFileNameField" );
-      put( "extensionFieldName", "getExtensionField" );
-      put( "pathFieldName", "getPathField" );
-      put( "sizeFieldName", "getSizeField" );
-      put( "hiddenFieldName", "isHiddenField" );
-      put( "lastModificationTimeFieldName", "getLastModificationDateField" );
-      put( "uriNameFieldName", "getUriField" );
-      put( "rootUriNameFieldName", "getRootUriField" );
-    }};
-    Map<String, String> setterMap = new HashMap<String, String>() {{
-
-      put( "shortFileFieldName", "setShortFileNameField" );
-      put( "extensionFieldName", "setExtensionField" );
-      put( "pathFieldName", "setPathField" );
-      put( "sizeFieldName", "setSizeField" );
-      put( "hiddenFieldName", "setIsHiddenField" );
-      put( "lastModificationTimeFieldName", "setLastModificationDateField" );
-      put( "uriNameFieldName", "setUriField" );
-      put( "rootUriNameFieldName", "setRootUriField" );
-    }};
+    Map<String, String> getterMap = new HashMap<String, String>() {
+      {
+        put( "excludeFileMask", "getExludeFileMask" );
+        put( "shortFileFieldName", "getShortFileNameField" );
+        put( "extensionFieldName", "getExtensionField" );
+        put( "pathFieldName", "getPathField" );
+        put( "sizeFieldName", "getSizeField" );
+        put( "hiddenFieldName", "isHiddenField" );
+        put( "lastModificationTimeFieldName", "getLastModificationDateField" );
+        put( "uriNameFieldName", "getUriField" );
+        put( "rootUriNameFieldName", "getRootUriField" );
+      }
+    };
+    Map<String, String> setterMap = new HashMap<String, String>() {
+      {
+        put( "shortFileFieldName", "setShortFileNameField" );
+        put( "extensionFieldName", "setExtensionField" );
+        put( "pathFieldName", "setPathField" );
+        put( "sizeFieldName", "setSizeField" );
+        put( "hiddenFieldName", "setIsHiddenField" );
+        put( "lastModificationTimeFieldName", "setLastModificationDateField" );
+        put( "uriNameFieldName", "setUriField" );
+        put( "rootUriNameFieldName", "setRootUriField" );
+      }
+    };
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
         new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 1 );
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();

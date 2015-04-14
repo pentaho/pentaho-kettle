@@ -27,8 +27,6 @@ import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.partition.PartitionSettings;
 
-import java.util.List;
-
 /**
  * @author Evgeniy_Lyakhov@epam.com
  */

@@ -114,7 +114,7 @@ public class IfNullTest {
         new ValueMetaString( "empty-field" ), //
         new ValueMetaString( "space-field" ), //
         new ValueMetaString( "another-field" ) //
-        );
+    );
     step.setInputRowMeta( inputRowMeta );
 
     final Object[] inputRow = new Object[] { "value1", null, "", "    ", "value5" };
@@ -147,7 +147,7 @@ public class IfNullTest {
         new ValueMetaString( "empty-field" ), //
         new ValueMetaString( "space-field" ), //
         new ValueMetaString( "another-field" ) //
-        );
+    );
     step.setInputRowMeta( inputRowMeta );
 
     final Object[] inputRow = new Object[] { "value1", null, "", "    ", "value5" };

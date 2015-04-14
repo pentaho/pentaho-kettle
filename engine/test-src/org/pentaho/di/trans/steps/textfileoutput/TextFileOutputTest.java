@@ -435,7 +435,7 @@ public class TextFileOutputTest {
 
     data.writer = new ByteArrayOutputStream();
 
-    if (field != null) {
+    if ( field != null ) {
       meta.setOutputFields( new TextFileField[] { field } );
     }
 

@@ -188,7 +188,7 @@ public class TransTest {
     Trans trans = new Trans( mockTransMeta, null, null, null, ktr.getURL().toURI().toString() );
     assertEquals( testParamValue, trans.getParameterValue( testParam ) );
   }
-  
+
   @Test
   public void testTransListeners() {
     TransMeta TransMeta = new TransMeta();

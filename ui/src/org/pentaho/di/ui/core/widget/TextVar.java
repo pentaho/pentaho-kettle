@@ -108,7 +108,7 @@ public class TextVar extends Composite {
     controlDecoration.setImage( image );
     controlDecoration.setDescriptionText( BaseMessages.getString( PKG, "TextVar.tooltip.InsertVariable" ) );
     PropsUI.getInstance().setLook( controlDecoration.getControl() );
-    
+
     modifyListenerTooltipText = getModifyListenerTooltipText( wText );
     wText.addModifyListener( modifyListenerTooltipText );
 

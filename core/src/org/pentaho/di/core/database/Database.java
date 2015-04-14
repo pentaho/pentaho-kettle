@@ -1168,11 +1168,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   public boolean insertRow( PreparedStatement ps, boolean batch ) throws KettleDatabaseException {
     return insertRow( ps, batch, true );
   }
-  
+
   public boolean getUseBatchInsert( boolean batch ) throws KettleDatabaseException {
     try {
-      return batch && getDatabaseMetaData().supportsBatchUpdates() &&
-          databaseMeta.supportsBatchUpdates() && Const.isEmpty( connectionGroup );
+      return batch && getDatabaseMetaData().supportsBatchUpdates() && databaseMeta.supportsBatchUpdates()
+          && Const.isEmpty( connectionGroup );
     } catch ( SQLException e ) {
       throw createKettleDatabaseBatchException( "Error determining whether to use batch", e );
     }
@@ -2141,7 +2141,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         ResultSet r = ps.executeQuery();
         ResultSetMetaData metadata = ps.getMetaData();
         // If the PreparedStatement can't get us the metadata, try using the ResultSet's metadata
-        if( metadata == null ) {
+        if ( metadata == null ) {
           metadata = r.getMetaData();
         }
         fields = getRowInfo( metadata, false, false );

@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -143,7 +142,7 @@ public class PartitionSettingsTest {
     when( stepMeta.getStepPartitioningMeta() ).thenReturn( meta );
 
     settings.updateSchema( null );
-    verify( meta, never() ).setPartitionSchema( any(PartitionSchema.class) );
+    verify( meta, never() ).setPartitionSchema( any( PartitionSchema.class ) );
   }
 
   @Test
@@ -154,6 +153,6 @@ public class PartitionSettingsTest {
     when( stepMeta.getStepPartitioningMeta() ).thenReturn( meta );
 
     settings.updateSchema( null );
-    verify( meta, never() ).setPartitionSchema( any(PartitionSchema.class) );
+    verify( meta, never() ).setPartitionSchema( any( PartitionSchema.class ) );
   }
 }

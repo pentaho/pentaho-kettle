@@ -4486,7 +4486,7 @@ public class ValueMetaBase implements ValueMetaInterface {
               precision = -1;
             }
           }
-          
+
           break;
 
         case java.sql.Types.TIMESTAMP:
@@ -4579,9 +4579,9 @@ public class ValueMetaBase implements ValueMetaInterface {
           throw new SQLException( e );
         }
       }
-      
+
       ValueMetaInterface newValueMetaInterface = databaseMeta.getDatabaseInterface().customizeValueFromSQLType( v, rm, index );
-      if( newValueMetaInterface != null ) {
+      if ( newValueMetaInterface != null ) {
         return newValueMetaInterface;
       } else {
         return v;
