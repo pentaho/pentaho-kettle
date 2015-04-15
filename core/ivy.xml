@@ -54,5 +54,14 @@
     <dependency org="org.apache.xmlgraphics" name="batik-transcoder" rev="${dependency.batik.revision}" transitive="false"/>
     <dependency org="org.apache.xmlgraphics" name="batik-codec" rev="${dependency.batik.revision}" transitive="false"/>
     <dependency org="org.apache.xmlgraphics" name="batik-util" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-ext" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-xml" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-anim" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-parser" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-script" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-awt-util" rev="${dependency.batik.revision}" transitive="false"/>
+
+    <dependency org="xml-apis" name="xml-apis-ext" rev="${dependency.xml-apis-ext.revision}" transitive="false"/>
+
   </dependencies>
 </ivy-module>
