@@ -57,34 +57,31 @@ public class KettleXulLoader extends SwtXulLoader {
 
   @Override
   public InputStream getResourceAsStream( String resource ) {
-    if ( SvgSupport.isSvgName( resource ) ) {
-      if ( SvgSupport.isSvgEnabled() ) {
-        InputStream in = super.getResourceAsStream( resource );
-        if ( in != null ) {
-          try {
-            // load SVG
-            SvgImage svg = SvgSupport.loadSvgImage( in );
-            SwtUniversalImage image = new SwtUniversalImageSvg( svg );
+    if ( SvgSupport.isSvgEnabled() && ( SvgSupport.isSvgName( resource ) 
+        || SvgSupport.isPngName( resource ) ) ) {
+      InputStream in = null;
+      try {
+        in = super.getResourceAsStream( SvgSupport.toSvgName( resource ) );
+        // load SVG
+        SvgImage svg = SvgSupport.loadSvgImage( in );
+        SwtUniversalImage image = new SwtUniversalImageSvg( svg );
 
-            Display d = Display.getCurrent() != null ? Display.getCurrent() : Display.getDefault();
-            // write to png
-            Image result = image.getAsBitmapForSize( d, iconWidth, iconHeight );
-            ImageLoader loader = new ImageLoader();
-            loader.data = new ImageData[] { result.getImageData() };
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            loader.save( out, SWT.IMAGE_PNG );
+        Display d = Display.getCurrent() != null ? Display.getCurrent() : Display.getDefault();
+        // write to png
+        Image result = image.getAsBitmapForSize( d, iconWidth, iconHeight );
+        ImageLoader loader = new ImageLoader();
+        loader.data = new ImageData[] { result.getImageData() };
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        loader.save( out, SWT.IMAGE_PNG );
 
-            image.dispose();
+        image.dispose();
 
-            return new ByteArrayInputStream( out.toByteArray() );
-          } catch ( Exception ex ) {
-            throw new RuntimeException( "Error loading " + resource, ex );
-          } finally {
-            IOUtils.closeQuietly( in );
-          }
-        }
+        return new ByteArrayInputStream( out.toByteArray() );
+      } catch ( Throwable ignored ) {
+        // any exception will result in falling back to PNG
+      } finally {
+        IOUtils.closeQuietly( in );
       }
-      // load .png image instead
       resource = SvgSupport.toPngName( resource );
     }
     return super.getResourceAsStream( resource );
