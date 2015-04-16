@@ -623,18 +623,32 @@ public class MemoryRepository extends AbstractRepository {
   public int countNrStepAttributes( ObjectId id_step, String code ) throws KettleException {
     Map<Integer, Map<String, String>> stepMap = stepAttributeMap.get( id_step );
     int count = 0;
-    for ( Entry<Integer, Map<String, String>> entry : stepMap.entrySet() ) {
-      if ( entry.getValue().get( code ) != null ) {
-        count++;
+    if ( stepMap != null ) {
+      for ( Entry<Integer, Map<String, String>> entry : stepMap.entrySet() ) {
+        Map<String, String> value = entry.getValue();
+        if ( value != null && value.get( code ) != null ) {
+          count++;
+        }
       }
     }
+
     return count;
   }
 
   @Override
   public int countNrJobEntryAttributes( ObjectId id_jobentry, String code ) throws KettleException {
-    // TODO Auto-generated method stub
-    return 0;
+    Map<Integer, Map<String, String>> jobMap = jobAttributeMap.get( id_jobentry );
+    int count = 0;
+    if  ( jobMap != null ) {
+      for ( Entry<Integer, Map<String, String>> entry : jobMap.entrySet() ) {
+        Map<String, String> value = entry.getValue();
+        if ( value != null && value.get( code ) != null ) {
+          count++;
+        }
+      }
+    }
+
+    return count;
   }
 
   @Override
