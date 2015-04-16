@@ -57,6 +57,17 @@ public class KettleXulLoader extends SwtXulLoader {
 
   @Override
   public InputStream getResourceAsStream( String resource ) {
+    int height = iconHeight;
+    int width = iconWidth;
+    if ( resource.contains( ":" ) ) {
+      // we have height/width overrides
+      width = Integer.parseInt( resource.substring( resource.indexOf( ":" ) + 1,
+          resource.indexOf( "#" ) ) );
+      height = Integer.parseInt( resource.substring( resource.indexOf( "#" ) + 1,
+          resource.indexOf( "." ) ) );
+      resource = resource.substring( 0, resource.indexOf( ":" ) ) +
+          resource.substring( resource.indexOf( "." ) );
+    }
     if ( SvgSupport.isSvgEnabled() && ( SvgSupport.isSvgName( resource ) 
         || SvgSupport.isPngName( resource ) ) ) {
       InputStream in = null;
@@ -68,7 +79,7 @@ public class KettleXulLoader extends SwtXulLoader {
 
         Display d = Display.getCurrent() != null ? Display.getCurrent() : Display.getDefault();
         // write to png
-        Image result = image.getAsBitmapForSize( d, iconWidth, iconHeight );
+        Image result = image.getAsBitmapForSize( d, width, height );
         ImageLoader loader = new ImageLoader();
         loader.data = new ImageData[] { result.getImageData() };
         ByteArrayOutputStream out = new ByteArrayOutputStream();

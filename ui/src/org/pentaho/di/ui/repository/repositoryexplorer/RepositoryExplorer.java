@@ -41,6 +41,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.controllers.MainControlle
 import org.pentaho.di.ui.repository.repositoryexplorer.uisupport.IRepositoryExplorerUISupport;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
+import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -65,27 +66,15 @@ public class RepositoryExplorer {
 
   private boolean initialized = false;
 
-  private ResourceBundle resourceBundle = new ResourceBundle() {
-
-    @Override
-    public Enumeration<String> getKeys() {
-      return null;
-    }
-
-    @Override
-    protected Object handleGetObject( String key ) {
-      return BaseMessages.getString( CLZ, key );
-    }
-
-  };
+  private ResourceBundle resourceBundle = new XulSpoonResourceBundle( CLZ );
 
   // private Repository repository;
   public RepositoryExplorer( Shell shell, final Repository rep, RepositoryExplorerCallback callback,
     VariableSpace variableSpace ) throws XulException {
     KettleXulLoader xulLoader = new KettleXulLoader();
+    xulLoader.setIconsSize( 24, 24 );
     xulLoader.setOuterContext( shell );
     xulLoader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
-    xulLoader.registerClassLoader( getClass().getClassLoader() );
     container =
       xulLoader.loadXul(
         "org/pentaho/di/ui/repository/repositoryexplorer/xul/explorer-layout.xul", resourceBundle );
