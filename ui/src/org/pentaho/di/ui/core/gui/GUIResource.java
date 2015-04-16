@@ -2115,7 +2115,7 @@ public class GUIResource {
   }
 
   public Image getImageWarning32() {
-    return imageInfoHop.getAsBitmapForSize( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
+    return imageWarning.getAsBitmapForSize( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
   }
 
   public Image getImageVersionBrowser() {
