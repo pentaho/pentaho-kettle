@@ -67,4 +67,9 @@ public class UIJob extends UIRepositoryContent {
       newParentDir.refresh();
     }
   }
+  
+  @Override
+  public String getImage() {
+    return "ui/images/job_tree.svg";
+  }  
 }
