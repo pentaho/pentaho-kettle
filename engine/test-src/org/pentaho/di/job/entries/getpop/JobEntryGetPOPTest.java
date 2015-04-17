@@ -21,10 +21,18 @@
  ******************************************************************************/
 package org.pentaho.di.job.entries.getpop;
 
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.mail.Message;
 import javax.mail.Flags.Flag;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
 import javax.mail.MessagingException;
 
 import org.junit.Before;
@@ -32,9 +40,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.utils.TestUtils;
 
 public class JobEntryGetPOPTest {
 
@@ -48,7 +59,7 @@ public class JobEntryGetPOPTest {
   JobEntryGetPOP entry = new JobEntryGetPOP();
 
   @Before
-  public void before() throws KettleException {
+  public void before() throws IOException, KettleException, MessagingException {
     MockitoAnnotations.initMocks( this );
 
     Mockito.when( parentJob.getLogLevel() ).thenReturn( LogLevel.BASIC );
@@ -56,12 +67,29 @@ public class JobEntryGetPOPTest {
     entry.setSaveMessage( true );
 
     Mockito.when( message.getMessageNumber() ).thenReturn( 1 );
+    Mockito.when( message.getContent() ).thenReturn( createMessageContent() );
     Mockito.when( mailConn.getMessage() ).thenReturn( message );
 
     Mockito.doNothing().when( mailConn ).openFolder( Mockito.anyBoolean() );
     Mockito.doNothing().when( mailConn ).openFolder( Mockito.anyString(), Mockito.anyBoolean() );
 
     Mockito.when( mailConn.getMessagesCount() ).thenReturn( 1 );
+  }
+
+  private Object createMessageContent() throws IOException, MessagingException {
+    MimeMultipart content = new MimeMultipart();
+    MimeBodyPart contentText = new MimeBodyPart();
+    contentText.setText( "Hello World!" );
+    content.addBodyPart( contentText );
+
+    MimeBodyPart contentFile = new MimeBodyPart();
+    File testFile = TestUtils.getInputFile( "GetPOP", "txt" );
+    FileDataSource fds = new FileDataSource( testFile.getAbsolutePath() );
+    contentFile.setDataHandler( new DataHandler( fds ) );
+    contentFile.setFileName( testFile.getName() );
+    content.addBodyPart( contentFile );
+
+    return (Object) content;
   }
 
   /**
@@ -113,5 +141,120 @@ public class JobEntryGetPOPTest {
         "junitRealMoveToIMAPFolder", "junitRealFilenamePattern", 0, Mockito.mock( SimpleDateFormat.class ) );
     Mockito.verify( mailConn ).openFolder( true );
     Mockito.verify( message ).setFlag( Flag.SEEN, true );
+  }
+
+  /**
+   * PDI-11943 - Get Mail Job Entry: Attachments folder not created
+   * 
+   * Test that the Attachments folder is created when the entry is
+   * configured to save attachments and messages in the same folder
+   * 
+   * @throws IOException
+   */
+  @Test
+  public void testCreateSameAttachmentsFolder() throws IOException {
+    File attachmentsDir = new File( TestUtils.createTempDir() );
+    attachmentsDir.deleteOnExit();
+
+    entry.setCreateLocalFolder( true );
+    entry.setSaveAttachment( true );
+    entry.setOutputDirectory( attachmentsDir.getAbsolutePath() );
+    entry.setDifferentFolderForAttachment( false );
+
+    String outputFolderName = "";
+    String attachmentsFolderName = "";
+    try {
+      outputFolderName = entry.createOutputDirectory( JobEntryGetPOP.FOLDER_OUTPUT );
+      attachmentsFolderName = entry.createOutputDirectory( JobEntryGetPOP.FOLDER_ATTACHMENTS );
+    } catch ( Exception e ) {
+      fail( "Could not create folder " + e.getLocalizedMessage() );
+    }
+
+    assertTrue( "Output Folder should be a local path", !Const.isEmpty( outputFolderName ) );
+    assertTrue( "Attachment Folder should be a local path", !Const.isEmpty( attachmentsFolderName ) );
+    assertTrue( "Output and Attachment Folder should match", outputFolderName.equals( attachmentsFolderName ) );
+  }
+
+  /**
+   * PDI-11943 - Get Mail Job Entry: Attachments folder not created
+   * 
+   * Test that the Attachments folder is created when the entry is
+   * configured to save attachments and messages in different folders
+   * 
+   * @throws IOException
+   */
+  @Test
+  public void testCreateDifferentAttachmentsFolder() throws IOException {
+    File outputDir = new File( TestUtils.createTempDir() );
+    File attachmentsDir = new File( TestUtils.createTempDir() );
+
+    entry.setCreateLocalFolder( true );
+    entry.setSaveAttachment( true );
+    entry.setOutputDirectory( outputDir.getAbsolutePath() );
+    entry.setDifferentFolderForAttachment( true );
+    entry.setAttachmentFolder( attachmentsDir.getAbsolutePath() );
+
+    String outputFolderName = "";
+    String attachmentsFolderName = "";
+    try {
+      outputFolderName = entry.createOutputDirectory( JobEntryGetPOP.FOLDER_OUTPUT );
+      attachmentsFolderName = entry.createOutputDirectory( JobEntryGetPOP.FOLDER_ATTACHMENTS );
+    } catch ( Exception e ) {
+      fail( "Could not create folder: " + e.getLocalizedMessage() );
+    }
+
+    assertTrue( "Output Folder should be a local path", !Const.isEmpty( outputFolderName ) );
+    assertTrue( "Attachment Folder should be a local path", !Const.isEmpty( attachmentsFolderName ) );
+    assertFalse( "Output and Attachment Folder should not match", outputFolderName.equals( attachmentsFolderName ) );
+  }
+
+  /**
+   * PDI-11943 - Get Mail Job Entry: Attachments folder not created
+   * 
+   * Test that the Attachments folder is not created when the entry is
+   * configured to not create folders
+   * 
+   * @throws IOException
+   */
+  @Test
+  public void testFolderIsNotCreatedWhenCreateFolderSettingIsDisabled() throws IOException {
+    File outputDir = new File( TestUtils.createTempDir() );
+    File attachmentsDir = new File( TestUtils.createTempDir() );
+    // The folders already exist from TestUtils.  Delete them so they don't exist during the test
+    outputDir.delete();
+    attachmentsDir.delete();
+
+    entry.setCreateLocalFolder( false );
+    entry.setSaveAttachment( true );
+    entry.setOutputDirectory( outputDir.getAbsolutePath() );
+    entry.setDifferentFolderForAttachment( true );
+    entry.setAttachmentFolder( attachmentsDir.getAbsolutePath() );
+
+    try {
+      entry.createOutputDirectory( JobEntryGetPOP.FOLDER_OUTPUT );
+      fail( "A KettleException should have been thrown" );
+    } catch ( Exception e ) {
+      if ( e instanceof KettleException ) {
+        assertTrue( "Output Folder should not be created",
+          BaseMessages.getString( JobEntryGetPOP.class,
+            "JobGetMailsFromPOP.Error.OutputFolderNotExist", outputDir.getCanonicalPath() ).equals(
+              Const.trim( e.getMessage() ) ) );
+      } else {
+        fail( "Output Folder should not have been created: " + e.getLocalizedMessage() );
+      }
+    }
+    try {
+      entry.createOutputDirectory( JobEntryGetPOP.FOLDER_ATTACHMENTS );
+      fail( "A KettleException should have been thrown" );
+    } catch ( Exception e ) {
+      if ( e instanceof KettleException ) {
+        assertTrue( "Output Folder should not be created",
+          BaseMessages.getString( JobEntryGetPOP.class,
+            "JobGetMailsFromPOP.Error.AttachmentFolderNotExist", attachmentsDir.getCanonicalPath() ).equals(
+              Const.trim( e.getMessage() ) ) );
+      } else {
+        fail( "Attachments Folder should not have been created: " + e.getLocalizedMessage() );
+      }
+    }
   }
 }

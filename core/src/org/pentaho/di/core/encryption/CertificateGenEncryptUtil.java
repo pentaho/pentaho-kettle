@@ -80,7 +80,7 @@ public class CertificateGenEncryptUtil {
   }
 
   public static Key decodeTransmittedKey( byte[] sessionKey, byte[] transmittedKey, boolean privateKey )
-      throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+    throws InvalidKeySpecException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
     KeySpec keySpec = null;
     Key keyKey = null;
     if ( transmittedKey == null || sessionKey == null ) {
@@ -98,8 +98,8 @@ public class CertificateGenEncryptUtil {
     return keyCipher.unwrap( transmittedKey, SINGLE_KEY_ALGORITHM, Cipher.SECRET_KEY );
   }
 
-  public static Cipher initDecryptionCipher( Key unwrappedKey, byte[] unencryptedKey )
-      throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+  public static Cipher initDecryptionCipher( Key unwrappedKey, byte[] unencryptedKey ) throws NoSuchAlgorithmException,
+    NoSuchPaddingException, InvalidKeyException {
     Cipher decryptionCip = Cipher.getInstance( SINGLE_KEY_ALGORITHM );
     if ( unwrappedKey != null ) {
       decryptionCip.init( Cipher.ENCRYPT_MODE, unwrappedKey );

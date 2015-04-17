@@ -23,11 +23,10 @@
 package org.pentaho.di.trans.steps.reservoirsampling;
 
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -114,13 +113,12 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
    * @return a <code>String</code> containing the XML
    */
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 100 );
+    StringBuilder retval = new StringBuilder( 100 );
 
-    retval.append( "<" + XML_TAG + ">" );
-
+    retval.append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
     retval.append( XMLHandler.addTagValue( "sample_size", m_sampleSize ) );
     retval.append( XMLHandler.addTagValue( "seed", m_randomSeed ) );
-    retval.append( "</" + XML_TAG + ">" );
+    retval.append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
     return retval.toString();
   }
@@ -192,11 +190,11 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
    * @exception KettleException
    *              if an error occurs
    */
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases,
-    Map<String, Counter> counters ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
 
-    m_sampleSize = rep.getStepAttributeString( id_step, 0, "sample_size" );
-    m_randomSeed = rep.getStepAttributeString( id_step, 0, "seed" );
+    m_sampleSize = rep.getStepAttributeString( id_step, "sample_size" );
+    m_randomSeed = rep.getStepAttributeString( id_step, "seed" );
   }
 
   /**
@@ -213,8 +211,8 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
    */
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
 
-    rep.saveStepAttribute( id_transformation, id_step, 0, "sample_size", m_sampleSize );
-    rep.saveStepAttribute( id_transformation, id_step, 0, "seed", m_randomSeed );
+    rep.saveStepAttribute( id_transformation, id_step, "sample_size", m_sampleSize );
+    rep.saveStepAttribute( id_transformation, id_step, "seed", m_randomSeed );
   }
 
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,

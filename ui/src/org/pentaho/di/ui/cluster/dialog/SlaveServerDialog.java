@@ -357,7 +357,7 @@ public class SlaveServerDialog extends Dialog {
     fdMaster.left = new FormAttachment( middle, 0 );
     fdMaster.right = new FormAttachment( 95, 0 );
     wMaster.setLayoutData( fdMaster );
-    
+
     // Https
     Control lastControl = wMaster;
     {
@@ -499,7 +499,7 @@ public class SlaveServerDialog extends Dialog {
     wNonProxyHosts.setText( Const.NVL( slaveServer.getNonProxyHosts(), "" ) );
 
     wMaster.setSelection( slaveServer.isMaster() );
-    
+
     wSSL.setSelection( slaveServer.isSslMode() );
 
     wName.setFocus();
@@ -524,7 +524,7 @@ public class SlaveServerDialog extends Dialog {
     originalServer.setNonProxyHosts( slaveServer.getNonProxyHosts() );
 
     originalServer.setMaster( slaveServer.isMaster() );
-    
+
     originalServer.setSslMode( slaveServer.isSslMode() );
 
     originalServer.setChanged();
@@ -548,7 +548,7 @@ public class SlaveServerDialog extends Dialog {
     slaveServer.setNonProxyHosts( wNonProxyHosts.getText() );
 
     slaveServer.setMaster( wMaster.getSelection() );
-    
+
     slaveServer.setSslMode( wSSL.getSelection() );
   }
 

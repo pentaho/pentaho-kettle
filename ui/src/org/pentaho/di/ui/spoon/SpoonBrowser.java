@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -173,6 +174,7 @@ public class SpoonBrowser implements TabItemInterface, XulEventHandler {
 
       @SuppressWarnings( "unused" )
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
+      spoon.props.setLook( swtToolBar, Props.WIDGET_STYLE_TOOLBAR );
 
       // Add a URL
 

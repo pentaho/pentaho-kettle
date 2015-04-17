@@ -236,4 +236,69 @@ public class MappingTest extends TestCase {
     assertEquals( "Expected a single Info Stream", 1, ioMeta.getInfoStreams().size() );
     assertEquals( "Expected a single Info Step", 1, loadedMappingMeta.getInfoSteps().length );
   }
+
+  public void testMapping_WhenSharingPreviousStepWithAnother() throws Exception {
+    KettleEnvironment.init();
+
+    TransMeta transMeta = new TransMeta( "testfiles/org/pentaho/di/trans/steps/mapping/pdi-13435/PDI-13435-main.ktr" );
+    transMeta.setTransformationType( TransMeta.TransformationType.Normal );
+
+    Trans trans = new Trans( transMeta );
+    trans.prepareExecution( null );
+    trans.startThreads();
+    trans.waitUntilFinished();
+
+    assertEquals( 0, trans.getErrors() );
+  }
+
+
+  /**
+   * This test case relates to PDI-13545. It executes a transformation with a Mapping step that is not configured
+   * manually with an <tt>outputStepname</tt> property and, therefore, it is set to be a mapping output step from the
+   * internal transformation.
+   *
+   * @throws Exception
+   */
+  public void testMapping_WhenNextStepHasTwoCopies_AndOutputIsNotDefinedExplicitly() throws Exception {
+    runTransWhenMappingsIsFollowedByCopiedStep(
+      "testfiles/org/pentaho/di/trans/steps/mapping/pdi-13545/pdi-13545-1.ktr" );
+  }
+
+  /**
+   * This test case relates to PDI-13545. It executes a transformation with a Mapping step that is configured manually
+   * with an <tt>outputStepname</tt> property.
+   *
+   * @throws Exception
+   */
+  public void testMapping_WhenNextStepHasTwoCopies_AndOutputIsDefinedExplicitly() throws Exception {
+    runTransWhenMappingsIsFollowedByCopiedStep(
+      "testfiles/org/pentaho/di/trans/steps/mapping/pdi-13545/pdi-13545-2.ktr" );
+  }
+
+  /**
+   * This method runs transformations related to PDI-13545.<br/> The scenario is the following: there are two step
+   * generating data, the latter of which is a Mapping step. They are followed with a Join Rows step, that has two
+   * copies. The last in a row is a Dummy step, named "Last". Since both generating steps output 3 rows ([10, 20, 30]
+   * and [1, 2, 3] respectively), the last step must obtain 3*3=9 rows.
+   *
+   * @param transPath a path to transformation file
+   * @throws Exception
+   */
+  private void runTransWhenMappingsIsFollowedByCopiedStep( String transPath ) throws Exception {
+    KettleEnvironment.init();
+
+    TransMeta transMeta = new TransMeta( transPath );
+    transMeta.setTransformationType( TransMeta.TransformationType.Normal );
+
+    Trans trans = new Trans( transMeta );
+    trans.prepareExecution( null );
+    trans.startThreads();
+    trans.waitUntilFinished();
+
+    assertEquals( 0, trans.getErrors() );
+
+    List<StepInterface> list = trans.findBaseSteps( "Last" );
+    assertEquals( 1, list.size() );
+    assertEquals( 9, list.get( 0 ).getLinesRead() );
+  }
 }

@@ -70,7 +70,7 @@ public class FormulaMetaFunction implements Cloneable {
   public boolean equals( Object obj ) {
     if ( obj != null && ( obj.getClass().equals( this.getClass() ) ) ) {
       FormulaMetaFunction mf = (FormulaMetaFunction) obj;
-      return ( getXML() == mf.getXML() );
+      return ( getXML().equals( mf.getXML() ) );
     }
 
     return false;

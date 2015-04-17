@@ -31,7 +31,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
+import org.pentaho.di.trans.step.StepMetaInjectionEntryInterface;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
+
+import static org.pentaho.di.trans.step.StepInjectionUtil.getEntry;
 
 /**
  * This takes care of the external metadata injection into the TextFileInputMeta class
@@ -40,7 +43,7 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
  */
 public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
 
-  private enum Entry {
+  enum Entry implements StepMetaInjectionEntryInterface {
 
     FILE_TYPE( ValueMetaInterface.TYPE_STRING, "File type (CSV/Fixed)" ), SEPARATOR(
       ValueMetaInterface.TYPE_STRING, "The field separator" ), ENCLOSURE(
@@ -63,7 +66,9 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
       ValueMetaInterface.TYPE_STRING, "Include a row number in the output? (Y/N)" ), ROW_NUMBER_BY_FILE(
       ValueMetaInterface.TYPE_STRING, "Reset the row number for each file? (Y/N)" ), ROW_NUMBER_FIELD(
       ValueMetaInterface.TYPE_STRING, "The name of the row number field in the output" ), FILE_FORMAT(
-      ValueMetaInterface.TYPE_STRING, "File format (DOS, UNIX, mixed)" ), ROW_LIMIT(
+      ValueMetaInterface.TYPE_STRING, "File format (DOS, UNIX, mixed)" ), ENCODING(
+      ValueMetaInterface.TYPE_STRING,
+      "Encoding type (for allowed values see: http://wiki.pentaho.com/display/EAI/Text+File+Input)" ), ROW_LIMIT(
       ValueMetaInterface.TYPE_STRING, "The maximum number of lines to read." ), DATE_FORMAT_LENIENT(
       ValueMetaInterface.TYPE_STRING, "Use a lenient date parsing algorithm? (Y/N)" ), DATE_FORMAT_LOCALE(
       ValueMetaInterface.TYPE_STRING, "The date format locale" ), ACCEPT_FILE_NAMES(
@@ -91,40 +96,40 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
       ValueMetaInterface.TYPE_STRING, "The target directory for the error files" ), ERROR_FILES_EXTENTION(
       ValueMetaInterface.TYPE_STRING, "The error files' extension" ), LINE_NR_FILES_TARGET_DIR(
       ValueMetaInterface.TYPE_STRING, "The target directory for the line number files" ),
-      LINE_NR_FILES_EXTENTION( ValueMetaInterface.TYPE_STRING, "The line number files' extension" ),
-      ERROR_LINES_SKIPPED( ValueMetaInterface.TYPE_STRING, "Skip error lines? (Y/N)" ),
+    LINE_NR_FILES_EXTENTION( ValueMetaInterface.TYPE_STRING, "The line number files' extension" ),
+    ERROR_LINES_SKIPPED( ValueMetaInterface.TYPE_STRING, "Skip error lines? (Y/N)" ),
 
-      FILENAME_LINES( ValueMetaInterface.TYPE_NONE, "The list of file definitions" ), FILENAME_LINE(
-        ValueMetaInterface.TYPE_NONE, "One file definition line" ), FILENAME(
-        ValueMetaInterface.TYPE_STRING, "The filename or directory" ), FILEMASK(
-        ValueMetaInterface.TYPE_STRING, "The file mask (regex)" ), EXCLUDE_FILEMASK(
-        ValueMetaInterface.TYPE_STRING, "The mask for the files to exclude (regex)" ), FILE_REQUIRED(
-        ValueMetaInterface.TYPE_STRING, "Is this a required file (Y/N)" ), INCLUDE_SUBFOLDERS(
-        ValueMetaInterface.TYPE_STRING, "Include sub-folders when searching files? (Y/N)" ),
+    FILENAME_LINES( ValueMetaInterface.TYPE_NONE, "The list of file definitions" ), FILENAME_LINE(
+      ValueMetaInterface.TYPE_NONE, "One file definition line" ), FILENAME(
+      ValueMetaInterface.TYPE_STRING, "The filename or directory" ), FILEMASK(
+      ValueMetaInterface.TYPE_STRING, "The file mask (regex)" ), EXCLUDE_FILEMASK(
+      ValueMetaInterface.TYPE_STRING, "The mask for the files to exclude (regex)" ), FILE_REQUIRED(
+      ValueMetaInterface.TYPE_STRING, "Is this a required file (Y/N)" ), INCLUDE_SUBFOLDERS(
+      ValueMetaInterface.TYPE_STRING, "Include sub-folders when searching files? (Y/N)" ),
 
-      FIELDS( ValueMetaInterface.TYPE_NONE, "The fields" ), FIELD( ValueMetaInterface.TYPE_NONE, "One field" ),
-      FIELD_NAME( ValueMetaInterface.TYPE_STRING, "Name" ), FIELD_POSITION(
-        ValueMetaInterface.TYPE_STRING, "Position" ), FIELD_LENGTH( ValueMetaInterface.TYPE_STRING, "Length" ),
-      FIELD_TYPE( ValueMetaInterface.TYPE_STRING, "Data type (String, Number, ...)" ), FIELD_IGNORE(
-        ValueMetaInterface.TYPE_STRING, "Ignore? (Y/N)" ),
-      FIELD_FORMAT( ValueMetaInterface.TYPE_STRING, "Format" ), FIELD_TRIM_TYPE(
-        ValueMetaInterface.TYPE_STRING, "Trim type (none, left, right, both)" ), FIELD_PRECISION(
-        ValueMetaInterface.TYPE_STRING, "Precision" ), FIELD_DECIMAL(
-        ValueMetaInterface.TYPE_STRING, "Decimal symbol" ), FIELD_GROUP(
-        ValueMetaInterface.TYPE_STRING, "Grouping symbol" ), FIELD_CURRENCY(
-        ValueMetaInterface.TYPE_STRING, "Currency symbol" ), FIELD_REPEAT(
-        ValueMetaInterface.TYPE_STRING, "Repeat values? (Y/N)" ), FIELD_NULL_STRING(
-        ValueMetaInterface.TYPE_STRING, "The null string" ), FIELD_IF_NULL(
-        ValueMetaInterface.TYPE_STRING, "The default value if null" ),
+    FIELDS( ValueMetaInterface.TYPE_NONE, "The fields" ), FIELD( ValueMetaInterface.TYPE_NONE, "One field" ),
+    FIELD_NAME( ValueMetaInterface.TYPE_STRING, "Name" ), FIELD_POSITION(
+      ValueMetaInterface.TYPE_STRING, "Position" ), FIELD_LENGTH( ValueMetaInterface.TYPE_STRING, "Length" ),
+    FIELD_TYPE( ValueMetaInterface.TYPE_STRING, "Data type (String, Number, ...)" ), FIELD_IGNORE(
+      ValueMetaInterface.TYPE_STRING, "Ignore? (Y/N)" ),
+    FIELD_FORMAT( ValueMetaInterface.TYPE_STRING, "Format" ), FIELD_TRIM_TYPE(
+      ValueMetaInterface.TYPE_STRING, "Trim type (none, left, right, both)" ), FIELD_PRECISION(
+      ValueMetaInterface.TYPE_STRING, "Precision" ), FIELD_DECIMAL(
+      ValueMetaInterface.TYPE_STRING, "Decimal symbol" ), FIELD_GROUP(
+      ValueMetaInterface.TYPE_STRING, "Grouping symbol" ), FIELD_CURRENCY(
+      ValueMetaInterface.TYPE_STRING, "Currency symbol" ), FIELD_REPEAT(
+      ValueMetaInterface.TYPE_STRING, "Repeat values? (Y/N)" ), FIELD_NULL_STRING(
+      ValueMetaInterface.TYPE_STRING, "The null string" ), FIELD_IF_NULL(
+      ValueMetaInterface.TYPE_STRING, "The default value if null" ),
 
-      // The filters
-      //
-      FILTERS( ValueMetaInterface.TYPE_NONE, "The filter definitions" ), FILTER(
-        ValueMetaInterface.TYPE_NONE, "One filter definition" ), FILTER_POSITION(
-        ValueMetaInterface.TYPE_STRING, "Position" ), FILTER_STRING(
-        ValueMetaInterface.TYPE_STRING, "Filter string" ), FILTER_LAST_LINE(
-        ValueMetaInterface.TYPE_STRING, "Stop reading when filter found? (Y/N)" ), FILTER_POSITIVE(
-        ValueMetaInterface.TYPE_STRING, "Only match the filter lines? (Y/N)" );
+    // The filters
+    //
+    FILTERS( ValueMetaInterface.TYPE_NONE, "The filter definitions" ), FILTER(
+      ValueMetaInterface.TYPE_NONE, "One filter definition" ), FILTER_POSITION(
+      ValueMetaInterface.TYPE_STRING, "Position" ), FILTER_STRING(
+      ValueMetaInterface.TYPE_STRING, "Filter string" ), FILTER_LAST_LINE(
+      ValueMetaInterface.TYPE_STRING, "Stop reading when filter found? (Y/N)" ), FILTER_POSITIVE(
+      ValueMetaInterface.TYPE_STRING, "Only match the filter lines? (Y/N)" );
 
     private int valueType;
     private String description;
@@ -151,9 +156,41 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
     public static Entry findEntry( String key ) {
       return Entry.valueOf( key );
     }
+
+    public static Entry[] getTopEntries() {
+      return new Entry[] {
+        FILE_TYPE, SEPARATOR, ENCLOSURE, ESCAPE_CHAR, BREAK_IN_ENCLOSURE,
+        HEADER_PRESENT, NR_HEADER_LINES, HAS_FOOTER, NR_FOOTER_LINES,
+        HAS_WRAPPED_LINES, NR_WRAPS, HAS_PAGED_LAYOUT, NR_DOC_HEADER_LINES,
+        NR_LINES_PER_PAGE, COMPRESSION_TYPE, NO_EMPTY_LINES, INCLUDE_FILENAME,
+        FILENAME_FIELD, INCLUDE_ROW_NUMBER, ROW_NUMBER_BY_FILE, ROW_NUMBER_FIELD,
+        FILE_FORMAT, ENCODING, ROW_LIMIT, DATE_FORMAT_LENIENT, DATE_FORMAT_LOCALE,
+        ACCEPT_FILE_NAMES, ACCEPT_FILE_STEP, ACCEPT_FILE_FIELD, PASS_THROUGH_FIELDS,
+        ADD_FILES_TO_RESULT, FILE_SHORT_FILE_FIELDNAME, FILE_PATH_FIELDNAME,
+        FILE_HIDDEN_FIELDNAME, FILE_LAST_MODIFICATION_FIELDNAME, FILE_URI_FIELDNAME,
+        FILE_EXTENSION_FIELDNAME, FILE_SIZE_FIELDNAME, SKIP_BAD_FILES,
+        FILE_ERROR_FIELD, FILE_ERROR_MESSAGE_FIELD, IGNORE_ERRORS, ERROR_COUNT_FIELD,
+        ERROR_FIELDS_FIELD, ERROR_TEXT_FIELD, WARNING_FILES_TARGET_DIR,
+        WARNING_FILES_EXTENTION, ERROR_FILES_TARGET_DIR, ERROR_FILES_EXTENTION,
+        LINE_NR_FILES_TARGET_DIR, LINE_NR_FILES_EXTENTION, ERROR_LINES_SKIPPED
+      };
+    }
+
+    public static Entry[] getFileFieldsEntries() {
+      return new Entry[] { FILENAME, FILEMASK, EXCLUDE_FILEMASK, FILE_REQUIRED, INCLUDE_SUBFOLDERS };
+    }
+
+    public static Entry[] getAggEntries() {
+      return new Entry[] {
+        FIELD_NAME, FIELD_POSITION, FIELD_LENGTH, FIELD_TYPE, FIELD_IGNORE,
+        FIELD_FORMAT, FIELD_TRIM_TYPE, FIELD_PRECISION, FIELD_DECIMAL,
+        FIELD_GROUP, FIELD_CURRENCY, FIELD_REPEAT, FIELD_NULL_STRING,
+        FIELD_IF_NULL };
+    }
   }
 
-  private TextFileInputMeta meta;
+
+  private final TextFileInputMeta meta;
 
   public TextFileInputMetaInjection( TextFileInputMeta meta ) {
     this.meta = meta;
@@ -163,71 +200,42 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
   public List<StepInjectionMetaEntry> getStepInjectionMetadataEntries() throws KettleException {
     List<StepInjectionMetaEntry> all = new ArrayList<StepInjectionMetaEntry>();
 
-    Entry[] topEntries =
-      new Entry[] {
-        Entry.FILE_TYPE, Entry.SEPARATOR, Entry.ENCLOSURE, Entry.ESCAPE_CHAR, Entry.BREAK_IN_ENCLOSURE,
-        Entry.HEADER_PRESENT, Entry.NR_HEADER_LINES, Entry.HAS_FOOTER, Entry.NR_FOOTER_LINES,
-        Entry.HAS_WRAPPED_LINES, Entry.NR_WRAPS, Entry.HAS_PAGED_LAYOUT, Entry.NR_DOC_HEADER_LINES,
-        Entry.NR_LINES_PER_PAGE, Entry.COMPRESSION_TYPE, Entry.NO_EMPTY_LINES, Entry.INCLUDE_FILENAME,
-        Entry.FILENAME_FIELD, Entry.INCLUDE_ROW_NUMBER, Entry.ROW_NUMBER_BY_FILE, Entry.ROW_NUMBER_FIELD,
-        Entry.FILE_FORMAT, Entry.ROW_LIMIT, Entry.DATE_FORMAT_LENIENT, Entry.DATE_FORMAT_LOCALE,
-        Entry.ACCEPT_FILE_NAMES, Entry.ACCEPT_FILE_STEP, Entry.ACCEPT_FILE_FIELD, Entry.PASS_THROUGH_FIELDS,
-        Entry.ADD_FILES_TO_RESULT, Entry.FILE_SHORT_FILE_FIELDNAME, Entry.FILE_PATH_FIELDNAME,
-        Entry.FILE_HIDDEN_FIELDNAME, Entry.FILE_LAST_MODIFICATION_FIELDNAME, Entry.FILE_URI_FIELDNAME,
-        Entry.FILE_EXTENSION_FIELDNAME, Entry.FILE_SIZE_FIELDNAME, Entry.SKIP_BAD_FILES,
-        Entry.FILE_ERROR_FIELD, Entry.FILE_ERROR_MESSAGE_FIELD, Entry.IGNORE_ERRORS, Entry.ERROR_COUNT_FIELD,
-        Entry.ERROR_FIELDS_FIELD, Entry.ERROR_TEXT_FIELD, Entry.WARNING_FILES_TARGET_DIR,
-        Entry.WARNING_FILES_EXTENTION, Entry.ERROR_FILES_TARGET_DIR, Entry.ERROR_FILES_EXTENTION,
-        Entry.LINE_NR_FILES_TARGET_DIR, Entry.LINE_NR_FILES_EXTENTION, Entry.ERROR_LINES_SKIPPED, };
-    for ( Entry topEntry : topEntries ) {
-      all.add( new StepInjectionMetaEntry( topEntry.name(), topEntry.getValueType(), topEntry.getDescription() ) );
+    for ( Entry topEntry : Entry.getTopEntries() ) {
+      all.add( getEntry( topEntry ) );
     }
 
     // The file name lines
     //
-    StepInjectionMetaEntry filesEntry =
-      new StepInjectionMetaEntry(
-        Entry.FILENAME_LINES.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINES.description );
+    StepInjectionMetaEntry filesEntry = getEntry( Entry.FILENAME_LINES );
     all.add( filesEntry );
-    StepInjectionMetaEntry fileEntry =
-      new StepInjectionMetaEntry(
-        Entry.FILENAME_LINE.name(), ValueMetaInterface.TYPE_NONE, Entry.FILENAME_LINE.description );
+    StepInjectionMetaEntry fileEntry = getEntry( Entry.FILENAME_LINE );
     filesEntry.getDetails().add( fileEntry );
 
-    Entry[] fieldsEntries =
-      new Entry[] {
-        Entry.FILENAME, Entry.FILEMASK, Entry.EXCLUDE_FILEMASK, Entry.FILE_REQUIRED, Entry.INCLUDE_SUBFOLDERS, };
-    for ( Entry entry : fieldsEntries ) {
-      StepInjectionMetaEntry metaEntry =
-        new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
-      fileEntry.getDetails().add( metaEntry );
+    Entry[] fileFieldsEntries = Entry.getFileFieldsEntries();
+    List<StepInjectionMetaEntry> fileEntryDetails = fileEntry.getDetails();
+    for ( Entry entry : fileFieldsEntries ) {
+      StepInjectionMetaEntry metaEntry = getEntry( entry );
+      fileEntryDetails.add( metaEntry );
     }
 
     // The fields...
     //
-    StepInjectionMetaEntry fieldsEntry =
-      new StepInjectionMetaEntry( Entry.FIELDS.name(), ValueMetaInterface.TYPE_NONE, Entry.FIELDS.description );
+    StepInjectionMetaEntry fieldsEntry = getEntry( Entry.FIELDS );
     all.add( fieldsEntry );
-    StepInjectionMetaEntry fieldEntry =
-      new StepInjectionMetaEntry( Entry.FIELD.name(), ValueMetaInterface.TYPE_NONE, Entry.FIELD.description );
+    StepInjectionMetaEntry fieldEntry = getEntry( Entry.FIELD );
     fieldsEntry.getDetails().add( fieldEntry );
 
-    Entry[] aggEntries =
-      new Entry[] {
-        Entry.FIELD_NAME, Entry.FIELD_POSITION, Entry.FIELD_LENGTH, Entry.FIELD_TYPE, Entry.FIELD_IGNORE,
-        Entry.FIELD_FORMAT, Entry.FIELD_TRIM_TYPE, Entry.FIELD_PRECISION, Entry.FIELD_DECIMAL,
-        Entry.FIELD_GROUP, Entry.FIELD_CURRENCY, Entry.FIELD_REPEAT, Entry.FIELD_NULL_STRING,
-        Entry.FIELD_IF_NULL, };
+    Entry[] aggEntries = Entry.getAggEntries();
+    List<StepInjectionMetaEntry> fieldEntryDetails = fieldEntry.getDetails();
     for ( Entry entry : aggEntries ) {
-      StepInjectionMetaEntry metaEntry =
-        new StepInjectionMetaEntry( entry.name(), entry.getValueType(), entry.getDescription() );
-      fieldEntry.getDetails().add( metaEntry );
+      StepInjectionMetaEntry metaEntry = getEntry( entry );
+      fieldEntryDetails.add( metaEntry );
     }
 
     return all;
   }
 
-  private class FileLine {
+  private static class FileLine {
     String filename;
     String includeMask;
     String excludeMask;
@@ -454,6 +462,9 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
         case FILE_FORMAT:
           meta.setFileFormat( lookValue );
           break;
+        case ENCODING:
+          meta.setEncoding( lookValue );
+          break;
         case ROW_LIMIT:
           meta.setRowLimit( Const.toInt( lookValue, -1 ) );
           break;
@@ -572,7 +583,102 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
   }
 
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
-    return null;
+    List<StepInjectionMetaEntry> result = new ArrayList<StepInjectionMetaEntry>();
+    result.add( getEntry( Entry.FILE_TYPE, meta.getFileType() ) );
+    result.add( getEntry( Entry.SEPARATOR, meta.getSeparator() ) );
+    result.add( getEntry( Entry.ENCLOSURE, meta.getEnclosure() ) );
+    result.add( getEntry( Entry.ESCAPE_CHAR, meta.getEscapeCharacter() ) );
+    result.add( getEntry( Entry.BREAK_IN_ENCLOSURE, meta.isBreakInEnclosureAllowed() ) );
+    result.add( getEntry( Entry.HEADER_PRESENT, meta.hasHeader() ) );
+    result.add( getEntry( Entry.NR_HEADER_LINES, meta.getNrHeaderLines() ) );
+    result.add( getEntry( Entry.HAS_FOOTER, meta.hasFooter() ) );
+    result.add( getEntry( Entry.NR_FOOTER_LINES, meta.getNrFooterLines() ) );
+    result.add( getEntry( Entry.HAS_WRAPPED_LINES, meta.isLineWrapped() ) );
+    result.add( getEntry( Entry.NR_WRAPS, meta.getNrWraps() ) );
+    result.add( getEntry( Entry.HAS_PAGED_LAYOUT, meta.isLayoutPaged() ) );
+    result.add( getEntry( Entry.NR_DOC_HEADER_LINES, meta.getNrLinesDocHeader() ) );
+    result.add( getEntry( Entry.NR_LINES_PER_PAGE, meta.getNrLinesPerPage() ) );
+    result.add( getEntry( Entry.COMPRESSION_TYPE, meta.getFileCompression() ) );
+    result.add( getEntry( Entry.NO_EMPTY_LINES, meta.noEmptyLines() ) );
+    result.add( getEntry( Entry.INCLUDE_FILENAME, meta.includeFilename() ) );
+    result.add( getEntry( Entry.FILENAME_FIELD, meta.getFilenameField() ) );
+    result.add( getEntry( Entry.INCLUDE_ROW_NUMBER, meta.includeRowNumber() ) );
+    result.add( getEntry( Entry.ROW_NUMBER_BY_FILE, meta.isRowNumberByFile() ) );
+    result.add( getEntry( Entry.ROW_NUMBER_FIELD, meta.getRowNumberField() ) );
+    result.add( getEntry( Entry.FILE_FORMAT, meta.getFileFormat() ) );
+    result.add( getEntry( Entry.ENCODING, meta.getEncoding() ) );
+    result.add( getEntry( Entry.ROW_LIMIT, meta.getRowLimit() ) );
+    result.add( getEntry( Entry.DATE_FORMAT_LENIENT, meta.isDateFormatLenient() ) );
+    result.add( getEntry( Entry.DATE_FORMAT_LOCALE, meta.getDateFormatLocale() ) );
+    result.add( getEntry( Entry.ACCEPT_FILE_NAMES, meta.isAcceptingFilenames() ) );
+    result.add( getEntry( Entry.ACCEPT_FILE_STEP, meta.getAcceptingStepName() ) );
+    result.add( getEntry( Entry.ACCEPT_FILE_FIELD, meta.getAcceptingField() ) );
+    result.add( getEntry( Entry.PASS_THROUGH_FIELDS, meta.isPassingThruFields() ) );
+    result.add( getEntry( Entry.ADD_FILES_TO_RESULT, meta.isAddResultFile() ) );
+    result.add( getEntry( Entry.FILE_SHORT_FILE_FIELDNAME, meta.getShortFileNameField() ) );
+    result.add( getEntry( Entry.FILE_PATH_FIELDNAME, meta.getPathField() ) );
+    result.add( getEntry( Entry.FILE_HIDDEN_FIELDNAME, meta.isHiddenField() ) );
+    result.add( getEntry( Entry.FILE_LAST_MODIFICATION_FIELDNAME, meta.getLastModificationDateField() ) );
+    result.add( getEntry( Entry.FILE_URI_FIELDNAME, meta.getUriField() ) );
+    result.add( getEntry( Entry.FILE_EXTENSION_FIELDNAME, meta.getExtensionField() ) );
+    result.add( getEntry( Entry.FILE_SIZE_FIELDNAME, meta.getSizeField() ) );
+    result.add( getEntry( Entry.SKIP_BAD_FILES, meta.isSkipBadFiles() ) );
+    result.add( getEntry( Entry.FILE_ERROR_FIELD, meta.getFileErrorField() ) );
+    result.add( getEntry( Entry.FILE_ERROR_MESSAGE_FIELD, meta.getFileErrorMessageField() ) );
+    result.add( getEntry( Entry.IGNORE_ERRORS, meta.isErrorIgnored() ) );
+    result.add( getEntry( Entry.ERROR_COUNT_FIELD, meta.getErrorCountField() ) );
+    result.add( getEntry( Entry.ERROR_FIELDS_FIELD, meta.getErrorFieldsField() ) );
+    result.add( getEntry( Entry.ERROR_TEXT_FIELD, meta.getErrorTextField() ) );
+    result.add( getEntry( Entry.WARNING_FILES_TARGET_DIR, meta.getWarningFilesDestinationDirectory() ) );
+    result.add( getEntry( Entry.WARNING_FILES_EXTENTION, meta.getWarningFilesExtension() ) );
+    result.add( getEntry( Entry.ERROR_FILES_TARGET_DIR, meta.getErrorFilesDestinationDirectory() ) );
+    result.add( getEntry( Entry.ERROR_FILES_EXTENTION, meta.getErrorLineFilesExtension() ) );
+    result.add( getEntry( Entry.LINE_NR_FILES_TARGET_DIR, meta.getLineNumberFilesDestinationDirectory() ) );
+    result.add( getEntry( Entry.LINE_NR_FILES_EXTENTION, meta.getLineNumberFilesExtension() ) );
+    result.add( getEntry( Entry.ERROR_LINES_SKIPPED, meta.isErrorLineSkipped() ) );
+
+    StepInjectionMetaEntry filenameLinesEntry = getEntry( Entry.FILENAME_LINES );
+    if ( !Const.isEmpty( meta.getFileName() ) ) {
+      for ( int i = 0, len = meta.getFileName().length; i < len; i++ ) {
+        StepInjectionMetaEntry filenameLineEntry = getEntry( Entry.FILENAME_LINE );
+        filenameLinesEntry.getDetails().add( filenameLineEntry );
+
+        List<StepInjectionMetaEntry> filenameLineEntryDetails = filenameLineEntry.getDetails();
+        filenameLineEntryDetails.add( getEntry( Entry.FILENAME, meta.getFileName()[ i ] ) );
+        filenameLineEntryDetails.add( getEntry( Entry.FILEMASK, meta.getFileMask()[ i ] ) );
+        filenameLineEntryDetails.add( getEntry( Entry.EXCLUDE_FILEMASK, meta.getExludeFileMask()[ i ] ) );
+        filenameLineEntryDetails.add( getEntry( Entry.FILE_REQUIRED, meta.getFileRequired()[ i ] ) );
+        filenameLineEntryDetails.add( getEntry( Entry.INCLUDE_SUBFOLDERS, meta.getIncludeSubFolders()[ i ] ) );
+      }
+    }
+    result.add( filenameLinesEntry );
+
+    StepInjectionMetaEntry fieldsEntry = getEntry( Entry.FIELDS );
+    if ( !Const.isEmpty( meta.getInputFields() ) ) {
+      for ( TextFileInputField inputField : meta.getInputFields() ) {
+        StepInjectionMetaEntry fieldEntry = getEntry( Entry.FIELD );
+        fieldsEntry.getDetails().add( fieldEntry );
+
+        List<StepInjectionMetaEntry> fieldDetails = fieldEntry.getDetails();
+        fieldDetails.add( getEntry( Entry.FIELD, inputField.getName() ) );
+        fieldDetails.add( getEntry( Entry.FIELD_POSITION, inputField.getPosition() ) );
+        fieldDetails.add( getEntry( Entry.FIELD_LENGTH, inputField.getLength() ) );
+        fieldDetails.add( getEntry( Entry.FIELD_TYPE, inputField.getType() ) );
+        fieldDetails.add( getEntry( Entry.FIELD_IGNORE, inputField.isIgnored() ) );
+        fieldDetails.add( getEntry( Entry.FIELD_FORMAT, inputField.getFormat() ) );
+        fieldDetails.add( getEntry( Entry.FIELD_TRIM_TYPE, inputField.getTrimType() ) );
+        fieldDetails.add( getEntry( Entry.FIELD_PRECISION, inputField.getPrecision() ) );
+        fieldDetails.add( getEntry( Entry.FIELD_DECIMAL, inputField.getDecimalSymbol() ) );
+        fieldDetails.add( getEntry( Entry.FIELD_GROUP, inputField.getGroupSymbol() ) );
+        fieldDetails.add( getEntry( Entry.FIELD_CURRENCY, inputField.getCurrencySymbol() ) );
+        fieldDetails.add( getEntry( Entry.FIELD_REPEAT, inputField.isRepeated() ) );
+        fieldDetails.add( getEntry( Entry.FIELD_NULL_STRING, inputField.getNullString() ) );
+        fieldDetails.add( getEntry( Entry.FIELD_IF_NULL, inputField.getIfNullValue() ) );
+      }
+    }
+    result.add( fieldsEntry );
+
+    return result;
   }
 
   public TextFileInputMeta getMeta() {

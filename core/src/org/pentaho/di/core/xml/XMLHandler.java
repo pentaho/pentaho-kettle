@@ -35,6 +35,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ import org.xml.sax.InputSource;
 public class XMLHandler {
   private static XMLHandlerCache cache = XMLHandlerCache.getInstance();
   private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat( ValueMeta.DEFAULT_DATE_FORMAT_MASK );
-
+  private static final SimpleDateFormat simpleTimeStampFormat = new SimpleDateFormat( ValueMeta.DEFAULT_TIMESTAMP_FORMAT_MASK );
   /**
    * The header string to specify encoding in UTF-8 for XML files
    *
@@ -1147,6 +1148,15 @@ public class XMLHandler {
     }
     synchronized ( simpleDateFormat ) {
       return simpleDateFormat.format( date );
+    }
+  }
+
+  public static String timestamp2string( Timestamp timestamp ) {
+    if ( timestamp == null ) {
+      return null;
+    }
+    synchronized ( simpleTimeStampFormat ) {
+      return simpleTimeStampFormat.format( timestamp );
     }
   }
 

@@ -156,6 +156,7 @@ public class FTPSConnection implements FTPListener {
       connection.addFTPStatusListener( this );
       connection.connect();
     } catch ( Exception e ) {
+      connection = null;
       throw new KettleException( BaseMessages.getString( PKG, "JobFTPS.Error.Connecting", hostName ), e );
     }
   }

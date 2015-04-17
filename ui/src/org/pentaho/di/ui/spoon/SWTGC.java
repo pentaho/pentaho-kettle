@@ -38,10 +38,12 @@ import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
+import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.util.ImageUtil;
@@ -51,6 +53,7 @@ public class SWTGC implements GCInterface {
   protected Color background;
 
   protected Color black;
+  protected Color white;
   protected Color red;
   protected Color yellow;
   protected Color orange;
@@ -61,12 +64,20 @@ public class SWTGC implements GCInterface {
   protected Color lightGray;
   protected Color darkGray;
   protected Color lightBlue;
+  protected Color crystal;
+  protected Color hopDefault;
+  protected Color hopOK;
 
   private GC gc;
 
   private int iconsize;
 
-  private Map<String, Image> images;
+  //TODO should be changed to PropsUI usage
+  private int small_icon_size = ConstUI.SMALL_ICON_SIZE;
+
+  private Map<String, SwtUniversalImage> images;
+
+  private float currentMagnification = 1.0f;
 
   private List<Color> colors;
   private List<Font> fonts;
@@ -88,6 +99,7 @@ public class SWTGC implements GCInterface {
 
     this.background = GUIResource.getInstance().getColorGraph();
     this.black = GUIResource.getInstance().getColorBlack();
+    this.white = GUIResource.getInstance().getColorWhite();
     this.red = GUIResource.getInstance().getColorRed();
     this.yellow = GUIResource.getInstance().getColorYellow();
     this.orange = GUIResource.getInstance().getColorOrange();
@@ -98,7 +110,9 @@ public class SWTGC implements GCInterface {
     this.lightGray = GUIResource.getInstance().getColorLightGray();
     this.darkGray = GUIResource.getInstance().getColorDarkGray();
     this.lightBlue = GUIResource.getInstance().getColorLightBlue();
-
+    this.crystal = GUIResource.getInstance().getColorCrystalTextPentaho();
+    this.hopDefault = GUIResource.getInstance().getColorHopDefault();
+    this.hopOK = GUIResource.getInstance().getColorHopOK();
   }
 
   public void dispose() {
@@ -118,60 +132,88 @@ public class SWTGC implements GCInterface {
     gc.drawLine( x, y, x2, y2 );
   }
 
+  @Override
   public void drawImage( EImage image, int x, int y ) {
+    drawImage( image, x, y, currentMagnification );
+  }
 
-    Image img = getNativeImage( image );
-    gc.drawImage( img, x, y );
+  public void drawImage( EImage image, int x, int y, float magnification ) {
+    Image img = getNativeImage( image ).getAsBitmapForSize( gc.getDevice(), Math.round( small_icon_size * magnification ),
+        Math.round( small_icon_size * magnification ) );
+    if ( img != null ) {
+      Rectangle bounds = img.getBounds();
+      gc.drawImage( img, 0, 0, bounds.width, bounds.height, x, y, small_icon_size, small_icon_size );
+    }
+  }
+
+  public void drawImage( EImage image, int x, int y, float magnification, double angle ) {
+    Image img =
+        getNativeImage( image ).getAsBitmapForSize( gc.getDevice(), Math.round( small_icon_size * magnification ),
+            Math.round( small_icon_size * magnification ), angle );
+    if ( img != null ) {
+      Rectangle bounds = img.getBounds();
+      int hx = Math.round( bounds.width / magnification );
+      int hy = Math.round( bounds.height / magnification );
+      gc.drawImage( img, 0, 0, bounds.width, bounds.height, x - hx / 2, y - hy / 2, hx, hy );
+    }
   }
 
   public Point getImageBounds( EImage image ) {
-    Image img = getNativeImage( image );
-    Rectangle r = img.getBounds();
-    return new Point( r.width, r.height );
+    return new Point( small_icon_size, small_icon_size );
   }
 
-  public static final Image getNativeImage( EImage image ) {
+  public static final SwtUniversalImage getNativeImage( EImage image ) {
     switch ( image ) {
       case LOCK:
-        return GUIResource.getInstance().getImageLocked();
+        return GUIResource.getInstance().getSwtImageLocked();
       case STEP_ERROR:
-        return GUIResource.getInstance().getImageStepError();
+        return GUIResource.getInstance().getSwtImageStepError();
       case EDIT:
-        return GUIResource.getInstance().getImageEdit();
+        return GUIResource.getInstance().getSwtImageEdit();
       case CONTEXT_MENU:
-        return GUIResource.getInstance().getImageContextMenu();
+        return GUIResource.getInstance().getSwtImageContextMenu();
       case TRUE:
-        return GUIResource.getInstance().getImageTrue();
+        return GUIResource.getInstance().getSwtImageTrue();
       case FALSE:
-        return GUIResource.getInstance().getImageFalse();
+        return GUIResource.getInstance().getSwtImageFalse();
       case ERROR:
-        return GUIResource.getInstance().getImageErrorHop();
+        return GUIResource.getInstance().getSwtImageErrorHop();
       case INFO:
-        return GUIResource.getInstance().getImageInfoHop();
+        return GUIResource.getInstance().getSwtImageInfoHop();
       case TARGET:
-        return GUIResource.getInstance().getImageHopTarget();
+        return GUIResource.getInstance().getSwtImageHopTarget();
       case INPUT:
-        return GUIResource.getInstance().getImageHopInput();
+        return GUIResource.getInstance().getSwtImageHopInput();
       case OUTPUT:
-        return GUIResource.getInstance().getImageHopOutput();
+        return GUIResource.getInstance().getSwtImageHopOutput();
       case ARROW:
-        return GUIResource.getInstance().getImageArrow();
+        return GUIResource.getInstance().getSwtImageArrow();
       case COPY_ROWS:
-        return GUIResource.getInstance().getImageCopyHop();
+        return GUIResource.getInstance().getSwtImageCopyHop();
       case LOAD_BALANCE:
-        return GUIResource.getInstance().getImageBalance();
+        return GUIResource.getInstance().getSwtImageBalance();
       case CHECKPOINT:
-        return GUIResource.getInstance().getImageCheckpoint();
+        return GUIResource.getInstance().getSwtImageCheckpoint();
       case DB:
-        return GUIResource.getInstance().getImageConnection();
+        return GUIResource.getInstance().getSwtImageConnection();
       case PARALLEL:
-        return GUIResource.getInstance().getImageParallelHop();
+        return GUIResource.getInstance().getSwtImageParallelHop();
       case UNCONDITIONAL:
-        return GUIResource.getInstance().getImageUnconditionalHop();
+        return GUIResource.getInstance().getSwtImageUnconditionalHop();
       case BUSY:
-        return GUIResource.getInstance().getImageBusy();
+        return GUIResource.getInstance().getSwtImageBusy();
       case INJECT:
-        return GUIResource.getInstance().getImageInject();
+        return GUIResource.getInstance().getSwtImageInject();
+      case ARROW_DEFAULT:
+        return GUIResource.getInstance().getDefaultArrow();
+      case ARROW_OK:
+        return GUIResource.getInstance().getOkArrow();
+      case ARROW_ERROR:
+        return GUIResource.getInstance().getErrorArrow();
+      case ARROW_DISABLED:
+        return GUIResource.getInstance().getDisabledArrow();
+      case ARROW_CANDIDATE:
+        return GUIResource.getInstance().getCandidateArrow();
       default:
         break;
     }
@@ -245,6 +287,8 @@ public class SWTGC implements GCInterface {
         return background;
       case BLACK:
         return black;
+      case WHITE:
+        return white;
       case RED:
         return red;
       case YELLOW:
@@ -265,6 +309,12 @@ public class SWTGC implements GCInterface {
         return darkGray;
       case LIGHTBLUE:
         return lightBlue;
+      case CRYSTAL:
+        return crystal;
+      case HOP_DEFAULT:
+        return hopDefault;
+      case HOP_OK:
+        return hopOK;
       default:
         break;
     }
@@ -302,6 +352,9 @@ public class SWTGC implements GCInterface {
       case DOT:
         gc.setLineStyle( SWT.LINE_DOT );
         break;
+      case DASH:
+        gc.setLineStyle( SWT.LINE_DASH );
+        break;
       case PARALLEL:
         gc.setLineAttributes( new LineAttributes(
           gc.getLineWidth(), SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_CUSTOM, new float[] { 5, 3, }, 0, 10 ) );
@@ -323,6 +376,7 @@ public class SWTGC implements GCInterface {
     transform.translate( translationX + shadowsize * magnification, translationY + shadowsize * magnification );
     transform.scale( magnification, magnification );
     gc.setTransform( transform );
+    currentMagnification = magnification;
   }
 
   public Point textExtent( String text ) {
@@ -330,12 +384,11 @@ public class SWTGC implements GCInterface {
     return new Point( p.x, p.y );
   }
 
-  public void drawStepIcon( int x, int y, StepMeta stepMeta ) {
-    // Draw a blank rectangle to prevent alpha channel problems...
-    //
-    gc.fillRectangle( x, y, iconsize, iconsize );
+  public void drawStepIcon( int x, int y, StepMeta stepMeta, float magnification ) {
     String steptype = stepMeta.getStepID();
-    Image im = images.get( steptype );
+    Image im =
+        images.get( steptype ).getAsBitmapForSize( gc.getDevice(), Math.round( iconsize * magnification ),
+            Math.round( iconsize * magnification ) );
     if ( im != null ) { // Draw the icon!
 
       org.eclipse.swt.graphics.Rectangle bounds = im.getBounds();
@@ -343,32 +396,47 @@ public class SWTGC implements GCInterface {
     }
   }
 
-  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
+  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy, float magnification ) {
     if ( jobEntryCopy == null ) {
       return; // Don't draw anything
     }
 
-    Image image = null;
+    SwtUniversalImage swtImage = null;
+
+    int w = Math.round( iconsize * magnification );
+    int h = Math.round( iconsize * magnification );
 
     if ( jobEntryCopy.isSpecial() ) {
       if ( jobEntryCopy.isStart() ) {
-        image = GUIResource.getInstance().getImageStart();
+        swtImage = GUIResource.getInstance().getSwtImageStart();
       }
       if ( jobEntryCopy.isDummy() ) {
-        image = GUIResource.getInstance().getImageDummy();
+        swtImage = GUIResource.getInstance().getSwtImageDummy();
       }
     } else {
       String configId = jobEntryCopy.getEntry().getPluginId();
       if ( configId != null ) {
-        image = GUIResource.getInstance().getImagesJobentries().get( configId );
+        swtImage = GUIResource.getInstance().getImagesJobentries().get( configId );
       }
     }
     if ( image == null ) {
       return;
     }
 
+    Image image = swtImage.getAsBitmapForSize( gc.getDevice(), w, h );
+
     org.eclipse.swt.graphics.Rectangle bounds = image.getBounds();
     gc.drawImage( image, 0, 0, bounds.width, bounds.height, x, y, iconsize, iconsize );
+  }
+
+  @Override
+  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
+    drawJobEntryIcon( x, y , jobEntryCopy, currentMagnification );
+  }
+
+  @Override
+  public void drawStepIcon( int x, int y, StepMeta stepMeta ) {
+    drawStepIcon( x, y, stepMeta, currentMagnification );
   }
 
   public void setAntialias( boolean antiAlias ) {

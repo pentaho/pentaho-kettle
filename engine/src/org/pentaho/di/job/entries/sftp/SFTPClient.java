@@ -359,8 +359,12 @@ public class SFTPClient {
   }
 
   public void disconnect() {
-    c.disconnect();
-    s.disconnect();
+    if ( c != null ) {
+      c.disconnect();
+    }
+    if ( s != null ) {
+      s.disconnect();
+    }
   }
 
   public String GetPrivateKeyFileName() {

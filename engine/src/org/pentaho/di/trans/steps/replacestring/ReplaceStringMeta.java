@@ -127,8 +127,16 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
     return wholeWord;
   }
 
+  public void setWholeWord( int[] wholeWord ) {
+    this.wholeWord = wholeWord;
+  }
+
   public int[] getUseRegEx() {
     return useRegEx;
+  }
+
+  public void setUseRegEx( int[] useRegEx ) {
+    this.useRegEx = useRegEx;
   }
 
   /**
@@ -173,8 +181,16 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
     return replaceByString;
   }
 
+  public void setReplaceByString( String[] replaceByString ) {
+    this.replaceByString = replaceByString;
+  }
+
   public String[] getFieldReplaceByString() {
     return replaceFieldByString;
+  }
+
+  public void setFieldReplaceByString( String[] replaceFieldByString ) {
+    this.replaceFieldByString = replaceFieldByString;
   }
 
   public void setCaseSensitive( int[] caseSensitive ) {

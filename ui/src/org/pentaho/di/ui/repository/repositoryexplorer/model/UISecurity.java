@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.pentaho.di.repository.IUser;
@@ -55,6 +56,7 @@ public class UISecurity extends XulEventSourceAdapter {
       for ( IUser user : rsm.getUsers() ) {
         userList.add( UIObjectRegistry.getInstance().constructUIRepositoryUser( user ) );
       }
+      Collections.sort( userList );
       this.firePropertyChange( "userList", null, userList );
     }
   }

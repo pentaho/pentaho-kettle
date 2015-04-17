@@ -189,7 +189,6 @@ public class ReservoirSampling extends BaseStep implements StepInterface {
   /**
    * Run is where the action happens!
    */
-  @SuppressWarnings( "deprecation" )
   public void run() {
     logBasic( "Starting to run..." );
     try {
@@ -206,7 +205,7 @@ public class ReservoirSampling extends BaseStep implements StepInterface {
       stopAll();
     } finally {
       dispose( m_meta, m_data );
-      logBasic( "Finished, processing " + linesRead + " rows" );
+      logBasic( "Finished, processing " + getLinesRead() + " rows" );
       markStop();
     }
   }

@@ -134,7 +134,7 @@ public class SqlCommentScrubber {
               if ( ( ch == '*' ) && ( !blkComment ) && ( !inString ) ) {
                // Make sure that the next character isn't a + which identifies a hint in Oracle (PDI-13054)
                 ch = buffer.read();
-                if (ch == '+') {
+                if ( ch == '+' ) {
                   queryWithoutComments.append( '/' );
                   queryWithoutComments.append( '*' );
                   queryWithoutComments.append( '+' );

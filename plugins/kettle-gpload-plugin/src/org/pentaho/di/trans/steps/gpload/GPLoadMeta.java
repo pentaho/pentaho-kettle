@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
  * 
  * @author Matt Casters, Sean Flatley
  */
-@Step( id = "GPLoad", image = "GBL.png", i18nPackageName = "org.pentaho.di.trans.steps.gpload",
+@Step( id = "GPLoad", image = "BLKGP.svg", i18nPackageName = "org.pentaho.di.trans.steps.gpload",
     name = "GPLoad.TypeLongDesc", description = "GPLoad.TypeLongDesc",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk" )
 public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {

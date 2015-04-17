@@ -109,6 +109,7 @@ import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta;
@@ -144,8 +145,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   /** A constant specifying the repository element type as a Transformation. */
   public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.TRANSFORMATION;
 
+  public static final int BORDER_INDENT = 20;
   /** The list of steps associated with the transformation. */
-
   protected List<StepMeta> steps;
 
   /** The list of hops associated with the transformation. */
@@ -281,6 +282,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
   /** The log channel interface. */
   protected LogChannelInterface log;
+
+  /** The list of StepChangeListeners */
+  protected List<StepMetaChangeListenerInterface> stepChangeListeners;
 
   protected byte[] keyForSessionKey;
   boolean isKeyPrivate;
@@ -621,6 +625,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         transMeta.slaveServers = new ArrayList<SlaveServer>();
         transMeta.clusterSchemas = new ArrayList<ClusterSchema>();
         transMeta.namedParams = new NamedParamsDefault();
+        transMeta.stepChangeListeners = new ArrayList<StepMetaChangeListenerInterface>();
       }
       for ( DatabaseMeta db : databases ) {
         transMeta.addDatabase( (DatabaseMeta) db.clone() );
@@ -670,6 +675,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     dependencies = new ArrayList<TransDependency>();
     partitionSchemas = new ArrayList<PartitionSchema>();
     clusterSchemas = new ArrayList<ClusterSchema>();
+    stepChangeListeners = new ArrayList<StepMetaChangeListenerInterface>();
 
     slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution();
 
@@ -738,6 +744,10 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   public void addStep( StepMeta stepMeta ) {
     steps.add( stepMeta );
     stepMeta.setParentTransMeta( this );
+    StepMetaInterface iface = stepMeta.getStepMetaInterface();
+    if ( iface instanceof StepMetaChangeListenerInterface ) {
+      addStepChangeListener( (StepMetaChangeListenerInterface) iface );
+    }
     changed_steps = true;
   }
 
@@ -757,6 +767,10 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       previous.replaceMeta( stepMeta );
     }
     stepMeta.setParentTransMeta( this );
+    StepMetaInterface iface = stepMeta.getStepMetaInterface();
+    if ( iface instanceof StepMetaChangeListenerInterface ) {
+      addStepChangeListener( index, (StepMetaChangeListenerInterface) iface );
+    }
     changed_steps = true;
   }
 
@@ -792,6 +806,10 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *          The step to be added.
    */
   public void addStep( int p, StepMeta stepMeta ) {
+    StepMetaInterface iface = stepMeta.getStepMetaInterface();
+    if ( iface instanceof StepMetaChangeListenerInterface ) {
+      addStepChangeListener( p, (StepMetaChangeListenerInterface) stepMeta.getStepMetaInterface() );
+    }
     steps.add( p, stepMeta );
     stepMeta.setParentTransMeta( this );
     changed_steps = true;
@@ -877,6 +895,12 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       return;
     }
 
+    StepMeta removeStep = steps.get( i );
+    StepMetaInterface iface = removeStep.getStepMetaInterface();
+    if ( iface instanceof StepMetaChangeListenerInterface ) {
+      removeStepChangeListener( (StepMetaChangeListenerInterface) iface );
+    }
+
     steps.remove( i );
     changed_steps = true;
   }
@@ -945,6 +969,15 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   }
 
   /**
+   * Gets the number of stepChangeListeners in the transformation.
+   * 
+   * @return The number of stepChangeListeners in the transformation.
+   */
+  public int nrStepChangeListeners() {
+    return stepChangeListeners.size();
+  }
+
+  /**
    * Changes the content of a step on a certain position. This is accomplished by setting the step's metadata at the
    * specified index to the specified meta-data object. The new step's parent transformation is updated to be this
    * transformation.
@@ -955,6 +988,10 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *          The step meta-data to set
    */
   public void setStep( int i, StepMeta stepMeta ) {
+    StepMetaInterface iface = stepMeta.getStepMetaInterface();
+    if ( iface instanceof StepMetaChangeListenerInterface ) {
+      addStepChangeListener( i, (StepMetaChangeListenerInterface) stepMeta.getStepMetaInterface() );
+    }
     steps.set( i, stepMeta );
     stepMeta.setParentTransMeta( this );
   }
@@ -3816,13 +3853,13 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       }
     }
 
-    if ( minx > 20 ) {
-      minx -= 20;
+    if ( minx > BORDER_INDENT && minx != Integer.MAX_VALUE ) {
+      minx -= BORDER_INDENT;
     } else {
       minx = 0;
     }
-    if ( miny > 20 ) {
-      miny -= 20;
+    if ( miny > BORDER_INDENT && miny != Integer.MAX_VALUE ) {
+      miny -= BORDER_INDENT;
     } else {
       miny = 0;
     }
@@ -6118,5 +6155,47 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    */
   public void saveMetaStoreObjects( Repository repository, IMetaStore metaStore ) throws MetaStoreException {
 
+  }
+
+  public void addStepChangeListener( StepMetaChangeListenerInterface listener ) {
+    stepChangeListeners.add( listener );
+  }
+
+  public void addStepChangeListener( int p, StepMetaChangeListenerInterface list ) {
+    int indexListener = -1;
+    int indexListenerRemove = -1;
+    StepMeta rewriteStep = steps.get( p );
+    StepMetaInterface iface = rewriteStep.getStepMetaInterface();
+    if ( iface instanceof StepMetaChangeListenerInterface ) {
+      for ( StepMetaChangeListenerInterface listener : stepChangeListeners ) {
+        indexListener++;
+        if ( listener.equals( iface ) ) {
+          indexListenerRemove = indexListener;
+        }
+      }
+      if ( indexListenerRemove >= 0 ) {
+        stepChangeListeners.add( indexListenerRemove, list );
+      }
+    }
+  }
+
+  public void removeStepChangeListener( StepMetaChangeListenerInterface list ) {
+    int indexListener = -1;
+    int indexListenerRemove = -1;
+    for ( StepMetaChangeListenerInterface listener : stepChangeListeners ) {
+      indexListener++;
+      if ( listener.equals( list ) ) {
+        indexListenerRemove = indexListener;
+      }
+    }
+    if ( indexListenerRemove >= 0 ) {
+      stepChangeListeners.remove( indexListenerRemove );
+    }
+  }
+
+  public void notifyAllListeners( StepMeta oldMeta, StepMeta newMeta ) {
+    for ( StepMetaChangeListenerInterface listener : stepChangeListeners ) {
+      listener.onStepChange( this, oldMeta, newMeta );
+    }
   }
 }
