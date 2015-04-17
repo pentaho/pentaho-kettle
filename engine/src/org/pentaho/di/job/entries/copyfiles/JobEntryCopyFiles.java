@@ -131,10 +131,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       for ( int i = 0; i < source_filefolder.length; i++ ) {
         retval.append( "        <field>" ).append( Const.CR );
         saveSource( retval, source_filefolder[i] );
-        retval.append( "          " ).append( XMLHandler.addTagValue( "source_filefolder", source_filefolder[i] ) );
         saveDestination( retval, destination_filefolder[i] );
-        retval.append( "          " ).append(
-          XMLHandler.addTagValue( "destination_filefolder", destination_filefolder[i] ) );
         retval.append( "          " ).append( XMLHandler.addTagValue( "wildcard", wildcard[i] ) );
         retval.append( "        </field>" ).append( Const.CR );
       }
@@ -187,27 +184,28 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   protected String loadDestination( Node fnode ) {
     return XMLHandler.getTagValue( fnode, "destination_filefolder" );
   }
-
   protected void saveSource( StringBuilder retval, String source ) {
-  }
-
+    retval.append( "          " ).append( XMLHandler.addTagValue( "source_filefolder", source ) );    
+  } 
+  
   protected void saveDestination( StringBuilder retval, String destination ) {
+    retval.append( "          " ).append( XMLHandler.addTagValue( "destination_filefolder", destination ) );
   }
-
+  
   protected String loadSourceRep( Repository rep, ObjectId id_jobentry, int a ) throws KettleException {
     return rep.getJobEntryAttributeString( id_jobentry, a, "source_filefolder" );
   }
-
+  
   protected String loadDestinationRep( Repository rep, ObjectId id_jobentry, int a ) throws KettleException {
     return rep.getJobEntryAttributeString( id_jobentry, a, "destination_filefolder" );
   }
-
-  protected void saveSourceRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value )
-    throws KettleException {
-  }
-
-  protected void saveDestinationRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value )
-    throws KettleException {
+  
+  protected void saveSourceRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value ) throws KettleException {
+    rep.saveJobEntryAttribute( id_job, getObjectId(), i, "source_filefolder", value );
+  } 
+  
+  protected void saveDestinationRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value ) throws KettleException {
+    rep.saveJobEntryAttribute( id_job, getObjectId(), i, "destination_filefolder", value );    
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
@@ -256,9 +254,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       if ( source_filefolder != null ) {
         for ( int i = 0; i < source_filefolder.length; i++ ) {
           saveSourceRep( rep, id_job, getObjectId(), i, source_filefolder[i] );
-          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "source_filefolder", source_filefolder[i] );
           saveDestinationRep( rep, id_job, getObjectId(), i, destination_filefolder[i] );
-          rep.saveJobEntryAttribute( id_job, getObjectId(), i, "destination_filefolder", destination_filefolder[i] );
           rep.saveJobEntryAttribute( id_job, getObjectId(), i, "wildcard", wildcard[i] );
         }
       }
