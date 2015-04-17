@@ -146,21 +146,17 @@ public class SslConfiguration {
     xml.append( "</" ).append( XML_TAG ).append( ">" );
     return xml.toString();
   }
-  
-  private static void addXmlValue(StringBuilder xml, String key, String value)
-  {
+
+  private static void addXmlValue( StringBuilder xml, String key, String value ) {
     if ( !StringUtils.isBlank( value ) ) {
       xml.append( XMLHandler.addTagValue( key, value, false ) );
     }
   }
-  
-  private static String encrypt(String value)
-  {
+
+  private static String encrypt( String value ) {
     if ( !StringUtils.isBlank( value ) ) {
-      return Encr
-          .encryptPasswordIfNotUsingVariables(value);
+      return Encr.encryptPasswordIfNotUsingVariables( value );
     }
     return null;
   }
-
 }

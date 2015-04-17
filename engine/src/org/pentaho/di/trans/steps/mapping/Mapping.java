@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowSet;
@@ -476,34 +477,9 @@ public class Mapping extends BaseStep implements StepInterface {
         mappingOutputSource = mappingOutputSteps[0];
       }
 
-      // To what step in this transformation are we writing to?
+      // To what steps in this transformation are we writing to?
       //
-      StepInterface[] targetSteps;
-      if ( !Const.isEmpty( outputDefinition.getOutputStepname() ) ) {
-        // If we have a target step specification for the output of the mapping,
-        // we need to send it over there...
-        //
-        StepInterface target = getTrans().findRunThread( outputDefinition.getOutputStepname() );
-        if ( target == null ) {
-          throw new KettleException( BaseMessages.getString( PKG, "MappingDialog.Exception.StepNameNotFound",
-              outputDefinition.getOutputStepname() ) );
-        }
-        targetSteps = new StepInterface[] { target, };
-      } else {
-        // No target step is specified.
-        // See if we can find the next steps in the transformation..
-        //
-        List<StepMeta> nextSteps = getTransMeta().findNextSteps( getStepMeta() );
-
-        // Let's send the data to all the next steps we find...
-        // The origin is the mapping output step
-        // The target is all the next steps after this mapping step.
-        //
-        targetSteps = new StepInterface[nextSteps.size()];
-        for ( int s = 0; s < targetSteps.length; s++ ) {
-          targetSteps[s] = getTrans().findRunThread( nextSteps.get( s ).getName() );
-        }
-      }
+      StepInterface[] targetSteps = pickupTargetStepsFor( outputDefinition );
 
       // Now tell the mapping output step where to look...
       // Also explain the mapping output steps how to rename the values back...
@@ -521,6 +497,40 @@ public class Mapping extends BaseStep implements StepInterface {
     // map in the parent transformation
     //
     getTrans().getActiveSubtransformations().put( getStepname(), getData().getMappingTrans() );
+  }
+
+  @VisibleForTesting StepInterface[] pickupTargetStepsFor( MappingIODefinition outputDefinition )
+    throws KettleException {
+    List<StepInterface> result;
+    if ( !Const.isEmpty( outputDefinition.getOutputStepname() ) ) {
+      // If we have a target step specification for the output of the mapping,
+      // we need to send it over there...
+      //
+      result = getTrans().findStepInterfaces( outputDefinition.getOutputStepname() );
+      if ( Const.isEmpty( result ) ) {
+        throw new KettleException( BaseMessages.getString( PKG, "MappingDialog.Exception.StepNameNotFound",
+          outputDefinition.getOutputStepname() ) );
+      }
+    } else {
+      // No target step is specified.
+      // See if we can find the next steps in the transformation..
+      //
+      List<StepMeta> nextSteps = getTransMeta().findNextSteps( getStepMeta() );
+
+      // Let's send the data to all the next steps we find...
+      // The origin is the mapping output step
+      // The target is all the next steps after this mapping step.
+      //
+      result = new ArrayList<StepInterface>();
+      for ( StepMeta nextStep : nextSteps ) {
+        // need to take into the account different copies of the step
+        List<StepInterface> copies = getTrans().findStepInterfaces( nextStep.getName() );
+        if ( copies != null ) {
+          result.addAll( copies );
+        }
+      }
+    }
+    return result.toArray( new StepInterface[ result.size() ] );
   }
 
   void initTransFromMeta() throws KettleException {

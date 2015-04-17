@@ -31,7 +31,14 @@ import java.util.Random;
 public class LocaleLoadSaveValidator implements FieldLoadSaveValidator<Locale> {
   @Override public Locale getTestObject() {
     Locale[] availableLocales = Locale.getAvailableLocales();
-    return availableLocales[ new Random().nextInt( availableLocales.length ) ];
+
+    Locale random = availableLocales[ new Random().nextInt( availableLocales.length ) ];
+    if ( random.toString().matches( "(\\w)*#.*" ) ) {
+      // locales with '#', like 'sr_rs_#latn', are not restored properly
+      return Locale.US;
+    } else {
+      return random;
+    }
   }
 
   @Override public boolean validateTestObject( Locale testObject, Object actual ) {

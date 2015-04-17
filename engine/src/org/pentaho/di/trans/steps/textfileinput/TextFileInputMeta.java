@@ -2048,7 +2048,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 
   @VisibleForTesting
-  public void setFileNameForTest(String[] fileName) {
+  public void setFileNameForTest( String[] fileName ) {
     allocateFiles( fileName.length );
     setFileName( fileName );
   }

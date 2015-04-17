@@ -26,7 +26,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;

@@ -1035,6 +1035,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           //
           trans.setRepository( rep );
 
+          // inject the metaStore
+          trans.setMetaStore( metaStore );
+
           // First get the root job
           //
           Job rootJob = parentJob;
@@ -1151,7 +1154,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         case FILENAME:
           String filename = space.environmentSubstitute( getFilename() );
           logBasic( "Loading transformation from XML file [" + filename + "]" );
-          transMeta = new TransMeta( filename, null, true, this );
+          transMeta = new TransMeta( filename, metaStore, null, true, this, null );
           break;
         case REPOSITORY_BY_NAME:
           String transname = space.environmentSubstitute( getTransname() );

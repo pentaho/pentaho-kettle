@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -101,6 +102,7 @@ import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
+import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
@@ -160,7 +162,6 @@ import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulLoader;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.containers.XulMenu;
@@ -320,7 +321,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     refreshListeners = new ArrayList<RefreshListener>();
 
     try {
-      XulLoader loader = new KettleXulLoader();
+      KettleXulLoader loader = new KettleXulLoader();
+      loader.setIconsSize( 16, 16 );
       loader.setSettingsManager( XulSpoonSettingsManager.getInstance() );
       ResourceBundle bundle = new XulSpoonResourceBundle( JobGraph.class );
       XulDomContainer container = loader.loadXul( XUL_FILE_JOB_GRAPH, bundle );
@@ -1012,10 +1014,10 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     //
     toolTip.hide();
 
+    Point real = screen2real( e.x, e.y );
     // Remember the last position of the mouse for paste with keyboard
     //
-    lastMove = new Point( e.x, e.y );
-    Point real = screen2real( e.x, e.y );
+    lastMove = real;
 
     if ( iconoffset == null ) {
       iconoffset = new Point( 0, 0 );
@@ -1303,11 +1305,28 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
     mouseOverEntries.add( jobEntryCopy );
 
-    DelayTimer delayTimer = new DelayTimer( 2500, new DelayListener() {
+    DelayTimer delayTimer = new DelayTimer( 500, new DelayListener() {
       public void expired() {
         mouseOverEntries.remove( jobEntryCopy );
         delayTimers.remove( jobEntryCopy );
         asyncRedraw();
+      }
+    }, new Callable<Boolean>() {
+
+      @Override
+      public Boolean call() throws Exception {
+        Point cursor = getLastMove();
+        if ( cursor != null ) {
+          AreaOwner areaOwner = getVisibleAreaOwner( cursor.x, cursor.y );
+          if ( areaOwner != null ) {
+            AreaType areaType = areaOwner.getAreaType();
+            if ( areaType == AreaType.JOB_ENTRY_ICON || areaType.belongsToJobContextMenu() ) {
+              JobEntryCopy selectedJobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
+              return selectedJobEntryCopy == jobEntryCopy;
+            }
+          }
+        }
+        return false;
       }
     } );
 
@@ -1352,6 +1371,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       toolbar = (XulToolbar) getXulDomContainer().getDocumentRoot().getElementById( "nav-toolbar" );
 
       ToolBar swtToolbar = (ToolBar) toolbar.getManagedObject();
+      swtToolbar.setBackground( GUIResource.getInstance().getColorDemoGray() );
       swtToolbar.pack();
 
       // Hack alert : more XUL limitations...
@@ -2248,7 +2268,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
         case JOB_ENTRY_MINI_ICON_CONTEXT:
           tip.append( BaseMessages.getString( PKG, "JobGraph.ShowMenu.Tooltip" ) );
-          tipImage = GUIResource.getInstance().getImageEdit();
+          tipImage = GUIResource.getInstance().getImageContextMenu();
           resetDelayTimer( (JobEntryCopy) areaOwner.getOwner() );
           break;
 
@@ -2357,7 +2377,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         }
         toolTip.setText( tip.toString() );
         toolTip.hide();
-        toolTip.show( new org.eclipse.swt.graphics.Point( x, y ) );
+        toolTip.show( new org.eclipse.swt.graphics.Point( screenX, screenY ) );
       }
     }
   }
@@ -2980,7 +3000,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     if ( rect.height < 0 ) {
       s.y = s.y + rect.height;
     }
-    gc.drawRectangle( s.x, s.y, Math.abs( rect.width ), Math.abs( rect.height ) );
+    gc.drawRoundRectangle( s.x, s.y, Math.abs( rect.width ), Math.abs( rect.height ), 3, 3 );
     gc.setLineStyle( SWT.LINE_SOLID );
   }
 
@@ -3160,7 +3180,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     //
     Label wResultsLabel = new Label( extraViewComposite, SWT.LEFT );
     wResultsLabel.setFont( GUIResource.getInstance().getFontMediumBold() );
-    wResultsLabel.setBackground( GUIResource.getInstance().getColorLightGray() );
+    wResultsLabel.setBackground( GUIResource.getInstance().getColorWhite() );
     wResultsLabel.setText( BaseMessages.getString( PKG, "JobLog.ResultsPanel.NameLabel" ) );
     FormData fdResultsLabel = new FormData();
     fdResultsLabel.left = new FormAttachment( 0, 0 );
@@ -3360,7 +3380,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
             if ( spoon.rep != null ) {
               runJobMeta = spoon.rep.loadJob( jobMeta.getName(), jobMeta.getRepositoryDirectory(), null, null );
             } else {
-              runJobMeta = new JobMeta( jobMeta.getFilename(), null, null );
+              runJobMeta = new JobMeta( null, jobMeta.getFilename(), null, jobMeta.getMetaStore(), null );
             }
 
             String spoonObjectId = UUID.randomUUID().toString();

@@ -1210,24 +1210,17 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.Connected.OK", wServerName.getText() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPDelete.Connected.Title.Ok" ) );
       mb.open();
-    } else {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.Connected.NOK.ConnectionBad", wServerName
-        .getText() )
-        + Const.CR );
-      mb.setText( BaseMessages.getString( PKG, "JobFTPDelete.Connected.Title.Bad" ) );
-      mb.open();
     }
-
   }
 
   private boolean connectToFTP() {
     boolean retval = false;
+    String realServername = null;
     try {
       if ( ftpclient == null || !ftpclient.connected() ) {
         // Create ftp client to host:port ...
         ftpclient = new FTPClient();
-        String realServername = jobMeta.environmentSubstitute( wServerName.getText() );
+        realServername = jobMeta.environmentSubstitute( wServerName.getText() );
         int realPort = Const.toInt( jobMeta.environmentSubstitute( wPort.getText() ), 21 );
         ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
         ftpclient.setRemotePort( realPort );
@@ -1260,8 +1253,18 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
       }
       retval = true;
     } catch ( Exception e ) {
+      if ( ftpclient != null ) {
+        try {
+          ftpclient.quit();
+        } catch ( Exception ignored ) {
+          // We've tried quitting the FTP Client exception
+          // nothing else to be done if the FTP Client was already disconnected
+        }
+        ftpclient = null;
+      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
+      mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.NOK", realServername,
+          e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.Title.Bad" ) );
       mb.open();
     }
@@ -1307,6 +1310,15 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
       }
       retval = true;
     } catch ( Exception e ) {
+      if ( ftpsclient != null ) {
+        try {
+          ftpsclient.disconnect();
+        } catch ( Exception ignored ) {
+          // We've tried quitting the FTPS Client exception
+          // nothing else to be done if the FTPS Client was already disconnected
+        }
+        ftpsclient = null;
+      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.Title.Bad" ) );
@@ -1332,6 +1344,15 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
       retval = true;
     } catch ( Exception e ) {
+      if ( sftpclient != null ) {
+        try {
+          sftpclient.disconnect();
+        } catch ( Exception ignored ) {
+          // We've tried quitting the SFTP Client exception
+          // nothing else to be done if the SFTP Client was already disconnected
+        }
+        sftpclient = null;
+      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.Title.Bad" ) );
@@ -1381,6 +1402,15 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
       retval = true;
     } catch ( Exception e ) {
+      if ( conn != null ) {
+        try {
+          conn.close();
+        } catch ( Exception ignored ) {
+          // We've tried quitting the SSH Client exception
+          // nothing else to be done if the SSH Client was already disconnected
+        }
+        conn = null;
+      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.Title.Bad" ) );

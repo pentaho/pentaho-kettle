@@ -873,14 +873,7 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.Connected.OK", wServerName.getText() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPSPUT.Connected.Title.Ok" ) );
       mb.open();
-    } else {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.Connected.NOK.ConnectionBad", wServerName.getText() )
-        + Const.CR );
-      mb.setText( BaseMessages.getString( PKG, "JobFTPSPUT.Connected.Title.Bad" ) );
-      mb.open();
     }
-
   }
 
   private void checkRemoteFolder( String remoteFoldername ) {
@@ -890,19 +883,14 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
         mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.FolderExists.OK", remoteFoldername ) + Const.CR );
         mb.setText( BaseMessages.getString( PKG, "JobFTPSPUT.FolderExists.Title.Ok" ) );
         mb.open();
-      } else {
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.FolderExists.NOK", remoteFoldername ) + Const.CR );
-        mb.setText( BaseMessages.getString( PKG, "JobFTPSPUT.FolderExists.Title.Bad" ) );
-        mb.open();
       }
     }
   }
 
   private boolean connectToFTP( boolean checkfolder, String remoteFoldername ) {
-    boolean retval = false;
+    String realServername = null;
     try {
-      String realServername = jobMeta.environmentSubstitute( wServerName.getText() );
+      realServername = jobMeta.environmentSubstitute( wServerName.getText() );
       int realPort = Const.toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 0 );
       String realUsername = jobMeta.environmentSubstitute( wUserName.getText() );
       String realPassword = jobMeta.environmentSubstitute( wPassword.getText() );
@@ -940,17 +928,27 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
         // move to spool dir ...
         if ( !Const.isEmpty( remoteFoldername ) ) {
           String realFtpDirectory = jobMeta.environmentSubstitute( remoteFoldername );
-          retval = connection.isDirectoryExists( realFtpDirectory );
+          return connection.isDirectoryExists( realFtpDirectory );
         }
       }
-      retval = true;
+      return true;
     } catch ( Exception e ) {
+      if ( connection != null ) {
+        try {
+          connection.disconnect();
+        } catch ( Exception ignored ) {
+          // We've tried quitting the FTPS Client exception
+          // nothing else to be done if the FTPS Client was already disconnected
+        }
+        connection = null;
+      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
+      mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.ErrorConnect.NOK", realServername,
+          e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPSPUT.ErrorConnect.Title.Bad" ) );
       mb.open();
     }
-    return retval;
+    return false;
   }
 
   public void dispose() {

@@ -150,6 +150,11 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
     return false;
   }
 
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT relname AS sequence_name FROM pg_catalog.pg_statio_all_sequences";
+  }
+
   /**
    * Get the SQL to get the next value of a sequence. (PostgreSQL version)
    * 
@@ -171,7 +176,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
    */
   @Override
   public String getSQLCurrentSequenceValue( String sequenceName ) {
-    return "SELECT last_value FROM " + sequenceName;
+    return "SELECT currval('" + sequenceName + "')";
   }
 
   /**
@@ -183,7 +188,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
    */
   @Override
   public String getSQLSequenceExists( String sequenceName ) {
-    return "SELECT relname AS sequence_name FROM pg_statio_all_sequences WHERE relname = '"
+    return "SELECT relname AS sequence_name FROM pg_catalog.pg_statio_all_sequences WHERE relname = '"
         + sequenceName.toLowerCase() + "'";
   }
 

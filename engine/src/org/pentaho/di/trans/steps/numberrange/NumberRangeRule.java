@@ -76,4 +76,14 @@ public class NumberRangeRule {
     return value;
   }
 
+  @Override
+  public boolean equals( Object obj ) {
+    if ( !obj.getClass().equals( this.getClass() ) ) {
+      return false;
+    } else {
+      NumberRangeRule target = (NumberRangeRule) obj;
+      return getLowerBound() == target.getLowerBound()
+        && getUpperBound() == target.getUpperBound() && getValue().equals( target.getValue() );
+    }
+  }
 }

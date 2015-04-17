@@ -120,13 +120,21 @@ public class SequenceMetaTests {
 
     databaseInterface = new PostgreSQLDatabaseMeta();
     assertEquals( "SELECT nextval('sequence_name')", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "SELECT last_value FROM sequence_name", databaseInterface
+    assertEquals( "SELECT currval('sequence_name')", databaseInterface
       .getSQLCurrentSequenceValue( sequenceName ) );
+    assertEquals( "SELECT relname AS sequence_name FROM pg_catalog.pg_statio_all_sequences", databaseInterface
+      .getSQLListOfSequences() );
+    assertEquals( "SELECT relname AS sequence_name FROM pg_catalog.pg_statio_all_sequences WHERE relname = 'sequence_name'",
+      databaseInterface.getSQLSequenceExists( sequenceName ) );
 
     databaseInterface = new GreenplumDatabaseMeta();
     assertEquals( "SELECT nextval('sequence_name')", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "SELECT last_value FROM sequence_name", databaseInterface
+    assertEquals( "SELECT currval('sequence_name')", databaseInterface
       .getSQLCurrentSequenceValue( sequenceName ) );
+    assertEquals( "SELECT relname AS sequence_name FROM pg_catalog.pg_statio_all_sequences", databaseInterface
+      .getSQLListOfSequences() );
+    assertEquals( "SELECT relname AS sequence_name FROM pg_catalog.pg_statio_all_sequences WHERE relname = 'sequence_name'",
+      databaseInterface.getSQLSequenceExists( sequenceName ) );
 
     databaseInterface = new AS400DatabaseMeta();
     assertEquals( "SELECT NEXT VALUE FOR sequence_name FROM SYSIBM.SYSDUMMY1", databaseInterface

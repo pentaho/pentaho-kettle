@@ -85,7 +85,7 @@ public class CheckBoxVar extends Composite {
 
     setVariableOnCheckBox( variable );
 
-    controlDecoration = new ControlDecoration( wBox, SWT.TOP | SWT.LEFT );
+    controlDecoration = new ControlDecoration( wBox, SWT.CENTER | SWT.LEFT );
     Image image = GUIResource.getInstance().getImageVariable();
     controlDecoration.setImage( image );
     controlDecoration.setDescriptionText( BaseMessages.getString( PKG, "CheckBoxVar.tooltip.InsertVariable" ) );

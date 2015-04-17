@@ -59,7 +59,10 @@
     <dependency org="pentaho" name="pdi-teradata-tpt-plugin-package" rev="${dependency.pdi-teradata-tpt-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
       <artifact name="pdi-teradata-tpt-plugin-package" type="zip"/>
     </dependency>
-    
+    <dependency org="pentaho" name="pdi-baserver-utils" rev="${dependency.pdi-baserver-utils.revision}" changing="true" transitive="false" conf="plugins->default">
+      <artifact name="pdi-baserver-utils" type="zip"/>
+    </dependency>
+	
     <!--  Pentaho reporting dependencies -->
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions" rev="${dependency.pentaho-reporting.revision}" changing="true">
       <exclude name="pentaho-reporting-engine-classic-core-test"/>

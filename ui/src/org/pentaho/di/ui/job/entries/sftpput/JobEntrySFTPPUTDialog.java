@@ -1111,14 +1111,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
       mb.setMessage( BaseMessages.getString( PKG, "JobSFTPPUT.Connected.OK", wServerName.getText() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobSFTPPUT.Connected.Title.Ok" ) );
       mb.open();
-    } else {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobSFTPPUT.Connected.NOK.ConnectionBad", wServerName.getText() )
-        + Const.CR );
-      mb.setText( BaseMessages.getString( PKG, "JobSFTPPUT.Connected.Title.Bad" ) );
-      mb.open();
     }
-
   }
 
   private void closeFTPConnections() {
@@ -1165,6 +1158,15 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
       }
 
     } catch ( Exception e ) {
+      if ( sftpclient != null ) {
+        try {
+          sftpclient.disconnect();
+        } catch ( Exception ignored ) {
+          // We've tried quitting the SFTP Client exception
+          // nothing else to be done if the SFTP Client was already disconnected
+        }
+        sftpclient = null;
+      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobSFTPPUT.ErrorConnect.NOK", wServerName.getText(), e
         .getMessage() )
@@ -1182,11 +1184,6 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
         MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
         mb.setMessage( BaseMessages.getString( PKG, "JobSFTPPUT.FolderExists.OK", changeFTPFolder ) + Const.CR );
         mb.setText( BaseMessages.getString( PKG, "JobSFTPPUT.FolderExists.Title.Ok" ) );
-        mb.open();
-      } else {
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "JobSFTPPUT.FolderExists.NOK", changeFTPFolder ) + Const.CR );
-        mb.setText( BaseMessages.getString( PKG, "JobSFTPPUT.FolderExists.Title.Bad" ) );
         mb.open();
       }
     }

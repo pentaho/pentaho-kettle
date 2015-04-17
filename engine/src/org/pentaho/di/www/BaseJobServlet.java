@@ -105,7 +105,7 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
     synchronized ( getJobMap() ) {
       getJobMap().addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
     }
-    
+
     return job;
   }
 
@@ -167,7 +167,7 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
         }
       } );
     }
-    
+
     return trans;
   }
 
@@ -196,7 +196,7 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
     }
     jobMeta.activateParameters();
   }
-  
+
   private SimpleLoggingObject getServletLogging( final String carteObjectId, final LogLevel level ) {
     SimpleLoggingObject servletLoggingObject =
         new SimpleLoggingObject( getContextPath(), LoggingObjectType.CARTE, null );

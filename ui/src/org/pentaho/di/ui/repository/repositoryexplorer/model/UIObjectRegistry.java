@@ -168,5 +168,4 @@ public class UIObjectRegistry {
       throw new UIObjectCreationException( "Unable to instantiate object for " + dbConnClass );
     }
   }
-  
 }

@@ -998,14 +998,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.Connected.OK", wServerName.getText() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.Connected.Title.Ok" ) );
       mb.open();
-    } else {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.Connected.NOK.ConnectionBad", wServerName.getText() )
-        + Const.CR );
-      mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.Connected.Title.Bad" ) );
-      mb.open();
     }
-
   }
 
   private void checkRemoteFolder( String remoteFoldername ) {
@@ -1015,22 +1008,18 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.FolderExists.OK", remoteFoldername ) + Const.CR );
         mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.FolderExists.Title.Ok" ) );
         mb.open();
-      } else {
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.FolderExists.NOK", remoteFoldername ) + Const.CR );
-        mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.FolderExists.Title.Bad" ) );
-        mb.open();
       }
     }
   }
 
   private boolean connectToFTP( boolean checkfolder, String remoteFoldername ) {
     boolean retval = false;
+    String realServername = null;
     try {
       if ( ftpclient == null || !ftpclient.connected() ) {
         // Create ftp client to host:port ...
         ftpclient = new FTPClient();
-        String realServername = jobMeta.environmentSubstitute( wServerName.getText() );
+        realServername = jobMeta.environmentSubstitute( wServerName.getText() );
         int realPort = Const.toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 21 );
         ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
         ftpclient.setRemotePort( realPort );
@@ -1076,8 +1065,18 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 
       retval = true;
     } catch ( Exception e ) {
+      if ( ftpclient != null ) {
+        try {
+          ftpclient.quit();
+        } catch ( Exception ignored ) {
+          // We've tried quitting the FTP Client exception
+          // nothing else can be done if the FTP Client was already disconnected
+        }
+        ftpclient = null;
+      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
+      mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.ErrorConnect.NOK", realServername,
+          e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.ErrorConnect.Title.Bad" ) );
       mb.open();
     }

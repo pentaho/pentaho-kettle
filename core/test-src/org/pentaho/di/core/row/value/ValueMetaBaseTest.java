@@ -1,3 +1,24 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package org.pentaho.di.core.row.value;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -6,17 +27,30 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.apache.commons.lang.SystemUtils.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.NetezzaDatabaseMeta;
@@ -107,6 +141,41 @@ public class ValueMetaBaseTest {
   }
 
   @Test
+  public void testGetDataXML() throws IOException {
+    Encoder encoder = ESAPI.encoder();
+
+    BigDecimal bigDecimal = BigDecimal.ONE;
+    ValueMetaBase valueDoubleMetaBase = new ValueMetaBase( String.valueOf( bigDecimal ), ValueMetaInterface.TYPE_BIGNUMBER, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( bigDecimal )  ) + "</value-data>" + LINE_SEPARATOR, valueDoubleMetaBase.getDataXML( bigDecimal ) );
+
+    boolean valueBoolean = Boolean.TRUE;
+    ValueMetaBase valueBooleanMetaBase = new ValueMetaBase( String.valueOf( valueBoolean ), ValueMetaInterface.TYPE_BOOLEAN, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( valueBoolean )  ) + "</value-data>" + LINE_SEPARATOR, valueBooleanMetaBase.getDataXML( valueBoolean ) );
+
+    Date date = new Date( 0 );
+    ValueMetaBase dateMetaBase = new ValueMetaBase( date.toString(), ValueMetaInterface.TYPE_DATE, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    SimpleDateFormat formaterData = new SimpleDateFormat( ValueMetaBase.DEFAULT_DATE_FORMAT_MASK );
+    assertEquals( "<value-data>" +  encoder.encodeForXML( formaterData.format( date ) )  + "</value-data>" + LINE_SEPARATOR, dateMetaBase.getDataXML( date ) );
+
+    InetAddress inetAddress = InetAddress.getByName( "127.0.0.1" );
+    ValueMetaBase inetAddressMetaBase = new ValueMetaBase( inetAddress.toString(), ValueMetaInterface.TYPE_INET, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    assertEquals( "<value-data>" +  encoder.encodeForXML( inetAddress.toString() )  + "</value-data>" + LINE_SEPARATOR, inetAddressMetaBase.getDataXML( inetAddress  ) );
+
+    long value = Long.MAX_VALUE;
+    ValueMetaBase integerMetaBase = new ValueMetaBase( String.valueOf( value ), ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( value )  ) + "</value-data>" + LINE_SEPARATOR, integerMetaBase.getDataXML( value ) );
+
+    String stringValue = "TEST_STRING";
+    ValueMetaBase valueMetaBase = new ValueMetaBase( stringValue, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    assertEquals( "<value-data>" + encoder.encodeForXML( stringValue ) + "</value-data>" + LINE_SEPARATOR, valueMetaBase.getDataXML( stringValue ) );
+
+    Timestamp timestamp = new Timestamp( 0 );
+    ValueMetaBase valueMetaBaseTimeStamp = new ValueMetaBase( timestamp.toString(), ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    SimpleDateFormat formater = new SimpleDateFormat( ValueMetaBase.DEFAULT_TIMESTAMP_FORMAT_MASK );
+    assertEquals( "<value-data>" + encoder.encodeForXML( formater.format( timestamp ) ) + "</value-data>" + LINE_SEPARATOR, valueMetaBaseTimeStamp.getDataXML( timestamp ) );
+  }
+
+  @Test
   public void testGetBinaryWithLength_WhenBinarySqlTypesOfVertica() throws Exception {
     final int binaryColumnIndex = 1;
     final int varbinaryColumnIndex = 2;
@@ -114,7 +183,7 @@ public class ValueMetaBaseTest {
     final int expectedVarBinarylength = 80;
 
     ValueMetaBase obj = new ValueMetaBase();
-    DatabaseMeta dbMeta = Mockito.spy( new DatabaseMeta() );
+    DatabaseMeta dbMeta = spy( new DatabaseMeta() );
     DatabaseInterface databaseInterface = new Vertica5DatabaseMeta();
     dbMeta.setDatabaseInterface( databaseInterface );
 
@@ -148,6 +217,23 @@ public class ValueMetaBaseTest {
     assertTrue( expectedVarBinarylength == varbinaryValueMeta.getLength() );
     assertFalse( varbinaryValueMeta.isLargeTextField() );
 
+  }
+
+  @Test
+  public void testGetValueFromSQLTypeTypeOverride() throws Exception {
+    final int varbinaryColumnIndex = 2;
+
+    ValueMetaBase valueMetaBase = new ValueMetaBase(),
+        valueMetaBaseSpy = spy( valueMetaBase );
+    DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
+    DatabaseInterface databaseInterface = Mockito.mock( DatabaseInterface.class );
+    doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface( );
+
+    ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
+    valueMetaBaseSpy.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
+
+    verify( databaseInterface, Mockito.times( 1 ) ).customizeValueFromSQLType( any( ValueMetaInterface.class ),
+        any( ResultSetMetaData.class ), anyInt() );
   }
 
   @Test
