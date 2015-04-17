@@ -62,7 +62,7 @@ public class SwtSvgImageUtil {
   /**
    * Load image from several sources.
    */
-  public static SwtUniversalImage getImageAsResourceInternal( Display display, String location ) {
+  private static SwtUniversalImage getImageAsResourceInternal( Display display, String location ) {
     SwtUniversalImage result = null;
     if ( result == null ) {
       result = loadFromCurrentClasspath( display, location );
@@ -91,6 +91,23 @@ public class SwtSvgImageUtil {
       result = getImageAsResource( display, NO_IMAGE );
     }
     return result;
+  }
+
+  /**
+   * Get an image using the provided classLoader and path.  An attempt will be made to load the image with the
+   * classLoader first using SVG (regardless of extension), and falling back to PNG.  If the image cannot be 
+   * loaded with the provided classLoader, the search path will be expanded to include the file system (ui/images).
+   *
+   * @param display the device to render the image to
+   * @param classLoader the classLoader to use to load the image resource
+   * @param filename the path to the image
+   * @param width the width to scale the image to
+   * @param height the height to scale the image to
+   * @return an swt Image with width/height dimensions
+   */
+  public static Image getImage( Display display, ClassLoader classLoader, String filename, int width, int height ) {
+    SwtUniversalImage u = getUniversalImage( display, classLoader, filename );
+    return u.getAsBitmapForSize( display, width, height );
   }
 
   private static SwtUniversalImage getUniversalImageInternal( Display display, ClassLoader classLoader, String filename ) {

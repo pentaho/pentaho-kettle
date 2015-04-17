@@ -76,6 +76,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
@@ -1659,7 +1660,8 @@ public class JobDialog extends Dialog {
   public static Image getImage( Shell shell, PluginInterface plugin ) {
     String id = plugin.getIds()[0];
     if ( id != null ) {
-      return GUIResource.getInstance().getImagesJobentries().get( id ).getAsBitmap( shell.getDisplay() );
+      return GUIResource.getInstance().getImagesJobentries().get( id ).getAsBitmapForSize(
+        shell.getDisplay(), ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
     }
     return null;
   }
