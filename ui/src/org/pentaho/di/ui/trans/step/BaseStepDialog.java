@@ -72,6 +72,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
@@ -1390,7 +1391,8 @@ public class BaseStepDialog extends Dialog {
       createHelpButton( shell, stepMeta, plugin );
       String id = plugin.getIds()[ 0 ];
       if ( id != null ) {
-        shell.setImage( GUIResource.getInstance().getImagesSteps().get( id ).getAsBitmap( shell.getDisplay() ) );
+        shell.setImage( GUIResource.getInstance().getImagesSteps().get( id ).getAsBitmapForSize(
+          shell.getDisplay(), ConstUI.ICON_SIZE, ConstUI.ICON_SIZE ) );
       }
     }
   }
