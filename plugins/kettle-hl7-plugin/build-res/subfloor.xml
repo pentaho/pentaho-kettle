@@ -317,6 +317,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="sonar.sourceEncoding" value="UTF-8"/>
   <property name="sonar.java.coveragePlugin" value="jacoco"/>
 
+  <!-- Jacoco properties -->
+  <property name="jacoco.report.dir" location="${bin.dir}/reports/jacoco" />
+  <property name="jacoco.execfile.path" location="${jacoco.report.dir}/jacoco.exec"/>
+  <property name="jacoco.it.execfile.path" location="${jacoco.report.dir}/jacoco-it.exec"/>
+
   <!-- Maven properties -->
   <property name="maven.options" value="-q"/>
 
@@ -1768,7 +1773,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Compiles and runs all the tests for the project
       ====================================================================-->
   <target name="jacoco" depends="install-jacoco,compile,compile-tests, init-test-reports"
-          description="Compiles and runs unit tests with Jacoco code coverage." if="junit.available">
+          description="Compiles and runs unit tests with Jacoco code coverage.">
+
+    <mkdir dir = "${jacoco.report.dir}" />
 
     <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
       <classpath>
@@ -1796,11 +1803,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </classpath>
     </taskdef>
 
-    <property name="jacoco.report.dir" location="${bin.dir}/reports/jacoco"/>
-    <property name="jacoco.execfile.path" location="${jacoco.report.dir}/jacoco.exec"/>
-
+    <if>
+    <equals arg1="${junit.available}" arg2="true"/>
+    <then>
     <!-- Run unit tests, adding the JaCoCo agent -->
-    <jacoco:coverage destfile="${jacoco.execfile.path}" xmlns:jacoco="antlib:org.jacoco.ant">
+    <jacoco:coverage destfile="${jacoco.execfile.path}" xmlns:jacoco="antlib:org.jacoco.ant" >
 
       <junit maxmemory="${junit.maxmemory}"
              dir="${junit.base.dir}"
@@ -1829,6 +1836,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </batchtest>
       </junit>
     </jacoco:coverage>
+    </then>
+    </if>
 
     <if>
       <!-- if there is no exec file (no tests or faulty tests), cannot gen report -->
@@ -2304,6 +2313,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </then>
       <else>
         <property name="sonar.jacoco.reportPath" value="${jacoco.execfile.path}"/>
+        <property name="sonar.jacoco.itReportPath" value="${jacoco.it.execfile.path}"/>
       </else>
     </if>
     <property name="sonar.junit.reportsPath" value="${testreports.xml.dir}"/>
