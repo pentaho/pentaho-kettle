@@ -22,9 +22,6 @@
 
 package org.pentaho.di.trans.steps.calculator;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -42,6 +39,9 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Calculate new field values using pre-defined functions.
@@ -572,6 +572,10 @@ public class Calculator extends BaseStep implements StepInterface {
             break;
           case CalculatorMetaFunction.CALC_SECOND_OF_MINUTE:
             calcData[index] = ValueDataUtil.secondOfMinute( metaA, dataA );
+            resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
+            break;
+          case CalculatorMetaFunction.CALC_ADD_SECONDS: // Add B seconds to date field A
+            calcData[index] = ValueDataUtil.addSeconds( metaA, dataA, metaB, dataB );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           default:

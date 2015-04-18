@@ -1107,6 +1107,15 @@ public class ValueDataUtil {
     return cal.getTime();
   }
 
+  public static Object addSeconds( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
+
+    Calendar cal = Calendar.getInstance();
+    cal.setTime( metaA.getDate( dataA ) );
+    cal.add( Calendar.SECOND, metaB.getInteger( dataB ).intValue() );
+
+    return cal.getTime();
+  }
+
   public static Object addMonths( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
 
     if ( dataA != null && dataB != null ) {

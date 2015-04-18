@@ -33,9 +33,14 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -64,6 +69,53 @@ public class CalculatorUnitTest {
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
       smh.logChannelInterface );
     when( smh.trans.isRunning() ).thenReturn( true );
+  }
+
+  @Test
+  public void testAddSeconds() throws KettleException {
+    RowMeta inputRowMeta = new RowMeta();
+    ValueMetaDate dayMeta = new ValueMetaDate( "Day" );
+    inputRowMeta.addValueMeta( dayMeta );
+    ValueMetaInteger secondsMeta = new ValueMetaInteger( "Seconds" );
+    inputRowMeta.addValueMeta( secondsMeta );
+
+    RowSet inputRowSet = null;
+    try {
+      inputRowSet = smh.getMockInputRowSet( new Object[][] {
+        { new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).parse( "2014-01-01 00:00:00" ), new Long( 10 ) },
+        { new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).parse( "2014-10-31 23:59:50" ), new Long( 30 ) } } );
+    } catch ( ParseException pe ) {
+      pe.printStackTrace();
+      fail();
+    }
+    inputRowSet.setRowMeta( inputRowMeta );
+
+    Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    calculator.getInputRowSets().add( inputRowSet );
+    calculator.setInputRowMeta( inputRowMeta );
+    calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
+
+    CalculatorMeta meta = new CalculatorMeta();
+    meta.setCalculation( new CalculatorMetaFunction[] {
+      new CalculatorMetaFunction( "new_day", CalculatorMetaFunction.CALC_ADD_SECONDS, "Day", "Seconds", null,
+        ValueMetaInterface.TYPE_DATE, 0, 0, false, "", "", "", "" ) } );
+
+    //Verify output
+    try {
+      calculator.addRowListener( new RowAdapter() {
+        @Override public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+          try {
+            assertEquals( new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).parse( "2014-01-01 00:00:10" ), row[ 2 ] );
+          } catch ( ParseException pe ) {
+            throw new KettleStepException( pe );
+          }
+        }
+      } );
+      calculator.processRow( meta, new CalculatorData() );
+    } catch ( KettleException ke ) {
+      ke.printStackTrace();
+      fail();
+    }
   }
 
   @Test
