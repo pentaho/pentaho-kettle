@@ -27,7 +27,8 @@
     <dependency org="net.sourceforge.nekohtml" name="nekohtml"             rev="1.9.7"  transitive="false" conf="test->default"/>
     <dependency org="com.puppycrawl.tools"     name="checkstyle"           rev="5.7"    transitive="true"  conf="checkstyle->default"/>
 
-    <!-- Apache Mina for settling up FTPS servers' instances -->
+    <!-- Apache Mina for settling up SFTP and FTPS servers' instances -->
+    <dependency org="org.apache.sshd"     name="sshd-sftp"     rev="0.11.0"  conf="test->default" transitive="true" />
     <dependency org="org.apache.ftpserver" name="ftpserver-core" rev="1.0.6"  conf="test->default" transitive="true" />
     <dependency org="org.bouncycastle"    name="bcprov-jdk14"  rev="1.51"    conf="test->default" transitive="true" />
 
