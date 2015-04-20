@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -430,8 +431,11 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
         shell.getDisplay().asyncExec( new Runnable() {
           @Override
           public void run() {
-            readGaProfiles( wGaEmail.getText(), wGaPassword.getText(), wGaAppName.getText(), wGaApiKey
-              .getText().trim() );
+            readGaProfiles( transMeta.environmentSubstitute( wGaEmail.getText() ),
+              Encr.decryptPasswordOptionallyEncrypted( transMeta.environmentSubstitute( wGaPassword.getText() ) ),
+              transMeta.environmentSubstitute( wGaAppName.getText() ),
+              Encr.decryptPasswordOptionallyEncrypted( transMeta.environmentSubstitute(
+                wGaApiKey.getText().trim() ) ) );
           }
         } );
       }
@@ -789,8 +793,12 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
         shell.getDisplay().asyncExec( new Runnable() {
           @Override
           public void run() {
-            readGaSegments( wGaEmail.getText(), wGaPassword.getText(), wGaAppName.getText(), wGaApiKey
-              .getText().trim() );
+            readGaSegments(
+              transMeta.environmentSubstitute( wGaEmail.getText() ),
+              Encr.decryptPasswordOptionallyEncrypted( transMeta.environmentSubstitute( wGaPassword.getText() ) ),
+              transMeta.environmentSubstitute( wGaAppName.getText() ),
+              Encr.decryptPasswordOptionallyEncrypted( transMeta.environmentSubstitute(
+                wGaApiKey.getText().trim() ) ) );
           }
         } );
       }
@@ -920,7 +928,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
         query.setMaxResults( 1 );
 
         String email = transMeta.environmentSubstitute( wGaEmail.getText() );
-        String pass = transMeta.environmentSubstitute( wGaPassword.getText() );
+        String pass = Encr.decryptPasswordOptionallyEncrypted(
+          transMeta.environmentSubstitute( wGaPassword.getText() ) );
 
         AnalyticsService analyticsService =
           new AnalyticsService( transMeta.environmentSubstitute( wGaAppName.getText() ) );
@@ -1059,10 +1068,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
         } catch ( AuthenticationException e1 ) {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-          mb.setText( "Authentication Error" );
-          mb.setMessage( "Could not authenticate. Please check the credentials and "
-            + "ensure that there's no network connectivity problem.\n\n"
-            + e1.getMessage() );
+          mb.setText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogTitle" ) );
+          mb.setMessage( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ) );
           mb.open();
 
           e1.printStackTrace();
@@ -1291,8 +1298,9 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     query.setDimensions( transMeta.environmentSubstitute( wQuDimensions.getText() ) );
     query.setMetrics( transMeta.environmentSubstitute( wQuMetrics.getText() ) );
 
-    if ( wGaApiKey.getText().trim().length() > 0 ) {
-      query.setStringCustomParameter( "key", wGaApiKey.getText().trim() );
+    if ( !Const.isEmpty( wGaApiKey.getText().trim() ) ) {
+      query.setStringCustomParameter( "key", Encr.decryptPasswordOptionallyEncrypted(
+        transMeta.environmentSubstitute( wGaApiKey.getText().trim() ) ) );
     }
 
     if ( wUseSegmentEnabled.getSelection() ) {
@@ -1346,17 +1354,12 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
   // Collect profile list from the GA service for the given authentication
   // information
   public void readGaProfiles( String emailText, String passwordText, String appName, String apiKey ) {
-
-    String email = transMeta.environmentSubstitute( emailText );
-    String pass = transMeta.environmentSubstitute( passwordText );
-    String key = transMeta.environmentSubstitute( apiKey );
-
-    AnalyticsService analyticsService = new AnalyticsService( transMeta.environmentSubstitute( appName ) );
+    AnalyticsService analyticsService = new AnalyticsService( appName );
     try {
-      analyticsService.setUserCredentials( email, pass );
+      analyticsService.setUserCredentials( emailText, passwordText );
 
       URL q =
-        new URL( GaInputStepMeta.GA_MANAGEMENT_URL + "/accounts/~all/webproperties/~all/profiles?key=" + key );
+        new URL( GaInputStepMeta.GA_MANAGEMENT_URL + "/accounts/~all/webproperties/~all/profiles?key=" + apiKey );
 
       ManagementFeed profilesFeed = analyticsService.getFeed( q, ManagementFeed.class );
 
@@ -1379,10 +1382,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     } catch ( AuthenticationException e ) {
       e.printStackTrace();
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setText( "Authentication Failure" );
-      mb
-        .setMessage( "Authentication failure occured when contacting Google Analytics.\n"
-          + "Please verify the credentials in the email and password fields as well as your network connectivity." );
+      mb.setText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogTitle" ) );
+      mb.setMessage( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ) );
       mb.open();
 
     } catch ( MalformedURLException e ) {
@@ -1408,15 +1409,10 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
   // Collect segment list from the GA service for the given authentication
   // information
   public void readGaSegments( String emailText, String passwordText, String appName, String apiKey ) {
-
-    String email = transMeta.environmentSubstitute( emailText );
-    String pass = transMeta.environmentSubstitute( passwordText );
-    String key = transMeta.environmentSubstitute( apiKey );
-
-    AnalyticsService analyticsService = new AnalyticsService( transMeta.environmentSubstitute( appName ) );
+    AnalyticsService analyticsService = new AnalyticsService( appName );
     try {
-      analyticsService.setUserCredentials( email, pass );
-      URL q = new URL( GaInputStepMeta.GA_MANAGEMENT_URL + "/segments?key=" + key );
+      analyticsService.setUserCredentials( emailText, passwordText );
+      URL q = new URL( GaInputStepMeta.GA_MANAGEMENT_URL + "/segments?key=" + apiKey );
 
       ManagementFeed segmentFeed = analyticsService.getFeed( q, ManagementFeed.class );
 
@@ -1437,10 +1433,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     } catch ( AuthenticationException e ) {
       e.printStackTrace();
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setText( "Authentication Failure" );
-      mb
-        .setMessage( "Authentication failure occured when contacting Google Analytics.\n"
-          + "Please verify the credentials in the email and password fields as well as your network connectivity." );
+      mb.setText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogTitle" ) );
+      mb.setMessage( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ) );
       mb.open();
 
     } catch ( MalformedURLException e ) {
