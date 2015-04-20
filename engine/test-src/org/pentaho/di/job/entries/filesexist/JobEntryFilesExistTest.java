@@ -24,8 +24,6 @@ package org.pentaho.di.job.entries.filesexist;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -37,6 +35,7 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.utils.TestUtils;
 
 public class JobEntryFilesExistTest {
   private Job job;
@@ -65,13 +64,8 @@ public class JobEntryFilesExistTest {
 
     job.setStopped( false );
 
-    File f = File.createTempFile( "existingFile", "ext" );
-    f.deleteOnExit();
-    existingFile1 = f.getPath();
-
-    f = File.createTempFile( "existingFile", "ext" );
-    f.deleteOnExit();
-    existingFile2 = f.getPath();
+    existingFile1 = TestUtils.createRamFile( getClass().getSimpleName() + "/existingFile1.ext" );
+    existingFile2 = TestUtils.createRamFile( getClass().getSimpleName() + "/existingFile2.ext" );
   }
 
   @After

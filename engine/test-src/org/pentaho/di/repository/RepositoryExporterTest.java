@@ -23,9 +23,8 @@
 package org.pentaho.di.repository;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,7 @@ import javax.xml.xpath.XPathFactory;
 
 import junit.framework.Assert;
 
-import org.junit.After;
+import org.apache.commons.vfs.FileObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -53,6 +52,7 @@ import org.pentaho.di.imp.rules.JobHasDescriptionImportRule;
 import org.pentaho.di.imp.rules.TransformationHasDescriptionImportRule;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.utils.TestUtils;
 import org.xml.sax.InputSource;
 
 public class RepositoryExporterTest {
@@ -64,7 +64,7 @@ public class RepositoryExporterTest {
   @Mock
   private RepositoryDirectoryInterface root;
 
-  private File file;
+  private FileObject fileObject;
   private String xmlFileName;
 
   @Before
@@ -81,9 +81,9 @@ public class RepositoryExporterTest {
     Mockito.when( root.findDirectory( Mockito.any( ObjectId.class ) ) ).thenReturn( root );
 
     Mockito.when( repository.getJobNames( Mockito.any( ObjectId.class ), Mockito.anyBoolean() ) ).thenReturn(
-        new String[] { "job1" } );
+      new String[] { "job1" } );
     Mockito.when( repository.getTransformationNames( Mockito.any( ObjectId.class ), Mockito.anyBoolean() ) )
-        .thenReturn( new String[] { "trans1" } );
+      .thenReturn( new String[] { "trans1" } );
 
     Mockito.when( root.getPath() ).thenReturn( "path" );
 
@@ -91,7 +91,7 @@ public class RepositoryExporterTest {
     Answer<JobMeta> jobLoader = new Answer<JobMeta>() {
       @Override
       public JobMeta answer( InvocationOnMock invocation ) throws Throwable {
-        String jobName = String.class.cast( invocation.getArguments()[0] );
+        String jobName = String.class.cast( invocation.getArguments()[ 0 ] );
         JobMeta jobMeta = Mockito.mock( JobMeta.class );
         Mockito.when( jobMeta.getXML() ).thenReturn( "<" + jobName + ">" + "found" + "</" + jobName + ">" );
         Mockito.when( jobMeta.getName() ).thenReturn( jobName );
@@ -100,14 +100,14 @@ public class RepositoryExporterTest {
     };
 
     Mockito.when(
-        repository.loadJob( Mockito.anyString(), Mockito.any( RepositoryDirectoryInterface.class ), Mockito
-            .any( ProgressMonitorListener.class ), Mockito.anyString() ) ).thenAnswer( jobLoader );
+      repository.loadJob( Mockito.anyString(), Mockito.any( RepositoryDirectoryInterface.class ), Mockito
+        .any( ProgressMonitorListener.class ), Mockito.anyString() ) ).thenAnswer( jobLoader );
 
     // and this is for transformation load
     Answer<TransMeta> transLoader = new Answer<TransMeta>() {
       @Override
       public TransMeta answer( InvocationOnMock invocation ) throws Throwable {
-        String transName = String.class.cast( invocation.getArguments()[0] );
+        String transName = String.class.cast( invocation.getArguments()[ 0 ] );
         TransMeta transMeta = Mockito.mock( TransMeta.class );
         Mockito.when( transMeta.getXML() ).thenReturn( "<" + transName + ">" + "found" + "</" + transName + ">" );
         Mockito.when( transMeta.getName() ).thenReturn( transName );
@@ -115,33 +115,25 @@ public class RepositoryExporterTest {
       }
     };
     Mockito.when(
-        repository.loadTransformation( Mockito.anyString(), Mockito.any( RepositoryDirectoryInterface.class ), Mockito
-            .any( ProgressMonitorListener.class ), Mockito.anyBoolean(), Mockito.anyString() ) ).thenAnswer(
-        transLoader );
+      repository.loadTransformation( Mockito.anyString(), Mockito.any( RepositoryDirectoryInterface.class ), Mockito
+        .any( ProgressMonitorListener.class ), Mockito.anyBoolean(), Mockito.anyString() ) ).thenAnswer(
+      transLoader );
 
     // export file
-    file = File.createTempFile( RepositoryExporterTest.class.getSimpleName(), "" );
-    file.deleteOnExit();
-    xmlFileName = file.getCanonicalPath();
-  }
-
-  @After
-  public void afterTest() {
-    if ( file != null ) {
-      file.delete();
-    }
+    xmlFileName = TestUtils.createRamFile( getClass().getSimpleName() + "/export.xml" );
+    fileObject = TestUtils.getFileObject( xmlFileName );
   }
 
   /**
    * Test that jobs can be exported with feedback
-   * 
+   *
    * @throws Exception
    */
   @Test
   public void testExportJobsWithFeedback() throws Exception {
     RepositoryExporter exporter = new RepositoryExporter( repository );
     List<ExportFeedback> feedback =
-        exporter.exportAllObjectsWithFeedback( null, xmlFileName, root, RepositoryExporter.ExportType.JOBS.toString() );
+      exporter.exportAllObjectsWithFeedback( null, xmlFileName, root, RepositoryExporter.ExportType.JOBS.toString() );
 
     Assert.assertEquals( "Feedback contains all items recorded", 2, feedback.size() );
     ExportFeedback fb = feedback.get( 1 );
@@ -149,20 +141,20 @@ public class RepositoryExporterTest {
     Assert.assertEquals( "Job1 was exproted", "job1", fb.getItemName() );
     Assert.assertEquals( "Repository path for Job1 is specified", "path", fb.getItemPath() );
 
-    String res = this.validateXmlFile( file, "//job1" );
+    String res = this.validateXmlFile( fileObject.getContent().getInputStream(), "//job1" );
     Assert.assertEquals( "Export xml contains exported job xml", "found", res );
   }
 
   /**
    * Test that transformations can be exported with feedback
-   * 
+   *
    * @throws Exception
    */
   @Test
   public void testExportTransformationsWithFeedback() throws Exception {
     RepositoryExporter exporter = new RepositoryExporter( repository );
     List<ExportFeedback> feedback =
-        exporter.exportAllObjectsWithFeedback( null, xmlFileName, root, RepositoryExporter.ExportType.TRANS.toString() );
+      exporter.exportAllObjectsWithFeedback( null, xmlFileName, root, RepositoryExporter.ExportType.TRANS.toString() );
 
     Assert.assertEquals( "Feedback contains all items recorded", 2, feedback.size() );
     ExportFeedback fb = feedback.get( 1 );
@@ -170,22 +162,22 @@ public class RepositoryExporterTest {
     Assert.assertEquals( "Job1 was exproted", "trans1", fb.getItemName() );
     Assert.assertEquals( "Repository path for Job1 is specified", "path", fb.getItemPath() );
 
-    String res = this.validateXmlFile( file, "//trans1" );
+    String res = this.validateXmlFile( fileObject.getContent().getInputStream(), "//trans1" );
     Assert.assertEquals( "Export xml contains exported job xml", "found", res );
   }
 
   /**
    * Test that we can have some feedback on rule violations
-   * 
+   *
    * @throws KettleException
    */
   @Test
-  public void testExportAllRulesViolation() throws KettleException {
+  public void testExportAllRulesViolation() throws Exception {
     RepositoryExporter exporter = new RepositoryExporter( repository );
     exporter.setImportRulesToValidate( getImportRules() );
 
     List<ExportFeedback> feedback =
-        exporter.exportAllObjectsWithFeedback( null, xmlFileName, root, RepositoryExporter.ExportType.ALL.toString() );
+      exporter.exportAllObjectsWithFeedback( null, xmlFileName, root, RepositoryExporter.ExportType.ALL.toString() );
 
     Assert.assertEquals( "Feedback contains all items recorded", 3, feedback.size() );
 
@@ -195,17 +187,16 @@ public class RepositoryExporterTest {
       }
       Assert.assertEquals( "all items rejected: " + feed.toString(), ExportFeedback.Status.REJECTED, feed.getStatus() );
     }
-    Assert.assertTrue( "Export file is deleted", !file.exists() );
+    Assert.assertTrue( "Export file is deleted", !fileObject.exists() );
   }
 
   /**
    * PDI-7734 - EE Repository export with Rules: When it fails, no UI feedback is given and the file is incomplete
-   * 
+   * <p/>
    * this tests bachward compatibility mode when attempt to export repository is called from code that does not support
    * feddbacks.
-   * 
+   *
    * @throws KettleException
-   * 
    */
   @Test( expected = KettleException.class )
   public void testExportAllExceptionThrown() throws KettleException {
@@ -239,10 +230,10 @@ public class RepositoryExporterTest {
     return imp;
   }
 
-  private String validateXmlFile( File file, String xpath ) throws Exception {
+  private String validateXmlFile( InputStream is, String xpath ) throws Exception {
     XPath xPath = XPathFactory.newInstance().newXPath();
     XPathExpression expression = xPath.compile( xpath );
-    BufferedReader in = new BufferedReader( new InputStreamReader( new FileInputStream( file ), "UTF8" ) );
+    BufferedReader in = new BufferedReader( new InputStreamReader( is, "UTF8" ) );
     InputSource input = new InputSource( in );
     String result = expression.evaluate( input );
 
