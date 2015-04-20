@@ -307,8 +307,6 @@ public class GUIResource {
 
   private SwtUniversalImage imageWarning;
 
-  private Image imageWarning32;
-
   private Image imageVersionBrowser;
 
   private Image imageNew;
@@ -568,7 +566,6 @@ public class GUIResource {
       imageErrorHop.dispose();
       imageInfoHop.dispose();
       imageWarning.dispose();
-      imageWarning32.dispose();
       imageVersionBrowser.dispose();
       imageExpandAll.dispose();
       imageSearchSmall.dispose();
@@ -980,9 +977,6 @@ public class GUIResource {
 
     // "ui/images/warning.png;
     imageWarning = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Warning_image" ) );
-
-    // "ui/images/warning_32.png;
-    imageWarning32 = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Warning32_image" ) );
 
     // "ui/images/version-history.png;
     imageVersionBrowser =
