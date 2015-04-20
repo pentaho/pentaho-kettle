@@ -27,6 +27,9 @@ import java.io.IOException;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 public class TestUtils {
 
@@ -54,5 +57,23 @@ public class TestUtils {
     inputFile.deleteOnExit();
     FileUtils.writeStringToFile( inputFile, UUID.randomUUID().toString(), "UTF-8" );
     return inputFile;
+  }
+
+  public static String createRamFile( String path ) {
+    try {
+      FileObject file = KettleVFS.getInstance().getFileSystemManager().resolveFile( "ram://" + path );
+      file.createFile();
+      return file.getName().getURI();
+    } catch ( FileSystemException e ) {
+      throw new RuntimeException( e );
+    }
+  }
+
+  public static FileObject getFileObject( String vfsPath ) {
+    try {
+      return KettleVFS.getInstance().getFileSystemManager().resolveFile( vfsPath );
+    } catch ( FileSystemException e ) {
+      throw new RuntimeException( e );
+    }
   }
 }
