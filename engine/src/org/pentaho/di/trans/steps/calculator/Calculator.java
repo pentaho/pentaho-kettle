@@ -33,7 +33,6 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -63,7 +62,7 @@ public class Calculator extends BaseStep implements StepInterface {
   private CalculatorData data;
 
   public Calculator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                     Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -74,6 +73,7 @@ public class Calculator extends BaseStep implements StepInterface {
     Object[] r = getRow(); // get row, set busy!
     if ( r == null ) { // no more input to be expected...
       setOutputDone();
+      data.clearValuesMetaMapping();
       return false;
     }
 
@@ -594,7 +594,8 @@ public class Calculator extends BaseStep implements StepInterface {
           if ( targetMeta.getType() != resultType ) {
             ValueMetaInterface resultMeta;
             try {
-              resultMeta = ValueMetaFactory.createValueMeta( "result", resultType );
+              // clone() is not necessary as one data instance belongs to one step instance and no race condition occurs
+              resultMeta = data.getValueMetaFor( resultType, "result" );
             } catch ( Exception exception ) {
               throw new KettleValueException( "Error creating value" );
             }
