@@ -19,20 +19,16 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
 package org.pentaho.di.ui.spoon;
 
-import org.eclipse.swt.graphics.Image;
-
-public abstract class AbstractSpoonPerspective implements SpoonPerspective {
+public interface SpoonPerspectiveImageProvider extends SpoonPerspective {
 
   /**
-   * Perspectives will be represented in spoon by an icon on the main toolbar. This method returns the Image for
-   * that icon.
-   *
-   * @return image Image
+   * Get the path to the perspective's icon, can be within a jar (classLoader) or
+   * file-system.
+   * 
+   * @return the path to the perspective's icon
    */
-  public Image getIcon() {
-    return null;
-  }
+  public String getPerspectiveIconPath();
+  
 }
