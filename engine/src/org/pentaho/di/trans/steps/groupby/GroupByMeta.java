@@ -450,6 +450,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
             break;
           case TYPE_GROUP_STANDARD_DEVIATION:
           case TYPE_GROUP_MEDIAN:
+          case TYPE_GROUP_PERCENTILE:
             value_type = ValueMetaInterface.TYPE_NUMBER;
             break;
           case TYPE_GROUP_CONCAT_STRING:
