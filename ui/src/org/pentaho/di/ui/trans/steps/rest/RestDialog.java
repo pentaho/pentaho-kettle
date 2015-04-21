@@ -67,6 +67,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboVar;
+import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -623,10 +624,9 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdlHttpPassword.left = new FormAttachment( 0, 0 );
     fdlHttpPassword.right = new FormAttachment( middle, -margin );
     wlHttpPassword.setLayoutData( fdlHttpPassword );
-    wHttpPassword = new TextVar( transMeta, gHttpAuth, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wHttpPassword = new PasswordTextVar( transMeta, gHttpAuth, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wHttpPassword.addModifyListener( lsMod );
     wHttpPassword.setToolTipText( BaseMessages.getString( PKG, "RestDialog.HttpPassword.Tooltip" ) );
-    wHttpPassword.setEchoChar( '*' );
     props.setLook( wHttpPassword );
     FormData fdHttpPassword = new FormData();
     fdHttpPassword.top = new FormAttachment( wHttpLogin, margin );
@@ -810,9 +810,8 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     fdlTrustStorePassword.right = new FormAttachment( middle, -margin );
     wlTrustStorePassword.setLayoutData( fdlTrustStorePassword );
     wTrustStorePassword =
-      new TextVar( transMeta, gSSLTrustStore, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.PASSWORD );
+      new PasswordTextVar( transMeta, gSSLTrustStore, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wTrustStorePassword );
-    wTrustStorePassword.setEchoChar( '*' );
     wTrustStorePassword.addModifyListener( lsMod );
     fdTrustStorePassword = new FormData();
     fdTrustStorePassword.left = new FormAttachment( middle, 0 );

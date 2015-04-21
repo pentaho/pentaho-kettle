@@ -558,8 +558,7 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     // AuthPass line
     wAuthPass = new LabelTextVar( jobMeta, wAuthentificationGroup,
       BaseMessages.getString( PKG, "JobMail.AuthenticationPassword.Label" ),
-      BaseMessages.getString( PKG, "JobMail.AuthenticationPassword.Tooltip" ) );
-    wAuthPass.setEchoChar( '*' );
+      BaseMessages.getString( PKG, "JobMail.AuthenticationPassword.Tooltip" ), true );
     wAuthPass.addModifyListener( lsMod );
     fdAuthPass = new FormData();
     fdAuthPass.left = new FormAttachment( 0, 0 );
