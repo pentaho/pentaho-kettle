@@ -58,9 +58,9 @@ import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
@@ -382,21 +382,14 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     fdlPassword.top = new FormAttachment( wUserName, margin );
     fdlPassword.right = new FormAttachment( middle, -margin );
     wlPassword.setLayoutData( fdlPassword );
-    wPassword = new TextVar( jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wPassword = new PasswordTextVar( jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wPassword );
-    wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
     fdPassword.left = new FormAttachment( middle, 0 );
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
-
-    wPassword.getTextWidget().addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
-      }
-    } );
 
     // usePublicKey
     wlusePublicKey = new Label( wServerSettings, SWT.RIGHT );
@@ -470,21 +463,14 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     wkeyfilePass =
       new LabelTextVar(
         jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTP.keyfilePass.Label" ), BaseMessages
-          .getString( PKG, "JobSFTP.keyfilePass.Tooltip" ) );
+          .getString( PKG, "JobSFTP.keyfilePass.Tooltip" ), true );
     props.setLook( wkeyfilePass );
-    wkeyfilePass.setEchoChar( '*' );
     wkeyfilePass.addModifyListener( lsMod );
     fdkeyfilePass = new FormData();
     fdkeyfilePass.left = new FormAttachment( 0, -2 * margin );
     fdkeyfilePass.top = new FormAttachment( wKeyFilename, margin );
     fdkeyfilePass.right = new FormAttachment( 100, 0 );
     wkeyfilePass.setLayoutData( fdkeyfilePass );
-
-    wkeyfilePass.getTextWidget().addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wkeyfilePass.getTextWidget() );
-      }
-    } );
 
     wlProxyType = new Label( wServerSettings, SWT.RIGHT );
     wlProxyType.setText( BaseMessages.getString( PKG, "JobSFTP.ProxyType.Label" ) );
@@ -554,21 +540,14 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     wProxyPassword =
       new LabelTextVar(
         jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobSFTP.ProxyPassword.Label" ), BaseMessages
-          .getString( PKG, "JobSFTP.ProxyPassword.Tooltip" ) );
+          .getString( PKG, "JobSFTP.ProxyPassword.Tooltip" ), true );
     props.setLook( wProxyPassword );
-    wProxyPassword.setEchoChar( '*' );
     wProxyPassword.addModifyListener( lsMod );
     fdProxyPasswd = new FormData();
     fdProxyPasswd.left = new FormAttachment( 0, -2 * margin );
     fdProxyPasswd.top = new FormAttachment( wProxyUsername, margin );
     fdProxyPasswd.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPasswd );
-
-    wProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wProxyPassword.getTextWidget() );
-      }
-    } );
 
     // Test connection button
     wTest = new Button( wServerSettings, SWT.PUSH );

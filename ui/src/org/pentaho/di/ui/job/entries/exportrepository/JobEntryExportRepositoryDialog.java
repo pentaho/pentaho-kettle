@@ -60,7 +60,6 @@ import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -328,21 +327,14 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
     wPassword =
       new LabelTextVar( jobMeta, wRepositoryInfos,
         BaseMessages.getString( PKG, "JobExportRepository.Password.Label" ),
-        BaseMessages.getString( PKG, "JobExportRepository.Password.Tooltip" ) );
+        BaseMessages.getString( PKG, "JobExportRepository.Password.Tooltip" ), true );
     props.setLook( wPassword );
-    wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
     fdPassword.left = new FormAttachment( 0, 0 );
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
-
-    wPassword.getTextWidget().addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
-      }
-    } );
 
     // Test connection button
     wTest = new Button( wRepositoryInfos, SWT.PUSH );

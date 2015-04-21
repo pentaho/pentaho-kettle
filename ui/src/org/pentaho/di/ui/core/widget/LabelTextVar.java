@@ -53,7 +53,15 @@ public class LabelTextVar extends Composite {
     this( space, composite, SWT.NONE, labelText, toolTipText );
   }
 
+  public LabelTextVar( VariableSpace space, Composite composite, String labelText, String toolTipText, boolean passwordField ) {
+    this( space, composite, SWT.NONE, labelText, toolTipText, passwordField );
+  }
+
   public LabelTextVar( VariableSpace space, Composite composite, int flags, String labelText, String toolTipText ) {
+    this( space, composite, flags, labelText, toolTipText, false );
+  }
+  public LabelTextVar( VariableSpace space, Composite composite, int flags, String labelText, String toolTipText,
+      boolean passwordField ) {
     super( composite, SWT.NONE );
     props.setLook( this );
 
@@ -73,7 +81,11 @@ public class LabelTextVar extends Composite {
       textFlags = flags;
     }
 
-    wText = new TextVar( space, this, textFlags, toolTipText );
+    if ( passwordField ) {
+      wText = new PasswordTextVar( space, this, textFlags, toolTipText );
+    } else {
+      wText = new TextVar( space, this, textFlags, toolTipText );
+    }
     FormData fdText = new FormData();
     fdText.left = new FormAttachment( middle, margin );
     fdText.right = new FormAttachment( 100, 0 );

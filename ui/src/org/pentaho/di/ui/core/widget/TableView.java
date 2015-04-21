@@ -96,7 +96,6 @@ import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterConditionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -2001,8 +2000,13 @@ public class TableView extends Composite {
         }
       };
 
-      final TextVar textWidget =
-        new TextVar( variables, table, SWT.NONE, getCaretPositionInterface, insertTextInterface );
+      final TextVar textWidget;
+      if ( passwordField ) {
+        textWidget = new PasswordTextVar( variables, table, SWT.NONE, getCaretPositionInterface, insertTextInterface );
+      } else {
+        textWidget = new TextVar( variables, table, SWT.NONE, getCaretPositionInterface, insertTextInterface );
+      }
+        
 
       text = textWidget;
       textWidget.setText( content );
@@ -2025,15 +2029,6 @@ public class TableView extends Composite {
       }
       textWidget.addTraverseListener( lsTraverse );
       textWidget.addFocusListener( lsFocusText );
-
-      if ( passwordField ) {
-        textWidget.setEchoChar( '*' );
-        textWidget.addModifyListener( new ModifyListener() {
-          public void modifyText( ModifyEvent arg0 ) {
-            DatabaseDialog.checkPasswordVisible( textWidget.getTextWidget() );
-          }
-        } );
-      }
     } else {
       Text textWidget = new Text( table, SWT.NONE );
       text = textWidget;
@@ -2057,10 +2052,6 @@ public class TableView extends Composite {
       }
       textWidget.addTraverseListener( lsTraverse );
       textWidget.addFocusListener( lsFocusText );
-      if ( passwordField ) {
-        textWidget.setEchoChar( '*' );
-
-      }
     }
     props.setLook( text, Props.WIDGET_STYLE_TABLE );
 
