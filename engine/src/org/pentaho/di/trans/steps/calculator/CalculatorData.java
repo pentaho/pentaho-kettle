@@ -22,14 +22,19 @@
 
 package org.pentaho.di.trans.steps.calculator;
 
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Matt
  * @since 8-sep-2005
- *
  */
 public class CalculatorData extends BaseStepData implements StepDataInterface {
   private RowMetaInterface outputRowMeta;
@@ -39,8 +44,11 @@ public class CalculatorData extends BaseStepData implements StepDataInterface {
 
   private int[] tempIndexes;
 
+  private final Map<Integer, ValueMetaInterface> resultMetaMapping;
+
   public CalculatorData() {
     super();
+    resultMetaMapping = new HashMap<Integer, ValueMetaInterface>();
   }
 
   public RowMetaInterface getOutputRowMeta() {
@@ -73,5 +81,19 @@ public class CalculatorData extends BaseStepData implements StepDataInterface {
 
   public void setTempIndexes( int[] tempIndexes ) {
     this.tempIndexes = tempIndexes;
+  }
+
+  public ValueMetaInterface getValueMetaFor( int resultType, String name ) throws KettlePluginException {
+    // don't need any synchronization as data instance belongs only to one step instance
+    ValueMetaInterface meta = resultMetaMapping.get( resultType );
+    if ( meta == null ) {
+      meta = ValueMetaFactory.createValueMeta( name, resultType );
+      resultMetaMapping.put( resultType, meta );
+    }
+    return meta;
+  }
+
+  public void clearValuesMetaMapping() {
+    resultMetaMapping.clear();
   }
 }
