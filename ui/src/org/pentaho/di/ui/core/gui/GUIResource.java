@@ -58,7 +58,6 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeListener;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.svg.SvgSupport;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
@@ -161,9 +160,9 @@ public class GUIResource {
 
   private Map<String, Image> imagesJobentriesSmall;
 
-  private Image imageHop;
+  private SwtUniversalImage imageHop;
 
-  private Image imageDisabledHop;
+  private SwtUniversalImage imageDisabledHop;
 
   private SwtUniversalImage imageConnection;
 
@@ -698,15 +697,12 @@ public class GUIResource {
         ClassLoader classLoader = registry.getClassLoader( steps.get( i ) );
         image = SwtSvgImageUtil.getUniversalImage( display, classLoader, filename );
       } catch ( Throwable t ) {
-        log.logError( "Unable to find required step image file or image format not supported (e.g. interlaced) ["
-            + filename + "] for plugin " + steps.get( i ), t );
-        Image img = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
-        GC gc = new GC( img );
-        gc.drawRectangle( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
-        gc.drawLine( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
-        gc.drawLine( ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE );
-        gc.dispose();
-        image = new SwtUniversalImageBitmap( img );
+        log.logError( "Error occurred loading image [" + filename + "] for plugin " + steps.get( i ), t );
+      } finally {
+        if ( image == null ) {
+          log.logError( "Unable to load image file [" + filename + "] for plugin " + steps.get( i ) );
+          image = SwtSvgImageUtil.getMissingImage( display );
+        }
       }
 
       // Calculate the smaller version of the image @ 16x16...
@@ -781,7 +777,9 @@ public class GUIResource {
 
   private void loadCommonImages() {
     // "ui/images/HOP.png"
-    imageHop = loadAsResource( display, BasePropertyHandler.getProperty( "HOP_image" ), ConstUI.SMALL_ICON_SIZE );
+    imageHop = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "HOP_image" ) );
+
+    imageDisabledHop = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Disabled_HOP_image" ) );
 
     // "ui/images/CNC.png"
     imageConnection = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "CNC_image" ) );
@@ -792,9 +790,6 @@ public class GUIResource {
 
     // "ui/images/Add.png"
     imageAdd = loadAsResource( display, BasePropertyHandler.getProperty( "Add_image" ), ConstUI.SMALL_ICON_SIZE );
-
-    imageDisabledHop =
-        loadAsResource( display, BasePropertyHandler.getProperty( "Disabled_HOP_image" ), ConstUI.SMALL_ICON_SIZE );
 
     // "ui/images/table.png"
     imageTable = loadAsResource( display, BasePropertyHandler.getProperty( "Table_image" ), ConstUI.SMALL_ICON_SIZE );
@@ -1079,32 +1074,27 @@ public class GUIResource {
 
     imageEmpty16x16 = new Image( display, 16, 16 );
 
-    imageTransGraph =
-        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), SvgSupport
-            .toSvgName( BasePropertyHandler.getProperty( "SpoonIcon_image" ) ) );
-    imageJobGraph =
-        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), SvgSupport
-            .toSvgName( BasePropertyHandler.getProperty( "ChefIcon_image" ) ) );
+    imageTransGraph = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), 
+        BasePropertyHandler.getProperty( "SpoonIcon_image" ) );
+    imageJobGraph = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), 
+        BasePropertyHandler.getProperty( "ChefIcon_image" ) );
 
-    imageTransTree =
-        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), SvgSupport
-            .toSvgName( BasePropertyHandler.getProperty( "Trans_tree_image" ) ) );
-    imageJobTree =
-        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), SvgSupport
-            .toSvgName( BasePropertyHandler.getProperty( "Job_tree_image" ) ) );
+    imageTransTree = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), 
+        BasePropertyHandler.getProperty( "Trans_tree_image" ) );
+    imageJobTree = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), 
+        BasePropertyHandler.getProperty( "Job_tree_image" ) );
 
     // "ui/images/kettle_logo_small.png"
-    imageLogoSmall =
-        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), SvgSupport
-            .toSvgName( BasePropertyHandler.getProperty( "Logo_sml_image" ) ) );
+    imageLogoSmall = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), 
+        BasePropertyHandler.getProperty( "Logo_sml_image" ) );
 
     // "ui/images/arrow.png"
-    imageArrow =
-        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), SvgSupport
-            .toSvgName( BasePropertyHandler.getProperty( "ArrowIcon_image" ) ) );
+    imageArrow = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), 
+        BasePropertyHandler.getProperty( "ArrowIcon_image" ) );
 
     // "ui/images/folder.png"
-    imageFolder = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), ( "ui/images/folder.svg" ) );
+    imageFolder = SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), 
+        BasePropertyHandler.getProperty( "Folder_image" ) );
 
     // Makes transparent images "on the fly"
     //
@@ -1185,17 +1175,13 @@ public class GUIResource {
         ClassLoader classLoader = registry.getClassLoader( plugin );
         image = SwtSvgImageUtil.getUniversalImage( display, classLoader, filename );
       } catch ( Throwable t ) {
-        log.logError( "Unable to find required job entry image file [" + filename + "] for id [" + plugin.getIds()[0]
-            + "] : " + t.toString() );
-        Image img = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
-        GC gc = new GC( img );
-        gc.drawRectangle( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
-        gc.drawLine( 0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
-        gc.drawLine( ConstUI.ICON_SIZE, 0, 0, ConstUI.ICON_SIZE );
-        gc.dispose();
-        image = new SwtUniversalImageBitmap( img );
+        log.logError( "Error occurred loading image [" + filename + "] for plugin " + plugin.getIds()[0], t );
+      } finally {
+        if ( image == null ) {
+          log.logError( "Unable to load image [" + filename + "] for plugin " + plugin.getIds()[0] );
+          image = SwtSvgImageUtil.getMissingImage( display );
+        }
       }
-
       // Calculate the smaller version of the image @ 16x16...
       // Perhaps we should make this configurable?
       //
@@ -1515,7 +1501,7 @@ public class GUIResource {
    * @return Returns the imageDummy.
    */
   public Image getImageDummy() {
-    return imageDummy.getAsBitmapForSize( display, 32, 32 );
+    return imageDummy.getAsBitmapForSize( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
   }
 
   public SwtUniversalImage getSwtImageDummy() {
@@ -1526,14 +1512,28 @@ public class GUIResource {
    * @return Returns the imageHop.
    */
   public Image getImageHop() {
-    return imageHop;
+    return imageHop.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
   /**
    * @return Returns the imageDisabledHop.
    */
   public Image getImageDisabledHop() {
-    return imageDisabledHop;
+    return imageDisabledHop.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+
+  /**
+   * @return Returns the imageHop.
+   */
+  public Image getImageHopTree() {
+    return imageHop.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
+  }
+
+  /**
+   * @return Returns the imageDisabledHop.
+   */
+  public Image getImageDisabledHopTree() {
+    return imageDisabledHop.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
   }
 
   /**
@@ -1575,7 +1575,7 @@ public class GUIResource {
    * @return Returns the imageStart.
    */
   public Image getImageStart() {
-    return imageStart.getAsBitmapForSize( display, 32, 32 );
+    return imageStart.getAsBitmapForSize( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
   }
 
   public SwtUniversalImage getSwtImageStart() {
