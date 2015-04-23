@@ -690,7 +690,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
         endedLine = "";
       }
 
-      fileName = XMLHandler.getTagValue( stepnode, "file", "name" );
+      fileName = loadSource( stepnode );
       fileAsCommand = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "is_command" ) );
       servletOutput = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "servlet_output" ) );
       doNotOpenNewFileInit =
@@ -967,7 +967,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     retval.append( "    " + XMLHandler.addTagValue( "fileNameField", fileNameField ) );
     retval.append( "    " + XMLHandler.addTagValue( "create_parent_folder", createparentfolder ) );
     retval.append( "    <file>" ).append( Const.CR );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "name", fileName ) );
+    saveSource( retval, fileName );
     retval.append( "      " ).append( XMLHandler.addTagValue( "is_command", fileAsCommand ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "servlet_output", servletOutput ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "do_not_open_new_file_init", doNotOpenNewFileInit ) );
@@ -1032,7 +1032,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       }
       encoding = rep.getStepAttributeString( id_step, "encoding" );
 
-      fileName = rep.getStepAttributeString( id_step, "file_name" );
+      fileName = loadSourceRep( rep, id_step );
       fileAsCommand = rep.getStepAttributeBoolean( id_step, "file_is_command" );
       servletOutput = rep.getStepAttributeBoolean( id_step, "file_servlet_output" );
       doNotOpenNewFileInit = rep.getStepAttributeBoolean( id_step, "do_not_open_new_file_init" );
@@ -1095,7 +1095,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       rep.saveStepAttribute( id_transformation, id_step, "format", fileFormat );
       rep.saveStepAttribute( id_transformation, id_step, "compression", fileCompression );
       rep.saveStepAttribute( id_transformation, id_step, "encoding", encoding );
-      rep.saveStepAttribute( id_transformation, id_step, "file_name", fileName );
+      saveSourceRep( rep, id_transformation, id_step, fileName );
       rep.saveStepAttribute( id_transformation, id_step, "file_is_command", fileAsCommand );
       rep.saveStepAttribute( id_transformation, id_step, "file_servlet_output", servletOutput );
       rep.saveStepAttribute( id_transformation, id_step, "do_not_open_new_file_init", doNotOpenNewFileInit );
@@ -1247,4 +1247,21 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
     return getStepMetaInjectionInterface().extractStepMetadataEntries();
   }
+  
+  protected String loadSource( Node stepnode ) {
+    return XMLHandler.getTagValue( stepnode, "file", "name" );
+  }
+    
+  protected void saveSource( StringBuffer retVal, String value ) {
+    retVal.append( "      " ).append( XMLHandler.addTagValue( "name", fileName ) );
+  }
+    
+  protected String loadSourceRep( Repository rep, ObjectId id_step ) throws KettleException {
+    return rep.getStepAttributeString( id_step, "file_name" );
+  }
+      
+  protected void saveSourceRep( Repository rep, ObjectId id_transformation, ObjectId id_step, String value )
+      throws KettleException {
+    rep.saveStepAttribute( id_transformation, id_step, "file_name", fileName );
+  }  
 }
