@@ -30,14 +30,19 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.SwtUniversalImageBitmap;
 import org.pentaho.di.core.SwtUniversalImageSvg;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.svg.SvgSupport;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.ui.core.ConstUI;
 
 /**
  * Class for loading images from SVG, PNG, or other bitmap formats.
@@ -47,8 +52,11 @@ import org.pentaho.di.core.vfs.KettleVFS;
  */
 public class SwtSvgImageUtil {
 
-  private static FileObject base;
+  private static LogChannelInterface log = new LogChannel( "SwtSvgImageUtil" );
+
   private static final String NO_IMAGE = "ui/images/no_image.svg";
+
+  private static FileObject base;
 
   static {
     try {
@@ -57,6 +65,25 @@ public class SwtSvgImageUtil {
       e.printStackTrace();
       base = null;
     }
+  }
+
+  /**
+   * Get the image for when all other fallbacks have failed.  This is an image
+   * drawn on the canvas, a square with a red X.
+   *
+   * @param display the device to render the image to
+   * @return the missing image
+   */
+  public static SwtUniversalImage getMissingImage( Display display ) {
+    Image img = new Image( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
+    GC gc = new GC( img );
+    gc.setForeground( new Color( display, 0, 0, 0 ) );
+    gc.drawRectangle( 4, 4, ConstUI.ICON_SIZE - 8, ConstUI.ICON_SIZE - 8 );
+    gc.setForeground( new Color( display, 255, 0, 0 ) );
+    gc.drawLine( 4, 4, ConstUI.ICON_SIZE - 4, ConstUI.ICON_SIZE - 4 );
+    gc.drawLine( ConstUI.ICON_SIZE - 4, 4, 4, ConstUI.ICON_SIZE - 4 );
+    gc.dispose();
+    return new SwtUniversalImageBitmap( img );
   }
 
   /**
@@ -88,7 +115,12 @@ public class SwtSvgImageUtil {
       result = getImageAsResourceInternal( display, SvgSupport.toPngName( location ) );
     }
     if ( result == null && !location.equals( NO_IMAGE ) ) {
+      log.logError( "Unable to load image [" + location + "]" );
       result = getImageAsResource( display, NO_IMAGE );
+    }
+    if ( result == null ) {
+      log.logError( "Unable to load image [" + location + "]" );
+      result = getMissingImage( display );
     }
     return result;
   }
@@ -130,7 +162,8 @@ public class SwtSvgImageUtil {
   public static SwtUniversalImage getUniversalImage( Display display, ClassLoader classLoader, String filename ) {
 
     if ( StringUtils.isBlank( filename ) ) {
-      throw new RuntimeException( "Filename not provided" );
+      log.logError( "Unable to load image [" + filename + "]" );
+      return getImageAsResource( display, NO_IMAGE );
     }
 
     SwtUniversalImage result = null;
@@ -145,6 +178,7 @@ public class SwtSvgImageUtil {
 
     // if we can't load PNG, use default "no_image" graphic
     if ( result == null ) {
+      log.logError( "Unable to load image [" + filename + "]" );
       result = getImageAsResource( display, NO_IMAGE );
     }
     return result;

@@ -6343,7 +6343,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         continue;
       }
 
-      Image icon = hopMeta.isEnabled() ? guiResource.getImageHop() : guiResource.getImageDisabledHop();
+      Image icon = hopMeta.isEnabled() ? guiResource.getImageHopTree() : guiResource.getImageDisabledHopTree();
       createTreeItem( tiHopTitle, hopMeta.toString(), icon );
     }
   }

@@ -26,11 +26,11 @@
   
   
   <menupopup id="new-file-popup">
-    <menuitem label="${Spoon.Menubar.File.NewJob}" command="spoon.newJobFile()" image="${ChefIcon_image}"/>
-    <menuitem id="menubar-new-trans" label="${Spoon.Menubar.File.NewTrans}" command="spoon.newTransFile()" image="${SpoonIcon_image}"/>
+    <menuitem label="${Spoon.Menubar.File.NewJob}" command="spoon.newJobFile()" image="images/chefgraph.svg"/>
+    <menuitem id="menubar-new-trans" label="${Spoon.Menubar.File.NewTrans}" command="spoon.newTransFile()" image="images/spoongraph.svg"/>
     <menuseparator />
-    <menuitem label="${Spoon.Menubar.File.NewDatabaseConn}" command="spoon.newConnection()" image="${CNC_image}"/>
-    <menuitem label="${Spoon.Menubar.File.NewSlave}" command="spoon.newSlaveServer()" image="${Slave_image}"/>
+    <menuitem label="${Spoon.Menubar.File.NewDatabaseConn}" command="spoon.newConnection()" image="images/CNC.svg"/>
+    <menuitem label="${Spoon.Menubar.File.NewSlave}" command="spoon.newSlaveServer()" image="images/slave.svg"/>
   </menupopup>
   
   <deck flex="1" id="canvas-deck">
