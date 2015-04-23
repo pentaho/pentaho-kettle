@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,11 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.excelwriter;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
@@ -50,11 +55,6 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ExcelWriterStepMeta.class; // for i18n purposes, needed by Translator2!!
@@ -123,6 +123,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
   /** Flag: use a template */
   private boolean templateEnabled;
   private boolean templateSheetEnabled;
+  private boolean templateSheetHidden;
 
   /** the excel template */
   private String templateFileName;
@@ -546,6 +547,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     this.leaveExistingStylesUnchanged = leaveExistingStylesUnchanged;
   }
 
+  @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
@@ -554,6 +556,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     outputFields = new ExcelWriterStepField[nrfields];
   }
 
+  @Override
   public Object clone() {
     ExcelWriterStepMeta retval = (ExcelWriterStepMeta) super.clone();
     int nrfields = outputFields.length;
@@ -613,6 +616,8 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       templateEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "template", "enabled" ) );
       templateSheetEnabled =
         "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "template", "sheet_enabled" ) );
+      templateSheetHidden =
+        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "template", "hidden" ) );
       templateFileName = XMLHandler.getTagValue( stepnode, "template", "filename" );
       templateSheetName = XMLHandler.getTagValue( stepnode, "template", "sheetname" );
       sheetname = XMLHandler.getTagValue( stepnode, "file", "sheetname" );
@@ -660,6 +665,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     return nl;
   }
 
+  @Override
   public void setDefault() {
 
     autosizecolums = false;
@@ -679,6 +685,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     splitEvery = 0;
     templateEnabled = false;
     templateFileName = "template.xls";
+    templateSheetHidden = false;
     sheetname = "Sheet1";
     appendLines = false;
     ifFileExists = IF_FILE_EXISTS_CREATE_NEW;
@@ -767,6 +774,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     return retval;
   }
 
+  @Override
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) {
     if ( r == null ) {
@@ -776,6 +784,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     // No values are added to the row in this type of step
   }
 
+  @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 800 );
 
@@ -822,6 +831,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     retval.append( "      " ).append( XMLHandler.addTagValue( "sheet_enabled", templateSheetEnabled ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", templateFileName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "sheetname", templateSheetName ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "hidden", templateSheetHidden ) );
     retval.append( "    </template>" ).append( Const.CR );
 
     retval.append( "    <fields>" ).append( Const.CR );
@@ -849,6 +859,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     return retval.toString();
   }
 
+  @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       headerEnabled = rep.getStepAttributeBoolean( id_step, "header" );
@@ -891,6 +902,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       templateEnabled = rep.getStepAttributeBoolean( id_step, "template_enabled" );
       templateFileName = rep.getStepAttributeString( id_step, "template_filename" );
       templateSheetEnabled = rep.getStepAttributeBoolean( id_step, "template_sheet_enabled" );
+      templateSheetHidden = rep.getStepAttributeBoolean( id_step, "template_sheet_hidden" );
       templateSheetName = rep.getStepAttributeString( id_step, "template_sheetname" );
       sheetname = rep.getStepAttributeString( id_step, "sheetname" );
       ifFileExists = rep.getStepAttributeString( id_step, "if_file_exists" );
@@ -922,6 +934,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "header", headerEnabled );
@@ -957,6 +970,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
       rep.saveStepAttribute( id_transformation, id_step, "template_enabled", templateEnabled );
       rep.saveStepAttribute( id_transformation, id_step, "template_filename", templateFileName );
       rep.saveStepAttribute( id_transformation, id_step, "template_sheet_enabled", templateSheetEnabled );
+      rep.saveStepAttribute( id_transformation, id_step, "template_sheet_hidden", templateSheetHidden );
       rep.saveStepAttribute( id_transformation, id_step, "template_sheetname", templateSheetName );
       rep.saveStepAttribute( id_transformation, id_step, "sheetname", sheetname );
       rep.saveStepAttribute( id_transformation, id_step, "if_file_exists", ifFileExists );
@@ -983,6 +997,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     }
   }
 
+  @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
@@ -1050,6 +1065,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
    *
    * @return the filename of the exported resource
    */
+  @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
@@ -1076,15 +1092,18 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     return new ExcelWriterMetaInjection( this );
   }
 
+  @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
     TransMeta transMeta, Trans trans ) {
     return new ExcelWriterStep( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
+  @Override
   public StepDataInterface getStepData() {
     return new ExcelWriterStepData();
   }
 
+  @Override
   public String[] getUsedLibraries() {
     return new String[0];
   }
@@ -1104,5 +1123,12 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
     this.streamingData = streamingData;
   }
 
+  public boolean isTemplateSheetHidden() {
+    return templateSheetHidden;
+  }
+
+  public void setTemplateSheetHidden( boolean hide ) {
+    this.templateSheetHidden = hide;
+  }
 
 }
