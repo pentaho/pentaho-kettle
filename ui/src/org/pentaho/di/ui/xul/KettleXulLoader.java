@@ -36,7 +36,6 @@ import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.SwtUniversalImageSvg;
 import org.pentaho.di.core.svg.SvgImage;
 import org.pentaho.di.core.svg.SvgSupport;
-import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 
@@ -69,18 +68,30 @@ public class KettleXulLoader extends SwtXulLoader {
       resource = resource.substring( 0, resource.indexOf( ":" ) ) +
           resource.substring( resource.indexOf( "." ) );
     }
-    if ( SvgSupport.isSvgName( resource ) || SvgSupport.isPngName( resource ) ) {
+    if ( SvgSupport.isSvgEnabled() && ( SvgSupport.isSvgName( resource ) 
+        || SvgSupport.isPngName( resource ) ) ) {
+      InputStream in = null;
       try {
+        in = super.getResourceAsStream( SvgSupport.toSvgName( resource ) );
+        // load SVG
+        SvgImage svg = SvgSupport.loadSvgImage( in );
+        SwtUniversalImage image = new SwtUniversalImageSvg( svg );
+
         Display d = Display.getCurrent() != null ? Display.getCurrent() : Display.getDefault();
-        Image result = SwtSvgImageUtil.getImage( d, getClass().getClassLoader(), resource, width, height );
+        // write to png
+        Image result = image.getAsBitmapForSize( d, width, height );
         ImageLoader loader = new ImageLoader();
         loader.data = new ImageData[] { result.getImageData() };
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         loader.save( out, SWT.IMAGE_PNG );
-        result.dispose();
+
+        image.dispose();
+
         return new ByteArrayInputStream( out.toByteArray() );
       } catch ( Throwable ignored ) {
         // any exception will result in falling back to PNG
+      } finally {
+        IOUtils.closeQuietly( in );
       }
       resource = SvgSupport.toPngName( resource );
     }
