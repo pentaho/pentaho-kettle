@@ -1938,13 +1938,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         | SWT.BORDER | SWT.LEFT | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL );
     selectionFilter.setToolTipText( BaseMessages.getString( PKG, "Spoon.SelectionFilter.Tooltip" ) );
     FormData fdSelectionFilter = new FormData();
+    int offset = -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 5 );
     if ( Const.isLinux() ) {
-      fdSelectionFilter.top =
-        new FormAttachment( treeTb, -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 12 ) );
-    } else {
-      fdSelectionFilter.top =
-        new FormAttachment( treeTb, -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 5 ) );
+      if ( !Const.isKDE() ) {
+        offset = -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 12 );
+      }
     }
+    fdSelectionFilter.top = new FormAttachment( treeTb, offset );
     fdSelectionFilter.right = new FormAttachment( 95, -55 );
     fdSelectionFilter.left = new FormAttachment( selectionLabel, 10 );
     selectionFilter.setLayoutData( fdSelectionFilter );
