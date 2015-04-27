@@ -53,7 +53,8 @@ public class DefaultFieldLoadSaveValidatorFactory implements FieldLoadSaveValida
         new BooleanLoadSaveValidator() ) );
     registerValidator( Boolean[].class.getCanonicalName(), new ArrayLoadSaveValidator<Boolean>(
         new BooleanLoadSaveValidator() ) );
-
+    registerValidator( int[].class.getCanonicalName(), new PrimitiveIntArrayLoadSaveValidator(
+        new IntLoadSaveValidator() ) );
     registerValidator( Locale.class.getCanonicalName(), new LocaleLoadSaveValidator() );
   }
 

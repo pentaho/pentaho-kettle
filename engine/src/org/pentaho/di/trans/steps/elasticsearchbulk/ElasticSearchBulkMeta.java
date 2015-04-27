@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.elasticsearchbulk;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -221,6 +222,10 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
 
   public InetSocketTransportAddress[] getServers() {
     return servers.toArray( new InetSocketTransportAddress[servers.size()] );
+  }
+
+  public void setServers( InetSocketTransportAddress[] servers ) {
+    this.servers = Arrays.asList( servers );
   }
 
   public void clearServers() {
