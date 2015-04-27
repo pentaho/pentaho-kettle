@@ -52,10 +52,16 @@ public class RestData extends BaseStepData implements StepDataInterface {
   /** Headers **/
   public int[] indexOfHeaderFields;
   public String[] headerNames;
-  /** parameters **/
+
+  /** query parameters **/
   public int nrParams;
   public int[] indexOfParamFields;
   public String[] paramNames;
+
+  /** matrix parameters **/
+  public int nrMatrixParams;
+  public int[] indexOfMatrixParamFields;
+  public String[] matrixParamNames;
 
   /** proxy **/
   public String realProxyHost;
@@ -71,8 +77,11 @@ public class RestData extends BaseStepData implements StepDataInterface {
   /** Flag set headers **/
   public boolean useHeaders;
 
-  /** Flag set Parameters **/
+  /** Flag set Query Parameters **/
   public boolean useParams;
+
+  /** Flag set Matrix Parameters **/
+  public boolean useMatrixParams;
 
   /** Flag set body **/
   public boolean useBody;
@@ -103,6 +112,7 @@ public class RestData extends BaseStepData implements StepDataInterface {
     this.resultResponseFieldName = null;
     this.nrheader = 0;
     this.nrParams = 0;
+    this.nrMatrixParams = 0;
     this.method = null;
     this.indexOfBodyField = -1;
     this.indexOfMethod = -1;
