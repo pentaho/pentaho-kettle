@@ -1640,17 +1640,19 @@ public class JobDialog extends Dialog {
     return sharedObjectsFileChanged;
   }
 
-  public static final void setShellImage( Shell shell, JobEntryInterface jobEntryInterface ) {
+  public static final Button setShellImage( Shell shell, JobEntryInterface jobEntryInterface ) {
+    Button helpButton = null;
     try {
       final PluginInterface plugin = getPlugin( jobEntryInterface );
 
-      HelpUtils.createHelpButton( shell, HelpUtils.getHelpDialogTitle( plugin ), plugin );
+      helpButton = HelpUtils.createHelpButton( shell, HelpUtils.getHelpDialogTitle( plugin ), plugin );
 
       shell.setImage( getImage( shell, plugin ) );
 
     } catch ( Throwable e ) {
       // Ignore unexpected errors, not worth it
     }
+    return helpButton;
   }
 
   public static PluginInterface getPlugin( JobEntryInterface jobEntryInterface ) {
