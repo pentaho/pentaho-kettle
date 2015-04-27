@@ -66,10 +66,10 @@ public interface RepositorySecurityProvider extends IRepositoryService {
   /**
    * @return true if the repository supports revisions AND if it is possible to give version comments
    */
-  public boolean allowsVersionComments();
+  public boolean allowsVersionComments( String fullPath );
 
   /**
-   * @return true if version comments are allowed and mandatory.
+   * @return true if version comments are mandatory if allowed.
    */
   public boolean isVersionCommentMandatory();
 
@@ -94,10 +94,11 @@ public interface RepositorySecurityProvider extends IRepositoryService {
   public String[] getUserLogins() throws KettleException;
 
   /**
-   * Determines whether versioning should be enabled in the UI.  If set to false, the repository
-   * may still support versioning, but the versioning will not be apparent in the UI.
+   * Determines whether versioning should be enabled in the UI for the given fully qualified file/path.
+   * If set to false, the repository may still support versioning, but the versioning will not be
+   * apparent in the UI.
    * @return true if version are enabled, false if they if are not
    */
-  public boolean isVersioningEnabled();
+  public boolean isVersioningEnabled( String fullPath );
 
 }
