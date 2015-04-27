@@ -879,6 +879,8 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.cluster.SlaveSequenceTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.concatfields.ConcatFields_PDI_10856_Test" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.www.CarteTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.sftp.SFTPClientTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.sftp.JobEntrySFTPTest" haltonerror="false"/>
 
       <!-- Some extra things to run -->
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.copyfiles.CopyFilesTest"
