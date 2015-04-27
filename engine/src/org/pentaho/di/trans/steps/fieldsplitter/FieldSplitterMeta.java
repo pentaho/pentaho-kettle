@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -434,6 +434,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
       retval.append( "        " ).append( XMLHandler.addTagValue( "format", fieldFormat[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "group", fieldGroup[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "decimal", fieldDecimal[i] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "currency", fieldCurrency[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "length", fieldLength[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "precision", fieldPrecision[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "nullif", fieldNullIf[i] ) );
@@ -465,6 +466,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
         fieldFormat[i] = rep.getStepAttributeString( id_step, i, "field_format" );
         fieldGroup[i] = rep.getStepAttributeString( id_step, i, "field_group" );
         fieldDecimal[i] = rep.getStepAttributeString( id_step, i, "field_decimal" );
+        fieldCurrency[i] = rep.getStepAttributeString( id_step, i, "field_currency" );
         fieldLength[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_length" );
         fieldPrecision[i] = (int) rep.getStepAttributeInteger( id_step, i, "field_precision" );
         fieldNullIf[i] = rep.getStepAttributeString( id_step, i, "field_nullif" );
@@ -492,6 +494,7 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
         rep.saveStepAttribute( id_transformation, id_step, i, "field_format", fieldFormat[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_group", fieldGroup[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_decimal", fieldDecimal[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_currency", fieldCurrency[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_length", fieldLength[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", fieldPrecision[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_nullif", fieldNullIf[i] );
