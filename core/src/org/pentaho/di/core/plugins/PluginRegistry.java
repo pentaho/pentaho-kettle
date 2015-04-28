@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,9 +34,9 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -63,35 +63,39 @@ public class PluginRegistry {
 
   private static Class<?> PKG = PluginRegistry.class; // for i18n purposes, needed by Translator2!!
 
-  private static final PluginRegistry pluginRegistry = new PluginRegistry();
+  private Map<Class<? extends PluginTypeInterface>, List<PluginInterface>> pluginMap = 
+    new ConcurrentHashMap<Class<? extends PluginTypeInterface>, List<PluginInterface>>();
 
-  private Map<Class<? extends PluginTypeInterface>, List<PluginInterface>> pluginMap;
+  private Map<String, URLClassLoader> folderBasedClassLoaderMap = 
+    new ConcurrentHashMap<String, URLClassLoader>();
+  
+  private Map<Class<? extends PluginTypeInterface>, Map<PluginInterface, URLClassLoader>> classLoaderMap =
+    new ConcurrentHashMap<Class<? extends PluginTypeInterface>, Map<PluginInterface, URLClassLoader>>();
 
-  private Map<String, URLClassLoader> folderBasedClassLoaderMap = new HashMap<String, URLClassLoader>();
-  private Map<Class<? extends PluginTypeInterface>, Map<PluginInterface, URLClassLoader>> classLoaderMap;
+  private Map<String, URLClassLoader> classLoaderGroupsMap =
+    new ConcurrentHashMap<String, URLClassLoader>();
 
-  private Map<String, URLClassLoader> classLoaderGroupsMap;
+  private Map<Class<? extends PluginTypeInterface>, List<String>> categoryMap =
+    new ConcurrentHashMap<Class<? extends PluginTypeInterface>, List<String>>();  
 
-  private Map<Class<? extends PluginTypeInterface>, List<String>> categoryMap;
-
-  private Map<PluginInterface, String[]> parentClassloaderPatternMap = new HashMap<PluginInterface, String[]>();
+  private Map<PluginInterface, String[]> parentClassloaderPatternMap = 
+    new ConcurrentHashMap<PluginInterface, String[]>();
 
   private static List<PluginTypeInterface> pluginTypes = new ArrayList<PluginTypeInterface>();
 
   private Map<Class<? extends PluginTypeInterface>, List<PluginTypeListener>> listeners =
-    new HashMap<Class<? extends PluginTypeInterface>, List<PluginTypeListener>>();
+    new ConcurrentHashMap<Class<? extends PluginTypeInterface>, List<PluginTypeListener>>();
+  
   private static List<PluginRegistryExtension> extensions = new ArrayList<PluginRegistryExtension>();
 
   public static LogChannelInterface log = new LogChannel( "PluginRegistry", true );
 
+  private static final PluginRegistry pluginRegistry = new PluginRegistry();
+
   /**
-   * Initialize the registry, keep private to keep this a singleton
+   * Keep private to keep this a singleton
    */
   private PluginRegistry() {
-    pluginMap = new HashMap<Class<? extends PluginTypeInterface>, List<PluginInterface>>();
-    classLoaderMap = new HashMap<Class<? extends PluginTypeInterface>, Map<PluginInterface, URLClassLoader>>();
-    categoryMap = new HashMap<Class<? extends PluginTypeInterface>, List<String>>();
-    classLoaderGroupsMap = new HashMap<String, URLClassLoader>();
   }
 
   /**
@@ -438,7 +442,7 @@ public class PluginRegistry {
             // See if we can find a class loader to re-use.
             Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
             if ( classLoaders == null ) {
-              classLoaders = new HashMap<PluginInterface, URLClassLoader>();
+              classLoaders = new ConcurrentHashMap<PluginInterface, URLClassLoader>();
               classLoaderMap.put( plugin.getPluginType(), classLoaders );
             } else {
               ucl = classLoaders.get( plugin );
@@ -606,13 +610,13 @@ public class PluginRegistry {
             LogChannel.GENERAL.logBasic( "Plugin class "
               + className + " registered for plugin type '" + pluginType.getName() + "'" );
           } else {
-            if ( KettleLogStore.isInitialized() ) {
+            if ( KettleLogStore.isInitialized() && LogChannel.GENERAL.isDebug() ) {
               LogChannel.GENERAL.logDebug( "Plugin class "
                 + className + " doesn't contain annotation for plugin type '" + pluginType.getName() + "'" );
             }
           }
         } else {
-          if ( KettleLogStore.isInitialized() ) {
+          if ( KettleLogStore.isInitialized() && LogChannel.GENERAL.isDebug() ) {
             LogChannel.GENERAL.logDebug( "Plugin class "
               + className + " doesn't contain valid class for plugin type '" + pluginType.getName() + "'" );
           }
@@ -624,10 +628,11 @@ public class PluginRegistry {
         }
       }
     }
-
-    LogChannel.GENERAL.logDetailed( "Registered "
-      + getPlugins( pluginType.getClass() ).size() + " plugins of type '" + pluginType.getName() + "' in "
-      + ( System.currentTimeMillis() - startScan ) + "ms." );
+    if (LogChannel.GENERAL.isDetailed()) {
+      LogChannel.GENERAL.logDetailed( "Registered "
+          + getPlugins( pluginType.getClass() ).size() + " plugins of type '" + pluginType.getName() + "' in "
+          + ( System.currentTimeMillis() - startScan ) + "ms." );
+    }
 
   }
 
@@ -849,7 +854,7 @@ public class PluginRegistry {
         URLClassLoader ucl = null;
         Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
         if ( classLoaders == null ) {
-          classLoaders = new HashMap<PluginInterface, URLClassLoader>();
+          classLoaders = new ConcurrentHashMap<PluginInterface, URLClassLoader>();
           classLoaderMap.put( plugin.getPluginType(), classLoaders );
         } else {
           ucl = classLoaders.get( plugin );
@@ -930,7 +935,7 @@ public class PluginRegistry {
           // See if we can find a class loader to re-use.
           Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
           if ( classLoaders == null ) {
-            classLoaders = new HashMap<PluginInterface, URLClassLoader>();
+            classLoaders = new ConcurrentHashMap<PluginInterface, URLClassLoader>();
             classLoaderMap.put( plugin.getPluginType(), classLoaders );
           } else {
             ucl = classLoaders.get( plugin );
@@ -1004,7 +1009,7 @@ public class PluginRegistry {
   public void addClassLoader( URLClassLoader ucl, PluginInterface plugin ) {
     Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
     if ( classLoaders == null ) {
-      classLoaders = new HashMap<PluginInterface, URLClassLoader>();
+      classLoaders = new ConcurrentHashMap<PluginInterface, URLClassLoader>();
       classLoaderMap.put( plugin.getPluginType(), classLoaders );
     }
     classLoaders.put( plugin, ucl );
