@@ -52,7 +52,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 public class TextVar extends Composite {
   private static Class<?> PKG = TextVar.class; // for i18n purposes, needed by Translator2!!
 
-  private String toolTipText;
+  protected String toolTipText;
 
   // private static final PropsUI props = PropsUI.getInstance();
 
@@ -64,7 +64,7 @@ public class TextVar extends Composite {
 
   private ControlSpaceKeyAdapter controlSpaceKeyAdapter;
 
-  private VariableSpace variables;
+  protected VariableSpace variables;
 
   private Text wText;
 
@@ -153,7 +153,7 @@ public class TextVar extends Composite {
     this.insertTextInterface = insertTextInterface;
   }
 
-  private ModifyListener getModifyListenerTooltipText( final Text textField ) {
+  protected ModifyListener getModifyListenerTooltipText( final Text textField ) {
     return new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         if ( textField.getEchoChar() == '\0' ) { // Can't show passwords ;-)

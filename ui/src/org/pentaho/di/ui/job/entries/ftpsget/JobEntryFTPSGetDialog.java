@@ -54,7 +54,6 @@ import org.pentaho.di.job.entries.ftpsget.JobEntryFTPSGet;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
@@ -382,8 +381,9 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 
     // Password line
     wPassword =
-      new LabelTextVar(
-        jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.Password.Label" ), "Mot de passe" );
+      new LabelTextVar( jobMeta, wServerSettings,
+        BaseMessages.getString( PKG, "JobFTPS.Password.Label" ),
+        BaseMessages.getString( PKG, "JobFTPS.Password.Tooltip" ), true );
     props.setLook( wPassword );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
@@ -391,12 +391,6 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
-
-    wPassword.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
-      }
-    } );
 
     // Proxy host line
     wProxyHost =
@@ -441,7 +435,7 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     wProxyPassword =
       new LabelTextVar(
         jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPS.ProxyPassword.Label" ), BaseMessages
-          .getString( PKG, "JobFTPS.ProxyPassword.Tooltip" ) );
+          .getString( PKG, "JobFTPS.ProxyPassword.Tooltip" ), true );
     props.setLook( wProxyPassword );
     wProxyPassword.addModifyListener( lsMod );
     fdProxyPasswd = new FormData();
@@ -449,12 +443,6 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
     fdProxyPasswd.top = new FormAttachment( wProxyUsername, margin );
     fdProxyPasswd.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPasswd );
-
-    wProxyPassword.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wProxyPassword.getTextWidget() );
-      }
-    } );
 
     wlConnectionType = new Label( wServerSettings, SWT.RIGHT );
     wlConnectionType.setText( BaseMessages.getString( PKG, "JobFTPS.ConnectionType.Label" ) );

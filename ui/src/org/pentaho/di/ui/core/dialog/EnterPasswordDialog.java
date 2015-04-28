@@ -128,9 +128,8 @@ public class EnterPasswordDialog extends Dialog {
     fdlDesc.left = new FormAttachment( 0, 0 );
     fdlDesc.top = new FormAttachment( 0, margin );
     wlDesc.setLayoutData( fdlDesc );
-    wDesc = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wDesc = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.PASSWORD );
     wDesc.setText( "" );
-    wDesc.setEchoChar( '*' );
     props.setLook( wDesc );
     fdDesc = new FormData();
     fdDesc.left = new FormAttachment( 0, 0 );
