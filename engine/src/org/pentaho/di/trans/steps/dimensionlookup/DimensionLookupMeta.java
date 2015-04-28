@@ -22,10 +22,6 @@
 
 package org.pentaho.di.trans.steps.dimensionlookup;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -51,11 +47,16 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Matt
@@ -1860,5 +1861,14 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
       extraFields = db.getTableFields( schemaTable );
     }
     return extraFields;
+  }
+
+  @Override
+  public DimensionLookupMetaInjection getStepMetaInjectionInterface() {
+    return new DimensionLookupMetaInjection( this );
+  }
+
+  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
+    return getStepMetaInjectionInterface().extractStepMetadataEntries();
   }
 }
