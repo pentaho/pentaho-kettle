@@ -2759,12 +2759,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @param use_autoinc true if we need to use auto-increment fields for a primary key
    * @param pk          the name of the primary/technical key field
    * @param semicolon   append semicolon to the statement
-   * @param pkc         primary key composite ( name of the key fields)
    * @return the SQL needed to create the specified table and fields.
    */
   public String getCreateTableStatement( String tableName, RowMetaInterface fields, String tk,
                                          boolean use_autoinc, String pk, boolean semicolon ) {
-    StringBuilder retval = new StringBuilder( "CREATE TABLE " );
+    StringBuilder retval = new StringBuilder( databaseMeta.getCreateTableStatement() );
 
     retval.append( tableName + Const.CR );
     retval.append( "(" ).append( Const.CR );
