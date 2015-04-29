@@ -54,4 +54,9 @@ public class BaseDatabaseMetaTest {
     assertNull( baseDatabaseMeta.customizeValueFromSQLType( mock( ValueMetaInterface.class ),
         mock( ResultSetMetaData.class ), 1 ) );
   }
+
+  @Test
+  public void testGetCreateTableStatement() throws Exception {
+    assertEquals( "CREATE TABLE ", baseDatabaseMeta.getCreateTableStatement() );
+  }
 }

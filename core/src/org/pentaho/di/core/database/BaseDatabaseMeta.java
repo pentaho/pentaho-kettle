@@ -2236,4 +2236,14 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
     throws SQLException {
     return null;
   }
+
+  /**
+   * Customizes the ValueMetaInterface defined in the base
+   *
+   * @return String the create table statement
+   */
+  @Override
+  public String getCreateTableStatement() {
+    return "CREATE TABLE ";
+  }
 }

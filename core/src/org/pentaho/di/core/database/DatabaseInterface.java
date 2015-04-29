@@ -1152,9 +1152,17 @@ public interface DatabaseInterface extends Cloneable {
    * Customizes the ValueMetaInterface defined in the base
    *
    * @param v the determined valueMetaInterface
-   * @param valueType the sql column type
+   * @param rm the sql column type
    * @return ValueMetaInterface customized with the data base specific types
    */
   public ValueMetaInterface customizeValueFromSQLType( ValueMetaInterface v, java.sql.ResultSetMetaData rm, int index )
     throws SQLException;
+
+  /**
+   * Customizes the ValueMetaInterface defined in the base
+   *
+   * @return String the create table statement
+   */
+
+  public String getCreateTableStatement();
 }
