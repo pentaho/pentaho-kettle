@@ -881,6 +881,8 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.www.CarteTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.sftp.SFTPClientTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.sftp.JobEntrySFTPTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.ftpsget.FTPSConnectionTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.ftpsget.JobEntryFTPSGetTest" haltonerror="false"/>
 
       <!-- Some extra things to run -->
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.copyfiles.CopyFilesTest"
