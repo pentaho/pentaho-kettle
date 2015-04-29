@@ -2432,6 +2432,14 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         setCurrentStep( stepMeta );
 
         XulMenupopup menu = menuMap.get( "trans-graph-entry" );
+
+        try {
+          ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.TransStepRightClick.id,
+            new StepMenuExtension( this, menu ) );
+        } catch ( Exception ex ) {
+          LogChannel.GENERAL.logError( "Error calling TransStepRightClick extension point", ex );
+        }
+
         if ( menu != null ) {
           List<StepMeta> selection = transMeta.getSelectedSteps();
           int sels = selection.size();
