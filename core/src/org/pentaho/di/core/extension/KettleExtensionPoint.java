@@ -45,6 +45,7 @@ public enum KettleExtensionPoint {
     TransBeforeClose( "TransBeforeClose", "A transformation file is about to be closed" ),
     TransAfterClose( "TransAfterClose", "A transformation file was closed" ),
     TransChanged( "TransChanged", "A transformation has been changed" ),
+    TransStepRightClick( "TransStepRightClick", "A right button was clicked on a step" ),
     TransGraphMouseDoubleClick( "TransGraphMouseDoubleClick",
       "A left or right button was double-clicked in a transformation" ),
     SpoonTransMetaExecutionStart( "SpoonTransMetaExecutionStart",
@@ -99,9 +100,7 @@ public enum KettleExtensionPoint {
     CarteShutdown( "CarteShutdown", "Right before the Carte webserver will shut down" ),
 
     SpoonViewTreeExtension ( "SpoonViewTreeExtension" , "View tree spoon extension" ),
-
     SpoonPopupMenuExtension ( "SpoonPopupMenuExtension" , "Pop up menu extension for the view tree" ),
-
     SpoonTreeDelegateExtension ( "SpoonTreeDelegateExtension" , "During the SpoonTreeDelegate execution" );
 
   public String id;
