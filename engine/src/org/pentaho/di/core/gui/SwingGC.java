@@ -52,6 +52,7 @@ import org.pentaho.di.core.SwingUniversalImageSvg;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.svg.SvgImage;
 import org.pentaho.di.core.svg.SvgSupport;
+import org.pentaho.di.core.util.SwingSvgImageUtil;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.trans.step.StepMeta;
@@ -335,6 +336,12 @@ public class SwingGC implements GCInterface {
 
   public void drawLine( int x, int y, int x2, int y2 ) {
     gc.drawLine( x + xOffset, y + yOffset, x2 + xOffset, y2 + yOffset );
+  }
+
+  @Override
+  public void drawImage( String location, ClassLoader classLoader, int x, int y ) {
+    SwingUniversalImage img = SwingSvgImageUtil.getUniversalImage( classLoader, location );
+    drawImage( img, x, y, small_icon_size  );
   }
 
   @Override
