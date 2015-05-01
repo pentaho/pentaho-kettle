@@ -178,6 +178,7 @@ public class TableView extends Composite {
 
   private boolean showingBlueNullValues;
   private boolean showingConversionErrorsInline;
+  private boolean isTextButton = false;
 
   public TableView( VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows,
     ModifyListener lsm, PropsUI pr ) {
@@ -488,27 +489,49 @@ public class TableView extends Composite {
 
     lsFocusText = new FocusAdapter() {
       public void focusLost( FocusEvent e ) {
+        final Display d = Display.getCurrent();
+
         if ( table.isDisposed() ) {
           return;
         }
-        TableItem row = activeTableItem;
+        final TableItem row = activeTableItem;
         if ( row == null ) {
           return;
         }
-        int colnr = activeTableColumn;
-        int rownr = table.indexOf( row );
+        final int colnr = activeTableColumn;
+        final int rownr = table.indexOf( row );
+        final Control ftext = text;
+
+        final String[] fBeforeEdit = beforeEdit;
 
         // Save the position of the caret for the focus-dropping popup-dialogs
         // The content is then in contentDestination
         textWidgetCaretPosition = getTextWidgetCaretPosition( colnr );
 
-        if ( !row.isDisposed() ) {
-          row.setText( colnr, getTextWidgetValue( colnr ) );
-        }
-        text.dispose();
+        final String value = getTextWidgetValue( colnr );
 
-        String[] afterEdit = getItemText( row );
-        checkChanged( new String[][] { beforeEdit }, new String[][] { afterEdit }, new int[] { rownr } );
+        Runnable r = new Runnable() {
+          public void run() {
+            try {
+              Thread.sleep( 250 );
+            } catch ( InterruptedException ignored ) {
+            }
+            d.asyncExec( new Runnable() {
+              public void run() {
+
+                if ( !row.isDisposed() ) {
+                  row.setText( colnr, value );
+                }
+                ftext.dispose();
+
+                String[] afterEdit = getItemText( row );
+                checkChanged( new String[][] { fBeforeEdit }, new String[][] { afterEdit }, new int[] { rownr } );
+              }
+            });
+          }
+        };
+        Thread t = new Thread(r);
+        t.start();
       }
     };
     lsFocusCombo = new FocusAdapter() {
@@ -1908,7 +1931,8 @@ public class TableView extends Composite {
 
     switch ( columns[colnr - 1].getType() ) {
       case ColumnInfo.COLUMN_TYPE_TEXT:
-        editText( row, rownr, colnr, selectText, extra );
+        isTextButton = false;
+        editText( row, rownr, colnr, selectText, extra, columns[colnr - 1] );
         break;
       case ColumnInfo.COLUMN_TYPE_CCOMBO:
       case ColumnInfo.COLUMN_TYPE_FORMAT:
@@ -1916,6 +1940,10 @@ public class TableView extends Composite {
         break;
       case ColumnInfo.COLUMN_TYPE_BUTTON:
         editButton( row, rownr, colnr );
+        break;
+      case ColumnInfo.COLUMN_TYPE_TEXT_BUTTON:
+        isTextButton = true;
+        editText( row, rownr, colnr, selectText, extra, columns[colnr - 1] );
         break;
       default:
         break;
@@ -1935,7 +1963,8 @@ public class TableView extends Composite {
     return retval;
   }
 
-  private void editText( TableItem row, final int rownr, final int colnr, boolean selectText, char extra ) {
+  private void editText( TableItem row, final int rownr, final int colnr, boolean selectText, char extra,
+      ColumnInfo columnInfo ) {
     beforeEdit = getItemText( row );
     fieldChanged = false;
 
@@ -2003,10 +2032,13 @@ public class TableView extends Composite {
       final TextVar textWidget;
       if ( passwordField ) {
         textWidget = new PasswordTextVar( variables, table, SWT.NONE, getCaretPositionInterface, insertTextInterface );
+      } else if ( isTextButton ) {
+        textWidget =
+            new TextVarButton( variables, table, SWT.NONE, getCaretPositionInterface, insertTextInterface,
+                columnInfo.getTextVarButtonSelectionListener() );
       } else {
         textWidget = new TextVar( variables, table, SWT.NONE, getCaretPositionInterface, insertTextInterface );
       }
-        
 
       text = textWidget;
       textWidget.setText( content );
@@ -3036,4 +3068,13 @@ public class TableView extends Composite {
   public ColumnInfo[] getColumns() {
     return Arrays.copyOf( columns, columns.length );
   }
+  
+  public TableItem getActiveTableItem() {
+    return activeTableItem;
+  }
+
+  public int getActiveTableColumn() {
+    return activeTableColumn;
+  }
+  
 }
