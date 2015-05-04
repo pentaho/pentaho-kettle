@@ -183,7 +183,10 @@ public class PropsUI extends Props {
     List<GUIOption<Object>> leditables = new ArrayList<GUIOption<Object>>();
     for ( PluginInterface plugin : plugins ) {
       try {
-        leditables.add( registry.loadClass( plugin, GUIOption.class ) );
+        GUIOption<Object> loaded = registry.loadClass( plugin, GUIOption.class );
+        if ( loaded != null ) {
+          leditables.add( loaded );
+        }
       } catch ( Exception e ) {
         LogChannel.GENERAL.logError( "Unexpected error loading class for plugin " + plugin.getName(), e );
       }
