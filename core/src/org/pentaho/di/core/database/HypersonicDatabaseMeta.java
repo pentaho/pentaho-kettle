@@ -269,6 +269,11 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
     return "SELECT * FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = '" + sequenceName + "'";
   }
 
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT SEQUENCE_NAME FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES";
+  }
+
   /**
    * Get the current value of a database sequence
    * 

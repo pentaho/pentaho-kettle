@@ -300,6 +300,16 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     return true;
   }
 
+  @Override
+  public String getSQLSequenceExists( String sequenceName ) {
+    return "SELECT sequence_name FROM sequences WHERE sequence_name = '" + sequenceName + "'";
+  }
+
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT sequence_name FROM sequences";
+  }
+
   /**
    * Get the SQL to get the next value of a sequence. (Vertica version)
    *

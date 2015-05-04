@@ -182,6 +182,11 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     return "SELECT seqname AS sequence_name from _v_sequence where seqname = '" + sequenceName.toLowerCase() + "'";
   }
 
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT seqname AS sequence_name from _v_sequence";
+  }
+
   /**
    * Generates the SQL statement to add a column to the specified table Note: Netezza does not allow adding columns to
    * tables
