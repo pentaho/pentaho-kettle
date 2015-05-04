@@ -42,6 +42,8 @@ public class SequenceMetaTests {
       new GreenplumDatabaseMeta(),
       new HypersonicDatabaseMeta(),
       new KingbaseESDatabaseMeta(),
+      new MSSQLServerDatabaseMeta(),
+      new MSSQLServerNativeDatabaseMeta(),
       new NetezzaDatabaseMeta(),
       new OracleDatabaseMeta(),
       new OracleRDBDatabaseMeta(),
@@ -73,8 +75,6 @@ public class SequenceMetaTests {
       new MondrianNativeDatabaseMeta(),
       new MonetDBDatabaseMeta(),
       new MSAccessDatabaseMeta(),
-      new MSSQLServerDatabaseMeta(),
-      new MSSQLServerNativeDatabaseMeta(),
       new MySQLDatabaseMeta(),
       new NeoviewDatabaseMeta(),
       new RemedyActionRequestSystemDatabaseMeta(),
@@ -178,6 +178,24 @@ public class SequenceMetaTests {
     assertEquals( "SELECT nextval('sequence_name')", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "SELECT currval('sequence_name')", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 
+    databaseInterface = new MSSQLServerDatabaseMeta();
+    assertEquals( "SELECT NEXT VALUE FOR sequence_name",
+      databaseInterface.getSQLNextSequenceValue( sequenceName ) );
+    assertEquals( "SELECT current_value FROM sys.sequences WHERE name = 'sequence_name'",
+      databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
+    assertEquals( "SELECT name FROM sys.sequences", databaseInterface.getSQLListOfSequences() );
+    assertEquals( "SELECT * FROM sys.sequences WHERE name = 'sequence_name'",
+      databaseInterface.getSQLSequenceExists( sequenceName ) );
+
+    databaseInterface = new MSSQLServerNativeDatabaseMeta();
+    assertEquals( "SELECT NEXT VALUE FOR sequence_name",
+      databaseInterface.getSQLNextSequenceValue( sequenceName ) );
+    assertEquals( "SELECT current_value FROM sys.sequences WHERE name = 'sequence_name'",
+      databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
+    assertEquals( "SELECT name FROM sys.sequences", databaseInterface.getSQLListOfSequences() );
+    assertEquals( "SELECT * FROM sys.sequences WHERE name = 'sequence_name'",
+      databaseInterface.getSQLSequenceExists( sequenceName ) );
+
     databaseInterface = new NetezzaDatabaseMeta();
     assertEquals( "select next value for sequence_name", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "select last_value from sequence_name", databaseInterface
@@ -246,14 +264,6 @@ public class SequenceMetaTests {
     assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 
     databaseInterface = new MSAccessDatabaseMeta();
-    assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
-
-    databaseInterface = new MSSQLServerDatabaseMeta();
-    assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
-    assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
-
-    databaseInterface = new MSSQLServerNativeDatabaseMeta();
     assertEquals( "", databaseInterface.getSQLNextSequenceValue( sequenceName ) );
     assertEquals( "", databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
 
