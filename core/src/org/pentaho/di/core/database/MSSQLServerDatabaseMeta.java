@@ -467,6 +467,31 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
     return "insert into " + schemaTable + "(" + versionField + ") values (1)";
   }
 
+  @Override
+  public String getSQLNextSequenceValue( String sequenceName ) {
+    return String.format( "SELECT NEXT VALUE FOR %s", sequenceName );
+  }
+
+  @Override
+  public String getSQLCurrentSequenceValue( String sequenceName ) {
+    return String.format( "SELECT current_value FROM sys.sequences WHERE name = '%s'", sequenceName );
+  }
+
+  @Override
+  public String getSQLSequenceExists( String sequenceName ) {
+    return String.format( "SELECT * FROM sys.sequences WHERE name = '%s'", sequenceName );
+  }
+
+  @Override
+  public boolean supportsSequences() {
+    return true;
+  }
+
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT name FROM sys.sequences";
+  }
+
   /**
    * @param string
    * @return A string that is properly quoted for use in an Oracle SQL statement (insert, update, delete, etc)
