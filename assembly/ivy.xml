@@ -62,8 +62,8 @@
     <dependency org="pentaho" name="pdi-teradata-tpt-plugin-package" rev="${dependency.pdi-teradata-tpt-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
       <artifact name="pdi-teradata-tpt-plugin-package" type="zip"/>
     </dependency>
-    <dependency org="pentaho" name="pdi-baserver-utils" rev="${dependency.pdi-baserver-utils.revision}" changing="true" transitive="false" conf="plugins->default">
-      <artifact name="pdi-baserver-utils" type="zip"/>
+    <dependency org="pentaho" name="pdi-platformr-utils-plugin" rev="${dependency.pdi-platformr-utils-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
+      <artifact name="pdi-platformr-utils-plugin" type="zip"/>
     </dependency>
 	
     <!--  Pentaho reporting dependencies -->
