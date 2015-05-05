@@ -70,6 +70,6 @@ public class UIJob extends UIRepositoryContent {
   
   @Override
   public String getImage() {
-    return "ui/images/job_tree.svg";
+    return "ui/images/jobrepo.svg";
   }  
 }
