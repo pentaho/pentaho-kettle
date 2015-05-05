@@ -83,6 +83,9 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
 
   protected static final String[] FILETYPES = new String[] { BaseMessages.getString(
     PKG, "JobCopyFiles.Filetype.All" ) };
+  
+  public static final String LOCAL_ENVIRONMENT = "Local"; 
+  public static final String STATIC_ENVIRONMENT = "<Static>";
 
   private Label wlName;
   protected Text wName;
@@ -233,8 +236,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     // ///////////////////////////////////////////////////////////
     
     wFilesTab = new CTabItem( wTabFolder, SWT.NONE );
-//    wFilesTab.setText( BaseMessages.getString( PKG, "JobCopyFiles.Tab.Files.Label" ) );
-    wFilesTab.setText( "Files" );
+    wFilesTab.setText( BaseMessages.getString( PKG, "JobCopyFiles.Tab.Files.Label" ) );
 
     wFilesComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wFilesComp );
@@ -510,26 +512,32 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
-      new ColumnInfo[] {
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "JobCopyFiles.Fields.SourceFileFolder.Label" ),
-          ColumnInfo.COLUMN_TYPE_TEXT_BUTTON, false ),
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "JobCopyFiles.Fields.DestinationFileFolder.Label" ),
-          ColumnInfo.COLUMN_TYPE_TEXT_BUTTON, false ),
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "JobCopyFiles.Fields.Wildcard.Label" ), ColumnInfo.COLUMN_TYPE_TEXT,
-          false ), };
-
-    colinf[0].setUsingVariables( true );
-    colinf[0].setToolTip( BaseMessages.getString( PKG, "JobCopyFiles.Fields.SourceFileFolder.Tooltip" ) );
+        new ColumnInfo[] {
+          new ColumnInfo( BaseMessages.getString( PKG, "JobCopyFiles.Fields.SourceEnvironment.Label" ),
+              ColumnInfo.COLUMN_TYPE_CCOMBO, false, true ),
+          new ColumnInfo( BaseMessages.getString( PKG, "JobCopyFiles.Fields.SourceFileFolder.Label" ),
+              ColumnInfo.COLUMN_TYPE_TEXT_BUTTON, false ),
+          new ColumnInfo( BaseMessages.getString( PKG, "JobCopyFiles.Fields.Wildcard.Label" ),
+              ColumnInfo.COLUMN_TYPE_TEXT, false ),
+          new ColumnInfo( BaseMessages.getString( PKG, "JobCopyFiles.Fields.DestinationEnvironment.Label" ),
+              ColumnInfo.COLUMN_TYPE_CCOMBO, false, true ),
+          new ColumnInfo( BaseMessages.getString( PKG, "JobCopyFiles.Fields.DestinationFileFolder.Label" ),
+              ColumnInfo.COLUMN_TYPE_TEXT_BUTTON, false ) };
+    
+    setComboValues( colinf[0] );
+    
     colinf[1].setUsingVariables( true );
-    colinf[1].setToolTip( BaseMessages.getString( PKG, "JobCopyFiles.Fields.DestinationFileFolder.Tooltip" ) );
+    colinf[1].setToolTip( BaseMessages.getString( PKG, "JobCopyFiles.Fields.SourceFileFolder.Tooltip" ) );
+    colinf[1].setTextVarButtonSelectionListener( getFileSelectionAdapter() );
+
     colinf[2].setUsingVariables( true );
     colinf[2].setToolTip( BaseMessages.getString( PKG, "JobCopyFiles.Fields.Wildcard.Tooltip" ) );
 
-    colinf[0].setTextVarButtonSelectionListener( getFileSelectionAdapter() );
-    colinf[1].setTextVarButtonSelectionListener( getFileSelectionAdapter() );
+    setComboValues( colinf[3] );
+    
+    colinf[4].setUsingVariables( true );
+    colinf[4].setToolTip( BaseMessages.getString( PKG, "JobCopyFiles.Fields.DestinationFileFolder.Tooltip" ) );
+    colinf[4].setTextVarButtonSelectionListener( getFileSelectionAdapter() );
     
     wFields =
       new TableView(
@@ -698,11 +706,11 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
         if ( jobEntry.source_filefolder[i] != null ) {
           ti.setText( 1, jobEntry.source_filefolder[i] );
         }
-        if ( jobEntry.destination_filefolder[i] != null ) {
-          ti.setText( 2, jobEntry.destination_filefolder[i] );
-        }
         if ( jobEntry.wildcard[i] != null ) {
-          ti.setText( 3, jobEntry.wildcard[i] );
+          ti.setText( 2, jobEntry.wildcard[i] );
+        }
+        if ( jobEntry.destination_filefolder[i] != null ) {
+          ti.setText( 4, jobEntry.destination_filefolder[i] );
         }
       }
       wFields.setRowNums();
@@ -788,4 +796,8 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     return true;
   }
   
+  protected void setComboValues( ColumnInfo colInfo ) {
+    String[] values = { LOCAL_ENVIRONMENT , STATIC_ENVIRONMENT };
+    colInfo.setComboValues( values );
+  }
 }
