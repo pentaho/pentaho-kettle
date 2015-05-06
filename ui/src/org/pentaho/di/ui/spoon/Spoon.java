@@ -8304,6 +8304,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
     }
 
+    transMeta.setChanged();
     refreshTree();
     refreshGraph();
   }
