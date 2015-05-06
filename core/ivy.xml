@@ -63,5 +63,7 @@
 
     <dependency org="xml-apis" name="xml-apis-ext" rev="${dependency.xml-apis-ext.revision}" transitive="false"/>
 
+    <dependency org="org.apache.karaf" name="org.apache.karaf.main" rev="2.3.5" transitive="false"/>
+
   </dependencies>
 </ivy-module>
