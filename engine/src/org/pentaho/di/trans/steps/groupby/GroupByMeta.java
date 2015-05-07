@@ -728,4 +728,8 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     return new GroupByMetaInjection( this );
   }
 
+  @Override
+  public TransMeta.TransformationType[] getSupportedTransformationTypes() {
+    return new TransMeta.TransformationType[] { TransMeta.TransformationType.Normal };
+  }
 }
