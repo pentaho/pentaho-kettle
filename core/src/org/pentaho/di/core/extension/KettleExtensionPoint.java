@@ -101,7 +101,10 @@ public enum KettleExtensionPoint {
 
     SpoonViewTreeExtension ( "SpoonViewTreeExtension" , "View tree spoon extension" ),
     SpoonPopupMenuExtension ( "SpoonPopupMenuExtension" , "Pop up menu extension for the view tree" ),
-    SpoonTreeDelegateExtension ( "SpoonTreeDelegateExtension" , "During the SpoonTreeDelegate execution" );
+    SpoonTreeDelegateExtension ( "SpoonTreeDelegateExtension" , "During the SpoonTreeDelegate execution" ),
+
+    AfterDeleteRepositoryObject( "AfterDeleteRepositoryObject",
+      "After an object has been deleted from the repository" );
 
   public String id;
 
