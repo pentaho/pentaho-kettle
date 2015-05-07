@@ -20,33 +20,49 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans;
+package org.pentaho.test.util;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.trans.SingleThreadedTransExecutor;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.stepsmetrics.StepsMetricsMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 
+import static org.junit.Assert.assertNotNull;
 
-public class SingleThreadedTransExecutorTest {
+/**
+ * This is a base class for creating guard tests, that check a step cannot be executed in the single-threaded mode
+ *
+ * @author Andrey Khayrutdinov
+ */
+public abstract class SingleThreadedExecutionGuarder<Meta extends StepMetaInterface> {
+
+  @BeforeClass
+  public static void setUp() throws Exception {
+    KettleEnvironment.init();
+  }
+
+  protected abstract Meta createMeta();
 
   @Test( expected = KettleException.class )
   public void failsWhenGivenNonSingleThreadSteps() throws Exception {
-    KettleEnvironment.init();
-
-    TransMeta transMeta = new TransMeta();
-    transMeta.setName( "failsWhenGivenNonSingleThreadSteps" );
-
-    StepsMetricsMeta metaInterface = new StepsMetricsMeta();
+    Meta metaInterface = createMeta();
 
     PluginRegistry plugReg = PluginRegistry.getInstance();
     String id = plugReg.getPluginId( StepPluginType.class, metaInterface );
+    assertNotNull( "pluginId", id );
 
     StepMeta stepMeta = new StepMeta( id, "stepMetrics", metaInterface );
     stepMeta.setDraw( true );
+
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "failsWhenGivenNonSingleThreadSteps" );
     transMeta.addStep( stepMeta );
 
     Trans trans = new Trans( transMeta );
