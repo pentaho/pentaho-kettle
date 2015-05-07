@@ -513,19 +513,22 @@ public class TableView extends Composite {
         Runnable r = new Runnable() {
           public void run() {
             try {
-              Thread.sleep( 250 );
+              Thread.sleep( 500 );
             } catch ( InterruptedException ignored ) {
             }
             d.asyncExec( new Runnable() {
               public void run() {
-
-                if ( !row.isDisposed() ) {
-                  row.setText( colnr, value );
+                try {
+                  if ( !row.isDisposed() ) {
+                    row.setText( colnr, value );
+                  }
+                  ftext.dispose();
+  
+                  String[] afterEdit = getItemText( row );
+                  checkChanged( new String[][] { fBeforeEdit }, new String[][] { afterEdit }, new int[] { rownr } );
+                } catch ( Exception ignored ) {
+                  // widget is disposed, ignore
                 }
-                ftext.dispose();
-
-                String[] afterEdit = getItemText( row );
-                checkChanged( new String[][] { fBeforeEdit }, new String[][] { afterEdit }, new int[] { rownr } );
               }
             });
           }
