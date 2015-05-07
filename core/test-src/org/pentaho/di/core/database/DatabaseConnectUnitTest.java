@@ -32,6 +32,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactoryBuilder;
 import javax.naming.spi.NamingManager;
+import javax.sql.DataSource;
 
 import junit.framework.Assert;
 
@@ -57,7 +58,8 @@ public class DatabaseConnectUnitTest {
   public static void beforeClass() throws NamingException {
     if ( !NamingManager.hasInitialContextFactoryBuilder() ) {
       // If JNDI is not initialized, use simpleJNDI
-      System.setProperty( Context.INITIAL_CONTEXT_FACTORY, "org.osjava.jndi.PropertiesFactory" );
+      System.setProperty( Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory" );// pentaho#simple-jndi;1.0.0
+      System.setProperty( "org.osjava.sj.jndi.shared", "true" );
       InitialContextFactoryBuilder simpleBuilder = new SimpleNamingContextBuilder();
       NamingManager.setInitialContextFactoryBuilder( simpleBuilder );
     }
@@ -70,7 +72,7 @@ public class DatabaseConnectUnitTest {
   }
 
   @Test
-  public void testConnect2() throws SQLException, NamingException, KettleDatabaseException {
+  public void testConnect() throws SQLException, NamingException, KettleDatabaseException {
     InitialContext ctx = new InitialContext();
 
     DatabaseMeta meta = Mockito.mock( DatabaseMeta.class );
@@ -81,7 +83,10 @@ public class DatabaseConnectUnitTest {
     Mockito.when( meta.environmentSubstitute( jndiName ) ).thenReturn( jndiName );
 
     Connection connection = mock( Connection.class );
-    TestDataSource ds = new TestDataSource( connection );
+
+    DataSource ds = Mockito.mock( DataSource.class );
+    Mockito.when( ds.getConnection() ).thenReturn( connection );
+
     ctx.bind( fullJndiName, ds );
 
     Database db = new Database( log, meta );
