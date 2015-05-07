@@ -163,7 +163,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   private int nrExecutedCommits;
 
-  private static List<ValueMetaInterface> valueMetaPluginClasses;
+  private static final Object syncValueMetaPluginClasses = new Object();
+  private volatile static List<ValueMetaInterface> valueMetaPluginClasses;
 
   /**
    * Construct a new Database Connection
@@ -2241,18 +2242,24 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     // Some housekeeping stuff...
     //
     if ( valueMetaPluginClasses == null ) {
-      try {
-        valueMetaPluginClasses = ValueMetaFactory.getValueMetaPluginClasses();
-        Collections.sort( valueMetaPluginClasses, new Comparator<ValueMetaInterface>() {
-          @Override
-          public int compare( ValueMetaInterface o1, ValueMetaInterface o2 ) {
-            // Reverse the sort list
-            return ( Integer.valueOf( o1.getType() ).compareTo( Integer.valueOf( o2.getType() ) ) ) * -1;
-          }
-        } );
-      } catch ( Exception e ) {
-        throw new KettleDatabaseException( "Unable to get list of instantiated value meta plugin classes", e );
+      synchronized(syncValueMetaPluginClasses) {
+        if ( valueMetaPluginClasses == null ) {
+		      try {
+		      	List<ValueMetaInterface> initValueMetaPluginClasses = ValueMetaFactory.getValueMetaPluginClasses();
+		        Collections.sort( initValueMetaPluginClasses, new Comparator<ValueMetaInterface>() {
+		          @Override
+		          public int compare( ValueMetaInterface o1, ValueMetaInterface o2 ) {
+		            // Reverse the sort list
+		            return ( Integer.valueOf( o1.getType() ).compareTo( Integer.valueOf( o2.getType() ) ) ) * -1;
+		          }
+		        } );
+	          valueMetaPluginClasses = initValueMetaPluginClasses;
+		      } catch ( Exception e ) {
+		        throw new KettleDatabaseException( "Unable to get list of instantiated value meta plugin classes", e );
+		      }
+        }
       }
+	    
     }
 
     // Extract the name from the result set meta data...
