@@ -2244,19 +2244,19 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     if ( valueMetaPluginClasses == null ) {
       synchronized(syncValueMetaPluginClasses) {
         if ( valueMetaPluginClasses == null ) {
-		      try {
-		      	List<ValueMetaInterface> initValueMetaPluginClasses = ValueMetaFactory.getValueMetaPluginClasses();
-		        Collections.sort( initValueMetaPluginClasses, new Comparator<ValueMetaInterface>() {
-		          @Override
-		          public int compare( ValueMetaInterface o1, ValueMetaInterface o2 ) {
-		            // Reverse the sort list
-		            return ( Integer.valueOf( o1.getType() ).compareTo( Integer.valueOf( o2.getType() ) ) ) * -1;
-		          }
-		        } );
-	          valueMetaPluginClasses = initValueMetaPluginClasses;
-		      } catch ( Exception e ) {
-		        throw new KettleDatabaseException( "Unable to get list of instantiated value meta plugin classes", e );
-		      }
+          try {
+          	List<ValueMetaInterface> initValueMetaPluginClasses = ValueMetaFactory.getValueMetaPluginClasses();
+            Collections.sort( initValueMetaPluginClasses, new Comparator<ValueMetaInterface>() {
+              @Override
+              public int compare( ValueMetaInterface o1, ValueMetaInterface o2 ) {
+                // Reverse the sort list
+                return ( Integer.valueOf( o1.getType() ).compareTo( Integer.valueOf( o2.getType() ) ) ) * -1;
+              }
+            } );
+            valueMetaPluginClasses = initValueMetaPluginClasses;
+          } catch ( Exception e ) {
+            throw new KettleDatabaseException( "Unable to get list of instantiated value meta plugin classes", e );
+          }
         }
       }
 	    
