@@ -2672,6 +2672,10 @@ public class TableView extends Composite {
   private void setUndoMenu() {
     TransAction prev = viewPreviousUndo();
     TransAction next = viewNextUndo();
+    
+    if ( miEditUndo.isDisposed() || miEditRedo.isDisposed() ) {
+      return;
+    }
 
     if ( prev != null ) {
       miEditUndo.setEnabled( true );
