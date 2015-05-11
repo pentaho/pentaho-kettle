@@ -815,7 +815,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         Node excludefilemasknode = XMLHandler.getSubNodeByNr( filenode, "exclude_filemask", i );
         Node fileRequirednode = XMLHandler.getSubNodeByNr( filenode, "file_required", i );
         Node includeSubFoldersnode = XMLHandler.getSubNodeByNr( filenode, "include_subfolders", i );
-        fileName[i] = loadSource( filenode, filenamenode, i );
+        fileName[i] = loadSource( filenode, filenamenode, i, metaStore );
         fileMask[i] = XMLHandler.getNodeValue( filemasknode );
         excludeFileMask[i] = XMLHandler.getNodeValue( excludefilemasknode );
         fileRequired[i] = XMLHandler.getNodeValue( fileRequirednode );
@@ -2046,7 +2046,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     setFileName( fileName );
   }
   
-  protected String loadSource( Node filenode, Node filenamenode, int i ) {
+  protected String loadSource( Node filenode, Node filenamenode, int i, IMetaStore metaStore ) {
     return XMLHandler.getNodeValue( filenamenode );
   }
 
