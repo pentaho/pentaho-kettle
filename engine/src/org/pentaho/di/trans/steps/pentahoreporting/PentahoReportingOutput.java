@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.Date;
 
 import org.apache.commons.vfs.FileObject;
+import org.jfree.base.config.ModifiableConfiguration;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -42,6 +43,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.pentahoreporting.PentahoReportingOutputMeta.ProcessorType;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
+import org.pentaho.reporting.engine.classic.core.modules.gui.xls.ExcelExportTask;
 import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.PdfReportUtil;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.csv.CSVReportUtil;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.html.HtmlReportUtil;
@@ -221,6 +223,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
         }
       }
 
+      ExcelExportTask task;
+
       switch ( outputProcessorType ) {
         case PDF:
           PdfReportUtil.createPDF( report, targetFilename );
@@ -229,7 +233,9 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
           CSVReportUtil.createCSV( report, targetFilename );
           break;
         case Excel:
-          ExcelReportUtil.createXLS( report, targetFilename );
+          ((ModifiableConfiguration)report.getConfiguration()).setConfigProperty( "org.pentaho.reporting.engine.classic.core.modules.gui.xls.FileName", targetFilename );
+          task = new ExcelExportTask( report, null, null );
+          task.run();
           break;
         case Excel_2007:
           ExcelReportUtil.createXLSX( report, targetFilename );
