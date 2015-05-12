@@ -474,6 +474,13 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   /**
+   * @return <tt>1</tt> if <tt>isFooterEnabled()</tt> and <tt>0</tt> otherwise
+   */
+  public int getFooterShift() {
+    return isFooterEnabled() ? 1 : 0;
+  }
+
+  /**
    * @param splitEvery
    *          The splitEvery to set.
    */
@@ -1195,7 +1202,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   /**
    * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively. So
    * what this does is turn the name of the base path into an absolute path.
-   * 
+   *
    * @param space
    *          the variable space to use
    * @param definitions
@@ -1204,7 +1211,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
    *          The repository to optionally load other resources from (to be converted to XML)
    * @param metaStore
    *          the metaStore in which non-kettle metadata could reside.
-   * 
+   *
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
