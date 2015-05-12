@@ -21,12 +21,12 @@
  ******************************************************************************/
 package org.pentaho.di.ui.job.entry;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.widgets.Button;
@@ -37,6 +37,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TypedListener;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.PackageMessages;
 import org.pentaho.di.job.JobMeta;
@@ -50,12 +52,9 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-import java.lang.reflect.Method;
+public abstract class JobStepDialog<T extends JobEntryInterface> extends JobEntryDialog implements
+    JobEntryDialogInterface {
 
-public abstract class JobStepDialog<T extends JobEntryInterface> extends JobEntryDialog implements JobEntryDialogInterface {
-
-//  protected static final int LEFT_PLACEMENT = 0;
-//  protected static final int RIGHT_PLACEMENT = 100;
   protected static final int LARGE_MARGIN = 15;
   protected static final int FIELD_WIDTH = 60;
   protected static final int BUTTON_WIDTH = 80;
@@ -70,17 +69,29 @@ public abstract class JobStepDialog<T extends JobEntryInterface> extends JobEntr
 
   private final T entry;
 
-  private final SelectionAdapter DEFAULT_FINISH_EVENT = new SelectionAdapter() {
+  private final TypedListener DEFAULT_FINISH_EVENT = new TypedListener( new SelectionAdapter() {
     public void widgetDefaultSelected( SelectionEvent e ) {
       ok();
     }
-  };
+  } );
 
-  private final ModifyListener DEFAULT_MODIFY_EVENT = new ModifyListener() {
-    public void modifyText( ModifyEvent e ) {
-      entry.setChanged();
+  private final TypedListener CHANGE_MODIFY_LISTENER = new TypedListener( new ModifyListener() {
+    @Override
+    public void modifyText( ModifyEvent paramModifyEvent ) {
+      dialogModified();
     }
-  };
+  } );
+
+  private final TypedListener CHANGE_SELECT_LISTENER = new TypedListener( new SelectionAdapter() {
+    @Override
+    public void widgetSelected( SelectionEvent paramSelectionEvent ) {
+      dialogModified();
+    }
+  } );
+
+  private void dialogModified() {
+    entry.setChanged();
+  }
 
   @SuppressWarnings( "unchecked" )
   public JobStepDialog( final Shell parent, final JobEntryInterface jobEntryInt, final Repository rep,
@@ -184,35 +195,23 @@ public abstract class JobStepDialog<T extends JobEntryInterface> extends JobEntr
   }
 
   private void addModifyListener( Control el ) {
-    try {
-      Method m = null;
-      try {
-        m = el.getClass().getMethod( "addModifyListener", ModifyListener.class );
-      } catch ( Exception e ) {
-        // not found
-      }
-      if ( m != null ) {
-        m.invoke( el, DEFAULT_MODIFY_EVENT );
-      }
-    } catch ( Exception e1 ) {
-      // nothing
+    if ( el instanceof Text ) {
+      addListener( el, 24, CHANGE_MODIFY_LISTENER );
+    }
+    if ( el instanceof Button ) {
+      addListener( el, 13, CHANGE_SELECT_LISTENER );
     }
   }
 
   private void addDefaultFinishEvent( Control el ) {
-    try {
-      Method m = null;
-      try {
-        m = el.getClass().getMethod( "addSelectionListener", SelectionAdapter.class );
-      } catch ( Exception e ) {
-        m = el.getClass().getMethod( "addSelectionListener", SelectionListener.class );
-      }
-      if ( m != null ) {
-        m.invoke( el, DEFAULT_FINISH_EVENT );
-      }
-    } catch ( Exception e1 ) {
-      // nothing
+    addListener( el, 14, DEFAULT_FINISH_EVENT );
+  }
+
+  private void addListener( Control el, int event, TypedListener listener ) {
+    if ( ArrayUtils.contains( el.getListeners( event ), listener ) ) {
+      return;
     }
+    el.addListener( event, listener );
   }
 
   private void dispose() {
