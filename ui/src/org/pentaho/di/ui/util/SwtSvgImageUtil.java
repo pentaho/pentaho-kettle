@@ -177,6 +177,11 @@ public class SwtSvgImageUtil {
    */
   private static SwtUniversalImage loadFromCurrentClasspath( Display display, String location ) {
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    if ( cl == null ) {
+      // Can't count on Thread.currentThread().getContextClassLoader() being non-null on Mac
+      // Have to provide some fallback
+      cl = SwtSvgImageUtil.class.getClassLoader();
+    }
     URL res = cl.getResource( location );
     if ( res == null ) {
       return null;
