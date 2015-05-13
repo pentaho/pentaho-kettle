@@ -686,7 +686,7 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.NormalExecutionTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.RowProducerTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.TransSingleThreadTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.WordCountSingleThreadTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.WordCountSampleTest" haltonerror="false"/>
 
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.addsequence.AddSequenceTest"
             haltonerror="false"/>
