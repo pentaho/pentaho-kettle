@@ -145,12 +145,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Number of times a connection was opened using this object. Only used in the context of a database connection map
    */
-  private int opened;
+  private volatile int opened;
 
   /**
    * The copy is equal to opened at the time of creation.
    */
-  private int copy;
+  private volatile int copy;
 
   private String connectionGroup;
   private String partitionId;
@@ -195,6 +195,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
     written = 0;
 
+    opened = copy = 0;
+
     if ( log.isDetailed() ) {
       log.logDetailed( "New database connection defined" );
     }
@@ -228,6 +230,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     rowlimit = 0;
 
     written = 0;
+
+    opened = copy = 0;
 
     if ( log.isDetailed() ) {
       log.logDetailed( "New database connection defined" );
@@ -327,31 +331,15 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         this.connectionGroup = group;
         this.partitionId = partitionId;
 
-        DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
-
         // Try to find the connection for the group
-        Database lookup = map.getDatabase( group, partitionId, this );
+        Database lookup = DatabaseConnectionMap.getInstance().getOrStoreIfAbsent( group, partitionId, this );
         if ( lookup == null ) {
-          // We already opened this connection for the
-          // partition & database in this group
-          // Do a normal connect and then store this database object for later
-          // re-use.
-          normalConnect( partitionId );
-          opened++;
-          copy = opened;
-
-          map.storeDatabase( group, partitionId, this );
-        } else {
-          connection = lookup.getConnection();
-          lookup.setOpened( lookup.getOpened() + 1 ); // if this counter hits 0
-          // again, close the
-          // connection.
-          copy = lookup.getOpened();
+          // There was no mapped value before
+          lookup = this;
         }
-
-        // If we have a connection group or transaction ID, disable auto commit!
-        //
-        setAutoCommit( false );
+        this.connection = lookup.getOrCreateSharedConnection( partitionId );
+        // opened in volatile, thus we can access it directly
+        this.copy = lookup.opened;
       } else {
         // Proceed with a normal connect
         normalConnect( partitionId );
@@ -367,6 +355,21 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       log.snap( Metrics.METRIC_DATABASE_CONNECT_STOP, databaseMeta.getName() );
 
     }
+  }
+
+  private synchronized Connection getOrCreateSharedConnection( String partitionId ) throws KettleDatabaseException {
+    // inside synchronized block we can increment 'opened' directly
+    this.opened++;
+
+    if ( this.connection == null ) {
+      normalConnect( partitionId );
+      this.copy = this.opened;
+
+      // If we have a connection group or transaction ID, disable auto commit!
+      //
+      setAutoCommit( false );
+    }
+    return this.connection;
   }
 
   /**
@@ -4019,7 +4022,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * @param opened the opened to set
    */
-  public void setOpened( int opened ) {
+  public synchronized void setOpened( int opened ) {
     this.opened = opened;
   }
 
@@ -4061,7 +4064,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * @param copy the copy to set
    */
-  public void setCopy( int copy ) {
+  public synchronized void setCopy( int copy ) {
     this.copy = copy;
   }
 
