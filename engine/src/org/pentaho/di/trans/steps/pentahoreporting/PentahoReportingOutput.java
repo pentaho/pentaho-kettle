@@ -27,7 +27,6 @@ import java.net.URL;
 import java.util.Date;
 
 import org.apache.commons.vfs.FileObject;
-import org.jfree.base.config.ModifiableConfiguration;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -43,15 +42,17 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.pentahoreporting.PentahoReportingOutputMeta.ProcessorType;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
+import org.pentaho.reporting.engine.classic.core.modules.gui.csv.CSVTableExportTask;
+import org.pentaho.reporting.engine.classic.core.modules.gui.html.HtmlDirExportTask;
+import org.pentaho.reporting.engine.classic.core.modules.gui.html.HtmlStreamExportTask;
+import org.pentaho.reporting.engine.classic.core.modules.gui.pdf.PdfExportTask;
+import org.pentaho.reporting.engine.classic.core.modules.gui.rtf.RTFExportTask;
 import org.pentaho.reporting.engine.classic.core.modules.gui.xls.ExcelExportTask;
-import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.PdfReportUtil;
-import org.pentaho.reporting.engine.classic.core.modules.output.table.csv.CSVReportUtil;
-import org.pentaho.reporting.engine.classic.core.modules.output.table.html.HtmlReportUtil;
-import org.pentaho.reporting.engine.classic.core.modules.output.table.rtf.RTFReportUtil;
-import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
+import org.pentaho.reporting.engine.classic.core.modules.gui.xls.XSSFExcelExportTask;
 import org.pentaho.reporting.engine.classic.core.parameters.ParameterDefinitionEntry;
 import org.pentaho.reporting.engine.classic.core.parameters.ReportParameterDefinition;
 import org.pentaho.reporting.engine.classic.core.util.ReportParameterValues;
+import org.pentaho.reporting.libraries.base.config.ModifiableConfiguration;
 import org.pentaho.reporting.libraries.base.util.ObjectUtilities;
 import org.pentaho.reporting.libraries.fonts.LibFontBoot;
 import org.pentaho.reporting.libraries.resourceloader.LibLoaderBoot;
@@ -223,33 +224,56 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
         }
       }
 
-      ExcelExportTask task;
-
-      switch ( outputProcessorType ) {
+      ModifiableConfiguration modifiableConfiguration = (ModifiableConfiguration) report.getConfiguration();
+      switch( outputProcessorType ) {
         case PDF:
-          PdfReportUtil.createPDF( report, targetFilename );
+          modifiableConfiguration
+            .setConfigProperty( "org.pentaho.reporting.engine.classic.core.modules.gui.pdf.TargetFileName",
+              targetFilename );
+          PdfExportTask pdfTask = new PdfExportTask( report, null, null );
+          pdfTask.run();
           break;
         case CSV:
-          CSVReportUtil.createCSV( report, targetFilename );
+          modifiableConfiguration
+            .setConfigProperty( "org.pentaho.reporting.engine.classic.core.modules.gui.csv.FileName", targetFilename );
+          CSVTableExportTask csvTask = new CSVTableExportTask( report, null, null );
+          csvTask.run();
           break;
         case Excel:
-          ((ModifiableConfiguration)report.getConfiguration()).setConfigProperty( "org.pentaho.reporting.engine.classic.core.modules.gui.xls.FileName", targetFilename );
-          task = new ExcelExportTask( report, null, null );
-          task.run();
+          modifiableConfiguration
+            .setConfigProperty( "org.pentaho.reporting.engine.classic.core.modules.gui.xls.FileName", targetFilename );
+          ExcelExportTask excelTask = new ExcelExportTask( report, null, null );
+          excelTask.run();
           break;
         case Excel_2007:
-          ExcelReportUtil.createXLSX( report, targetFilename );
+          modifiableConfiguration
+            .setConfigProperty( "org.pentaho.reporting.engine.classic.core.modules.gui.xls.FileName", targetFilename );
+          XSSFExcelExportTask xssfExcelTask = new XSSFExcelExportTask( report, null, null );
+          xssfExcelTask.run();
           break;
         case StreamingHTML:
-          HtmlReportUtil.createStreamHTML( report, targetFilename );
+          modifiableConfiguration
+            .setConfigProperty( "org.pentaho.reporting.engine.classic.core.modules.gui.html.stream.TargetFileName",
+              targetFilename );
+          HtmlStreamExportTask htmlStreamTask = new HtmlStreamExportTask( report, null, null );
+          htmlStreamTask.run();
           break;
         case PagedHTML:
-          HtmlReportUtil.createDirectoryHTML( report, targetFilename );
+          modifiableConfiguration
+            .setConfigProperty( "org.pentaho.reporting.engine.classic.core.modules.gui.html.file.TargetFileName",
+              targetFilename );
+          modifiableConfiguration
+            .setConfigProperty( "org.pentaho.reporting.engine.classic.core.modules.gui.html.file.DataDirectory", "" );
+          modifiableConfiguration
+            .setConfigProperty( "org.pentaho.reporting.engine.classic.core.modules.gui.html.file.ExportMethod", "" );
+          HtmlDirExportTask htmlDirTask = new HtmlDirExportTask( report, null, null );
+          htmlDirTask.run();
           break;
-
         case RTF:
-          RTFReportUtil.createRTF( report, targetFilename );
-          break;
+          modifiableConfiguration
+            .setConfigProperty( "org.pentaho.reporting.engine.classic.core.modules.gui.rtf.FileName", targetFilename );
+          RTFExportTask rtfTask = new RTFExportTask( report, null, null );
+          rtfTask.run();
         default:
           break;
       }
