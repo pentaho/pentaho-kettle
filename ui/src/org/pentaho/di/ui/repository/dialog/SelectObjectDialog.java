@@ -172,6 +172,7 @@ public class SelectObjectDialog extends Dialog {
     int margin = Const.MARGIN;
 
     ToolBar treeTb = new ToolBar( shell, SWT.HORIZONTAL | SWT.FLAT );
+    props.setLook( treeTb );
 
     wfilter = new ToolItem( treeTb, SWT.SEPARATOR );
     searchText = new Text( treeTb, SWT.SEARCH | SWT.CANCEL );
@@ -304,7 +305,7 @@ public class SelectObjectDialog extends Dialog {
 
     wTree.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        wOK.setEnabled( !wTree.getSelection()[0].getForeground().equals( dircolor ) );
+        wOK.setEnabled( !Boolean.TRUE.equals( wTree.getSelection()[0].getData( "isFolder" ) ) );
       }
     } );
 
@@ -479,7 +480,7 @@ public class SelectObjectDialog extends Dialog {
       TreeItem ti = wTree.getSelection()[0];
 
       // No directory!
-      if ( !ti.getForeground().equals( dircolor ) ) {
+      if ( !Boolean.TRUE.equals( wTree.getSelection()[0].getData( "isFolder" ) ) ) {
         int level = ConstUI.getTreeLevel( ti );
         if ( level > 0 ) {
           repositoryObject = (RepositoryElementMetaInterface) ti.getData();
