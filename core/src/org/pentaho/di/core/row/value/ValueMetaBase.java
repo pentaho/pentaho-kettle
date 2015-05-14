@@ -233,7 +233,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         }
         break;
       case TYPE_BIGNUMBER:
-        String alternativeBigNumberMask = EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_NUMBER_FORMAT );
+        String alternativeBigNumberMask = EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_BIGNUMBER_FORMAT );
         if ( Const.isEmpty( alternativeBigNumberMask ) ) {
           setConversionMask( "#.###############################################;"
               + "-#.###############################################" );
