@@ -18,7 +18,7 @@
     <type>MONETDB</type>
     <access>Native</access>
     <database>pentaho-instaview</database>
-    <port>50000</port>
+    <port>50006</port>
     <username>monetdb</username>
     <password>Encrypted 2be98afc86aa7f2e4cb14a17edb86abd8</password>
     <servername/>
@@ -29,7 +29,7 @@
       <attribute><code>EXTRA_OPTION_INFOBRIGHT.characterEncoding</code><attribute>UTF-8</attribute></attribute>
       <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
       <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>50000</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>50006</attribute></attribute>
       <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>Y</attribute></attribute>
       <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
       <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
@@ -98,7 +98,6 @@
       <className>org.apache.spark.examples.SparkPi</className>
       <args>10</args>
       <configParams>
-            <param>spark.yarn.jar&#x3d;hdfs&#x3a;&#x2f;&#x2f;&#x3c;cdh5_cluster&#x3e;&#x2f;user&#x2f;spark&#x2f;share&#x2f;lib&#x2f;spark-assembly.jar</param>
       </configParams>
       <driverMemory/>
       <executorMemory/>
@@ -142,10 +141,10 @@
   </hops>
   <notepads>
     <notepad>
-      <note>SETUP INSTRUCTIONS&#x3a;&#xa;1. Download and unpack spark binary distribution&#xa;2. Copy your CDH cluster configuration files &#x28;core-site.xml, hdfs-site.xml and yarn-site.xml &#x29; to some location&#xa;2. Make sure HADOOP_CONF_DIR&#x2f;YARN_CONF_DIR environment variable is available to spark &#x28;set in your env, in spoon or in spark&#x27;s configuration&#x29; and points to the directory you&#x27;ve put cluster configuration files&#xa;3. Make sure spark&#x27;s spark.yarn.jar configuration parameter is pointing to cloudera&#x27;s spark-assembly.jar &#x28;update spark config files or parameters tab of the job entry&#x29;&#x2a;&#xa;4. Edit Spark PI job entry&#x27;s paths to spark-submit utility and application jar to match your environment&#xa;&#xa;&#x2a; NOTE&#x3a; By default cloudera manager puts spark-assembly.jar to hdfs&#x3a;&#x2f;&#x2f;&#x3c;hdfs file system name&#x3e;&#x2f;user&#x2f;spark&#x2f;share&#x2f;lib&#x2f;spark-assembly.jar during spark installation</note>
+      <note>SETUP INSTRUCTIONS&#x3a;&#xa;1. Download and unpack spark binary distribution&#xa;2. Copy your CDH cluster configuration files &#x28;core-site.xml, hdfs-site.xml and yarn-site.xml &#x29; to the host job will be run from&#xa;3. Make sure HADOOP_CONF_DIR&#x2f;YARN_CONF_DIR environment variable is available to spark &#x28;set in spark configuration, in your or spoon&#x27;s environment&#x29; and points to the directory you&#x27;ve put cluster configuration files &#x28;see p.2&#x29;&#xa;4. Make sure spark&#x27;s spark.yarn.jar configuration parameter is pointing to cloudera&#x27;s spark-assembly.jar location &#x28;set it in spark config or use job entry&#x27;s parameters tab&#x29;&#x2a;&#xa;5. Edit Spark PI job entry&#x27;s paths to spark-submit utility and application jar to match your environment&#xa;&#xa;&#x2a; NOTE&#x3a; By default cloudera manager puts spark-assembly.jar to hdfs&#x3a;&#x2f;&#x2f;&#x3c;hdfs file system name&#x3e;&#x2f;user&#x2f;spark&#x2f;share&#x2f;lib&#x2f;spark-assembly.jar during spark installation</note>
       <xloc>12</xloc>
       <yloc>15</yloc>
-      <width>1317</width>
+      <width>1414</width>
       <heigth>138</heigth>
       <fontname>.Helvetica Neue DeskInterface</fontname>
       <fontsize>13</fontsize>
