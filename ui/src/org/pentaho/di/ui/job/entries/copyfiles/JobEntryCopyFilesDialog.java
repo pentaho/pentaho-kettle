@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -65,6 +66,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVarButtonRenderCallback;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -87,74 +89,28 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
   public static final String LOCAL_ENVIRONMENT = "Local"; 
   public static final String STATIC_ENVIRONMENT = "<Static>";
 
-  private Label wlName;
   protected Text wName;
-  private FormData fdlName, fdName;
 
-  private Label wlCopyEmptyFolders;
+  protected Button wPrevious;
   protected Button wCopyEmptyFolders;
-  private FormData fdlCopyEmptyFolders, fdCopyEmptyFolders;
-
-  private Label wlOverwriteFiles;
   protected Button wOverwriteFiles;
-  private FormData fdlOverwriteFiles, fdOverwriteFiles;
-
-  private Label wlIncludeSubfolders;
   protected Button wIncludeSubfolders;
-  private FormData fdlIncludeSubfolders, fdIncludeSubfolders;
-
-  private Label wlRemoveSourceFiles;
   protected Button wRemoveSourceFiles;
-  private FormData fdlRemoveSourceFiles, fdRemoveSourceFiles;
-
-  private Button wOK, wCancel;
-  private Listener lsOK, lsCancel;
-
+  protected Button wAddFileToResult;
+  protected Button wDestinationIsAFile;
+  protected Button wCreateDestinationFolder;
+  
   protected JobEntryCopyFiles jobEntry;
   protected Shell shell;
 
-  private SelectionAdapter lsDef;
-
   protected boolean changed;
-
-  private Label wlPrevious;
-
-  protected Button wPrevious;
-
-  private FormData fdlPrevious, fdPrevious;
 
   private Label wlFields;
 
   protected TableView wFields;
 
-  private FormData fdlFields, fdFields;
-
   private ToolItem deleteToolItem; // Delete
-
-  private CTabFolder wTabFolder;
-  // settings tab
-  private Composite wSettingsComp;
-  private CTabItem wSettingsTab;
-  private FormData fdSettingsComp;
-  private FormData fdTabFolder;
-  // files tab
-  private Composite wFilesComp;
-  private CTabItem wFilesTab;
-  private FormData fdFilesComp;
   
-  // Add File to result
-  private Label wlAddFileToResult;
-  protected Button wAddFileToResult;
-  private FormData fdlAddFileToResult, fdAddFileToResult;
-
-  private Label wlCreateDestinationFolder;
-  protected Button wCreateDestinationFolder;
-  private FormData fdlCreateDestinationFolder, fdCreateDestinationFolder;
-
-  private Label wlDestinationIsAFile;
-  protected Button wDestinationIsAFile;
-  private FormData fdlDestinationIsAFile, fdDestinationIsAFile;
-
   public JobEntryCopyFilesDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
     jobEntry = (JobEntryCopyFiles) jobEntryInt;
@@ -189,10 +145,10 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     int margin = Const.MARGIN;
 
     // Filename line
-    wlName = new Label( shell, SWT.LEFT );
+    Label wlName = new Label( shell, SWT.LEFT );
     wlName.setText( BaseMessages.getString( PKG, "JobCopyFiles.Name.Label" ) );
     props.setLook( wlName );
-    fdlName = new FormData();
+    FormData fdlName = new FormData();
     fdlName.left = new FormAttachment( 0, 0 );
     fdlName.right = new FormAttachment( middle, -margin );
     fdlName.top = new FormAttachment( 0, margin );
@@ -200,7 +156,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     wName = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wName );
     wName.addModifyListener( lsMod );
-    fdName = new FormData();
+    FormData fdName = new FormData();
     fdName.left = new FormAttachment( 0, 0 );
     fdName.top = new FormAttachment( wlName, margin );
     fdName.right = new FormAttachment( 40, 0 );
@@ -221,10 +177,10 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     lTopSeparator.setLayoutData( fdTopSeparator );    
     
     
-    wTabFolder = new CTabFolder( shell, SWT.BORDER );
+    CTabFolder wTabFolder = new CTabFolder( shell, SWT.BORDER );
     props.setLook( wTabFolder, Props.WIDGET_STYLE_TAB );
 
-    fdTabFolder = new FormData();
+    FormData fdTabFolder = new FormData();
     fdTabFolder.left = new FormAttachment( 0, 0 );
     fdTabFolder.top = new FormAttachment( lTopSeparator, margin * 3 );
     fdTabFolder.right = new FormAttachment( 100, 0 );
@@ -235,10 +191,10 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     // / START OF FILES TAB
     // ///////////////////////////////////////////////////////////
     
-    wFilesTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wFilesTab = new CTabItem( wTabFolder, SWT.NONE );
     wFilesTab.setText( BaseMessages.getString( PKG, "JobCopyFiles.Tab.Files.Label" ) );
 
-    wFilesComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wFilesComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wFilesComp );
     
     FormLayout filesLayout = new FormLayout();
@@ -246,7 +202,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     filesLayout.marginHeight = 3;
     wFilesComp.setLayout( filesLayout );
     
-    fdFilesComp = new FormData();
+    FormData fdFilesComp = new FormData();
     fdFilesComp.left = new FormAttachment( 0, 0 );
     fdFilesComp.top = new FormAttachment( 0, 0 );
     fdFilesComp.right = new FormAttachment( 100, 0 );
@@ -264,206 +220,48 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     // START OF SETTINGS TAB ///
     // ////////////////////////
 
-    wSettingsTab = new CTabItem( wTabFolder, SWT.NONE );
+    CTabItem wSettingsTab = new CTabItem( wTabFolder, SWT.NONE );
     wSettingsTab.setText( BaseMessages.getString( PKG, "JobCopyFiles.Settings.Label" ) );
 
-    wSettingsComp = new Composite( wTabFolder, SWT.NONE );
+    Composite wSettingsComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wSettingsComp );
 
     FormLayout settingsLayout = new FormLayout();
     settingsLayout.marginWidth = 3;
     settingsLayout.marginHeight = 3;
     wSettingsComp.setLayout( settingsLayout );
+
+    SelectionAdapter listener = new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        jobEntry.setChanged();
+      }
+    };
     
-    wlIncludeSubfolders = new Label( wSettingsComp, SWT.RIGHT );
-    wlIncludeSubfolders.setText( BaseMessages.getString( PKG, "JobCopyFiles.IncludeSubfolders.Label" ) );
-    props.setLook( wlIncludeSubfolders );
-    fdlIncludeSubfolders = new FormData();
-    fdlIncludeSubfolders.left = new FormAttachment( 0, 0 );
-    fdlIncludeSubfolders.top = new FormAttachment( wName, margin );
-    fdlIncludeSubfolders.right = new FormAttachment( middle, -margin );
-    wlIncludeSubfolders.setLayoutData( fdlIncludeSubfolders );
-    wIncludeSubfolders = new Button( wSettingsComp, SWT.CHECK );
-    props.setLook( wIncludeSubfolders );
-    wIncludeSubfolders.setToolTipText( BaseMessages.getString( PKG, "JobCopyFiles.IncludeSubfolders.Tooltip" ) );
-    fdIncludeSubfolders = new FormData();
-    fdIncludeSubfolders.left = new FormAttachment( middle, 0 );
-    fdIncludeSubfolders.top = new FormAttachment( wName, margin );
-    fdIncludeSubfolders.right = new FormAttachment( 100, 0 );
-    wIncludeSubfolders.setLayoutData( fdIncludeSubfolders );
-    wIncludeSubfolders.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        jobEntry.setChanged();
-        CheckIncludeSubFolders();
-      }
-    } );
+    wIncludeSubfolders = createSettingsButton( 
+        wSettingsComp, "JobCopyFiles.IncludeSubfolders.Label", "JobCopyFiles.IncludeSubfolders.Tooltip", null, listener );
 
-    // Destination is a file?
-    wlDestinationIsAFile = new Label( wSettingsComp, SWT.RIGHT );
-    wlDestinationIsAFile.setText( BaseMessages.getString( PKG, "JobCopyFiles.DestinationIsAFile.Label" ) );
-    props.setLook( wlDestinationIsAFile );
-    fdlDestinationIsAFile = new FormData();
-    fdlDestinationIsAFile.left = new FormAttachment( 0, 0 );
-    fdlDestinationIsAFile.top = new FormAttachment( wIncludeSubfolders, margin );
-    fdlDestinationIsAFile.right = new FormAttachment( middle, -margin );
-    wlDestinationIsAFile.setLayoutData( fdlDestinationIsAFile );
-    wDestinationIsAFile = new Button( wSettingsComp, SWT.CHECK );
-    props.setLook( wDestinationIsAFile );
-    wDestinationIsAFile.setToolTipText( BaseMessages.getString( PKG, "JobCopyFiles.DestinationIsAFile.Tooltip" ) );
-    fdDestinationIsAFile = new FormData();
-    fdDestinationIsAFile.left = new FormAttachment( middle, 0 );
-    fdDestinationIsAFile.top = new FormAttachment( wIncludeSubfolders, margin );
-    fdDestinationIsAFile.right = new FormAttachment( 100, 0 );
-    wDestinationIsAFile.setLayoutData( fdDestinationIsAFile );
-    wDestinationIsAFile.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        jobEntry.setChanged();
-      }
-    } );
+    wDestinationIsAFile = createSettingsButton( 
+        wSettingsComp, "JobCopyFiles.DestinationIsAFile.Label", "JobCopyFiles.DestinationIsAFile.Tooltip", wIncludeSubfolders, listener );
 
-    // Copy empty folders
-    wlCopyEmptyFolders = new Label( wSettingsComp, SWT.RIGHT );
-    wlCopyEmptyFolders.setText( BaseMessages.getString( PKG, "JobCopyFiles.CopyEmptyFolders.Label" ) );
-    props.setLook( wlCopyEmptyFolders );
-    fdlCopyEmptyFolders = new FormData();
-    fdlCopyEmptyFolders.left = new FormAttachment( 0, 0 );
-    fdlCopyEmptyFolders.top = new FormAttachment( wDestinationIsAFile, margin );
-    fdlCopyEmptyFolders.right = new FormAttachment( middle, -margin );
-    wlCopyEmptyFolders.setLayoutData( fdlCopyEmptyFolders );
-    wCopyEmptyFolders = new Button( wSettingsComp, SWT.CHECK );
-    props.setLook( wCopyEmptyFolders );
-    wCopyEmptyFolders.setToolTipText( BaseMessages.getString( PKG, "JobCopyFiles.CopyEmptyFolders.Tooltip" ) );
-    fdCopyEmptyFolders = new FormData();
-    fdCopyEmptyFolders.left = new FormAttachment( middle, 0 );
-    fdCopyEmptyFolders.top = new FormAttachment( wDestinationIsAFile, margin );
-    fdCopyEmptyFolders.right = new FormAttachment( 100, 0 );
-    wCopyEmptyFolders.setLayoutData( fdCopyEmptyFolders );
-    wCopyEmptyFolders.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        jobEntry.setChanged();
-      }
-    } );
+    wCopyEmptyFolders = createSettingsButton( 
+        wSettingsComp, "JobCopyFiles.CopyEmptyFolders.Label", "JobCopyFiles.CopyEmptyFolders.Tooltip", wDestinationIsAFile, listener );
 
-    // Create destination folder/parent folder
-    wlCreateDestinationFolder = new Label( wSettingsComp, SWT.RIGHT );
-    wlCreateDestinationFolder
-      .setText( BaseMessages.getString( PKG, "JobCopyFiles.CreateDestinationFolder.Label" ) );
-    props.setLook( wlCreateDestinationFolder );
-    fdlCreateDestinationFolder = new FormData();
-    fdlCreateDestinationFolder.left = new FormAttachment( 0, 0 );
-    fdlCreateDestinationFolder.top = new FormAttachment( wCopyEmptyFolders, margin );
-    fdlCreateDestinationFolder.right = new FormAttachment( middle, -margin );
-    wlCreateDestinationFolder.setLayoutData( fdlCreateDestinationFolder );
-    wCreateDestinationFolder = new Button( wSettingsComp, SWT.CHECK );
-    props.setLook( wCreateDestinationFolder );
-    wCreateDestinationFolder.setToolTipText( BaseMessages.getString(
-      PKG, "JobCopyFiles.CreateDestinationFolder.Tooltip" ) );
-    fdCreateDestinationFolder = new FormData();
-    fdCreateDestinationFolder.left = new FormAttachment( middle, 0 );
-    fdCreateDestinationFolder.top = new FormAttachment( wCopyEmptyFolders, margin );
-    fdCreateDestinationFolder.right = new FormAttachment( 100, 0 );
-    wCreateDestinationFolder.setLayoutData( fdCreateDestinationFolder );
-    wCreateDestinationFolder.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        jobEntry.setChanged();
-      }
-    } );
+    wCreateDestinationFolder = createSettingsButton( 
+        wSettingsComp, "JobCopyFiles.CreateDestinationFolder.Label", "JobCopyFiles.CreateDestinationFolder.Tooltip", wCopyEmptyFolders, listener );
 
-    // OverwriteFiles Option
-    wlOverwriteFiles = new Label( wSettingsComp, SWT.RIGHT );
-    wlOverwriteFiles.setText( BaseMessages.getString( PKG, "JobCopyFiles.OverwriteFiles.Label" ) );
-    props.setLook( wlOverwriteFiles );
-    fdlOverwriteFiles = new FormData();
-    fdlOverwriteFiles.left = new FormAttachment( 0, 0 );
-    fdlOverwriteFiles.top = new FormAttachment( wCreateDestinationFolder, margin );
-    fdlOverwriteFiles.right = new FormAttachment( middle, -margin );
-    wlOverwriteFiles.setLayoutData( fdlOverwriteFiles );
-    wOverwriteFiles = new Button( wSettingsComp, SWT.CHECK );
-    props.setLook( wOverwriteFiles );
-    wOverwriteFiles.setToolTipText( BaseMessages.getString( PKG, "JobCopyFiles.OverwriteFiles.Tooltip" ) );
-    fdOverwriteFiles = new FormData();
-    fdOverwriteFiles.left = new FormAttachment( middle, 0 );
-    fdOverwriteFiles.top = new FormAttachment( wCreateDestinationFolder, margin );
-    fdOverwriteFiles.right = new FormAttachment( 100, 0 );
-    wOverwriteFiles.setLayoutData( fdOverwriteFiles );
-    wOverwriteFiles.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        jobEntry.setChanged();
-      }
-    } );
-
-    // Remove source files option
-    wlRemoveSourceFiles = new Label( wSettingsComp, SWT.RIGHT );
-    wlRemoveSourceFiles.setText( BaseMessages.getString( PKG, "JobCopyFiles.RemoveSourceFiles.Label" ) );
-    props.setLook( wlRemoveSourceFiles );
-    fdlRemoveSourceFiles = new FormData();
-    fdlRemoveSourceFiles.left = new FormAttachment( 0, 0 );
-    fdlRemoveSourceFiles.top = new FormAttachment( wOverwriteFiles, margin );
-    fdlRemoveSourceFiles.right = new FormAttachment( middle, -margin );
-    wlRemoveSourceFiles.setLayoutData( fdlRemoveSourceFiles );
-    wRemoveSourceFiles = new Button( wSettingsComp, SWT.CHECK );
-    props.setLook( wRemoveSourceFiles );
-    wRemoveSourceFiles.setToolTipText( BaseMessages.getString( PKG, "JobCopyFiles.RemoveSourceFiles.Tooltip" ) );
-    fdRemoveSourceFiles = new FormData();
-    fdRemoveSourceFiles.left = new FormAttachment( middle, 0 );
-    fdRemoveSourceFiles.top = new FormAttachment( wOverwriteFiles, margin );
-    fdRemoveSourceFiles.right = new FormAttachment( 100, 0 );
-    wRemoveSourceFiles.setLayoutData( fdRemoveSourceFiles );
-    wRemoveSourceFiles.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        jobEntry.setChanged();
-      }
-    } );
-
-    wlPrevious = new Label( wSettingsComp, SWT.RIGHT );
-    wlPrevious.setText( BaseMessages.getString( PKG, "JobCopyFiles.Previous.Label" ) );
-    props.setLook( wlPrevious );
-    fdlPrevious = new FormData();
-    fdlPrevious.left = new FormAttachment( 0, 0 );
-    fdlPrevious.top = new FormAttachment( wRemoveSourceFiles, margin );
-    fdlPrevious.right = new FormAttachment( middle, -margin );
-    wlPrevious.setLayoutData( fdlPrevious );
-    wPrevious = new Button( wSettingsComp, SWT.CHECK );
-    props.setLook( wPrevious );
-    wPrevious.setSelection( jobEntry.arg_from_previous );
-    wPrevious.setToolTipText( BaseMessages.getString( PKG, "JobCopyFiles.Previous.Tooltip" ) );
-    fdPrevious = new FormData();
-    fdPrevious.left = new FormAttachment( middle, 0 );
-    fdPrevious.top = new FormAttachment( wRemoveSourceFiles, margin );
-    fdPrevious.right = new FormAttachment( 100, 0 );
-    wPrevious.setLayoutData( fdPrevious );
-    wPrevious.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-
-        refreshArgFromPrevious();
-
-      }
-    } );
+    wOverwriteFiles = createSettingsButton( 
+        wSettingsComp, "JobCopyFiles.OverwriteFiles.Label", "JobCopyFiles.OverwriteFiles.Tooltip", wCreateDestinationFolder, listener );
     
-    // Add file to result
-    wlAddFileToResult = new Label( wSettingsComp, SWT.RIGHT );
-    wlAddFileToResult.setText( BaseMessages.getString( PKG, "JobCopyFiles.AddFileToResult.Label" ) );
-    props.setLook( wlAddFileToResult );
-    fdlAddFileToResult = new FormData();
-    fdlAddFileToResult.left = new FormAttachment( 0, 0 );
-    fdlAddFileToResult.top = new FormAttachment( wPrevious, margin );
-    fdlAddFileToResult.right = new FormAttachment( middle, -margin );
-    wlAddFileToResult.setLayoutData( fdlAddFileToResult );
-    wAddFileToResult = new Button( wSettingsComp, SWT.CHECK );
-    props.setLook( wAddFileToResult );
-    wAddFileToResult.setToolTipText( BaseMessages.getString( PKG, "JobCopyFiles.AddFileToResult.Tooltip" ) );
-    fdAddFileToResult = new FormData();
-    fdAddFileToResult.left = new FormAttachment( middle, 0 );
-    fdAddFileToResult.top = new FormAttachment( wPrevious, margin );
-    fdAddFileToResult.right = new FormAttachment( 100, 0 );
-    wAddFileToResult.setLayoutData( fdAddFileToResult );
-    wAddFileToResult.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        jobEntry.setChanged();
-      }
-    } );
+    wRemoveSourceFiles = createSettingsButton( 
+        wSettingsComp, "JobCopyFiles.RemoveSourceFiles.Label", "JobCopyFiles.RemoveSourceFiles.Tooltip", wOverwriteFiles, listener );
+
+    wPrevious = createSettingsButton( 
+        wSettingsComp, "JobCopyFiles.Previous.Label", "JobCopyFiles.Previous.Tooltip", wRemoveSourceFiles, listener );
     
-    fdSettingsComp = new FormData();
+    wAddFileToResult = createSettingsButton( 
+        wSettingsComp, "JobCopyFiles.AddFileToResult.Label", "JobCopyFiles.AddFileToResult.Tooltip", wPrevious, listener );
+
+    FormData fdSettingsComp = new FormData();
     fdSettingsComp.left = new FormAttachment( 0, 0 );
     fdSettingsComp.top = new FormAttachment( 0, 0 );
     fdSettingsComp.right = new FormAttachment( 100, 0 );
@@ -500,7 +298,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     wlFields = new Label( wFilesComp, SWT.NONE );
     wlFields.setText( BaseMessages.getString( PKG, "JobCopyFiles.Fields.Label" ) );
     props.setLook( wlFields );
-    fdlFields = new FormData();
+    FormData fdlFields = new FormData();
     fdlFields.left = new FormAttachment( 0, margin );
     fdlFields.right = new FormAttachment( middle, -margin );
     fdlFields.top = new FormAttachment( wFilesComp, 15 );
@@ -526,9 +324,17 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     
     setComboValues( colinf[0] );
     
+    TextVarButtonRenderCallback callback = new TextVarButtonRenderCallback() {
+      public boolean shouldRenderButton() {
+        String envType = wFields.getActiveTableItem().getText( wFields.getActiveTableColumn() - 1 );
+        return !STATIC_ENVIRONMENT.equalsIgnoreCase( envType );
+      }
+    };
+    
     colinf[1].setUsingVariables( true );
     colinf[1].setToolTip( BaseMessages.getString( PKG, "JobCopyFiles.Fields.SourceFileFolder.Tooltip" ) );
     colinf[1].setTextVarButtonSelectionListener( getFileSelectionAdapter() );
+    colinf[1].setRenderTextVarButtonCallback( callback );
 
     colinf[2].setUsingVariables( true );
     colinf[2].setToolTip( BaseMessages.getString( PKG, "JobCopyFiles.Fields.Wildcard.Tooltip" ) );
@@ -543,7 +349,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
       new TableView(
         jobMeta, wFilesComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
 
-    fdFields = new FormData();
+    FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, margin );
     fdFields.top = new FormAttachment( tb, margin );
     fdFields.right = new FormAttachment( 100, -margin );
@@ -552,9 +358,9 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
 
     refreshArgFromPrevious();
 
-    wOK = new Button( shell, SWT.PUSH );
+    Button wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
-    wCancel = new Button( shell, SWT.PUSH );
+    Button wCancel = new Button( shell, SWT.PUSH );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
     Label lBottomSeparator = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
@@ -572,12 +378,12 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     helpButton.setLayoutData( fdHelpButton );
 
     // Add listeners
-    lsCancel = new Listener() {
+    Listener lsCancel = new Listener() {
       public void handleEvent( Event e ) {
         cancel();
       }
     };
-    lsOK = new Listener() {
+    Listener lsOK = new Listener() {
       public void handleEvent( Event e ) {
         ok();
       }
@@ -586,7 +392,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     wCancel.addListener( SWT.Selection, lsCancel );
     wOK.addListener( SWT.Selection, lsOK );
 
-    lsDef = new SelectionAdapter() {
+    SelectionAdapter lsDef = new SelectionAdapter() {
       public void widgetDefaultSelected( SelectionEvent e ) {
         ok();
       }
@@ -602,7 +408,6 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     } );
 
     getData();
-    CheckIncludeSubFolders();
     wTabFolder.setSelection( 0 );
     
   }
@@ -618,6 +423,24 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
       }
     }
     return jobEntry;
+  }
+
+  protected Button createSettingsButton( Composite p, String text, String title, Control top, SelectionAdapter sa ) {
+    Button button = new Button( p, SWT.CHECK );
+    button.setText( BaseMessages.getString( PKG, text ) );
+    button.setToolTipText( BaseMessages.getString( PKG, title ) );
+    props.setLook( button );
+    FormData fd = new FormData();
+    fd.left = new FormAttachment( 0, Const.MARGIN * 2 );
+    if ( top == null ) {
+      fd.top = new FormAttachment( 0, 10 );
+    } else {
+      fd.top = new FormAttachment( top, 5 );
+    }
+    fd.right = new FormAttachment( 100, 0 );
+    button.setLayoutData( fd );
+    button.addSelectionListener( sa );
+    return button;
   }
 
   protected SelectionAdapter getFileSelectionAdapter() {
@@ -684,11 +507,6 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
     WindowProperty winprop = new WindowProperty( shell );
     props.setScreen( winprop );
     shell.dispose();
-  }
-
-  private void CheckIncludeSubFolders() {
-    wlCopyEmptyFolders.setEnabled( wIncludeSubfolders.getSelection() );
-    wCopyEmptyFolders.setEnabled( wIncludeSubfolders.getSelection() );
   }
 
   /**

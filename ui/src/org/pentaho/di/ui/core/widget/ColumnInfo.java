@@ -59,6 +59,8 @@ public class ColumnInfo {
   private SelectionListener selButton;
   private SelectionListener textVarButtonSelectionListener;
 
+  private TextVarButtonRenderCallback renderTextVarButtonCallback;
+  
   private FieldDisabledListener disabledListener;
 
   private boolean usingVariables;
@@ -365,4 +367,13 @@ public class ColumnInfo {
   public void setTextVarButtonSelectionListener( SelectionListener textVarButtonSelectionListener ) {
     this.textVarButtonSelectionListener = textVarButtonSelectionListener;
   }
+  
+  public void setRenderTextVarButtonCallback( TextVarButtonRenderCallback callback ) {
+    this.renderTextVarButtonCallback = callback;
+  }
+  
+  public boolean shouldRenderTextVarButton() {
+    return this.renderTextVarButtonCallback == null || this.renderTextVarButtonCallback.shouldRenderButton();
+  }
+  
 }
