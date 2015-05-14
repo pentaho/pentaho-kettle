@@ -510,31 +510,38 @@ public class TableView extends Composite {
 
         final String value = getTextWidgetValue( colnr );
 
-        Runnable r = new Runnable() {
+        final Runnable worker = new Runnable() {
           public void run() {
             try {
-              Thread.sleep( 500 );
-            } catch ( InterruptedException ignored ) {
-            }
-            d.asyncExec( new Runnable() {
-              public void run() {
-                try {
-                  if ( !row.isDisposed() ) {
-                    row.setText( colnr, value );
-                  }
-                  ftext.dispose();
-  
-                  String[] afterEdit = getItemText( row );
-                  checkChanged( new String[][] { fBeforeEdit }, new String[][] { afterEdit }, new int[] { rownr } );
-                } catch ( Exception ignored ) {
-                  // widget is disposed, ignore
-                }
+              if ( row.isDisposed() ) {
+                return;
               }
-            });
+              row.setText( colnr, value );
+              ftext.dispose();
+
+              String[] afterEdit = getItemText( row );
+              checkChanged( new String[][] { fBeforeEdit }, new String[][] { afterEdit }, new int[] { rownr } );
+            } catch ( Exception ignored ) {
+              // widget is disposed, ignore
+            }
           }
         };
-        Thread t = new Thread(r);
-        t.start();
+        
+        if ( columns[ colnr - 1 ].getType() == ColumnInfo.COLUMN_TYPE_TEXT_BUTTON ) {
+          try {
+            Thread.sleep( 500 );
+          } catch ( InterruptedException ignored ) {
+          }
+          Runnable r = new Runnable() {
+            public void run() {
+              d.asyncExec( worker );
+            }
+          };
+          Thread t = new Thread( r );
+          t.start();
+        } else {
+          worker.run();
+        }
       }
     };
     lsFocusCombo = new FocusAdapter() {
@@ -1945,7 +1952,11 @@ public class TableView extends Composite {
         editButton( row, rownr, colnr );
         break;
       case ColumnInfo.COLUMN_TYPE_TEXT_BUTTON:
-        isTextButton = true;
+        if ( columns[colnr - 1].shouldRenderTextVarButton() ) {
+          isTextButton = true;
+        } else {
+          isTextButton = false;
+        }
         editText( row, rownr, colnr, selectText, extra, columns[colnr - 1] );
         break;
       default:
