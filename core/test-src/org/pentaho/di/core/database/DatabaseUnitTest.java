@@ -22,9 +22,7 @@
 
 package org.pentaho.di.core.database;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.sql.BatchUpdateException;
@@ -36,7 +34,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+import org.junit.matchers.JUnitMatchers;
 import org.mockito.Mockito;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -128,7 +128,7 @@ public class DatabaseUnitTest {
   @Test
   public void testCreateKettleDatabaseBatchExceptionNotUpdatesWhenBatchUpdateException() {
     assertNotNull(
-        Database.createKettleDatabaseBatchException( "", new BatchUpdateException( new int[0] ) ).getUpdateCounts() );
+      Database.createKettleDatabaseBatchException( "", new BatchUpdateException( new int[ 0 ] ) ).getUpdateCounts() );
   }
 
   @Test
@@ -382,7 +382,14 @@ public class DatabaseUnitTest {
     doReturn( true ).when( dbMeta ).requiresCreateTablePrimaryKeyAppend();
 
     String statement = db.getCreateTableStatement( tableName, fields, tk, useAutoInc, pk, semiColon );
-    assertEquals( statement, "CREATE TABLE DUMMY\n(\n  double foo, PRIMARY KEY (tKey)\n, PRIMARY KEY (pKey)\n)\n ;" );
+
+    String expectedStatRegexp = concatWordsForRegexp(
+      "CREATE TABLE DUMMY", "\\(",
+      "double foo", ",",
+      "PRIMARY KEY \\(tKey\\)", ",",
+      "PRIMARY KEY \\(pKey\\)",
+      "\\)", ";" );
+    assertTrue( statement.matches( expectedStatRegexp ) );
 
     DatabaseInterfaceExtended databaseInterfaceExtended = mock( DatabaseInterfaceExtended.class );
     doReturn( "CREATE COLUMN TABLE " ).when( databaseInterfaceExtended ).getCreateTableStatement();
@@ -390,8 +397,23 @@ public class DatabaseUnitTest {
     doReturn( databaseInterfaceExtended ).when( dbMeta ).getDatabaseInterface();
 
     statement = db.getCreateTableStatement( tableName, fields, tk, useAutoInc, pk, semiColon );
-    assertEquals( statement,
-        "CREATE COLUMN TABLE DUMMY\n(\n  double foo, PRIMARY KEY (tKey)\n, PRIMARY KEY (pKey)\n)\n ;" );
+
+    expectedStatRegexp = concatWordsForRegexp(
+      "CREATE COLUMN TABLE DUMMY", "\\(",
+      "double foo", ",",
+      "PRIMARY KEY \\(tKey\\)", ",",
+      "PRIMARY KEY \\(pKey\\)",
+      "\\)", ";" );
+    assertTrue( statement.matches( expectedStatRegexp ) );
+  }
+
+  private static String concatWordsForRegexp( String... words ) {
+    String emptySpace = "\\s*";
+    StringBuilder sb = new StringBuilder( emptySpace );
+    for ( String word : words ) {
+      sb.append( word ).append( emptySpace );
+    }
+    return sb.toString();
   }
 
   private static LoggingObjectInterface mockLogger() {
