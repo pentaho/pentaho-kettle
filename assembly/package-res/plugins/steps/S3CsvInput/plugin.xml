@@ -2,7 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin
    id="S3CSVINPUT"
-   iconfile="S3CIN.svg"
+   iconfile="S3I.svg"
    description="S3 CSV Input"
    tooltip="Is capable of reading CSV data stored on Amazon S3 in parallel"
    category="Input"
