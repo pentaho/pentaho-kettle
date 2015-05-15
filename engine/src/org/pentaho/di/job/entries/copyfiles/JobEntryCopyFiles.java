@@ -29,17 +29,21 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExis
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
+import org.apache.commons.vfs.provider.url.UrlFileNameParser;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -72,6 +76,18 @@ import org.w3c.dom.Node;
  */
 public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryCopyFiles.class; // for i18n purposes, needed by Translator2!!
+  
+  public static final String SOURCE_CONFIGURATION_NAME = "source_configuration_name";
+  public static final String SOURCE_FILE_FOLDER = "source_filefolder";
+
+  public static final String DESTINATION_CONFIGURATION_NAME = "destination_configuration_name";
+  public static final String DESTINATION_FILE_FOLDER = "destination_filefolder";
+
+  public static final String LOCAL_SOURCE_FILE = "LOCAL-SOURCE-FILE-";
+  public static final String LOCAL_DEST_FILE = "LOCAL-DEST-FILE-";
+
+  public static final String STATIC_SOURCE_FILE = "STATIC-SOURCE-FILE-";
+  public static final String STATIC_DEST_FILE = "STATIC-DEST-FILE-";
 
   public boolean copy_empty_folders;
   public boolean arg_from_previous;
@@ -87,6 +103,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   HashSet<String> list_files_remove = new HashSet<String>();
   HashSet<String> list_add_result = new HashSet<String>();
   int NbrFail = 0;
+  
+  private Map<String, String> configurationMappings = new HashMap<String, String>();
 
   public JobEntryCopyFiles( String n ) {
     super( n, "" );
@@ -178,34 +196,53 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   }
 
   protected String loadSource( Node fnode ) {
-    return XMLHandler.getTagValue( fnode, "source_filefolder" );
+    String source_filefolder = XMLHandler.getTagValue( fnode, SOURCE_FILE_FOLDER );
+    String ncName = XMLHandler.getTagValue( fnode, SOURCE_CONFIGURATION_NAME );
+    return loadURL( source_filefolder, ncName, getMetaStore(), configurationMappings );
   }
 
   protected String loadDestination( Node fnode ) {
-    return XMLHandler.getTagValue( fnode, "destination_filefolder" );
+    String destination_filefolder = XMLHandler.getTagValue( fnode, DESTINATION_FILE_FOLDER );
+    String ncName = XMLHandler.getTagValue( fnode, DESTINATION_CONFIGURATION_NAME );
+    return loadURL( destination_filefolder, ncName, getMetaStore(), configurationMappings );
   }
+
   protected void saveSource( StringBuilder retval, String source ) {
-    retval.append( "          " ).append( XMLHandler.addTagValue( "source_filefolder", source ) );    
-  } 
-  
+    String namedCluster = configurationMappings.get( source );
+    retval.append( "          " ).append( XMLHandler.addTagValue( SOURCE_FILE_FOLDER, source ) );
+    retval.append( "          " ).append( XMLHandler.addTagValue( SOURCE_CONFIGURATION_NAME, namedCluster ) );
+  }
+
   protected void saveDestination( StringBuilder retval, String destination ) {
-    retval.append( "          " ).append( XMLHandler.addTagValue( "destination_filefolder", destination ) );
+    String namedCluster = configurationMappings.get( destination );
+    retval.append( "          " ).append( XMLHandler.addTagValue( DESTINATION_FILE_FOLDER, destination ) );
+    retval.append( "          " ).append( XMLHandler.addTagValue( DESTINATION_CONFIGURATION_NAME, namedCluster ) );
   }
-  
+
   protected String loadSourceRep( Repository rep, ObjectId id_jobentry, int a ) throws KettleException {
-    return rep.getJobEntryAttributeString( id_jobentry, a, "source_filefolder" );
+    String source_filefolder = rep.getJobEntryAttributeString( id_jobentry, a, SOURCE_FILE_FOLDER );
+    String ncName = rep.getJobEntryAttributeString( id_jobentry, a, SOURCE_CONFIGURATION_NAME );
+    return loadURL( source_filefolder, ncName, getMetaStore(), configurationMappings );
   }
-  
+
   protected String loadDestinationRep( Repository rep, ObjectId id_jobentry, int a ) throws KettleException {
-    return rep.getJobEntryAttributeString( id_jobentry, a, "destination_filefolder" );
+    String destination_filefolder = rep.getJobEntryAttributeString( id_jobentry, a, DESTINATION_FILE_FOLDER );
+    String ncName = rep.getJobEntryAttributeString( id_jobentry, a, DESTINATION_CONFIGURATION_NAME );
+    return loadURL( destination_filefolder, ncName, getMetaStore(), configurationMappings );
   }
-  
-  protected void saveSourceRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value ) throws KettleException {
-    rep.saveJobEntryAttribute( id_job, getObjectId(), i, "source_filefolder", value );
-  } 
-  
-  protected void saveDestinationRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value ) throws KettleException {
-    rep.saveJobEntryAttribute( id_job, getObjectId(), i, "destination_filefolder", value );    
+
+  protected void saveSourceRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value )
+    throws KettleException {
+    String namedCluster = configurationMappings.get( value );
+    rep.saveJobEntryAttribute( id_job, getObjectId(), i, SOURCE_FILE_FOLDER, value );
+    rep.saveJobEntryAttribute( id_job, id_jobentry, i, SOURCE_CONFIGURATION_NAME, namedCluster );
+  }
+
+  protected void saveDestinationRep( Repository rep, ObjectId id_job, ObjectId id_jobentry, int i, String value )
+    throws KettleException {
+    String namedCluster = configurationMappings.get( value );
+    rep.saveJobEntryAttribute( id_job, getObjectId(), i, DESTINATION_FILE_FOLDER, value );
+    rep.saveJobEntryAttribute( id_job, id_jobentry, i, DESTINATION_CONFIGURATION_NAME, namedCluster );
   }
 
   public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
@@ -1085,5 +1122,31 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
   public boolean evaluates() {
     return true;
+  }
+  
+  public String loadURL( String url, String ncName, IMetaStore metastore, Map mappings ) {
+    if ( !Const.isEmpty( ncName ) && !Const.isEmpty( url ) ) {
+      mappings.put( url, ncName );
+    }
+    return url;
+  }
+  
+  public void setConfigurationMappings( Map<String, String> mappings ) {
+    this.configurationMappings = mappings;
+  }
+  
+  public String getConfigurationBy( String url ) {
+    return this.configurationMappings.get( url );
+  }
+  
+  public String getUrlPath( String source ) {
+    try {
+      UrlFileNameParser parser = new UrlFileNameParser();
+      FileName fileName = parser.parseUri( null, null, source );
+      source = fileName.getPath();
+    } catch ( FileSystemException e ) {
+      source = null;
+    }
+    return source;
   }
 }
