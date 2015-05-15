@@ -22,6 +22,9 @@
 
 package org.pentaho.di.ui.job.entries.copyfiles;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.swt.SWT;
@@ -482,8 +485,8 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
           fileChooserDialog.defaultInitialFile = defaultInitialFile;
           
           selectedFile =
-              fileChooserDialog.open( shell, null, null, true, null, new String[] { "*.*" },
-                  FILETYPES, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY );
+              fileChooserDialog.open( shell, new String[] { "file" }, "file", true, null, new String[] { "*.*" },
+                  FILETYPES, true, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY, false, false );
           
           if ( selectedFile != null ) {
             String url = selectedFile.getURL().toString();
@@ -522,15 +525,40 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
       for ( int i = 0; i < jobEntry.source_filefolder.length; i++ ) {
         TableItem ti = wFields.table.getItem( i );
         if ( jobEntry.source_filefolder[i] != null ) {
-          ti.setText( 1, jobEntry.source_filefolder[i] );
+          String sourceUrl = jobEntry.source_filefolder[i];
+          String clusterName = jobEntry.getConfigurationBy( sourceUrl );
+          if ( clusterName != null ) {
+            clusterName =
+                clusterName.startsWith( JobEntryCopyFiles.LOCAL_SOURCE_FILE ) ? LOCAL_ENVIRONMENT : clusterName;
+            clusterName =
+                clusterName.startsWith( JobEntryCopyFiles.STATIC_SOURCE_FILE ) ? STATIC_ENVIRONMENT : clusterName;
+
+            ti.setText( 1, clusterName );
+            sourceUrl =
+                clusterName.equals( LOCAL_ENVIRONMENT ) || clusterName.equals( STATIC_ENVIRONMENT ) ? sourceUrl
+                    : jobEntry.getUrlPath( sourceUrl );
+          }
+          ti.setText( 2, sourceUrl );
         }
         if ( jobEntry.wildcard[i] != null ) {
-          ti.setText( 2, jobEntry.wildcard[i] );
+          ti.setText( 3, jobEntry.wildcard[i] );
         }
-        if ( jobEntry.destination_filefolder[i] != null ) {
-          ti.setText( 4, jobEntry.destination_filefolder[i] );
+        if ( jobEntry.destination_filefolder[i] != null && !Const.isEmpty( jobEntry.destination_filefolder[i] ) ) {
+          String destinationURL = jobEntry.destination_filefolder[i];
+          String clusterName = jobEntry.getConfigurationBy( destinationURL );
+          if ( clusterName != null ) {
+            clusterName = clusterName.startsWith( JobEntryCopyFiles.LOCAL_DEST_FILE ) ? LOCAL_ENVIRONMENT : clusterName;
+            clusterName =
+                clusterName.startsWith( JobEntryCopyFiles.STATIC_DEST_FILE ) ? STATIC_ENVIRONMENT : clusterName;
+            ti.setText( 4, clusterName );
+            destinationURL =
+                clusterName.equals( LOCAL_ENVIRONMENT ) || clusterName.equals( STATIC_ENVIRONMENT ) ? destinationURL
+                    : jobEntry.getUrlPath( destinationURL );
+          }
+          ti.setText( 5, destinationURL );
         }
       }
+    
       wFields.setRowNums();
       wFields.optWidth( true );
     }
@@ -580,21 +608,32 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
         nr++;
       }
     }
+    Map<String, String> sourceDestinationMappings = new HashMap<String, String>();
     jobEntry.source_filefolder = new String[nr];
     jobEntry.destination_filefolder = new String[nr];
     jobEntry.wildcard = new String[nr];
     nr = 0;
     for ( int i = 0; i < nritems; i++ ) {
-      String source = wFields.getNonEmpty( i ).getText( 1 );
-      String dest = wFields.getNonEmpty( i ).getText( 2 );
+      String sourceNc = wFields.getNonEmpty( i ).getText( 1 );
+      sourceNc = sourceNc.equals( LOCAL_ENVIRONMENT ) ? JobEntryCopyFiles.LOCAL_SOURCE_FILE + i : sourceNc;
+      sourceNc = sourceNc.equals( STATIC_ENVIRONMENT ) ? JobEntryCopyFiles.STATIC_SOURCE_FILE + i : sourceNc;
+      String source = wFields.getNonEmpty( i ).getText( 2 );
       String wild = wFields.getNonEmpty( i ).getText( 3 );
-      if ( source != null && source.length() != 0 ) {
-        jobEntry.source_filefolder[nr] = source;
-        jobEntry.destination_filefolder[nr] = dest;
+      String destNc = wFields.getNonEmpty( i ).getText( 4 );
+      destNc = destNc.equals( LOCAL_ENVIRONMENT ) ? JobEntryCopyFiles.LOCAL_DEST_FILE + i : destNc;
+      destNc = destNc.equals( STATIC_ENVIRONMENT ) ? JobEntryCopyFiles.STATIC_DEST_FILE + i : destNc;
+      String dest = wFields.getNonEmpty( i ).getText( 5 );
+
+      if ( !Const.isEmpty( source ) && jobEntry.source_filefolder.length > 0 ) {
+        jobEntry.source_filefolder[nr] = jobEntry.loadURL( source, sourceNc, getMetaStore(), sourceDestinationMappings );
+        jobEntry.destination_filefolder[nr] =
+            jobEntry.loadURL( dest, destNc, getMetaStore(), sourceDestinationMappings );
         jobEntry.wildcard[nr] = wild;
         nr++;
       }
     }
+    jobEntry.setConfigurationMappings( sourceDestinationMappings );
+
     dispose();
   }
 
