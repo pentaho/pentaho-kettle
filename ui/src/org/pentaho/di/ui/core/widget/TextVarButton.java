@@ -32,6 +32,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -86,8 +87,11 @@ public class TextVarButton extends TextVar {
     FormData fdButton = new FormData();
     fdButton.top = new FormAttachment( 0, 0 );
     fdButton.right = new FormAttachment( 100, 0 );
-    fdButton.height = 25;
     fdButton.width = 30;
+    fdButton.height = 25;
+    if ( Const.isWindows() ) {
+      fdButton.height = 18;
+    }
     button.setLayoutData( fdButton );
     if ( selectionListener != null ) {
       button.addSelectionListener( selectionListener );
