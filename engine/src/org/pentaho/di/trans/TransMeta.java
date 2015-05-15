@@ -2023,7 +2023,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     RowMetaInterface before = row.clone();
     compatibleGetStepFields( stepint, row, name, inform, nextStep, this );
     if ( !isSomethingDifferentInRow( before, row ) ) {
-      stepint.getFields( row, name, inform, nextStep, this, repository, metaStore );
+      stepint.getFields( before, name, inform, nextStep, this, repository, metaStore );
+      // pass the clone object to prevent from spoiling data by other steps
+      row = before;
     }
 
     return row;
