@@ -10,11 +10,11 @@
     <conf name="plugins"/>
     <conf name="launcher" />
   </configurations>
-  
+
   <publications>
     <artifact name="${ivy.artifact.id}" type="zip"/>
   </publications>
-  
+
   <dependencies defaultconf="default->default">
     <!-- Kettle module dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-core"          rev="${project.revision}" changing="true" force="true"/>
@@ -23,7 +23,7 @@
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"        rev="${project.revision}" changing="true" force="true">
       <exclude name="swt-linux-x86_64"/>
     </dependency>
-    
+
     <!-- Kettle plugin dependencies-->
     <dependency org="${ivy.artifact.group}" name="market" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="market" type="zip"/>
@@ -62,7 +62,7 @@
     <dependency org="pentaho" name="pdi-baserver-utils" rev="${dependency.pdi-baserver-utils.revision}" changing="true" transitive="false" conf="plugins->default">
       <artifact name="pdi-baserver-utils" type="zip"/>
     </dependency>
-	
+
     <!--  Pentaho reporting dependencies -->
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions" rev="${dependency.pentaho-reporting.revision}" changing="true">
       <exclude name="pentaho-reporting-engine-classic-core-test"/>
@@ -80,8 +80,8 @@
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-legacy-charts" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-legacy-functions" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-wizard-core"  rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="true"/>
-    
-    
+
+
  	<!-- PDF Documentation for bundling -->
 	<dependency org="pentaho-doc" name="bigdata_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
 		<artifact name="bigdata_guide" type="pdf" />
@@ -122,9 +122,6 @@
 	<dependency org="pentaho-doc" name="pdi_user_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
 		<artifact name="pdi_user_guide" type="pdf" />
 	</dependency>
-	<dependency org="pentaho-doc" name="pdi_whats_new" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
-		<artifact name="pdi_whats_new" type="pdf" />
-	</dependency>
 	<dependency org="pentaho-doc" name="reporting_embedders_guide" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
 		<artifact name="reporting_embedders_guide" type="pdf" />
 	</dependency>
@@ -140,17 +137,17 @@
     <dependency org="pentaho-doc" name="troubleshooting_guide_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
         <artifact name="troubleshooting_guide_pdi" type="pdf" />
     </dependency>
-    
+
  	<!--  OSS Licenses file -->
 	<dependency org="pentaho" name="oss-licenses" rev="${dependency.oss-licenses.revision}" conf="oss-licenses->default">
 		<artifact name="oss-licenses" type="zip" />
 	</dependency>
-     
+
     <!-- The OS-specific libraries are bundled together, unzip them all for assembly -->
     <dependency org="org.eclipse"          name="swtlibs"               rev="4.3.2" conf="swtlibs->default" transitive="false">
       <artifact name="swtlibs" type="zip"/>
     </dependency>
-      
+
     <!-- Third-party JDBC dependencies -->
     <dependency org="org.apache.derby"     name="derby"                 rev="10.2.1.6"      transitive="false"/>
     <dependency org="org.apache.derby"     name="derbyclient"           rev="10.2.1.6"      transitive="false"/>
@@ -158,7 +155,7 @@
     <dependency org="hsqldb"               name="hsqldb"                rev="1.8.0.7"       transitive="false"/>
     <dependency org="infobright"           name="infobright-core"       rev="3.4"           transitive="false"/>
     <dependency org="org.firebirdsql.jdbc" name="jaybird"               rev="2.1.6"         transitive="false"/>
-    <dependency org="net.sf.jt400"         name="jt400"                 rev="6.1"           transitive="false"/>  
+    <dependency org="net.sf.jt400"         name="jt400"                 rev="6.1"           transitive="false"/>
     <dependency org="jtds"                 name="jtds"                  rev="1.2.5"         transitive="false"/>
     <dependency org="luciddb"              name="LucidDbClient-minimal" rev="0.9.4"         transitive="false"/>
     <dependency org="monetdb"              name="monetdb-jdbc"          rev="2.1"           transitive="false"/>
@@ -166,11 +163,12 @@
     <dependency org="com.sap"              name="sapdbc"                rev="7.4.4"         transitive="false"/>
     <dependency org="org.xerial"           name="sqlite-jdbc"           rev="3.7.2"         transitive="false"/>
     <dependency org="jaxen"                name="jaxen"                 rev="1.1.1"         transitive="false"/>
-    
+
     <!-- Other third-party dependencies -->
     <dependency org="asm"                  name="asm"                   rev="3.2"           transitive="false"/>
     <dependency org="net.sf.saxon"         name="saxon-dom"             rev="9.1.0.8"       transitive="false"/>
     
     <override org="pentaho" module="metastore" rev="${project.revision}" />
+
   </dependencies>
 </ivy-module>
