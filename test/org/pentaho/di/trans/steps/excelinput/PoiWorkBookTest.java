@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,21 +22,61 @@
 
 package org.pentaho.di.trans.steps.excelinput;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.Date;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
+import org.apache.commons.io.FileUtils;
 
-public class PoiWorkBookTest extends TestCase {
-  public void testRead() throws Exception {
+public class PoiWorkBookTest {
+
+  @Test
+  public void testReadData() throws KettleException {
+    readData();
+  }
+
+  @Test
+  public void testFileDoesNotChange() throws KettleException, IOException {
     File fileBeforeRead = new File( "testfiles/sample-file.xlsx" );
+    readData();
+    File fileAfterRead = new File( "testfiles/sample-file.xlsx" );
+    assertTrue( FileUtils.contentEquals(fileBeforeRead, fileAfterRead ) );
+  }
+
+  @Test
+  public void testResourceFree() throws Exception {
+    FileLock lock = null;
+    RandomAccessFile randomAccessFile = null;
+    try {
+      readData();
+      File fileAfterRead = new File( "testfiles/sample-file.xlsx" );
+      randomAccessFile = new RandomAccessFile( fileAfterRead, "rw" );
+      FileChannel fileChannel = randomAccessFile.getChannel();
+      lock = fileChannel.tryLock();
+      // check that we could lock file
+      assertTrue( lock.isValid() );
+    } finally {
+      if ( lock != null ) {
+        lock.release();
+      }
+      if ( randomAccessFile != null ) {
+        randomAccessFile.close();
+      }
+    }
+  }
+
+  private void readData() throws KettleException {
     KWorkbook workbook = WorkbookFactory.getWorkbook( SpreadSheetType.POI, "testfiles/sample-file.xlsx", null );
     int numberOfSheets = workbook.getNumberOfSheets();
     assertEquals( 3, numberOfSheets );
@@ -85,13 +125,10 @@ public class PoiWorkBookTest extends TestCase {
 
     try {
       sheet1.getRow( 5 );
-      throw new Exception( "No out of bounds exception thrown when expected" );
+      fail( "No out of bounds exception thrown when expected" );
     } catch ( ArrayIndexOutOfBoundsException e ) {
       // OK!
     }
-
     workbook.close();
-    File fileAfterRead = new File( "testfiles/sample-file.xlsx" );
-    assertEquals( fileBeforeRead, fileAfterRead );
   }
 }
