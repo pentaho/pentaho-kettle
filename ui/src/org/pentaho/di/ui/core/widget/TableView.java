@@ -526,6 +526,11 @@ public class TableView extends Composite {
             }
           }
         };
+
+        // force the immediate update
+        if ( !row.isDisposed() ) {
+          row.setText( colnr, value );
+        }
         
         if ( columns[ colnr - 1 ].getType() == ColumnInfo.COLUMN_TYPE_TEXT_BUTTON ) {
           try {
