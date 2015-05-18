@@ -112,12 +112,11 @@ public class PluginRegistry {
       List<String> categories = new ArrayList<String>();
       categoryMap.put( pluginType, categories );
     }
-
   }
 
   public synchronized void removePlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin ) {
     List<PluginInterface> list = pluginMap.get( pluginType );
-    if( list != null ) {
+    if ( list != null ) {
       list.remove( plugin );
     }
 
@@ -138,6 +137,7 @@ public class PluginRegistry {
         listener.pluginRemoved( plugin );
       }
     }
+    notifyAll();
   }
 
   public void addParentClassLoaderPatterns( PluginInterface plugin, String[] patterns ) {
@@ -225,6 +225,7 @@ public class PluginRegistry {
         }
       }
     }
+    notifyAll();
   }
 
   /**
