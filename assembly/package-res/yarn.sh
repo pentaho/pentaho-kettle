@@ -39,5 +39,7 @@ fi
 
 echo "$KETTLE_HOME"
 
+export IS_YARN="true"
+
 BASEDIR="`dirname $0`"
 "$BASEDIR/carte.sh" "$@"
