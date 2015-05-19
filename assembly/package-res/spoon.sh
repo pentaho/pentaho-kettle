@@ -44,8 +44,12 @@ setPentahoEnv
 LIBPATH="NONE"
 STARTUP="$BASEDIR/launcher/launcher.jar"
 
-# Go to directory where spoon.sh located
-cd $BASEDIR
+if [ -z "$IS_YARN" ]; then
+	# Go to directory where spoon.sh located
+	cd $BASEDIR
+else
+	cd "$BASEDIR"
+fi
 
 case `uname -s` in 
 	AIX)
