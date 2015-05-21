@@ -228,7 +228,7 @@ public class JobPainter extends BasePainter {
 
     String name = jobEntryCopy.getName();
     if ( jobEntryCopy.isSelected() ) {
-      gc.setLineWidth( 2 );
+      gc.setLineWidth( 3 );
     } else {
       gc.setLineWidth( 1 );
     }
