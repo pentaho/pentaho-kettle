@@ -28,7 +28,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.ImportRulePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.imp.rule.ImportRuleInterface;
 import org.pentaho.di.imp.rule.ImportValidationFeedback;
@@ -70,7 +70,7 @@ public abstract class BaseImportRule implements ImportRuleInterface {
 
   public void loadXML( Node ruleNode ) throws KettleException {
     id = XMLHandler.getTagValue( ruleNode, "id" );
-    enabled = ValueMeta.convertStringToBoolean( XMLHandler.getTagValue( ruleNode, "enabled" ) );
+    enabled = ValueMetaBoolean.convertStringToBoolean( XMLHandler.getTagValue( ruleNode, "enabled" ) );
   }
 
   @Override

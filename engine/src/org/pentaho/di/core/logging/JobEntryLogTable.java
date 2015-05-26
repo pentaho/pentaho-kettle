@@ -30,6 +30,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -176,8 +177,9 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
    *          the object to log
    * @param parent
    *          the parent to which the object belongs
+   * @throws KettleValueException 
    */
-  public RowMetaAndData getLogRecord( LogStatus status, Object subject, Object parent ) {
+  public RowMetaAndData getLogRecord( LogStatus status, Object subject, Object parent ) throws KettleValueException {
     if ( subject == null || subject instanceof JobEntryCopy ) {
 
       JobEntryCopy jobEntryCopy = (JobEntryCopy) subject;

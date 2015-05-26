@@ -117,7 +117,7 @@ public class RepositoryExporterTest {
     Mockito.when(
       repository.loadTransformation( Mockito.anyString(), Mockito.any( RepositoryDirectoryInterface.class ), Mockito
         .any( ProgressMonitorListener.class ), Mockito.anyBoolean(), Mockito.anyString() ) ).thenAnswer(
-      transLoader );
+          transLoader );
 
     // export file
     xmlFileName = TestUtils.createRamFile( getClass().getSimpleName() + "/export.xml" );

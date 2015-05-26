@@ -35,7 +35,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -942,7 +942,7 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
       case FIELD_TYPE_BOOLEAN:
         boolean valuebool;
         try {
-          valuebool = ValueMeta.convertStringToBoolean( sourcevalue );
+          valuebool = ValueMetaBoolean.convertStringToBoolean( sourcevalue );
         } catch ( Exception e ) {
           logError( BaseMessages.getString( PKG, "JobEntrySimpleEval.Error.UnparsableBoolean", sourcevalue, e
             .getMessage() ) );

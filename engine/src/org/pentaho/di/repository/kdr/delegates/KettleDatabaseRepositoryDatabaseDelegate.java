@@ -41,6 +41,8 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
@@ -246,37 +248,22 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
     ObjectId id_database_contype = getDatabaseConTypeID( access );
 
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING ), name );
-    table
-      .addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER ),
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE ), id );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_NAME ), name );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_TYPE ),
         id_database_type );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER ),
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_CONTYPE ),
       id_database_contype );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_HOST_NAME, ValueMetaInterface.TYPE_STRING ), host );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING ), dbname );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER ), Long.valueOf(
-        Const.toLong( port, -1 ) ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING ), user );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_PASSWORD, ValueMetaInterface.TYPE_STRING ), Encr
-      .encryptPasswordIfNotUsingVariables( pass ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_SERVERNAME, ValueMetaInterface.TYPE_STRING ), servername );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_DATA_TBS, ValueMetaInterface.TYPE_STRING ), data_tablespace );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_INDEX_TBS, ValueMetaInterface.TYPE_STRING ), index_tablespace );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_HOST_NAME ), host );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_DATABASE_NAME ), dbname );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_DATABASE_PORT ),
+      Long.valueOf( Const.toLong( port, -1 ) ) );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_USERNAME ), user );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_PASSWORD ),
+      Encr.encryptPasswordIfNotUsingVariables( pass ) );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_SERVERNAME ), servername );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_DATA_TBS ), data_tablespace );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_INDEX_TBS ), index_tablespace );
 
     repository.connectionDelegate.getDatabase().prepareInsert(
       table.getRowMeta(), KettleDatabaseRepository.TABLE_R_DATABASE );
@@ -294,35 +281,21 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
     ObjectId id_database_contype = getDatabaseConTypeID( access );
 
     RowMetaAndData table = new RowMetaAndData();
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_NAME ), name );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING ), name );
-    table
-      .addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_TYPE, ValueMetaInterface.TYPE_INTEGER ),
-        id_database_type );
+      new ValueMetaInteger( KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_TYPE ), id_database_type );
     table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_CONTYPE, ValueMetaInterface.TYPE_INTEGER ),
-      id_database_contype );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_HOST_NAME, ValueMetaInterface.TYPE_STRING ), host );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_DATABASE_NAME, ValueMetaInterface.TYPE_STRING ), dbname );
+      new ValueMetaInteger( KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE_CONTYPE ), id_database_contype );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_HOST_NAME ), host );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_DATABASE_NAME ), dbname );
     table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_DATABASE_PORT, ValueMetaInterface.TYPE_INTEGER ), Long.valueOf(
-        Const.toLong( port, -1 ) ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_USERNAME, ValueMetaInterface.TYPE_STRING ), user );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_PASSWORD, ValueMetaInterface.TYPE_STRING ), Encr
+      new ValueMetaInteger( KettleDatabaseRepository.FIELD_DATABASE_PORT ), Long.valueOf( Const.toLong( port, -1 ) ) );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_USERNAME ), user );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_PASSWORD ), Encr
       .encryptPasswordIfNotUsingVariables( pass ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_SERVERNAME, ValueMetaInterface.TYPE_STRING ), servername );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_DATA_TBS, ValueMetaInterface.TYPE_STRING ), data_tablespace );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_INDEX_TBS, ValueMetaInterface.TYPE_STRING ), index_tablespace );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_SERVERNAME ), servername );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_DATA_TBS ), data_tablespace );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_INDEX_TBS ), index_tablespace );
 
     repository.connectionDelegate.updateTableRow(
       KettleDatabaseRepository.TABLE_R_DATABASE, KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE, table,
@@ -455,17 +428,11 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
     RowMetaAndData table = new RowMetaAndData();
 
     table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE,
-        ValueMetaInterface.TYPE_INTEGER ), id );
+      new ValueMetaInteger( KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE ), id );
     table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, ValueMetaInterface.TYPE_INTEGER ),
-      idDatabase );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_CODE, ValueMetaInterface.TYPE_STRING ), code );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_VALUE_STR, ValueMetaInterface.TYPE_STRING ), strValue );
+      new ValueMetaInteger( KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE ), idDatabase );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_CODE ), code );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_VALUE_STR ), strValue );
 
     return table;
   }
