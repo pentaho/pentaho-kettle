@@ -59,6 +59,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
@@ -395,7 +396,7 @@ public class ConditionEditor extends Composite {
                       new ErrorDialog( shell, "Error", "Error creating value meta object", exception );
                     }
                   } else {
-                    v = new ValueMetaAndData( new ValueMeta( "constant", ValueMetaInterface.TYPE_STRING ), null );
+                    v = new ValueMetaAndData( new ValueMetaString( "constant" ), null );
                   }
                 }
                 EnterValueDialog evd = new EnterValueDialog( shell, SWT.NONE, v.getValueMeta(), v.getValueData() );

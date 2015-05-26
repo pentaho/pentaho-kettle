@@ -92,6 +92,8 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
@@ -215,7 +217,7 @@ public class TableView extends Composite {
     clearUndo();
 
     numberColumn = new ColumnInfo( "#", ColumnInfo.COLUMN_TYPE_TEXT, true, true );
-    ValueMetaInterface numberColumnValueMeta = new ValueMeta( "#", ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface numberColumnValueMeta = new ValueMetaInteger( "#" );
     numberColumnValueMeta.setConversionMask( "####0" );
     numberColumn.setValueMeta( numberColumnValueMeta );
 
@@ -1230,8 +1232,8 @@ public class TableView extends Composite {
       final RowMetaInterface rowMeta = new RowMeta();
 
       // First values are the color name + value!
-      rowMeta.addValueMeta( new ValueMeta( "colorname", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "color", ValueMetaInterface.TYPE_INTEGER ) );
+      rowMeta.addValueMeta( new ValueMetaString( "colorname" ) );
+      rowMeta.addValueMeta( new ValueMetaInteger( "color" ) );
       for ( int j = 0; j < table.getColumnCount(); j++ ) {
         ColumnInfo colInfo;
         if ( j > 0 ) {
@@ -2830,9 +2832,9 @@ public class TableView extends Composite {
 
   public RowMetaInterface getRowWithoutValues() {
     RowMetaInterface f = new RowMeta();
-    f.addValueMeta( new ValueMeta( "#", ValueMetaInterface.TYPE_INTEGER ) );
+    f.addValueMeta( new ValueMetaInteger( "#" ) );
     for ( int i = 0; i < columns.length; i++ ) {
-      f.addValueMeta( new ValueMeta( columns[i].getName(), ValueMetaInterface.TYPE_STRING ) );
+      f.addValueMeta( new ValueMetaString( columns[i].getName() ) );
     }
     return f;
   }

@@ -48,6 +48,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -430,7 +431,7 @@ public class EnterValueDialog extends Dialog {
       valueMeta.setPrecision( Const.toInt( wPrecision.getText(), -1 ) );
       val.setValueMeta( valueMeta );
 
-      ValueMetaInterface stringValueMeta = new ValueMeta( valuename, ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface stringValueMeta = new ValueMetaString( valuename );
       stringValueMeta.setConversionMetadata( valueMeta );
 
       Object targetData = stringValueMeta.convertDataUsingConversionMetaData( valueData );

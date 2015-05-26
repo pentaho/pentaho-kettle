@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataField;
@@ -241,7 +242,7 @@ public class XMLInputFieldsImportProgressDialog {
   }
 
   @SuppressWarnings( "unchecked" )
-  private void setNodeField( Node node, IProgressMonitor monitor ) {
+  private void setNodeField( Node node, IProgressMonitor monitor ) throws KettleValueException {
     Element e = (Element) node;
     // get all attributes
     List<Attribute> lista = e.attributes();
@@ -290,7 +291,7 @@ public class XMLInputFieldsImportProgressDialog {
     } // end if
   }
 
-  private void setAttributeField( Attribute attribute, IProgressMonitor monitor ) {
+  private void setAttributeField( Attribute attribute, IProgressMonitor monitor ) throws KettleValueException {
     // Get Attribute Name
     String attributname = attribute.getName();
     String attributnametxt = cleanString( attribute.getPath() );
@@ -370,7 +371,7 @@ public class XMLInputFieldsImportProgressDialog {
     return true;
   }
 
-  private boolean childNode( Node node, IProgressMonitor monitor ) {
+  private boolean childNode( Node node, IProgressMonitor monitor ) throws KettleValueException {
     boolean rc = false; // true: we found child nodes
     Element ce = (Element) node;
     // List child

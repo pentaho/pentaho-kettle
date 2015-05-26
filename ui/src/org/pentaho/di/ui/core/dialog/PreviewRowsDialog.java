@@ -45,8 +45,8 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -282,7 +282,7 @@ public class PreviewRowsDialog {
 
     if ( dynamic && rowMeta == null ) {
       rowMeta = new RowMeta();
-      rowMeta.addValueMeta( new ValueMeta( "<waiting for rows>", ValueMetaInterface.TYPE_STRING ) );
+      rowMeta.addValueMeta( new ValueMetaString( "<waiting for rows>" ) );
       waitingForRows = true;
     }
     if ( !dynamic ) {
