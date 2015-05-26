@@ -47,8 +47,13 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleSQLException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 /**
  * This class is no longer used
@@ -92,7 +97,7 @@ public class ThinPreparedStatement extends ThinStatement implements PreparedStat
       paramMeta = new ValueMetaInterface[placeholderIndexes.size()];
       // Null Strings is the default.
       for ( int i = 0; i < placeholderIndexes.size(); i++ ) {
-        paramMeta[i] = new ValueMeta( "param-" + ( i + 1 ), ValueMetaInterface.TYPE_STRING );
+        paramMeta[i] = new ValueMetaString( "param-" + ( i + 1 ) );
       }
 
     } catch ( Exception e ) {
@@ -215,7 +220,7 @@ public class ThinPreparedStatement extends ThinStatement implements PreparedStat
   @Override
   public void setBigDecimal( int nr, BigDecimal value ) throws SQLException {
     paramData[nr - 1] = value;
-    paramMeta[nr - 1] = new ValueMeta( "param-" + nr, ValueMetaInterface.TYPE_BIGNUMBER );
+    paramMeta[nr - 1] = new ValueMetaBigNumber( "param-" + nr );
   }
 
   @Override
@@ -251,13 +256,13 @@ public class ThinPreparedStatement extends ThinStatement implements PreparedStat
   @Override
   public void setBoolean( int nr, boolean value ) throws SQLException {
     paramData[nr - 1] = Boolean.valueOf( value );
-    paramMeta[nr - 1] = new ValueMeta( "param-" + nr, ValueMetaInterface.TYPE_BOOLEAN );
+    paramMeta[nr - 1] = new ValueMetaBoolean( "param-" + nr );
   }
 
   @Override
   public void setByte( int nr, byte value ) throws SQLException {
     paramData[nr - 1] = Long.valueOf( value );
-    paramMeta[nr - 1] = new ValueMeta( "param-" + nr, ValueMetaInterface.TYPE_INTEGER );
+    paramMeta[nr - 1] = new ValueMetaInteger( "param-" + nr );
   }
 
   @Override
@@ -298,7 +303,7 @@ public class ThinPreparedStatement extends ThinStatement implements PreparedStat
   @Override
   public void setDate( int nr, Date value ) throws SQLException {
     paramData[nr - 1] = new java.util.Date( value.getTime() );
-    paramMeta[nr - 1] = new ValueMeta( "param-" + nr, ValueMetaInterface.TYPE_DATE );
+    paramMeta[nr - 1] = new ValueMetaDate( "param-" + nr );
   }
 
   @Override
@@ -306,31 +311,31 @@ public class ThinPreparedStatement extends ThinStatement implements PreparedStat
     // TODO: investigate the calendar parameter functionality with regards to time zones.
     //
     paramData[nr - 1] = new java.util.Date( value.getTime() );
-    paramMeta[nr - 1] = new ValueMeta( "param-" + nr, ValueMetaInterface.TYPE_DATE );
+    paramMeta[nr - 1] = new ValueMetaDate( "param-" + nr );
   }
 
   @Override
   public void setDouble( int nr, double value ) throws SQLException {
     paramData[nr - 1] = Double.valueOf( value );
-    paramMeta[nr - 1] = new ValueMeta( "param-" + nr, ValueMetaInterface.TYPE_NUMBER );
+    paramMeta[nr - 1] = new ValueMetaNumber( "param-" + nr );
   }
 
   @Override
   public void setFloat( int nr, float value ) throws SQLException {
     paramData[nr - 1] = Double.valueOf( value );
-    paramMeta[nr - 1] = new ValueMeta( "param-" + nr, ValueMetaInterface.TYPE_NUMBER );
+    paramMeta[nr - 1] = new ValueMetaNumber( "param-" + nr );
   }
 
   @Override
   public void setInt( int nr, int value ) throws SQLException {
     paramData[nr - 1] = Long.valueOf( value );
-    paramMeta[nr - 1] = new ValueMeta( "param-" + nr, ValueMetaInterface.TYPE_INTEGER );
+    paramMeta[nr - 1] = new ValueMetaInteger( "param-" + nr );
   }
 
   @Override
   public void setLong( int nr, long value ) throws SQLException {
     paramData[nr - 1] = Long.valueOf( value );
-    paramMeta[nr - 1] = new ValueMeta( "param-" + nr, ValueMetaInterface.TYPE_INTEGER );
+    paramMeta[nr - 1] = new ValueMetaInteger( "param-" + nr );
   }
 
   @Override
@@ -435,13 +440,13 @@ public class ThinPreparedStatement extends ThinStatement implements PreparedStat
   @Override
   public void setString( int nr, String value ) throws SQLException {
     paramData[nr - 1] = value;
-    paramMeta[nr - 1] = new ValueMeta( "param-" + nr, ValueMetaInterface.TYPE_STRING );
+    paramMeta[nr - 1] = new ValueMetaString( "param-" + nr );
   }
 
   @Override
   public void setTime( int nr, Time value ) throws SQLException {
     paramData[nr - 1] = new java.util.Date( value.getTime() );
-    paramMeta[nr - 1] = new ValueMeta( "param-" + nr, ValueMetaInterface.TYPE_DATE );
+    paramMeta[nr - 1] = new ValueMetaDate( "param-" + nr );
   }
 
   @Override
@@ -452,7 +457,7 @@ public class ThinPreparedStatement extends ThinStatement implements PreparedStat
   @Override
   public void setTimestamp( int nr, Timestamp value ) throws SQLException {
     paramData[nr - 1] = new java.util.Date( value.getTime() );
-    paramMeta[nr - 1] = new ValueMeta( "param-" + nr, ValueMetaInterface.TYPE_DATE );
+    paramMeta[nr - 1] = new ValueMetaDate( "param-" + nr );
   }
 
   @Override

@@ -57,6 +57,7 @@ import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
@@ -406,14 +407,14 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
         if ( nameField != null ) {
           if ( transMeta.isUsingAClusterSchema() ) {
             sql.append( " WHERE " ).append( logConnection.quoteField( nameField.getFieldName() ) ).append( " LIKE ?" );
-            params.addValue( new ValueMeta( "transname_literal", ValueMetaInterface.TYPE_STRING ), transMeta.getName() );
+            params.addValue( new ValueMetaString( "transname_literal" ), transMeta.getName() );
 
             sql.append( " OR    " ).append( logConnection.quoteField( nameField.getFieldName() ) ).append( " LIKE ?" );
-            params.addValue( new ValueMeta( "transname_cluster", ValueMetaInterface.TYPE_STRING ), transMeta.getName()
+            params.addValue( new ValueMetaString( "transname_cluster" ), transMeta.getName()
               + " (%" );
           } else {
             sql.append( " WHERE " ).append( logConnection.quoteField( nameField.getFieldName() ) ).append( " = ?" );
-            params.addValue( new ValueMeta( "transname_literal", ValueMetaInterface.TYPE_STRING ), transMeta.getName() );
+            params.addValue( new ValueMetaString( "transname_literal" ), transMeta.getName() );
           }
         }
 

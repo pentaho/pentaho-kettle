@@ -58,6 +58,7 @@ import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -519,7 +520,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
             .append( " WHERE " ).append( logConnection.quoteField( nameField.getFieldName() ) ).append(
               " LIKE ?" );
           params
-            .addValue( new ValueMeta( "transname_literal", ValueMetaInterface.TYPE_STRING ), jobMeta.getName() );
+            .addValue( new ValueMetaString( "transname_literal" ), jobMeta.getName() );
         }
 
         if ( keyField != null && keyField.isEnabled() ) {

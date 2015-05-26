@@ -25,12 +25,13 @@ package org.pentaho.di.core;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
 
@@ -132,8 +133,12 @@ public class RowMetaAndData implements Cloneable {
     rowMeta.addValueMeta( valueMeta );
   }
 
-  public void addValue( String valueName, int valueType, Object valueData ) {
-    addValue( new ValueMeta( valueName, valueType ), valueData );
+  public void addValue( String valueName, int valueType, Object valueData ) throws KettleValueException {
+    try {
+      addValue( ValueMetaFactory.createValueMeta( valueName, valueType ), valueData );
+    } catch ( KettlePluginException e ) {
+      throw new KettleValueException( e );
+    }
   }
 
   public void clear() {

@@ -26,8 +26,8 @@ import java.util.Date;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -248,25 +248,25 @@ public class ResultFile implements Cloneable {
     RowMetaAndData row = new RowMetaAndData();
 
     // First the type
-    row.addValue( new ValueMeta( "type", ValueMetaInterface.TYPE_STRING ), getTypeDesc() );
+    row.addValue( new ValueMetaString( "type" ), getTypeDesc() );
 
     // The filename
-    row.addValue( new ValueMeta( "filename", ValueMetaInterface.TYPE_STRING ), file.getName().getBaseName() );
+    row.addValue( new ValueMetaString( "filename" ), file.getName().getBaseName() );
 
     // The path
-    row.addValue( new ValueMeta( "path", ValueMetaInterface.TYPE_STRING ), file.getName().getURI() );
+    row.addValue( new ValueMetaString( "path" ), file.getName().getURI() );
 
     // The origin parent
-    row.addValue( new ValueMeta( "parentorigin", ValueMetaInterface.TYPE_STRING ), originParent );
+    row.addValue( new ValueMetaString( "parentorigin" ), originParent );
 
     // The origin
-    row.addValue( new ValueMeta( "origin", ValueMetaInterface.TYPE_STRING ), origin );
+    row.addValue( new ValueMetaString( "origin" ), origin );
 
     // The comment
-    row.addValue( new ValueMeta( "comment", ValueMetaInterface.TYPE_STRING ), comment );
+    row.addValue( new ValueMetaString( "comment" ), comment );
 
     // The timestamp
-    row.addValue( new ValueMeta( "timestamp", ValueMetaInterface.TYPE_DATE ), timestamp );
+    row.addValue( new ValueMetaDate( "timestamp" ), timestamp );
 
     return row;
   }

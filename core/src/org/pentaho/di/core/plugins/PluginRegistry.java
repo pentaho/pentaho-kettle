@@ -50,8 +50,7 @@ import org.pentaho.di.core.logging.Metrics;
 import org.pentaho.di.core.row.RowBuffer;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -787,28 +786,14 @@ public class PluginRegistry {
   private RowMetaInterface getPluginInformationRowMeta() {
     RowMetaInterface row = new RowMeta();
 
-    row.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "PluginRegistry.Information.Type.Label" ), ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "PluginRegistry.Information.ID.Label" ), ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "PluginRegistry.Information.Name.Label" ), ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "PluginRegistry.Information.Description.Label" ),
-      ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "PluginRegistry.Information.Libraries.Label" ),
-      ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "PluginRegistry.Information.ImageFile.Label" ),
-      ValueMetaInterface.TYPE_STRING ) );
-    row.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "PluginRegistry.Information.ClassName.Label" ),
-      ValueMetaInterface.TYPE_STRING ) );
-    row
-      .addValueMeta( new ValueMeta(
-        BaseMessages.getString( PKG, "PluginRegistry.Information.Category.Label" ),
-        ValueMetaInterface.TYPE_STRING ) );
+    row.addValueMeta( new ValueMetaString( BaseMessages.getString( PKG, "PluginRegistry.Information.Type.Label" ) ) );
+    row.addValueMeta( new ValueMetaString( BaseMessages.getString( PKG, "PluginRegistry.Information.ID.Label" ) ) );
+    row.addValueMeta( new ValueMetaString( BaseMessages.getString( PKG, "PluginRegistry.Information.Name.Label" ) ) );
+    row.addValueMeta( new ValueMetaString( BaseMessages.getString( PKG, "PluginRegistry.Information.Description.Label" ) ) );
+    row.addValueMeta( new ValueMetaString( BaseMessages.getString( PKG, "PluginRegistry.Information.Libraries.Label" ) ) );
+    row.addValueMeta( new ValueMetaString( BaseMessages.getString( PKG, "PluginRegistry.Information.ImageFile.Label" ) ) );
+    row.addValueMeta( new ValueMetaString( BaseMessages.getString( PKG, "PluginRegistry.Information.ClassName.Label" ) ) );
+    row.addValueMeta( new ValueMetaString( BaseMessages.getString( PKG, "PluginRegistry.Information.Category.Label" ) ) );
 
     return row;
   }

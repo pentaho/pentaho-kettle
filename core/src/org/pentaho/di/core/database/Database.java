@@ -71,6 +71,7 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
@@ -90,10 +91,16 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNone;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -1103,7 +1110,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       RowMetaInterface rowMeta;
       if ( resultSetMetaData == null ) {
         rowMeta = new RowMeta();
-        rowMeta.addValueMeta( new ValueMeta( "ai-key", ValueMetaInterface.TYPE_INTEGER ) );
+        rowMeta.addValueMeta( new ValueMetaInteger( "ai-key" ) );
       } else {
         rowMeta = getRowInfo( resultSetMetaData, false, false );
       }
@@ -3072,42 +3079,42 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         int sqltype = pmd.getParameterType( i );
         int length = pmd.getPrecision( i );
         int precision = pmd.getScale( i );
-        ValueMeta val;
+        ValueMetaInterface val;
 
         switch( sqltype ) {
           case java.sql.Types.CHAR:
           case java.sql.Types.VARCHAR:
-            val = new ValueMeta( name, ValueMetaInterface.TYPE_STRING );
+            val = new ValueMetaString( name );
             break;
           case java.sql.Types.BIGINT:
           case java.sql.Types.INTEGER:
           case java.sql.Types.NUMERIC:
           case java.sql.Types.SMALLINT:
           case java.sql.Types.TINYINT:
-            val = new ValueMeta( name, ValueMetaInterface.TYPE_INTEGER );
+            val = new ValueMetaInteger( name );
             break;
           case java.sql.Types.DECIMAL:
           case java.sql.Types.DOUBLE:
           case java.sql.Types.FLOAT:
           case java.sql.Types.REAL:
-            val = new ValueMeta( name, ValueMetaInterface.TYPE_NUMBER );
+            val = new ValueMetaNumber( name );
             break;
           case java.sql.Types.DATE:
           case java.sql.Types.TIME:
           case java.sql.Types.TIMESTAMP:
-            val = new ValueMeta( name, ValueMetaInterface.TYPE_DATE );
+            val = new ValueMetaDate( name );
             break;
           case java.sql.Types.BOOLEAN:
           case java.sql.Types.BIT:
-            val = new ValueMeta( name, ValueMetaInterface.TYPE_BOOLEAN );
+            val = new ValueMetaBoolean( name );
             break;
           default:
-            val = new ValueMeta( name, ValueMetaInterface.TYPE_NONE );
+            val = new ValueMetaNone( name );
             break;
         }
 
         if ( val.isNumeric() && ( length > 18 || precision > 18 ) ) {
-          val = new ValueMeta( name, ValueMetaInterface.TYPE_BIGNUMBER );
+          val = new ValueMetaBigNumber( name );
         }
 
         par.addValueMeta( val );
@@ -3167,7 +3174,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
     } else {
       for ( int i = 0; i < q; i++ ) {
-        ValueMetaInterface v = new ValueMeta( "name" + i, ValueMetaInterface.TYPE_NUMBER );
+        ValueMetaInterface v = new ValueMetaNumber( "name" + i );
         par.addValueMeta( v );
       }
     }
@@ -3260,7 +3267,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     long now = System.currentTimeMillis();
     long limit = now - Math.round( timeout * 24 * 60 * 60 * 1000 );
     RowMetaAndData row = new RowMetaAndData();
-    row.addValue( logField.getFieldName(), ValueMetaInterface.TYPE_DATE, new Date( limit ) );
+    row.addValue( new ValueMetaDate( logField.getFieldName() ), new Date( limit ) );
 
     try {
       //fire database
@@ -3295,8 +3302,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       pstmt = connection.prepareStatement( databaseMeta.stripCR( sql ) );
 
       RowMetaInterface r = new RowMeta();
-      r.addValueMeta( new ValueMeta( "TRANSNAME", ValueMetaInterface.TYPE_STRING ) );
-      setValues( r, new Object[] { name } );
+      r.addValueMeta( new ValueMetaString( "TRANSNAME" ) );
+      setValues( r, new Object[]{ name } );
 
       ResultSet res = pstmt.executeQuery();
       if ( res != null ) {
@@ -4149,7 +4156,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       ret = new RowMetaAndData();
       int pos = 1;
       if ( resultname != null && resultname.length() != 0 ) {
-        ValueMeta vMeta = new ValueMeta( resultname, resulttype );
+        ValueMetaInterface vMeta;
+        try {
+          vMeta = ValueMetaFactory.createValueMeta( resultname, resulttype );
+        } catch ( KettlePluginException e ) {
+          vMeta = new ValueMetaNone( resultname );
+        }
         Object v = null;
         switch( resulttype ) {
           case ValueMetaInterface.TYPE_BOOLEAN:

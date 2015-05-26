@@ -34,9 +34,15 @@ import java.util.regex.Pattern;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
 
 /**
@@ -110,43 +116,43 @@ public class ThinUtil {
   public static ValueMetaInterface getValueMeta( String valueName, int sqlType ) throws SQLException {
     switch ( sqlType ) {
       case java.sql.Types.BIGINT:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_INTEGER );
+        return new ValueMetaInteger( valueName );
       case java.sql.Types.INTEGER:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_INTEGER );
+        return new ValueMetaInteger( valueName );
       case java.sql.Types.SMALLINT:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_INTEGER );
+        return new ValueMetaInteger( valueName );
 
       case java.sql.Types.CHAR:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_STRING );
+        return new ValueMetaString( valueName );
       case java.sql.Types.VARCHAR:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_STRING );
+        return new ValueMetaString( valueName );
       case java.sql.Types.CLOB:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_STRING );
+        return new ValueMetaString( valueName );
 
       case java.sql.Types.DATE:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_DATE );
+        return new ValueMetaDate( valueName );
       case java.sql.Types.TIMESTAMP:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_DATE );
+        return new ValueMetaDate( valueName );
       case java.sql.Types.TIME:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_DATE );
+        return new ValueMetaDate( valueName );
 
       case java.sql.Types.DECIMAL:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BIGNUMBER );
+        return new ValueMetaBigNumber( valueName );
 
       case java.sql.Types.DOUBLE:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_NUMBER );
+        return new ValueMetaNumber( valueName );
       case java.sql.Types.FLOAT:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_NUMBER );
+        return new ValueMetaNumber( valueName );
 
       case java.sql.Types.BOOLEAN:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BOOLEAN );
+        return new ValueMetaBoolean( valueName );
       case java.sql.Types.BIT:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BOOLEAN );
+        return new ValueMetaBoolean( valueName );
 
       case java.sql.Types.BINARY:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BINARY );
+        return new ValueMetaBinary( valueName );
       case java.sql.Types.BLOB:
-        return new ValueMeta( valueName, ValueMetaInterface.TYPE_BINARY );
+        return new ValueMetaBinary( valueName );
 
       default:
         throw new SQLException( "Don't know how to handle SQL Type: " + sqlType + ", with name: " + valueName );
@@ -154,7 +160,7 @@ public class ThinUtil {
   }
 
   public static ValueMetaAndData attemptDateValueExtraction( String string ) {
-    if ( string.length() > 2 && string.startsWith( "[" ) && string.endsWith( "]" ) ) {
+    if ( string != null && string.length() > 2 && string.startsWith( "[" ) && string.endsWith( "]" ) ) {
       String unquoted = string.substring( 1, string.length() - 1 );
       if ( unquoted.length() >= 9 && unquoted.charAt( 4 ) == '/' && unquoted.charAt( 7 ) == '/' ) {
         Date date = XMLHandler.stringToDate( unquoted );
@@ -173,7 +179,7 @@ public class ThinUtil {
           }
         }
         if ( date != null ) {
-          ValueMetaInterface valueMeta = new ValueMeta( "iif-date", ValueMetaInterface.TYPE_DATE );
+          ValueMetaInterface valueMeta = new ValueMetaDate( "iif-date" );
           valueMeta.setConversionMask( format );
           return new ValueMetaAndData( valueMeta, date );
         }
@@ -199,7 +205,7 @@ public class ThinUtil {
             // Format does not match
           }
           if ( date != null ) {
-            ValueMetaInterface valueMeta = new ValueMeta( "iff-date", ValueMetaInterface.TYPE_DATE );
+            ValueMetaInterface valueMeta = new ValueMetaDate( "iff-date" );
             valueMeta.setConversionMask( format );
             return new ValueMetaAndData( valueMeta, date );
           }
@@ -213,12 +219,12 @@ public class ThinUtil {
 
   public static ValueMetaAndData attemptIntegerValueExtraction( String string ) {
     // Try an Integer
-    if ( !string.contains( "." ) ) {
+    if ( string != null && !string.contains( "." ) ) {
       try {
         long l = Long.parseLong( string );
         if ( Long.toString( l ).equals( string ) ) {
           ValueMetaAndData value = new ValueMetaAndData();
-          ValueMetaInterface valueMeta = new ValueMeta( "Constant", ValueMetaInterface.TYPE_INTEGER );
+          ValueMetaInterface valueMeta = new ValueMetaInteger( "Constant" );
           valueMeta.setConversionMask( "0" );
           valueMeta.setGroupingSymbol( null );
           value.setValueMeta( valueMeta );
@@ -233,43 +239,47 @@ public class ThinUtil {
   }
 
   public static ValueMetaAndData attemptNumberValueExtraction( String string ) {
+    if ( string != null ) {
     // Try a Number
-    try {
-      double d = Double.parseDouble( string );
-      if ( Double.toString( d ).equals( string ) ) {
-        ValueMetaAndData value = new ValueMetaAndData();
-        ValueMetaInterface valueMeta = new ValueMeta( "Constant", ValueMetaInterface.TYPE_NUMBER );
-        valueMeta.setConversionMask( "0.#" );
-        valueMeta.setGroupingSymbol( null );
-        valueMeta.setDecimalSymbol( "." );
-        value.setValueMeta( valueMeta );
-        value.setValueData( Double.valueOf( d ) );
-        return value;
+      try {
+        double d = Double.parseDouble( string );
+        if ( Double.toString( d ).equals( string ) ) {
+          ValueMetaAndData value = new ValueMetaAndData();
+          ValueMetaInterface valueMeta = new ValueMetaNumber( "Constant" );
+          valueMeta.setConversionMask( "0.#" );
+          valueMeta.setGroupingSymbol( null );
+          valueMeta.setDecimalSymbol( "." );
+          value.setValueMeta( valueMeta );
+          value.setValueData( Double.valueOf( d ) );
+          return value;
+        }
+      } catch ( NumberFormatException e ) {
+        // ignore - will return null below
       }
-    } catch ( NumberFormatException e ) {
-      // ignore - will return null below
     }
     return null;
   }
 
   public static ValueMetaAndData attemptBigNumberValueExtraction( String string ) {
-    // Try a BigNumber
-    try {
-      BigDecimal d = new BigDecimal( string );
-      if ( d.toString().equals( string ) ) {
-        ValueMetaAndData value = new ValueMetaAndData();
-        value.setValueMeta( new ValueMeta( "Constant", ValueMetaInterface.TYPE_BIGNUMBER ) );
-        value.setValueData( d );
-        return value;
+    if ( string != null ) {
+      // Try a BigNumber
+      try {
+        BigDecimal d = new BigDecimal( string );
+        if ( d.toString().equals( string ) ) {
+          ValueMetaAndData value = new ValueMetaAndData();
+          value.setValueMeta( new ValueMetaBigNumber( "Constant" ) );
+          value.setValueData( d );
+          return value;
+        }
+      } catch ( NumberFormatException e ) {
+        // ignore - will return null below
       }
-    } catch ( NumberFormatException e ) {
-      // ignore - will return null below
     }
     return null;
   }
 
   public static ValueMetaAndData attemptStringValueExtraction( String string ) {
-    if ( string.startsWith( "'" ) && string.endsWith( "'" ) ) {
+    if ( string != null && string.startsWith( "'" ) && string.endsWith( "'" ) ) {
       String s = string.substring( 1, string.length() - 1 );
 
       // Make sure to replace quoted '' occurrences.
@@ -277,7 +287,7 @@ public class ThinUtil {
       s = s.replace( "''", "'" );
 
       ValueMetaAndData value = new ValueMetaAndData();
-      value.setValueMeta( new ValueMeta( "Constant", ValueMetaInterface.TYPE_STRING ) );
+      value.setValueMeta( new ValueMetaString( "Constant" ) );
       value.setValueData( s );
       return value;
     }
@@ -288,7 +298,7 @@ public class ThinUtil {
     // Try an Integer
     if ( "TRUE".equalsIgnoreCase( string ) || "FALSE".equalsIgnoreCase( string ) ) {
       ValueMetaAndData value = new ValueMetaAndData();
-      value.setValueMeta( new ValueMeta( "Constant", ValueMetaInterface.TYPE_BOOLEAN ) );
+      value.setValueMeta( new ValueMetaBoolean( "Constant" ) );
       value.setValueData( Boolean.valueOf( "TRUE".equalsIgnoreCase( string ) ) );
       return value;
     }
