@@ -39,6 +39,7 @@ import org.w3c.dom.Node;
  *
  *
  */
+@Deprecated
 public class ValueMeta extends ValueMetaBase {
   private static Class<?> PKG = Const.class;
 
