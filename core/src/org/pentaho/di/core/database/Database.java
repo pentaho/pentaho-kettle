@@ -406,8 +406,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           // This was a new path that was added. If in case we did not find this datasource in JNDI,
           // we were throwing exception and exiting out of this method. We will attempt to load this datasource
           // using the classs if JNDI lookup fail. This is how it was working in 5.3
-          log.logDetailed( "Unable to find datasource using JNDI. Cause: " + kde.getLocalizedMessage() );
-          log.logDetailed( "Attempting to connect using the class" );
+          if ( log.isDetailed() ) {
+            log.logDetailed( "Unable to find datasource using JNDI. Cause: " + kde.getLocalizedMessage() );            
+          }
           connectUsingClass();
         }
       } else {
@@ -4683,12 +4684,25 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       log.setForcingSeparateLogging( forcingSeparateLogging );
     }
   }
-  
-  private void connectUsingClass() throws KettleDatabaseException{
+
+  private void connectUsingClass() throws KettleDatabaseException {
     // TODO connectUsingNamedDataSource can be called here but the current implementation of
     // org.pentaho.platform.plugin.action.kettle.PlatformKettleDataSourceProvider can cause collision of name and
     // JNDI name. See also [PDI-13633], [SP-1776].
-    connectUsingClass( databaseMeta.getDriverClass(), partitionId );
+    // We will first try to find the connection in the named datasources. If we can't find it there,
+    // we will connect using the class.
+    try  {
+      if ( log.isDetailed() ) {
+        log.logDetailed( "Attempting to find connection in Named Datasources" );
+      }
+      connectUsingNamedDataSource( environmentSubstitute( databaseMeta.getDatabaseName() ) );
+    } catch ( KettleDatabaseException kde ) {
+      if ( log.isDetailed() ) {
+        log.logDetailed( "Unable to find datasource in Named Datasources."
+            + " Finally will try to attempt connecting using class " );
+      }
+      connectUsingClass( databaseMeta.getDriverClass(), partitionId );
+    }
     if ( log.isDetailed() ) {
       log.logDetailed( "Connected to database." );
     }
