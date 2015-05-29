@@ -1186,7 +1186,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     if ( rep != null ) {
       return getJobMeta( rep, rep.getMetaStore(), space );
     } else {
-      return getJobMeta( rep, null, space );
+      return getJobMeta( rep, getMetaStore(), space );
     }
   }
 
