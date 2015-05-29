@@ -16,17 +16,20 @@
      <category locale="nl_NL">Input</category>
      <category locale="fr_FR">Extraction</category>
      <category locale="zh_CN">输入</category>
+     <category locale="ja_JP">入力</category>
    </localized_category>
    <localized_description>
      <description locale="en_US">S3 CSV Input</description>
      <description locale="nl_NL">S3 CSV Input</description>
      <description locale="fr_FR">Extraction depuis fichier CSV S3</description>
      <description locale="zh_CN">S3 CSV 输入</description>
+     <description locale="ja_JP">S3 CSV入力</description>
    </localized_description>
    <localized_tooltip>
      <tooltip locale="en_US">S3 CSV Input</tooltip>
      <tooltip locale="nl_NL">S3 CSV Input</tooltip>
      <tooltip locale="fr_FR">S3 CSV Input</tooltip>
      <tooltip locale="zh_CN">S3 CSV 输入</tooltip>
+     <tooltip locale="ja_JP">AWS Simple Strage ServiceからCSVファイルを取り込む</tooltip>
    </localized_tooltip>
 </plugin>

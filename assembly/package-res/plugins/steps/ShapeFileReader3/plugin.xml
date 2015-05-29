@@ -10,4 +10,13 @@
    <libraries>
     <library name="shapefilereader3.jar"/>
     </libraries>
+    <localized_category>
+     <category locale="ja_JP">入力</category>
+   </localized_category>
+   <localized_description>
+     <description locale="ja_JP">ESRIシェープファイルリーダー</description>
+   </localized_description>
+   <localized_tooltip>
+     <tooltip locale="ja_JP">ESRIシェープファイルとリンク付きのDBFファイルからシェープファイルデータを読み込みます</tooltip>
+   </localized_tooltip>
 </plugin>

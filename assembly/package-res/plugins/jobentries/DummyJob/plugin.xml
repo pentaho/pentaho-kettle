@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <plugin
    id="DummyJob"
    iconfile="DPL.svg"
@@ -13,13 +13,16 @@
    <localized_category>
      <category locale="en_US">General</category>
      <category locale="nl_NL">Algemeen</category>
-     <category locale="fr_FR">G�n�ral</category>
+     <category locale="fr_FR">Général</category>
+     <category locale="ja_JP">全般</category>
    </localized_category>
    <localized_description>
      <description locale="en_US">Example plugin</description>
+     <description locale="ja_JP">プラグインの例</description>
    </localized_description>
    <localized_tooltip>
      <tooltip locale="en_US">This is an example test job entry for a plugin</tooltip>
+     <tooltip locale="ja_JP">プラグインのジョブエントリーの例です。</tooltip>
    </localized_tooltip>
    
 </plugin>

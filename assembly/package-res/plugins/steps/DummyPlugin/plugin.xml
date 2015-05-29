@@ -15,12 +15,15 @@
      <category locale="nl_NL">Transform</category>
      <category locale="fr_FR">Transformation</category>
      <category locale="zh_CN">转换</category>
+     <category locale="ja_JP">変換</category>
    </localized_category>
    <localized_description>
      <description locale="en_US">Example plugin</description>
+     <description locale="ja_JP">プラグインの例</description>
    </localized_description>
    <localized_tooltip>
      <tooltip locale="en_US">This is an example for a plugin test step</tooltip>
+     <tooltip locale="ja_JP">プラグインの例のテストステップです</tooltip>
    </localized_tooltip>
    
 </plugin>
