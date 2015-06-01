@@ -593,36 +593,5 @@ public class StringUtil {
     return variable.startsWith( UNIX_OPEN ) && variable.endsWith( UNIX_CLOSE )
         || variable.startsWith( WINDOWS_OPEN ) && variable.endsWith( WINDOWS_CLOSE )
         || variable.startsWith( HEX_OPEN ) && variable.endsWith( HEX_CLOSE );
-
   }
-  
-  public static String extractVariableFromURL( String incomingURL ) {
-    String variable = null;
-    try {
-      if ( StringUtil.isVariable( incomingURL ) ) {
-        // Is Variable
-        variable = incomingURL;
-      } else {
-        // URL may contain Variable
-        if ( incomingURL.contains( StringUtil.UNIX_OPEN ) && incomingURL.contains( StringUtil.UNIX_CLOSE ) ) {
-          variable =
-              incomingURL.substring( incomingURL.lastIndexOf( StringUtil.UNIX_OPEN ), incomingURL
-                  .lastIndexOf( StringUtil.UNIX_CLOSE ) + 1 );
-        }
-        if ( incomingURL.contains( StringUtil.WINDOWS_OPEN ) && incomingURL.contains( StringUtil.WINDOWS_CLOSE ) ) {
-          variable =
-              incomingURL.substring( incomingURL.lastIndexOf( StringUtil.WINDOWS_OPEN ), incomingURL
-                  .lastIndexOf( StringUtil.WINDOWS_CLOSE ) + 1 );
-        }
-        if ( incomingURL.contains( StringUtil.HEX_OPEN ) && incomingURL.contains( StringUtil.HEX_CLOSE ) ) {
-          variable =
-              incomingURL.substring( incomingURL.lastIndexOf( StringUtil.HEX_OPEN ), incomingURL
-                  .lastIndexOf( StringUtil.HEX_CLOSE ) + 1 );
-        }
-      }
-    } catch ( Exception e ) {
-      variable = null;
-    }
-    return variable;
-  }  
 }
