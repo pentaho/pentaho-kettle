@@ -54,7 +54,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -1143,12 +1142,11 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   public String getUrlPath( String incomingURL ) {
     String path = null;
     try {
-      path = StringUtil.extractVariableFromURL( incomingURL );
-      if ( path == null ) {
-        UrlFileNameParser parser = new UrlFileNameParser();
-        FileName fileName = parser.parseUri( null, null, incomingURL );
-        path = fileName.getPath();
-      }
+      String noVariablesURL = incomingURL.replaceAll( "[${}]", "/" );
+      UrlFileNameParser parser = new UrlFileNameParser();
+      FileName fileName = parser.parseUri( null, null, noVariablesURL );
+      String root = fileName.getRootURI();
+      path = incomingURL.substring( root.length() - 1 );
     } catch ( FileSystemException e ) {
       path = null;
     }
