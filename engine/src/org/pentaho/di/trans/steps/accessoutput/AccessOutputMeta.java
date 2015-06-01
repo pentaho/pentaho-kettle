@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,12 +35,14 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -272,7 +274,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
-  public static final RowMetaInterface getLayout( Table table ) throws SQLException {
+  public static final RowMetaInterface getLayout( Table table ) throws SQLException, KettleStepException {
     RowMetaInterface row = new RowMeta();
     List<Column> columns = table.getColumns();
     for ( int i = 0; i < columns.size(); i++ ) {
@@ -374,9 +376,13 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
           break;
       }
 
-      ValueMetaInterface v = new ValueMeta( column.getName(), valtype );
+      ValueMetaInterface v;
+      try {
+        v = ValueMetaFactory.createValueMeta( column.getName(), valtype );
+      } catch ( KettlePluginException e ) {
+        throw new KettleStepException( e );
+      }
       v.setLength( length, precision );
-
       row.addValueMeta( v );
     }
 

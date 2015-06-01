@@ -21,6 +21,10 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.accessoutput;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -43,21 +47,32 @@ public class AccessOutputMetaTest {
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "filename", "fileCreated", "tablename", "tableCreated", "tableTruncated", "commitSize", "addToResultFiles", "DoNotOpenNewFileInit" );
+      Arrays.asList( "filename", "fileCreated", "tablename", "tableCreated", "tableTruncated", "commitSize", "addToResultFiles", "DoNotOpenNewFileInit" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+      new LoadSaveTester( testMetaClass, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
   }
 
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testDefaults() {
+    AccessOutputMeta stepMeta = new AccessOutputMeta();
+    stepMeta.setDefault();
+    assertTrue( stepMeta.isFileCreated() );
+    assertTrue( stepMeta.isTableCreated() );
+    assertTrue( stepMeta.isAddToResultFiles() );
+    assertEquals( 500, stepMeta.getCommitSize() );
+    assertFalse( stepMeta.isTableTruncated() );
+    assertFalse( stepMeta.isDoNotOpenNewFileInit() );
   }
 }
