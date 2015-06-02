@@ -1211,14 +1211,27 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
         transMeta.environmentSubstitute( wGaCustomProfile.getText() ) :
         profileTableIds.get( wGaProfile.getText() );
 
+      String metrics = transMeta.environmentSubstitute( wQuMetrics.getText() );
+      if ( Const.isEmpty( metrics ) ) {
+        logError( BaseMessages.getString( PKG, "GoogleAnalytics.Error.NoMetricsSpecified.Message" ) );
+        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+        mb.setText( BaseMessages.getString( PKG, "GoogleAnalytics.Error.NoMetricsSpecified.Title" ) );
+        mb.setMessage( BaseMessages.getString( PKG, "GoogleAnalytics.Error.NoMetricsSpecified.Message" ) );
+        mb.open();
+        return null;
+      }
+
       Analytics.Data.Ga.Get query = getAnalytics().data().ga().get(
         ids,
         transMeta.environmentSubstitute( wQuStartDate.getText() ),
         transMeta.environmentSubstitute( wQuEndDate.getText() ),
-        transMeta.environmentSubstitute( wQuMetrics.getText() )
+        metrics
       );
 
-      query.setDimensions( transMeta.environmentSubstitute( wQuDimensions.getText() ) );
+      String dimensions = transMeta.environmentSubstitute( wQuDimensions.getText() );
+      if ( !Const.isEmpty( dimensions ) ) {
+        query.setDimensions( dimensions );
+      }
 
       if ( wUseSegmentEnabled.getSelection() ) {
         if ( wCustomSegmentEnabled.getSelection() ) {
@@ -1480,6 +1493,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
     wlOauthAccount.setLayoutData( fdlOathAccount );
     wOauthAccount = new TextVar( transMeta, gConnect, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wOauthAccount.setToolTipText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.OauthAccount.Tooltip" ) );
 
     wOauthAccount.addModifyListener( lsMod );
     FormData fdOathAccount = new FormData();
