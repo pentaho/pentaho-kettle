@@ -585,26 +585,6 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     this.oauthKeyFile = oauthKeyFile;
   }
 
-  public void loadKeyFrom( InputStream is ) throws IOException {
-    byte[] data;
-    try {
-      data = IOUtils.toByteArray( is );
-    } finally {
-      is.close();
-    }
-
-    oauthKeyFile = data.toString();
-  }
-
-
-  public void copyKeyFrom( GaInputStepMeta another ) {
-    setOAuthKeyFile( another.getOAuthKeyFile() );
-  }
-
-  public boolean isKeyLoaded() {
-    return !Const.isEmpty( oauthKeyFile );
-  }
-
   public String getOAuthServiceAccount() {
     return oauthServiceAccount;
   }

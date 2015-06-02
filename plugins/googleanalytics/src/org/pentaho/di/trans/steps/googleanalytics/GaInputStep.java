@@ -156,14 +156,22 @@ public class GaInputStep extends BaseStep implements StepInterface {
     Analytics.Data.Ga.Get query;
 
     try {
+      String metrics = environmentSubstitute( meta.getMetrics() );
+      if ( Const.isEmpty( metrics ) ) {
+        logError( BaseMessages.getString( PKG, "GoogleAnalytics.Error.NoMetricsSpecified.Message" ) );
+        return null;
+      }
       query = dataApi.ga().get(
         meta.isUseCustomTableId() ? environmentSubstitute( meta.getGaCustomTableId() ) : meta.getGaProfileTableId(), //ids
         environmentSubstitute( meta.getStartDate() ), // start date
         environmentSubstitute( meta.getEndDate() ), // end date
-        environmentSubstitute( meta.getMetrics() ) // metrics
+        metrics  // metrics
       );
-      query.setDimensions( environmentSubstitute( meta.getDimensions() ) );
 
+      String dimensions = environmentSubstitute( meta.getDimensions() );
+      if ( !Const.isEmpty( dimensions ) ) {
+        query.setDimensions( dimensions );
+      }
 
       if ( meta.isUseSegment() ) {
         if ( meta.isUseCustomSegment() ) {
