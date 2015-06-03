@@ -145,7 +145,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
     fdlKey.top = new FormAttachment( wStepname, 2 * margin );
     wlKey.setLayoutData( fdlKey );
 
-    int nrFieldCols = 11;
+    int nrFieldCols = 12;
     int nrFieldRows = ( input.getFieldInStream() != null ? input.getFieldInStream().length : 1 );
 
     ciKey = new ColumnInfo[nrFieldCols];
@@ -193,6 +193,10 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
       new ColumnInfo(
         BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.RemoveSpecialCharacters" ),
         ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.removeSpecialCharactersDesc );
+    ciKey[11] =
+      new ColumnInfo(
+        BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.ReverseString" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, StringOperationsMeta.reverseStringDesc );
 
     ciKey[1]
       .setToolTip( BaseMessages.getString( PKG, "StringOperationsDialog.ColumnInfo.OutStreamField.Tooltip" ) );
@@ -360,6 +364,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
         item.setText( 10, StringOperationsMeta.getDigitsDesc( input.getDigits()[i] ) );
         item.setText( 11, StringOperationsMeta
           .getRemoveSpecialCharactersDesc( input.getRemoveSpecialCharacters()[i] ) );
+        item.setText(  12, StringOperationsMeta.getReverseStringDesc( input.getReverseString()[i] ) );
       }
     }
 
@@ -397,6 +402,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
       inf.getMaskXML()[i] = StringOperationsMeta.getMaskXMLByDesc( item.getText( 9 ) );
       inf.getDigits()[i] = StringOperationsMeta.getDigitsByDesc( item.getText( 10 ) );
       inf.getRemoveSpecialCharacters()[i] = StringOperationsMeta.getRemoveSpecialCharactersByDesc( item.getText( 11 ) );
+      inf.getReverseString()[i] = StringOperationsMeta.getReverseStringByDesc( item.getText( 12 ) );
     }
 
     stepname = wStepname.getText(); // return value
@@ -429,6 +435,7 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
               tableItem.setText( 10, BaseMessages.getString( PKG, "StringOperationsMeta.Digits.None" ) );
               tableItem.setText( 11, BaseMessages.getString(
                 PKG, "StringOperationsMeta.RemoveSpecialCharacters.None" ) );
+              tableItem.setText( 12, BaseMessages.getString( PKG, "StringOperationsMeta.Reverse.No" ) );
               return true;
             } else {
               return false;

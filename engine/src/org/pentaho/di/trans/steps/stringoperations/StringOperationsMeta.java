@@ -88,6 +88,9 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
 
   private String[] padChar;
 
+  /** Reverse */
+  private int[] reverseString;
+
   /**
    * The trim type codes
    */
@@ -213,6 +216,19 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
 
   public static final int PADDING_RIGHT = 2;
 
+  /**
+   * The reverse string description
+   */
+  public static final String[] reverseStringDesc = {
+    BaseMessages.getString( PKG, "StringOperationsMeta.Reverse.No" ),
+    BaseMessages.getString( PKG, "StringOperationsMeta.Reverse.Yes" ) };
+
+  public static final String[] reverseStringCode = { "no", "yes" };
+
+  public static final int REVERSE_NO = 0;
+
+  public static final int REVERSE_YES = 1;
+
   public StringOperationsMeta() {
     super(); // allocate BaseStepMeta
   }
@@ -251,8 +267,16 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     return padLen;
   }
 
+  public void setPadLen( String[] padLen ) {
+    this.padLen = padLen;
+  }
+
   public String[] getPadChar() {
     return padChar;
+  }
+
+  public void setPadChar( String[] padChar ) {
+    this.padChar = padChar;
   }
 
   public int[] getTrimType() {
@@ -275,20 +299,48 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     return initCap;
   }
 
+  public void setInitCap( int[] initCap ) {
+    this.initCap = initCap;
+  }
+
   public int[] getMaskXML() {
     return maskXML;
+  }
+
+  public void setMaskXML( int[] maskXML ) {
+    this.maskXML = maskXML;
   }
 
   public int[] getDigits() {
     return digits;
   }
 
+  public void setDigits( int[] digits ) {
+    this.digits = digits;
+  }
+
   public int[] getRemoveSpecialCharacters() {
     return remove_special_characters;
   }
 
+  public void setRemoveSpecialCharacters( int[] remove_special_characters ) {
+    this.remove_special_characters = remove_special_characters;
+  }
+
   public int[] getPaddingType() {
     return padding_type;
+  }
+
+  public void setPaddingType( int[] padding_type ) {
+    this.padding_type = padding_type;
+  }
+
+  public int[] getReverseString() {
+    return reverseString;
+  }
+
+  public void setReverseString( int[] reverseString ) {
+    this.reverseString = reverseString;
   }
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
@@ -307,6 +359,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     maskXML = new int[nrkeys];
     digits = new int[nrkeys];
     remove_special_characters = new int[nrkeys];
+    reverseString = new int[nrkeys];
   }
 
   public Object clone() {
@@ -327,7 +380,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
       retval.maskXML[i] = maskXML[i];
       retval.digits[i] = digits[i];
       retval.remove_special_characters[i] = remove_special_characters[i];
-
+      retval.reverseString[i] = reverseString[i];
     }
 
     return retval;
@@ -359,6 +412,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
         remove_special_characters[i] =
           getRemoveSpecialCharactersByCode( Const.NVL( XMLHandler.getTagValue(
             fnode, "remove_special_characters" ), "" ) );
+        reverseString[i] = getReverseStringByCode( Const.NVL(  XMLHandler.getTagValue( fnode, "reverseString" ), "" ) );
 
       }
     } catch ( Exception e ) {
@@ -377,12 +431,12 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 500 );
+    StringBuilder retval = new StringBuilder( 500 );
 
-    retval.append( "    <fields>" ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.openTag( "fields" ) ).append( Const.CR );
 
     for ( int i = 0; i < fieldInStream.length; i++ ) {
-      retval.append( "      <field>" ).append( Const.CR );
+      retval.append( "      " ).append( XMLHandler.openTag( "field" ) ).append( Const.CR );
       retval.append( "        " ).append( XMLHandler.addTagValue( "in_stream_name", fieldInStream[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "out_stream_name", fieldOutStream[i] ) );
 
@@ -399,11 +453,12 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
       retval.append( "        " ).append(
         XMLHandler.addTagValue(
           "remove_special_characters", getRemoveSpecialCharactersCode( remove_special_characters[i] ) ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "reverseString", getReverseStringCode( reverseString[i] ) ) );
 
-      retval.append( "      </field>" ).append( Const.CR );
+      retval.append( "      " ).append( XMLHandler.closeTag( "field" ) ).append( Const.CR );
     }
 
-    retval.append( "    </fields>" ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.closeTag( "fields" ) ).append( Const.CR );
 
     return retval.toString();
   }
@@ -431,6 +486,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
         remove_special_characters[i] =
           getRemoveSpecialCharactersByCode( Const.NVL( rep.getStepAttributeString(
             id_step, i, "remove_special_characters" ), "" ) );
+        reverseString[i] = getReverseStringByCode( Const.NVL(  rep.getStepAttributeString( id_step, i, "reverseString" ), "" ) );
 
       }
     } catch ( Exception e ) {
@@ -456,6 +512,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
         rep.saveStepAttribute(
           id_transformation, id_step, i, "remove_special_characters",
           getRemoveSpecialCharactersCode( remove_special_characters[i] ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "reverseString", getReverseStringCode( reverseString[i] ) );
 
       }
     } catch ( Exception e ) {
@@ -655,6 +712,13 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
     return paddingCode[i];
   }
 
+  private static String getReverseStringCode( int i ) {
+    if ( i < 0 || i >= reverseStringCode.length ) {
+      return reverseStringCode[0];
+    }
+    return reverseStringCode[i];
+  }
+
   public static String getTrimTypeDesc( int i ) {
     if ( i < 0 || i >= trimTypeDesc.length ) {
       return trimTypeDesc[0];
@@ -702,6 +766,13 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
       return paddingDesc[0];
     }
     return paddingDesc[i];
+  }
+
+  public static String getReverseStringDesc( int i ) {
+    if ( i < 0 || i >= reverseStringDesc.length ) {
+      return reverseStringDesc[0];
+    }
+    return reverseStringDesc[i];
   }
 
   private static int getTrimTypeByCode( String tt ) {
@@ -789,6 +860,19 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
 
     for ( int i = 0; i < paddingCode.length; i++ ) {
       if ( paddingCode[i].equalsIgnoreCase( tt ) ) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
+  private static int getReverseStringByCode( String tt ) {
+    if ( tt == null ) {
+      return 0;
+    }
+
+    for ( int i = 0; i < reverseStringCode.length; i++ ) {
+      if ( reverseStringCode[i].equalsIgnoreCase( tt ) ) {
         return i;
       }
     }
@@ -898,5 +982,20 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
 
     // If this fails, try to match using the code.
     return getPaddingByCode( tt );
+  }
+
+  public static int getReverseStringByDesc( String tt ) {
+    if ( tt == null ) {
+      return 0;
+    }
+
+    for ( int i = 0; i < reverseStringDesc.length; i++ ) {
+      if ( reverseStringDesc[i].equalsIgnoreCase( tt ) ) {
+        return i;
+      }
+    }
+
+    // If this fails, try to match using the code.
+    return getReverseStringByCode( tt );
   }
 }

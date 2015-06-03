@@ -58,6 +58,8 @@ public class StringOperationsData extends BaseStepData implements StepDataInterf
 
   public int[] removeSpecialCharacters;
 
+  public int[] reverseString;
+
   public RowMetaInterface outputRowMeta;
 
   public int inputFieldsNr;
