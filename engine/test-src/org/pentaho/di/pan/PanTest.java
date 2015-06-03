@@ -22,7 +22,9 @@
 
 package org.pentaho.di.pan;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.trans.Trans;
@@ -35,6 +37,11 @@ public class PanTest {
   private static final String TEST_PARAM_NAME = "testParam";
   private static final String DEFAULT_PARAM_VALUE = "default value";
   private static final String NOT_DEFAULT_PARAM_VALUE = "not the default value";
+
+  @BeforeClass
+  public static void setUp() throws Exception {
+    KettleEnvironment.init();
+  }
 
   @Test
   public void testConfigureParameters() throws Exception {

@@ -25,25 +25,32 @@ package org.pentaho.di.trans.steps.delete;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 
-public class DeleteMetaTest extends TestCase {
+public class DeleteMetaTest {
 
   private StepMeta stepMeta;
   private Delete del;
   private DeleteData dd;
   private DeleteMeta dmi;
 
+
+  @BeforeClass
+  public static void initEnvironment() throws Exception {
+    KettleEnvironment.init();
+  }
+
   @Before
-  protected void setUp() {
+  public void setUp() {
     TransMeta transMeta = new TransMeta();
     transMeta.setName( "delete1" );
 
