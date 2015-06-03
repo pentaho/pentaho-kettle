@@ -77,6 +77,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboVar;
+import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -503,10 +504,9 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
     fdlPassword.top = new FormAttachment( wUserName, margin );
     fdlPassword.right = new FormAttachment( middle, -margin );
     wlPassword.setLayoutData( fdlPassword );
-    wPassword = new TextVar( transMeta, wAuthenticationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wPassword = new PasswordTextVar( transMeta, wAuthenticationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wPassword.setToolTipText( BaseMessages.getString( PKG, "LDAPOutputDialog.Password.Tooltip" ) );
     props.setLook( wPassword );
-    wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
     fdPassword.left = new FormAttachment( middle, 0 );
@@ -614,7 +614,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
     fdlTrustStorePassword.top = new FormAttachment( wTrustStorePath, margin );
     fdlTrustStorePassword.right = new FormAttachment( middle, -margin );
     wlTrustStorePassword.setLayoutData( fdlTrustStorePassword );
-    wTrustStorePassword = new TextVar( transMeta, wCertificateGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wTrustStorePassword = new PasswordTextVar( transMeta, wCertificateGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wTrustStorePassword );
     wTrustStorePassword.setToolTipText( BaseMessages
       .getString( PKG, "LDAPOutputDialog.TrustStorePassword.Tooltip" ) );

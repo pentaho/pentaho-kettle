@@ -593,6 +593,5 @@ public class StringUtil {
     return variable.startsWith( UNIX_OPEN ) && variable.endsWith( UNIX_CLOSE )
         || variable.startsWith( WINDOWS_OPEN ) && variable.endsWith( WINDOWS_CLOSE )
         || variable.startsWith( HEX_OPEN ) && variable.endsWith( HEX_CLOSE );
-
   }
 }

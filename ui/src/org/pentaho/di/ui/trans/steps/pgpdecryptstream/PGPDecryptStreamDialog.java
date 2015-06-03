@@ -52,8 +52,8 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.pgpdecryptstream.PGPDecryptStreamMeta;
-import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -212,7 +212,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
     fdlPassphrase.top = new FormAttachment( wGPGLocation, margin );
     wlPassphrase.setLayoutData( fdlPassphrase );
 
-    wPassphrase = new TextVar( transMeta, wGPGGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wPassphrase = new PasswordTextVar( transMeta, wGPGGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wPassphrase.setToolTipText( BaseMessages.getString( PKG, "PGPDecryptStreamDialog.PassphraseField.Tooltip" ) );
     props.setLook( wPassphrase );
     wPassphrase.addModifyListener( lsMod );
@@ -221,13 +221,6 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
     fdPassphrase.top = new FormAttachment( wGPGLocation, margin );
     fdPassphrase.right = new FormAttachment( 100, 0 );
     wPassphrase.setLayoutData( fdPassphrase );
-
-    wPassphrase.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        input.setChanged();
-        DatabaseDialog.checkPasswordVisible( wPassphrase.getTextWidget() );
-      }
-    } );
 
     wlPassphraseFromField = new Label( wGPGGroup, SWT.RIGHT );
     wlPassphraseFromField.setText( BaseMessages

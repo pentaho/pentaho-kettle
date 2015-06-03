@@ -66,6 +66,7 @@ import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
@@ -308,7 +309,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     fdlGaPassword.left = new FormAttachment( 0, 0 );
     fdlGaPassword.right = new FormAttachment( middle, -margin );
     wlGaPassword.setLayoutData( fdlGaPassword );
-    wGaPassword = new TextVar( transMeta, gConnect, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.PASSWORD );
+    wGaPassword = new PasswordTextVar( transMeta, gConnect, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wGaPassword.addModifyListener( lsMod );
     wGaPassword.setToolTipText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.Password.Tooltip" ) );
     props.setLook( wGaPassword );
@@ -327,7 +328,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     fdlGaApiKey.left = new FormAttachment( 0, 0 );
     fdlGaApiKey.right = new FormAttachment( middle, -margin );
     wlGaApiKey.setLayoutData( fdlGaApiKey );
-    wGaApiKey = new TextVar( transMeta, gConnect, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.PASSWORD );
+    wGaApiKey = new PasswordTextVar( transMeta, gConnect, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wGaApiKey.addModifyListener( lsMod );
     wGaApiKey.setToolTipText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ApiKey.Tooltip" ) );
     props.setLook( wGaApiKey );
