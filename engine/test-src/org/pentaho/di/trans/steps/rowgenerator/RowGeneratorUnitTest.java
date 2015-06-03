@@ -29,7 +29,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -40,6 +42,11 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 public class RowGeneratorUnitTest {
 
   private RowGenerator rowGenerator;
+
+  @BeforeClass
+  public static void initEnvironment() throws Exception {
+    KettleEnvironment.init();
+  }
 
   @Before
   public void setUp() throws KettleException {

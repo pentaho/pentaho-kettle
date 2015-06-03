@@ -24,11 +24,18 @@ package org.pentaho.di.trans;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.trans.step.StepMeta;
 
 public class TransMetaTest {
+
+  @BeforeClass
+  public static void setUp() throws Exception {
+    KettleEnvironment.init();
+  }
 
   private final Point minimalCanvasPoint = new Point( 0, 0 );
 
