@@ -302,6 +302,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     wlGaCustomProfile.setLayoutData( fdlGaCustomProfile );
 
     wCustomProfileEnabled = new Button( gConnect, SWT.CHECK );
+    wCustomProfileEnabled.setToolTipText(
+      BaseMessages.getString( PKG, "GoogleAnalyticsDialog.Profile.CustomProfileEnabled.Tooltip" ) );
     props.setLook( wCustomProfileEnabled );
     wCustomProfileEnabled.pack( true );
 
@@ -1485,6 +1487,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     // OathAccount line
     wlOauthAccount = new Label( gConnect, SWT.RIGHT );
     wlOauthAccount.setText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.OauthAccount.Label" ) );
+    props.setLook( wlOauthAccount );
 
     FormData fdlOathAccount = new FormData();
     fdlOathAccount.left = new FormAttachment( 0, 0 );
@@ -1494,6 +1497,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     wlOauthAccount.setLayoutData( fdlOathAccount );
     wOauthAccount = new TextVar( transMeta, gConnect, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wOauthAccount.setToolTipText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.OauthAccount.Tooltip" ) );
+    props.setLook( wOauthAccount );
 
     wOauthAccount.addModifyListener( lsMod );
     FormData fdOathAccount = new FormData();
@@ -1505,6 +1509,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
     fileChooser = new Button( gConnect, SWT.PUSH | SWT.CENTER );
     fileChooser.setText( BaseMessages.getString( PKG, ( "System.Button.Browse" ) ) );
+    props.setLook( fileChooser );
 
     FormData fdbFilename = new FormData();
     fdbFilename.right = new FormAttachment( 100, 0 );
@@ -1513,7 +1518,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
     Label wlFilename = new Label( gConnect, SWT.RIGHT );
     wlFilename.setText( BaseMessages.getString( PKG, ( "GoogleAnalyticsDialog.KeyFile.Label" ) ) );
-
+    props.setLook( wlFilename );
     FormData fdlFilename = new FormData();
     fdlFilename.top = new FormAttachment( wOauthAccount, margin );
     fdlFilename.left = new FormAttachment( 0, 0 );
@@ -1523,6 +1528,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     keyFilename = new TextVar( transMeta, gConnect, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     keyFilename.setToolTipText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.KeyFilename.Tooltip" ) );
     keyFilename.addModifyListener( lsMod );
+    props.setLook( keyFilename );
 
     FormData fdFilename = new FormData();
     fdFilename.top = new FormAttachment( wOauthAccount, margin );
@@ -1530,22 +1536,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     fdFilename.right = new FormAttachment( fileChooser, -margin );
     keyFilename.setLayoutData( fdFilename );
 
-    setDefaultLook( wlOauthAccount, wlOauthAccount, fileChooser, wlFilename, keyFilename );
-
-    Label label = new Label( gConnect, SWT.RIGHT );
-
-    FormData labelFormData = new FormData();
-    labelFormData.top = new FormAttachment( keyFilename, margin );
-    labelFormData.left = new FormAttachment( 0, 0 );
-    labelFormData.right = new FormAttachment( middle, -margin );
-    label.setLayoutData( labelFormData );
   }
 
-  private void setDefaultLook( Control... controls ) {
-    for ( Control control : controls ) {
-      props.setLook( control );
-    }
-  }
 
   private Analytics getAnalytics() {
     return ( API == null ) ? null : API.getAnalytics();
