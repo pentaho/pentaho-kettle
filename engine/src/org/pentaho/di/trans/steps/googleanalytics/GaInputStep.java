@@ -104,7 +104,19 @@ public class GaInputStep extends BaseStep implements StepInterface {
     // generate output row, make it correct size
     Object[] outputRow = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
 
-    DataEntry entry = getNextDataEntry();
+    DataEntry entry;
+    try {
+        entry = getNextDataEntry();
+    } catch (KettleException ex) {
+        if (getStepMeta().isDoingErrorHandling()) {
+            String tableId = meta.isUseCustomTableId()?environmentSubstitute(meta.getGaCustomTableId()):meta.getGaProfileTableId();
+            putError(data.outputRowMeta, outputRow, 1, ex.toString(), tableId, "GA001");
+            setOutputDone();
+            return false;
+        } else {
+            throw ex;
+        }
+    }
 
     if ( entry != null && ( meta.getRowLimit() <= 0 || getLinesWritten() < meta.getRowLimit() ) ) { // another record to
                                                                                                     // process
@@ -170,7 +182,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
 
   }
 
-  protected DataQuery getQuery() {
+  protected DataQuery getQuery() throws KettleException {
 
     DataQuery query = null;
     try {
@@ -185,8 +197,17 @@ public class GaInputStep extends BaseStep implements StepInterface {
 
     query.setStartDate( environmentSubstitute( meta.getStartDate() ) );
     query.setEndDate( environmentSubstitute( meta.getEndDate() ) );
-    query.setDimensions( environmentSubstitute( meta.getDimensions() ) );
-    query.setMetrics( environmentSubstitute( meta.getMetrics() ) );
+
+    String dimensions = environmentSubstitute(meta.getDimensions());
+    if (!dimensions.matches("ga:.+")) {
+        throw new KettleException("dimensions Invalid value ''. Values must match the following regular expression: 'ga:.+'");
+    }
+    query.setDimensions(dimensions);
+    String metrics = environmentSubstitute(meta.getMetrics());
+    if (!metrics.matches("ga:.+")) {
+        throw new KettleException("metrics Invalid value ''. Values must match the following regular expression: 'ga:.+'");
+    }
+    query.setMetrics(metrics);
 
     if ( meta.isUseSegment() ) {
       if ( meta.isUseCustomSegment() ) {
@@ -203,10 +224,10 @@ public class GaInputStep extends BaseStep implements StepInterface {
       query.setSort( environmentSubstitute( meta.getSort() ) );
     }
 
-    if ( !Const.isEmpty( meta.getGaApiKey() ) ) {
+    String gaapikey = environmentSubstitute(Encr.decryptPasswordOptionallyEncrypted(meta.getGaApiKey()));
+    if (!Const.isEmpty(gaapikey)){
       // allow to use optionally encrypted environment variables
-      query.setStringCustomParameter( "key", Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta
-        .getGaApiKey() ) ) );
+      query.setStringCustomParameter( "key", gaapikey );
     }
 
     return query;

@@ -48,6 +48,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -115,6 +116,10 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   public String[] getConversionMask() {
     return conversionMask;
+  }
+
+  public void setConversionMask(String[] conversionMask) {
+    this.conversionMask = conversionMask;
   }
 
   public String getGaAppName() {
@@ -265,16 +270,32 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     return feedFieldType;
   }
 
+  public void setFeedFieldType(String[] feedFieldType) {
+    this.feedFieldType = feedFieldType;
+  }
+
   public String[] getFeedField() {
     return feedField;
+  }
+
+  public void setFeedField(String[] feedField) {
+    this.feedField = feedField;
   }
 
   public String[] getOutputField() {
     return outputField;
   }
 
+  public void setOutputField(String[] outputField) {
+    this.outputField = outputField;
+  }
+
   public int[] getOutputType() {
     return outputType;
+  }
+
+  public void setOutputType(int[] outputType) {
+    this.outputType = outputType;
   }
 
   public String getGaApiKey() {
@@ -576,6 +597,15 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   public StepDataInterface getStepData() {
     return new GaInputStepData();
+  }
+
+  public boolean supportsErrorHandling() {
+    return true;
+  }
+
+  @Override
+  public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+    return new GaInputStepMetaInjection(this);
   }
 
 }
