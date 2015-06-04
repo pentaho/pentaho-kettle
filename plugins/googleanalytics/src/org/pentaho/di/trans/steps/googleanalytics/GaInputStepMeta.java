@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,15 +22,18 @@
 
 package org.pentaho.di.trans.steps.googleanalytics;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -52,29 +55,40 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+@Step( id = "TypeExitGoogleAnalyticsInputStep",
+  i18nPackageName = "org.pentaho.di.trans.steps.googleanalytics",
+  name = "GoogleAnalytics.TypeLongDesc.GoogleAnalyticsStep",
+  description = "GoogleAnalytics.TypeTooltipDesc.GoogleAnalyticsStep",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
+  image = "GAN.svg",
+
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Google+Analytics"
+)
 public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   private static Class<?> PKG = GaInputStepMeta.class; // for i18n purposes
 
-  public static final String GA_MANAGEMENT_URL = "https://www.googleapis.com/analytics/v2.4/management";
-  public static final String GA_DATA_URL = "https://www.googleapis.com/analytics/v2.4/data";
-
-  public static final String FIELD_TYPE_CONFIDENCE_INTERVAL = "Confidence Interval for Metric";
   public static final String FIELD_TYPE_DIMENSION = "Dimension";
   public static final String FIELD_TYPE_METRIC = "Metric";
   public static final String FIELD_TYPE_DATA_SOURCE_PROPERTY = "Data Source Property";
   public static final String FIELD_TYPE_DATA_SOURCE_FIELD = "Data Source Field";
   public static final String FIELD_DATA_SOURCE_TABLE_ID = "dxp:tableId";
   public static final String FIELD_DATA_SOURCE_TABLE_NAME = "dxp:tableName";
+  public static final String PROPERTY_DATA_SOURCE_PROFILE_ID = "ga:profileId";
+  public static final String PROPERTY_DATA_SOURCE_WEBPROP_ID = "ga:webPropertyId";
+  public static final String PROPERTY_DATA_SOURCE_ACCOUNT_NAME = "ga:accountName";
+  public static final String DEFAULT_GA_APPLICATION_NAME = "pdi-google-analytics-app";
 
-  public static final String DEFAULT_GA_APPLICATION_NAME = "type-exit.org kettle plugin";
+  // The following is deprecated and removed by Google, and remains here only to allow old transformations to load
+  // successfully in Spoon.
+  public static final String DEPRECATED_FIELD_TYPE_CONFIDENCE_INTERVAL = "Confidence Interval for Metric";
+
+  private String oauthServiceAccount;
+  private String oauthKeyFile;
 
   private String gaAppName;
-  private String gaEmail;
-  private String gaPassword;
   private String gaProfileTableId;
   private String gaProfileName;
-  private String gaApiKey;
   private boolean useCustomTableId;
   private String gaCustomTableId;
   private String startDate;
@@ -229,22 +243,6 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     this.endDate = endDate;
   }
 
-  public String getGaEmail() {
-    return gaEmail;
-  }
-
-  public void setGaEmail( String email ) {
-    this.gaEmail = email;
-  }
-
-  public String getGaPassword() {
-    return gaPassword;
-  }
-
-  public void setGaPassword( String gaPassword ) {
-    this.gaPassword = gaPassword;
-  }
-
   public String getGaProfileTableId() {
     return gaProfileTableId;
   }
@@ -277,17 +275,10 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     return outputType;
   }
 
-  public String getGaApiKey() {
-    return gaApiKey;
-  }
-
-  public void setGaApiKey( String gaApiKey ) {
-    this.gaApiKey = gaApiKey;
-  }
-
   // set sensible defaults for a new step
   public void setDefault() {
-    gaEmail = "your.account@googlemail.com";
+    oauthServiceAccount = "service.account@developer.gserviceaccount.com";
+    oauthKeyFile = "";
     useSegment = true;
     segmentId = "gaid::-1";
     segmentName = "All Visits";
@@ -298,7 +289,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     sort = "-ga:visits";
     gaAppName = DEFAULT_GA_APPLICATION_NAME;
     rowLimit = 0;
-    gaApiKey = "";
+
     // default is to have no key lookup settings
     allocate( 0 );
 
@@ -315,7 +306,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) {
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) {
 
     // clear the output
     r.clear();
@@ -359,14 +350,10 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   public String getXML() throws KettleValueException {
 
-    StringBuffer retval = new StringBuffer( 800 );
-
-    retval.append( "    " ).append( XMLHandler.addTagValue( "user", gaEmail ) );
-    retval.append( "    " ).append(
-      XMLHandler.addTagValue( "pass", "Encrypted " + Encr.encryptPassword( gaPassword ) ) );
+    StringBuilder retval = new StringBuilder( 800 );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "oauthServiceAccount", oauthServiceAccount ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "appName", gaAppName ) );
-    retval.append( "    " ).append(
-      XMLHandler.addTagValue( "apiKey", "Encrypted " + Encr.encryptPassword( gaApiKey ) ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "oauthKeyFile", oauthKeyFile ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "profileName", gaProfileName ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "profileTableId", gaProfileTableId ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "customTableId", gaCustomTableId ) );
@@ -394,18 +381,26 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
       retval.append( "        " ).append( XMLHandler.addTagValue( "conversionMask", conversionMask[i] ) );
       retval.append( "      </feedField>" ).append( Const.CR );
     }
-
     return retval.toString();
   }
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
 
     try {
+      // Check for legacy fields (user/pass/API key), present an error if found
+      String user = XMLHandler.getTagValue( stepnode, "user" );
+      String pass = XMLHandler.getTagValue( stepnode, "pass" );
+      String apiKey = XMLHandler.getTagValue( stepnode, "apiKey" );
 
-      gaEmail = XMLHandler.getTagValue( stepnode, "user" );
-      gaPassword = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "pass" ) );
+      oauthServiceAccount = XMLHandler.getTagValue( stepnode, "oauthServiceAccount" );
+      oauthKeyFile = XMLHandler.getTagValue( stepnode, "oauthKeyFile" );
+
+      // Are we loading a legacy transformation?
+      if ( ( user != null || pass != null || apiKey != null )
+        && ( oauthServiceAccount == null && oauthKeyFile == null ) ) {
+        logError( BaseMessages.getString( PKG, "GoogleAnalytics.Error.TransformationUpdateNeeded" ) );
+      }
       gaAppName = XMLHandler.getTagValue( stepnode, "appName" );
-      gaApiKey = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "apiKey" ) );
       gaProfileName = XMLHandler.getTagValue( stepnode, "profileName" );
       gaProfileTableId = XMLHandler.getTagValue( stepnode, "profileTableId" );
       gaCustomTableId = XMLHandler.getTagValue( stepnode, "customTableId" );
@@ -453,10 +448,19 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
+      String user = rep.getStepAttributeString( id_step, "user" );
+      String pass = rep.getStepAttributeString( id_step, "pass" );
+      String apiKey = rep.getStepAttributeString( id_step, "apiKey" );
 
-      gaEmail = rep.getStepAttributeString( id_step, "user" );
-      gaPassword = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "pass" ) );
-      gaApiKey = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "apiKey" ) );
+      oauthServiceAccount = rep.getStepAttributeString( id_step, "oauthServiceAccount" );
+      oauthKeyFile = rep.getStepAttributeString( id_step, "oauthKeyFile" );
+
+      // Are we loading a legacy transformation?
+      if ( ( user != null || pass != null || apiKey != null )
+        && ( oauthServiceAccount == null && oauthKeyFile == null ) ) {
+        logError( BaseMessages.getString( PKG, "GoogleAnalytics.Error.TransformationUpdateNeeded" ) );
+      }
+
       gaProfileName = rep.getStepAttributeString( id_step, "profileName" );
       gaAppName = rep.getStepAttributeString( id_step, "appName" );
       gaProfileTableId = rep.getStepAttributeString( id_step, "profileTableId" );
@@ -489,9 +493,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
         if ( outputType[i] < 0 ) {
           outputType[i] = ValueMetaInterface.TYPE_STRING;
         }
-
       }
-
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "GoogleAnalytics.Error.UnableToReadFromRep" ), e );
     }
@@ -499,11 +501,8 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
-      rep.saveStepAttribute( id_transformation, id_step, "user", gaEmail );
-      rep
-        .saveStepAttribute( id_transformation, id_step, "pass", "Encrypted " + Encr.encryptPassword( gaPassword ) );
-      rep
-        .saveStepAttribute( id_transformation, id_step, "apiKey", "Encrypted " + Encr.encryptPassword( gaApiKey ) );
+      rep.saveStepAttribute( id_transformation, id_step, "oauthServiceAccount", oauthServiceAccount );
+      rep.saveStepAttribute( id_transformation, id_step, "oauthKeyFile", oauthKeyFile );
       rep.saveStepAttribute( id_transformation, id_step, "appName", gaAppName );
       rep.saveStepAttribute( id_transformation, id_step, "profileName", gaProfileName );
       rep.saveStepAttribute( id_transformation, id_step, "profileTableId", gaProfileTableId );
@@ -538,8 +537,8 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+                     Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( prev == null || prev.size() == 0 ) {
@@ -570,7 +569,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
-    TransMeta transMeta, Trans disp ) {
+                                TransMeta transMeta, Trans disp ) {
     return new GaInputStep( stepMeta, stepDataInterface, cnr, transMeta, disp );
   }
 
@@ -578,4 +577,19 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     return new GaInputStepData();
   }
 
+  public String getOAuthKeyFile() {
+    return oauthKeyFile;
+  }
+
+  public void setOAuthKeyFile( String oauthKeyFile ) {
+    this.oauthKeyFile = oauthKeyFile;
+  }
+
+  public String getOAuthServiceAccount() {
+    return oauthServiceAccount;
+  }
+
+  public void setOauthServiceAccount( String oauthServiceAccount ) {
+    this.oauthServiceAccount = oauthServiceAccount;
+  }
 }
