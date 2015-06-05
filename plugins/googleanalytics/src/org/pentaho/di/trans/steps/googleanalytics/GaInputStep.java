@@ -252,10 +252,12 @@ public class GaInputStep extends BaseStep implements StepInterface {
     } else if ( data.entryIndex >= data.feed.getItemsPerPage() ) {
       try {
         // query is there, check whether we hit the last entry and re-query as necessary
-        if ( data.query.getStartIndex() + data.entryIndex <= data.feed.getTotalResults() ) {
-          // need to query for next page
-          data.query.setStartIndex( data.query.getStartIndex() + data.entryIndex );
+        int startIndex = ( data.query.getStartIndex() == null ) ? 0 : data.query.getStartIndex();
+        int totalResults = ( data.feed.getTotalResults() == null ) ? 0 : data.feed.getTotalResults();
 
+        if ( ( startIndex + data.entryIndex ) <= totalResults ) {
+          // need to query for next page
+          data.query.setStartIndex( startIndex + data.entryIndex );
           data.feed = data.query.execute();
           data.entryIndex = 0;
         }
