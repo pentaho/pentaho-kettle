@@ -155,8 +155,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="javac.deprecation"
             value="true"
             description="Indicates whether source should be compiled with deprecation information"/>
-  <property name="javac.source" value="6" description="Provide source compatibility with specified release"/>
-  <property name="javac.target" value="6" description="Generate class files for specific VM version"/>
+  <property name="javac.source" value="7" description="Provide source compatibility with specified release"/>
+  <property name="javac.target" value="7" description="Generate class files for specific VM version"/>
   <property name="javac.maxmemory" value="256M" description="Max memory alloted to java compile"/>
   <property name="javac.xlint" value="-Xlint:all"/>
 
@@ -1641,7 +1641,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <target name="javadoc" depends="javadoc.init, compile">
     <javadoc destdir="${javadoc.dir}/docs/api"
              access="public"
-             source="6"
+             source="7"
              use="true"
              notree="false"
              nonavbar="false"
