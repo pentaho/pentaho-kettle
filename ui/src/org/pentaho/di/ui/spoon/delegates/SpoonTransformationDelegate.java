@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -884,7 +885,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         //
       } else if ( executionConfiguration.isExecutingRemotely() ) {
         activeTransGraph.handleTransMetaChanges( transMeta );
-        if ( executionConfiguration.getRemoteServer() != null ) {
+        if ( transMeta.hasChanged() ) {
+          showSaveTransformationBeforeRunningDialog( spoon.getShell() );
+        } else if ( executionConfiguration.getRemoteServer() != null ) {
           String carteObjectId =
             Trans.sendToSlaveServer( transMeta, executionConfiguration, spoon.rep, spoon.metaStore );
           monitorRemoteTrans( transMeta, carteObjectId, executionConfiguration.getRemoteServer() );
@@ -901,9 +904,20 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         //
       } else if ( executionConfiguration.isExecutingClustered() ) {
         activeTransGraph.handleTransMetaChanges( transMeta );
-        splitTrans( transMeta, executionConfiguration );
+        if ( transMeta.hasChanged() ) {
+          showSaveTransformationBeforeRunningDialog( spoon.getShell() );
+        } else {
+          splitTrans( transMeta, executionConfiguration );
+        }
       }
     }
+  }
+  
+  private static void showSaveTransformationBeforeRunningDialog(Shell shell) {
+    MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
+    m.setText( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Title" ) );
+    m.setMessage( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Message" ) );
+    m.open();
   }
 
   private void monitorRemoteTrans( final TransMeta transMeta, final String carteObjectId,
