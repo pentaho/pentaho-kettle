@@ -39,7 +39,7 @@ import org.w3c.dom.Node;
  *
  *
  */
-public class ValueMeta extends ValueMetaBase implements ValueMetaInterface {
+public class ValueMeta extends ValueMetaBase {
   private static Class<?> PKG = Const.class;
 
   public static final String DEFAULT_DATE_FORMAT_MASK = "yyyy/MM/dd HH:mm:ss.SSS";
