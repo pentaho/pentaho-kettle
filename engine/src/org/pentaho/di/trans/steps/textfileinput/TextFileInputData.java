@@ -23,9 +23,9 @@
 package org.pentaho.di.trans.steps.textfileinput;
 
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -137,7 +137,8 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
   public TextFileInputData() {
     super();
 
-    lineBuffer = new ArrayList<TextFileLine>();
+    // linked list is better, as usually .remove(0) is applied to this list
+    lineBuffer = new LinkedList<TextFileLine>();
 
     nr_repeats = 0;
     previous_row = null;
