@@ -43,8 +43,8 @@
     <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle5-log4j-plugin" type="zip"/>
     </dependency>
-    <dependency org="pentaho" name="pdi-osgi-bridge" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" conf="plugins->default">
-      <artifact name="pdi-osgi-bridge" type="zip"/>
+    <dependency org="pentaho" name="pdi-osgi-bridge-assembly" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" conf="plugins->default">
+      <artifact name="pdi-osgi-bridge-assembly" type="zip"/>
     </dependency>
 
     <!-- Pentaho dependencies (non-Kettle), launcher, shim, etc. -->
