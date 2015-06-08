@@ -716,6 +716,7 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.NormalExecutionTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.RowProducerTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.TransSingleThreadTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.TransMeta_PDI_13634_Test" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.WordCountSampleTest" haltonerror="false"/>
 
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.addsequence.AddSequenceTest"
