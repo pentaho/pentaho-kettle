@@ -60,7 +60,7 @@ import org.w3c.dom.Node;
   name = "GoogleAnalytics.TypeLongDesc.GoogleAnalyticsStep",
   description = "GoogleAnalytics.TypeTooltipDesc.GoogleAnalyticsStep",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
-  image = "GAN.svg",
+  image = "GAN.png",
 
   documentationUrl = "http://wiki.pentaho.com/display/EAI/Google+Analytics"
 )
