@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.pentaho.di.core.database.DatabaseInterfaceExtended;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.steps.loadsave.MemoryRepository;
 import org.pentaho.metastore.api.IMetaStore;
@@ -100,6 +101,31 @@ public class TableOutputMetaTest {
 
     tableOutputMetaSpy.setReturningGeneratedKeys( false );
     assertFalse( tableOutputMetaSpy.isReturningGeneratedKeys() );
+  }
+
+  @Test
+  public void testProvidesModeler() throws Exception {
+    TableOutputMeta tableOutputMeta = new TableOutputMeta();
+    tableOutputMeta.setFieldDatabase( new String[] {"f1", "f2", "f3"} );
+    tableOutputMeta.setFieldStream( new String[] {"s4", "s5", "s6"} );
+
+    TableOutputData tableOutputData = new TableOutputData();
+    tableOutputData.insertRowMeta = mock( RowMeta.class );
+    assertEquals( tableOutputData.insertRowMeta, tableOutputMeta.getRowMeta( tableOutputData ) );
+
+    tableOutputMeta.setSpecifyFields( false );
+    assertEquals( 0, tableOutputMeta.getDatabaseFields().size() );
+    assertEquals( 0, tableOutputMeta.getStreamFields().size() );
+
+    tableOutputMeta.setSpecifyFields( true );
+    assertEquals( 3, tableOutputMeta.getDatabaseFields().size() );
+    assertEquals( "f1", tableOutputMeta.getDatabaseFields().get( 0 ) );
+    assertEquals( "f2", tableOutputMeta.getDatabaseFields().get( 1 ) );
+    assertEquals( "f3", tableOutputMeta.getDatabaseFields().get( 2 ) );
+    assertEquals( 3, tableOutputMeta.getStreamFields().size() );
+    assertEquals( "s4", tableOutputMeta.getStreamFields().get( 0 ) );
+    assertEquals( "s5", tableOutputMeta.getStreamFields().get( 1 ) );
+    assertEquals( "s6", tableOutputMeta.getStreamFields().get( 2 ) );
   }
 
 }
