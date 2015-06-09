@@ -101,8 +101,8 @@ public class SplitFieldToRows extends BaseStep implements StepInterface {
     if ( meta.includeRowNumber() && meta.resetRowNumber() ) {
       data.rownr = 1L;
     }
-
-    String[] splitStrings = data.delimiterPattern.split( originalString );
+    // use -1 for include all strings. see http://jira.pentaho.com/browse/PDI-11477
+    String[] splitStrings = data.delimiterPattern.split( originalString, -1 );
     for ( String string : splitStrings ) {
       Object[] outputRow = RowDataUtil.createResizedCopy( rowData, data.outputRowMeta.size() );
       outputRow[rowMeta.size()] = string;
