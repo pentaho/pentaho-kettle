@@ -22,12 +22,10 @@
 
 package org.pentaho.di.trans.steps.tableoutput;
 
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
+import org.pentaho.di.core.ProvidesModelerMeta;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseInterface;
@@ -37,6 +35,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -58,14 +57,17 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Table Output meta data.
  *
  * @author Matt Casters
  * @since 2-jun-2003
  */
-public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
-  ProvidesDatabaseConnectionInformation {
+public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, ProvidesModelerMeta {
   private static Class<?> PKG = TableOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DatabaseMeta databaseMeta;
@@ -475,7 +477,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
     StringBuilder retval = new StringBuilder();
 
     retval.append( "    "
-      + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
+        + XMLHandler.addTagValue( "connection", databaseMeta == null ? "" : databaseMeta.getName() ) );
     retval.append( "    " + XMLHandler.addTagValue( "schema", schemaName ) );
     retval.append( "    " + XMLHandler.addTagValue( "table", tableName ) );
     retval.append( "    " + XMLHandler.addTagValue( "commit", commitSize ) );
@@ -588,22 +590,22 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
   }
 
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Just add the returning key field...
     if ( returningGeneratedKeys && generatedKeyField != null && generatedKeyField.length() > 0 ) {
       ValueMetaInterface key =
-        new ValueMeta( space.environmentSubstitute( generatedKeyField ), ValueMetaInterface.TYPE_INTEGER );
+          new ValueMeta( space.environmentSubstitute( generatedKeyField ), ValueMetaInterface.TYPE_INTEGER );
       key.setOrigin( origin );
       row.addValueMeta( key );
     }
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+      Repository repository, IMetaStore metaStore ) {
     if ( databaseMeta != null ) {
       CheckResult cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
           PKG, "TableOutputMeta.CheckResult.ConnectionExists" ), stepMeta );
       remarks.add( cr );
 
@@ -619,7 +621,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
 
         if ( !Const.isEmpty( tableName ) ) {
           String schemaTable =
-            databaseMeta.getQuotedSchemaTableCombination( db.environmentSubstitute( schemaName ), db
+              databaseMeta.getQuotedSchemaTableCombination( db.environmentSubstitute( schemaName ), db
               .environmentSubstitute( tableName ) );
           // Check if this table exists...
           if ( db.checkTableExists( schemaTable ) ) {
@@ -772,7 +774,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
       }
     } else {
       CheckResult cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "TableOutputMeta.CheckResult.NoConnection" ), stepMeta );
       remarks.add( cr );
     }
@@ -780,19 +782,19 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       CheckResult cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
           PKG, "TableOutputMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       CheckResult cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
           PKG, "TableOutputMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
-    TransMeta transMeta, Trans trans ) {
+      TransMeta transMeta, Trans trans ) {
     return new TableOutput( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -801,11 +803,11 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
   }
 
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-    IMetaStore metaStore ) {
+      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+      IMetaStore metaStore ) {
     if ( truncateTable ) {
       DatabaseImpact ii =
-        new DatabaseImpact(
+          new DatabaseImpact(
           DatabaseImpact.TYPE_IMPACT_TRUNCATE, transMeta.getName(), stepMeta.getName(), databaseMeta
             .getDatabaseName(), tableName, "", "", "", "", "Truncate of table" );
       impact.add( ii );
@@ -816,7 +818,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
       for ( int i = 0; i < prev.size(); i++ ) {
         ValueMetaInterface v = prev.getValueMeta( i );
         DatabaseImpact ii =
-          new DatabaseImpact(
+            new DatabaseImpact(
             DatabaseImpact.TYPE_IMPACT_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
               .getDatabaseName(), tableName, v.getName(), v.getName(), v != null ? v.getOrigin() : "?", "",
             "Type = " + v.toStringMeta() );
@@ -826,12 +828,12 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
   }
 
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-    Repository repository, IMetaStore metaStore ) {
+      Repository repository, IMetaStore metaStore ) {
     return getSQLStatements( transMeta, stepMeta, prev, null, false, null );
   }
 
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String tk,
-    boolean use_autoinc, String pk ) {
+      boolean use_autoinc, String pk ) {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
 
     if ( databaseMeta != null ) {
@@ -853,7 +855,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
             retval.setSQL( cr_table );
           } catch ( KettleDatabaseException dbe ) {
             retval.setError( BaseMessages.getString( PKG, "TableOutputMeta.Error.ErrorConnecting", dbe
-              .getMessage() ) );
+                .getMessage() ) );
           } finally {
             db.disconnect();
           }
@@ -924,6 +926,25 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface,
    */
   public void setFieldStream( String[] fieldStream ) {
     this.fieldStream = fieldStream;
+  }
+
+  @Override public RowMeta getRowMeta( StepDataInterface stepData ) {
+    return (RowMeta) ( (TableOutputData) stepData ).insertRowMeta;
+  }
+
+  @Override public List<String> getDatabaseFields() {
+    if ( specifyFields() ) {
+      return Arrays.asList( getFieldDatabase() );
+    }
+    return Collections.emptyList();
+  }
+
+  @Override public List<String> getStreamFields() {
+    if ( specifyFields() ) {
+      return Arrays.asList( getFieldStream() );
+    }
+    return Collections.emptyList();
+
   }
 
   /**
