@@ -108,55 +108,57 @@ public class PluginRegistry {
   public void registerPluginType( Class<? extends PluginTypeInterface> pluginType ) {
     lock.writeLock().lock();
     try {
-      if ( pluginMap.get( pluginType ) == null ) {
-        pluginMap.put( pluginType, new ArrayList<PluginInterface>() );
-      }
+    if ( pluginMap.get( pluginType ) == null ) {
+      pluginMap.put( pluginType, new ArrayList<PluginInterface>() );
+    }
 
-      // Keep track of the categories separately for performance reasons...
-      //
-      if ( categoryMap.get( pluginType ) == null ) {
+    // Keep track of the categories separately for performance reasons...
+    //
+    if ( categoryMap.get( pluginType ) == null ) {
         categoryMap.put( pluginType, new ArrayList<String>() );
-      }
+    }
     } finally {
       lock.writeLock().unlock();
-    }
+  }
   }
 
   public void removePlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin ) {
     lock.writeLock().lock();
     try {
-      List<PluginInterface> list = pluginMap.get( pluginType );
+    List<PluginInterface> list = pluginMap.get( pluginType );
+    if ( list != null ) {
       list.remove( plugin );
+    }
 
-      Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
-      if ( classLoaders != null ) {
-        classLoaders.remove( plugin );
-      }
+    Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
+    if ( classLoaders != null ) {
+      classLoaders.remove( plugin );
+    }
 
-      if ( !Const.isEmpty( plugin.getClassLoaderGroup() ) ) {
-        // Straight away remove the class loader for the whole group...
-        //
-        classLoaderGroupsMap.remove( plugin.getClassLoaderGroup() );
-      }
+    if ( !Const.isEmpty( plugin.getClassLoaderGroup() ) ) {
+      // Straight away remove the class loader for the whole group...
+      //
+      classLoaderGroupsMap.remove( plugin.getClassLoaderGroup() );
+    }
 
       List<PluginTypeListener> listeners = (List<PluginTypeListener>) this.listeners.get( pluginType );
-      if ( listeners != null ) {
-        for ( PluginTypeListener listener : listeners ) {
-          listener.pluginRemoved( plugin );
-        }
+    if ( listeners != null ) {
+      for ( PluginTypeListener listener : listeners ) {
+        listener.pluginRemoved( plugin );
       }
+    }
     } finally {
       lock.writeLock().unlock();
-    }
+  }
   }
 
   public void addParentClassLoaderPatterns( PluginInterface plugin, String[] patterns ) {
     lock.writeLock().lock();
     try {
-      parentClassloaderPatternMap.put( plugin, patterns );
+    parentClassloaderPatternMap.put( plugin, patterns );
     } finally {
       lock.writeLock().unlock();
-    }
+  }
   }
 
   public void registerPlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin )
@@ -165,88 +167,88 @@ public class PluginRegistry {
     lock.writeLock().lock();
     try {
 
-      boolean changed = false; // Is this an add or an update?
+    boolean changed = false; // Is this an add or an update?
 
-      if ( plugin.getIds()[ 0 ] == null ) {
-        throw new KettlePluginException( "Not a valid id specified in plugin :" + plugin );
+    if ( plugin.getIds()[0] == null ) {
+      throw new KettlePluginException( "Not a valid id specified in plugin :" + plugin );
+    }
+
+    List<PluginInterface> list = pluginMap.get( pluginType );
+    if ( list == null ) {
+      list = new ArrayList<PluginInterface>();
+      pluginMap.put( pluginType, list );
+    }
+
+    int index = list.indexOf( plugin );
+    if ( index < 0 ) {
+      list.add( plugin );
+    } else {
+      list.set( index, plugin ); // replace with the new one
+      changed = true;
+    }
+
+    // Keep the list of plugins sorted by name...
+    //
+    Collections.sort( list, new Comparator<PluginInterface>() {
+      @Override
+      public int compare( PluginInterface p1, PluginInterface p2 ) {
+        return p1.getName().compareToIgnoreCase( p2.getName() );
       }
+    } );
 
-      List<PluginInterface> list = pluginMap.get( pluginType );
-      if ( list == null ) {
-        list = new ArrayList<PluginInterface>();
-        pluginMap.put( pluginType, list );
+    if ( !Const.isEmpty( plugin.getCategory() ) ) {
+      List<String> categories = categoryMap.get( pluginType );
+      if ( categories == null ) {
+        categories = new ArrayList<String>();
+        categoryMap.put( pluginType, categories );
       }
+      if ( !categories.contains( plugin.getCategory() ) ) {
+        categories.add( plugin.getCategory() );
 
-      int index = list.indexOf( plugin );
-      if ( index < 0 ) {
-        list.add( plugin );
-      } else {
-        list.set( index, plugin ); // replace with the new one
-        changed = true;
-      }
+        // Keep it sorted in the natural order here too!
+        //
+        // Sort the categories in the correct order.
+        //
+        String[] naturalOrder = null;
 
-      // Keep the list of plugins sorted by name...
-      //
-      Collections.sort( list, new Comparator<PluginInterface>() {
-        @Override
-        public int compare( PluginInterface p1, PluginInterface p2 ) {
-          return p1.getName().compareToIgnoreCase( p2.getName() );
+        PluginTypeCategoriesOrder naturalOrderAnnotation =
+          pluginType.getAnnotation( PluginTypeCategoriesOrder.class );
+        if ( naturalOrderAnnotation != null ) {
+          String[] naturalOrderKeys = naturalOrderAnnotation.getNaturalCategoriesOrder();
+          Class<?> i18nClass = naturalOrderAnnotation.i18nPackageClass();
+          naturalOrder = new String[naturalOrderKeys.length];
+          for ( int i = 0; i < naturalOrderKeys.length; i++ ) {
+            naturalOrder[i] = BaseMessages.getString( i18nClass, naturalOrderKeys[i] );
+          }
         }
-      } );
+        if ( naturalOrder != null ) {
+          final String[] fNaturalOrder = naturalOrder;
+          Collections.sort( categories, new Comparator<String>() {
 
-      if ( !Const.isEmpty( plugin.getCategory() ) ) {
-        List<String> categories = categoryMap.get( pluginType );
-        if ( categories == null ) {
-          categories = new ArrayList<String>();
-          categoryMap.put( pluginType, categories );
-        }
-        if ( !categories.contains( plugin.getCategory() ) ) {
-          categories.add( plugin.getCategory() );
-
-          // Keep it sorted in the natural order here too!
-          //
-          // Sort the categories in the correct order.
-          //
-          String[] naturalOrder = null;
-
-          PluginTypeCategoriesOrder naturalOrderAnnotation =
-            pluginType.getAnnotation( PluginTypeCategoriesOrder.class );
-          if ( naturalOrderAnnotation != null ) {
-            String[] naturalOrderKeys = naturalOrderAnnotation.getNaturalCategoriesOrder();
-            Class<?> i18nClass = naturalOrderAnnotation.i18nPackageClass();
-            naturalOrder = new String[ naturalOrderKeys.length ];
-            for ( int i = 0; i < naturalOrderKeys.length; i++ ) {
-              naturalOrder[ i ] = BaseMessages.getString( i18nClass, naturalOrderKeys[ i ] );
+            @Override
+            public int compare( String one, String two ) {
+              int idx1 = Const.indexOfString( one, fNaturalOrder );
+              int idx2 = Const.indexOfString( two, fNaturalOrder );
+              return idx1 - idx2;
             }
-          }
-          if ( naturalOrder != null ) {
-            final String[] fNaturalOrder = naturalOrder;
-            Collections.sort( categories, new Comparator<String>() {
-
-              @Override
-              public int compare( String one, String two ) {
-                int idx1 = Const.indexOfString( one, fNaturalOrder );
-                int idx2 = Const.indexOfString( two, fNaturalOrder );
-                return idx1 - idx2;
-              }
-            } );
-          }
+          } );
         }
       }
+    }
       List<PluginTypeListener> listeners = this.listeners.get( pluginType );
-      if ( listeners != null ) {
-        for ( PluginTypeListener listener : listeners ) {
-          // Changed or added?
-          if ( changed ) {
-            listener.pluginChanged( plugin );
-          } else {
-            listener.pluginAdded( plugin );
-          }
+    if ( listeners != null ) {
+      for ( PluginTypeListener listener : listeners ) {
+        // Changed or added?
+        if ( changed ) {
+          listener.pluginChanged( plugin );
+        } else {
+          listener.pluginAdded( plugin );
         }
       }
+    }
     } finally {
       lock.writeLock().unlock();
-    }
+  }
   }
 
   /**
@@ -255,11 +257,11 @@ public class PluginRegistry {
   public List<Class<? extends PluginTypeInterface>> getPluginTypes() {
     lock.readLock().lock();
     try {
-      return Collections
-        .unmodifiableList( new ArrayList<Class<? extends PluginTypeInterface>>( pluginMap.keySet() ) );
+    return Collections
+      .unmodifiableList( new ArrayList<Class<? extends PluginTypeInterface>>( pluginMap.keySet() ) );
     } finally {
       lock.readLock().unlock();
-    }
+  }
   }
 
   /**
@@ -272,12 +274,12 @@ public class PluginRegistry {
 
     lock.readLock().lock();
     try {
-      for ( Class<? extends PluginTypeInterface> pi : pluginMap.keySet() ) {
-        if ( Const.classIsOrExtends( pi, type ) ) {
-          List<PluginInterface> mapList = pluginMap.get( pi );
-          if ( mapList != null ) {
-            for ( PluginInterface p : mapList ) {
-              T t = (T) p;
+    for ( Class<? extends PluginTypeInterface> pi : pluginMap.keySet() ) {
+      if ( Const.classIsOrExtends( pi, type ) ) {
+        List<PluginInterface> mapList = pluginMap.get( pi );
+        if ( mapList != null ) {
+          for ( PluginInterface p : mapList ) {
+            T t = (T) p;
               set.add( t );
             }
           }
@@ -319,7 +321,7 @@ public class PluginRegistry {
    * @return An unmodifiable list of plugins that belong to the specified type and category.
    */
   public <T extends PluginTypeInterface> List<PluginInterface> getPluginsByCategory( Class<T> pluginType,
-                                                                                     String pluginCategory ) {
+    String pluginCategory ) {
     List<PluginInterface> plugins = new ArrayList<PluginInterface>();
 
     for ( PluginInterface verify : getPlugins( pluginType ) ) {
@@ -337,7 +339,7 @@ public class PluginRegistry {
    *
    * @param pluginType The plugin type to search categories for.
    * @return The list of categories for this plugin type. The list can be modified (sorted etc) but will not impact the
-   * registry in any way.
+   *         registry in any way.
    */
   public List<String> getCategories( Class<? extends PluginTypeInterface> pluginType ) {
     lock.readLock().lock();
@@ -345,7 +347,7 @@ public class PluginRegistry {
       return categoryMap.get( pluginType );
     } finally {
       lock.readLock().unlock();
-    }
+  }
   }
 
   /**
@@ -398,10 +400,10 @@ public class PluginRegistry {
   private KettleURLClassLoader createClassLoader( PluginInterface plugin ) throws MalformedURLException,
     UnsupportedEncodingException {
     List<String> jarfiles = plugin.getLibraries();
-    URL[] urls = new URL[ jarfiles.size() ];
+    URL[] urls = new URL[jarfiles.size()];
     for ( int i = 0; i < jarfiles.size(); i++ ) {
       File jarfile = new File( jarfiles.get( i ) );
-      urls[ i ] = new URL( URLDecoder.decode( jarfile.toURI().toURL().toString(), "UTF-8" ) );
+      urls[i] = new URL( URLDecoder.decode( jarfile.toURI().toURL().toString(), "UTF-8" ) );
     }
     ClassLoader classLoader = getClass().getClassLoader();
     String[] patterns = parentClassloaderPatternMap.get( plugin );
@@ -448,36 +450,36 @@ public class PluginRegistry {
           //
           lock.writeLock().lock();
           try {
-            if ( plugin.isSeparateClassLoaderNeeded() ) {
-              // Create a new one each time
-              ucl = createClassLoader( plugin );
+          if ( plugin.isSeparateClassLoaderNeeded() ) {
+            // Create a new one each time
+            ucl = createClassLoader( plugin );
+          } else {
+            // See if we can find a class loader to re-use.
+            Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
+            if ( classLoaders == null ) {
+              classLoaders = new HashMap<PluginInterface, URLClassLoader>();
+              classLoaderMap.put( plugin.getPluginType(), classLoaders );
             } else {
-              // See if we can find a class loader to re-use.
-              Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
-              if ( classLoaders == null ) {
-                classLoaders = new HashMap<PluginInterface, URLClassLoader>();
-                classLoaderMap.put( plugin.getPluginType(), classLoaders );
+              ucl = classLoaders.get( plugin );
+            }
+            if ( ucl == null ) {
+
+              if ( plugin.getPluginDirectory() != null ) {
+                ucl = folderBasedClassLoaderMap.get( plugin.getPluginDirectory().toString() );
+                if ( ucl == null ) {
+                  ucl = createClassLoader( plugin );
+                  classLoaders.put( plugin, ucl ); // save for later use...
+                  folderBasedClassLoaderMap.put( plugin.getPluginDirectory().toString(), ucl );
+                }
               } else {
                 ucl = classLoaders.get( plugin );
-              }
-              if ( ucl == null ) {
-
-                if ( plugin.getPluginDirectory() != null ) {
-                  ucl = folderBasedClassLoaderMap.get( plugin.getPluginDirectory().toString() );
-                  if ( ucl == null ) {
-                    ucl = createClassLoader( plugin );
-                    classLoaders.put( plugin, ucl ); // save for later use...
-                    folderBasedClassLoaderMap.put( plugin.getPluginDirectory().toString(), ucl );
-                  }
-                } else {
-                  ucl = classLoaders.get( plugin );
-                  if ( ucl == null ) {
-                    ucl = createClassLoader( plugin );
-                    classLoaders.put( plugin, ucl ); // save for later use...
-                  }
+                if ( ucl == null ) {
+                  ucl = createClassLoader( plugin );
+                  classLoaders.put( plugin, ucl ); // save for later use...
                 }
               }
             }
+          }
           } finally {
             lock.writeLock().unlock();
           }
@@ -518,7 +520,7 @@ public class PluginRegistry {
 
   /**
    * Added so we can tell when types have been added (but not necessarily registered)
-   *
+   * 
    * @return the list of added plugin types
    */
   public static List<PluginTypeInterface> getAddedPluginTypes() {
@@ -646,9 +648,9 @@ public class PluginRegistry {
     }
 
     if ( LogChannel.GENERAL.isDetailed() ) {
-      LogChannel.GENERAL.logDetailed( "Registered "
-        + getPlugins( pluginType.getClass() ).size() + " plugins of type '" + pluginType.getName() + "' in "
-        + ( System.currentTimeMillis() - startScan ) + "ms." );
+    LogChannel.GENERAL.logDetailed( "Registered "
+      + getPlugins( pluginType.getClass() ).size() + " plugins of type '" + pluginType.getName() + "' in "
+      + ( System.currentTimeMillis() - startScan ) + "ms." );
     }
 
   }
@@ -675,14 +677,14 @@ public class PluginRegistry {
    * @param pluginType  the type of plugin
    * @param pluginClass The class to look for
    * @return The ID of the plugin to which this class belongs (checks the plugin class maps) or null if nothing was
-   * found.
+   *         found.
    */
   public String getPluginId( Class<? extends PluginTypeInterface> pluginType, Object pluginClass ) {
     String className = pluginClass.getClass().getName();
     for ( PluginInterface plugin : getPlugins( pluginType ) ) {
       for ( String check : plugin.getClassMap().values() ) {
         if ( check != null && check.equals( className ) ) {
-          return plugin.getIds()[ 0 ];
+          return plugin.getIds()[0];
         }
       }
     }
@@ -736,7 +738,7 @@ public class PluginRegistry {
    * @return The plugin with the specified description or null if nothing was found.
    */
   public PluginInterface findPluginWithDescription( Class<? extends PluginTypeInterface> pluginType,
-                                                    String pluginDescription ) {
+    String pluginDescription ) {
     for ( PluginInterface plugin : getPlugins( pluginType ) ) {
 
       if ( plugin.getDescription().equals( pluginDescription ) ) {
@@ -821,17 +823,17 @@ public class PluginRegistry {
     RowBuffer rowBuffer = new RowBuffer( getPluginInformationRowMeta() );
     for ( PluginInterface plugin : getPlugins( pluginType ) ) {
 
-      Object[] row = new Object[ getPluginInformationRowMeta().size() ];
+      Object[] row = new Object[getPluginInformationRowMeta().size()];
       int rowIndex = 0;
 
-      row[ rowIndex++ ] = getPluginType( plugin.getPluginType() ).getName();
-      row[ rowIndex++ ] = plugin.getIds()[ 0 ];
-      row[ rowIndex++ ] = plugin.getName();
-      row[ rowIndex++ ] = Const.NVL( plugin.getDescription(), "" );
-      row[ rowIndex++ ] = Const.isEmpty( plugin.getLibraries() ) ? "" : plugin.getLibraries().toString();
-      row[ rowIndex++ ] = Const.NVL( plugin.getImageFile(), "" );
-      row[ rowIndex++ ] = plugin.getClassMap().values().toString();
-      row[ rowIndex++ ] = Const.NVL( plugin.getCategory(), "" );
+      row[rowIndex++] = getPluginType( plugin.getPluginType() ).getName();
+      row[rowIndex++] = plugin.getIds()[0];
+      row[rowIndex++] = plugin.getName();
+      row[rowIndex++] = Const.NVL( plugin.getDescription(), "" );
+      row[rowIndex++] = Const.isEmpty( plugin.getLibraries() ) ? "" : plugin.getLibraries().toString();
+      row[rowIndex++] = Const.NVL( plugin.getImageFile(), "" );
+      row[rowIndex++] = plugin.getClassMap().values().toString();
+      row[rowIndex++] = Const.NVL( plugin.getCategory(), "" );
 
       rowBuffer.getBuffer().add( row );
     }
@@ -859,23 +861,23 @@ public class PluginRegistry {
 
         lock.writeLock().lock();
         try {
-          Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
-          if ( classLoaders == null ) {
-            classLoaders = new HashMap<PluginInterface, URLClassLoader>();
-            classLoaderMap.put( plugin.getPluginType(), classLoaders );
-          } else {
-            ucl = classLoaders.get( plugin );
-          }
-          if ( ucl == null ) {
+        Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
+        if ( classLoaders == null ) {
+          classLoaders = new HashMap<PluginInterface, URLClassLoader>();
+          classLoaderMap.put( plugin.getPluginType(), classLoaders );
+        } else {
+          ucl = classLoaders.get( plugin );
+        }
+        if ( ucl == null ) {
 
-            if ( plugin.getPluginDirectory() != null ) {
-              ucl = folderBasedClassLoaderMap.get( plugin.getPluginDirectory().toString() );
+          if ( plugin.getPluginDirectory() != null ) {
+            ucl = folderBasedClassLoaderMap.get( plugin.getPluginDirectory().toString() );
 
-              classLoaders.put( plugin, ucl ); // save for later use...
-
-            }
+            classLoaders.put( plugin, ucl ); // save for later use...
 
           }
+
+        }
         } finally {
           lock.writeLock().unlock();
         }
@@ -930,54 +932,54 @@ public class PluginRegistry {
 
         lock.writeLock().lock();
         try {
-          // If the plugin needs to have a separate class loader for each instance
-          // of the plugin.
-          // This is not the default. By default we cache the class loader for
-          // each plugin ID.
-          //
-          if ( plugin.isSeparateClassLoaderNeeded() ) {
-            // Create a new one each time
-            ucl = createClassLoader( plugin );
+        // If the plugin needs to have a separate class loader for each instance
+        // of the plugin.
+        // This is not the default. By default we cache the class loader for
+        // each plugin ID.
+        //
+        if ( plugin.isSeparateClassLoaderNeeded() ) {
+          // Create a new one each time
+          ucl = createClassLoader( plugin );
+        } else {
+          // See if we can find a class loader to re-use.
+          Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
+          if ( classLoaders == null ) {
+            classLoaders = new HashMap<PluginInterface, URLClassLoader>();
+            classLoaderMap.put( plugin.getPluginType(), classLoaders );
           } else {
-            // See if we can find a class loader to re-use.
-            Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
-            if ( classLoaders == null ) {
-              classLoaders = new HashMap<PluginInterface, URLClassLoader>();
-              classLoaderMap.put( plugin.getPluginType(), classLoaders );
+            ucl = classLoaders.get( plugin );
+          }
+          if ( ucl == null ) {
+            if ( !Const.isEmpty( plugin.getClassLoaderGroup() ) ) {
+              ucl = classLoaderGroupsMap.get( plugin.getClassLoaderGroup() );
+              if ( ucl == null ) {
+                ucl = createClassLoader( plugin );
+                classLoaders.put( plugin, ucl );
+                classLoaderGroupsMap.put( plugin.getClassLoaderGroup(), ucl );
+              }
             } else {
-              ucl = classLoaders.get( plugin );
-            }
-            if ( ucl == null ) {
-              if ( !Const.isEmpty( plugin.getClassLoaderGroup() ) ) {
-                ucl = classLoaderGroupsMap.get( plugin.getClassLoaderGroup() );
+              if ( plugin.getPluginDirectory() != null ) {
+                ucl = folderBasedClassLoaderMap.get( plugin.getPluginDirectory().toString() );
                 if ( ucl == null ) {
                   ucl = createClassLoader( plugin );
-                  classLoaders.put( plugin, ucl );
-                  classLoaderGroupsMap.put( plugin.getClassLoaderGroup(), ucl );
+                  classLoaders.put( plugin, ucl ); // save for later use...
+                  folderBasedClassLoaderMap.put( plugin.getPluginDirectory().toString(), ucl );
                 }
               } else {
-                if ( plugin.getPluginDirectory() != null ) {
-                  ucl = folderBasedClassLoaderMap.get( plugin.getPluginDirectory().toString() );
-                  if ( ucl == null ) {
-                    ucl = createClassLoader( plugin );
-                    classLoaders.put( plugin, ucl ); // save for later use...
-                    folderBasedClassLoaderMap.put( plugin.getPluginDirectory().toString(), ucl );
-                  }
-                } else {
-                  ucl = classLoaders.get( plugin );
-                  if ( ucl == null ) {
-                    if ( plugin.getLibraries().size() == 0 ) {
-                      if ( plugin instanceof ClassLoadingPluginInterface ) {
-                        return ( (ClassLoadingPluginInterface) plugin ).getClassLoader();
-                      }
+                ucl = classLoaders.get( plugin );
+                if ( ucl == null ) {
+                  if ( plugin.getLibraries().size() == 0 ) {
+                    if ( plugin instanceof ClassLoadingPluginInterface ) {
+                      return ( (ClassLoadingPluginInterface) plugin ).getClassLoader();
                     }
-                    ucl = createClassLoader( plugin );
-                    classLoaders.put( plugin, ucl ); // save for later use...
                   }
+                  ucl = createClassLoader( plugin );
+                  classLoaders.put( plugin, ucl ); // save for later use...
                 }
               }
             }
           }
+        }
         } finally {
           lock.writeLock().unlock();
         }
@@ -1005,31 +1007,31 @@ public class PluginRegistry {
   public <T extends PluginTypeInterface> void addPluginListener( Class<T> typeToTrack, PluginTypeListener listener ) {
     lock.writeLock().lock();
     try {
-      List<PluginTypeListener> list = listeners.get( typeToTrack );
-      if ( list == null ) {
-        list = new ArrayList<PluginTypeListener>();
-        listeners.put( typeToTrack, list );
-      }
+    List<PluginTypeListener> list = listeners.get( typeToTrack );
+    if ( list == null ) {
+      list = new ArrayList<PluginTypeListener>();
+      listeners.put( typeToTrack, list );
+    }
       if ( !list.contains( listener ) ) {
-        list.add( listener );
-      }
+      list.add( listener );
+    }
     } finally {
       lock.writeLock().unlock();
-    }
+  }
   }
 
   public void addClassLoader( URLClassLoader ucl, PluginInterface plugin ) {
     lock.writeLock().lock();
     try {
-      Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
-      if ( classLoaders == null ) {
-        classLoaders = new HashMap<PluginInterface, URLClassLoader>();
-        classLoaderMap.put( plugin.getPluginType(), classLoaders );
-      }
-      classLoaders.put( plugin, ucl );
+    Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get( plugin.getPluginType() );
+    if ( classLoaders == null ) {
+      classLoaders = new HashMap<PluginInterface, URLClassLoader>();
+      classLoaderMap.put( plugin.getPluginType(), classLoaders );
+    }
+    classLoaders.put( plugin, ucl );
     } finally {
       lock.writeLock().unlock();
-    }
+  }
   }
 
   public PluginTypeInterface getPluginType( Class<? extends PluginTypeInterface> pluginTypeClass )
@@ -1038,8 +1040,8 @@ public class PluginRegistry {
       // All these plugin type interfaces are singletons...
       // So we should call a static getInstance() method...
       //
-      Method method = pluginTypeClass.getMethod( "getInstance", new Class<?>[ 0 ] );
-      PluginTypeInterface pluginTypeInterface = (PluginTypeInterface) method.invoke( null, new Object[ 0 ] );
+      Method method = pluginTypeClass.getMethod( "getInstance", new Class<?>[0] );
+      PluginTypeInterface pluginTypeInterface = (PluginTypeInterface) method.invoke( null, new Object[0] );
 
       return pluginTypeInterface;
     } catch ( Exception e ) {
@@ -1060,18 +1062,18 @@ public class PluginRegistry {
     List<PluginInterface> result = new ArrayList<PluginInterface>();
     lock.readLock().lock();
     try {
-      for ( List<PluginInterface> typeInterfaces : pluginMap.values() ) {
-        for ( PluginInterface plugin : typeInterfaces ) {
-          URL pluginFolder = plugin.getPluginDirectory();
-          try {
-            if ( pluginFolder != null && pluginFolder.toURI().normalize().getPath().startsWith( path ) ) {
-              result.add( plugin );
-            }
-          } catch ( URISyntaxException e ) {
-            log.logError( e.getLocalizedMessage(), e );
+    for ( List<PluginInterface> typeInterfaces : pluginMap.values() ) {
+      for ( PluginInterface plugin : typeInterfaces ) {
+        URL pluginFolder = plugin.getPluginDirectory();
+        try {
+          if ( pluginFolder != null && pluginFolder.toURI().normalize().getPath().startsWith( path ) ) {
+            result.add( plugin );
           }
+        } catch ( URISyntaxException e ) {
+          log.logError( e.getLocalizedMessage(), e );
         }
       }
+    }
     } finally {
       lock.readLock().unlock();
     }

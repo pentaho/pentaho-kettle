@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.pentaho.di.core.Const;
@@ -38,6 +39,13 @@ import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 
+/**
+ * Static methods provided by this class should be copied to their respective projects
+ *
+ * Data Service client code is now available in the pdi-dataservice-plugin project
+ *
+ */
+@Deprecated
 public class ThinUtil {
 
   public static String stripNewlines( String sql ) {
@@ -168,12 +176,40 @@ public class ThinUtil {
           ValueMetaInterface valueMeta = new ValueMeta( "iif-date", ValueMetaInterface.TYPE_DATE );
           valueMeta.setConversionMask( format );
           return new ValueMetaAndData( valueMeta, date );
-
         }
       }
     }
+
+    Matcher matcher = Pattern.compile( "^([A-Za-z]+) ?'([0-9\\-:\\. ]+)'$" ).matcher( string );
+    if ( matcher.find() ) {
+      if ( matcher.groupCount() == 2 ) {
+        String keyword = matcher.group( 1 );
+        String dateString = matcher.group( 2 );
+        String format = null;
+        if ( keyword.equalsIgnoreCase( "TIMESTAMP" ) ) {
+          format = "yyyy-MM-dd HH:mm:ss";
+        } else if ( keyword.equalsIgnoreCase( "DATE" ) ) {
+          format = "yyyy-MM-dd";
+        }
+        if ( format != null ) {
+          Date date = null;
+          try {
+            date = new SimpleDateFormat( format ).parse( dateString );
+          } catch ( ParseException e ) {
+            // Format does not match
+          }
+          if ( date != null ) {
+            ValueMetaInterface valueMeta = new ValueMeta( "iff-date", ValueMetaInterface.TYPE_DATE );
+            valueMeta.setConversionMask( format );
+            return new ValueMetaAndData( valueMeta, date );
+          }
+        }
+      }
+    }
+
     return null;
   }
+
 
   public static ValueMetaAndData attemptIntegerValueExtraction( String string ) {
     // Try an Integer

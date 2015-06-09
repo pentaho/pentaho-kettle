@@ -4372,6 +4372,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         steps = selectedSteps.toArray( new StepMeta[selectedSteps.size()] );
       }
 
+      ExtensionPointHandler.callExtensionPoint( getLogChannel(), KettleExtensionPoint.BeforeCheckSteps.id,
+        new CheckStepsExtension( remarks, space, this, steps, repository, metaStore ) );
+
       boolean stop_checking = false;
 
       if ( monitor != null ) {
@@ -4431,7 +4434,11 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           String[] output = getNextStepNames( stepMeta );
 
           // Check step specific info...
+          ExtensionPointHandler.callExtensionPoint( getLogChannel(), KettleExtensionPoint.BeforeCheckStep.id,
+            new CheckStepsExtension( remarks, space, this, new StepMeta[]{ stepMeta }, repository, metaStore ) );
           stepMeta.check( remarks, this, prev, input, output, info, space, repository, metaStore );
+          ExtensionPointHandler.callExtensionPoint( getLogChannel(), KettleExtensionPoint.AfterCheckStep.id,
+            new CheckStepsExtension( remarks, space, this, new StepMeta[]{ stepMeta }, repository, metaStore ) );
 
           // See if illegal characters etc. were used in field-names...
           if ( prev != null ) {
@@ -4593,10 +4600,13 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       if ( monitor != null ) {
         monitor.worked( 1 );
       }
+      ExtensionPointHandler.callExtensionPoint( getLogChannel(), KettleExtensionPoint.AfterCheckSteps.id,
+        new CheckStepsExtension( remarks, space, this, steps, repository, metaStore ) );
     } catch ( Exception e ) {
       log.logError( Const.getStackTracker( e ) );
       throw new RuntimeException( e );
     }
+
   }
 
   /**

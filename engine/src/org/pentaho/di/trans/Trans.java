@@ -23,6 +23,10 @@
 
 package org.pentaho.di.trans;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -402,6 +406,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   private HttpServletRequest servletRequest;
 
   private Map<String, Object> extensionDataMap;
+
+  private ExecutorService heartbeat = null; // this transformations's heartbeat scheduled executor
 
   /**
    * Instantiates a new transformation.
@@ -1292,6 +1298,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       public void transFinished( Trans trans ) {
 
         try {
+          shutdownHeartbeat( trans != null ? trans.heartbeat : null );
+
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationFinish.id, trans );
         } catch ( KettleException e ) {
           throw new RuntimeException( "Error calling extension point at end of transformation", e );
@@ -1438,6 +1446,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationStart.id, this );
+
+    heartbeat = startHeartbeat( getHeartbeatIntervalInSeconds() );
 
     if ( log.isDetailed() ) {
       log
@@ -5553,5 +5563,76 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   @Override
   public Map<String, Object> getExtensionDataMap() {
     return extensionDataMap;
+  }
+
+  protected ExecutorService startHeartbeat( final long intervalInSeconds ) {
+
+    ScheduledExecutorService heartbeat = Executors.newSingleThreadScheduledExecutor( new ThreadFactory() {
+
+        @Override
+        public Thread newThread( Runnable r ) {
+          Thread thread = new Thread( r, "Transformation Heartbeat Thread for: " + getName() );
+          thread.setDaemon( true );
+          return thread;
+        }
+      } );
+
+    heartbeat.scheduleAtFixedRate( new Runnable() {
+      public void run() {
+        try {
+
+          if( Trans.this.isFinished() ){
+            log.logBasic( "Shutting down heartbeat signal for " + getName() );
+            shutdownHeartbeat( Trans.this.heartbeat );
+            return;
+          }
+
+          log.logDebug( "Triggering heartbeat signal for " + getName() + " at every " + intervalInSeconds + " seconds" );
+          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationHeartbeat.id, Trans.this );
+
+        } catch ( KettleException e ) {
+          log.logError( e.getMessage(), e );
+        }
+      }
+    }, intervalInSeconds /* initial delay */, intervalInSeconds /* interval delay */, TimeUnit.SECONDS );
+
+    return heartbeat;
+  }
+
+  protected void shutdownHeartbeat( ExecutorService heartbeat ){
+
+    if( heartbeat != null ) {
+
+      try {
+        heartbeat.shutdownNow(); // prevents waiting tasks from starting and attempts to stop currently executing ones
+
+      } catch( Throwable t ) {
+        /* do nothing */
+      }
+    }
+  }
+
+  private int getHeartbeatIntervalInSeconds() {
+
+    TransMeta meta = this.getTransMeta();
+
+    // 1 - check if there's a user defined value ( transformation-specific ) heartbeat periodic interval;
+    // 2 - check if there's a default defined value ( transformation-specific ) heartbeat periodic interval;
+    // 3 - use default Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS if none of the above have been set
+
+    try {
+
+      if ( meta != null ) {
+
+        return Const.toInt( meta.getParameterValue( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
+            Const.toInt(  meta.getParameterDefault( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
+                Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS ) );
+      }
+
+    } catch( Exception e ){
+      /* do nothing, return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS */
+    }
+
+    return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS;
   }
 }

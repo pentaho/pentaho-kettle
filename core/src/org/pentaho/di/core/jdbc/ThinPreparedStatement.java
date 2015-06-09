@@ -50,6 +50,13 @@ import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
+/**
+ * This class is no longer used
+ *
+ * Data Service client code is now available in the pdi-dataservice-plugin project
+ *
+ */
+@Deprecated
 public class ThinPreparedStatement extends ThinStatement implements PreparedStatement {
 
   private String sql; // contains ? placeholders

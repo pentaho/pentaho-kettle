@@ -27,6 +27,8 @@ import java.util.Locale;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -39,6 +41,9 @@ public class JobFileListener implements FileListener {
   public boolean open( Node jobNode, String fname, boolean importfile ) {
     Spoon spoon = Spoon.getInstance();
     try {
+      // Call extension point(s) before the file has been opened
+      ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.JobBeforeOpen.id, fname );
+
       JobMeta jobMeta = new JobMeta();
       jobMeta.loadXML( jobNode, fname, spoon.getRepository(), spoon.getMetaStore(), false, spoon );
       jobMeta.setRepositoryDirectory( spoon.getDefaultSaveLocation( jobMeta ) );
@@ -52,6 +57,9 @@ public class JobFileListener implements FileListener {
       }
       jobMeta.setFilename( fname );
       spoon.delegates.jobs.addJobGraph( jobMeta );
+
+      // Call extension point(s) now that the file has been opened
+      ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.JobAfterOpen.id, jobMeta );
 
       spoon.refreshTree();
       SpoonPerspectiveManager.getInstance().activatePerspective( MainSpoonPerspective.class );

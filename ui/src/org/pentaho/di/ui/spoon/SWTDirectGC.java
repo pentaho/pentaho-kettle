@@ -46,6 +46,7 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.util.ImageUtil;
+import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 /**
  * SWTGC draws on an Image. This class draws directly on an SWT GC. getImage() returns null as a consequence of not
@@ -133,6 +134,16 @@ public class SWTDirectGC implements GCInterface {
 
   public void drawLine( int x, int y, int x2, int y2 ) {
     gc.drawLine( x, y, x2, y2 );
+  }
+
+  public void drawImage( String location, ClassLoader classLoader, int x, int y ) {
+    Image img = SwtSvgImageUtil.getImage( PropsUI.getDisplay(), classLoader, location,
+      Math.round( small_icon_size * currentMagnification ),
+      Math.round( small_icon_size * currentMagnification ) );
+    if ( img != null ) {
+      Rectangle bounds = img.getBounds();
+      gc.drawImage( img, 0, 0, bounds.width, bounds.height, x, y, small_icon_size, small_icon_size );
+    }
   }
 
   @Override

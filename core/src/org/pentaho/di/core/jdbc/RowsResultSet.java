@@ -47,6 +47,13 @@ import java.util.Map;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 
+/**
+ * This class is no longer used
+ *
+ * Data Service client code is now available in the pdi-dataservice-plugin project
+ *
+ */
+@Deprecated
 public class RowsResultSet implements ResultSet {
 
   private RowMetaInterface rowMeta;

@@ -287,6 +287,7 @@ import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.dialog.AnalyseImpactProgressDialog;
+import org.pentaho.di.ui.spoon.dialog.CapabilityManagerDialog;
 import org.pentaho.di.ui.spoon.dialog.CheckTransProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.LogSettingsDialog;
 import org.pentaho.di.ui.spoon.dialog.MetaStoreExplorerDialog;
@@ -1014,8 +1015,37 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     boolean closed = true;
     EngineMetaInterface meta = getActiveMeta();
     if ( meta != null ) {
-      // If a transformation is the current active tab, close it
+
+      String beforeCloseId = null;
+      String afterCloseId = null;
+
+      if( meta instanceof TransMeta ) {
+        beforeCloseId = KettleExtensionPoint.TransBeforeClose.id;
+        afterCloseId = KettleExtensionPoint.TransAfterClose.id;
+      }
+      else if( meta instanceof JobMeta ) {
+        beforeCloseId = KettleExtensionPoint.JobBeforeClose.id;
+        afterCloseId = KettleExtensionPoint.JobAfterClose.id;
+      }
+
+      if( beforeCloseId != null ) {
+        try {
+          ExtensionPointHandler.callExtensionPoint( log, beforeCloseId, meta );
+        } catch ( KettleException e ) {
+          // fails gracefully but perhaps should return false?
+        }
+      }
+
+      // If a transformation or job is the current active tab, close it
       closed = tabCloseSelected();
+
+      if( closed && ( afterCloseId != null ) ) {
+        try {
+          ExtensionPointHandler.callExtensionPoint( log, afterCloseId, meta );
+        } catch ( KettleException e ) {
+          // fails gracefully but perhaps should return false?
+        }
+      }
     }
 
     return closed;
@@ -4228,9 +4258,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           String name = sod.getObjectName();
           RepositoryDirectoryInterface repDir = sod.getDirectory();
 
+          ObjectId objId = sod.getObjectId();
           // Load a transformation
           if ( RepositoryObjectType.TRANSFORMATION.equals( type ) ) {
-            TransLoadProgressDialog tlpd = new TransLoadProgressDialog( shell, rep, name, repDir, null ); // Loads
+            TransLoadProgressDialog tlpd = null;
+            // prioritize loading file by id
+            if( objId != null && !Const.isEmpty( objId.getId() ) ) {
+              tlpd = new TransLoadProgressDialog( shell, rep, objId, null ); // Load by id
+            } else {
+              tlpd = new TransLoadProgressDialog( shell, rep, name, repDir, null ); // Load by name/path
+            }
             // the
             // last
             // version
@@ -4253,7 +4290,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             refreshTree();
           } else if ( RepositoryObjectType.JOB.equals( type ) ) {
             // Load a job
-            JobLoadProgressDialog jlpd = new JobLoadProgressDialog( shell, rep, name, repDir, null ); // Loads
+            JobLoadProgressDialog jlpd = null;
+            // prioritize loading file by id
+            if( objId != null && !Const.isEmpty( objId.getId() ) ) {
+              jlpd = new JobLoadProgressDialog( shell, rep, objId, null ); // Loads
+            } else {
+              jlpd = new JobLoadProgressDialog( shell, rep, name, repDir, null ); // Loads
+            }
             // the last version
             JobMeta jobMeta = jlpd.open();
             sharedObjectsFileMap.put( jobMeta.getSharedObjects().getFilename(), jobMeta.getSharedObjects() );
@@ -5120,11 +5163,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
             boolean versioningEnabled = true;
             boolean versionCommentsEnabled = true;
+            String fullPath = meta.getRepositoryDirectory() + "/" + meta.getName() + meta.getRepositoryElementType().getExtension(); 
             RepositorySecurityProvider repositorySecurityProvider =
                 rep != null && rep.getSecurityProvider() != null ? rep.getSecurityProvider() : null;
             if ( repositorySecurityProvider != null ) {
-              versioningEnabled = repositorySecurityProvider.isVersioningEnabled();
-              versionCommentsEnabled = repositorySecurityProvider.allowsVersionComments();
+              versioningEnabled = repositorySecurityProvider.isVersioningEnabled( fullPath );
+              versionCommentsEnabled = repositorySecurityProvider.allowsVersionComments( fullPath );
             }
 
             // Finally before saving, ask for a version comment (if
@@ -5139,15 +5183,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               versionOk = false;
             }
             while ( !versionOk ) {
-              versionComment = RepositorySecurityUI.getVersionComment( shell, rep, meta.getName() );
+              versionComment = RepositorySecurityUI.getVersionComment( shell, rep, meta.getName(), fullPath, false );
 
               // if the version comment is null, the user hit cancel, exit.
               if ( rep != null && rep.getSecurityProvider() != null
-                  && rep.getSecurityProvider().allowsVersionComments() && versionComment == null ) {
+                  && rep.getSecurityProvider().allowsVersionComments( fullPath ) && versionComment == null ) {
                 return false;
               }
 
-              if ( Const.isEmpty( versionComment ) && rep.getSecurityProvider().isVersionCommentMandatory() ) {
+              if ( Const.isEmpty( versionComment ) && rep.getSecurityProvider().isVersioningEnabled( fullPath )
+                  && rep.getSecurityProvider().isVersionCommentMandatory() ) {
                 if ( !RepositorySecurityUI.showVersionCommentMandatoryDialog( shell ) ) {
                   return false; // no, I don't want to enter a
                   // version comment and yes,
@@ -5555,19 +5600,19 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     // Finally before importing, ask for a version comment (if applicable)
     //
+    String fullPath = baseDirectory.getPath() + "/foo.ktr"; 
     String versionComment = null;
     boolean versionOk = false;
     while ( !versionOk ) {
       versionComment =
         RepositorySecurityUI.getVersionComment( shell, rep, "Import of files into ["
-          + baseDirectory.getPath() + "]" );
+          + baseDirectory.getPath() + "]", fullPath, true );
       // if the version comment is null, the user hit cancel, exit.
-      if ( rep != null && rep.getSecurityProvider() != null && rep.getSecurityProvider().allowsVersionComments()
-          && versionComment == null ) {
+      if ( versionComment == null ) {
         return;
       }
 
-      if ( Const.isEmpty( versionComment ) && rep.getSecurityProvider().isVersionCommentMandatory() ) {
+      if ( Const.isEmpty( versionComment ) && rep.getSecurityProvider().isVersionCommentMandatory( ) ) {
         if ( !RepositorySecurityUI.showVersionCommentMandatoryDialog( shell ) ) {
           versionOk = true;
         }
@@ -5713,8 +5758,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     String filename = null;
     FileObject selectedFile =
       getVfsFileChooserDialog( rootFile, initialFile ).open(
-        shell, "Untitled", Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const.getTransformationAndJobFilterNames(),
-        VfsFileChooserDialog.VFS_DIALOG_SAVEAS );
+          shell, "Untitled", Const.STRING_TRANS_AND_JOB_FILTER_EXT, Const.getTransformationAndJobFilterNames(),
+          VfsFileChooserDialog.VFS_DIALOG_SAVEAS );
     if ( selectedFile != null ) {
       filename = selectedFile.getName().getFriendlyURI();
     }
@@ -6035,6 +6080,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.PleaseRestartApplication.Title" ) );
       mb.open();
     }
+  }
+
+  public void editCapabilities() {
+    CapabilityManagerDialog capabilityManagerDialog = new CapabilityManagerDialog( this.shell );
+    capabilityManagerDialog.open();
   }
 
   public void editKettlePropertiesFile() {
@@ -6946,12 +6996,32 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private void markTabsChanged() {
+
     for ( TabMapEntry entry : delegates.tabs.getTabs() ) {
       if ( entry.getTabItem().isDisposed() ) {
         continue;
       }
 
       boolean changed = entry.getObject().hasContentChanged();
+      if( changed ) {
+        // Call extension point to alert plugins that a transformation or job has changed
+        Object tabObject = entry.getObject().getManagedObject();
+        String changedId = null;
+        if( tabObject instanceof TransMeta ) {
+          changedId = KettleExtensionPoint.TransChanged.id;
+        }
+        else if( tabObject instanceof JobMeta ) {
+          changedId = KettleExtensionPoint.JobChanged.id;
+        }
+
+        if( changedId != null ) {
+          try {
+            ExtensionPointHandler.callExtensionPoint( log, changedId, tabObject );
+          } catch ( KettleException e ) {
+            // fails gracefully
+          }
+        }
+      }
       entry.getTabItem().setChanged( changed );
     }
   }
@@ -9236,4 +9306,5 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     AuthProviderDialog authProviderDialog = new AuthProviderDialog( shell );
     authProviderDialog.show();
   }
+
 }

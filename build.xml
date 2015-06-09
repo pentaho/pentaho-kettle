@@ -165,6 +165,8 @@
           <then>
             <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
               <target name="resolve"/>
+              <target name="test"/>	
+              <target name="cobertura"/> 	
               <target name="package"/>
               <target name="publish-local"/>
             </ant>
@@ -172,6 +174,8 @@
           <else>
             <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
               <target name="resolve"/>
+              <target name="test"/>	
+              <target name="cobertura"/> 	
               <target name="package"/>
               <target name="publish"/>
             </ant>
@@ -669,7 +673,6 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.KettleFileRepositoryTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.RepositoryImportExporterApiTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.repository.RepositoryUnitTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.sql.SqlTransMetaTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.logging.MetricsTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.parameters.ParameterSimpleTransTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.plugins.PluginRegistryTest" haltonerror="false"/>

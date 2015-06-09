@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="CheckStyle-IDEA">
+    <option name="configuration">
+      <map>
+        <entry key="active-configuration" value="LOCAL_FILE:/Users/nbaker/IdeaProjects/Platform/pentaho-coding-standards/pentaho_checkStyle.xml:Pentaho Checks" />
+        <entry key="check-nonjava-files" value="false" />
+        <entry key="check-test-classes" value="false" />
+        <entry key="location-0" value="CLASSPATH:/sun_checks.xml:The default CheckStyle rules" />
+        <entry key="location-1" value="LOCAL_FILE:/Users/nbaker/IdeaProjects/Platform/pentaho-coding-standards/pentaho_checkStyle.xml:Pentaho Checks" />
+        <entry key="property-1.samedir" value="" />
+        <entry key="suppress-errors" value="false" />
+        <entry key="thirdparty-classpath" value="" />
+      </map>
+    </option>
+  </component>
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
     <resourceExtensions />
@@ -19,9 +33,7 @@
       </profile>
     </annotationProcessing>
   </component>
-  <component name="CopyrightManager" default="">
-    <module2copyright />
-  </component>
+  <component name="CopyrightManager" default="" />
   <component name="DependencyValidationManager">
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
@@ -36,6 +48,12 @@
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
+  </component>
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="Osmorc" url="file://$PROJECT_DIR$/../osgi-spoonexample" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/../pdi-osgi-bridge/examples/spoon" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/../pdi-osgi-bridge/examples/step" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/../pdi-osgi-bridge/utility-projects/pdi-osgi-bridge-activator" />
   </component>
   <component name="IdProvider" IDEtalkID="7D21794E4B9E7CE717F5920D85700CD6" />
   <component name="Palette2">
@@ -173,6 +191,7 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/star-modeler/Kettle Star Modeler Plugin.iml" filepath="$PROJECT_DIR$/plugins/star-modeler/Kettle Star Modeler Plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui/Kettle UI.iml" filepath="$PROJECT_DIR$/ui/Kettle UI.iml" />
       <module fileurl="file://$PROJECT_DIR$/plugins/kettle5-log4j-plugin/PDI5 Log4j logging plugin.iml" filepath="$PROJECT_DIR$/plugins/kettle5-log4j-plugin/PDI5 Log4j logging plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pentaho-kettle.iml" filepath="$PROJECT_DIR$/pentaho-kettle.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.7" project-jdk-type="JavaSDK">
@@ -210,4 +229,3 @@
     </library>
   </component>
 </project>
-

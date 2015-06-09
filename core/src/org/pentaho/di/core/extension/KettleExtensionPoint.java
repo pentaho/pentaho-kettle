@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,8 @@ public enum KettleExtensionPoint {
     TransformationPrepareExecution( "TransformationPrepareExecution", "A transformation begins to prepare execution" ),
     TransformationStartThreads( "TransformationStartThreads", "A transformation begins to start" ),
     TransformationStart( "TransformationStart", "A transformation has started" ),
+    TransformationHeartbeat( "TransformationHeartbeat",
+      "A signal sent at regular intervals to indicate that the transformation is still active" ),
     TransformationFinish( "TransformationFinish", "A transformation finishes" ),
     TransformationMetaLoaded( "TransformationMetaLoaded", "Transformation metadata was loaded" ),
     TransPainterArrow( "TransPainterArrow", "Draw additional information on top of a transformation hop (arrow)" ),
@@ -36,6 +38,14 @@ public enum KettleExtensionPoint {
     TransPainterStart( "TransPainterStart", "Draw transformation or plugin metadata at the start (below the rest)" ),
     TransPainterEnd( "TransPainterEnd", "Draw transformation or plugin metadata at the end (on top of all the rest)" ),
     TransGraphMouseDown( "TransGraphMouseDown", "A left or right button was clicked in a transformation" ),
+    TransBeforeOpen( "TransBeforeOpen", "A transformation file is about to be opened" ),
+    TransAfterOpen( "TransAfterOpen", "A transformation file was opened" ),
+    TransBeforeSave( "TransBeforeSave", "A transformation file is about to be saved" ),
+    TransAfterSave( "TransAfterSave", "A transformation file was saved" ),
+    TransBeforeClose( "TransBeforeClose", "A transformation file is about to be closed" ),
+    TransAfterClose( "TransAfterClose", "A transformation file was closed" ),
+    TransChanged( "TransChanged", "A transformation has been changed" ),
+    TransStepRightClick( "TransStepRightClick", "A right button was clicked on a step" ),
     TransGraphMouseDoubleClick( "TransGraphMouseDoubleClick",
       "A left or right button was double-clicked in a transformation" ),
     SpoonTransMetaExecutionStart( "SpoonTransMetaExecutionStart",
@@ -44,6 +54,7 @@ public enum KettleExtensionPoint {
       "Right before Spoon configuration of transformation to be executed takes place" ),
 
     JobStart( "JobStart", "A job starts" ),
+    JobHeartbeat( "JobHeartbeat", "A signal sent at regular intervals to indicate that the job is still active" ),
     JobFinish( "JobFinish", "A job finishes" ),
     JobBeforeJobEntryExecution( "JobBeforeJobEntryExecution", "Before a job entry executes" ),
     JobAfterJobEntryExecution( "JobAfterJobEntryExecution", "After a job entry executes" ),
@@ -53,6 +64,13 @@ public enum KettleExtensionPoint {
     JobPainterStart( "JobPainterStart", "Draw job or plugin metadata at the start (below the rest)" ),
     JobPainterEnd( "JobPainterEnd", "Draw job or plugin metadata at the end (on top of all the rest)" ),
     JobGraphMouseDown( "JobGraphMouseDown", "A left or right button was clicked in a job" ),
+    JobBeforeOpen( "JobBeforeOpen", "A job file is about to be opened" ),
+    JobAfterOpen( "JobAfterOpen", "A job file was opened" ),
+    JobBeforeSave( "JobBeforeSave", "A job file is about to be saved" ),
+    JobAfterSave( "JobAfterSave", "A job file was saved" ),
+    JobBeforeClose( "JobBeforeClose", "A job file is about to be closed" ),
+    JobAfterClose( "JobAfterClose", "A job file was closed" ),
+    JobChanged( "JobChanged", "A job has been changed" ),
     JobGraphMouseDoubleClick( "JobGraphMouseDoubleClick",
       "A left or right button was double-clicked in a job" ),
     JobGraphJobEntrySetMenu( "JobGraphJobEntrySetMenu", "Manipulate the menu on right click on a job entry" ),
@@ -73,14 +91,20 @@ public enum KettleExtensionPoint {
     StepBeforeStart( "StepBeforeStart", "Right before a step is about to be started" ),
     StepFinished( "StepFinished", "After a step has finished" ),
 
+    BeforeCheckSteps( "BeforeCheckSteps", "Right before a set of steps is about to be verified." ),
+    AfterCheckSteps( "AfterCheckSteps", "After a set of steps has been checked for warnings/errors." ),
+    BeforeCheckStep( "BeforeCheckStep", "Right before a step is about to be verified." ),
+    AfterCheckStep( "AfterCheckStep", "After a step has been checked for warnings/errors." ),
+
     CarteStartup( "CarteStartup", "Right after the Carte webserver has started and is fully functional" ),
     CarteShutdown( "CarteShutdown", "Right before the Carte webserver will shut down" ),
 
     SpoonViewTreeExtension ( "SpoonViewTreeExtension" , "View tree spoon extension" ),
-
     SpoonPopupMenuExtension ( "SpoonPopupMenuExtension" , "Pop up menu extension for the view tree" ),
+    SpoonTreeDelegateExtension ( "SpoonTreeDelegateExtension" , "During the SpoonTreeDelegate execution" ),
 
-    SpoonTreeDelegateExtension ( "SpoonTreeDelegateExtension" , "During the SpoonTreeDelegate execution" );
+    AfterDeleteRepositoryObject( "AfterDeleteRepositoryObject",
+      "After an object has been deleted from the repository" );
 
   public String id;
 

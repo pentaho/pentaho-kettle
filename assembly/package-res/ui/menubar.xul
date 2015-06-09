@@ -175,6 +175,8 @@
         /> -->
         <menuseparator />
         <menuitem id="edit-options" label="${Spoon.Menu.Edit.Options}" command="spoon.editOptions()" />
+        <menuseparator />
+        <menuitem id="capability-manager" label="Capability Manager" command="spoon.editCapabilities()" />
       </menupopup>
     </menu>
     

@@ -26,6 +26,8 @@
     <dependency org="pentaho"               name="pentaho-xul-swt"     rev="${dependency.pentaho-xul.revision}"         changing="true"/>
     <dependency org="pentaho"               name="pentaho-xul-swing"   rev="${dependency.pentaho-xul.revision}"         changing="true"/>
 
+    <dependency org="pentaho" name="pentaho-capability-manager" rev="6.0-SNAPSHOT" conf="default->default" transitive="false"/>
+
     <!-- Third-party (external) dependencies -->
 
     <!-- SWT it required to compile any version of any architecture will work -->

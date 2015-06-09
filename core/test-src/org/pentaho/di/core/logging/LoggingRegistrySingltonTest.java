@@ -58,7 +58,7 @@ public class LoggingRegistrySingltonTest {
   public void testLoggingRegistryConcurrentInitialization() throws InterruptedException, ExecutionException {
     CountDownLatch start = new CountDownLatch( 1 );
 
-    int count = 1000;
+    int count = 10;
     CompletionService<LoggingRegistry> drover = registerHounds( count, start );
     // fire!
     start.countDown();

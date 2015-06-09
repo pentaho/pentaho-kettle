@@ -143,6 +143,11 @@ public class Const {
   public static final int SORT_SIZE = 5000;
 
   /**
+   * job/trans heartbeat scheduled executor periodic interval ( in seconds )
+   */
+  public static final int HEARTBEAT_PERIODIC_INTERVAL_IN_SECS = 10;
+
+  /**
    * What's the file systems file separator on this operating system?
    */
   public static final String FILE_SEPARATOR = System.getProperty( "file.separator" );
@@ -442,6 +447,12 @@ public class Const {
 
   /** The job run attempt nr */
   public static final String INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR = INTERNAL_VARIABLE_PREFIX + ".Job.Run.AttemptNr";
+
+  /** job/trans heartbeat scheduled executor periodic interval ( in seconds ) */
+  public static final String VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS = "heartbeat.periodic.interval.seconds";
+
+  /** comma-separated list of extension point plugins for which snmp traps should be sent */
+  public static final String VARIABLE_MONITORING_SNMP_TRAPS_ENABLED = "monitoring.snmp.traps.enabled";
 
   /**
    * All the internal transformation variables
@@ -929,6 +940,16 @@ public class Const {
    * The XML file that contains the list of native extension points (None by default, this is mostly for OEM purposes)
    */
   public static final String XML_FILE_KETTLE_EXTENSION_POINTS = "kettle-extension-points.xml";
+
+  /**
+   * The XML file that contains the list of native extension points (None by default, this is mostly for OEM purposes)
+   */
+  public static final String XML_FILE_KETTLE_REGISTRY_EXTENSIONS = "kettle-registry-extensions.xml";
+
+  /**
+   * The XML file that contains the list of lifecycle listeners
+   */
+  public static final String XML_FILE_KETTLE_LIFECYCLE_LISTENERS = "kettle-lifecycle-listeners.xml";
 
   /**
    * the value the Pan JVM should return on exit.

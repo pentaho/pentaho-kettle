@@ -35,13 +35,12 @@ import org.pentaho.di.repository.ObjectId;
 import org.w3c.dom.Node;
 
 /**
- * This class describes a transformation data service containing a name, a description as well as a transformation to
- * give the data, the step from which to read. Later we will also add additional information about this service like the
- * database cache location for this service, retention period and so on.
+ * This class is no longer used
  *
- * @author matt
+ * Data Service client code is now available in the pdi-dataservice-plugin project
  *
  */
+@Deprecated
 public class TransDataService implements XMLInterface {
 
   public static final String XML_TAG_VARIABLE_MAPS = "variable-maps";

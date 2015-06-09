@@ -29,6 +29,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -37,6 +38,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
+import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -79,6 +81,31 @@ public class DatabaseMetaTest {
     assertEquals( expectedJndi, access );
   }
 
+  @Test
+  public void testApplyingDefaultOptions() throws Exception {
+    HashMap<String, String> existingOptions = new HashMap<String, String>();
+    existingOptions.put( "type1.extra", "extraValue" );
+    existingOptions.put( "type1.existing", "existingValue" );
+    existingOptions.put( "type2.extra", "extraValue2" );
+
+    HashMap<String, String> newOptions = new HashMap<String, String>();
+    newOptions.put( "type1.new", "newValue" );
+    newOptions.put( "type1.existing", "existingDefault" );
+
+    // Register Natives to create a default DatabaseMeta
+    DatabasePluginType.getInstance().searchPlugins();
+    DatabaseMeta meta = new DatabaseMeta();
+    DatabaseInterface type = mock( DatabaseInterface.class );
+    meta.setDatabaseInterface( type );
+
+    when( type.getExtraOptions() ).thenReturn( existingOptions );
+    when( type.getDefaultOptions() ).thenReturn( newOptions );
+
+    meta.applyDefaultOptions( type );
+    verify( type ).addExtraOption( "type1", "new", "newValue" );
+    verify( type, never() ).addExtraOption( "type1", "existing", "existingDefault" );
+  }
+  
   @Test
   public void testQuoteReservedWords() {
     DatabaseMeta databaseMeta = mock( DatabaseMeta.class );

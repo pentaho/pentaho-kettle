@@ -104,7 +104,7 @@
     <dependency org="javax.mail"                       name="mail"                 rev="1.4.7"           transitive="false" />
     <dependency org="org.mnode.mstor"                  name="mstor"                rev="0.9.13"          transitive="false"/>
     <dependency org="org.xerial.snappy"                name="snappy-java"          rev="1.1.0"           transitive="true"/>
-    
+    <dependency org="commons-cli"											 name="commons-cli"					 rev="1.2" 						 transitive="false"/>   
 
     
     <!-- OLAP4J is bringing in an older version of beanutils-core than is needed -->

@@ -33,6 +33,13 @@ import java.util.logging.Logger;
 
 import org.pentaho.di.core.KettleClientEnvironment;
 
+/**
+ * This class is no longer used
+ *
+ * Data Service client code is now available in the pdi-dataservice-plugin project
+ *
+ */
+@Deprecated
 public class ThinDriver implements Driver {
 
   public static final String BASE_URL = "jdbc:pdi://";
