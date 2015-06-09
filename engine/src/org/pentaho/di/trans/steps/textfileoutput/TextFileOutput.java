@@ -142,8 +142,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     }
 
     if ( ( r == null && data.outputRowMeta != null && meta.isFooterEnabled() )
-        || ( r != null && getLinesOutput() > 0 && meta.getSplitEvery() > 0 && ( ( getLinesOutput() + 1 ) % meta
-            .getSplitEvery() ) == 0 ) ) {
+        || ( r != null && getLinesOutput() > 0 && meta.getSplitEvery() > 0
+        && ( ( getLinesOutput() + meta.getFooterShift() ) % meta.getSplitEvery() ) == 0 ) ) {
       if ( data.outputRowMeta != null ) {
         if ( meta.isFooterEnabled() ) {
           writeHeader();
@@ -163,9 +163,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         openNewFile( meta.getFileName() );
 
         if ( meta.isHeaderEnabled() && data.outputRowMeta != null ) {
-          if ( writeHeader() ) {
-            incrementLinesOutput();
-          }
+          writeHeader();
         }
       }
     }

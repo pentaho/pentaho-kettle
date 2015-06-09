@@ -65,5 +65,10 @@
 
     <dependency org="org.apache.karaf" name="org.apache.karaf.main" rev="2.3.5" transitive="false"/>
 
+    <dependency org="org.springframework" name="spring-test"         rev="2.5.6"      transitive="true" conf="test->default"/>
+    <dependency org="org.springframework" name="spring"              rev="2.5.6"      transitive="true" conf="test->default"/>
+    <dependency org="pentaho"             name="simple-jndi"         rev="1.0.0"      transitive="true" conf="test->default"/>
+    
+
   </dependencies>
 </ivy-module>

@@ -589,6 +589,9 @@ public class StringUtil {
    * @return true if the input is a variable, false otherwise
    */
   public static boolean isVariable( String variable ) {
+    if ( variable == null ) {
+      return false;
+    }
     variable = variable.trim();
     return variable.startsWith( UNIX_OPEN ) && variable.endsWith( UNIX_CLOSE )
         || variable.startsWith( WINDOWS_OPEN ) && variable.endsWith( WINDOWS_CLOSE )

@@ -1968,13 +1968,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         | SWT.BORDER | SWT.LEFT | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL );
     selectionFilter.setToolTipText( BaseMessages.getString( PKG, "Spoon.SelectionFilter.Tooltip" ) );
     FormData fdSelectionFilter = new FormData();
+    int offset = -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 5 );
     if ( Const.isLinux() ) {
-      fdSelectionFilter.top =
-        new FormAttachment( treeTb, -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 12 ) );
-    } else {
-      fdSelectionFilter.top =
-        new FormAttachment( treeTb, -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 5 ) );
+      if ( !Const.isKDE() ) {
+        offset = -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 12 );
+      }
     }
+    fdSelectionFilter.top = new FormAttachment( treeTb, offset );
     fdSelectionFilter.right = new FormAttachment( 95, -55 );
     fdSelectionFilter.left = new FormAttachment( selectionLabel, 10 );
     selectionFilter.setLayoutData( fdSelectionFilter );
@@ -6393,7 +6393,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         continue;
       }
 
-      Image icon = hopMeta.isEnabled() ? guiResource.getImageHop() : guiResource.getImageDisabledHop();
+      Image icon = hopMeta.isEnabled() ? guiResource.getImageHopTree() : guiResource.getImageDisabledHopTree();
       createTreeItem( tiHopTitle, hopMeta.toString(), icon );
     }
   }
@@ -8374,6 +8374,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
     }
 
+    transMeta.setChanged();
     refreshTree();
     refreshGraph();
   }
@@ -8386,34 +8387,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   /**
-   * This creates a new partitioning schema, edits it and adds it to the transformation metadata
-   *
+   * This creates a new partitioning schema, edits it and adds it to the transformation metadata if its name is not a
+   * duplicate of any of existing
    */
   public void newPartitioningSchema( TransMeta transMeta ) {
-    PartitionSchema partitionSchema = new PartitionSchema();
-
-    PartitionSchemaDialog dialog =
-      new PartitionSchemaDialog( shell, partitionSchema, transMeta.getDatabases(), transMeta );
-    if ( dialog.open() ) {
-      transMeta.getPartitionSchemas().add( partitionSchema );
-
-      if ( rep != null ) {
-        try {
-          if ( !rep.getSecurityProvider().isReadOnly() ) {
-            rep.save( partitionSchema, Const.VERSION_COMMENT_INITIAL_VERSION, null );
-          } else {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
-          }
-        } catch ( KettleException e ) {
-          new ErrorDialog(
-            getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingPartition.Title" ), BaseMessages
-              .getString( PKG, "Spoon.Dialog.ErrorSavingPartition.Message", partitionSchema.getName() ), e );
-        }
-      }
-
-      refreshTree();
-    }
+    delegates.partitions.newPartitioningSchema( transMeta );
   }
 
   private void editPartitionSchema( TransMeta transMeta, PartitionSchema partitionSchema ) {
@@ -8442,33 +8420,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   /**
-   * This creates a new clustering schema, edits it and adds it to the transformation metadata
-   *
+   * This creates a new clustering schema, edits it and adds it to the transformation metadata if its name is not a
+   * duplicate of any of existing
    */
   public void newClusteringSchema( TransMeta transMeta ) {
-    ClusterSchema clusterSchema = new ClusterSchema();
-
-    ClusterSchemaDialog dialog = new ClusterSchemaDialog( shell, clusterSchema, transMeta.getSlaveServers() );
-    if ( dialog.open() ) {
-      transMeta.getClusterSchemas().add( clusterSchema );
-
-      if ( rep != null ) {
-        try {
-          if ( !rep.getSecurityProvider().isReadOnly() ) {
-            rep.save( clusterSchema, Const.VERSION_COMMENT_INITIAL_VERSION, null );
-          } else {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
-          }
-        } catch ( KettleException e ) {
-          new ErrorDialog(
-            getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingCluster.Title" ), BaseMessages
-              .getString( PKG, "Spoon.Dialog.ErrorSavingCluster.Message", clusterSchema.getName() ), e );
-        }
-      }
-
-      refreshTree();
-    }
+    delegates.clusters.newClusteringSchema( transMeta );
   }
 
   private void editClusterSchema( TransMeta transMeta, ClusterSchema clusterSchema ) {

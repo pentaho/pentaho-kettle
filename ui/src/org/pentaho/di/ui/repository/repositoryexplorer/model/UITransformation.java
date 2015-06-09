@@ -71,6 +71,6 @@ public class UITransformation extends UIRepositoryContent {
   
   @Override
   public String getImage() {
-    return "ui/images/transformation_tree.svg";
+    return "ui/images/transrepo.svg";
   }  
 }

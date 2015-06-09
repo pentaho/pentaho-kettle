@@ -1450,6 +1450,13 @@ public class Const {
     return getOS().toUpperCase().contains( "OS X" );
   }
 
+  /**
+   * @return True if KDE is in use.
+   */
+  public static final boolean isKDE() {
+    return StringUtils.isNotBlank( System.getenv( "KDE_SESSION_VERSION" ) );
+  }
+
   private static String cachedHostname;
 
   /**

@@ -39,6 +39,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.ui.core.ConstUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -353,10 +355,12 @@ public class SpoonPerspectiveManager {
       mainToolbar.addChild( btn );
 
       boolean iconSet = false;
-      if ( AbstractSpoonPerspective.class.isAssignableFrom( per.getClass() ) ) {
-        Image ic = ( (AbstractSpoonPerspective) per ).getIcon();
-        if ( ic != null ) {
-          btn.setImage( ic );
+      if ( SpoonPerspectiveImageProvider.class.isAssignableFrom( per.getClass() ) ) {
+        String location = ( (SpoonPerspectiveImageProvider) per ).getPerspectiveIconPath();
+        Image image = GUIResource.getInstance().getImage( location, per.getClass().getClassLoader(), 
+            ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+        if ( image != null ) {
+          btn.setImage( image );
           iconSet = true;
         }
       }

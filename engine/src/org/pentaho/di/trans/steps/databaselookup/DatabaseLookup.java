@@ -80,32 +80,32 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
   private synchronized Object[] lookupValues( RowMetaInterface inputRowMeta, Object[] row ) throws KettleException {
     Object[] outputRow = RowDataUtil.resizeArray( row, data.outputRowMeta.size() );
 
-    Object[] lookupRow = new Object[data.lookupMeta.size()];
+    Object[] lookupRow = new Object[ data.lookupMeta.size() ];
     int lookupIndex = 0;
 
     for ( int i = 0; i < meta.getStreamKeyField1().length; i++ ) {
-      if ( data.keynrs[i] >= 0 ) {
-        ValueMetaInterface input = inputRowMeta.getValueMeta( data.keynrs[i] );
+      if ( data.keynrs[ i ] >= 0 ) {
+        ValueMetaInterface input = inputRowMeta.getValueMeta( data.keynrs[ i ] );
         ValueMetaInterface value = data.lookupMeta.getValueMeta( lookupIndex );
-        lookupRow[lookupIndex] = row[data.keynrs[i]];
+        lookupRow[ lookupIndex ] = row[ data.keynrs[ i ] ];
 
         // Try to convert type if needed
         if ( input.getType() != value.getType()
           || ValueMetaInterface.STORAGE_TYPE_BINARY_STRING == input.getStorageType() ) {
-          lookupRow[lookupIndex] = value.convertData( input, lookupRow[lookupIndex] );
+          lookupRow[ lookupIndex ] = value.convertData( input, lookupRow[ lookupIndex ] );
           value.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
         }
         lookupIndex++;
       }
-      if ( data.keynrs2[i] >= 0 ) {
-        ValueMetaInterface input = inputRowMeta.getValueMeta( data.keynrs2[i] );
+      if ( data.keynrs2[ i ] >= 0 ) {
+        ValueMetaInterface input = inputRowMeta.getValueMeta( data.keynrs2[ i ] );
         ValueMetaInterface value = data.lookupMeta.getValueMeta( lookupIndex );
-        lookupRow[lookupIndex] = row[data.keynrs2[i]];
+        lookupRow[ lookupIndex ] = row[ data.keynrs2[ i ] ];
 
         // Try to convert type if needed
         if ( input.getType() != value.getType()
           || ValueMetaInterface.STORAGE_TYPE_BINARY_STRING == input.getStorageType() ) {
-          lookupRow[lookupIndex] = value.convertData( input, lookupRow[lookupIndex] );
+          lookupRow[ lookupIndex ] = value.convertData( input, lookupRow[ lookupIndex ] );
           value.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
         }
         lookupIndex++;
@@ -139,7 +139,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         }
 
         data.db.setValuesLookup( data.lookupMeta, lookupRow );
-        add = data.db.getLookup( meta.isFailingOnMultipleResults() );
+        // PDI-8373
+        add = data.db.getLookup( meta.isFailingOnMultipleResults(), meta.getDatabaseMeta().isMySQLVariant() );
         cache_now = true;
       }
     }
@@ -159,12 +160,12 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         logRowlevel( BaseMessages.getString( PKG, "DatabaseLookup.Log.NoResultsFoundAfterLookup" ) );
       }
 
-      add = new Object[data.returnMeta.size()];
+      add = new Object[ data.returnMeta.size() ];
       for ( int i = 0; i < meta.getReturnValueField().length; i++ ) {
-        if ( data.nullif[i] != null ) {
-          add[i] = data.nullif[i];
+        if ( data.nullif[ i ] != null ) {
+          add[ i ] = data.nullif[ i ];
         } else {
-          add[i] = null;
+          add[ i ] = null;
         }
       }
     } else {
@@ -188,9 +189,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
           ValueMetaInterface returned = data.db.getReturnRowMeta().getValueMeta( i );
           ValueMetaInterface expected = data.returnMeta.getValueMeta( i );
 
-          if ( returned != null && types[i] > 0 && types[i] != returned.getType() ) {
+          if ( returned != null && types[ i ] > 0
+            && ( types[ i ] != returned.getType()
+            ||
+              returned.getType() == ValueMetaInterface.TYPE_STRING
+                && returned.getStorageType() == ValueMetaInterface.STORAGE_TYPE_BINARY_STRING ) ) {
             // Set the type to the default return type
-            add[i] = expected.convertData( returned, add[i] );
+            add[ i ] = expected.convertData( returned, add[ i ] );
           }
         }
       }
@@ -204,7 +209,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     }
 
     for ( int i = 0; i < data.returnMeta.size(); i++ ) {
-      outputRow[inputRowMeta.size() + i] = add[i];
+      outputRow[ inputRowMeta.size() + i ] = add[ i ];
     }
 
     return outputRow;
@@ -285,11 +290,11 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
           int lookupIndex = 0;
           for ( int i = 0; i < data.conditions.length && match; i++ ) {
             ValueMetaInterface cmpMeta = lookupMeta.getValueMeta( lookupIndex );
-            Object cmpData = lookupRow[lookupIndex];
+            Object cmpData = lookupRow[ lookupIndex ];
             ValueMetaInterface keyMeta = key.getValueMeta( i );
-            Object keyData = key.getData()[i];
+            Object keyData = key.getData()[ i ];
 
-            switch ( data.conditions[i] ) {
+            switch( data.conditions[ i ] ) {
               case DatabaseLookupMeta.CONDITION_EQ:
                 match = ( cmpMeta.compare( cmpData, keyMeta, keyData ) == 0 );
                 break;
@@ -317,7 +322,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
               case DatabaseLookupMeta.CONDITION_BETWEEN:
                 // Between key >= cmp && key <= cmp2
                 ValueMetaInterface cmpMeta2 = lookupMeta.getValueMeta( lookupIndex + 1 );
-                Object cmpData2 = lookupRow[lookupIndex + 1];
+                Object cmpData2 = lookupRow[ lookupIndex + 1 ];
                 match = ( keyMeta.compare( keyData, cmpMeta, cmpData ) >= 0 );
                 if ( match ) {
                   match = ( keyMeta.compare( keyData, cmpMeta2, cmpData2 ) <= 0 );
@@ -346,15 +351,113 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     return null;
   }
 
-  public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
-    meta = (DatabaseLookupMeta) smi;
-    data = (DatabaseLookupData) sdi;
+  private void determineFieldsTypesQueryingDb() throws KettleException {
+    final String[] keyFields = meta.getTableKeyField();
+    data.keytypes = new int[ keyFields.length ];
 
+    String schemaTable =
+      meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+        environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ) );
+
+    RowMetaInterface fields = data.db.getTableFields( schemaTable );
+    if ( fields != null ) {
+      // Fill in the types...
+      for ( int i = 0; i < keyFields.length; i++ ) {
+        ValueMetaInterface key = fields.searchValueMeta( keyFields[ i ] );
+        if ( key != null ) {
+          data.keytypes[ i ] = key.getType();
+        } else {
+          throw new KettleStepException( BaseMessages.getString(
+            PKG, "DatabaseLookup.ERROR0001.FieldRequired5.Exception" )
+            + keyFields[ i ]
+            + BaseMessages.getString( PKG, "DatabaseLookup.ERROR0001.FieldRequired6.Exception" ) );
+        }
+      }
+
+      final String[] returnFields = meta.getReturnValueField();
+      final int returnFieldsOffset = getInputRowMeta().size();
+      for ( int i = 0; i < returnFields.length; i++ ) {
+        ValueMetaInterface returnValueMeta = fields.searchValueMeta( returnFields[ i ] );
+        if ( returnValueMeta != null ) {
+          ValueMetaInterface v = data.outputRowMeta.getValueMeta( returnFieldsOffset + i );
+          if ( v.getType() != returnValueMeta.getType() ) {
+            ValueMetaInterface clone = returnValueMeta.clone();
+            clone.setName( v.getName() );
+            data.outputRowMeta.setValueMeta( returnFieldsOffset + i, clone );
+          }
+        }
+      }
+    } else {
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable" )
+        + schemaTable + "]" );
+    }
+  }
+
+  private void initNullIf() throws KettleException {
+    final String[] returnFields = meta.getReturnValueField();
+
+    data.nullif = new Object[ returnFields.length ];
+
+    for ( int i = 0; i < returnFields.length; i++ ) {
+      if ( !Const.isEmpty( meta.getReturnValueDefault()[ i ] ) ) {
+        ValueMetaInterface stringMeta = new ValueMeta( "string", ValueMetaInterface.TYPE_STRING );
+        ValueMetaInterface returnMeta = data.outputRowMeta.getValueMeta( i + getInputRowMeta().size() );
+        data.nullif[ i ] = returnMeta.convertData( stringMeta, meta.getReturnValueDefault()[ i ] );
+      } else {
+        data.nullif[ i ] = null;
+      }
+    }
+  }
+
+  private void initLookupMeta() throws KettleException {
+    // Count the number of values in the lookup as well as the metadata to send along with it.
+    //
+    data.lookupMeta = new RowMeta();
+
+    for ( int i = 0; i < meta.getStreamKeyField1().length; i++ ) {
+      if ( data.keynrs[ i ] >= 0 ) {
+        ValueMetaInterface inputValueMeta = getInputRowMeta().getValueMeta( data.keynrs[ i ] );
+
+        // Try to convert type if needed in a clone, we don't want to
+        // change the type in the original row
+        //
+        ValueMetaInterface value = ValueMetaFactory.cloneValueMeta( inputValueMeta, data.keytypes[ i ] );
+
+        data.lookupMeta.addValueMeta( value );
+      }
+      if ( data.keynrs2[ i ] >= 0 ) {
+        ValueMetaInterface inputValueMeta = getInputRowMeta().getValueMeta( data.keynrs2[ i ] );
+
+        // Try to convert type if needed in a clone, we don't want to
+        // change the type in the original row
+        //
+        ValueMetaInterface value = ValueMetaFactory.cloneValueMeta( inputValueMeta, data.keytypes[ i ] );
+
+        data.lookupMeta.addValueMeta( value );
+      }
+    }
+  }
+
+  private void initReturnMeta() {
+    // We also want to know the metadata of the return values beforehand (null handling)
+    data.returnMeta = new RowMeta();
+
+    for ( int i = 0; i < meta.getReturnValueField().length; i++ ) {
+      ValueMetaInterface v = data.outputRowMeta.getValueMeta( getInputRowMeta().size() + i ).clone();
+      data.returnMeta.addValueMeta( v );
+    }
+  }
+
+  public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     Object[] r = getRow(); // Get row from input rowset & set row busy!
     if ( r == null ) { // no more input to be expected...
       setOutputDone();
       return false;
     }
+
+    meta = (DatabaseLookupMeta) smi;
+    data = (DatabaseLookupData) sdi;
 
     if ( first ) {
       first = false;
@@ -372,9 +475,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       }
 
       data.db.setLookup(
-        environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ), meta
-          .getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta
-          .getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults() );
+        environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ),
+        meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(),
+        meta.getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults()
+      );
 
       // lookup the values!
       if ( log.isDetailed() ) {
@@ -382,108 +486,43 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
           + getInputRowMeta().getString( r ) );
       }
 
-      data.keynrs = new int[meta.getStreamKeyField1().length];
-      data.keynrs2 = new int[meta.getStreamKeyField1().length];
+      data.keynrs = new int[ meta.getStreamKeyField1().length ];
+      data.keynrs2 = new int[ meta.getStreamKeyField1().length ];
 
       for ( int i = 0; i < meta.getStreamKeyField1().length; i++ ) {
-        data.keynrs[i] = getInputRowMeta().indexOfValue( meta.getStreamKeyField1()[i] );
-        if ( data.keynrs[i] < 0 && // couldn't find field!
-          !"IS NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) && // No field needed!
-          !"IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[i] ) // No field needed!
+        data.keynrs[ i ] = getInputRowMeta().indexOfValue( meta.getStreamKeyField1()[ i ] );
+        if ( data.keynrs[ i ] < 0 && // couldn't find field!
+          !"IS NULL".equalsIgnoreCase( meta.getKeyCondition()[ i ] ) && // No field needed!
+          !"IS NOT NULL".equalsIgnoreCase( meta.getKeyCondition()[ i ] ) // No field needed!
         ) {
           throw new KettleStepException( BaseMessages.getString(
             PKG, "DatabaseLookup.ERROR0001.FieldRequired1.Exception" )
-            + meta.getStreamKeyField1()[i]
+            + meta.getStreamKeyField1()[ i ]
             + BaseMessages.getString( PKG, "DatabaseLookup.ERROR0001.FieldRequired2.Exception" ) );
         }
-        data.keynrs2[i] = getInputRowMeta().indexOfValue( meta.getStreamKeyField2()[i] );
-        if ( data.keynrs2[i] < 0 && // couldn't find field!
-          "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[i] ) // 2 fields needed!
+        data.keynrs2[ i ] = getInputRowMeta().indexOfValue( meta.getStreamKeyField2()[ i ] );
+        if ( data.keynrs2[ i ] < 0 && // couldn't find field!
+          "BETWEEN".equalsIgnoreCase( meta.getKeyCondition()[ i ] ) // 2 fields needed!
         ) {
           throw new KettleStepException( BaseMessages.getString(
             PKG, "DatabaseLookup.ERROR0001.FieldRequired3.Exception" )
-            + meta.getStreamKeyField2()[i]
+            + meta.getStreamKeyField2()[ i ]
             + BaseMessages.getString( PKG, "DatabaseLookup.ERROR0001.FieldRequired4.Exception" ) );
         }
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "DatabaseLookup.Log.FieldHasIndex1" )
-            + meta.getStreamKeyField1()[i] + BaseMessages.getString( PKG, "DatabaseLookup.Log.FieldHasIndex2" )
-            + data.keynrs[i] );
+            + meta.getStreamKeyField1()[ i ] + BaseMessages.getString( PKG, "DatabaseLookup.Log.FieldHasIndex2" )
+            + data.keynrs[ i ] );
         }
       }
 
-      data.nullif = new Object[meta.getReturnValueField().length];
+      determineFieldsTypesQueryingDb();
 
-      for ( int i = 0; i < meta.getReturnValueField().length; i++ ) {
-        ValueMetaInterface stringMeta = new ValueMeta( "string", ValueMetaInterface.TYPE_STRING );
-        ValueMetaInterface returnMeta = data.outputRowMeta.getValueMeta( i + getInputRowMeta().size() );
+      initNullIf();
 
-        if ( !Const.isEmpty( meta.getReturnValueDefault()[i] ) ) {
-          data.nullif[i] = returnMeta.convertData( stringMeta, meta.getReturnValueDefault()[i] );
-        } else {
-          data.nullif[i] = null;
-        }
-      }
+      initLookupMeta();
 
-      // Determine the types...
-      data.keytypes = new int[meta.getTableKeyField().length];
-      String schemaTable =
-        meta.getDatabaseMeta().getQuotedSchemaTableCombination(
-          environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ) );
-      RowMetaInterface fields = data.db.getTableFields( schemaTable );
-      if ( fields != null ) {
-        // Fill in the types...
-        for ( int i = 0; i < meta.getTableKeyField().length; i++ ) {
-          ValueMetaInterface key = fields.searchValueMeta( meta.getTableKeyField()[i] );
-          if ( key != null ) {
-            data.keytypes[i] = key.getType();
-          } else {
-            throw new KettleStepException( BaseMessages.getString(
-              PKG, "DatabaseLookup.ERROR0001.FieldRequired5.Exception" )
-              + meta.getTableKeyField()[i]
-              + BaseMessages.getString( PKG, "DatabaseLookup.ERROR0001.FieldRequired6.Exception" ) );
-          }
-        }
-      } else {
-        throw new KettleStepException( BaseMessages.getString(
-          PKG, "DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable" )
-          + schemaTable + "]" );
-      }
-
-      // Count the number of values in the lookup as well as the metadata to send along with it.
-      //
-      data.lookupMeta = new RowMeta();
-
-      for ( int i = 0; i < meta.getStreamKeyField1().length; i++ ) {
-        if ( data.keynrs[i] >= 0 ) {
-          ValueMetaInterface inputValueMeta = getInputRowMeta().getValueMeta( data.keynrs[i] );
-
-          // Try to convert type if needed in a clone, we don't want to
-          // change the type in the original row
-          //
-          ValueMetaInterface value = ValueMetaFactory.cloneValueMeta( inputValueMeta, data.keytypes[i] );
-
-          data.lookupMeta.addValueMeta( value );
-        }
-        if ( data.keynrs2[i] >= 0 ) {
-          ValueMetaInterface inputValueMeta = getInputRowMeta().getValueMeta( data.keynrs2[i] );
-
-          // Try to convert type if needed in a clone, we don't want to
-          // change the type in the original row
-          //
-          ValueMetaInterface value = ValueMetaFactory.cloneValueMeta( inputValueMeta, data.keytypes[i] );
-
-          data.lookupMeta.addValueMeta( value );
-        }
-      }
-
-      // We also want to know the metadata of the return values beforehand (null handling)
-      data.returnMeta = new RowMeta();
-
-      for ( int i = 0; i < meta.getReturnValueField().length; i++ ) {
-        ValueMetaInterface v = data.outputRowMeta.getValueMeta( getInputRowMeta().size() + i ).clone();
-        data.returnMeta.addValueMeta( v );
-      }
+      initReturnMeta();
 
       // If the user selected to load all data into the cache at startup, that's what we do now...
       //
@@ -545,13 +584,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         if ( i > 0 ) {
           sql += ", ";
         }
-        sql += dbMeta.quoteField( meta.getTableKeyField()[i] );
+        sql += dbMeta.quoteField( meta.getTableKeyField()[ i ] );
       }
 
       // Also grab the return field...
       //
       for ( int i = 0; i < meta.getReturnValueField().length; i++ ) {
-        sql += ", " + dbMeta.quoteField( meta.getReturnValueField()[i] );
+        sql += ", " + dbMeta.quoteField( meta.getReturnValueField()[ i ] );
       }
       // The schema/table
       //
@@ -575,15 +614,15 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         for ( Object[] row : rows ) {
           int index = 0;
           RowMeta keyMeta = new RowMeta();
-          Object[] keyData = new Object[meta.getStreamKeyField1().length];
+          Object[] keyData = new Object[ meta.getStreamKeyField1().length ];
           for ( int i = 0; i < meta.getStreamKeyField1().length; i++ ) {
-            keyData[i] = row[index];
+            keyData[ i ] = row[ index ];
             keyMeta.addValueMeta( returnRowMeta.getValueMeta( index++ ) );
           }
           // RowMeta valueMeta = new RowMeta();
-          Object[] valueData = new Object[data.returnMeta.size()];
+          Object[] valueData = new Object[ data.returnMeta.size() ];
           for ( int i = 0; i < data.returnMeta.size(); i++ ) {
-            valueData[i] = row[index++];
+            valueData[ i ] = row[ index++ ];
             // valueMeta.addValueMeta(returnRowMeta.getValueMeta(index++));
           }
           // Store the data...
@@ -634,14 +673,14 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         //
         data.allEquals = true;
         data.hasDBCondition = false;
-        data.conditions = new int[meta.getKeyCondition().length];
+        data.conditions = new int[ meta.getKeyCondition().length ];
         for ( int i = 0; i < meta.getKeyCondition().length; i++ ) {
-          data.conditions[i] =
-            Const.indexOfString( meta.getKeyCondition()[i], DatabaseLookupMeta.conditionStrings );
-          if ( !( "=".equals( meta.getKeyCondition()[i] ) ) ) {
+          data.conditions[ i ] =
+            Const.indexOfString( meta.getKeyCondition()[ i ], DatabaseLookupMeta.conditionStrings );
+          if ( !( "=".equals( meta.getKeyCondition()[ i ] ) ) ) {
             data.allEquals = false;
           }
-          if ( data.conditions[i] == DatabaseLookupMeta.CONDITION_LIKE ) {
+          if ( data.conditions[ i ] == DatabaseLookupMeta.CONDITION_LIKE ) {
             data.hasDBCondition = true;
           }
         }
