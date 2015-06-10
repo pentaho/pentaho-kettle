@@ -43,9 +43,9 @@
     <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle5-log4j-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="pdi-google-analytics-plugin-ce" rev="${project.revision}" changing="true" conf="plugins->default">
-        <artifact name="pdi-google-analytics-plugin-ce" type="zip"/>
-    </dependency>
+    <!--<dependency org="${ivy.artifact.group}" name="pdi-google-analytics-plugin-ce" rev="${project.revision}" changing="true" conf="plugins->default">-->
+        <!--<artifact name="pdi-google-analytics-plugin-ce" type="zip"/>-->
+    <!--</dependency>-->
     <dependency org="pentaho" name="pdi-osgi-bridge-assembly" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" conf="plugins->default">
       <artifact name="pdi-osgi-bridge-assembly" type="zip"/>
     </dependency>
@@ -68,6 +68,8 @@
     <dependency org="pentaho" name="pdi-baserver-utils" rev="${dependency.pdi-baserver-utils.revision}" changing="true" transitive="false" conf="plugins->default">
       <artifact name="pdi-baserver-utils" type="zip"/>
     </dependency>
+
+    <dependency org="pentaho" name="pentaho-platform-core"  rev="${dependency.pentaho-platform.revision}" />
 
     <!-- required for pentaho-metaverse -->
     <dependency org="commons-configuration" name="commons-configuration" rev="1.9" changing="true" transitive="false"/>
