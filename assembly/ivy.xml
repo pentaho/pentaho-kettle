@@ -43,9 +43,9 @@
     <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle5-log4j-plugin" type="zip"/>
     </dependency>
-    <!--<dependency org="${ivy.artifact.group}" name="pdi-google-analytics-plugin-ce" rev="${project.revision}" changing="true" conf="plugins->default">-->
-        <!--<artifact name="pdi-google-analytics-plugin-ce" type="zip"/>-->
-    <!--</dependency>-->
+    <dependency org="${ivy.artifact.group}" name="pdi-google-analytics-plugin-ce" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="pdi-google-analytics-plugin-ce" type="zip"/>
+    </dependency>
     <dependency org="pentaho" name="pdi-osgi-bridge-assembly" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" conf="plugins->default">
       <artifact name="pdi-osgi-bridge-assembly" type="zip"/>
     </dependency>
