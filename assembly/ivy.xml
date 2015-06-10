@@ -69,7 +69,12 @@
       <artifact name="pdi-baserver-utils" type="zip"/>
     </dependency>
 
-    <dependency org="pentaho" name="pentaho-platform-core"  rev="${dependency.pentaho-platform.revision}" />
+    <dependency org="pentaho" name="pentaho-platform-api"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
+    <dependency org="pentaho" name="pentaho-platform-core"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
+    <dependency org="pentaho" name="pentaho-platform-extensions"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.3" />
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.3" />
+    <dependency org="org.springframework.security" name="spring-security-core" rev="2.0.5.RELEASE" />
 
     <!-- required for pentaho-metaverse -->
     <dependency org="commons-configuration" name="commons-configuration" rev="1.9" changing="true" transitive="false"/>
