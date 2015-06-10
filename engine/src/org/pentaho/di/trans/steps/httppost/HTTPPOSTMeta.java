@@ -103,6 +103,8 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
 
   private boolean postafile;
 
+  private boolean postfieldasfile;
+
   private String proxyHost;
 
   private String proxyPort;
@@ -260,6 +262,14 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
     this.postafile = postafile;
   }
 
+  public boolean isPostFieldAsFile() {
+    return postfieldasfile;
+  }
+
+  public void setPostFieldAsFile( boolean postfieldasfile ) {
+    this.postfieldasfile = postfieldasfile;
+  }
+
   /**
    * @param urlInField
    *          Is the url coded in a field?
@@ -372,6 +382,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
     resultCodeFieldName = "";
     responseTimeFieldName = "";
     postafile = false;
+    postfieldasfile = false;
 
     socketTimeout = String.valueOf( DEFAULT_SOCKET_TIMEOUT );
     connectionTimeout = String.valueOf( DEFAULT_CONNECTION_TIMEOUT );
@@ -401,6 +412,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
     StringBuffer retval = new StringBuffer();
 
     retval.append( "    " + XMLHandler.addTagValue( "postafile", postafile ) );
+    retval.append( "    " + XMLHandler.addTagValue( "postfieldasfile", postfieldasfile ) );
     retval.append( "    " + XMLHandler.addTagValue( "encoding", encoding ) );
     retval.append( "    " + XMLHandler.addTagValue( "url", url ) );
     retval.append( "    " + XMLHandler.addTagValue( "urlInField", urlInField ) );
@@ -445,6 +457,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
   private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
       postafile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "postafile" ) );
+      postfieldasfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "postfieldasfile" ) );
       encoding = XMLHandler.getTagValue( stepnode, "encoding" );
       url = XMLHandler.getTagValue( stepnode, "url" );
       urlInField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "urlInField" ) );
@@ -491,6 +504,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       postafile = rep.getStepAttributeBoolean( id_step, "postafile" );
+      postfieldasfile = rep.getStepAttributeBoolean( id_step, "postfieldasfile" );
       encoding = rep.getStepAttributeString( id_step, "encoding" );
       url = rep.getStepAttributeString( id_step, "url" );
       urlInField = rep.getStepAttributeBoolean( id_step, "urlInField" );
@@ -534,6 +548,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "postafile", postafile );
+      rep.saveStepAttribute( id_transformation, id_step, "postfieldasfile", postfieldasfile );
       rep.saveStepAttribute( id_transformation, id_step, "encoding", encoding );
       rep.saveStepAttribute( id_transformation, id_step, "url", url );
       rep.saveStepAttribute( id_transformation, id_step, "urlInField", urlInField );

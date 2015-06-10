@@ -36,6 +36,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -176,9 +177,13 @@ public class HTTPPOST extends BaseStep implements StepInterface {
         // content length is explicitly specified
 
         if ( meta.isPostAFile() ) {
-          File input = new File( tmp );
-          fis = new FileInputStream( input );
-          post.setRequestEntity( new InputStreamRequestEntity( fis, input.length() ) );
+          if ( meta.isPostFieldAsFile() ) {
+            post.setRequestEntity( new StringRequestEntity( tmp ) );
+          } else {
+            File input = new File( tmp );
+            fis = new FileInputStream( input );
+            post.setRequestEntity( new InputStreamRequestEntity( fis, input.length() ) );
+          }
         } else {
           if ( ( data.realEncoding != null ) && ( data.realEncoding.length() > 0 ) ) {
             post.setRequestEntity( new InputStreamRequestEntity( new ByteArrayInputStream( tmp

@@ -151,6 +151,9 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
   private Label wlPostAFile;
   private Button wPostAFile;
 
+  private Label wlPostFieldAsFile;
+  private Button wPostFieldAsFile;
+
   private CTabFolder wTabFolder;
 
   private CTabItem wGeneralTab, wAdditionalTab;
@@ -399,8 +402,26 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
     FormData fdPostAFile = new FormData();
     fdPostAFile.left = new FormAttachment( middle, 0 );
     fdPostAFile.top = new FormAttachment( wrequestEntity, margin );
-    fdPostAFile.right = new FormAttachment( 100, 0 );
+    fdPostAFile.right = new FormAttachment( 50, -margin );
     wPostAFile.setLayoutData( fdPostAFile );
+
+    // Post field content as file?
+    wlPostFieldAsFile = new Label( gSettings, SWT.RIGHT );
+    wlPostFieldAsFile.setText( BaseMessages.getString( PKG, "HTTPPOSTDialog.postFieldAsFile.Label" ) );
+    props.setLook( wlPostFieldAsFile );
+    FormData fdlPostFieldAsFile = new FormData();
+    fdlPostFieldAsFile.left = new FormAttachment( 50, 0 );
+    fdlPostFieldAsFile.right = new FormAttachment( 75, -margin );
+    fdlPostFieldAsFile.top = new FormAttachment( wrequestEntity, margin );
+    wlPostFieldAsFile.setLayoutData( fdlPostFieldAsFile );
+    wPostFieldAsFile = new Button( gSettings, SWT.CHECK );
+    wPostFieldAsFile.setToolTipText( BaseMessages.getString( PKG, "HTTPPOSTDialog.postFieldAsFile.Tooltip" ) );
+    props.setLook( wPostFieldAsFile );
+    FormData fdPostFieldAsFile = new FormData();
+    fdPostFieldAsFile.left = new FormAttachment( 75, 0 );
+    fdPostFieldAsFile.top = new FormAttachment( wrequestEntity, margin );
+    fdPostFieldAsFile.right = new FormAttachment( 100, 0 );
+    wPostFieldAsFile.setLayoutData( fdPostFieldAsFile );
 
     wlConnectionTimeOut = new Label( gSettings, SWT.RIGHT );
     wlConnectionTimeOut.setText( BaseMessages.getString( PKG, "HTTPPOSTDialog.ConnectionTimeOut.Label" ) );
@@ -1006,6 +1027,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
       wEncoding.setText( input.getEncoding() );
     }
     wPostAFile.setSelection( input.isPostAFile() );
+    wPostFieldAsFile.setSelection( input.isPostFieldAsFile() );
 
     if ( input.getHttpLogin() != null ) {
       wHttpLogin.setText( input.getHttpLogin() );
@@ -1079,6 +1101,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
     input.setResponseTimeFieldName( wResponseTime.getText() );
     input.setEncoding( wEncoding.getText() );
     input.setPostAFile( wPostAFile.getSelection() );
+    input.setPostFieldAsFile( wPostFieldAsFile.getSelection() );
     input.setHttpLogin( wHttpLogin.getText() );
     input.setHttpPassword( wHttpPassword.getText() );
     input.setProxyHost( wProxyHost.getText() );
