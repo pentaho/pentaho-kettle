@@ -23,16 +23,19 @@
 package org.pentaho.di.trans.steps.excelinput.poi;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KSheet;
 
 public class PoiSheet implements KSheet {
+  private FormulaEvaluator evaluator;
   private Sheet sheet;
 
-  public PoiSheet( Sheet sheet ) {
+  public PoiSheet( Sheet sheet, FormulaEvaluator evaluator ) {
     this.sheet = sheet;
+    this.evaluator = evaluator;
   }
 
   public String getName() {
@@ -57,7 +60,7 @@ public class PoiSheet implements KSheet {
     for ( int i = 0; i < cols; i++ ) {
       Cell cell = row.getCell( i );
       if ( cell != null ) {
-        xlsCells[i] = new PoiCell( cell );
+        xlsCells[i] = new PoiCell( cell, evaluator );
       }
     }
     return xlsCells;
@@ -76,6 +79,6 @@ public class PoiSheet implements KSheet {
     if ( cell == null ) {
       return null;
     }
-    return new PoiCell( cell );
+    return new PoiCell( cell, evaluator );
   }
 }

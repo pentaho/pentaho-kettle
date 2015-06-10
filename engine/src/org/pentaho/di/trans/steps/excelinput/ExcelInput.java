@@ -149,7 +149,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
           sourceMeta = data.valueMetaDate;
         } else {
           if ( KCellType.LABEL == cellType || KCellType.STRING_FORMULA == cellType ) {
-            String string = (String) cell.getValue();
+            String string = cell.getContents();
             switch ( meta.getField()[rowcolumn].getTrimType() ) {
               case ExcelInputMeta.TYPE_TRIM_LEFT:
                 string = Const.ltrim( string );
