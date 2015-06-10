@@ -92,7 +92,7 @@ public class Script extends BaseStep implements StepInterface {
   // public String script; //TODO AKRETION should be compiled script actually
 
   public Script( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                 Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -109,8 +109,8 @@ public class Script extends BaseStep implements StepInterface {
     }
 
     // Allocate fields_used
-    data.fields_used = new int[nr];
-    data.values_used = new Value[nr];
+    data.fields_used = new int[ nr ];
+    data.values_used = new Value[ nr ];
 
     nr = 0;
     // Count the occurrences of the values.
@@ -124,7 +124,7 @@ public class Script extends BaseStep implements StepInterface {
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "Script.Log.UsedValueName", String.valueOf( i ), valname ) );
         }
-        data.fields_used[nr] = i;
+        data.fields_used[ nr ] = i;
         nr++;
       }
     }
@@ -150,23 +150,23 @@ public class Script extends BaseStep implements StepInterface {
 
       // Get the indexes of the replaced fields...
       //
-      data.replaceIndex = new int[meta.getFieldname().length];
+      data.replaceIndex = new int[ meta.getFieldname().length ];
       for ( int i = 0; i < meta.getFieldname().length; i++ ) {
-        if ( meta.getReplace()[i] ) {
-          data.replaceIndex[i] = rowMeta.indexOfValue( meta.getFieldname()[i] );
-          if ( data.replaceIndex[i] < 0 ) {
-            if ( Const.isEmpty( meta.getFieldname()[i] ) ) {
+        if ( meta.getReplace()[ i ] ) {
+          data.replaceIndex[ i ] = rowMeta.indexOfValue( meta.getFieldname()[ i ] );
+          if ( data.replaceIndex[ i ] < 0 ) {
+            if ( Const.isEmpty( meta.getFieldname()[ i ] ) ) {
               throw new KettleStepException( BaseMessages.getString(
-                PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getFieldname()[i] ) );
+                PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getFieldname()[ i ] ) );
             }
-            data.replaceIndex[i] = rowMeta.indexOfValue( meta.getRename()[i] );
-            if ( data.replaceIndex[i] < 0 ) {
+            data.replaceIndex[ i ] = rowMeta.indexOfValue( meta.getRename()[ i ] );
+            if ( data.replaceIndex[ i ] < 0 ) {
               throw new KettleStepException( BaseMessages.getString(
-                PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getRename()[i] ) );
+                PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getRename()[ i ] ) );
             }
           }
         } else {
-          data.replaceIndex[i] = -1;
+          data.replaceIndex[ i ] = -1;
         }
       }
 
@@ -180,7 +180,7 @@ public class Script extends BaseStep implements StepInterface {
       // Adding the existing Scripts to the Context
       //
       for ( int i = 0; i < meta.getNumberOfJSScripts(); i++ ) {
-        data.scope.put( jsScripts[i].getScriptName(), jsScripts[i].getScript() );
+        data.scope.put( jsScripts[ i ].getScriptName(), jsScripts[ i ].getScript() );
       }
 
       // Adding the Name of the Transformation to the Context
@@ -199,8 +199,8 @@ public class Script extends BaseStep implements StepInterface {
         // Add the used fields...
         //
         for ( int i = 0; i < data.fields_used.length; i++ ) {
-          ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fields_used[i] );
-          Object valueData = row[data.fields_used[i]];
+          ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fields_used[ i ] );
+          Object valueData = row[ data.fields_used[ i ] ];
 
           Object normalStorageValueData = valueMeta.convertToNormalStorageType( valueData );
           data.scope.put( valueMeta.getName(), normalStorageValueData );
@@ -216,7 +216,7 @@ public class Script extends BaseStep implements StepInterface {
           if ( meta.getAddClasses() != null ) {
             for ( int i = 0; i < meta.getAddClasses().length; i++ ) {
               // TODO AKRETION ensure it works
-              data.scope.put( meta.getAddClasses()[i].getJSName(), meta.getAddClasses()[i].getAddObject() );
+              data.scope.put( meta.getAddClasses()[ i ].getJSName(), meta.getAddClasses()[ i ].getAddObject() );
               // Object jsOut =
               // Context.javaToJS(meta.getAddClasses()[i].getAddObject(),
               // data.scope);
@@ -302,8 +302,8 @@ public class Script extends BaseStep implements StepInterface {
         data.scope.put( "row", row );
 
         for ( int i = 0; i < data.fields_used.length; i++ ) {
-          ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fields_used[i] );
-          Object valueData = row[data.fields_used[i]];
+          ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fields_used[ i ] );
+          Object valueData = row[ data.fields_used[ i ] ];
 
           Object normalStorageValueData = valueMeta.convertToNormalStorageType( valueData );
           data.scope.put( valueMeta.getName(), normalStorageValueData );
@@ -352,18 +352,18 @@ public class Script extends BaseStep implements StepInterface {
       if ( iTranStat == CONTINUE_TRANSFORMATION ) {
         bRC = true;
         for ( int i = 0; i < meta.getFieldname().length; i++ ) {
-          Object result = data.scope.get( meta.getFieldname()[i] );
+          Object result = data.scope.get( meta.getFieldname()[ i ] );
           Object valueData = getValueFromJScript( result, i );
-          if ( data.replaceIndex[i] < 0 ) {
-            outputRow[outputIndex++] = valueData;
+          if ( data.replaceIndex[ i ] < 0 ) {
+            outputRow[ outputIndex++ ] = valueData;
           } else {
-            outputRow[data.replaceIndex[i]] = valueData;
+            outputRow[ data.replaceIndex[ i ] ] = valueData;
           }
         }
 
         putRow( data.outputRowMeta, outputRow );
       } else {
-        switch ( iTranStat ) {
+        switch( iTranStat ) {
           case SKIP_TRANSFORMATION:
             // eat this row.
             bRC = true;
@@ -399,14 +399,14 @@ public class Script extends BaseStep implements StepInterface {
   }
 
   public Object getValueFromJScript( Object result, int i ) throws KettleValueException {
-    if ( meta.getFieldname()[i] != null && meta.getFieldname()[i].length() > 0 ) {
+    if ( meta.getFieldname()[ i ] != null && meta.getFieldname()[ i ].length() > 0 ) {
       // res.setName(meta.getRename()[i]);
       // res.setType(meta.getType()[i]);
 
       try {
         if ( result != null ) {
           String classType = result.getClass().getName();
-          switch ( meta.getType()[i] ) {
+          switch( meta.getType()[ i ] ) {
             case ValueMetaInterface.TYPE_NUMBER:
               if ( classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
                 return null;
@@ -571,11 +571,11 @@ public class Script extends BaseStep implements StepInterface {
             }
             case ValueMetaInterface.TYPE_NONE: {
               throw new RuntimeException( "No data output data type was specified for new field ["
-                + meta.getFieldname()[i] + "]" );
+                + meta.getFieldname()[ i ] + "]" );
             }
             default: {
               throw new RuntimeException( "JavaScript conversion not implemented for type "
-                + meta.getType()[i] + " (" + ValueMeta.getTypeDesc( meta.getType()[i] ) + ")" );
+                + meta.getType()[ i ] + " (" + ValueMeta.getTypeDesc( meta.getType()[ i ] ) + ")" );
             }
           }
         } else {
@@ -667,15 +667,15 @@ public class Script extends BaseStep implements StepInterface {
       // Get the actual Scripts from our MetaData
       jsScripts = meta.getJSScripts();
       for ( int j = 0; j < jsScripts.length; j++ ) {
-        switch ( jsScripts[j].getScriptType() ) {
+        switch( jsScripts[ j ].getScriptType() ) {
           case ScriptValuesScript.TRANSFORM_SCRIPT:
-            strTransformScript = jsScripts[j].getScript();
+            strTransformScript = jsScripts[ j ].getScript();
             break;
           case ScriptValuesScript.START_SCRIPT:
-            strStartScript = jsScripts[j].getScript();
+            strStartScript = jsScripts[ j ].getScript();
             break;
           case ScriptValuesScript.END_SCRIPT:
-            strEndScript = jsScripts[j].getScript();
+            strEndScript = jsScripts[ j ].getScript();
             break;
           default:
             break;

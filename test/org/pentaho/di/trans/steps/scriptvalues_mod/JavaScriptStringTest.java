@@ -53,7 +53,7 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 /**
  * Test class for the Modified Javascript step. Things tested: ltrim(), rtrim(), trim(), lpad(), rpad(), upper(),
  * lower(), isNum(), str2num(), num2str().
- *
+ * <p/>
  * Still to do: - Use multiple arguments in str2num/num2str (tests only with 1 argument) - Defined error handling
  *
  * @author Sven Boden
@@ -65,7 +65,7 @@ public class JavaScriptStringTest extends TestCase {
     ValueMetaInterface[] valuesMeta = { new ValueMeta( "string", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
-      rm.addValueMeta( valuesMeta[i] );
+      rm.addValueMeta( valuesMeta[ i ] );
     }
 
     return rm;
@@ -148,13 +148,13 @@ public class JavaScriptStringTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    {
-      new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "original", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "ltrimStr", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "rtrimStr", ValueMeta.TYPE_STRING ), new ValueMeta( "trimStr", ValueMeta.TYPE_STRING ), };
+      {
+        new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "original", ValueMeta.TYPE_STRING ),
+        new ValueMeta( "ltrimStr", ValueMeta.TYPE_STRING ),
+        new ValueMeta( "rtrimStr", ValueMeta.TYPE_STRING ), new ValueMeta( "trimStr", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
-      rm.addValueMeta( valuesMeta[i] );
+      rm.addValueMeta( valuesMeta[ i ] );
     }
 
     return rm;
@@ -200,16 +200,16 @@ public class JavaScriptStringTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    {
-      new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "lpadded1", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "lpadded2", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "rpadded1", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "rpadded2", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "upperStr", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "lowerStr", ValueMeta.TYPE_STRING ), };
+      {
+        new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "lpadded1", ValueMeta.TYPE_STRING ),
+        new ValueMeta( "lpadded2", ValueMeta.TYPE_STRING ),
+        new ValueMeta( "rpadded1", ValueMeta.TYPE_STRING ),
+        new ValueMeta( "rpadded2", ValueMeta.TYPE_STRING ),
+        new ValueMeta( "upperStr", ValueMeta.TYPE_STRING ),
+        new ValueMeta( "lowerStr", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
-      rm.addValueMeta( valuesMeta[i] );
+      rm.addValueMeta( valuesMeta[ i ] );
     }
 
     return rm;
@@ -222,12 +222,12 @@ public class JavaScriptStringTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    {
-      new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "numb1", ValueMeta.TYPE_NUMBER ),
-      new ValueMeta( "bool1", ValueMeta.TYPE_BOOLEAN ), new ValueMeta( "str1", ValueMeta.TYPE_STRING ), };
+      {
+        new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "numb1", ValueMeta.TYPE_NUMBER ),
+        new ValueMeta( "bool1", ValueMeta.TYPE_BOOLEAN ), new ValueMeta( "str1", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
-      rm.addValueMeta( valuesMeta[i] );
+      rm.addValueMeta( valuesMeta[ i ] );
     }
 
     return rm;
@@ -301,13 +301,13 @@ public class JavaScriptStringTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    {
-      new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "search", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "offset1", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "offset2", ValueMeta.TYPE_INTEGER ), };
+      {
+        new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "search", ValueMeta.TYPE_STRING ),
+        new ValueMeta( "offset1", ValueMeta.TYPE_INTEGER ),
+        new ValueMeta( "offset2", ValueMeta.TYPE_INTEGER ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
-      rm.addValueMeta( valuesMeta[i] );
+      rm.addValueMeta( valuesMeta[ i ] );
     }
 
     return rm;
@@ -342,14 +342,14 @@ public class JavaScriptStringTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    {
-      new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "search", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "offset1", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "offset2", ValueMeta.TYPE_INTEGER ), new ValueMeta( "index1", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "index2", ValueMeta.TYPE_INTEGER ), new ValueMeta( "index3", ValueMeta.TYPE_INTEGER ), };
+      {
+        new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "search", ValueMeta.TYPE_STRING ),
+        new ValueMeta( "offset1", ValueMeta.TYPE_INTEGER ),
+        new ValueMeta( "offset2", ValueMeta.TYPE_INTEGER ), new ValueMeta( "index1", ValueMeta.TYPE_INTEGER ),
+        new ValueMeta( "index2", ValueMeta.TYPE_INTEGER ), new ValueMeta( "index3", ValueMeta.TYPE_INTEGER ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
-      rm.addValueMeta( valuesMeta[i] );
+      rm.addValueMeta( valuesMeta[ i ] );
     }
 
     return rm;
@@ -412,9 +412,9 @@ public class JavaScriptStringTest extends TestCase {
       if ( rm1.size() != rm2.size() ) {
         fail( "row nr " + idx + " is not equal" );
       }
-      int[] fields = new int[rm1.size()];
+      int[] fields = new int[ rm1.size() ];
       for ( int ydx = 0; ydx < rm1.size(); ydx++ ) {
-        fields[ydx] = ydx;
+        fields[ ydx ] = ydx;
       }
       try {
         if ( rm1.getRowMeta().compare( r1, r2, fields ) != 0 ) {
@@ -462,9 +462,9 @@ public class JavaScriptStringTest extends TestCase {
     ScriptValuesScript[] js =
       new ScriptValuesScript[] { new ScriptValuesScript(
         ScriptValuesScript.TRANSFORM_SCRIPT, "script", "var original = 'b' + string.getString() + 'e';\n"
-          + "var ltrimStr = 'b' + ltrim(string.getString()) + 'e';\n"
-          + "var rtrimStr = 'b' + rtrim(string.getString()) + 'e';\n"
-          + "var trimStr  = 'b' + trim(string.getString()) + 'e';\n" ) };
+        + "var ltrimStr = 'b' + ltrim(string.getString()) + 'e';\n"
+        + "var rtrimStr = 'b' + rtrim(string.getString()) + 'e';\n"
+        + "var trimStr  = 'b' + trim(string.getString()) + 'e';\n" ) };
     svm.setJSScripts( js );
     svm.setFieldname( new String[] { "original", "ltrimStr", "rtrimStr", "trimStr" } );
     svm.setRename( new String[] { "", "", "", "" } );
@@ -567,9 +567,9 @@ public class JavaScriptStringTest extends TestCase {
     ScriptValuesScript[] js =
       new ScriptValuesScript[] { new ScriptValuesScript(
         ScriptValuesScript.TRANSFORM_SCRIPT, "script", "var lpadded1 = lpad(string, \"x\", 10);\n"
-          + "var lpadded2 = lpad(string, \" \", 9);\n" + "var rpadded1 = rpad(string, \"x\", 10);\n"
-          + "var rpadded2 = rpad(string, \" \", 9);\n" + "var upperStr = upper(string);\n"
-          + "var lowerStr = lower(string);\n" ) };
+        + "var lpadded2 = lpad(string, \" \", 9);\n" + "var rpadded1 = rpad(string, \"x\", 10);\n"
+        + "var rpadded2 = rpad(string, \" \", 9);\n" + "var upperStr = upper(string);\n"
+        + "var lowerStr = lower(string);\n" ) };
     svm.setJSScripts( js );
     svm.setFieldname( new String[] { "lpadded1", "lpadded2", "rpadded1", "rpadded2", "upperStr", "lowerStr" } );
     svm.setRename( new String[] { "", "", "", "", "", "", "" } );
