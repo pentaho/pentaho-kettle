@@ -23,8 +23,6 @@
 package org.pentaho.di.trans.steps.googleanalytics;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
@@ -42,15 +40,11 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import com.google.gdata.client.analytics.AnalyticsService;
-import com.google.gdata.client.analytics.DataQuery;
-import com.google.gdata.data.analytics.DataEntry;
-import com.google.gdata.data.analytics.DataFeed;
-import com.google.gdata.data.analytics.DataSource;
-import com.google.gdata.data.analytics.Dimension;
-import com.google.gdata.data.analytics.Metric;
-import com.google.gdata.util.AuthenticationException;
-import com.google.gdata.util.ServiceException;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.analytics.Analytics;
+import com.google.api.services.analytics.model.GaData;
 
 public class GaInputStep extends BaseStep implements StepInterface {
 
@@ -84,11 +78,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
         ValueMetaInterface returnMeta = data.outputRowMeta.getValueMeta( i );
 
         ValueMetaInterface conversionMeta;
-        if ( meta.getFeedFieldType()[i].equals( GaInputStepMeta.FIELD_TYPE_CONFIDENCE_INTERVAL ) ) {
-          conversionMeta = ValueMetaFactory.cloneValueMeta( returnMeta, ValueMetaInterface.TYPE_NUMBER );
-        } else {
-          conversionMeta = ValueMetaFactory.cloneValueMeta( returnMeta, ValueMetaInterface.TYPE_STRING );
-        }
+        conversionMeta = ValueMetaFactory.cloneValueMeta( returnMeta, ValueMetaInterface.TYPE_STRING );
 
         conversionMeta.setConversionMask( meta.getConversionMask()[i] );
 
@@ -104,7 +94,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
     // generate output row, make it correct size
     Object[] outputRow = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
 
-    DataEntry entry;
+    List<String> entry;
     try {
         entry = getNextDataEntry();
     } catch (KettleException ex) {
@@ -123,45 +113,11 @@ public class GaInputStep extends BaseStep implements StepInterface {
       // fill the output fields with look up data
       for ( int i = 0; i < meta.getFeedField().length; i++ ) {
 
-        String value = null;
+        String value = entry.get(i);
         String fieldName = environmentSubstitute( meta.getFeedField()[i] );
         String fieldType = meta.getFeedFieldType()[i];
 
-        // confidence intervals
-        if ( fieldType.equals( GaInputStepMeta.FIELD_TYPE_CONFIDENCE_INTERVAL ) ) {
-          Metric metric = entry.getMetric( fieldName );
-          Double interval = metric.getConfidenceInterval();
-          outputRow[i] = data.outputRowMeta.getValueMeta( i ).convertData( data.conversionMeta[i], interval );
-        } else if ( fieldType.equals( GaInputStepMeta.FIELD_TYPE_DIMENSION ) ) {
-          Dimension dim = entry.getDimension( fieldName );
-          value = dim.getValue();
-          outputRow[i] = data.outputRowMeta.getValueMeta( i ).convertData( data.conversionMeta[i], value );
-        } else if ( fieldType.equals( GaInputStepMeta.FIELD_TYPE_METRIC ) ) {
-          Metric metric = entry.getMetric( fieldName );
-          value = metric.getValue();
-          outputRow[i] = data.outputRowMeta.getValueMeta( i ).convertData( data.conversionMeta[i], value );
-        } else if ( fieldType.equals( GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_PROPERTY ) ) {
-          DataSource d = data.feed.getDataSources().size() > 0 ? data.feed.getDataSources().get( 0 ) : null;
-          if ( d != null ) {
-            value = d.getProperty( fieldName );
-            outputRow[i] = data.outputRowMeta.getValueMeta( i ).convertData( data.conversionMeta[i], value );
-          }
-        } else if ( fieldType.equals( GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_FIELD ) ) {
-          DataSource d = data.feed.getDataSources().size() > 0 ? data.feed.getDataSources().get( 0 ) : null;
-          if ( d != null ) {
-
-            if ( fieldName.equalsIgnoreCase( GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_ID ) ) {
-              value = d.getTableId().getValue();
-              outputRow[i] = data.outputRowMeta.getValueMeta( i ).convertData( data.conversionMeta[i], value );
-
-            } else if ( fieldName.equalsIgnoreCase( GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_NAME ) ) {
-              value = d.getTableName().getValue();
-              outputRow[i] = data.outputRowMeta.getValueMeta( i ).convertData( data.conversionMeta[i], value );
-
-            }
-
-          }
-        }
+        outputRow[i] = data.outputRowMeta.getValueMeta( i ).convertData( data.conversionMeta[i], value );
 
       }
 
@@ -182,32 +138,28 @@ public class GaInputStep extends BaseStep implements StepInterface {
 
   }
 
-  protected DataQuery getQuery() throws KettleException {
+  protected Analytics.Data.Ga.Get getQuery(Analytics analyticsService) throws KettleException {
 
-    DataQuery query = null;
-    try {
-      query = new DataQuery( new URL( GaInputStepMeta.GA_DATA_URL ) );
-    } catch ( MalformedURLException ex ) {
-      ex.printStackTrace();
-      return null;
-    }
-
-    query.setIds( meta.isUseCustomTableId() ? environmentSubstitute( meta.getGaCustomTableId() ) : meta
-      .getGaProfileTableId() );
-
-    query.setStartDate( environmentSubstitute( meta.getStartDate() ) );
-    query.setEndDate( environmentSubstitute( meta.getEndDate() ) );
-
-    String dimensions = environmentSubstitute(meta.getDimensions());
+    String ids = meta.isUseCustomTableId() ? environmentSubstitute( meta.getGaCustomTableId() ) : meta
+      .getGaProfileTableId();
+    String startDate = environmentSubstitute( meta.getStartDate() );
+    String endDate = environmentSubstitute( meta.getEndDate() );
+    String dimensions = environmentSubstitute( meta.getDimensions() );
     if (!dimensions.matches("ga:.+")) {
         throw new KettleException("dimensions Invalid value ''. Values must match the following regular expression: 'ga:.+'");
     }
-    query.setDimensions(dimensions);
-    String metrics = environmentSubstitute(meta.getMetrics());
+    String metrics = environmentSubstitute( meta.getMetrics() );
     if (!metrics.matches("ga:.+")) {
         throw new KettleException("metrics Invalid value ''. Values must match the following regular expression: 'ga:.+'");
     }
-    query.setMetrics(metrics);
+
+    Analytics.Data.Ga.Get query;
+    try {
+        query = analyticsService.data().ga().get(ids, startDate, endDate, metrics);
+    } catch ( IOException e ) {
+        throw new KettleException( e );
+    }
+    query.setDimensions(dimensions);
 
     if ( meta.isUseSegment() ) {
       if ( meta.isUseCustomSegment() ) {
@@ -224,87 +176,53 @@ public class GaInputStep extends BaseStep implements StepInterface {
       query.setSort( environmentSubstitute( meta.getSort() ) );
     }
 
-    String gaapikey = environmentSubstitute(Encr.decryptPasswordOptionallyEncrypted(meta.getGaApiKey()));
-    if (!Const.isEmpty(gaapikey)){
-      // allow to use optionally encrypted environment variables
-      query.setStringCustomParameter( "key", gaapikey );
-    }
-
     return query;
 
   }
 
-  private DataEntry getNextDataEntry() throws KettleException {
+  private List<String> getNextDataEntry() throws KettleException {
 
     // no query prepared yet?
     if ( data.query == null ) {
 
-      data.query = getQuery();
-      // use default max results for now
-      // data.query.setMaxResults(10000);
-
-      if ( log.isDetailed() ) {
-        logDetailed( "querying google analytics: " + data.query.getUrl() );
-      }
-
-      String email = environmentSubstitute( meta.getGaEmail() );
-      // allow to use optionally encrypted environment variables
-      String pass = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getGaPassword() ) );
-
-      AnalyticsService analyticsService = new AnalyticsService( environmentSubstitute( meta.getGaAppName() ) );
+      String accessToken = environmentSubstitute( Encr.decryptPasswordOptionallyEncrypted( meta.getGaApiKey() ) );
+      GoogleCredential credential = new GoogleCredential().setAccessToken(Encr.decryptPasswordOptionallyEncrypted( accessToken ));
+      Analytics analyticsService = new Analytics.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), credential)
+          .setApplicationName(meta.getGaAppName())
+          .build();
 
       try {
 
-        analyticsService.setUserCredentials( email, pass );
-        data.feed = analyticsService.getFeed( data.query.getUrl(), DataFeed.class );
+        data.query = getQuery(analyticsService);
+        // use default max results for now
+        // data.query.setMaxResults(10000);
+        data.feed = data.query.execute();
         data.entryIndex = 0;
 
-      } catch ( AuthenticationException e1 ) {
-        throw new KettleException( e1 );
-
-      } catch ( IOException e2 ) {
-        throw new KettleException( e2 );
-
-      } catch ( ServiceException e3 ) {
-        throw new KettleException( e3 );
+      } catch ( IOException e ) {
+        throw new KettleException( e );
       }
 
-    } else if ( data.entryIndex >= data.feed.getEntries().size() ) {
+    } else if ( data.entryIndex >= data.feed.getRows().size() ) {
       // query is there, check whether we hit the last entry and re-query as necessary
-      if ( data.feed.getStartIndex() + data.entryIndex <= data.feed.getTotalResults() ) {
+      if ( data.feed.getQuery().getStartIndex() + data.entryIndex <= data.feed.getTotalResults() ) {
         // need to query for next page
-        data.query.setStartIndex( data.feed.getStartIndex() + data.entryIndex );
-
-        if ( log.isDetailed() ) {
-          logDetailed( "querying google analytics: " + data.query.getUrl() );
-        }
-
-        String email = environmentSubstitute( meta.getGaEmail() );
-        String pass = environmentSubstitute( meta.getGaPassword() );
-
-        AnalyticsService analyticsService = new AnalyticsService( environmentSubstitute( meta.getGaAppName() ) );
+        data.query.setStartIndex( data.feed.getQuery().getStartIndex() + data.entryIndex );
 
         try {
 
-          analyticsService.setUserCredentials( email, pass );
-          data.feed = analyticsService.getFeed( data.query.getUrl(), DataFeed.class );
+          data.feed = data.query.execute();
           data.entryIndex = 0;
 
-        } catch ( AuthenticationException e1 ) {
-          throw new KettleException( e1 );
-
-        } catch ( IOException e2 ) {
-          throw new KettleException( e2 );
-
-        } catch ( ServiceException e3 ) {
-          throw new KettleException( e3 );
+        } catch ( IOException e ) {
+          throw new KettleException( e );
         }
 
       }
 
     }
 
-    List<DataEntry> entries = data.feed.getEntries();
+    List<List<String>> entries = data.feed.getRows();
     if ( data.entryIndex < entries.size() ) {
       return entries.get( data.entryIndex++ );
     } else {

@@ -27,8 +27,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
-import com.google.gdata.client.analytics.DataQuery;
-import com.google.gdata.data.analytics.DataFeed;
+import com.google.api.services.analytics.Analytics;
+import com.google.api.services.analytics.model.GaData;
 
 public class GaInputStepData extends BaseStepData implements StepDataInterface {
 
@@ -38,8 +38,8 @@ public class GaInputStepData extends BaseStepData implements StepDataInterface {
   public ValueMetaInterface[] conversionMeta;
 
   // holds currently processed feed
-  public DataQuery query;
-  public DataFeed feed;
+  public Analytics.Data.Ga.Get query;
+  public GaData feed;
   public int entryIndex;
 
   public GaInputStepData() {
