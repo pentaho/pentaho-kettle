@@ -85,7 +85,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
   private CombinationLookupData data;
 
   public CombinationLookup( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-    TransMeta transMeta, Trans trans ) {
+                            TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
     meta = (CombinationLookupMeta) getStepMeta().getStepMetaInterface();
@@ -103,10 +103,10 @@ public class CombinationLookup extends BaseStep implements StepInterface {
   private void determineTechKeyCreation() {
     String keyCreation = meta.getTechKeyCreation();
     if ( meta.getDatabaseMeta().supportsAutoinc()
-      && CombinationLookupMeta.CREATION_METHOD_AUTOINC.equals( keyCreation ) ) {
+        && CombinationLookupMeta.CREATION_METHOD_AUTOINC.equals( keyCreation ) ) {
       setTechKeyCreation( CREATION_METHOD_AUTOINC );
     } else if ( meta.getDatabaseMeta().supportsSequences()
-      && CombinationLookupMeta.CREATION_METHOD_SEQUENCE.equals( keyCreation ) ) {
+        && CombinationLookupMeta.CREATION_METHOD_SEQUENCE.equals( keyCreation ) ) {
       setTechKeyCreation( CREATION_METHOD_SEQUENCE );
     } else {
       setTechKeyCreation( CREATION_METHOD_TABLEMAX );
@@ -244,7 +244,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
       lookupIndex++;
 
       if ( meta.getDatabaseMeta().requiresCastToVariousForIsNull()
-        && rowMeta.getValueMeta( rowIndex ).getType() == ValueMeta.TYPE_STRING ) {
+          && rowMeta.getValueMeta( rowIndex ).getType() == ValueMeta.TYPE_STRING ) {
         lookupRow[lookupIndex] = rowMeta.getValueMeta( rowIndex ).isNull( row[rowIndex] ) ? null : "NotNull"; // KEYi IS
                                                                                                               // NULL or
                                                                                                               // ? IS
@@ -281,7 +281,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
                 .getTechnicalKeyField() );
             if ( val_key != null && isRowLevel() ) {
               logRowlevel( BaseMessages.getString( PKG, "CombinationLookup.Log.FoundNextSequenceValue" )
-                + val_key.toString() );
+                  + val_key.toString() );
             }
             break;
           default:
@@ -508,12 +508,12 @@ public class CombinationLookup extends BaseStep implements StepInterface {
           // NO AUTOINCREMENT
           sql += databaseMeta.quoteField( meta.getTechnicalKeyField() );
           data.insertRowMeta.addValueMeta( new ValueMeta(
-            meta.getTechnicalKeyField(), ValueMetaInterface.TYPE_INTEGER ) );
+              meta.getTechnicalKeyField(), ValueMetaInterface.TYPE_INTEGER ) );
           comma = true;
         } else if ( databaseMeta.needsPlaceHolder() ) {
           sql += "0"; // placeholder on informix! Will be replaced in table by real autoinc value.
           data.insertRowMeta.addValueMeta( new ValueMeta(
-            meta.getTechnicalKeyField(), ValueMetaInterface.TYPE_INTEGER ) );
+              meta.getTechnicalKeyField(), ValueMetaInterface.TYPE_INTEGER ) );
           comma = true;
         }
 
@@ -680,7 +680,7 @@ public class CombinationLookup extends BaseStep implements StepInterface {
   public boolean init( StepMetaInterface sii, StepDataInterface sdi ) {
     if ( super.init( sii, sdi ) ) {
       data.realSchemaName = environmentSubstitute( meta.getSchemaName() );
-      data.realTableName = environmentSubstitute( meta.getTablename() );
+      data.realTableName = environmentSubstitute( meta.getTableName() );
 
       if ( meta.getCacheSize() > 0 ) {
         data.cache = new HashMap<RowMetaAndData, Long>( (int) ( meta.getCacheSize() * 1.5 ) );
