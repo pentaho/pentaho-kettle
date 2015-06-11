@@ -478,7 +478,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     GridData gdTableMax = new GridData();
     wTableMax.setLayoutData( gdTableMax );
     wTableMax.setToolTipText( BaseMessages.getString(
-      PKG, "CombinationLookupDialog.TableMaximum.Tooltip", Const.CR ) );
+        PKG, "CombinationLookupDialog.TableMaximum.Tooltip", Const.CR ) );
     wlTableMax = new Label( gTechGroup, SWT.LEFT );
     wlTableMax.setText( BaseMessages.getString( PKG, "CombinationLookupDialog.TableMaximum.Label" ) );
     props.setLook( wlTableMax );
@@ -525,7 +525,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     GridData gdAutoinc = new GridData();
     wAutoinc.setLayoutData( gdAutoinc );
     wAutoinc.setToolTipText( BaseMessages.getString(
-      PKG, "CombinationLookupDialog.AutoincButton.Tooltip", Const.CR ) );
+        PKG, "CombinationLookupDialog.AutoincButton.Tooltip", Const.CR ) );
     wlAutoinc = new Label( gTechGroup, SWT.LEFT );
     wlAutoinc.setText( BaseMessages.getString( PKG, "CombinationLookupDialog.Autoincrement.Label" ) );
     props.setLook( wlAutoinc );
@@ -690,7 +690,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
       public void run() {
         if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
           final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
-            wSchema.getText();
+              wSchema.getText();
 
           // clear
           for ( ColumnInfo colInfo : tableFieldColumns ) {
@@ -704,7 +704,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
                 db.connect();
 
                 String schemaTable =
-                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
                     .environmentSubstitute( tableName ) );
                 RowMetaInterface r = db.getTableFields( schemaTable );
                 if ( null != r ) {
@@ -833,8 +833,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     if ( input.getSchemaName() != null ) {
       wSchema.setText( input.getSchemaName() );
     }
-    if ( input.getTablename() != null ) {
-      wTable.setText( input.getTablename() );
+    if ( input.getTableName() != null ) {
+      wTable.setText( input.getTableName() );
     }
     if ( input.getTechnicalKeyField() != null ) {
       wTk.setText( input.getTechnicalKeyField() );
