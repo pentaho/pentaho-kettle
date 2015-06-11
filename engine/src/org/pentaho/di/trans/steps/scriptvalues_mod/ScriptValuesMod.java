@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.scriptvalues_mod;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -33,7 +31,6 @@ import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.UniqueTag;
 import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.compatibility.ValueUsedListener;
@@ -45,7 +42,6 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -54,6 +50,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.core.util.JavaScriptUtils;
 
 /**
  * Executes a JavaScript on the values in the input stream. Selected calculated values can then be put on the output
@@ -480,186 +477,14 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
   }
 
   public Object getValueFromJScript( Object result, int i ) throws KettleValueException {
-    if ( meta.getFieldname()[ i ] != null && meta.getFieldname()[ i ].length() > 0 ) {
+    String fieldName = meta.getFieldname()[ i ];
+    if ( !Const.isEmpty( fieldName ) ) {
       // res.setName(meta.getRename()[i]);
       // res.setType(meta.getType()[i]);
 
       try {
-        if ( result != null ) {
-          String classType = result.getClass().getName();
-          switch( meta.getType()[ i ] ) {
-            case ValueMetaInterface.TYPE_NUMBER:
-              if ( classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
-                return null;
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" ) ) {
-                try {
-                  // Is it a java Value class ?
-                  Value v = (Value) Context.jsToJava( result, Value.class );
-                  return v.getNumber();
-                } catch ( Exception e ) {
-                  String string = Context.toString( result );
-                  return new Double( Double.parseDouble( Const.trim( string ) ) );
-                }
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeNumber" ) ) {
-                Number nb = Context.toNumber( result );
-                return new Double( nb.doubleValue() );
-              } else {
-                Number nb = (Number) result;
-                return new Double( nb.doubleValue() );
-              }
-
-            case ValueMetaInterface.TYPE_INTEGER:
-              if ( classType.equalsIgnoreCase( "java.lang.Byte" ) ) {
-                return new Long( ( (java.lang.Byte) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Short" ) ) {
-                return new Long( ( (Short) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Integer" ) ) {
-                return new Long( ( (Integer) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Long" ) ) {
-                return new Long( ( (Long) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Double" ) ) {
-                return new Long( ( (Double) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.String" ) ) {
-                return new Long( ( new Long( (String) result ) ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
-                return null;
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeNumber" ) ) {
-                Number nb = Context.toNumber( result );
-                return new Long( nb.longValue() );
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" ) ) {
-                // Is it a Value?
-                //
-                try {
-                  Value value = (Value) Context.jsToJava( result, Value.class );
-                  return value.getInteger();
-                } catch ( Exception e2 ) {
-                  String string = Context.toString( result );
-                  return new Long( Long.parseLong( Const.trim( string ) ) );
-                }
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.UniqueTag" ) ) {
-                return Long.valueOf( Long.parseLong( ( (UniqueTag) result ).toString() ) );
-              } else {
-                return Long.valueOf( Long.parseLong( result.toString() ) );
-              }
-
-            case ValueMetaInterface.TYPE_STRING:
-              if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" )
-                || classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
-                // Is it a java Value class ?
-                try {
-                  Value v = (Value) Context.jsToJava( result, Value.class );
-                  return v.toString();
-                } catch ( Exception ev ) {
-                  // convert to a string should work in most cases...
-                  //
-                  String string = Context.toString( result );
-                  return string;
-                }
-              } else {
-                // A String perhaps?
-                String string = Context.toString( result );
-                return string;
-              }
-
-            case ValueMetaInterface.TYPE_DATE:
-              double dbl = 0;
-              if ( classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
-                return null;
-              } else {
-                if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeDate" ) ) {
-                  dbl = Context.toNumber( result );
-                } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" )
-                  || classType.equalsIgnoreCase( "java.util.Date" ) ) {
-                  // Is it a java Date() class ?
-                  try {
-                    Date dat = (Date) Context.jsToJava( result, java.util.Date.class );
-                    dbl = dat.getTime();
-                  } catch ( Exception e ) {
-                    // Is it a Value?
-                    //
-                    try {
-                      Value value = (Value) Context.jsToJava( result, Value.class );
-                      return value.getDate();
-                    } catch ( Exception e2 ) {
-                      try {
-                        String string = Context.toString( result );
-                        return XMLHandler.stringToDate( string );
-                      } catch ( Exception e3 ) {
-                        throw new KettleValueException( "Can't convert a string to a date" );
-                      }
-                    }
-                  }
-                } else if ( classType.equalsIgnoreCase( "java.lang.Double" ) ) {
-                  dbl = ( (Double) result ).doubleValue();
-                } else {
-                  String string = (String) Context.jsToJava( result, String.class );
-                  dbl = Double.parseDouble( string );
-                }
-                long lng = Math.round( dbl );
-                Date dat = new Date( lng );
-                return dat;
-              }
-
-            case ValueMetaInterface.TYPE_BOOLEAN:
-              return result;
-
-            case ValueMetaInterface.TYPE_BIGNUMBER:
-              if ( classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
-                return null;
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeNumber" ) ) {
-                Number nb = Context.toNumber( result );
-                return new BigDecimal( nb.longValue() );
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" ) ) {
-                // Is it a BigDecimal class ?
-                try {
-                  BigDecimal bd = (BigDecimal) Context.jsToJava( result, BigDecimal.class );
-                  return bd;
-                } catch ( Exception e ) {
-                  try {
-                    Value v = (Value) Context.jsToJava( result, Value.class );
-                    if ( !v.isNull() ) {
-                      return v.getBigNumber();
-                    } else {
-                      return null;
-                    }
-                  } catch ( Exception e2 ) {
-                    String string = (String) Context.jsToJava( result, String.class );
-                    return new BigDecimal( string );
-                  }
-                }
-              } else if ( classType.equalsIgnoreCase( "java.lang.Byte" ) ) {
-                return new BigDecimal( ( (java.lang.Byte) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Short" ) ) {
-                return new BigDecimal( ( (Short) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Integer" ) ) {
-                return new BigDecimal( ( (Integer) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Long" ) ) {
-                return new BigDecimal( ( (Long) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Double" ) ) {
-                return new BigDecimal( ( (Double) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.String" ) ) {
-                return new BigDecimal( ( new Long( (String) result ) ).longValue() );
-              } else {
-                throw new RuntimeException( "JavaScript conversion to BigNumber not implemented for " + classType );
-              }
-
-            case ValueMetaInterface.TYPE_BINARY: {
-              return Context.jsToJava( result, byte[].class );
-            }
-            case ValueMetaInterface.TYPE_NONE: {
-              throw new RuntimeException( "No data output data type was specified for new field ["
-                + meta.getFieldname()[ i ] + "]" );
-            }
-            default:
-              return Context.jsToJava( result, Object.class );
-              /*
-               * { throw new RuntimeException("JavaScript conversion not implemented for type " + meta.getType()[i] +
-               * " (" + ValueMeta.getTypeDesc(meta.getType()[i]) + ")"); }
-               */
-          }
-        } else {
-          return null;
-        }
+        return ( result == null ) ? null
+          : JavaScriptUtils.convertFromJs( result, meta.getType()[ i ], fieldName );
       } catch ( Exception e ) {
         throw new KettleValueException( BaseMessages.getString( PKG, "ScriptValuesMod.Log.JavascriptError" ), e );
       }
