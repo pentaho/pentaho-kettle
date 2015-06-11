@@ -69,7 +69,7 @@ public class ScriptTest {
     Script step = new Script( helper.stepMeta, helper.stepDataInterface, 1, helper.transMeta, helper.trans );
     step.init( helper.initStepMetaInterface, helper.initStepDataInterface );
 
-    RowSet rs = helper.getMockInputRowSet( new Object[0][0] );
+    RowSet rs = helper.getMockInputRowSet( new Object[ 0 ][ 0 ] );
     List<RowSet> in = new ArrayList<RowSet>();
     in.add( rs );
     step.setInputRowSets( in );
