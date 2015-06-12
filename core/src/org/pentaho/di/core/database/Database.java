@@ -164,7 +164,22 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   private int nrExecutedCommits;
 
   private static List<ValueMetaInterface> valueMetaPluginClasses;
-
+  
+  static {
+    try {
+      valueMetaPluginClasses = ValueMetaFactory.getValueMetaPluginClasses();
+      Collections.sort( valueMetaPluginClasses, new Comparator<ValueMetaInterface>() {
+        @Override
+        public int compare( ValueMetaInterface o1, ValueMetaInterface o2 ) {
+          // Reverse the sort list
+          return ( Integer.valueOf( o1.getType() ).compareTo( Integer.valueOf( o2.getType() ) ) ) * -1;
+        }
+      } );
+    } catch ( Exception e ) {
+      throw new RuntimeException( "Unable to get list of instantiated value meta plugin classes", e );
+    }
+  }
+  
   /**
    * Construct a new Database Connection
    *
@@ -2264,23 +2279,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     throws KettleDatabaseException, SQLException {
     // TODO If we do lazy conversion, we need to find out about the encoding
     //
-
-    // Some housekeeping stuff...
-    //
-    if ( valueMetaPluginClasses == null ) {
-      try {
-        valueMetaPluginClasses = ValueMetaFactory.getValueMetaPluginClasses();
-        Collections.sort( valueMetaPluginClasses, new Comparator<ValueMetaInterface>() {
-          @Override
-          public int compare( ValueMetaInterface o1, ValueMetaInterface o2 ) {
-            // Reverse the sort list
-            return ( Integer.valueOf( o1.getType() ).compareTo( Integer.valueOf( o2.getType() ) ) ) * -1;
-          }
-        } );
-      } catch ( Exception e ) {
-        throw new KettleDatabaseException( "Unable to get list of instantiated value meta plugin classes", e );
-      }
-    }
 
     // Extract the name from the result set meta data...
     //
