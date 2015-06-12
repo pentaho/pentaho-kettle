@@ -274,4 +274,13 @@ public class KettleURLClassLoader extends URLClassLoader {
     }
   }
 
+  @Override
+  public URL getResource(String name) {
+    URL url;
+    url = findResource(name);
+    if (url == null && getParent() != null) {
+      url = getParent().getResource(name);
+    }
+    return url;
+  }
 }
