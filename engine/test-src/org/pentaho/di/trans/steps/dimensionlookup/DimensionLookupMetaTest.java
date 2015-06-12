@@ -158,20 +158,23 @@ public class DimensionLookupMetaTest {
       }
     };
     dimensionLookupMeta.setFieldLookup( new String[] { "f1", "f2", "f3" } );
+    dimensionLookupMeta.setKeyLookup( new String[] {"k1"} );
     dimensionLookupMeta.setFieldStream( new String[] { "s4", "s5", "s6" } );
+    dimensionLookupMeta.setKeyStream( new String[] {"ks1"} );
     dimensionLookupMeta.setSchemaName( "aSchema" );
     dimensionLookupMeta.setTableName( "aDimTable" );
 
     final DimensionLookupData dimensionLookupData = new DimensionLookupData();
     assertEquals( rowMeta, dimensionLookupMeta.getRowMeta( dimensionLookupData ) );
-    assertEquals( 3, dimensionLookupMeta.getDatabaseFields().size() );
+    assertEquals( 4, dimensionLookupMeta.getDatabaseFields().size() );
     assertEquals( "f1", dimensionLookupMeta.getDatabaseFields().get( 0 ) );
     assertEquals( "f2", dimensionLookupMeta.getDatabaseFields().get( 1 ) );
     assertEquals( "f3", dimensionLookupMeta.getDatabaseFields().get( 2 ) );
-    assertEquals( 3, dimensionLookupMeta.getStreamFields().size() );
+    assertEquals( "k1", dimensionLookupMeta.getDatabaseFields().get( 3 ) );
+    assertEquals( 4, dimensionLookupMeta.getStreamFields().size() );
     assertEquals( "s4", dimensionLookupMeta.getStreamFields().get( 0 ) );
     assertEquals( "s5", dimensionLookupMeta.getStreamFields().get( 1 ) );
     assertEquals( "s6", dimensionLookupMeta.getStreamFields().get( 2 ) );
+    assertEquals( "ks1", dimensionLookupMeta.getStreamFields().get( 3 ) );
   }
-
 }
