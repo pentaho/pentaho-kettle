@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.dimensionlookup;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -1883,10 +1884,16 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
   }
 
   @Override public List<String> getDatabaseFields() {
-    return Arrays.asList( fieldLookup );
+    ArrayList<String> fields = new ArrayList<String>( fieldLookup.length + keyLookup.length );
+    fields.addAll( Arrays.asList( fieldLookup ) );
+    fields.addAll( Arrays.asList( keyLookup ) );
+    return fields;
   }
 
   @Override public List<String> getStreamFields() {
-    return Arrays.asList( fieldStream );
+    ArrayList<String> fields = new ArrayList<String>( fieldLookup.length + keyLookup.length );
+    fields.addAll( Arrays.asList( fieldStream ) );
+    fields.addAll( Arrays.asList( keyStream ) );
+    return fields;
   }
 }
