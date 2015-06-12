@@ -903,7 +903,10 @@ public class PropsUI extends Props {
         CTabFolder tabFolder = (CTabFolder) control;
         tabFolder.setSimple( false );
         tabFolder.setBorderVisible( true );
-        tabFolder.setSelectionBackground( GUIResource.getInstance().getColorTab() );
+        // need to make a copy of the tab selection background color to get around PDI-13940
+        Color c = GUIResource.getInstance().getColorTab();
+        Color tabColor = new Color( c.getDevice(), c.getRed(), c.getGreen(), c.getBlue() );
+        tabFolder.setSelectionBackground( tabColor );
         break;
       default:
         background = gui.getColorBackground();
