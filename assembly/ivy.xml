@@ -173,6 +173,7 @@
     <!-- Other third-party dependencies -->
     <dependency org="asm"                  name="asm"                   rev="3.2"           transitive="false"/>
     <dependency org="net.sf.saxon"         name="saxon-dom"             rev="9.1.0.8"       transitive="false"/>
-
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.5"/>
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.5"/>
   </dependencies>
 </ivy-module>
