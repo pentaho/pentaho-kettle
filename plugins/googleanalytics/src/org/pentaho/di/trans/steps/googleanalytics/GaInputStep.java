@@ -249,7 +249,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
         throw new KettleException( e2 );
       }
 
-    } else if ( data.entryIndex >= data.feed.getItemsPerPage() ) {
+    } else if ( data.feed != null && data.entryIndex >= data.feed.getItemsPerPage() ) {
       try {
         // query is there, check whether we hit the last entry and re-query as necessary
         int startIndex = ( data.query.getStartIndex() == null ) ? 0 : data.query.getStartIndex();
@@ -266,9 +266,13 @@ public class GaInputStep extends BaseStep implements StepInterface {
       }
     }
 
-    List<List<String>> entries = data.feed.getRows();
-    if ( data.entryIndex < entries.size() ) {
-      return entries.get( data.entryIndex++ );
+    if ( data.feed != null ) {
+      List<List<String>> entries = data.feed.getRows();
+      if ( entries != null && data.entryIndex < entries.size() ) {
+        return entries.get( data.entryIndex++ );
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
