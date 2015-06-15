@@ -22,63 +22,53 @@
 
 package org.pentaho.di.core.database.util;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DataSourceNamingException;
 import org.pentaho.di.core.database.DataSourceProviderInterface;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.i18n.BaseMessages;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Provides default implementation for looking data sources up in JNDI.
  *
  * @author mbatchel
- *
  */
 
 public class DatabaseUtil implements DataSourceProviderInterface {
   private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!
+  private static Map<String, DataSource> FoundDS = Collections.synchronizedMap( new HashMap<String, DataSource>() );
 
   /**
-   * Implementation of DatasourceProviderInterface.
-   *
+   * Clears cache of DataSources (For Unit test)
    */
-  @Override
-  public DataSource getNamedDataSource( String datasourceName ) throws DataSourceNamingException {
-    try {
-      return DatabaseUtil.getDataSourceFromJndi( datasourceName );
-    } catch ( NamingException ex ) {
-      throw new DataSourceNamingException( ex );
-    }
+  protected static void clearDSCache() {
+    FoundDS.clear();
   }
-
-  private static Map<String, DataSource> FoundDS = Collections.synchronizedMap( new HashMap<String, DataSource>() );
 
   /**
    * Since JNDI is supported different ways in different app servers, it's nearly impossible to have a ubiquitous way to
    * look up a datasource. This method is intended to hide all the lookups that may be required to find a jndi name.
    *
-   * @param dsName
-   *          The Datasource name
+   * @param dsName The Datasource name
    * @return DataSource if there is one bound in JNDI
    * @throws NamingException
    */
-  private static DataSource getDataSourceFromJndi( String dsName ) throws NamingException {
+  protected static DataSource getDataSourceFromJndi( String dsName, Context ctx ) throws NamingException {
     if ( Const.isEmpty( dsName ) ) {
-      throw new NamingException( BaseMessages.getString( PKG, "DatabaseUtil.DSNotFound", String.valueOf ( dsName )  ) );
+      throw new NamingException( BaseMessages.getString( PKG, "DatabaseUtil.DSNotFound", String.valueOf( dsName ) ) );
     }
     Object foundDs = FoundDS.get( dsName );
     if ( foundDs != null ) {
       return (DataSource) foundDs;
     }
-    InitialContext ctx = new InitialContext();
     Object lkup = null;
     DataSource rtn = null;
     NamingException firstNe = null;
@@ -130,5 +120,17 @@ public class DatabaseUtil implements DataSourceProviderInterface {
       throw firstNe;
     }
     throw new NamingException( BaseMessages.getString( PKG, "DatabaseUtil.DSNotFound", dsName ) );
+  }
+
+  /**
+   * Implementation of DatasourceProviderInterface.
+   */
+  @Override
+  public DataSource getNamedDataSource( String datasourceName ) throws DataSourceNamingException {
+    try {
+      return DatabaseUtil.getDataSourceFromJndi( datasourceName, new InitialContext() );
+    } catch ( NamingException ex ) {
+      throw new DataSourceNamingException( ex );
+    }
   }
 }
