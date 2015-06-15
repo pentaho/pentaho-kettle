@@ -83,7 +83,7 @@
     <dependency org="com.fasterxml.jackson.core" name="jackson-annotations" rev="2.3.3" changing="true" transitive="false"/>
     <dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.3.3" changing="true" transitive="false"/>
     <dependency org="com.fasterxml.jackson.core" name="jackson-core" rev="2.3.3" changing="true" transitive="false"/>
-    <dependency org="com.pentaho" name="pentaho-metaverse-api" rev="${project.revision}" changing="true" transitive="false"/>
+    <dependency org="pentaho" name="pentaho-metaverse-api" rev="${project.revision}" changing="true" transitive="false"/>
     <!-- end: required for pentaho-metaverse -->
 
     <!--  Pentaho reporting dependencies -->
