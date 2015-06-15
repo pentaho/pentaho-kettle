@@ -29,6 +29,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.XMLEvent;
 
@@ -254,7 +255,6 @@ public class XMLInputStream extends BaseStep implements StepInterface {
             outputRowData[data.pos_xml_data_name] = e.asStartElement().getName().getLocalPart();
           }
         }
-
         // store the name
         if ( data.pos_xml_data_name >= 0 ) {
           data.elementName[data.elementLevel] = new String( (String) outputRowData[data.pos_xml_data_name] );
@@ -276,9 +276,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
         break;
 
       case XMLStreamConstants.END_ELEMENT:
-        if ( data.pos_xml_data_name >= 0 ) {
-          outputRowData[data.pos_xml_data_name] = e.asEndElement().getName().getLocalPart();
-        }
+        parseEndElement( outputRowData, e.asEndElement() );
         putRowOut( outputRowData );
         data.elementParentID[data.elementLevel + 1] = null;
         data.elementLevel--;
@@ -349,6 +347,25 @@ public class XMLInputStream extends BaseStep implements StepInterface {
     return outputRowData;
   }
 
+  private void parseEndElement( Object[] outputRowData, EndElement el ) {
+    if ( data.pos_xml_data_name >= 0 ) {
+      outputRowData[data.pos_xml_data_name] = getEndElementName( el, meta.isEnableNamespaces() );
+    }
+  }
+
+  /**Returns the qualified name of the end element
+   * @param el an EndElement event
+   * @param enabledNamespaces indicates if namespaces should be added or not 
+   * @return the qualified name of the end element
+   */
+  private String getEndElementName( EndElement el, boolean enabledNamespaces ) {
+    if ( !enabledNamespaces ) {
+      return el.getName().getLocalPart();
+    } else {
+      return getName( el.getName().getPrefix(), el.getName().getLocalPart() );
+    }
+  }
+
   // Namespaces: put an extra row out for each namespace
   @SuppressWarnings( "unchecked" )
   private Object[] parseNamespaces( Object[] outputRowData, XMLEvent e ) throws KettleValueException,
@@ -401,8 +418,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
     while ( iter.hasNext() ) {
       Object[] outputRowDataAttribute = data.outputRowMeta.cloneRow( outputRowData );
       Attribute a = iter.next();
-      outputRowDataAttribute[data.pos_xml_data_name] = a.getName().getLocalPart();
-      outputRowDataAttribute[data.pos_xml_data_value] = a.getValue();
+      parseAttribute( outputRowDataAttribute, a, meta.isEnableNamespaces() );
       if ( iter.hasNext() ) {
         // send out the Attribute row
         putRowOut( outputRowDataAttribute );
@@ -413,6 +429,36 @@ public class XMLInputStream extends BaseStep implements StepInterface {
     }
 
     return outputRowData;
+  }
+
+  private void parseAttribute( Object[] outputRowDataAttribute, Attribute a, boolean enabledNamespaces ) {
+    outputRowDataAttribute[data.pos_xml_data_name] = getAttributeName( a, enabledNamespaces );
+    outputRowDataAttribute[data.pos_xml_data_value] = a.getValue();
+  }
+
+  /**Returns the qualified name of the attribute
+   * @param a an attribute event
+   * @param enabledNamespaces indicates if namespaces should be added or not 
+   * @return the qualified name of the attribute
+   */
+  private String getAttributeName( Attribute a, boolean enabledNamespaces ) {
+    if ( !enabledNamespaces ) {
+      return a.getName().getLocalPart();
+    } else {
+      return getName( a.getName().getPrefix(), a.getName().getLocalPart() );
+    }
+  }
+
+  /**
+   * Returns the qualified name in the format: <code>prefix:localPart</code> if the prefix is present
+   * otherwise just <code>localPart</code>
+   * 
+   * @param prefix the namespace prefix part of the qualified name
+   * @param localPart the local part of the qualified name
+   * @return the qualified name
+   */
+  private String getName( String prefix, String localPart ) {
+    return ( !Const.isEmpty( prefix ) ) ? prefix + ":" + localPart : localPart;
   }
 
   private void resetElementCounters() {
