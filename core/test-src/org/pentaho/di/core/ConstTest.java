@@ -400,4 +400,11 @@ public class ConstTest extends TestCase {
     assertEquals( "level2", a[1] );
     assertEquals( "lvl3", a[2] );
   }
+
+  @Test
+  public void testReverseString() {
+    assertEquals( null, Const.reverse( null ) );
+    assertEquals( "kraM", Const.reverse( "Mark" ) );
+    assertEquals( "eoD nhoJ", Const.reverse( "John Doe" ) );
+  }
 }

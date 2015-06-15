@@ -54,9 +54,29 @@ public class StringOperations extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
+  @SuppressWarnings( "unused" )
+  @Deprecated
   private String processString( String string, int trimType, int lowerUpper, int padType, String padChar, int padLen,
       int iniCap, int maskHTML, int digits, int removeSpecialCharacters ) {
+    return processString( string, trimType, lowerUpper, padType, padChar, padLen,
+        iniCap, maskHTML, digits, removeSpecialCharacters, StringOperationsMeta.REVERSE_NO );
+  }
+  private String processString( String string, int trimType, int lowerUpper, int padType, String padChar, int padLen,
+      int iniCap, int maskHTML, int digits, int removeSpecialCharacters, int reverseString ) {
     String rcode = string;
+
+    // reverse string ?
+    if ( !Const.isEmpty( rcode ) ) {
+      switch ( reverseString ) {
+        case StringOperationsMeta.REVERSE_NO:
+          break;
+        case StringOperationsMeta.REVERSE_YES:
+          rcode = Const.reverse( rcode );
+          break;
+        default:
+          break;
+      }
+    }
 
     // Trim ?
     if ( !Const.isEmpty( rcode ) ) {
@@ -197,7 +217,7 @@ public class StringOperations extends BaseStep implements StepInterface {
         // Apply String operations and return result value
         value =
             processString( value, data.trimOperators[i], data.lowerUpperOperators[i], data.padType[i], data.padChar[i],
-                data.padLen[i], data.initCap[i], data.maskHTML[i], data.digits[i], data.removeSpecialCharacters[i] );
+                data.padLen[i], data.initCap[i], data.maskHTML[i], data.digits[i], data.removeSpecialCharacters[i], data.reverseString[i] );
         if ( Const.isEmpty( data.outStreamNrs[i] ) ) {
           // Update field
           RowData[data.inStreamNrs[i]] = value;
@@ -300,6 +320,11 @@ public class StringOperations extends BaseStep implements StepInterface {
       data.removeSpecialCharacters = new int[data.nrFieldsInStream];
       for ( int i = 0; i < meta.getFieldInStream().length; i++ ) {
         data.removeSpecialCharacters[i] = meta.getRemoveSpecialCharacters()[i];
+      }
+      // reverse string?
+      data.reverseString = new int[data.nrFieldsInStream];
+      for ( int i = 0; i < meta.getFieldInStream().length; i++ ) {
+        data.reverseString[i] = meta.getReverseString()[i];
       }
 
     } // end if first

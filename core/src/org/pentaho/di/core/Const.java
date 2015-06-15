@@ -3115,4 +3115,11 @@ public class Const {
     }
     return classIsOrExtends( clazz.getSuperclass(), superClass );
   }
+
+  public static String reverse( String input ) {
+    if ( input == null ) {
+      return null;
+    }
+    return new StringBuilder( input ).reverse().toString();
+  }
 }

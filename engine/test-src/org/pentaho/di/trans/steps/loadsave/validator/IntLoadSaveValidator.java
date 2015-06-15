@@ -28,7 +28,15 @@ import java.util.Random;
  * @author Andrey Khayrutdinov
  */
 public class IntLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
-  private final Integer sample = new Random().nextInt();
+  private final Integer sample;
+
+  public IntLoadSaveValidator() {
+    sample = new Random().nextInt();
+  }
+
+  public IntLoadSaveValidator( Integer maxValue ) {
+    sample = new Random().nextInt( maxValue + 1 );
+  }
 
   @Override
   public Integer getTestObject() {
