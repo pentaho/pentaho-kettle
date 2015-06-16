@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,7 +28,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MenuAdapter;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.DBCache;
@@ -60,6 +64,7 @@ import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulPromptBox;
+import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtButton;
@@ -193,6 +198,18 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler imple
       this.databaseTree, "selectedItem", "buttonMenuPopUpImg", "disabled", isDisabledConvertor );
     this.bf.createBinding( this.databaseTree, "selectedItem", "action_popup", "disabled", isDisabledConvertor );
     fireBindings();
+
+    // hide context menu for notable items
+    XulMenupopup action_popup = (XulMenupopup) document.getElementById( "action_popup" );
+    final Menu menu = ( (MenuManager) action_popup.getManagedObject() ).getMenu();
+    menu.addMenuListener( new MenuAdapter() {
+      @Override public void menuShown( MenuEvent menuEvent ) {
+        DatabaseExplorerNode selectedNode = (DatabaseExplorerNode) databaseTree.getSelectedItem();
+        if ( !selectedNode.isTable() ) {
+          menu.setVisible( false );
+        }
+      }
+    } );
   }
 
   public void setSelectedSchemaAndTable( String aSchema, String aTable ) throws KettleDatabaseException {
