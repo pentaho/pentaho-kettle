@@ -76,15 +76,8 @@
     <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.3" />
     <dependency org="org.springframework.security" name="spring-security-core" rev="2.0.5.RELEASE" />
 
-    <!-- required for pentaho-metaverse -->
-    <dependency org="commons-configuration" name="commons-configuration" rev="1.9" changing="true" transitive="false"/>
-    <dependency org="com.tinkerpop.blueprints" name="blueprints-core" rev="2.6.0" changing="true" transitive="false"/>
-    <dependency org="net.sf.flexjson" name="flexjson" rev="2.1" changing="true" transitive="false"/>
-    <dependency org="com.fasterxml.jackson.core" name="jackson-annotations" rev="2.3.3" changing="true" transitive="false"/>
-    <dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.3.3" changing="true" transitive="false"/>
-    <dependency org="com.fasterxml.jackson.core" name="jackson-core" rev="2.3.3" changing="true" transitive="false"/>
-    <dependency org="pentaho" name="pentaho-metaverse-api" rev="${project.revision}" changing="true" transitive="false"/>
-    <!-- end: required for pentaho-metaverse -->
+    <!-- pentaho-metaverse -->
+    <dependency org="pentaho" name="pentaho-metaverse-api" rev="${project.revision}" changing="true" transitive="true"/>
 
     <!--  Pentaho reporting dependencies -->
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-classic-extensions" rev="${dependency.pentaho-reporting.revision}" changing="true">
