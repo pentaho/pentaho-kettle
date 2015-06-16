@@ -372,13 +372,13 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
     final Runnable runnable = new Runnable() {
       public void run() {
-        StepMeta stepMeta = transMeta.getStep( inputStreamIndex );
         try {
-
+          String[] prevSteps = transMeta.getPrevStepNames( stepname );
+          String stepName = prevSteps[inputStreamIndex];
+          StepMeta stepMeta = transMeta.findStep( stepName );
           if ( stepMeta != null ) {
             prev = transMeta.getStepFields( stepMeta );
             if ( prev != null ) {
-
               // Remember these fields...
               for ( int i = 0; i < prev.size(); i++ ) {
                 inputFields.put( prev.getValueMeta( i ).getName(), Integer.valueOf( i ) );
