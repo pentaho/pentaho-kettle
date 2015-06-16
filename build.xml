@@ -659,6 +659,7 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.ReleaseSavePointTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.TablespaceDDLFragmentTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.VerticaDatabaseMetaTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.database.util.DatabaseUtilTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.core.row.ValueDataUtilTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.DatabaseConfigurationImportRuleTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.imp.rule.JobHasANoteImportRuleTest" haltonerror="false"/>

@@ -72,8 +72,8 @@
     <dependency org="pentaho" name="pentaho-platform-api"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
     <dependency org="pentaho" name="pentaho-platform-core"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
     <dependency org="pentaho" name="pentaho-platform-extensions"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
-    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.3" />
-    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.3" />
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.5"/>
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.5"/>
     <dependency org="org.springframework.security" name="spring-security-core" rev="2.0.5.RELEASE" />
 
     <!-- required for pentaho-metaverse -->
@@ -190,8 +190,5 @@
     <!-- Other third-party dependencies -->
     <dependency org="asm"                  name="asm"                   rev="3.2"           transitive="false"/>
     <dependency org="net.sf.saxon"         name="saxon-dom"             rev="9.1.0.8"       transitive="false"/>
-    
-    <override org="pentaho" module="metastore" rev="${project.revision}" />
-
   </dependencies>
 </ivy-module>
