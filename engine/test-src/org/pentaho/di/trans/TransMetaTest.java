@@ -24,20 +24,43 @@ package org.pentaho.di.trans;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.metastore.api.IMetaStore;
 
 public class TransMetaTest {
 
-  private final Point minimalCanvasPoint = new Point( 0, 0 );
+  @BeforeClass
+  public static void initKettle() throws Exception {
+    KettleEnvironment.init();
+  }
 
-  //for test goal should content coordinate more than NotePadMetaPoint
-  private final Point stepPoint = new Point( 500, 500 );
+  private TransMeta transMeta;
+
+  @Before
+  public void setUp() throws Exception {
+    transMeta = new TransMeta();
+  }
 
   @Test
   public void testGetMinimum() {
-    TransMeta transMeta = new TransMeta();
+    final Point minimalCanvasPoint = new Point( 0, 0 );
+
+    //for test goal should content coordinate more than NotePadMetaPoint
+    final Point stepPoint = new Point( 500, 500 );
 
     //empty Trans return 0 coordinate point
     Point point = transMeta.getMinimum();
@@ -48,9 +71,47 @@ public class TransMetaTest {
     StepMeta stepMeta = mock( StepMeta.class );
     when( stepMeta.getLocation() ).thenReturn( stepPoint );
     transMeta.addStep( stepMeta );
-    Point  actualStepPoint = transMeta.getMinimum();
+    Point actualStepPoint = transMeta.getMinimum();
     assertEquals( stepPoint.x - TransMeta.BORDER_INDENT, actualStepPoint.x );
     assertEquals( stepPoint.y - TransMeta.BORDER_INDENT, actualStepPoint.y );
+  }
+
+  @Test
+  public void getThisStepFieldsPassesCloneRowMeta() throws Exception {
+    final String overriddenValue = "overridden";
+
+    StepMeta nextStep = mockStepMeta( "nextStep" );
+
+    StepMetaInterface smi = mock( StepMetaInterface.class );
+    StepIOMeta ioMeta = mock( StepIOMeta.class );
+    when( smi.getStepIOMeta() ).thenReturn( ioMeta );
+    doAnswer( new Answer() {
+      @Override public Object answer( InvocationOnMock invocation ) throws Throwable {
+        RowMetaInterface rmi = (RowMetaInterface) invocation.getArguments()[ 0 ];
+        rmi.clear();
+        rmi.addValueMeta( new ValueMetaString( overriddenValue ) );
+        return null;
+      }
+    } ).when( smi ).getFields( any( RowMetaInterface.class ), anyString(), any( RowMetaInterface[].class ),
+      eq( nextStep ), any(
+        VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
+
+    StepMeta thisStep = mockStepMeta( "thisStep" );
+    when( thisStep.getStepMetaInterface() ).thenReturn( smi );
+
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "value" ) );
+
+    RowMetaInterface thisStepsFields = transMeta.getThisStepFields( thisStep, nextStep, rowMeta );
+
+    assertEquals( 1, thisStepsFields.size() );
+    assertEquals( overriddenValue, thisStepsFields.getValueMeta( 0 ).getName() );
+  }
+
+  private static StepMeta mockStepMeta( String name ) {
+    StepMeta meta = mock( StepMeta.class );
+    when( meta.getName() ).thenReturn( name );
+    return meta;
   }
 
 }
