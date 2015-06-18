@@ -3032,33 +3032,17 @@ public class KettleDatabaseRepositoryCreationHelper {
     return statements;
   }
 
-  private void getAndCopyStepTypeIds( String[] chunk, int amount, ObjectId[] ids, int idsPos ) throws KettleException {
-    ObjectId[] chunkIds = repository.stepDelegate.getStepTypeIDs( chunk, amount );
-    System.arraycopy( chunkIds, 0, ids, idsPos, amount );
-  }
-
   private ObjectId[] loadPluginsIds( List<PluginInterface> plugins, boolean create ) throws KettleException {
     ObjectId[] ids = new ObjectId[ plugins.size() ];
     if ( create ) {
       return ids;
     }
 
-    final int CHUNK_SIZE = 10;
-    String[] tmp = new String[CHUNK_SIZE];
-
-    int internalInd = 0;
-    int externalInd = 0;
+    Map<String, LongObjectId> stepTypeCodeToIdMap = repository.stepDelegate.getStepTypeCodeToIdMap();
+    int index = 0;
     for ( PluginInterface sp : plugins ) {
-      if ( internalInd == CHUNK_SIZE ) {
-        getAndCopyStepTypeIds( tmp, CHUNK_SIZE, ids, externalInd );
-
-        internalInd = 0;
-        externalInd += CHUNK_SIZE;
-      }
-
-      tmp[ internalInd++ ] = sp.getIds()[ 0 ];
+      ids[index++] = stepTypeCodeToIdMap.get( sp.getIds()[0] );
     }
-    getAndCopyStepTypeIds( tmp, internalInd, ids, externalInd );
 
     return ids;
   }

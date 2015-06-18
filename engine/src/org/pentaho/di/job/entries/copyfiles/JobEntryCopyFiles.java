@@ -1098,4 +1098,36 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   public boolean evaluates() {
     return true;
   }
+<<<<<<< HEAD
+=======
+  
+  public String loadURL( String url, String ncName, IMetaStore metastore, Map mappings ) {
+    if ( !Const.isEmpty( ncName ) && !Const.isEmpty( url ) ) {
+      mappings.put( url, ncName );
+    }
+    return url;
+  }
+  
+  public void setConfigurationMappings( Map<String, String> mappings ) {
+    this.configurationMappings = mappings;
+  }
+  
+  public String getConfigurationBy( String url ) {
+    return this.configurationMappings.get( url );
+  }
+  
+  public String getUrlPath( String incomingURL ) {
+    String path = null;
+    try {
+      String noVariablesURL = incomingURL.replaceAll( "[${}]", "/" );
+      UrlFileNameParser parser = new UrlFileNameParser();
+      FileName fileName = parser.parseUri( null, null, noVariablesURL );
+      String root = fileName.getRootURI();
+      path = incomingURL.substring( root.length() - 1 );
+    } catch ( FileSystemException e ) {
+      path = null;
+    }
+    return path;
+  }
+>>>>>>> upstream/5.4.0.1
 }

@@ -902,14 +902,50 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
       for ( int i = 0; i < jobEntry.source_filefolder.length; i++ ) {
         TableItem ti = wFields.table.getItem( i );
         if ( jobEntry.source_filefolder[i] != null ) {
+<<<<<<< HEAD
           ti.setText( 1, jobEntry.source_filefolder[i] );
         }
         if ( jobEntry.destination_filefolder[i] != null ) {
           ti.setText( 2, jobEntry.destination_filefolder[i] );
+=======
+          String sourceUrl = jobEntry.source_filefolder[i];
+          String clusterName = jobEntry.getConfigurationBy( sourceUrl );
+          ti.setText( 1, STATIC_ENVIRONMENT );
+          if ( clusterName != null ) {
+            clusterName =
+                clusterName.startsWith( JobEntryCopyFiles.LOCAL_SOURCE_FILE ) ? LOCAL_ENVIRONMENT : clusterName;
+            clusterName =
+                clusterName.startsWith( JobEntryCopyFiles.STATIC_SOURCE_FILE ) ? STATIC_ENVIRONMENT : clusterName;
+
+            ti.setText( 1, clusterName );
+            sourceUrl =
+                clusterName.equals( LOCAL_ENVIRONMENT ) || clusterName.equals( STATIC_ENVIRONMENT ) ? sourceUrl
+                    : jobEntry.getUrlPath( sourceUrl );
+          }
+          ti.setText( 2, sourceUrl );
+>>>>>>> upstream/5.4.0.1
         }
         if ( jobEntry.wildcard[i] != null ) {
           ti.setText( 3, jobEntry.wildcard[i] );
         }
+<<<<<<< HEAD
+=======
+        if ( jobEntry.destination_filefolder[i] != null && !Const.isEmpty( jobEntry.destination_filefolder[i] ) ) {
+          String destinationURL = jobEntry.destination_filefolder[i];
+          String clusterName = jobEntry.getConfigurationBy( destinationURL );
+          ti.setText( 4, STATIC_ENVIRONMENT );
+          if ( clusterName != null ) {
+            clusterName = clusterName.startsWith( JobEntryCopyFiles.LOCAL_DEST_FILE ) ? LOCAL_ENVIRONMENT : clusterName;
+            clusterName =
+                clusterName.startsWith( JobEntryCopyFiles.STATIC_DEST_FILE ) ? STATIC_ENVIRONMENT : clusterName;
+            ti.setText( 4, clusterName );
+            destinationURL =
+                clusterName.equals( LOCAL_ENVIRONMENT ) || clusterName.equals( STATIC_ENVIRONMENT ) ? destinationURL
+                    : jobEntry.getUrlPath( destinationURL );
+          }
+          ti.setText( 5, destinationURL );
+        }
+>>>>>>> upstream/5.4.0.1
       }
       wFields.setRowNums();
       wFields.optWidth( true );
