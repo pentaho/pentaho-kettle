@@ -22,11 +22,19 @@
 
 package org.pentaho.di.core.plugins;
 
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIOption;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * Plugins of this type can extend to capabilities of the PluginRegiestry
@@ -54,9 +62,49 @@ public class PluginRegistryPluginType extends BasePluginType implements PluginTy
     // To change body of implemented methods use File | Settings | File Templates.
   }
 
+  private static class NativePlugin {
+    Class<?> clazz;
+    String id, name, desc;
+
+    public NativePlugin( Class<?> clazz, String id, String name, String desc ) {
+      this.clazz = clazz;
+      this.id = id;
+      this.desc = desc;
+    }
+  }
+
+  private static List<NativePlugin> natives = new ArrayList<NativePlugin>();
+
+  public static void registerNative( Class<?> clazz, String id, String name, String desc ) {
+    natives.add( new NativePlugin( clazz, id, name, desc ) );
+  }
+
   @Override
   protected void registerNatives() throws KettlePluginException {
-    // To change body of implemented methods use File | Settings | File Templates.
+    // Scan the native database types...
+    //
+    String xmlFile = Const.XML_FILE_KETTLE_REGISTRY_EXTENSIONS;
+
+    // Load the plugins for this file...
+    //
+    try {
+      InputStream inputStream = getClass().getResourceAsStream( xmlFile );
+      if ( inputStream == null ) {
+        inputStream = getClass().getResourceAsStream( "/" + xmlFile );
+      }
+      if ( inputStream == null ) {
+        return;
+      }
+      Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
+
+      Node repsNode = XMLHandler.getSubNode( document, "registry-extensions" );
+      List<Node> repsNodes = XMLHandler.getNodes( repsNode, "registry-extension" );
+      for ( Node repNode : repsNodes ) {
+        registerPluginFromXmlResource( repNode, "./", this.getClass(), true, null );
+      }
+    } catch ( KettleXMLException e ) {
+      throw new KettlePluginException( "Unable to read the kettle extension points XML config file: " + xmlFile, e );
+    }
   }
 
   @Override

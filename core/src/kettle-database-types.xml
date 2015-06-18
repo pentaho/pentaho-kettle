@@ -1,10 +1,5 @@
 <database-types>
 
-   <database-type id="KettleThin">                                                        
-    <description>Kettle thin JDBC driver</description>                                                
-    <classname>org.pentaho.di.core.database.KettleDatabaseMeta</classname>            
-  </database-type>                                                                   
- 
    <database-type id="AS/400">                                                        
     <description>AS/400</description>                                                
     <classname>org.pentaho.di.core.database.AS400DatabaseMeta</classname>            

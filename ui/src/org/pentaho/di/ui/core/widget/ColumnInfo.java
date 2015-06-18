@@ -41,6 +41,7 @@ public class ColumnInfo {
   public static final int COLUMN_TYPE_BUTTON = 3;
   public static final int COLUMN_TYPE_ICON = 4;
   public static final int COLUMN_TYPE_FORMAT = 5;
+  public static final int COLUMN_TYPE_TEXT_BUTTON = 6;
 
   private int type;
   private String name;
@@ -56,7 +57,10 @@ public class ColumnInfo {
   private ValueMetaInterface valueMeta;
 
   private SelectionListener selButton;
+  private SelectionListener textVarButtonSelectionListener;
 
+  private TextVarButtonRenderCallback renderTextVarButtonCallback;
+  
   private FieldDisabledListener disabledListener;
 
   private boolean usingVariables;
@@ -355,4 +359,21 @@ public class ColumnInfo {
   public void setDisabledListener( FieldDisabledListener disabledListener ) {
     this.disabledListener = disabledListener;
   }
+
+  public SelectionListener getTextVarButtonSelectionListener() {
+    return textVarButtonSelectionListener;
+  }
+
+  public void setTextVarButtonSelectionListener( SelectionListener textVarButtonSelectionListener ) {
+    this.textVarButtonSelectionListener = textVarButtonSelectionListener;
+  }
+  
+  public void setRenderTextVarButtonCallback( TextVarButtonRenderCallback callback ) {
+    this.renderTextVarButtonCallback = callback;
+  }
+  
+  public boolean shouldRenderTextVarButton() {
+    return this.renderTextVarButtonCallback == null || this.renderTextVarButtonCallback.shouldRenderButton();
+  }
+  
 }

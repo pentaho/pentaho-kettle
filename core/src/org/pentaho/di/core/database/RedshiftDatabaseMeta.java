@@ -38,7 +38,7 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
     }
     return -1;
   }
-  
+
   @Override
   public String getDriverClass() {
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
@@ -56,7 +56,7 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
       return "jdbc:redshift://" + hostname + ":" + port + "/" + databaseName;
     }
   }
-  
+
   @Override
   public String getExtraOptionsHelpText() {
     return "http://docs.aws.amazon.com/redshift/latest/mgmt/configure-jdbc-connection.html";
@@ -66,5 +66,4 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
   public String[] getUsedLibraries() {
     return new String[] { "RedshiftJDBC4_1.0.10.1010.jar" };
   }
-  
 }

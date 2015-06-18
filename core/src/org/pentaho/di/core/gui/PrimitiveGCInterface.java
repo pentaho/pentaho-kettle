@@ -27,7 +27,7 @@ import java.awt.image.BufferedImage;
 public interface PrimitiveGCInterface {
 
   public enum EColor {
-    BACKGROUND, BLACK, RED, YELLOW, ORANGE, GREEN, BLUE, MAGENTA, GRAY, LIGHTGRAY, DARKGRAY, LIGHTBLUE,
+    BACKGROUND, BLACK, WHITE, RED, YELLOW, ORANGE, GREEN, BLUE, MAGENTA, GRAY, LIGHTGRAY, DARKGRAY, LIGHTBLUE, CRYSTAL, HOP_DEFAULT, HOP_OK
   }
 
   public enum EFont {
@@ -35,12 +35,13 @@ public interface PrimitiveGCInterface {
   }
 
   public enum ELineStyle {
-    SOLID, DASHDOT, DOT, PARALLEL,
+    SOLID, DASHDOT, DOT, PARALLEL, DASH
   }
 
   public enum EImage {
     LOCK, STEP_ERROR, EDIT, CONTEXT_MENU, TRUE, FALSE, ERROR, INFO, TARGET, INPUT, OUTPUT, ARROW, COPY_ROWS,
       UNCONDITIONAL, PARALLEL, BUSY, INJECT, LOAD_BALANCE, CHECKPOINT, DB,
+    ARROW_DEFAULT, ARROW_OK, ARROW_ERROR, ARROW_DISABLED, ARROW_CANDIDATE
   }
 
   public void setLineWidth( int width );
@@ -66,7 +67,13 @@ public interface PrimitiveGCInterface {
 
   public void fillGradientRectangle( int x, int y, int width, int height, boolean vertical );
 
+  public void drawImage( String location, ClassLoader classLoader, int x, int y );
+
   public void drawImage( EImage image, int x, int y );
+
+  public void drawImage( EImage image, int x, int y, float magnification );
+
+  public void drawImage( EImage image, int x, int y, float magnification, double angle );
 
   public void drawImage( BufferedImage image, int x, int y );
 

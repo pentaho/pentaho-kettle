@@ -22,14 +22,14 @@
 
 package org.pentaho.di.trans.steps.combinationlookup;
 
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ProvidesModelerMeta;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -54,13 +54,17 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.util.Arrays;
+import java.util.List;
+
 /*
  * Created on 14-may-2003
  *
  * TODO: In the distant future the use_autoinc flag should be removed since its
  *       functionality is now taken over by techKeyCreation (which is cleaner).
  */
-public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInterface {
+public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInterface,
+    ProvidesModelerMeta {
   private static Class<?> PKG = CombinationLookupMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** Default cache size: 0 will cache everything */
@@ -279,7 +283,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   /**
    * @return Returns the tablename.
    */
-  public String getTablename() {
+  public String getTableName() {
     return tablename;
   }
 
@@ -433,7 +437,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     ValueMetaInterface v = new ValueMeta( technicalKeyField, ValueMetaInterface.TYPE_INTEGER );
     v.setLength( 10 );
     v.setPrecision( 0 );
@@ -456,7 +460,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     retval.append( "      " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "table", tablename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "connection",
-      databaseMeta == null ? "" : databaseMeta.getName() ) );
+        databaseMeta == null ? "" : databaseMeta.getName() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "commit", commitSize ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "cache_size", cacheSize ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "replace", replaceFields ) );
@@ -559,8 +563,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+      Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -686,7 +690,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
         if ( techKeyCreation != null ) {
           // post 2.2 version
           if ( !( CREATION_METHOD_AUTOINC.equals( techKeyCreation )
-            || CREATION_METHOD_SEQUENCE.equals( techKeyCreation ) || CREATION_METHOD_TABLEMAX
+              || CREATION_METHOD_SEQUENCE.equals( techKeyCreation ) || CREATION_METHOD_TABLEMAX
               .equals( techKeyCreation ) ) ) {
             error_message +=
               BaseMessages.getString( PKG, "CombinationLookupMeta.CheckResult.ErrorTechKeyCreation" )
@@ -725,7 +729,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public SQLStatement getSQLStatements( TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-    Repository repository, IMetaStore metaStore ) {
+      Repository repository, IMetaStore metaStore ) {
     SQLStatement retval = new SQLStatement( stepMeta.getName(), databaseMeta, null ); // default: nothing to do!
 
     int i;
@@ -782,12 +786,12 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
                     newValue.setName( name );
 
                     if ( name.equals( vkeyfield.getName() )
-                      || ( doHash == true && name.equals( vhashfield.getName() ) ) ) {
+                        || ( doHash == true && name.equals( vhashfield.getName() ) ) ) {
                       error_field += name;
                     }
                     if ( error_field.length() > 0 ) {
                       retval.setError( BaseMessages.getString(
-                        PKG, "CombinationLookupMeta.ReturnValue.NameCollision", error_field ) );
+                          PKG, "CombinationLookupMeta.ReturnValue.NameCollision", error_field ) );
                     } else {
                       fields.addValueMeta( newValue );
                     }
@@ -874,7 +878,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
                 idx_fields = new String[] { hashField };
               } else {
                 retval.setError( BaseMessages.getString(
-                  PKG, "CombinationLookupMeta.ReturnValue.NotHashFieldSpecified" ) );
+                    PKG, "CombinationLookupMeta.ReturnValue.NotHashFieldSpecified" ) );
               }
             } else {
               // index on all key fields...
@@ -890,7 +894,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
                 }
               } else {
                 retval.setError( BaseMessages.getString(
-                  PKG, "CombinationLookupMeta.ReturnValue.NotFieldsSpecified" ) );
+                    PKG, "CombinationLookupMeta.ReturnValue.NotFieldsSpecified" ) );
               }
             }
 
@@ -898,21 +902,21 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
             if ( !Const.isEmpty( technicalKeyField ) ) {
               String[] techKeyArr = new String[] { technicalKeyField };
-              if ( !db.checkIndexExists( schemaName, tablename, techKeyArr ) ) {
+              if ( !db.checkIndexExists( schemaTable, techKeyArr ) ) {
                 String indexname = "idx_" + tablename + "_pk";
                 cr_uniq_index =
-                  db.getCreateIndexStatement(
-                    schemaName, tablename, indexname, techKeyArr, true, true, false, true );
+                    db.getCreateIndexStatement(
+                        schemaTable, indexname, techKeyArr, true, true, false, true );
                 cr_uniq_index += Const.CR;
               }
             }
 
             // OK, now get the create lookup index statement...
-            if ( !Const.isEmpty( idx_fields ) && !db.checkIndexExists( schemaName, tablename, idx_fields ) ) {
+            if ( !Const.isEmpty( idx_fields ) && !db.checkIndexExists( schemaTable, idx_fields ) ) {
               String indexname = "idx_" + tablename + "_lookup";
               cr_index =
-                db.getCreateIndexStatement(
-                  schemaName, tablename, indexname, idx_fields, false, false, false, true );
+                  db.getCreateIndexStatement(
+                    schemaTable, indexname, idx_fields, false, false, false, true );
               cr_index += Const.CR;
             }
 
@@ -929,7 +933,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
             retval.setSQL( transMeta.environmentSubstitute( cr_table + cr_uniq_index + cr_index + cr_seq ) );
           } catch ( KettleException e ) {
             retval.setError( BaseMessages.getString( PKG, "CombinationLookupMeta.ReturnValue.ErrorOccurred" )
-              + Const.CR + e.getMessage() );
+                + Const.CR + e.getMessage() );
           }
         } else {
           retval.setError( BaseMessages.getString( PKG, "CombinationLookupMeta.ReturnValue.NotTableDefined" ) );
@@ -945,7 +949,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
-    TransMeta transMeta, Trans trans ) {
+      TransMeta transMeta, Trans trans ) {
     return new CombinationLookup( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -954,13 +958,13 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   }
 
   public void analyseImpact( List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
-    IMetaStore metaStore ) {
+      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
+      IMetaStore metaStore ) {
     // The keys are read-only...
     for ( int i = 0; i < keyField.length; i++ ) {
       ValueMetaInterface v = prev.searchValueMeta( keyField[i] );
       DatabaseImpact ii =
-        new DatabaseImpact(
+          new DatabaseImpact(
           DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), databaseMeta
             .getDatabaseName(), tablename, keyLookup[i], keyField[i], v != null ? v.getOrigin() : "?", "",
           useHash ? BaseMessages.getString( PKG, "CombinationLookupMeta.ReadAndInsert.Label" ) : BaseMessages
@@ -971,7 +975,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     // Do we lookup-on the hash-field?
     if ( useHash ) {
       DatabaseImpact ii =
-        new DatabaseImpact(
+          new DatabaseImpact(
           DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(),
           databaseMeta.getDatabaseName(), tablename, hashField, "", "", "",
           BaseMessages.getString( PKG, "CombinationLookupMeta.KeyLookup.Label" ) );
@@ -1018,33 +1022,33 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
       return false;
     }
     if ( ( getSequenceFrom() == null && o.getSequenceFrom() != null )
-      || ( getSequenceFrom() != null && o.getSequenceFrom() == null )
-      || ( getSequenceFrom() != null && o.getSequenceFrom() != null && !getSequenceFrom().equals(
+        || ( getSequenceFrom() != null && o.getSequenceFrom() == null )
+        || ( getSequenceFrom() != null && o.getSequenceFrom() != null && !getSequenceFrom().equals(
         o.getSequenceFrom() ) ) ) {
       return false;
     }
 
     if ( ( getSchemaName() == null && o.getSchemaName() != null )
-      || ( getSchemaName() != null && o.getSchemaName() == null )
-      || ( getSchemaName() != null && o.getSchemaName() != null && !getSchemaName().equals( o.getSchemaName() ) ) ) {
+        || ( getSchemaName() != null && o.getSchemaName() == null )
+        || ( getSchemaName() != null && o.getSchemaName() != null && !getSchemaName().equals( o.getSchemaName() ) ) ) {
       return false;
     }
 
-    if ( ( getTablename() == null && o.getTablename() != null )
-      || ( getTablename() != null && o.getTablename() == null )
-      || ( getTablename() != null && o.getTablename() != null && !getTablename().equals( o.getTablename() ) ) ) {
+    if ( ( getTableName() == null && o.getTableName() != null )
+        || ( getTableName() != null && o.getTableName() == null )
+        || ( getTableName() != null && o.getTableName() != null && !getTableName().equals( o.getTableName() ) ) ) {
       return false;
     }
 
     if ( ( getHashField() == null && o.getHashField() != null )
-      || ( getHashField() != null && o.getHashField() == null )
-      || ( getHashField() != null && o.getHashField() != null && !getHashField().equals( o.getHashField() ) ) ) {
+        || ( getHashField() != null && o.getHashField() == null )
+        || ( getHashField() != null && o.getHashField() != null && !getHashField().equals( o.getHashField() ) ) ) {
       return false;
     }
 
     if ( ( getTechnicalKeyField() == null && o.getTechnicalKeyField() != null )
-      || ( getTechnicalKeyField() != null && o.getTechnicalKeyField() == null )
-      || ( getTechnicalKeyField() != null && o.getTechnicalKeyField() != null && !getTechnicalKeyField().equals(
+        || ( getTechnicalKeyField() != null && o.getTechnicalKeyField() == null )
+        || ( getTechnicalKeyField() != null && o.getTechnicalKeyField() != null && !getTechnicalKeyField().equals(
         o.getTechnicalKeyField() ) ) ) {
       return false;
     }
@@ -1062,6 +1066,10 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
    */
   public String getSchemaName() {
     return schemaName;
+  }
+
+  @Override public String getMissingDatabaseConnectionInformationMessage() {
+    return null;
   }
 
   /**
@@ -1090,5 +1098,37 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
   @Override
   public boolean supportsErrorHandling() {
     return true;
+  }
+
+  protected RowMetaInterface getDatabaseTableFields( Database db, String schemaName, String tableName ) throws KettleDatabaseException {
+    // First try without connecting to the database... (can be S L O W)
+    String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
+    RowMetaInterface extraFields = db.getTableFields( schemaTable );
+    if ( extraFields == null ) { // now we need to connect
+      db.connect();
+      extraFields = db.getTableFields( schemaTable );
+    }
+    return extraFields;
+  }
+
+  Database createDatabaseObject() {
+    return new Database( loggingObject, databaseMeta );
+  }
+
+  @Override public RowMeta getRowMeta( StepDataInterface stepData ) {
+    try {
+      return (RowMeta) getDatabaseTableFields( createDatabaseObject(), schemaName, getTableName() );
+    } catch ( KettleDatabaseException e ) {
+      log.logError( "", e );
+      return new RowMeta();
+    }
+  }
+
+  @Override public List<String> getDatabaseFields() {
+    return Arrays.asList( keyLookup );
+  }
+
+  @Override public List<String> getStreamFields() {
+    return Arrays.asList( keyField );
   }
 }

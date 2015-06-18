@@ -68,9 +68,9 @@ import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
@@ -570,21 +570,14 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
     fdlPassword.top = new FormAttachment( wUserName, margin );
     fdlPassword.right = new FormAttachment( middle, -margin );
     wlPassword.setLayoutData( fdlPassword );
-    wPassword = new TextVar( jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wPassword = new PasswordTextVar( jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wPassword );
-    wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
     fdPassword.left = new FormAttachment( middle, 0 );
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
-
-    wPassword.getTextWidget().addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
-      }
-    } );
 
     // USE proxy
     wlUseProxy = new Label( wServerSettings, SWT.RIGHT );

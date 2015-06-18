@@ -49,7 +49,7 @@ import org.w3c.dom.Node;
  */
 
 @org.pentaho.di.core.annotations.JobEntry( id = "PALO_CUBE_CREATE",
-    i18nPackageName = "org.pentaho.di.job.entries.palo.JobEntryCubeCreate", image = "PaloCubeCreate.png",
+    i18nPackageName = "org.pentaho.di.job.entries.palo.JobEntryCubeCreate", image = "PaloCubeCreate.svg",
     name = "PaloCubeCreate.JobName", description = "PaloCubeCreate.JobDescription",
     categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Palo" )
 public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryInterface {

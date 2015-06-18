@@ -33,6 +33,7 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
@@ -40,6 +41,10 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -53,7 +58,7 @@ public class CalculatorUnitTest {
 
   @BeforeClass
   public static void init() throws KettleException {
-    KettleEnvironment.init();
+    KettleEnvironment.init( false );
   }
 
   @Before
@@ -99,5 +104,34 @@ public class CalculatorUnitTest {
       ke.printStackTrace();
       fail();
     }
+  }
+
+  @Test
+  public void calculatorShouldClearDataInstance() throws Exception {
+    RowMeta inputRowMeta = new RowMeta();
+    ValueMetaInteger valueMeta = new ValueMetaInteger( "Value" );
+    inputRowMeta.addValueMeta( valueMeta );
+
+    RowSet inputRowSet = smh.getMockInputRowSet( new Object[] { -1L } );
+    inputRowSet.setRowMeta( inputRowMeta );
+
+    Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    calculator.getInputRowSets().add( inputRowSet );
+    calculator.setInputRowMeta( inputRowMeta );
+    calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
+
+    CalculatorMeta meta = new CalculatorMeta();
+    meta.setCalculation( new CalculatorMetaFunction[] {
+      new CalculatorMetaFunction( "test", CalculatorMetaFunction.CALC_ABS, "Value", null, null,
+        ValueMetaInterface.TYPE_STRING, 0, 0, false, "", "", "", "" ) } );
+
+    CalculatorData data = new CalculatorData();
+    data = spy( data );
+
+    calculator.processRow( meta, data );
+    verify( data ).getValueMetaFor( eq( valueMeta.getType() ), anyString() );
+
+    calculator.processRow( meta, data );
+    verify( data ).clearValuesMetaMapping();
   }
 }

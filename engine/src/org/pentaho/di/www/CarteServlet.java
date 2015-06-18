@@ -23,12 +23,13 @@
 package org.pentaho.di.www;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -42,6 +43,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.CartePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.PluginTypeListener;
 
 public class CarteServlet extends HttpServlet {
 
@@ -52,6 +54,7 @@ public class CarteServlet extends HttpServlet {
   private Map<String, CartePluginInterface> cartePluginRegistry;
 
   private final LogChannelInterface log;
+  private List<SlaveServerDetection> detections;
 
   public CarteServlet() {
     this.log = new LogChannel( STRING_CARTE_SERVLET );
@@ -93,21 +96,16 @@ public class CarteServlet extends HttpServlet {
 
   @Override
   public void init( ServletConfig config ) throws ServletException {
-    final TransformationMap transformationMap = CarteSingleton.getInstance().getTransformationMap();
-    final JobMap jobMap = CarteSingleton.getInstance().getJobMap();
-
-    List<SlaveServerDetection> detections = Collections.synchronizedList( new ArrayList<SlaveServerDetection>() );
-    SocketRepository socketRepository = CarteSingleton.getInstance().getSocketRepository();
+    cartePluginRegistry = new ConcurrentHashMap<String, CartePluginInterface>();
+    detections = Collections.synchronizedList( new ArrayList<SlaveServerDetection>() );
 
     PluginRegistry pluginRegistry = PluginRegistry.getInstance();
     List<PluginInterface> plugins = pluginRegistry.getPlugins( CartePluginType.class );
-    Map<String, CartePluginInterface> pluginMap = new HashMap<String, CartePluginInterface>();
 
+    // Initial Registry scan
     for ( PluginInterface plugin : plugins ) {
-      CartePluginInterface servlet;
       try {
-        servlet = (CartePluginInterface) pluginRegistry.loadClass( plugin );
-        pluginMap.put( getServletKey( servlet ), servlet );
+        registerServlet( loadServlet( plugin ) );
       } catch ( KettlePluginException e ) {
         log.logError( "Unable to instantiate plugin for use with CarteServlet " + plugin.getName() );
       }
@@ -122,8 +120,7 @@ public class CarteServlet extends HttpServlet {
       final Class<?> clazz;
       try {
         clazz = Class.forName( className );
-        final CartePluginInterface servlet = (CartePluginInterface) clazz.newInstance();
-        pluginMap.put( getServletKey( servlet ), servlet );
+        registerServlet( (CartePluginInterface) clazz.newInstance() );
       } catch ( ClassNotFoundException e ) {
         log.logError( "Unable to find configured " + paramName + " of " + className, e );
       } catch ( InstantiationException e ) {
@@ -136,11 +133,42 @@ public class CarteServlet extends HttpServlet {
       }
     }
 
-    for ( CartePluginInterface servlet : pluginMap.values() ) {
-      servlet.setup( transformationMap, jobMap, socketRepository, detections );
-      servlet.setJettyMode( false );
-    }
+    // Catch servlets as they become available
+    pluginRegistry.addPluginListener( CartePluginType.class, new PluginTypeListener() {
+      @Override public void pluginAdded( Object serviceObject ) {
+        try {
+          registerServlet( loadServlet( (PluginInterface) serviceObject ) );
+        } catch ( KettlePluginException e ) {
+          log.logError( MessageFormat.format( "Unable to load plugin: {0}", serviceObject ), e );
+        }
+      }
 
-    cartePluginRegistry = Collections.unmodifiableMap( pluginMap );
+      @Override public void pluginRemoved( Object serviceObject ) {
+        try {
+          String key = getServletKey( loadServlet( (PluginInterface) serviceObject ) );
+          cartePluginRegistry.remove( key );
+        } catch ( KettlePluginException e ) {
+          log.logError( MessageFormat.format( "Unable to load plugin: {0}", serviceObject ), e );
+        }
+      }
+
+      @Override public void pluginChanged( Object serviceObject ) {
+        pluginAdded( serviceObject );
+      }
+    } );
+  }
+
+  private CartePluginInterface loadServlet( PluginInterface plugin ) throws KettlePluginException {
+    return PluginRegistry.getInstance().loadClass( plugin, CartePluginInterface.class );
+  }
+
+  private void registerServlet( CartePluginInterface servlet ) {
+    TransformationMap transformationMap = CarteSingleton.getInstance().getTransformationMap();
+    JobMap jobMap = CarteSingleton.getInstance().getJobMap();
+    SocketRepository socketRepository = CarteSingleton.getInstance().getSocketRepository();
+
+    cartePluginRegistry.put( getServletKey( servlet ), servlet );
+    servlet.setup( transformationMap, jobMap, socketRepository, detections );
+    servlet.setJettyMode( false );
   }
 }

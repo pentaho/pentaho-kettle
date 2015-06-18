@@ -26,6 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -33,6 +34,7 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.dom.Element;
 import org.pentaho.ui.xul.impl.AbstractXulComponent;
 import org.pentaho.ui.xul.swt.tags.SwtTextbox;
+import org.pentaho.ui.xul.util.TextType;
 
 public class ExtTextbox extends SwtTextbox {
 
@@ -44,6 +46,10 @@ public class ExtTextbox extends SwtTextbox {
 
   public ExtTextbox( Element self, XulComponent parent, XulDomContainer container, String tagName ) {
     super( self, parent, container, tagName );
+    String typeAttribute = self.getAttributeValue( "type" );
+    if ( typeAttribute != null ) {
+      this.type = TextType.valueOf( typeAttribute.toUpperCase() );
+    }
     createNewExtText( parent );
   }
 
@@ -58,7 +64,11 @@ public class ExtTextbox extends SwtTextbox {
       style = SWT.BORDER;
     }
 
-    extText = new TextVar( variableSpace, parentComposite, style );
+    if ( type == TextType.PASSWORD ) {
+      extText = new PasswordTextVar( variableSpace, parentComposite, style );
+    } else {
+      extText = new TextVar( variableSpace, parentComposite, style );
+    }
     textBox = extText.getTextWidget();
     addKeyListener( textBox );
     setManagedObject( extText );
@@ -102,4 +112,8 @@ public class ExtTextbox extends SwtTextbox {
     extText.setVariables( variableSpace );
   }
 
+  @Override
+  public void setType( TextType type ) {
+    return;
+  }
 }

@@ -1,12 +1,12 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="stretch">
 
   <toolbar id="nav-toolbar" mode="icons">
-    <toolbarbutton id="show-error-lines" label="${JobLog.Button.ShowErrorLines}" image="images/show-error-lines.png"
+    <toolbarbutton id="show-error-lines" label="${JobLog.Button.ShowErrorLines}" image="images/show-error-lines.svg"
       tooltiptext="${JobLog.Button.ShowErrorLines}" onclick="joblog.showErrors()" />
-    <toolbarbutton id="clear-log" label="${JobLog.Button.ClearLog}" image="images/clear-log.png"
+    <toolbarbutton id="clear-log" label="${JobLog.Button.ClearLog}" image="images/trash.svg"
       tooltiptext="${JobLog.Button.ClearLog}" onclick="joblog.clearLog()" />
     <toolbarseparator />
-    <toolbarbutton id="log-settings" label="${JobLog.Button.LogSettings}" image="images/log-settings.png"
+    <toolbarbutton id="log-settings" label="${JobLog.Button.LogSettings}" image="images/log-settings.svg"
       tooltiptext="${JobLog.Button.LogSettings}" onclick="joblog.showLogSettings()" />
   </toolbar>
 

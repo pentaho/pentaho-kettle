@@ -49,6 +49,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
@@ -253,7 +254,9 @@ public class TransDebugDialog extends Dialog {
     for ( int i = 0; i < transDebugMeta.getTransMeta().getSteps().size(); i++ ) {
       StepMeta stepMeta = transDebugMeta.getTransMeta().getStep( i );
       TableItem item = new TableItem( wSteps.table, SWT.NONE );
-      Image image = resource.getImagesSteps().get( stepMeta.getStepID() );
+      Image image =
+          resource.getImagesSteps().get( stepMeta.getStepID() ).getAsBitmapForSize( display, ConstUI.ICON_SIZE,
+              ConstUI.ICON_SIZE );
       item.setImage( 0, image );
       item.setText( 0, "" );
       item.setText( 1, stepMeta.getName() );

@@ -76,7 +76,6 @@ import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnectionUtils;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputField;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta;
-import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -301,21 +300,14 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     // Password line
     wPassword = new LabelTextVar( transMeta, wConnectionGroup,
       BaseMessages.getString( PKG, "SalesforceInputDialog.Password.Label" ),
-      BaseMessages.getString( PKG, "SalesforceInputDialog.Password.Tooltip" ) );
+      BaseMessages.getString( PKG, "SalesforceInputDialog.Password.Tooltip" ), true );
     props.setLook( wPassword );
-    wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
     fdPassword.left = new FormAttachment( 0, 0 );
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
-
-    wPassword.getTextWidget().addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
-      }
-    } );
 
     // Test Salesforce connection button
     wTest = new Button( wConnectionGroup, SWT.PUSH );

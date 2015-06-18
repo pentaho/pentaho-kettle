@@ -50,7 +50,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step( id = "PaloCellOutput", image = "PaloCellOutput.png",
+@Step( id = "PaloCellOutput", image = "PaloCellOutput.svg",
   i18nPackageName = "org.pentaho.di.trans.steps.palo.celloutput", name = "PaloCellOutput.TransName",
   description = "PaloCellOutput.TransDescription",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo" )

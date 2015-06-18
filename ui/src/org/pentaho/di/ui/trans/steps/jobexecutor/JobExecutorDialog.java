@@ -607,7 +607,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
       VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
       FileObject file =
         vfsFileChooser.open(
-          shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getJobFilterNames(),
+          shell, null, Const.STRING_JOB_FILTER_EXT, Const.getJobFilterNames(),
           VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
       if ( file == null ) {
         return;

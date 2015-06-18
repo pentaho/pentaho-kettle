@@ -29,6 +29,13 @@ import java.sql.SQLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
+/**
+ * This class is no longer used
+ *
+ * Data Service client code is now available in the pdi-dataservice-plugin project
+ *
+ */
+@Deprecated
 public class ThinResultSetMetaData implements ResultSetMetaData {
 
   private String serviceName;
@@ -103,6 +110,8 @@ public class ThinResultSetMetaData implements ResultSetMetaData {
         return java.sql.Types.VARCHAR;
       case ValueMetaInterface.TYPE_NUMBER:
         return java.sql.Types.DOUBLE;
+      case ValueMetaInterface.TYPE_TIMESTAMP:
+        return java.sql.Types.TIMESTAMP;
       case ValueMetaInterface.TYPE_DATE:
         return java.sql.Types.TIMESTAMP;
       case ValueMetaInterface.TYPE_BIGNUMBER:

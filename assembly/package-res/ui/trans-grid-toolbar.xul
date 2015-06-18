@@ -1,7 +1,7 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="stretch">
 
   <toolbar id="nav-toolbar" mode="icons">
-    <toolbarbutton id="show-inactive" label="${TransLog.Button.ShowOnlyActiveSteps}" image="images/show-inactive.png"
+    <toolbarbutton id="show-inactive" label="${TransLog.Button.ShowOnlyActiveSteps}" image="images/show-inactive.svg"
       tooltiptext="${TransLog.Button.ShowOnlyActiveSteps}" onclick="transgrid.showHideInactive()" />
       
     <!---

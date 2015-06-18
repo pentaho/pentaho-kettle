@@ -56,7 +56,6 @@ import org.pentaho.di.job.entries.ftp.JobEntryFTP;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
@@ -411,21 +410,14 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     wPassword =
       new LabelTextVar(
         jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTP.Password.Label" ), BaseMessages
-          .getString( PKG, "JobFTP.Password.Tooltip" ) );
+          .getString( PKG, "JobFTP.Password.Tooltip" ), true );
     props.setLook( wPassword );
-    wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
     fdPassword.left = new FormAttachment( 0, 0 );
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
-
-    wPassword.getTextWidget().addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
-      }
-    } );
 
     // Proxy host line
     wProxyHost =
@@ -470,21 +462,14 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     wProxyPassword =
       new LabelTextVar(
         jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTP.ProxyPassword.Label" ), BaseMessages
-          .getString( PKG, "JobFTP.ProxyPassword.Tooltip" ) );
+          .getString( PKG, "JobFTP.ProxyPassword.Tooltip" ), true );
     props.setLook( wProxyPassword );
-    wProxyPassword.setEchoChar( '*' );
     wProxyPassword.addModifyListener( lsMod );
     fdProxyPasswd = new FormData();
     fdProxyPasswd.left = new FormAttachment( 0, 0 );
     fdProxyPasswd.top = new FormAttachment( wProxyUsername, margin );
     fdProxyPasswd.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPasswd );
-
-    wProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wProxyPassword.getTextWidget() );
-      }
-    } );
 
     // Test connection button
     wTest = new Button( wServerSettings, SWT.PUSH );
@@ -1243,21 +1228,14 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
     wSocksProxyPassword =
       new LabelTextVar(
         jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTP.SocksProxyPassword.Label" ), BaseMessages
-          .getString( PKG, "JobFTP.SocksProxyPassword.Tooltip" ) );
+          .getString( PKG, "JobFTP.SocksProxyPassword.Tooltip" ), true );
     props.setLook( wSocksProxyPort );
-    wSocksProxyPassword.setEchoChar( '*' );
     wSocksProxyPassword.addModifyListener( lsMod );
     fdSocksProxyPassword = new FormData();
     fdSocksProxyPassword.left = new FormAttachment( 0, 0 );
     fdSocksProxyPassword.top = new FormAttachment( wSocksProxyUsername, margin );
     fdSocksProxyPassword.right = new FormAttachment( 100, margin );
     wSocksProxyPassword.setLayoutData( fdSocksProxyPassword );
-
-    wSocksProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wSocksProxyPassword.getTextWidget() );
-      }
-    } );
 
     // ///////////////////////////////////////////////////////////////
     // End of socks proxy group
@@ -1378,14 +1356,7 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
       mb.setMessage( BaseMessages.getString( PKG, "JobFTP.Connected.OK", wServerName.getText() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTP.Connected.Title.Ok" ) );
       mb.open();
-    } else {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTP.Connected.NOK.ConnectionBad", wServerName.getText() )
-        + Const.CR );
-      mb.setText( BaseMessages.getString( PKG, "JobFTP.Connected.Title.Bad" ) );
-      mb.open();
     }
-
   }
 
   private void checkRemoteFolder( boolean FTPFolfer, boolean checkMoveFolder, String foldername ) {
@@ -1395,22 +1366,18 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
         mb.setMessage( BaseMessages.getString( PKG, "JobFTP.FolderExists.OK", foldername ) + Const.CR );
         mb.setText( BaseMessages.getString( PKG, "JobFTP.FolderExists.Title.Ok" ) );
         mb.open();
-      } else {
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "JobFTP.FolderExists.NOK", foldername ) + Const.CR );
-        mb.setText( BaseMessages.getString( PKG, "JobFTP.FolderExists.Title.Bad" ) );
-        mb.open();
       }
     }
   }
 
   private boolean connectToFTP( boolean checkfolder, boolean checkmoveToFolder ) {
     boolean retval = false;
+    String realServername = null;
     try {
       if ( ftpclient == null || !ftpclient.connected() ) {
         // Create ftp client to host:port ...
         ftpclient = new FTPClient();
-        String realServername = jobMeta.environmentSubstitute( wServerName.getText() );
+        realServername = jobMeta.environmentSubstitute( wServerName.getText() );
         int realPort = Const.toInt( jobMeta.environmentSubstitute( wPort.getText() ), 21 );
         ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
         ftpclient.setRemotePort( realPort );
@@ -1473,7 +1440,8 @@ public class JobEntryFTPDialog extends JobEntryDialog implements JobEntryDialogI
       retval = true;
     } catch ( Exception e ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTP.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
+      mb.setMessage( BaseMessages.getString( PKG, "JobFTP.ErrorConnect.NOK", realServername,
+          e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTP.ErrorConnect.Title.Bad" ) );
       mb.open();
     }

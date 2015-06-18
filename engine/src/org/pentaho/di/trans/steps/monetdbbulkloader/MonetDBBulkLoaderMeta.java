@@ -187,6 +187,12 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
    */
   private String bufferSize;
 
+  /**
+   * The indicator defines that it is used the version of <i>MonetBD Jan2014-SP2</i> or later if it is <code>true</code>.
+   * <code>False</code> indicates about using all MonetDb versions before this one.
+   */
+  private boolean compatibilityDbVersionMode = false;
+
   public MonetDBBulkLoaderMeta() {
     super();
   }
@@ -983,5 +989,59 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInjec
     return null;
   }
 
+  /**
+   * Returns the version of MonetDB that is used.
+   * 
+   * @return The version of MonetDB
+   * @throws KettleException
+   *           if an error occurs
+   */
+  private MonetDbVersion getMonetDBVersion() throws KettleException {
+    Database db = null;
+
+    db = new Database( loggingObject, databaseMeta );
+    try {
+      db.connect();
+      return new MonetDbVersion( db.getDatabaseMetaData().getDatabaseProductVersion() );
+    } catch ( Exception e ) {
+      throw new KettleException( e );
+    } finally {
+      if ( db != null ) {
+        db.disconnect();
+      }
+    }
+  }
+
+  /**
+   * Returns <code>true</code> if used the version of MonetBD Jan2014-SP2 or later, <code>false</code> otherwise.
+   * 
+   * @return the compatibilityDbVersionMode
+   */
+  public boolean isCompatibilityDbVersionMode() {
+    return compatibilityDbVersionMode;
+  }
+
+  /**
+   * Defines and sets <code>true</code> if it is used the version of <i>MonetBD Jan2014-SP2</i> or later,
+   * <code>false</code> otherwise. Sets also <code>false</code> if it's impossible to define which version of db is
+   * used.
+   */
+  public void setCompatibilityDbVersionMode() {
+
+    MonetDbVersion monetDBVersion;
+    try {
+      monetDBVersion = getMonetDBVersion();
+      this.compatibilityDbVersionMode =
+          monetDBVersion.compareTo( MonetDbVersion.JAN_2014_SP2_DB_VERSION ) < 0 ? false : true;
+      if ( isDebug() && this.compatibilityDbVersionMode ) {
+        logDebug( BaseMessages.getString( PKG, "MonetDBVersion.Info.UsingCompatibilityMode",
+            MonetDbVersion.JAN_2014_SP2_DB_VERSION ) );
+      }
+    } catch ( KettleException e ) {
+      if ( isDebug() ) {
+        logDebug( BaseMessages.getString( PKG, "MonetDBBulkLoaderMeta.Exception.ErrorOnGettingDbVersion", e.getMessage() ) );
+      }
+    }
+  }
 
 }

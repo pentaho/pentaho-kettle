@@ -27,7 +27,11 @@ import org.pentaho.di.trans.step.StepMeta;
 
 public interface GCInterface extends PrimitiveGCInterface {
 
+  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy, float magnification );
+
   public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy );
+
+  public void drawStepIcon( int x, int y, StepMeta stepMeta, float magnification );
 
   public void drawStepIcon( int x, int y, StepMeta stepMeta );
 }

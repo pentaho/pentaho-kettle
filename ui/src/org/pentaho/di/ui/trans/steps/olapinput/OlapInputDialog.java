@@ -59,6 +59,7 @@ import org.pentaho.di.trans.steps.olapinput.OlapInputMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
@@ -202,7 +203,7 @@ public class OlapInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdlPassword.right = new FormAttachment( middle, -margin );
     fdlPassword.top = new FormAttachment( wUsername, margin );
     wlPassword.setLayoutData( fdlPassword );
-    wPassword = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wPassword = new PasswordTextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wPassword );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
@@ -210,7 +211,6 @@ public class OlapInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdPassword.right = new FormAttachment( 100, 0 );
     fdPassword.top = new FormAttachment( wUsername, margin );
     wPassword.setLayoutData( fdPassword );
-    wPassword.setEchoChar( '*' );
 
     // Some buttons
     //

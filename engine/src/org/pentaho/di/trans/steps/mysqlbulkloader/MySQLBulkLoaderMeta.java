@@ -334,7 +334,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
         if ( fieldStream[i] == null ) {
           fieldStream[i] = fieldTable[i];
         }
-        fieldFormatType[i] = getFieldFormatType( rep.getStepAttributeString( id_step, i, "field_format_type" ) );
+        fieldFormatType[i] = getFieldFormatType( rep.getStepAttributeString( id_step, i, "field_format_ok" ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG,

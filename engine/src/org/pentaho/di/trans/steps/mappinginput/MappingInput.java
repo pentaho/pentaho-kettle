@@ -29,7 +29,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -146,7 +145,6 @@ public class MappingInput extends BaseStep implements StepInterface {
       } else {
         meta.setInputRowMeta( new RowMeta() );
       }
-     
 
       // Fill the output row meta with the processed fields
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
@@ -159,8 +157,8 @@ public class MappingInput extends BaseStep implements StepInterface {
         for ( int i = 0; i < data.outputRowMeta.size(); i++ ) {
           data.fieldNrs[i] = getInputRowMeta().indexOfValue( data.outputRowMeta.getValueMeta( i ).getName() );
         }
-      }    
-    }    
+      }
+    }
 
     // Fill and send the output row
     if ( meta.isSelectingAndSortingUnspecifiedFields() ) {

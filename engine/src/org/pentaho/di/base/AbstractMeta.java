@@ -394,7 +394,7 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
   public DatabaseMeta getDatabase( int i ) {
     return databases.get( i );
   }
-  
+
   public void importFromMetaStore() throws MetaStoreException, KettlePluginException {
     // Read the databases...
     //
@@ -409,11 +409,11 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
             metaStore, databaseElement ) );
         }
       }
-      
+
       // TODO: do the same for slaves, clusters, partition schemas
     }
-  }  
-  
+  }
+
   /**
    * Adds the name changed listener.
    * 
@@ -1472,7 +1472,7 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
     if ( sharedObjects == null ) {
       try {
         String soFile = environmentSubstitute( sharedObjectsFile );
-        sharedObjects = new SharedObjects( soFile );	  
+        sharedObjects = new SharedObjects( soFile );
       } catch ( KettleException e ) {
         LogChannel.GENERAL.logDebug( e.getMessage(), e );
       }

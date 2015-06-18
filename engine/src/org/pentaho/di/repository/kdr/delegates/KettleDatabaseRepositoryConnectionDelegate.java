@@ -1709,6 +1709,17 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     return sb.toString();
   }
 
+  public Map<String, LongObjectId> getValueToIdMap( String tablename, String idfield, String lookupfield ) throws KettleException {
+    String sql = new StringBuilder( "SELECT " ).append( lookupfield ).append( ", " ).append( idfield )
+      .append( " FROM " ).append( tablename ).toString();
+
+    Map<String, LongObjectId> result = new HashMap<String, LongObjectId>();
+    for ( Object[] row : database.getRows( sql, new RowMeta(), new Object[]{}, ResultSet.FETCH_FORWARD, false, -1, null ) ) {
+      result.put( String.valueOf( row[0] ), new LongObjectId( ( (Number) row[ 1 ] ).longValue() ) );
+    }
+    return result;
+  }
+
   public LongObjectId[] getIDsWithValues( String tablename, String idfield, String lookupfield,
                                           String[] values ) throws KettleException {
     String sql = createIdsWithValuesQuery( tablename, idfield, lookupfield, values.length );

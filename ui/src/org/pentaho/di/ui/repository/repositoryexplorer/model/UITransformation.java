@@ -68,4 +68,9 @@ public class UITransformation extends UIRepositoryContent {
       newParentDir.refresh();
     }
   }
+  
+  @Override
+  public String getImage() {
+    return "ui/images/transrepo.svg";
+  }  
 }

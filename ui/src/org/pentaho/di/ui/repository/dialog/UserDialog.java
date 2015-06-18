@@ -123,9 +123,8 @@ public class UserDialog extends Dialog {
     fdlPassword.right = new FormAttachment( middle, -margin );
     fdlPassword.top = new FormAttachment( wLogin, margin );
     wlPassword.setLayoutData( fdlPassword );
-    wPassword = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wPassword = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.PASSWORD );
     props.setLook( wPassword );
-    wPassword.setEchoChar( '*' );
     FormData fdPassword = new FormData();
     fdPassword.left = new FormAttachment( middle, 0 );
     fdPassword.right = new FormAttachment( 100, 0 );

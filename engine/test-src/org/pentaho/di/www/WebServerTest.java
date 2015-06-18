@@ -91,12 +91,13 @@ public class WebServerTest {
     when( sServer.getPassword() ).thenReturn( "cluster" );
     when( sServer.getUsername() ).thenReturn( "cluster" );
     webServer =
-        new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT, SHOULD_JOIN, null);
+        new WebServer( logMock, trMapMock, jbMapMock, sRepoMock, detections, HOST_NAME, PORT, SHOULD_JOIN, null );
 
   }
 
   @After
   public void tearDown() {
+    webServer.setWebServerShutdownHandler( null ); // disable system.exit
     webServer.stopServer();
 
     System.getProperties().remove( Const.KETTLE_CARTE_JETTY_ACCEPTORS );
@@ -146,6 +147,7 @@ public class WebServerTest {
     for ( SocketConnector sc : getSocketConnectors( webServerNg ) ) {
       assertEquals( defSocketConnector.getAcceptors(), sc.getAcceptors() );
     }
+    webServerNg.setWebServerShutdownHandler( null ); // disable system.exit
     webServerNg.stopServer();
   }
 
@@ -162,6 +164,7 @@ public class WebServerTest {
     for ( SocketConnector sc : getSocketConnectors( webServerNg ) ) {
       assertEquals( defSocketConnector.getAcceptors(), sc.getAcceptors() );
     }
+    webServerNg.setWebServerShutdownHandler( null ); // disable system.exit
     webServerNg.stopServer();
   }
 

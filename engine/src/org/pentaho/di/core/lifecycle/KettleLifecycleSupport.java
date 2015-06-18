@@ -22,10 +22,11 @@
 
 package org.pentaho.di.core.lifecycle;
 
-import java.util.Set;
-
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Functions;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LogChannel;
@@ -35,19 +36,27 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeListener;
 import org.pentaho.di.i18n.BaseMessages;
 
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * A single point of contact for Kettle Lifecycle Plugin instances for invoking lifecycle methods.
  */
 public class KettleLifecycleSupport {
   private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!
+  @VisibleForTesting protected static PluginRegistry registry = PluginRegistry.getInstance();
 
-  private Set<KettleLifecycleListener> kettleLifecycleListeners;
+  private ConcurrentMap<KettleLifecycleListener, Boolean> kettleLifecycleListeners;
+  private AtomicBoolean initialized = new AtomicBoolean( false );
 
   public KettleLifecycleSupport() {
-    kettleLifecycleListeners =
+    Set<KettleLifecycleListener> listeners =
       LifecycleSupport.loadPlugins( KettleLifecyclePluginType.class, KettleLifecycleListener.class );
+    kettleLifecycleListeners =
+      new ConcurrentHashMap<KettleLifecycleListener, Boolean>( Maps.asMap( listeners, Functions.constant( false ) ) );
 
-    final PluginRegistry registry = PluginRegistry.getInstance();
     registry.addPluginListener( KettleLifecyclePluginType.class, new PluginTypeListener() {
 
       @Override
@@ -59,15 +68,13 @@ public class KettleLifecycleSupport {
           e.printStackTrace();
           return;
         }
-        kettleLifecycleListeners.add( listener );
-        if ( KettleEnvironment.isInitialized() ) {
+        kettleLifecycleListeners.put( listener, false );
+        if ( initialized.get() ) {
           try {
-            listener.onEnvironmentInit();
-          } catch ( LifecycleException ex ) {
-            String message =
-              BaseMessages.getString( PKG, "LifecycleSupport.ErrorInvokingKettleLifecycleListener", listener );
-            // Can't do much except log the error
-            LogChannel.GENERAL.logError( message, ex );
+            onEnvironmentInit( listener );
+          } catch ( Throwable e ) {
+            // Exception is unexpected and couldn't recover
+            Throwables.propagate( e );
           }
         }
       }
@@ -92,7 +99,17 @@ public class KettleLifecycleSupport {
    *           if any listener throws a severe Lifecycle Exception or any {@link Throwable}.
    */
   public void onEnvironmentInit() throws KettleException {
-    for ( KettleLifecycleListener listener : kettleLifecycleListeners ) {
+    // Execute only once
+    if ( initialized.compareAndSet( false, true ) ) {
+      for ( KettleLifecycleListener listener : kettleLifecycleListeners.keySet() ) {
+        onEnvironmentInit( listener );
+      }
+    }
+  }
+
+  private void onEnvironmentInit( KettleLifecycleListener listener ) throws KettleException {
+    // Run only once per listener
+    if ( kettleLifecycleListeners.replace( listener, false, true ) ) {
       try {
         listener.onEnvironmentInit();
       } catch ( LifecycleException ex ) {
@@ -104,14 +121,16 @@ public class KettleLifecycleSupport {
         // Not a severe error so let's simply log it and continue invoking the others
         LogChannel.GENERAL.logError( message, ex );
       } catch ( Throwable t ) {
-        throw new KettleException( BaseMessages.getString(
-          PKG, "LifecycleSupport.ErrorInvokingKettleLifecycleListener", listener ), t );
+        Throwables.propagateIfPossible( t, KettleException.class );
+        String message = BaseMessages.getString(
+          PKG, "LifecycleSupport.ErrorInvokingKettleLifecycleListener", listener );
+        throw new KettleException( message, t );
       }
     }
   }
 
   public void onEnvironmentShutdown() {
-    for ( KettleLifecycleListener listener : kettleLifecycleListeners ) {
+    for ( KettleLifecycleListener listener : kettleLifecycleListeners.keySet() ) {
       try {
         listener.onEnvironmentShutdown();
       } catch ( Throwable t ) {

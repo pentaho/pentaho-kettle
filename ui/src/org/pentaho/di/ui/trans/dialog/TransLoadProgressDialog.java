@@ -30,6 +30,8 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
@@ -37,6 +39,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while loading a transformation...
@@ -85,7 +88,14 @@ public class TransLoadProgressDialog {
   public TransMeta open() {
     IRunnableWithProgress op = new IRunnableWithProgress() {
       public void run( IProgressMonitor monitor ) throws InvocationTargetException, InterruptedException {
+        Spoon spoon = Spoon.getInstance();
         try {
+          // Call extension point(s) before the file has been opened
+          ExtensionPointHandler.callExtensionPoint(
+            spoon.getLog(),
+            KettleExtensionPoint.TransBeforeOpen.id,
+            ( objectId == null ) ? transname : objectId.toString() );
+
           if ( objectId != null ) {
             transInfo = rep.loadTransformation( objectId, versionLabel );
           } else {
@@ -93,6 +103,9 @@ public class TransLoadProgressDialog {
               rep.loadTransformation(
                 transname, repdir, new ProgressMonitorAdapter( monitor ), true, versionLabel );
           }
+          // Call extension point(s) now that the file has been opened
+          ExtensionPointHandler.callExtensionPoint(spoon.getLog(), KettleExtensionPoint.TransAfterOpen.id, transInfo );
+          
         } catch ( KettleException e ) {
           throw new InvocationTargetException( e, BaseMessages.getString(
             PKG, "TransLoadProgressDialog.Exception.ErrorLoadingTransformation" ) );

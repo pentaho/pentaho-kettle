@@ -28,12 +28,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.BlockingRowSet;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
@@ -51,23 +51,28 @@ import org.pentaho.di.trans.steps.mapping.MappingValueRename;
 
 public class MappingInputFieldsTest {
 
+  private static Plugin p1;
+  private static Plugin p2;
+
   MappingInput step;
   MappingInputMeta meta;
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
+    KettleEnvironment.init();
+
     // PluginRegistry.addPluginType(ValueMetaPluginType.getInstance());
     PluginRegistry.getInstance().registerPluginType( ValueMetaPluginType.class );
 
     Map<Class<?>, String> classes = new HashMap<Class<?>, String>();
     classes.put( ValueMetaInterface.class, "org.pentaho.di.core.row.value.ValueMetaString" );
-    Plugin p1 =
+    p1 =
         new Plugin( new String[] { "2" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false,
         true, classes, null, null, null );
 
     classes = new HashMap<Class<?>, String>();
     classes.put( ValueMetaInterface.class, "org.pentaho.di.core.row.value.ValueMetaInteger" );
-    Plugin p2 =
+    p2 =
         new Plugin( new String[] { "5" }, ValueMetaPluginType.class, ValueMetaInterface.class, "", "", "", "", false,
         true, classes, null, null, null );
 
@@ -77,6 +82,12 @@ public class MappingInputFieldsTest {
 
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
+    if ( p1 != null ) {
+      PluginRegistry.getInstance().removePlugin( ValueMetaPluginType.class, p1 );
+    }
+    if ( p2 != null ) {
+      PluginRegistry.getInstance().removePlugin( ValueMetaPluginType.class, p2 );
+    }
   }
 
   @Before
@@ -129,9 +140,9 @@ public class MappingInputFieldsTest {
     rm.addValueMeta( new ValueMeta( "number5", ValueMetaInterface.TYPE_INTEGER ) );
 
     in.putRow( rm, new Object[] { "str", new Integer( 100501 ), new Integer( 100502 ), new Integer( 100503 ),
-        new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );
+      new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );
     in.putRow( rm, new Object[] { "str_1", new Integer( 200501 ), new Integer( 200502 ), new Integer( 200503 ),
-        new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
+      new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
 
     step.getInputRowSets().add( in );
     step.getOutputRowSets().add( out );
@@ -251,9 +262,9 @@ public class MappingInputFieldsTest {
     rm.addValueMeta( new ValueMeta( "number5", ValueMetaInterface.TYPE_INTEGER ) );
 
     in.putRow( rm, new Object[] { "str", new Integer( 100501 ), new Integer( 100502 ), new Integer( 100503 ),
-        new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );
+      new Integer( 100500 ), new Integer( 100504 ), new Integer( 100505 ) } );
     in.putRow( rm, new Object[] { "str_1", new Integer( 200501 ), new Integer( 200502 ), new Integer( 200503 ),
-        new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
+      new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
 
     step.getInputRowSets().add( in );
     step.getOutputRowSets().add( out );

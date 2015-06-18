@@ -30,8 +30,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import java.util.jar.JarFile;
 
@@ -234,7 +236,16 @@ public class KettleURLClassLoader extends URLClassLoader {
         // skip
       }
       if ( uCache != null ) {
-        for ( Object file : ( (HashMap<?, ?>) uCache.clone() ).keySet() ) {
+        Set<?> set = null;
+        while ( set == null ) {
+          try {
+            set = ( (HashMap<?, ?>) uCache.clone() ).keySet();
+          } catch ( ConcurrentModificationException e ) {
+            //Fix for BACKLOG-2149 - Do nothing - while loop will try again.
+          }
+        }
+        
+        for ( Object file : set ) {
           if ( file instanceof JarFile ) {
             JarFile jar = (JarFile) file;
             if ( !closedFiles.contains( jar.getName() ) ) {
@@ -274,4 +285,13 @@ public class KettleURLClassLoader extends URLClassLoader {
     }
   }
 
+  @Override
+  public URL getResource(String name) {
+    URL url;
+    url = findResource(name);
+    if (url == null && getParent() != null) {
+      url = getParent().getResource(name);
+    }
+    return url;
+  }
 }

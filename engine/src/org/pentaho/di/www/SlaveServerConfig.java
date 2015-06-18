@@ -213,7 +213,7 @@ public class SlaveServerConfig {
       slaveServer = new SlaveServer( slaveNode );
       checkNetworkInterfaceSetting( log, slaveNode, slaveServer );
     }
-    
+
     Node mastersNode = XMLHandler.getSubNode( node, XML_TAG_MASTERS );
     int nrMasters = XMLHandler.countNodes( mastersNode, SlaveServer.XML_TAG );
     for ( int i = 0; i < nrMasters; i++ ) {
@@ -223,7 +223,7 @@ public class SlaveServerConfig {
       masterSlaveServer.setSslMode( slaveServer.isSslMode() );
       masters.add( masterSlaveServer );
     }
-    
+
     reportingToMasters = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "report_to_masters" ) );
 
     joining = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node, "joining" ) );

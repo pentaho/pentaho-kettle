@@ -54,6 +54,7 @@ import org.w3c.dom.Node;
     "BaseStep.Category.Utility",
     "BaseStep.Category.Flow",
     "BaseStep.Category.Scripting",
+    "BaseStep.Category.BAServer",
     "BaseStep.Category.Lookup",
     "BaseStep.Category.Joins",
     "BaseStep.Category.DataWarehouse",

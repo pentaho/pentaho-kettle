@@ -23,6 +23,15 @@
 
 package org.pentaho.di.core;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.laf.BasePropertyHandler;
+import org.pentaho.di.version.BuildVersion;
+
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
@@ -51,15 +60,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.laf.BasePropertyHandler;
-import org.pentaho.di.version.BuildVersion;
 
 /**
  * This class is used to define a number of default values for various settings throughout Kettle. It also contains a
@@ -141,6 +141,11 @@ public class Const {
    * Sort size: how many rows do we sort in memory at once?
    */
   public static final int SORT_SIZE = 5000;
+
+  /**
+   * job/trans heartbeat scheduled executor periodic interval ( in seconds )
+   */
+  public static final int HEARTBEAT_PERIODIC_INTERVAL_IN_SECS = 10;
 
   /**
    * What's the file systems file separator on this operating system?
@@ -255,7 +260,7 @@ public class Const {
   /**
    * The default shadow size on the graphical view.
    */
-  public static final int SHADOW_SIZE = 4;
+  public static final int SHADOW_SIZE = 0;
 
   /**
    * The size of relationship symbols
@@ -406,6 +411,9 @@ public class Const {
 
   /** Name of the kettle parameters file */
   public static final String KETTLE_PROPERTIES = "kettle.properties";
+  
+  /** Name of the kettle shared data file */
+  public static final String SHARED_DATA_FILE = "shared.xml";
 
   /** The prefix that all internal kettle variables should have */
   public static final String INTERNAL_VARIABLE_PREFIX = "Internal";
@@ -439,6 +447,12 @@ public class Const {
 
   /** The job run attempt nr */
   public static final String INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR = INTERNAL_VARIABLE_PREFIX + ".Job.Run.AttemptNr";
+
+  /** job/trans heartbeat scheduled executor periodic interval ( in seconds ) */
+  public static final String VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS = "heartbeat.periodic.interval.seconds";
+
+  /** comma-separated list of extension point plugins for which snmp traps should be sent */
+  public static final String VARIABLE_MONITORING_SNMP_TRAPS_ENABLED = "monitoring.snmp.traps.enabled";
 
   /**
    * All the internal transformation variables
@@ -928,6 +942,16 @@ public class Const {
   public static final String XML_FILE_KETTLE_EXTENSION_POINTS = "kettle-extension-points.xml";
 
   /**
+   * The XML file that contains the list of native extension points (None by default, this is mostly for OEM purposes)
+   */
+  public static final String XML_FILE_KETTLE_REGISTRY_EXTENSIONS = "kettle-registry-extensions.xml";
+
+  /**
+   * The XML file that contains the list of lifecycle listeners
+   */
+  public static final String XML_FILE_KETTLE_LIFECYCLE_LISTENERS = "kettle-lifecycle-listeners.xml";
+
+  /**
    * the value the Pan JVM should return on exit.
    */
   public static final String KETTLE_TRANS_PAN_JVM_EXIT_CODE = "KETTLE_TRANS_PAN_JVM_EXIT_CODE";
@@ -1011,7 +1035,7 @@ public class Const {
    * A variable to configure jetty option: lowResourcesMaxIdleTime for Carte
    */
   public static final String KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME = "KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME";
-
+  
   /**
   * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
   * overflow while rounding
@@ -1426,6 +1450,13 @@ public class Const {
     return getOS().toUpperCase().contains( "OS X" );
   }
 
+  /**
+   * @return True if KDE is in use.
+   */
+  public static final boolean isKDE() {
+    return StringUtils.isNotBlank( System.getenv( "KDE_SESSION_VERSION" ) );
+  }
+
   private static String cachedHostname;
 
   /**
@@ -1688,12 +1719,22 @@ public class Const {
   }
 
   /**
+   * Determines the Kettle absolute directory in the user's home directory.
+   *
+   * @return The Kettle absolute directory.
+   */
+  public static final String getKettleDirectory() {
+    return getUserHomeDirectory() + FILE_SEPARATOR + getUserBaseDir();
+  }
+  
+   
+  /**
    * Determines the Kettle directory in the user's home directory.
    *
    * @return The Kettle directory.
    */
-  public static final String getKettleDirectory() {
-    return getUserHomeDirectory() + FILE_SEPARATOR + BasePropertyHandler.getProperty( "userBaseDir", ".kettle" );
+  public static final String getUserBaseDir() {
+    return BasePropertyHandler.getProperty( "userBaseDir", ".kettle" );
   }
 
   /**
@@ -1709,7 +1750,7 @@ public class Const {
    * @return the name of the shared objects file
    */
   public static final String getSharedObjectsFile() {
-    return getKettleDirectory() + FILE_SEPARATOR + "shared.xml";
+    return getKettleDirectory() + FILE_SEPARATOR + SHARED_DATA_FILE;
   }
 
   /**

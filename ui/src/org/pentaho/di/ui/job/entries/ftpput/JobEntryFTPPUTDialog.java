@@ -56,9 +56,9 @@ import org.pentaho.di.job.entries.ftpput.JobEntryFTPPUT;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
@@ -390,21 +390,14 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     fdlPassword.top = new FormAttachment( wUserName, margin );
     fdlPassword.right = new FormAttachment( middle, 0 );
     wlPassword.setLayoutData( fdlPassword );
-    wPassword = new TextVar( jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wPassword = new PasswordTextVar( jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wPassword );
-    wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
     fdPassword.left = new FormAttachment( middle, margin );
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
-
-    wPassword.getTextWidget().addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
-      }
-    } );
 
     // Proxy host line
     wProxyHost =
@@ -449,21 +442,14 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     wProxyPassword =
       new LabelTextVar(
         jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPPUT.ProxyPassword.Label" ), BaseMessages
-          .getString( PKG, "JobFTPPUT.ProxyPassword.Tooltip" ) );
+          .getString( PKG, "JobFTPPUT.ProxyPassword.Tooltip" ), true );
     props.setLook( wProxyPassword );
-    wProxyPassword.setEchoChar( '*' );
     wProxyPassword.addModifyListener( lsMod );
     fdProxyPasswd = new FormData();
     fdProxyPasswd.left = new FormAttachment( 0, 0 );
     fdProxyPasswd.top = new FormAttachment( wProxyUsername, margin );
     fdProxyPasswd.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPasswd );
-
-    wProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wProxyPassword.getTextWidget() );
-      }
-    } );
 
     // Test connection button
     wTest = new Button( wServerSettings, SWT.PUSH );
@@ -852,21 +838,14 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
     wSocksProxyPassword =
       new LabelTextVar(
         jobMeta, wSocksProxy, BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyPassword.Label" ),
-        BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyPassword.Tooltip" ) );
+        BaseMessages.getString( PKG, "JobFTPPUT.SocksProxyPassword.Tooltip" ), true );
     props.setLook( wSocksProxyPort );
-    wSocksProxyPassword.setEchoChar( '*' );
     wSocksProxyPassword.addModifyListener( lsMod );
     fdSocksProxyPassword = new FormData();
     fdSocksProxyPassword.left = new FormAttachment( 0, 0 );
     fdSocksProxyPassword.top = new FormAttachment( wSocksProxyUsername, margin );
     fdSocksProxyPassword.right = new FormAttachment( 100, margin );
     wSocksProxyPassword.setLayoutData( fdSocksProxyPassword );
-
-    wSocksProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        DatabaseDialog.checkPasswordVisible( wSocksProxyPassword.getTextWidget() );
-      }
-    } );
 
     // ///////////////////////////////////////////////////////////////
     // End of socks proxy group
@@ -998,14 +977,7 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.Connected.OK", wServerName.getText() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.Connected.Title.Ok" ) );
       mb.open();
-    } else {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.Connected.NOK.ConnectionBad", wServerName.getText() )
-        + Const.CR );
-      mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.Connected.Title.Bad" ) );
-      mb.open();
     }
-
   }
 
   private void checkRemoteFolder( String remoteFoldername ) {
@@ -1015,22 +987,18 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
         mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.FolderExists.OK", remoteFoldername ) + Const.CR );
         mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.FolderExists.Title.Ok" ) );
         mb.open();
-      } else {
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.FolderExists.NOK", remoteFoldername ) + Const.CR );
-        mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.FolderExists.Title.Bad" ) );
-        mb.open();
       }
     }
   }
 
   private boolean connectToFTP( boolean checkfolder, String remoteFoldername ) {
     boolean retval = false;
+    String realServername = null;
     try {
       if ( ftpclient == null || !ftpclient.connected() ) {
         // Create ftp client to host:port ...
         ftpclient = new FTPClient();
-        String realServername = jobMeta.environmentSubstitute( wServerName.getText() );
+        realServername = jobMeta.environmentSubstitute( wServerName.getText() );
         int realPort = Const.toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 21 );
         ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
         ftpclient.setRemotePort( realPort );
@@ -1076,8 +1044,18 @@ public class JobEntryFTPPUTDialog extends JobEntryDialog implements JobEntryDial
 
       retval = true;
     } catch ( Exception e ) {
+      if ( ftpclient != null ) {
+        try {
+          ftpclient.quit();
+        } catch ( Exception ignored ) {
+          // We've tried quitting the FTP Client exception
+          // nothing else can be done if the FTP Client was already disconnected
+        }
+        ftpclient = null;
+      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
+      mb.setMessage( BaseMessages.getString( PKG, "JobFTPPUT.ErrorConnect.NOK", realServername,
+          e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPPUT.ErrorConnect.Title.Bad" ) );
       mb.open();
     }

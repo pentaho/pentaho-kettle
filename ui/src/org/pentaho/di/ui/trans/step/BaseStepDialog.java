@@ -72,6 +72,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
@@ -298,61 +299,72 @@ public class BaseStepDialog extends Dialog {
    */
   public static final void positionBottomButtons( Composite composite, Button[] buttons, int margin,
     Control lastControl ) {
-    // Determine the largest button in the array
-    Rectangle largest = null;
-    for ( int i = 0; i < buttons.length; i++ ) {
-      buttons[i].pack( true );
-      Rectangle r = buttons[i].getBounds();
-      if ( largest == null || r.width > largest.width ) {
-        largest = r;
-      }
-
-      // Also, set the tooltip the same as the name if we don't have one...
-      if ( buttons[i].getToolTipText() == null ) {
-        buttons[i].setToolTipText( Const.replace( buttons[i].getText(), "&", "" ) );
-      }
-    }
-
-    // Make buttons a bit larger... (nicer)
-    largest.width += 10;
-    if ( ( largest.width % 2 ) == 1 ) {
-      largest.width++;
-    }
-
-    // Compute the left side of the 1st button (based on the system button alignment)
-    switch ( buttonAlignment ) {
-      case BUTTON_ALIGNMENT_CENTER:
-        centerButtons( buttons, largest.width, margin, lastControl );
-        break;
-      case BUTTON_ALIGNMENT_LEFT:
-        leftAlignButtons( buttons, largest.width, margin, lastControl );
-        break;
-      case BUTTON_ALIGNMENT_RIGHT:
-        rightAlignButtons( buttons, largest.width, margin, lastControl );
-        break;
-      default:
-        break;
-    }
-    if ( Const.isOSX() ) {
-      Shell parentShell = composite.getShell();
-      final List<TableView> tableViews = new ArrayList<TableView>();
-      getTableViews( parentShell, tableViews );
-      for ( final Button button : buttons ) {
-        // We know the table views
-        // We also know that if a button is hit, the table loses focus
-        // In that case, we can apply the content of an open text editor...
-        //
-        button.addSelectionListener( new SelectionAdapter() {
-
-          public void widgetSelected( SelectionEvent e ) {
-            for ( TableView view : tableViews ) {
-              view.applyOSXChanges();
-            }
-          }
-        } );
-      }
-    }
+    // call positionBottomButtons method the system button alignment
+    positionBottomButtons( composite, buttons, margin, buttonAlignment, lastControl );
   }
+  
+  public static final void positionBottomRightButtons( Composite composite, Button[] buttons, int margin,
+      Control lastControl ) {
+      positionBottomButtons( composite, buttons, margin, BUTTON_ALIGNMENT_RIGHT, lastControl );
+    }
+  
+  private static final void positionBottomButtons( Composite composite, Button[] buttons, int margin, int alignment,
+      Control lastControl ) {
+      // Determine the largest button in the array
+      Rectangle largest = null;
+      for ( int i = 0; i < buttons.length; i++ ) {
+        buttons[i].pack( true );
+        Rectangle r = buttons[i].getBounds();
+        if ( largest == null || r.width > largest.width ) {
+          largest = r;
+        }
+
+        // Also, set the tooltip the same as the name if we don't have one...
+        if ( buttons[i].getToolTipText() == null ) {
+          buttons[i].setToolTipText( Const.replace( buttons[i].getText(), "&", "" ) );
+        }
+      }
+
+      // Make buttons a bit larger... (nicer)
+      largest.width += 10;
+      if ( ( largest.width % 2 ) == 1 ) {
+        largest.width++;
+      }
+
+      // Compute the left side of the 1st button
+      switch ( alignment ) {
+        case BUTTON_ALIGNMENT_CENTER:
+          centerButtons( buttons, largest.width, margin, lastControl );
+          break;
+        case BUTTON_ALIGNMENT_LEFT:
+          leftAlignButtons( buttons, largest.width, margin, lastControl );
+          break;
+        case BUTTON_ALIGNMENT_RIGHT:
+          rightAlignButtons( buttons, largest.width, margin, lastControl );
+          break;
+        default:
+          break;
+      }
+      if ( Const.isOSX() ) {
+        Shell parentShell = composite.getShell();
+        final List<TableView> tableViews = new ArrayList<TableView>();
+        getTableViews( parentShell, tableViews );
+        for ( final Button button : buttons ) {
+          // We know the table views
+          // We also know that if a button is hit, the table loses focus
+          // In that case, we can apply the content of an open text editor...
+          //
+          button.addSelectionListener( new SelectionAdapter() {
+
+            public void widgetSelected( SelectionEvent e ) {
+              for ( TableView view : tableViews ) {
+                view.applyOSXChanges();
+              }
+            }
+          } );
+        }
+      }
+    }
 
   /**
    * Gets the table views.
@@ -1390,7 +1402,8 @@ public class BaseStepDialog extends Dialog {
       createHelpButton( shell, stepMeta, plugin );
       String id = plugin.getIds()[ 0 ];
       if ( id != null ) {
-        shell.setImage( GUIResource.getInstance().getImagesSteps().get( id ) );
+        shell.setImage( GUIResource.getInstance().getImagesSteps().get( id ).getAsBitmapForSize(
+          shell.getDisplay(), ConstUI.ICON_SIZE, ConstUI.ICON_SIZE ) );
       }
     }
   }

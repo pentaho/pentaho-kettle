@@ -34,16 +34,24 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
-import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.IOUtils;
 import org.jfree.text.TextUtilities;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.SwingUniversalImage;
+import org.pentaho.di.core.SwingUniversalImageBitmap;
+import org.pentaho.di.core.SwingUniversalImageSvg;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.PrimitiveGCInterface.EImage;
+import org.pentaho.di.core.svg.SvgImage;
+import org.pentaho.di.core.svg.SvgSupport;
+import org.pentaho.di.core.util.SwingSvgImageUtil;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.trans.step.StepMeta;
@@ -51,49 +59,54 @@ import org.pentaho.reporting.libraries.base.util.WaitingImageObserver;
 
 public class SwingDirectGC implements GCInterface {
 
-  private static BufferedImage imageLocked;
+  private static SwingUniversalImage imageLocked;
 
-  private static BufferedImage imageStepError;
+  private static SwingUniversalImage imageStepError;
 
-  private static BufferedImage imageEdit;
+  private static SwingUniversalImage imageEdit;
 
-  private static BufferedImage imageContextMenu;
+  private static SwingUniversalImage imageContextMenu;
 
-  private static BufferedImage imageTrue;
+  private static SwingUniversalImage imageTrue;
 
-  private static BufferedImage imageFalse;
+  private static SwingUniversalImage imageFalse;
 
-  private static BufferedImage imageErrorHop;
+  private static SwingUniversalImage imageErrorHop;
 
-  private static BufferedImage imageInfoHop;
+  private static SwingUniversalImage imageInfoHop;
 
-  private static BufferedImage imageHopTarget;
+  private static SwingUniversalImage imageHopTarget;
 
-  private static BufferedImage imageHopInput;
+  private static SwingUniversalImage imageHopInput;
 
-  private static BufferedImage imageHopOutput;
+  private static SwingUniversalImage imageHopOutput;
 
-  private static BufferedImage imageArrow;
+  private static SwingUniversalImage imageArrow;
 
-  private static BufferedImage imageCopyHop;
+  private static SwingUniversalImage imageCopyHop;
 
-  private static BufferedImage imageLoadBalance;
+  private static SwingUniversalImage imageLoadBalance;
 
-  private static BufferedImage imageCheckpoint;
+  private static SwingUniversalImage imageCheckpoint;
 
-  private static BufferedImage imageDatabase;
+  private static SwingUniversalImage imageDatabase;
 
-  private static BufferedImage imageParallelHop;
+  private static SwingUniversalImage imageParallelHop;
 
-  private static BufferedImage imageUnconditionalHop;
+  private static SwingUniversalImage imageUnconditionalHop;
 
-  private static BufferedImage imageStart;
+  private static SwingUniversalImage imageStart;
 
-  private static BufferedImage imageDummy;
+  private static SwingUniversalImage imageDummy;
 
-  private static BufferedImage imageBusy;
+  private static SwingUniversalImage imageBusy;
 
-  private static BufferedImage imageInject;
+  private static SwingUniversalImage imageInject;
+
+  private static SwingUniversalImage defaultArrow;
+  private static SwingUniversalImage okArrow;
+  private static SwingUniversalImage errorArrow;
+  private static SwingUniversalImage disabledArrow;
 
   protected Color background;
 
@@ -108,13 +121,19 @@ public class SwingDirectGC implements GCInterface {
   protected Color lightGray;
   protected Color darkGray;
   protected Color lightBlue;
+  protected Color crystal;
+  protected Color hopDefault;
+  protected Color hopOK;
 
   private Graphics2D gc;
 
   private int iconsize;
 
-  private Map<String, BufferedImage> stepImages;
-  private Map<String, BufferedImage> entryImages;
+  //TODO should be changed to PropsUI usage
+  private int small_icon_size = 16;
+
+  private Map<String, SwingUniversalImage> stepImages;
+  private Map<String, SwingUniversalImage> entryImages;
 
   private BufferedImage image;
   private ImageObserver observer;
@@ -139,7 +158,7 @@ public class SwingDirectGC implements GCInterface {
   private boolean drawingPixelatedImages;
 
   public SwingDirectGC( ImageObserver observer, Point area, int iconsize, int xOffset, int yOffset ) throws KettleException {
-    this.image = new BufferedImage( area.x, area.y, BufferedImage.TYPE_INT_RGB );
+    this.image = new BufferedImage( area.x, area.y, BufferedImage.TYPE_INT_ARGB );
     this.gc = image.createGraphics();
     this.observer = observer;
     this.stepImages = SwingGUIResource.getInstance().getStepImages();
@@ -183,6 +202,9 @@ public class SwingDirectGC implements GCInterface {
     this.lightGray = new Color( 200, 200, 200 );
     this.darkGray = new Color( 80, 80, 80 );
     this.lightBlue = new Color( 135, 206, 250 ); // light sky blue
+    this.crystal = new Color( 61, 99, 128 );
+    this.hopDefault = new Color( 61, 99, 128 );
+    this.hopOK = new Color( 12, 178, 15 );
 
     imageLocked = getImageIcon( BasePropertyHandler.getProperty( "Locked_image" ) );
     imageStepError = getImageIcon( BasePropertyHandler.getProperty( "StepErrorLines_image" ) );
@@ -207,6 +229,11 @@ public class SwingDirectGC implements GCInterface {
     imageBusy = getImageIcon( BasePropertyHandler.getProperty( "Busy_image" ) );
     imageInject = getImageIcon( BasePropertyHandler.getProperty( "Inject_image" ) );
 
+    defaultArrow = getImageIcon( BasePropertyHandler.getProperty( "defaultArrow_image" ) );
+    okArrow = getImageIcon( BasePropertyHandler.getProperty( "okArrow_image" ) );
+    errorArrow = getImageIcon( BasePropertyHandler.getProperty( "errorArrow_image" ) );
+    disabledArrow = getImageIcon( BasePropertyHandler.getProperty( "disabledArrow_image" ) );
+
     fontGraph = new Font( "FreeSans", Font.PLAIN, 10 );
     fontNote = new Font( "FreeSans", Font.PLAIN, 10 );
     fontSmall = new Font( "FreeSans", Font.PLAIN, 8 );
@@ -217,39 +244,86 @@ public class SwingDirectGC implements GCInterface {
     gc.fillRect( 0, 0, area.x, area.y );
   }
 
-  private BufferedImage getImageIcon( String fileName ) throws KettleException {
+  private SwingUniversalImage getImageIcon( String fileName ) throws KettleException {
+    SwingUniversalImage image = null;
+
     InputStream inputStream = null;
-    try {
-      BufferedImage image = ImageIO.read( new File( fileName ) );
-      if ( image == null ) {
-        image = ImageIO.read( new File( "/" + fileName ) );
+    if ( fileName == null ) {
+      throw new KettleException( "Image icon file name can not be null" );
+    }
+
+    if ( SvgSupport.isSvgEnabled() && SvgSupport.isSvgName( fileName ) ) {
+      try {
+        inputStream = new FileInputStream( fileName );
+      } catch ( FileNotFoundException ex ) {
+        // no need to fail
       }
-      if ( image == null ) {
+      if ( inputStream == null ) {
+        try {
+          inputStream = new FileInputStream( "/" + fileName );
+        } catch ( FileNotFoundException ex ) {
+          // no need to fail
+        }
+      }
+      if ( inputStream == null ) {
         inputStream = getClass().getResourceAsStream( fileName );
-        if ( inputStream == null ) {
-          inputStream = getClass().getResourceAsStream( "/" + fileName );
-        }
-        if ( inputStream == null ) {
-          throw new KettleException( "Unable to load image from file : '" + fileName + "'" );
-        }
-        image = ImageIO.read( inputStream );
       }
-
-      WaitingImageObserver observer = new WaitingImageObserver( image );
-      observer.waitImageLoaded();
-
-      return image;
-    } catch ( Throwable e ) {
-      throw new KettleException( "Unable to load image from file : '" + fileName + "'", e );
-    } finally {
+      if ( inputStream == null ) {
+        inputStream = getClass().getResourceAsStream( "/" + fileName );
+      }
       if ( inputStream != null ) {
         try {
-          inputStream.close();
-        } catch ( IOException e ) {
-          throw new KettleException( "Unable to close image reading stream", e );
+          SvgImage svg = SvgSupport.loadSvgImage( inputStream );
+          image = new SwingUniversalImageSvg( svg );
+        } catch ( Exception ex ) {
+          throw new KettleException( "Unable to load image from classpath : '" + fileName + "'", ex );
+        } finally {
+          IOUtils.closeQuietly( inputStream );
         }
       }
     }
+
+    if ( image == null ) {
+      fileName = SvgSupport.toPngName( fileName );
+
+      try {
+        inputStream = new FileInputStream( fileName );
+      } catch ( FileNotFoundException ex ) {
+        // no need to fail
+      }
+      if ( inputStream == null ) {
+        try {
+          inputStream = new FileInputStream( "/" + fileName );
+        } catch ( FileNotFoundException ex ) {
+          // no need to fail
+        }
+      }
+      if ( inputStream == null ) {
+        inputStream = getClass().getResourceAsStream( fileName );
+      }
+      if ( inputStream == null ) {
+        inputStream = getClass().getResourceAsStream( "/" + fileName );
+      }
+      if ( inputStream != null ) {
+        try {
+          BufferedImage bitmap = ImageIO.read( inputStream );
+
+          WaitingImageObserver wia = new WaitingImageObserver( bitmap );
+          wia.waitImageLoaded();
+
+          image = new SwingUniversalImageBitmap( bitmap );
+        } catch ( Exception ex ) {
+          throw new KettleException( "Unable to load image from classpath : '" + fileName + "'", ex );
+        } finally {
+          IOUtils.closeQuietly( inputStream );
+        }
+      }
+    }
+    if ( image == null ) {
+      throw new KettleException( "Unable to load image from classpath : '" + fileName + "'" );
+    }
+
+    return image;
   }
 
   public void dispose() {
@@ -259,24 +333,39 @@ public class SwingDirectGC implements GCInterface {
     gc.drawLine( x + xOffset, y + yOffset, x2 + xOffset, y2 + yOffset );
   }
 
-  public void drawImage( EImage image, int locationX, int locationY ) {
+  @Override
+  public void drawImage( String location, ClassLoader classLoader, int x, int y ) {
+    SwingUniversalImage img = SwingSvgImageUtil.getUniversalImage( classLoader, location );
+    drawImage( img, x, y, small_icon_size );
+  }
 
-    BufferedImage img = getNativeImage( image );
+  @Override
+  public void drawImage( EImage image, int x, int y ) {
+    drawImage( image, x, y, 0.0f );
+  }
 
-    drawPixelatedImage( img, locationX, locationY );
+  public void drawImage( EImage image, int locationX, int locationY, float magnification ) {
+
+    SwingUniversalImage img = getNativeImage( image );
+
+    drawImage( img, locationX, locationY, small_icon_size );
 
     // gc.drawImage(img, locationX+xOffset, locationY+yOffset, observer);
 
   }
 
-  public void drawPixelatedImage( BufferedImage img, int locationX, int locationY ) {
+  public void drawImage( EImage image, int locationX, int locationY, float magnification, double angle ) {
+    SwingUniversalImage img = getNativeImage( image );
+    drawImage( img, locationX, locationY, angle, small_icon_size );
+  }
 
-    if ( isDrawingPixelatedImages() ) {
-      BufferedImage bi = new BufferedImage( img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB );
+  private void drawImage( SwingUniversalImage img, int locationX, int locationY, int imageSize ) {
+    if ( isDrawingPixelatedImages() && img.isBitmap() ) {
+      BufferedImage bi = new BufferedImage( imageSize, imageSize, BufferedImage.TYPE_INT_ARGB );
       Graphics2D g2 = (Graphics2D) bi.getGraphics();
       g2.setColor( Color.WHITE );
-      g2.fillRect( 0, 0, img.getWidth(), img.getHeight() );
-      g2.drawImage( img, 0, 0, observer );
+      g2.fillRect( 0, 0, imageSize, imageSize );
+      g2.drawImage( img.getAsBitmapForSize( imageSize, imageSize ), 0, 0, observer );
       g2.dispose();
 
       for ( int x = 0; x < bi.getWidth( observer ); x++ ) {
@@ -286,31 +375,41 @@ public class SwingDirectGC implements GCInterface {
           gc.setStroke( new BasicStroke( 1.0f ) );
           gc.drawLine( locationX + xOffset + x, locationY + yOffset + y, locationX + xOffset + x, locationY
             + yOffset + y );
-          // gc.drawLine(locationX+xOffset+x, locationY+yOffset+y,
-          // locationX+xOffset+x+1, locationY+yOffset+y);
-          // gc.drawLine(locationX+xOffset+x, locationY+yOffset+y+1,
-          // locationX+xOffset+x+1, locationY+yOffset+y+1);
-          // gc.fillRect(locationX+xOffset+x, locationY+yOffset+y, 1, 1);
         }
       }
     } else {
-      // Wait
-      boolean changed = true;
-      while ( changed ) {
-        changed = !gc.drawImage( img, locationX, locationY, observer );
-      }
+      gc.setBackground( Color.white );
+      gc.clearRect( locationX, locationY, imageSize, imageSize );
+      img.drawToGraphics( gc, locationX, locationY, imageSize, imageSize );
     }
+  }
 
+  private void drawImage( SwingUniversalImage img, int centerX, int centerY, double angle, int imageSize ) {
+    if ( isDrawingPixelatedImages() && img.isBitmap() ) {
+      BufferedImage bi =  img.getAsBitmapForSize( imageSize, imageSize, angle );
+
+      int offx = centerX + xOffset - bi.getWidth() / 2;
+      int offy = centerY + yOffset - bi.getHeight() / 2;
+      for ( int x = 0; x < bi.getWidth( observer ); x++ ) {
+        for ( int y = 0; y < bi.getHeight( observer ); y++ ) {
+          int rgb = bi.getRGB( x, y );
+          gc.setColor( new Color( rgb ) );
+          gc.setStroke( new BasicStroke( 1.0f ) );
+          gc.drawLine( offx + x, offy + y, offx + x, offy + y );
+        }
+      }
+    } else {
+      gc.setBackground( Color.white );
+      gc.clearRect( centerX, centerY, imageSize, imageSize );
+      img.drawToGraphics( gc, centerX, centerY, imageSize, imageSize, angle );
+    }
   }
 
   public Point getImageBounds( EImage image ) {
-    BufferedImage img = getNativeImage( image );
-    int width = img.getWidth( observer );
-    int height = img.getHeight( observer );
-    return new Point( width, height );
+    return new Point( small_icon_size, small_icon_size );
   }
 
-  public static final BufferedImage getNativeImage( EImage image ) {
+  public static final SwingUniversalImage getNativeImage( EImage image ) {
     switch ( image ) {
       case LOCK:
         return imageLocked;
@@ -352,6 +451,14 @@ public class SwingDirectGC implements GCInterface {
         return imageBusy;
       case INJECT:
         return imageInject;
+      case ARROW_DEFAULT:
+        return defaultArrow;
+      case ARROW_OK:
+        return okArrow;
+      case ARROW_ERROR:
+        return errorArrow;
+      case ARROW_DISABLED:
+        return disabledArrow;
       default:
         break;
     }
@@ -480,6 +587,12 @@ public class SwingDirectGC implements GCInterface {
         return darkGray;
       case LIGHTBLUE:
         return lightBlue;
+      case CRYSTAL:
+        return crystal;
+      case HOP_DEFAULT:
+        return hopDefault;
+      case HOP_OK:
+        return hopOK;
       default:
         break;
     }
@@ -559,26 +672,21 @@ public class SwingDirectGC implements GCInterface {
     return new Point( maxWidth, height );
   }
 
-  public void drawStepIcon( int x, int y, StepMeta stepMeta ) {
-    // Draw a blank rectangle to prevent alpha channel problems...
-    //
-    gc.fillRect( x + xOffset, y + yOffset, iconsize, iconsize );
+  public void drawStepIcon( int x, int y, StepMeta stepMeta, float magnification ) {
     String steptype = stepMeta.getStepID();
-    BufferedImage im = stepImages.get( steptype );
+    SwingUniversalImage im = stepImages.get( steptype );
     if ( im != null ) { // Draw the icon!
 
-      drawPixelatedImage( im, x + xOffset, y + xOffset );
-
-      // gc.drawImage(im, x+xOffset, y+yOffset, observer);
+      drawImage( im, x + xOffset, y + xOffset, iconsize );
     }
   }
 
-  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
+  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy, float magnification ) {
     if ( jobEntryCopy == null ) {
       return; // Don't draw anything
     }
 
-    BufferedImage image = null;
+    SwingUniversalImage image = null;
 
     if ( jobEntryCopy.isSpecial() ) {
       if ( jobEntryCopy.isStart() ) {
@@ -597,8 +705,18 @@ public class SwingDirectGC implements GCInterface {
       return;
     }
 
-    drawPixelatedImage( image, x + xOffset, y + xOffset );
+    drawImage( image, x + xOffset, y + xOffset, iconsize );
     // gc.drawImage(image, x+xOffset, y+yOffset, observer);
+  }
+
+  @Override
+  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
+    drawJobEntryIcon( x, y , jobEntryCopy, 1.0f );
+  }
+
+  @Override
+  public void drawStepIcon( int x, int y, StepMeta stepMeta ) {
+    drawStepIcon( x, y, stepMeta, 1.0f );
   }
 
   public void setAntialias( boolean antiAlias ) {

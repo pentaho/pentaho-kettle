@@ -1,9 +1,9 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="stretch">
 
   <toolbar id="nav-toolbar" mode="icons">
-    <toolbarbutton id="browse-back" label="${SpoonBrowser.Dialog.Back}" image="images/back.png"
+    <toolbarbutton id="browse-back" label="${SpoonBrowser.Dialog.Back}" image="images/back.svg"
       tooltiptext="${SpoonBrowser.Dialog.Back}" onclick="browser.browseBack()" />
-    <toolbarbutton id="browse-forward" label="${SpoonBrowser.Dialog.Forward}" image="images/forward.png"
+    <toolbarbutton id="browse-forward" label="${SpoonBrowser.Dialog.Forward}" image="images/forward.svg"
       tooltiptext="${SpoonBrowser.Dialog.Forward}" onclick="browser.browseForward()" />
     <toolbaritem flex="1">
       <textbox id="browser-address" value="http://" flex="1"/>

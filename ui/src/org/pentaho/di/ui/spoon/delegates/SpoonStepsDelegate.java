@@ -154,6 +154,9 @@ public class SpoonStepsDelegate extends SpoonDelegate {
           refresh = true;
         }
 
+        StepMeta newStepMeta = (StepMeta) stepMeta.clone();
+        newStepMeta.setName( stepname );
+        transMeta.notifyAllListeners( stepMeta, newStepMeta );
         stepMeta.setName( stepname );
 
         //

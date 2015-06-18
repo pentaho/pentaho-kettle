@@ -367,7 +367,17 @@ public interface RowMetaInterface extends Cloneable {
    * @param r
    *          The row to be merged with this row
    */
+  @Deprecated
   public void mergeRowMeta( RowMetaInterface r );
+
+  /**
+   * Merge the values of row r to this Row. The values that are not yet in the row are added unchanged. The values that
+   * are in the row are renamed to name[2], name[3], etc.
+   *
+   * @param r
+   *          The row to be merged with this row
+   */
+  public void mergeRowMeta( RowMetaInterface r, String originStepName );
 
   /**
    * Get an array of the names of all the Values in the Row.

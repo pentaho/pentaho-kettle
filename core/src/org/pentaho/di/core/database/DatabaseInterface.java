@@ -264,6 +264,11 @@ public interface DatabaseInterface extends Cloneable {
   public int getDefaultDatabasePort();
 
   /**
+   * @return default extra Options
+   */
+  public Map<String, String> getDefaultOptions();
+
+  /**
    * @param nrRows
    *          The number of rows to which we want to limit the result of the query.
    * @return the clause after a select statement to limit the number of rows

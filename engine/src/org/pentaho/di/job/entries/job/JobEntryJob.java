@@ -1186,7 +1186,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     if ( rep != null ) {
       return getJobMeta( rep, rep.getMetaStore(), space );
     } else {
-      return getJobMeta( rep, null, space );
+      return getJobMeta( rep, getMetaStore(), space );
     }
   }
 
@@ -1196,8 +1196,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       switch ( specificationMethod ) {
         case FILENAME:
           jobMeta =
-            new JobMeta(
-              ( space != null ? space.environmentSubstitute( getFilename() ) : getFilename() ), rep, null );
+            new JobMeta( space, ( space != null ? space.environmentSubstitute( getFilename() ) : getFilename() ),
+              rep, metaStore, null );
           break;
         case REPOSITORY_BY_NAME:
           if ( rep != null ) {
