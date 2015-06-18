@@ -60,6 +60,16 @@ public class SFTPPutTest {
       .createSftpClient( anyString(), anyString(), anyString(), anyString(), anyString() );
   }
 
+
+  private static RowMeta rowOfStringsMeta( String... columns ) {
+    RowMeta rowMeta = new RowMeta();
+    for ( String column : columns ) {
+      rowMeta.addValueMeta( new ValueMetaString( column ) );
+    }
+    return rowMeta;
+  }
+
+
   @Test
   public void checkRemoteFilenameField_FieldNameIsBlank() throws Exception {
     SFTPPutData data = new SFTPPutData();
@@ -75,9 +85,7 @@ public class SFTPPutTest {
 
   @Test
   public void checkRemoteFilenameField_FieldNameIsSet_Found() throws Exception {
-    RowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMetaString( "some field" ) );
-    rowMeta.addValueMeta( new ValueMetaString( "remoteFileName" ) );
+    RowMeta rowMeta = rowOfStringsMeta( "some field", "remoteFileName" );
     step.setInputRowMeta( rowMeta );
 
     SFTPPutData data = new SFTPPutData();
@@ -86,11 +94,78 @@ public class SFTPPutTest {
   }
 
 
+  @Test( expected = KettleStepException.class )
+  public void checkSourceFileField_NameIsBlank() throws Exception {
+    SFTPPutData data = new SFTPPutData();
+    step.checkSourceFileField( "", data );
+  }
+
+  @Test( expected = KettleStepException.class )
+  public void checkSourceFileField_NameIsSet_NotFound() throws Exception {
+    step.setInputRowMeta( new RowMeta() );
+    step.checkSourceFileField( "sourceFile", new SFTPPutData() );
+  }
+
+  @Test
+  public void checkSourceFileField_NameIsSet_Found() throws Exception {
+    RowMeta rowMeta = rowOfStringsMeta( "some field", "sourceFileFieldName" );
+    step.setInputRowMeta( rowMeta );
+
+    SFTPPutData data = new SFTPPutData();
+    step.checkSourceFileField( "sourceFileFieldName", data );
+    assertEquals( 1, data.indexOfSourceFileFieldName );
+  }
+
+
+  @Test( expected = KettleStepException.class )
+  public void checkRemoteFoldernameField_NameIsBlank() throws Exception {
+    SFTPPutData data = new SFTPPutData();
+    step.checkRemoteFoldernameField( "", data );
+  }
+
+  @Test( expected = KettleStepException.class )
+  public void checkRemoteFoldernameField_NameIsSet_NotFound() throws Exception {
+    step.setInputRowMeta( new RowMeta() );
+    step.checkRemoteFoldernameField( "remoteFolder", new SFTPPutData() );
+  }
+
+  @Test
+  public void checkRemoteFoldernameField_NameIsSet_Found() throws Exception {
+    RowMeta rowMeta = rowOfStringsMeta( "some field", "remoteFoldernameFieldName" );
+    step.setInputRowMeta( rowMeta );
+
+    SFTPPutData data = new SFTPPutData();
+    step.checkRemoteFoldernameField( "remoteFoldernameFieldName", data );
+    assertEquals( 1, data.indexOfRemoteDirectory );
+  }
+
+
+  @Test( expected = KettleStepException.class )
+  public void checkDestinationFolderField_NameIsBlank() throws Exception {
+    SFTPPutData data = new SFTPPutData();
+    step.checkDestinationFolderField( "", data );
+  }
+
+  @Test( expected = KettleStepException.class )
+  public void checkDestinationFolderField_NameIsSet_NotFound() throws Exception {
+    step.setInputRowMeta( new RowMeta() );
+    step.checkDestinationFolderField( "destinationFolder", new SFTPPutData() );
+  }
+
+  @Test
+  public void checkDestinationFolderField_NameIsSet_Found() throws Exception {
+    RowMeta rowMeta = rowOfStringsMeta( "some field", "destinationFolderFieldName" );
+    step.setInputRowMeta( rowMeta );
+
+    SFTPPutData data = new SFTPPutData();
+    step.checkDestinationFolderField( "destinationFolderFieldName", data );
+    assertEquals( 1, data.indexOfMoveToFolderFieldName );
+  }
+
+
   @Test
   public void remoteFilenameFieldIsMandatoryWhenStreamingFromInputField() throws Exception {
-    RowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMetaString( "sourceFilenameFieldName" ) );
-    rowMeta.addValueMeta( new ValueMetaString( "remoteDirectoryFieldName" ) );
+    RowMeta rowMeta = rowOfStringsMeta( "sourceFilenameFieldName", "remoteDirectoryFieldName" );
     step.setInputRowMeta( rowMeta );
 
     doReturn( new Object[] { "qwerty", "asdfg" } ).when( step ).getRow();
