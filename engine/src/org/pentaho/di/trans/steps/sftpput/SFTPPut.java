@@ -139,57 +139,16 @@ public class SFTPPut extends BaseStep implements StepInterface {
       }
 
       // Let's perform some checks
-      // Sourcefilename field
-      String sourceFilenameFieldName = environmentSubstitute( meta.getSourceFileFieldName() );
 
-      if ( Const.isEmpty( sourceFilenameFieldName ) ) {
-        // source filename field is missing
-        throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Error.SourceFileNameFieldMissing" ) );
-      }
+      checkSourceFileField( meta.getSourceFileFieldName(), data );
 
-      data.indexOfSourceFileFieldName = getInputRowMeta().indexOfValue( sourceFilenameFieldName );
-
-      if ( data.indexOfSourceFileFieldName < -1 ) {
-        // source filename field is missing
-        throw new KettleStepException( BaseMessages.getString(
-          PKG, "SFTPPut.Error.CanNotFindField", sourceFilenameFieldName ) );
-      }
-
-      // Remote folder fieldname
-      String remoteFoldernameFieldName = environmentSubstitute( meta.getRemoteDirectoryFieldName() );
-
-      if ( Const.isEmpty( remoteFoldernameFieldName ) ) {
-        // remote folder field is missing
-        throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Error.RemoteFolderNameFieldMissing" ) );
-      }
-
-      data.indexOfRemoteDirectory = getInputRowMeta().indexOfValue( remoteFoldernameFieldName );
-
-      if ( data.indexOfRemoteDirectory < -1 ) {
-        // remote foldername field is missing
-        throw new KettleStepException( BaseMessages.getString(
-          PKG, "SFTPPut.Error.CanNotFindField", remoteFoldernameFieldName ) );
-      }
+      checkRemoteFoldernameField( meta.getRemoteDirectoryFieldName(), data );
 
       checkRemoteFilenameField( meta.getRemoteFilenameFieldName(), data );
 
       // Move to folder
       if ( meta.getAfterFTPS() == JobEntrySFTPPUT.AFTER_FTPSPUT_MOVE ) {
-        String realDestinationFoldernameFieldName = environmentSubstitute( meta.getDestinationFolderFieldName() );
-
-        if ( Const.isEmpty( realDestinationFoldernameFieldName ) ) {
-          throw new KettleStepException( BaseMessages.getString(
-            PKG, "SFTPPut.Log.DestinatFolderNameFieldNameMissing" ) );
-        }
-
-        data.indexOfMoveToFolderFieldName = getInputRowMeta().indexOfValue( realDestinationFoldernameFieldName );
-
-        if ( data.indexOfMoveToFolderFieldName < -1 ) {
-          // move to folder field is missing
-          throw new KettleStepException( BaseMessages.getString(
-            PKG, "SFTPPut.Error.CanNotFindField", realDestinationFoldernameFieldName ) );
-        }
-
+        checkDestinationFolderField( meta.getDestinationFolderFieldName(), data );
       }
     }
 
@@ -309,6 +268,40 @@ public class SFTPPut extends BaseStep implements StepInterface {
   }
 
   @VisibleForTesting
+  void checkSourceFileField( String sourceFilenameFieldName, SFTPPutData data ) throws KettleStepException {
+    // Sourcefilename field
+    sourceFilenameFieldName = environmentSubstitute( sourceFilenameFieldName );
+    if ( Const.isEmpty( sourceFilenameFieldName ) ) {
+      // source filename field is missing
+      throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Error.SourceFileNameFieldMissing" ) );
+    }
+
+    data.indexOfSourceFileFieldName = getInputRowMeta().indexOfValue( sourceFilenameFieldName );
+    if ( data.indexOfSourceFileFieldName == -1 ) {
+      // source filename field is missing
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "SFTPPut.Error.CanNotFindField", sourceFilenameFieldName ) );
+    }
+  }
+
+  @VisibleForTesting
+  void checkRemoteFoldernameField( String remoteFoldernameFieldName, SFTPPutData data ) throws KettleStepException {
+    // Remote folder fieldname
+    remoteFoldernameFieldName = environmentSubstitute( remoteFoldernameFieldName );
+    if ( Const.isEmpty( remoteFoldernameFieldName ) ) {
+      // remote folder field is missing
+      throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Error.RemoteFolderNameFieldMissing" ) );
+    }
+
+    data.indexOfRemoteDirectory = getInputRowMeta().indexOfValue( remoteFoldernameFieldName );
+    if ( data.indexOfRemoteDirectory == -1 ) {
+      // remote foldername field is missing
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "SFTPPut.Error.CanNotFindField", remoteFoldernameFieldName ) );
+    }
+  }
+
+  @VisibleForTesting
   void checkRemoteFilenameField( String remoteFilenameFieldName, SFTPPutData data )
     throws KettleStepException {
     remoteFilenameFieldName = environmentSubstitute( remoteFilenameFieldName );
@@ -319,6 +312,22 @@ public class SFTPPut extends BaseStep implements StepInterface {
         throw new KettleStepException( BaseMessages.getString(
           PKG, "SFTPPut.Error.CanNotFindField", remoteFilenameFieldName ) );
       }
+    }
+  }
+
+  @VisibleForTesting
+  void checkDestinationFolderField( String realDestinationFoldernameFieldName, SFTPPutData data ) throws KettleStepException {
+    realDestinationFoldernameFieldName = environmentSubstitute( realDestinationFoldernameFieldName );
+    if ( Const.isEmpty( realDestinationFoldernameFieldName ) ) {
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "SFTPPut.Log.DestinatFolderNameFieldNameMissing" ) );
+    }
+
+    data.indexOfMoveToFolderFieldName = getInputRowMeta().indexOfValue( realDestinationFoldernameFieldName );
+    if ( data.indexOfMoveToFolderFieldName == -1 ) {
+      // move to folder field is missing
+      throw new KettleStepException( BaseMessages.getString(
+        PKG, "SFTPPut.Error.CanNotFindField", realDestinationFoldernameFieldName ) );
     }
   }
 
