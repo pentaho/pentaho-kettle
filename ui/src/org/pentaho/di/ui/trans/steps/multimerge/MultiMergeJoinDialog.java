@@ -23,7 +23,9 @@
 package org.pentaho.di.ui.trans.steps.multimerge;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -89,8 +91,25 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
   public MultiMergeJoinDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, (BaseStepMeta) in, tr, sname );
     joinMeta = (MultiMergeJoinMeta) in;
-    wInputStepArray = new CCombo[tr.getPrevStepNames( stepname ).length];
-    keyValTextBox = new Text[wInputStepArray.length];
+
+    String[] inputStepNames = getInputStepNames();
+
+    wInputStepArray = new CCombo[inputStepNames.length];
+    keyValTextBox = new Text[inputStepNames.length];
+  }
+
+  private String[] getInputStepNames() {
+    Set<String> nameSet = new HashSet<String>();
+
+    String[] infoStepNames = joinMeta.getStepIOMeta().getInfoStepnames();
+    Collections.addAll( nameSet, infoStepNames );
+
+    String[] prevStepNames = transMeta.getPrevStepNames( stepname );
+    if ( prevStepNames != null ) {
+      Collections.addAll( nameSet, prevStepNames );
+    }
+
+    return nameSet.toArray( new String[ nameSet.size() ] );
   }
 
   /*
@@ -152,7 +171,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
     wCancel = new Button( shell, SWT.PUSH );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-    setButtonPositions( new Button[] { wOK, wCancel }, margin, joinTypeCombo );
+    setButtonPositions( new Button[] { wOK, wCancel }, margin, null );
 
     // Add listeners
     lsCancel = new Listener() {
@@ -240,8 +259,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
    */
   private void createInputStreamWidgets( final ModifyListener lsMod ) {
     // Get the previous steps ...
-    inputSteps = transMeta.getPrevStepNames( stepname );
-
+    inputSteps = getInputStepNames();
     for ( int index = 0; index < inputSteps.length; index++ ) {
       Label wlStep;
       FormData fdlStep, fdStep1;
@@ -475,10 +493,9 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    List<StreamInterface> infoStreams = joinMeta.getStepIOMeta().getInfoStreams();
-
-    for ( int i = 0; i < infoStreams.size(); i++ ) {
-      wInputStepArray[i].setText( joinMeta.getInputSteps()[i] );
+    String[] infoStepNames = joinMeta.getStepIOMeta().getInfoStepnames();
+    for ( int i = 0; i < infoStepNames.length; i++ ) {
+      wInputStepArray[i].setText( infoStepNames[i] );
     }
     String joinType = joinMeta.getJoinType();
     if ( joinType != null && joinType.length() > 0 ) {
@@ -489,7 +506,13 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
     String[] keyFields = joinMeta.getKeyFields();
     for ( int i = 0; i < keyFields.length; i++ ) {
-      keyValTextBox[i].setText( Const.NVL( keyFields[i], "" ) );
+      String keyField = keyFields[i];
+      Text kvTextBox = keyValTextBox[i];
+      if ( kvTextBox == null ) {
+        continue;
+      }
+      keyField = Const.NVL( keyField, "" );
+      kvTextBox.setText( keyField );
     }
     wStepname.selectAll();
     wStepname.setFocus();
