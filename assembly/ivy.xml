@@ -43,14 +43,7 @@
     <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle5-log4j-plugin" type="zip"/>
     </dependency>
-<<<<<<< HEAD
     
-=======
-    <dependency org="${ivy.artifact.group}" name="pdi-google-analytics-plugin-ce" rev="${project.revision}" changing="true" conf="plugins->default">
-        <artifact name="pdi-google-analytics-plugin-ce" type="zip"/>
-    </dependency>
-
->>>>>>> upstream/5.4.0.1
     <!-- Pentaho dependencies (non-Kettle), launcher, shim, etc. -->
     <dependency org="pentaho"               name="pentaho-application-launcher"  rev="${dependency.launcher.revision}" conf="launcher->default"/>
     <dependency org="pentaho"               name="pentaho-hadoop-hive-jdbc-shim" rev="${dependency.pentaho-hadoop-hive-jdbc-shim.revision}"/>
@@ -174,11 +167,6 @@
     <!-- Other third-party dependencies -->
     <dependency org="asm"                  name="asm"                   rev="3.2"           transitive="false"/>
     <dependency org="net.sf.saxon"         name="saxon-dom"             rev="9.1.0.8"       transitive="false"/>
-<<<<<<< HEAD
     
-=======
-    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.5"/>
-    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.5"/>
->>>>>>> upstream/5.4.0.1
   </dependencies>
 </ivy-module>

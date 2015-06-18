@@ -892,20 +892,12 @@ public class PropsUI extends Props {
         // font = gui.getFontDefault();
         CTabFolder tabFolder = (CTabFolder) control;
         tabFolder.setSimple( false );
-<<<<<<< HEAD
         tabFolder.setBorderVisible( false );
 
         // Set a small vertical gradient
         tabFolder.setSelectionBackground( new Color[] {
           display.getSystemColor( SWT.COLOR_WIDGET_NORMAL_SHADOW ),
           display.getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ), }, new int[] { 55, }, true );
-=======
-        tabFolder.setBorderVisible( true );
-        // need to make a copy of the tab selection background color to get around PDI-13940
-        Color c = GUIResource.getInstance().getColorTab();
-        Color tabColor = new Color( c.getDevice(), c.getRed(), c.getGreen(), c.getBlue() );
-        tabFolder.setSelectionBackground( tabColor );
->>>>>>> upstream/5.4.0.1
         break;
       default:
         background = gui.getColorBackground();

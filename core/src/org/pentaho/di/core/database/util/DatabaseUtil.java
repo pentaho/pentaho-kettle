@@ -30,7 +30,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DataSourceNamingException;
 import org.pentaho.di.core.database.DataSourceProviderInterface;
 import org.pentaho.di.core.database.Database;
@@ -71,9 +70,6 @@ public class DatabaseUtil implements DataSourceProviderInterface {
    * @throws NamingException
    */
   private static DataSource getDataSourceFromJndi( String dsName ) throws NamingException {
-    if ( Const.isEmpty( dsName ) ) {
-      throw new NamingException( BaseMessages.getString( PKG, "DatabaseUtil.DSNotFound", String.valueOf ( dsName )  ) );
-    }
     Object foundDs = FoundDS.get( dsName );
     if ( foundDs != null ) {
       return (DataSource) foundDs;
@@ -85,7 +81,7 @@ public class DatabaseUtil implements DataSourceProviderInterface {
     // First, try what they ask for...
     try {
       lkup = ctx.lookup( dsName );
-      if ( lkup instanceof DataSource ) {
+      if ( lkup != null ) {
         rtn = (DataSource) lkup;
         FoundDS.put( dsName, rtn );
         return rtn;
@@ -96,7 +92,7 @@ public class DatabaseUtil implements DataSourceProviderInterface {
     try {
       // Needed this for Jboss
       lkup = ctx.lookup( "java:" + dsName );
-      if ( lkup instanceof DataSource ) {
+      if ( lkup != null ) {
         rtn = (DataSource) lkup;
         FoundDS.put( dsName, rtn );
         return rtn;
@@ -107,7 +103,7 @@ public class DatabaseUtil implements DataSourceProviderInterface {
     try {
       // Tomcat
       lkup = ctx.lookup( "java:comp/env/jdbc/" + dsName );
-      if ( lkup instanceof DataSource ) {
+      if ( lkup != null ) {
         rtn = (DataSource) lkup;
         FoundDS.put( dsName, rtn );
         return rtn;
@@ -118,7 +114,7 @@ public class DatabaseUtil implements DataSourceProviderInterface {
     try {
       // Others?
       lkup = ctx.lookup( "jdbc/" + dsName );
-      if ( lkup instanceof DataSource ) {
+      if ( lkup != null ) {
         rtn = (DataSource) lkup;
         FoundDS.put( dsName, rtn );
         return rtn;
