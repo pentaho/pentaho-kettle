@@ -131,7 +131,7 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
     return capabilities.supportsLocking();
   }
 
-  public boolean allowsVersionComments( String fullPath ) {
+  public boolean allowsVersionComments() {
     return false;
   }
 
@@ -152,7 +152,7 @@ public class KettleFileRepositorySecurityProvider implements RepositorySecurityP
   }
 
   @Override
-  public boolean isVersioningEnabled( String fullPath ) {
+  public boolean isVersioningEnabled() {
     return false;
   }
 }

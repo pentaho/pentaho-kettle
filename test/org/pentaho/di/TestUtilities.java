@@ -40,8 +40,6 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
@@ -77,8 +75,10 @@ public class TestUtilities {
   /**
    * Check the 2 lists comparing the rows in order. If they are not the same fail the test.
    *
-   * @param rows1 set 1 of rows to compare
-   * @param rows2 set 2 of rows to compare
+   * @param rows1
+   *          set 1 of rows to compare
+   * @param rows2
+   *          set 2 of rows to compare
    * @throws TestFailedException
    */
   public static void checkRows( List<RowMetaAndData> rows1, List<RowMetaAndData> rows2 ) throws TestFailedException {
@@ -90,13 +90,15 @@ public class TestUtilities {
   /**
    * Check the 2 lists comparing the rows in order. If they are not the same fail the test.
    *
-   * @param rows1          set 1 of rows to compare
-   * @param rows2          set 2 of rows to compare
-   * @param fileNameColumn Number of the column containing the filename. This is only checked for being non-null (some
-   *                       systems maybe canonize names differently than we input).
+   * @param rows1
+   *          set 1 of rows to compare
+   * @param rows2
+   *          set 2 of rows to compare
+   * @param fileNameColumn
+   *          Number of the column containing the filename. This is only checked for being non-null (some systems maybe
+   *          canonize names differently than we input).
    */
-  public static void checkRows( List<RowMetaAndData> rows1, List<RowMetaAndData> rows2, int fileNameColumn )
-    throws TestFailedException {
+  public static void checkRows( List<RowMetaAndData> rows1, List<RowMetaAndData> rows2, int fileNameColumn ) throws TestFailedException {
 
     int idx = 1;
     if ( rows1.size() != rows2.size() ) {
@@ -117,14 +119,14 @@ public class TestUtilities {
       if ( rowMetaAndData1.size() != rowMetaAndData2.size() ) {
         throw new TestFailedException( "row number " + idx + " is not equal" );
       }
-      int[] fields = new int[ rowMetaInterface1.size() ];
+      int[] fields = new int[rowMetaInterface1.size()];
       for ( int ydx = 0; ydx < rowMetaInterface1.size(); ydx++ ) {
-        fields[ ydx ] = ydx;
+        fields[ydx] = ydx;
       }
 
       if ( fileNameColumn > 0 ) {
         try {
-          rowObject1[ fileNameColumn ] = rowObject2[ fileNameColumn ];
+          rowObject1[fileNameColumn] = rowObject2[fileNameColumn];
           if ( rowMetaAndData1.getRowMeta().compare( rowObject1, rowObject2, fields ) != 0 ) {
             throw new TestFailedException( "row nr " + idx + " is not equal" );
           }
@@ -184,7 +186,8 @@ public class TestUtilities {
    * Create an empty temp file and return it's absolute path.
    *
    * @param fileName
-   * @param suffix   A suffix to add at the end of the file name
+   * @param suffix
+   *          A suffix to add at the end of the file name
    * @return
    * @throws IOException
    */
@@ -227,7 +230,8 @@ public class TestUtilities {
    * Write the file to be used as input (as a temporary file).
    *
    * @return Absolute file name/path of the created file.
-   * @throws IOException UPON
+   * @throws IOException
+   *           UPON
    */
   public static String writeTextFile( String folderName, String fileName, String delimiter ) throws IOException {
 
@@ -254,20 +258,22 @@ public class TestUtilities {
    * Create and return a SortRows step.
    *
    * @param name
-   * @param sortFields     [] Fields to sort by
-   * @param ascending      [] Boolean indicating whether the corresponding field is to be sorted in ascending or
-   *                       descending order.
-   * @param caseSensitive  [] Boolean indicating whether the corresponding field is to have case as a factor in the
-   *                       sort.
-   * @param directory      The directory in the file system where the sort is to take place if it can't fit into
-   *                       memory?
-   * @param sortSize       ???
-   * @param pluginRegistry The environment's Kettle plugin registry.
+   * @param sortFields
+   *          [] Fields to sort by
+   * @param ascending
+   *          [] Boolean indicating whether the corresponding field is to be sorted in ascending or descending order.
+   * @param caseSensitive
+   *          [] Boolean indicating whether the corresponding field is to have case as a factor in the sort.
+   * @param directory
+   *          The directory in the file system where the sort is to take place if it can't fit into memory?
+   * @param sortSize
+   *          ???
+   * @param pluginRegistry
+   *          The environment's Kettle plugin registry.
    * @return
    */
   public static synchronized StepMeta createSortRowsStep( String name, String[] sortFields, boolean[] ascending,
-                                                          boolean[] caseSensitive, String directory, int sortSize,
-                                                          PluginRegistry pluginRegistry ) {
+    boolean[] caseSensitive, String directory, int sortSize, PluginRegistry pluginRegistry ) {
 
     SortRowsMeta sortRowsMeta = new SortRowsMeta();
     sortRowsMeta.setSortSize( Integer.toString( sortSize / 10 ) );
@@ -284,14 +290,14 @@ public class TestUtilities {
 
   /**
    * 65-90 = big, 97-122 - small
-   *
+   * 
    * @param rng
    * @param characters
    * @param length
    * @return
    */
   public static String generateString( Random rng, int length ) {
-    char[] text = new char[ length ];
+    char[] text = new char[length];
     for ( int i = 0; i < length; i++ ) {
       int ch = -1;
       double db = rng.nextDouble();
@@ -300,7 +306,7 @@ public class TestUtilities {
       } else {
         ch = 97 + (int) ( db * 26 );
       }
-      text[ i ] = (char) ch;
+      text[i] = (char) ch;
     }
     return new String( text );
   }
@@ -334,29 +340,5 @@ public class TestUtilities {
       }
     }
     return sb.toString();
-  }
-
-  public static Trans loadAndRunTransformation( String path, Object... parameters ) throws Exception {
-    TransMeta transMeta = new TransMeta( path );
-    transMeta.setTransformationType( TransMeta.TransformationType.Normal );
-
-    Trans trans = new Trans( transMeta );
-    if ( parameters != null ) {
-      if ( parameters.length % 2 == 1 ) {
-        throw new IllegalArgumentException( "Parameters should be an array of pairs 'parameter'-'value'-..." );
-      }
-
-      for ( int i = 0; i < parameters.length; i += 2 ) {
-        Object parameter = parameters[ i ];
-        Object value = parameters[i + 1];
-        trans.setParameterValue( parameter.toString(), value.toString() );
-      }
-    }
-
-    trans.prepareExecution( null );
-    trans.startThreads();
-    trans.waitUntilFinished();
-
-    return trans;
   }
 }

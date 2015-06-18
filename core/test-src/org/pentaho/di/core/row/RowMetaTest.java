@@ -1,25 +1,3 @@
-/*! ******************************************************************************
- *
- * Pentaho Data Integration
- *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
- *
- *******************************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
-
 package org.pentaho.di.core.row;
 
 import static org.junit.Assert.assertEquals;
@@ -75,9 +53,7 @@ public class RowMetaTest {
   private List<ValueMetaInterface> generateVList( String[] names, int[] types ) throws KettlePluginException {
     List<ValueMetaInterface> list = new ArrayList<ValueMetaInterface>();
     for ( int i = 0; i < names.length; i++ ) {
-      ValueMetaInterface vm = ValueMetaFactory.createValueMeta( names[i], types[i] );
-      vm.setOrigin( "originStep" );
-      list.add( vm );
+      list.add( ValueMetaFactory.createValueMeta( names[i], types[i] ) );
     }
     return list;
   }
@@ -92,7 +68,7 @@ public class RowMetaTest {
 
   @Test
   public void testSetValueMetaList() throws KettlePluginException {
-    List<ValueMetaInterface> setList = this.generateVList( new String[]{ "alpha", "bravo" }, new int[]{ 2, 2 } );
+    List<ValueMetaInterface> setList = this.generateVList( new String[] { "alpha", "bravo" }, new int[] { 2, 2 } );
     rowMeta.setValueMetaList( setList );
     assertTrue( setList.contains( rowMeta.searchValueMeta( "alpha" ) ) );
     assertTrue( setList.contains( rowMeta.searchValueMeta( "bravo" ) ) );
@@ -104,7 +80,7 @@ public class RowMetaTest {
 
   @Test
   public void testSetValueMetaListNullName() throws KettlePluginException {
-    List<ValueMetaInterface> setList = this.generateVList( new String[]{ "alpha", null }, new int[]{ 2, 2 } );
+    List<ValueMetaInterface> setList = this.generateVList( new String[] { "alpha", null }, new int[] { 2, 2 } );
     rowMeta.setValueMetaList( setList );
     assertTrue( setList.contains( rowMeta.searchValueMeta( "alpha" ) ) );
     assertFalse( setList.contains( rowMeta.searchValueMeta( null ) ) );
@@ -197,7 +173,7 @@ public class RowMetaTest {
   @Test
   public void testAddRowMeta() throws KettlePluginException {
     List<ValueMetaInterface> list =
-      this.generateVList( new String[]{ "alfa", "bravo", "charly", "delta" }, new int[]{ 2, 2, 3, 4 } );
+        this.generateVList( new String[] { "alfa", "bravo", "charly", "delta" }, new int[] { 2, 2, 3, 4 } );
     RowMeta added = new RowMeta();
     added.setValueMetaList( list );
     rowMeta.addRowMeta( added );
@@ -209,7 +185,7 @@ public class RowMetaTest {
   @Test
   public void testMergeRowMeta() throws KettlePluginException {
     List<ValueMetaInterface> list =
-      this.generateVList( new String[]{ "phobos", "demos", "mars" }, new int[]{ 6, 6, 6 } );
+        this.generateVList( new String[] { "phobos", "demos", "mars" }, new int[] { 6, 6, 6 } );
     list.add( 1, integer );
     RowMeta toMerge = new RowMeta();
     toMerge.setValueMetaList( list );
@@ -290,7 +266,7 @@ public class RowMetaTest {
     ValueMetaInterface searchFor = null;
     for ( int i = 0; i < 100000; i++ ) {
       ValueMetaInterface vm =
-        ValueMetaFactory.createValueMeta( UUID.randomUUID().toString(), ValueMetaInterface.TYPE_STRING );
+          ValueMetaFactory.createValueMeta( UUID.randomUUID().toString(), ValueMetaInterface.TYPE_STRING );
       rowMeta.addValueMeta( vm );
       if ( i == 50000 ) {
         searchFor = vm;
@@ -314,7 +290,7 @@ public class RowMetaTest {
     // System.out.println( time1 + ", " + time2 );
 
     assertTrue( "array search is slower then current implementation : " + "for array list: " + time1
-      + ", for hashed rowMeta: " + time2, time1 > time2 );
+        + ", for hashed rowMeta: " + time2, time1 > time2 );
   }
 
   // @Test
@@ -325,7 +301,7 @@ public class RowMetaTest {
     List<ValueMetaInterface> pre = new ArrayList<ValueMetaInterface>( 100000 );
     for ( int i = 0; i < 100000; i++ ) {
       ValueMetaInterface vm =
-        ValueMetaFactory.createValueMeta( UUID.randomUUID().toString(), ValueMetaInterface.TYPE_STRING );
+          ValueMetaFactory.createValueMeta( UUID.randomUUID().toString(), ValueMetaInterface.TYPE_STRING );
       pre.add( vm );
     }
 
@@ -353,37 +329,6 @@ public class RowMetaTest {
 
     // let say finally it is not 10 times slower :(
     assertTrue( "it is not 10 times slower than for original arrayList", time1 * 10 > time2 );
-  }
-
-  @Test
-  public void testMergeRowMetaWithOriginStep() throws Exception {
-
-    List<ValueMetaInterface> list =
-      this.generateVList( new String[]{ "phobos", "demos", "mars" }, new int[]{ 6, 6, 6 } );
-    list.add( 1, integer );
-    RowMeta toMerge = new RowMeta();
-    toMerge.setValueMetaList( list );
-
-    rowMeta.mergeRowMeta( toMerge, "newOriginStep" );
-    assertEquals( 7, rowMeta.size() );
-
-    list = rowMeta.getValueMetaList();
-    assertTrue( list.contains( integer ) );
-    ValueMetaInterface found = null;
-    ValueMetaInterface other = null;
-    for ( ValueMetaInterface vm : list ) {
-      if ( vm.getName().equals( "integer_1" ) ) {
-        found = vm;
-        break;
-      } else {
-        other = vm;
-      }
-    }
-    assertNotNull( found );
-    assertEquals( found.getOrigin(), "newOriginStep" );
-    assertNotNull( other );
-    assertEquals( other.getOrigin(), "originStep" );
-
   }
 
 }

@@ -24,10 +24,9 @@ package org.pentaho.di.core.database.map;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.pentaho.di.core.Const;
@@ -36,72 +35,54 @@ import org.pentaho.di.core.database.DatabaseTransactionListener;
 
 /**
  * This class contains a map between on the one hand
- * <p/>
+ *
  * the transformation name/thread the partition ID the connection group
- * <p/>
+ *
  * And on the other hand
- * <p/>
+ *
  * The database connection The number of times it was opened
  *
  * @author Matt
+ *
  */
 public class DatabaseConnectionMap {
-  private final ConcurrentMap<String, Database> map;
-  private final AtomicInteger transactionId;
-  private final Map<String, List<DatabaseTransactionListener>> transactionListenersMap;
+  private Map<String, Database> map;
+  private AtomicInteger transactionId;
+  private Map<String, List<DatabaseTransactionListener>> transactionListenersMap;
 
-  private static final DatabaseConnectionMap connectionMap = new DatabaseConnectionMap();
+  private static DatabaseConnectionMap connectionMap;
 
-  public static synchronized DatabaseConnectionMap getInstance() {
+  public static final synchronized DatabaseConnectionMap getInstance() {
+    if ( connectionMap != null ) {
+      return connectionMap;
+    }
+    connectionMap = new DatabaseConnectionMap();
     return connectionMap;
   }
 
   private DatabaseConnectionMap() {
-    map = new ConcurrentHashMap<String, Database>();
+    map = new Hashtable<String, Database>();
     transactionId = new AtomicInteger( 0 );
     transactionListenersMap = new HashMap<String, List<DatabaseTransactionListener>>();
   }
 
-  /**
-   * Tries to obtain an existing <tt>Database</tt> instance for specified parameters. If none is found, then maps the
-   * key's value to <tt>database</tt>. Similarly to {@linkplain ConcurrentHashMap#putIfAbsent(Object, Object)} returns
-   * <tt>null</tt> if there was no value for the specified key and they mapped value otherwise.
-   *
-   * @param connectionGroup connection group
-   * @param partitionID     partition's id
-   * @param database        database
-   * @return <tt>null</tt> or previous value
-   */
-  public Database getOrStoreIfAbsent( String connectionGroup, String partitionID, Database database ) {
-    String key = createEntryKey( connectionGroup, partitionID, database );
-    return map.putIfAbsent( key, database );
-  }
-
-  public void removeConnection( String connectionGroup, String partitionID, Database database ) {
-    String key = createEntryKey( connectionGroup, partitionID, database );
-    map.remove( key );
-  }
-
-  /**
-   * @deprecated use {@linkplain #getOrStoreIfAbsent(String, String, Database)} instead
-   */
-  @Deprecated
   public synchronized void storeDatabase( String connectionGroup, String partitionID, Database database ) {
     String key = createEntryKey( connectionGroup, partitionID, database );
     map.put( key, database );
   }
 
-  /**
-   * @deprecated use {@linkplain #getOrStoreIfAbsent(String, String, Database)} instead
-   */
-  @Deprecated
+  public synchronized void removeConnection( String connectionGroup, String partitionID, Database database ) {
+    String key = createEntryKey( connectionGroup, partitionID, database );
+    map.remove( key );
+  }
+
   public synchronized Database getDatabase( String connectionGroup, String partitionID, Database database ) {
     String key = createEntryKey( connectionGroup, partitionID, database );
     return map.get( key );
   }
 
-  public static String createEntryKey( String connectionGroup, String partitionID, Database database ) {
-    StringBuilder key = new StringBuilder( connectionGroup );
+  public static final String createEntryKey( String connectionGroup, String partitionID, Database database ) {
+    StringBuffer key = new StringBuffer( connectionGroup );
 
     key.append( ':' ).append( database.getDatabaseMeta().getName() );
     if ( !Const.isEmpty( partitionID ) ) {

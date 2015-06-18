@@ -157,7 +157,6 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
           db.disconnect();
         }
       }
-      meta.setCompatibilityDbVersionMode();
     } catch ( Exception ex ) {
       throw new KettleException( ex );
     }
@@ -503,16 +502,12 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface {
       if ( error != null ) {
         throw new KettleException( "Error loading data: " + error );
       }
+      data.out.writeLine( "" );
 
-      if ( !meta.isCompatibilityDbVersionMode() ) {
-        // write an empty line, forces the flush of the stream
-        data.out.writeLine( "" );
-
-        // again...
-        error = data.in.waitForPrompt();
-        if ( error != null ) {
-          throw new KettleException( "Error loading data: " + error );
-        }
+      // and again, making sure we commit all the records
+      error = data.in.waitForPrompt();
+      if ( error != null ) {
+        throw new KettleException( "Error loading data: " + error );
       }
 
       if ( log.isRowLevel() ) {

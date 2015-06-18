@@ -1,17 +1,17 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="stretch">
 
   <toolbar id="nav-toolbar" mode="icons">
-    <toolbarbutton id="refresh-history" label="${JobHistory.Button.Refresh}" image="images/refresh.svg"
+    <toolbarbutton id="refresh-history" label="${JobHistory.Button.Refresh}" image="images/refresh.png"
       tooltiptext="${JobHistory.Button.Refresh}" onclick="history.refreshHistory()" />
-    <toolbarbutton id="replay-history" label="${JobHistory.Button.Replay}" image="images/replay.svg"
+    <toolbarbutton id="replay-history" label="${JobHistory.Button.Replay}" image="images/replay.png"
       tooltiptext="${JobHistory.Button.Replay}" onclick="history.replayHistory()" />
     <toolbarseparator />
-    <toolbarbutton id="clear-history" label="${JobHistory.Button.Clear}" image="images/trash.svg"
+    <toolbarbutton id="clear-history" label="${JobHistory.Button.Clear}" image="images/clear-log.png"
       tooltiptext="${JobHistory.Button.Clear}" onclick="history.clearLogTable()" />
     <toolbarseparator />
-    <toolbarbutton id="fetch-next-batch-history" label="${JobHistory.Button.FetchNextBatch}" image="images/history_get_next.svg"
+    <toolbarbutton id="fetch-next-batch-history" label="${JobHistory.Button.FetchNextBatch}" image="images/history_get_next.png"
       tooltiptext="${JobHistory.Button.FetchNextBatch}" onclick="history.fetchNextBatch()" />
-    <toolbarbutton id="fetch-all-history" label="${JobHistory.Button.FetchAll}" image="images/history_get_all.svg"
+    <toolbarbutton id="fetch-all-history" label="${JobHistory.Button.FetchAll}" image="images/history_get_all.png"
       tooltiptext="${JobHistory.Button.FetchAll}" onclick="history.fetchAll()" />
   </toolbar>
 

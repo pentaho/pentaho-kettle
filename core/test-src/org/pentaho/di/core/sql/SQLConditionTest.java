@@ -23,6 +23,7 @@
 package org.pentaho.di.core.sql;
 
 import junit.framework.TestCase;
+
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -713,67 +714,14 @@ public class SQLConditionTest extends TestCase {
   //
 
   public void testCondition25() throws KettleSQLException {
-    runParamTest( "PARAMETER('param')='FOO'",
-        "param",
-        "FOO" );
-  }
-
-  public void testLowerCaseParamInConditionClause() throws KettleSQLException {
-    runParamTest( "parameter('param')='FOO'",
-        "param",
-        "FOO" );
-  }
-
-  public void testMixedCaseParamInConditionClause() throws KettleSQLException {
-    runParamTest( "Parameter('param')='FOO'",
-        "param",
-        "FOO" );
-  }
-
-  public void testSpaceInParamNameAndValueInConditionClause() throws KettleSQLException {
-    runParamTest( "Parameter('My Parameter')='Foo Bar Baz'",
-        "My Parameter",
-        "Foo Bar Baz" );
-  }
-
-  public void testUnquotedNumericParameterValueInConditionClause() throws KettleSQLException {
-    runParamTest( "Parameter('My Parameter') = 123",
-        "My Parameter",
-        "123" );
-  }
-
-  public void testExtraneousWhitespaceInParameterConditionClause() throws KettleSQLException {
-    runParamTest( "Parameter   ( \t     'My Parameter'  \t   )  \t= \t    'My value'",
-        "My Parameter",
-        "My value" );
-  }
-
-  public void testParameterNameMissingThrows() throws KettleSQLException {
     RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
-    SQLFields fields = new SQLFields( "Service", rowMeta, "A, B" );
-    try {
-      new SQLCondition( "Service", "Parameter('') =  'My value'", rowMeta, fields );
-      fail();
-    } catch ( KettleSQLException kse ) {
-      assertTrue( kse.getMessage().contains( "A parameter name cannot be empty" ) );
-    }
-  }
 
-  public void testParameterValueMissingThrows() throws KettleSQLException {
-    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
-    SQLFields fields = new SQLFields( "Service", rowMeta, "A, B" );
-    try {
-      new SQLCondition( "Service", "Parameter('Foo') =  ''", rowMeta, fields );
-      fail();
-    } catch ( KettleSQLException kse ) {
-      assertTrue( kse.getMessage().contains( "A parameter value cannot be empty" ) );
-    }
-  }
+    String fieldsClause = "A, B";
+    String conditionClause = "PARAMETER('param')='FOO'";
 
-  private void runParamTest( String conditionClause, String paramName, String paramValue )
-      throws KettleSQLException {
-    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
-    SQLFields fields = new SQLFields( "Service", rowMeta, "A, B" );
+    // Correctness of the next statement is tested in SQLFieldsTest
+    //
+    SQLFields fields = new SQLFields( "Service", rowMeta, fieldsClause );
 
     SQLCondition sqlCondition = new SQLCondition( "Service", conditionClause, rowMeta, fields );
     Condition condition = sqlCondition.getCondition();
@@ -781,14 +729,10 @@ public class SQLConditionTest extends TestCase {
     assertNotNull( condition );
     assertFalse( condition.isEmpty() );
     assertTrue( condition.isAtomic() );
-    assertEquals(
-        String.format(
-            "Expected condition to be of type FUNC_TRUE, was (%s)",
-            Condition.functions[condition.getFunction()] ),
-        Condition.FUNC_TRUE, condition.getFunction() );
+    assertEquals( Condition.FUNC_TRUE, condition.getFunction() );
 
-    assertEquals( paramName, condition.getLeftValuename() );
-    assertEquals( paramValue, condition.getRightExactString() );
+    assertEquals( "param", condition.getLeftValuename() );
+    assertEquals( "FOO", condition.getRightExactString() );
   }
 
   public void testCondition26() throws KettleSQLException {
@@ -836,9 +780,8 @@ public class SQLConditionTest extends TestCase {
     String fieldsClause = "\"Service\".\"Category\" as \"c0\", \"Service\".\"Country\" as \"c1\"";
     SQLFields fields = new SQLFields( "Service", rowMeta, fieldsClause );
 
-    String
-        conditionClause =
-        "(NOT((sum(\"Service\".\"sales_amount\") is null)) OR NOT((sum(\"Service\".\"products_sold\") is null)) )";
+    String conditionClause =
+      "(NOT((sum(\"Service\".\"sales_amount\") is null)) OR NOT((sum(\"Service\".\"products_sold\") is null)) )";
     SQLCondition sqlCondition = new SQLCondition( "Service", conditionClause, rowMeta, fields );
     Condition condition = sqlCondition.getCondition();
     assertNotNull( condition );
@@ -847,9 +790,8 @@ public class SQLConditionTest extends TestCase {
   public void testCondition28() throws Exception {
 
     RowMetaInterface rowMeta = SQLTest.generateServiceRowMeta();
-    String
-        fieldsClause =
-        "\"Service\".\"Category\" as \"c0\", \"Service\".\"Country\" as \"c1\" from \"Service\" as \"Service\"";
+    String fieldsClause =
+      "\"Service\".\"Category\" as \"c0\", \"Service\".\"Country\" as \"c1\" from \"Service\" as \"Service\"";
     SQLFields fields = new SQLFields( "Service", rowMeta, fieldsClause );
 
     String conditionClause = "((not (\"Service\".\"Country\" = 'Belgium') or (\"Service\".\"Country\" is null)))";
@@ -862,9 +804,8 @@ public class SQLConditionTest extends TestCase {
     RowMetaInterface rowMeta = SQLTest.generateGettingStartedRowMeta();
 
     String fieldsClause = "CUSTOMERNAME";
-    String
-        conditionClause =
-        "\"GETTING_STARTED\".\"CUSTOMERNAME\" IN ('ANNA''S DECORATIONS, LTD', 'MEN ''R'' US RETAILERS, Ltd.' )";
+    String conditionClause =
+      "\"GETTING_STARTED\".\"CUSTOMERNAME\" IN ('ANNA''S DECORATIONS, LTD', 'MEN ''R'' US RETAILERS, Ltd.' )";
 
     // Correctness of the next statement is tested in SQLFieldsTest
     //

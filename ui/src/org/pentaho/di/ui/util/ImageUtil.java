@@ -71,36 +71,28 @@ public class ImageUtil {
     return image;
   }
 
-  public static InputStream getImageInputStream( Display display, String location ) {
+  public static Image getImageAsResource( Display display, String location ) {
     // assume the classloader for the active thread
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
     URL res = cl.getResource( location );
     if ( res != null ) {
       try {
         java.io.InputStream s = res.openStream();
-        return s;
+        if ( s != null ) {
+          return new Image( display, s );
+        }
       } catch ( IOException e ) {
         // do nothing. just move on to trying to load via file system
       }
     }
     try {
       FileObject imageFileObject = KettleVFS.getInstance().getFileSystemManager().resolveFile( base, location );
-      return KettleVFS.getInputStream( imageFileObject );
+      return new Image( display, KettleVFS.getInputStream( imageFileObject ) );
     } catch ( FileSystemException e ) {
       throw new RuntimeException( "Unable to load image with name [" + location + "]", e );
     }
   }
 
-  /**
-   * TODO: Load splash and common images.
-   */
-  public static Image getImageAsResource( Display display, String location ) {
-    return new Image( display, getImageInputStream( display, location ) );
-  }
-
-  /**
-   * TODO: not used.
-   */
   public static Image getImage( Display display, Class<?> resourceClass, String filename ) {
     try {
       return new Image( display, resourceClass.getResourceAsStream( filename ) );
@@ -113,9 +105,6 @@ public class ImageUtil {
     }
   }
 
-  /**
-   * TODO: Load job and step images.
-   */
   public static Image getImage( Display display, ClassLoader classLoader, String filename ) {
     try {
       return new Image( display, classLoader.getResourceAsStream( filename ) );
@@ -128,9 +117,6 @@ public class ImageUtil {
     }
   }
 
-  /**
-   * TODO: GUI resources.
-   */
   public static Image getImage( Display display, String location ) {
     // TODO: find other instances of getImage (plugin, steps) and transition them to new model through an laf manager
     try {
@@ -156,13 +142,12 @@ public class ImageUtil {
       ImageData data =
         new ImageData( bufferedImage.getWidth(), bufferedImage.getHeight(), colorModel.getPixelSize(), palette );
       WritableRaster raster = bufferedImage.getRaster();
-      int[] pixelArray = new int[4];
+      int[] pixelArray = new int[3];
       for ( int y = 0; y < data.height; y++ ) {
         for ( int x = 0; x < data.width; x++ ) {
           raster.getPixel( x, y, pixelArray );
           int pixel = palette.getPixel( new RGB( pixelArray[0], pixelArray[1], pixelArray[2] ) );
           data.setPixel( x, y, pixel );
-          data.setAlpha( x, y, pixelArray[3] );
         }
       }
       return data;

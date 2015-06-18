@@ -58,6 +58,7 @@ import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
@@ -391,14 +392,21 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     wPassword =
       new LabelTextVar(
         jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.Password.Label" ), BaseMessages
-          .getString( PKG, "JobFTPDelete.Password.Tooltip" ), true );
+          .getString( PKG, "JobFTPDelete.Password.Tooltip" ) );
     props.setLook( wPassword );
+    wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
     fdPassword.left = new FormAttachment( 0, 0 );
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
+
+    wPassword.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
+      }
+    } );
 
     wlConnectionType = new Label( wServerSettings, SWT.RIGHT );
     wlConnectionType.setText( BaseMessages.getString( PKG, "JobFTPDelete.ConnectionType.Label" ) );
@@ -485,14 +493,21 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     wProxyPassword =
       new LabelTextVar( jobMeta, wServerSettings,
         BaseMessages.getString( PKG, "JobFTPDelete.ProxyPassword.Label" ),
-        BaseMessages.getString( PKG, "JobFTPDelete.ProxyPassword.Tooltip" ), true );
+        BaseMessages.getString( PKG, "JobFTPDelete.ProxyPassword.Tooltip" ) );
     props.setLook( wProxyPassword );
+    wProxyPassword.setEchoChar( '*' );
     wProxyPassword.addModifyListener( lsMod );
     fdProxyPasswd = new FormData();
     fdProxyPasswd.left = new FormAttachment( 0, 0 );
     fdProxyPasswd.top = new FormAttachment( wProxyUsername, margin );
     fdProxyPasswd.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPasswd );
+
+    wProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wProxyPassword.getTextWidget() );
+      }
+    } );
 
     // usePublicKey
     wlusePublicKey = new Label( wServerSettings, SWT.RIGHT );
@@ -572,14 +587,21 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     wkeyfilePass =
       new LabelTextVar(
         jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPDelete.keyfilePass.Label" ),
-        BaseMessages.getString( PKG, "JobFTPDelete.keyfilePass.Tooltip" ), true );
+        BaseMessages.getString( PKG, "JobFTPDelete.keyfilePass.Tooltip" ) );
     props.setLook( wkeyfilePass );
+    wkeyfilePass.setEchoChar( '*' );
     wkeyfilePass.addModifyListener( lsMod );
     fdkeyfilePass = new FormData();
     fdkeyfilePass.left = new FormAttachment( 0, 0 );
     fdkeyfilePass.top = new FormAttachment( wKeyFilename, margin );
     fdkeyfilePass.right = new FormAttachment( 100, 0 );
     wkeyfilePass.setLayoutData( fdkeyfilePass );
+
+    wkeyfilePass.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wkeyfilePass.getTextWidget() );
+      }
+    } );
 
     // Test connection button
     wTest = new Button( wServerSettings, SWT.PUSH );
@@ -929,14 +951,21 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
     wSocksProxyPassword =
       new LabelTextVar( jobMeta, wSocksProxy,
         BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyPassword.Label" ),
-        BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyPassword.Tooltip" ), true );
+        BaseMessages.getString( PKG, "JobFTPDelete.SocksProxyPassword.Tooltip" ) );
     props.setLook( wSocksProxyPort );
+    wSocksProxyPassword.setEchoChar( '*' );
     wSocksProxyPassword.addModifyListener( lsMod );
     fdSocksProxyPassword = new FormData();
     fdSocksProxyPassword.left = new FormAttachment( 0, 0 );
     fdSocksProxyPassword.top = new FormAttachment( wSocksProxyUsername, margin );
     fdSocksProxyPassword.right = new FormAttachment( 100, margin );
     wSocksProxyPassword.setLayoutData( fdSocksProxyPassword );
+
+    wSocksProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wSocksProxyPassword.getTextWidget() );
+      }
+    } );
 
     // ///////////////////////////////////////////////////////////////
     // End of socks proxy group
@@ -1181,17 +1210,24 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.Connected.OK", wServerName.getText() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPDelete.Connected.Title.Ok" ) );
       mb.open();
+    } else {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.Connected.NOK.ConnectionBad", wServerName
+        .getText() )
+        + Const.CR );
+      mb.setText( BaseMessages.getString( PKG, "JobFTPDelete.Connected.Title.Bad" ) );
+      mb.open();
     }
+
   }
 
   private boolean connectToFTP() {
     boolean retval = false;
-    String realServername = null;
     try {
       if ( ftpclient == null || !ftpclient.connected() ) {
         // Create ftp client to host:port ...
         ftpclient = new FTPClient();
-        realServername = jobMeta.environmentSubstitute( wServerName.getText() );
+        String realServername = jobMeta.environmentSubstitute( wServerName.getText() );
         int realPort = Const.toInt( jobMeta.environmentSubstitute( wPort.getText() ), 21 );
         ftpclient.setRemoteAddr( InetAddress.getByName( realServername ) );
         ftpclient.setRemotePort( realPort );
@@ -1224,18 +1260,8 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
       }
       retval = true;
     } catch ( Exception e ) {
-      if ( ftpclient != null ) {
-        try {
-          ftpclient.quit();
-        } catch ( Exception ignored ) {
-          // We've tried quitting the FTP Client exception
-          // nothing else to be done if the FTP Client was already disconnected
-        }
-        ftpclient = null;
-      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.NOK", realServername,
-          e.getMessage() ) + Const.CR );
+      mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.Title.Bad" ) );
       mb.open();
     }
@@ -1281,15 +1307,6 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
       }
       retval = true;
     } catch ( Exception e ) {
-      if ( ftpsclient != null ) {
-        try {
-          ftpsclient.disconnect();
-        } catch ( Exception ignored ) {
-          // We've tried quitting the FTPS Client exception
-          // nothing else to be done if the FTPS Client was already disconnected
-        }
-        ftpsclient = null;
-      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.Title.Bad" ) );
@@ -1315,15 +1332,6 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
       retval = true;
     } catch ( Exception e ) {
-      if ( sftpclient != null ) {
-        try {
-          sftpclient.disconnect();
-        } catch ( Exception ignored ) {
-          // We've tried quitting the SFTP Client exception
-          // nothing else to be done if the SFTP Client was already disconnected
-        }
-        sftpclient = null;
-      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.Title.Bad" ) );
@@ -1373,15 +1381,6 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 
       retval = true;
     } catch ( Exception e ) {
-      if ( conn != null ) {
-        try {
-          conn.close();
-        } catch ( Exception ignored ) {
-          // We've tried quitting the SSH Client exception
-          // nothing else to be done if the SSH Client was already disconnected
-        }
-        conn = null;
-      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPDelete.ErrorConnect.Title.Bad" ) );

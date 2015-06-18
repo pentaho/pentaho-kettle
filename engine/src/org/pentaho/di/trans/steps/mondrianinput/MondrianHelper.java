@@ -55,7 +55,6 @@ import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.DBCacheEntry;
 import org.pentaho.di.core.database.DataSourceProviderFactory;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.util.DatabaseUtil;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -100,7 +99,9 @@ public class MondrianHelper {
     String realRole = space.environmentSubstitute( role );
 
     if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
-      DataSource dataSource = ( new DatabaseUtil() ).getNamedDataSource( databaseMeta.getDatabaseName() );
+      DataSource dataSource =
+        DataSourceProviderFactory.getDataSourceProviderInterface().getNamedDataSource(
+          databaseMeta.getDatabaseName() );
       mondrian.olap.Util.PropertyList propList = new mondrian.olap.Util.PropertyList();
       propList.put( "Provider", "mondrian" );
       propList.put( "Catalog", space.environmentSubstitute( catalog ) );

@@ -25,13 +25,6 @@ package org.pentaho.di.core.jdbc;
 import java.sql.ParameterMetaData;
 import java.sql.SQLException;
 
-/**
- * This class is no longer used
- *
- * Data Service client code is now available in the pdi-dataservice-plugin project
- *
- */
-@Deprecated
 public class ThinParameterMetaData implements ParameterMetaData {
 
   private ThinPreparedStatement ps;

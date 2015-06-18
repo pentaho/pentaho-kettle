@@ -31,12 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseConnectionPoolParameter;
@@ -46,12 +43,11 @@ import org.pentaho.di.core.database.GenericDatabaseMeta;
 import org.pentaho.di.core.database.MSSQLServerNativeDatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.core.database.SAPR3DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.plugins.PluginTypeListener;
 import org.pentaho.ui.database.Messages;
 import org.pentaho.ui.util.Launch;
 import org.pentaho.ui.util.Launch.Status;
@@ -96,22 +92,21 @@ public class DataHandler extends AbstractXulEventHandler {
     PluginRegistry registry = PluginRegistry.getInstance();
 
     List<PluginInterface> plugins = registry.getPlugins( DatabasePluginType.class );
-
-    PluginTypeListener databaseTypeListener = new DatabaseTypeListener( registry ){
-      public void databaseTypeAdded( String pluginName, DatabaseInterface databaseInterface ) {
-        connectionMap.put( pluginName, databaseInterface );
-        connectionNametoID.put( pluginName, databaseInterface.getPluginId() );
-      }
-
-      public void databaseTypeRemoved( String pluginName ) {
-        connectionMap.remove( pluginName );
-        connectionNametoID.remove( pluginName );
-      }
-    };
-
-    registry.addPluginListener( DatabasePluginType.class, databaseTypeListener );
     for ( PluginInterface plugin : plugins ) {
-      databaseTypeListener.pluginAdded( plugin );
+      try {
+        DatabaseInterface databaseInterface = (DatabaseInterface) registry.loadClass( plugin );
+        databaseInterface.setPluginId( plugin.getIds()[0] );
+        databaseInterface.setName( plugin.getName() );
+        connectionMap.put( plugin.getName(), databaseInterface );
+        connectionNametoID.put( plugin.getName(), plugin.getIds()[0] );
+      } catch ( KettlePluginException cnfe ) {
+        System.out.println( "Could not create connection entry for "
+          + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
+        LogChannel.GENERAL.logError( "Could not create connection entry for "
+          + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
+      } catch ( Exception e ) {
+        throw new RuntimeException( "Error creating class for: " + plugin, e );
+      }
     }
 
   }
@@ -248,35 +243,9 @@ public class DataHandler extends AbstractXulEventHandler {
 
     // Add sorted types to the listbox now.
 
-    final SortedSet<String> keys = new TreeSet<String>( connectionMap.keySet() );
-    for ( String key : keys ) {
+    for ( String key : connectionMap.keySet() ) {
       connectionBox.addItem( key );
     }
-    PluginRegistry registry = PluginRegistry.getInstance();
-    registry.addPluginListener( DatabasePluginType.class, new DatabaseTypeListener( registry ) {
-      @Override public void databaseTypeAdded( String pluginName, DatabaseInterface databaseInterface ) {
-        if ( keys.add( pluginName ) ) {
-          update();
-        }
-      }
-
-      @Override public void databaseTypeRemoved( String pluginName ) {
-        if ( keys.remove( pluginName ) ) {
-          update();
-        }
-      }
-
-      private void update() {
-        Display.getDefault().syncExec( new Runnable() {
-          @Override public void run() {
-            connectionBox.removeItems();
-            for ( String key : keys ) {
-              connectionBox.addItem( key );
-            }
-          }
-        } );
-      }
-    } );
 
     // HACK: Need to force height of list control, as it does not behave
     // well when using relative layouting
@@ -354,13 +323,7 @@ public class DataHandler extends AbstractXulEventHandler {
 
     Map<String, String> options = null;
     if ( this.databaseMeta != null ) {
-      // Apply defaults to meta if set (only current db type will be displayed)
-      this.databaseMeta.applyDefaultOptions( database );
       options = this.databaseMeta.getExtraOptions();
-    } else {
-      // Otherwise clear and display defaults directly
-      clearOptionsData();
-      options = database.getDefaultOptions();
     }
     setOptionsData( options );
     PartitionDatabaseMeta[] clusterInfo = null;
@@ -387,11 +350,6 @@ public class DataHandler extends AbstractXulEventHandler {
         newRow.addCellText( 1, "" );
       }
     }
-  }
-
-  public void clearOptionsData() {
-    getControls();
-    optionsParameterTree.getRootChildren().removeAll();
   }
 
   public void getOptionHelp() {
@@ -1079,12 +1037,9 @@ public class DataHandler extends AbstractXulEventHandler {
       }
 
     }
-    // Have at least 5 option rows, with at least one blank
+    // Add 5 blank rows if none are already there, otherwise, just add one.
     int numToAdd = 5;
-    int numSet = optionsParameterTree.getRootChildren().getItemCount();
-    if ( numSet < numToAdd ) {
-      numToAdd -= numSet;
-    } else {
+    if ( extraOptions != null && extraOptions.keySet().size() > 0 ) {
       numToAdd = 1;
     }
     while ( numToAdd-- > 0 ) {
@@ -1447,45 +1402,5 @@ public class DataHandler extends AbstractXulEventHandler {
         passwordBox.setDisabled( false );
       }
     }
-  }
-
-  private static abstract class DatabaseTypeListener implements PluginTypeListener {
-    private final PluginRegistry registry;
-
-    public DatabaseTypeListener( PluginRegistry registry ) {
-      this.registry = registry;
-    }
-
-    @Override public void pluginAdded( Object serviceObject ) {
-      PluginInterface plugin = (PluginInterface) serviceObject;
-      String pluginName = plugin.getName();
-      try {
-        DatabaseInterface databaseInterface = (DatabaseInterface) registry.loadClass( plugin );
-        databaseInterface.setPluginId( plugin.getIds()[0] );
-        databaseInterface.setName( pluginName );
-        databaseTypeAdded( pluginName, databaseInterface );
-      } catch ( KettleException e ) {
-        System.out.println( "Could not create connection entry for "
-          + pluginName + ".  " + e.getCause().getClass().getName() );
-        LogChannel.GENERAL.logError( "Could not create connection entry for "
-          + pluginName + ".  " + e.getCause().getClass().getName() );
-      }
-    }
-
-    public abstract void databaseTypeAdded( String pluginName, DatabaseInterface databaseInterface );
-
-    @Override public void pluginRemoved( Object serviceObject ) {
-      PluginInterface plugin = (PluginInterface) serviceObject;
-      String pluginName = plugin.getName();
-      databaseTypeRemoved( pluginName );
-    }
-
-    public abstract void databaseTypeRemoved( String pluginName );
-
-    @Override public void pluginChanged( Object serviceObject ) {
-      pluginRemoved( serviceObject );
-      pluginAdded( serviceObject );
-    }
-
   }
 }

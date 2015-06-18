@@ -30,8 +30,6 @@ import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
-import org.pentaho.di.core.extension.ExtensionPointHandler;
-import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
@@ -49,9 +47,6 @@ public class TransFileListener implements FileListener {
     final Spoon spoon = Spoon.getInstance();
     final PropsUI props = PropsUI.getInstance();
     try {
-      // Call extension point(s) before the file has been opened
-      ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.TransBeforeOpen.id, fname );
-      
       TransMeta transMeta = new TransMeta();
       transMeta.loadXML(
         transNode, fname, spoon.getMetaStore(), spoon.getRepository(), true, new Variables(),
@@ -87,9 +82,6 @@ public class TransFileListener implements FileListener {
       spoon.addTransGraph( transMeta );
       spoon.sharedObjectsFileMap.put( transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects() );
 
-      // Call extension point(s) now that the file has been opened
-      ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.TransAfterOpen.id, transMeta );
-
       SpoonPerspectiveManager.getInstance().activatePerspective( MainSpoonPerspective.class );
       spoon.refreshTree();
       return true;
@@ -113,24 +105,7 @@ public class TransFileListener implements FileListener {
     } else {
       lmeta = meta;
     }
-
-    try {
-      ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.TransBeforeClose.id, lmeta );
-    } catch ( KettleException e ) {
-      // fails gracefully
-    }
-
-    boolean saveStatus = spoon.saveMeta( lmeta, fname );
-
-    if( saveStatus ) {
-      try {
-        ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.TransAfterClose.id, lmeta );
-      } catch ( KettleException e ) {
-        // fails gracefully
-      }
-    }
-
-    return saveStatus;
+    return spoon.saveMeta( lmeta, fname );
   }
 
   public void syncMetaName( EngineMetaInterface meta, String name ) {

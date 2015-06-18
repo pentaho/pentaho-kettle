@@ -22,8 +22,9 @@
 
 package org.pentaho.di.trans.steps.excelwriter;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
@@ -31,9 +32,10 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
-import org.pentaho.di.utils.TestUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.List;
@@ -47,6 +49,7 @@ public class ExcelWriterStepTest {
 
   private static final String SHEET_NAME = "Sheet1";
 
+  private File xlsFile;
   private HSSFWorkbook wb;
   private StepMockHelper<ExcelWriterStepMeta, ExcelWriterStepData> mockHelper;
   private ExcelWriterStep step;
@@ -55,8 +58,7 @@ public class ExcelWriterStepTest {
 
   @Before
   public void setUp() throws Exception {
-    String path = TestUtils.createRamFile( getClass().getSimpleName() + "/testXLSProtect.xls" );
-    FileObject xlsFile = TestUtils.getFileObject( path );
+    xlsFile = File.createTempFile( "testXLSProtect", ".xls" );
     wb = createWorkbook( xlsFile );
     mockHelper =
       new StepMockHelper<ExcelWriterStepMeta, ExcelWriterStepData>(
@@ -68,6 +70,11 @@ public class ExcelWriterStepTest {
         mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
 
     stepMeta = new ExcelWriterStepMeta();
+  }
+
+  @After
+  public void tearDown() {
+    FileUtils.deleteQuietly( xlsFile );
   }
 
   @Test
@@ -169,7 +176,7 @@ public class ExcelWriterStepTest {
         stepMeta.getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
 
       for ( StepInjectionMetaEntry entry : entries ) {
-        switch( entry.getValueType() ) {
+        switch ( entry.getValueType() ) {
           case ValueMetaInterface.TYPE_STRING:
             entry.setValue( "new_".concat( entry.getKey() ) );
             break;
@@ -184,7 +191,7 @@ public class ExcelWriterStepTest {
 
           List<StepInjectionMetaEntry> childEntries = entry.getDetails().get( 0 ).getDetails();
           for ( StepInjectionMetaEntry childEntry : childEntries ) {
-            switch( childEntry.getValueType() ) {
+            switch ( childEntry.getValueType() ) {
               case ValueMetaInterface.TYPE_STRING:
                 childEntry.setValue( "new_".concat( childEntry.getKey() ) );
                 break;
@@ -200,20 +207,15 @@ public class ExcelWriterStepTest {
 
       stepMeta.getStepMetaInjectionInterface().injectStepMetadataEntries( entries );
 
-      assertEquals( "Cell comment not properly injected... ", "new_CELLCOMMENT",
-        stepMeta.getOutputFields()[ 0 ].getCommentField() );
-      assertEquals( "Format not properly injected... ", "new_FORMAT", stepMeta.getOutputFields()[ 0 ].getFormat() );
-      assertEquals( "Hyperlink not properly injected... ", "new_HYPERLINKFIELD",
-        stepMeta.getOutputFields()[ 0 ].getHyperlinkField() );
-      assertEquals( "Name not properly injected... ", "new_NAME", stepMeta.getOutputFields()[ 0 ].getName() );
-      assertEquals( "Style cell not properly injected... ", "new_STYLECELL",
-        stepMeta.getOutputFields()[ 0 ].getStyleCell() );
-      assertEquals( "Title not properly injected... ", "new_FIELDTITLE", stepMeta.getOutputFields()[ 0 ].getTitle() );
-      assertEquals( "Title style cell not properly injected... ", "new_TITLESTYLE",
-        stepMeta.getOutputFields()[ 0 ].getTitleStyleCell() );
-      assertEquals( "Type not properly injected... ", "-", stepMeta.getOutputFields()[ 0 ].getTypeDesc() );
-      assertEquals( "Comment author not properly injected... ", "new_COMMENTAUTHOR",
-        stepMeta.getOutputFields()[ 0 ].getCommentAuthorField() );
+      assertEquals( "Cell comment not properly injected... ", "new_CELLCOMMENT", stepMeta.getOutputFields()[0].getCommentField() );
+      assertEquals( "Format not properly injected... ", "new_FORMAT", stepMeta.getOutputFields()[0].getFormat() );
+      assertEquals( "Hyperlink not properly injected... ", "new_HYPERLINKFIELD", stepMeta.getOutputFields()[0].getHyperlinkField() );
+      assertEquals( "Name not properly injected... ", "new_NAME", stepMeta.getOutputFields()[0].getName() );
+      assertEquals( "Style cell not properly injected... ", "new_STYLECELL", stepMeta.getOutputFields()[0].getStyleCell() );
+      assertEquals( "Title not properly injected... ", "new_FIELDTITLE", stepMeta.getOutputFields()[0].getTitle() );
+      assertEquals( "Title style cell not properly injected... ", "new_TITLESTYLE", stepMeta.getOutputFields()[0].getTitleStyleCell() );
+      assertEquals( "Type not properly injected... ", "-", stepMeta.getOutputFields()[0].getTypeDesc() );
+      assertEquals( "Comment author not properly injected... ", "new_COMMENTAUTHOR", stepMeta.getOutputFields()[0].getCommentAuthorField() );
 
     } catch ( KettleException e ) {
       fail( e.getMessage() );
@@ -221,11 +223,11 @@ public class ExcelWriterStepTest {
 
   }
 
-  private HSSFWorkbook createWorkbook( FileObject file ) throws Exception {
+  private HSSFWorkbook createWorkbook( File file ) throws Exception {
     HSSFWorkbook wb = null;
     OutputStream os = null;
     try {
-      os = file.getContent().getOutputStream();
+      os = new FileOutputStream( file );
       wb = new HSSFWorkbook();
       wb.createSheet( SHEET_NAME );
       wb.write( os );

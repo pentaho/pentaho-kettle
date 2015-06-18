@@ -28,11 +28,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.apache.commons.lang.SystemUtils.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -52,7 +47,6 @@ import org.mockito.Mockito;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.core.database.DatabaseInterfaceExtended;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.NetezzaDatabaseMeta;
 import org.pentaho.di.core.database.Vertica5DatabaseMeta;
@@ -184,7 +178,7 @@ public class ValueMetaBaseTest {
     final int expectedVarBinarylength = 80;
 
     ValueMetaBase obj = new ValueMetaBase();
-    DatabaseMeta dbMeta = spy( new DatabaseMeta() );
+    DatabaseMeta dbMeta = Mockito.spy( new DatabaseMeta() );
     DatabaseInterface databaseInterface = new Vertica5DatabaseMeta();
     dbMeta.setDatabaseInterface( databaseInterface );
 
@@ -218,28 +212,6 @@ public class ValueMetaBaseTest {
     assertTrue( expectedVarBinarylength == varbinaryValueMeta.getLength() );
     assertFalse( varbinaryValueMeta.isLargeTextField() );
 
-  }
-
-  @Test
-  public void testGetValueFromSQLTypeTypeOverride() throws Exception {
-    final int varbinaryColumnIndex = 2;
-
-    ValueMetaBase valueMetaBase = new ValueMetaBase(),
-        valueMetaBaseSpy = spy( valueMetaBase );
-    DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
-    DatabaseInterface databaseInterface = Mockito.mock( DatabaseInterface.class );
-    doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface( );
-
-    ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
-    valueMetaBaseSpy.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
-
-    DatabaseInterfaceExtended databaseInterfaceExtended = Mockito.mock( DatabaseInterfaceExtended.class );
-    doReturn( databaseInterfaceExtended ).when( dbMeta ).getDatabaseInterface();
-
-    valueMetaBaseSpy.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
-
-    verify( databaseInterfaceExtended, Mockito.times( 1 ) ).customizeValueFromSQLType( any( ValueMetaInterface.class ),
-        any( ResultSetMetaData.class ), anyInt() );
   }
 
   @Test

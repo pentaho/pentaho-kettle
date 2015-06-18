@@ -75,7 +75,7 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
     return capabilities.supportsLocking();
   }
 
-  public boolean allowsVersionComments( String fullPath ) {
+  public boolean allowsVersionComments() {
     return false;
   }
 
@@ -168,7 +168,7 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
   }
 
   @Override
-  public boolean isVersioningEnabled( String fullPath ) {
+  public boolean isVersioningEnabled() {
     return false;
   }
 }

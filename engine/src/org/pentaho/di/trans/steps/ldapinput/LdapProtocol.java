@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,12 +32,13 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.ldap.InitialLdapContext;
 
-import com.google.common.base.Joiner;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
+
+import com.google.gdata.util.common.base.Join;
 
 /**
  * Class encapsulating Ldap protocol configuration
@@ -64,7 +65,7 @@ public class LdapProtocol {
   }
 
   public LdapProtocol( LogChannelInterface log, VariableSpace variableSpace, LdapMeta meta,
-                       Collection<String> binaryAttributes ) {
+    Collection<String> binaryAttributes ) {
     this.log = log;
     hostname = variableSpace.environmentSubstitute( meta.getHost() );
     port = Const.toInt( variableSpace.environmentSubstitute( meta.getPort() ), LDAPConnection.DEFAULT_PORT );
@@ -111,7 +112,7 @@ public class LdapProtocol {
     }
 
     if ( binaryAttributes.size() > 0 ) {
-      env.put( "java.naming.ldap.attributes.binary", Joiner.on( " " ).join( binaryAttributes ) );
+      env.put( "java.naming.ldap.attributes.binary", Join.join( " ", binaryAttributes ) );
     }
   }
 

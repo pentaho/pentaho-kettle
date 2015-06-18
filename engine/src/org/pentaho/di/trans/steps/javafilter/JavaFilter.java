@@ -133,7 +133,6 @@ public class JavaFilter extends BaseStep implements StepInterface {
       // Initialize evaluators etc. Only do it once.
       //
       if ( data.expressionEvaluator == null ) {
-        String realCondition = environmentSubstitute( meta.getCondition() );
         data.argumentIndexes = new ArrayList<Integer>();
 
         List<String> parameterNames = new ArrayList<String>();
@@ -145,7 +144,7 @@ public class JavaFilter extends BaseStep implements StepInterface {
 
           // See if the value is being used in a formula...
           //
-          if ( realCondition.contains( valueMeta.getName() ) ) {
+          if ( meta.getCondition().contains( valueMeta.getName() ) ) {
             // If so, add it to the indexes...
             data.argumentIndexes.add( i );
 
@@ -189,7 +188,7 @@ public class JavaFilter extends BaseStep implements StepInterface {
             .toArray( new Class<?>[parameterTypes.size()] ) );
         data.expressionEvaluator.setReturnType( Object.class );
         data.expressionEvaluator.setThrownExceptions( new Class<?>[] { Exception.class } );
-        data.expressionEvaluator.cook( realCondition );
+        data.expressionEvaluator.cook( meta.getCondition() );
 
         // Also create the argument data structure once...
         //

@@ -1,25 +1,3 @@
-/*! ******************************************************************************
- *
- * Pentaho Data Integration
- *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
- *
- *******************************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
-
 package org.pentaho.di.trans.steps.excelinput;
 
 import org.junit.Before;
@@ -49,31 +27,29 @@ public class ExcelInputMetaTest {
             "rowNumberField", "shortFileFieldName", "extensionFieldName", "pathFieldName", "sizeFieldName",
             "hiddenFieldName", "lastModificationTimeFieldName", "uriNameFieldName", "rootUriNameFieldName" );
 
-    Map<String, String> getterMap = new HashMap<String, String>() {
-      {
-        put( "excludeFileMask", "getExludeFileMask" );
-        put( "shortFileFieldName", "getShortFileNameField" );
-        put( "extensionFieldName", "getExtensionField" );
-        put( "pathFieldName", "getPathField" );
-        put( "sizeFieldName", "getSizeField" );
-        put( "hiddenFieldName", "isHiddenField" );
-        put( "lastModificationTimeFieldName", "getLastModificationDateField" );
-        put( "uriNameFieldName", "getUriField" );
-        put( "rootUriNameFieldName", "getRootUriField" );
-      }
-    };
-    Map<String, String> setterMap = new HashMap<String, String>() {
-      {
-        put( "shortFileFieldName", "setShortFileNameField" );
-        put( "extensionFieldName", "setExtensionField" );
-        put( "pathFieldName", "setPathField" );
-        put( "sizeFieldName", "setSizeField" );
-        put( "hiddenFieldName", "setIsHiddenField" );
-        put( "lastModificationTimeFieldName", "setLastModificationDateField" );
-        put( "uriNameFieldName", "setUriField" );
-        put( "rootUriNameFieldName", "setRootUriField" );
-      }
-    };
+    Map<String, String> getterMap = new HashMap<String, String>() {{
+      put( "excludeFileMask", "getExludeFileMask" );
+
+      put( "shortFileFieldName", "getShortFileNameField" );
+      put( "extensionFieldName", "getExtensionField" );
+      put( "pathFieldName", "getPathField" );
+      put( "sizeFieldName", "getSizeField" );
+      put( "hiddenFieldName", "isHiddenField" );
+      put( "lastModificationTimeFieldName", "getLastModificationDateField" );
+      put( "uriNameFieldName", "getUriField" );
+      put( "rootUriNameFieldName", "getRootUriField" );
+    }};
+    Map<String, String> setterMap = new HashMap<String, String>() {{
+
+      put( "shortFileFieldName", "setShortFileNameField" );
+      put( "extensionFieldName", "setExtensionField" );
+      put( "pathFieldName", "setPathField" );
+      put( "sizeFieldName", "setSizeField" );
+      put( "hiddenFieldName", "setIsHiddenField" );
+      put( "lastModificationTimeFieldName", "setLastModificationDateField" );
+      put( "uriNameFieldName", "setUriField" );
+      put( "rootUriNameFieldName", "setRootUriField" );
+    }};
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
         new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 1 );
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();

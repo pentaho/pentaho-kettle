@@ -45,30 +45,5 @@
 
     <dependency org="junit"               name="junit"               rev="4.7"              transitive="false" conf="test->default"/>
     <dependency org="org.mockito"         name="mockito-all"         rev="1.9.5"            transitive="false" conf="test->default"/>
-
-    <dependency org="org.apache.xmlgraphics" name="batik-bridge" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-css" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-dom" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-gvt" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-svg-dom" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-transcoder" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-codec" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-util" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-ext" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-xml" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-anim" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-parser" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-script" rev="${dependency.batik.revision}" transitive="false"/>
-    <dependency org="org.apache.xmlgraphics" name="batik-awt-util" rev="${dependency.batik.revision}" transitive="false"/>
-
-    <dependency org="xml-apis" name="xml-apis-ext" rev="${dependency.xml-apis-ext.revision}" transitive="false"/>
-
-    <dependency org="org.apache.karaf" name="org.apache.karaf.main" rev="2.3.5" transitive="false"/>
-
-    <dependency org="org.springframework" name="spring-test"         rev="2.5.6"      transitive="true" conf="test->default"/>
-    <dependency org="org.springframework" name="spring"              rev="2.5.6"      transitive="true" conf="test->default"/>
-    <dependency org="pentaho"             name="simple-jndi"         rev="1.0.0"      transitive="true" conf="test->default"/>
-    
-
   </dependencies>
 </ivy-module>

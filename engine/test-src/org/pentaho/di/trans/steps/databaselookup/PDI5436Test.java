@@ -68,6 +68,8 @@ public class PDI5436Test {
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         smh.logChannelInterface );
     when( smh.trans.isRunning() ).thenReturn( true );
+        
+    
   }
 
   private RowMeta mockInputRowMeta() {

@@ -39,7 +39,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -144,12 +143,6 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
     props.setLook( shell );
     setShellImage( shell, input );
 
-    SelectionListener lsSel = new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent arg0 ) {
-        input.setChanged();
-      }
-    };
-
     ModifyListener lsMod = new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         input.setChanged();
@@ -227,7 +220,6 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
     fdUnspecified.right = new FormAttachment( 100, 0 );
     fdUnspecified.bottom = new FormAttachment( 100, 0 );
     wUnspecified.setLayoutData( fdUnspecified );
-    wUnspecified.addSelectionListener( lsSel );
 
     wlFields = new Label( wSelectComp, SWT.NONE );
     wlFields.setText( BaseMessages.getString( PKG, "SelectValuesDialog.Fields.Label" ) );

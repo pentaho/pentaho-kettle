@@ -24,7 +24,6 @@ package org.pentaho.di.core.sql;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.pentaho.di.core.Condition;
@@ -44,17 +43,12 @@ public class SQLCondition {
   private String conditionClause;
   private SQLFields selectFields;
 
-  private static final Pattern
-      PARAMETER_REGEX_PATTERN =
-      Pattern.compile( "(?i)^PARAMETER\\s*\\(\\s*'(.*)'\\s*\\)\\s*=\\s*'?([^']*)'?$" );
-
-  public SQLCondition( String tableAlias, String conditionSql, RowMetaInterface serviceFields )
-      throws KettleSQLException {
+  public SQLCondition( String tableAlias, String conditionSql, RowMetaInterface serviceFields ) throws KettleSQLException {
     this( tableAlias, conditionSql, serviceFields, null );
   }
 
-  public SQLCondition( String tableAlias, String conditionSql, RowMetaInterface serviceFields, SQLFields selectFields )
-      throws KettleSQLException {
+  public SQLCondition( String tableAlias, String conditionSql, RowMetaInterface serviceFields,
+    SQLFields selectFields ) throws KettleSQLException {
     this.tableAlias = tableAlias;
     this.conditionClause = conditionSql;
     this.serviceFields = serviceFields;
@@ -65,9 +59,9 @@ public class SQLCondition {
 
   /**
    * Support for conditions is very simple for now:
-   * <p/>
+   *
    * <Field> <operator> <value> <Field> <operator> <other field>
-   * <p/>
+   *
    * TODO: figure out a simple algorithm to split up on brackets, AND, OR
    *
    * @throws KettleSQLException
@@ -92,9 +86,12 @@ public class SQLCondition {
    * Searches for the given string in a clause and returns the start index if found, -1 if not found. This method skips
    * brackets and single quotes. Case is ignored
    *
-   * @param clause     the clause
-   * @param string     the string to search
-   * @param startIndex the index to start searching
+   * @param clause
+   *          the clause
+   * @param string
+   *          the string to search
+   * @param startIndex
+   *          the index to start searching
    * @return the index if the string is found, -1 if not found
    * @throws KettleSQLException
    */
@@ -113,8 +110,7 @@ public class SQLCondition {
     return -1;
   }
 
-  private Condition splitConditionByOperator( String clause, Condition parentCondition, int parentOperator )
-      throws KettleSQLException {
+  private Condition splitConditionByOperator( String clause, Condition parentCondition, int parentOperator ) throws KettleSQLException {
     if ( parentCondition == null ) {
       parentCondition = new Condition();
     } else {
@@ -153,15 +149,40 @@ public class SQLCondition {
 
         // See if it's a PARAMETER
         //
-        Matcher paramMatcher = PARAMETER_REGEX_PATTERN.matcher( cleaned );
-        if ( paramMatcher.matches() ) {
-          String parameterName = paramMatcher.group( 1 );
-          String parameterValue = paramMatcher.group( 2 );
+        if ( Pattern.matches( "^PARAMETER\\s*\\(.*\\)\\s*=\\s*'.*'$", cleaned ) ) {
+          // Grab the string
+          //
+          int startParamIndex = cleaned.indexOf( '(' ) + 1;
+          int endParamIndex = ThinUtil.skipChars( cleaned, startParamIndex, '(', '\'' );
+          String quotedParameter = Const.trim( cleaned.substring( startParamIndex, endParamIndex ) );
+          if ( quotedParameter.startsWith( "'" ) && quotedParameter.endsWith( "'" ) ) {
+            String parameterName = quotedParameter.substring( 1, quotedParameter.length() - 1 );
 
-          validateParam( clause, parameterName, parameterValue );
+            int startValueIndex = cleaned.indexOf( '=', endParamIndex + 1 ) + 1;
+            String quotedValue = Const.trim( cleaned.substring( startValueIndex ) );
+            if ( quotedValue.startsWith( "'" ) && quotedValue.endsWith( "'" ) ) {
+              String parameterValue = quotedValue.substring( 1, quotedValue.length() - 1 );
 
-          parentCondition
-              .addCondition( createParameterCondition( orConditionOperator, parameterName, parameterValue ) );
+              // A PARAMETER() function in the where clause always returns true
+              //
+              Condition subCondition =
+                new Condition( parameterName, Condition.FUNC_TRUE, parameterName, new ValueMetaAndData(
+                  new ValueMeta( "string", ValueMetaInterface.TYPE_STRING ), Const.NVL( parameterValue, "" ) ) );
+              subCondition.setOperator( orConditionOperator );
+              parentCondition.addCondition( subCondition );
+
+              if ( Const.isEmpty( parameterName ) ) {
+                throw new KettleSQLException( "A parameter name can not be empty in : " + clause );
+              }
+
+            } else {
+              throw new KettleSQLException(
+                "A parameter value has to always be a string between single quotes in : " + clause );
+            }
+
+          } else {
+            throw new KettleSQLException( "Parameter name between single quotes expected in : " + clause );
+          }
         } else {
 
           // See if this elementary block is a NOT ( ) construct
@@ -196,30 +217,8 @@ public class SQLCondition {
     return parentCondition;
   }
 
-  /**
-   * Creates a Condition object which will act as a container for a Parameter key/value.
-   */
-  private Condition createParameterCondition( int orConditionOperator, String parameterName, String parameterValue ) {
-    Condition
-        subCondition =
-        new Condition( parameterName, Condition.FUNC_TRUE, parameterName,
-            new ValueMetaAndData( new ValueMeta( "string", ValueMetaInterface.TYPE_STRING ),
-                Const.NVL( parameterValue, "" ) ) );
-    subCondition.setOperator( orConditionOperator );
-    return subCondition;
-  }
-
-  private void validateParam( String clause, String parameterName, String parameterValue ) throws KettleSQLException {
-    if ( Const.isEmpty( parameterName ) ) {
-      throw new KettleSQLException( "A parameter name cannot be empty in : " + clause );
-    }
-    if ( Const.isEmpty( parameterValue ) || parameterValue.equals( "''" ) ) {
-      throw new KettleSQLException( "A parameter value cannot be empty in : " + clause );
-    }
-  }
-
-  private int splitByOperator( String clause, Condition parentCondition, String operatorString, int conditionOperator )
-      throws KettleSQLException {
+  private int splitByOperator( String clause, Condition parentCondition, String operatorString,
+    int conditionOperator ) throws KettleSQLException {
     int lastIndex = 0;
     int index = 0;
     while ( index < clause.length() && ( index = searchForString( clause, operatorString, index ) ) >= 0 ) {
@@ -247,8 +246,8 @@ public class SQLCondition {
     List<String> strings = splitConditionClause( clause );
     if ( strings.size() > 3 ) {
       throw new KettleSQLException(
-          "Unfortunately support for conditions is still very rudimentary, only 1 simple condition is supported ["
-              + clause + "]" );
+        "Unfortunately support for conditions is still very rudimentary, only 1 simple condition is supported ["
+          + clause + "]" );
     }
     String left = strings.get( 0 );
 
@@ -313,8 +312,8 @@ public class SQLCondition {
         valueString.append( part );
       }
       value =
-          new ValueMetaAndData( new ValueMeta( "constant-in-list", ValueMetaInterface.TYPE_STRING ),
-              valueString.toString() );
+        new ValueMetaAndData( new ValueMeta( "constant-in-list", ValueMetaInterface.TYPE_STRING ), valueString
+          .toString() );
     } else {
 
       // Mondrian, analyzer CONTAINS hack:
@@ -357,16 +356,16 @@ public class SQLCondition {
   private List<String> splitConditionClause( String clause ) throws KettleSQLException {
     List<String> strings = new ArrayList<String>();
 
-    String[]
-        operators =
-        new String[] { "<>", ">=", "=>", "<=", "=<", "<", ">", "=", " REGEX ", " IN ", " IS NOT NULL", " IS NULL",
-            " LIKE", "CONTAINS " };
-    int[]
-        functions =
-        new int[] { Condition.FUNC_NOT_EQUAL, Condition.FUNC_LARGER_EQUAL, Condition.FUNC_LARGER_EQUAL,
-            Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER, Condition.FUNC_LARGER,
-            Condition.FUNC_EQUAL, Condition.FUNC_REGEXP, Condition.FUNC_IN_LIST, Condition.FUNC_NOT_NULL,
-            Condition.FUNC_NULL, Condition.FUNC_LIKE, Condition.FUNC_CONTAINS, };
+    String[] operators =
+      new String[] {
+        "<>", ">=", "=>", "<=", "=<", "<", ">", "=", " REGEX ", " IN ", " IS NOT NULL", " IS NULL", " LIKE",
+        "CONTAINS " };
+    int[] functions =
+      new int[] {
+        Condition.FUNC_NOT_EQUAL, Condition.FUNC_LARGER_EQUAL, Condition.FUNC_LARGER_EQUAL,
+        Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER_EQUAL, Condition.FUNC_SMALLER,
+        Condition.FUNC_LARGER, Condition.FUNC_EQUAL, Condition.FUNC_REGEXP, Condition.FUNC_IN_LIST,
+        Condition.FUNC_NOT_NULL, Condition.FUNC_NULL, Condition.FUNC_LIKE, Condition.FUNC_CONTAINS, };
     int index = 0;
     while ( index < clause.length() ) {
       index = ThinUtil.skipChars( clause, index, '\'', '"' );
@@ -402,7 +401,8 @@ public class SQLCondition {
   }
 
   /**
-   * @param serviceFields the serviceFields to set
+   * @param serviceFields
+   *          the serviceFields to set
    */
   public void setServiceFields( RowMetaInterface serviceFields ) {
     this.serviceFields = serviceFields;
@@ -416,7 +416,8 @@ public class SQLCondition {
   }
 
   /**
-   * @param condition the condition to set
+   * @param condition
+   *          the condition to set
    */
   public void setCondition( Condition condition ) {
     this.condition = condition;
@@ -430,7 +431,8 @@ public class SQLCondition {
   }
 
   /**
-   * @param conditionClause the conditionClause to set
+   * @param conditionClause
+   *          the conditionClause to set
    */
   public void setConditionClause( String conditionClause ) {
     this.conditionClause = conditionClause;
@@ -463,7 +465,7 @@ public class SQLCondition {
    * @throws KettleSQLException
    */
   public List<SQLField> extractHavingFields( List<SQLField> selectFields, List<SQLField> aggFields,
-      RowMetaInterface rowMeta ) throws KettleSQLException {
+    RowMetaInterface rowMeta ) throws KettleSQLException {
     List<SQLField> list = new ArrayList<SQLField>();
 
     // Get a list of all the lowest level field names and see if we can parse them as aggregation fields

@@ -291,7 +291,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     wPassword =
       new LabelTextVar(
         transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.Password.Label" ), BaseMessages
-          .getString( PKG, "SSHDialog.Password.Tooltip" ), true );
+          .getString( PKG, "SSHDialog.Password.Tooltip" ) );
     props.setLook( wPassword );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
@@ -299,6 +299,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
+    wPassword.setEchoChar( '*' );
 
     // Use key?
     wlUseKey = new Label( wSettingsGroup, SWT.RIGHT );
@@ -365,7 +366,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     wPassphrase =
       new LabelTextVar(
         transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.Passphrase.Label" ), BaseMessages
-          .getString( PKG, "SSHDialog.Passphrase.Tooltip" ), true );
+          .getString( PKG, "SSHDialog.Passphrase.Tooltip" ) );
     props.setLook( wPassphrase );
     wPassphrase.addModifyListener( lsMod );
     fdPassphrase = new FormData();
@@ -373,6 +374,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     fdPassphrase.top = new FormAttachment( wbFilename, margin );
     fdPassphrase.right = new FormAttachment( 100, 0 );
     wPassphrase.setLayoutData( fdPassphrase );
+    wPassphrase.setEchoChar( '*' );
 
     // ProxyHostline
     wProxyHost =
@@ -417,7 +419,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     wProxyPassword =
       new LabelTextVar(
         transMeta, wSettingsGroup, BaseMessages.getString( PKG, "SSHDialog.ProxyPassword.Label" ),
-        BaseMessages.getString( PKG, "SSHDialog.ProxyPassword.Tooltip" ), true );
+        BaseMessages.getString( PKG, "SSHDialog.ProxyPassword.Tooltip" ) );
     props.setLook( wProxyUsername );
     wProxyPassword.addModifyListener( lsMod );
     fdProxyPassword = new FormData();
@@ -425,6 +427,7 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface {
     fdProxyPassword.top = new FormAttachment( wProxyUsername, margin );
     fdProxyPassword.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPassword );
+    wProxyPassword.setEchoChar( '*' );
 
     // Test connection button
     wTest = new Button( wSettingsGroup, SWT.PUSH );

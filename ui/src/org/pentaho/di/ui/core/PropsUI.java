@@ -183,10 +183,7 @@ public class PropsUI extends Props {
     List<GUIOption<Object>> leditables = new ArrayList<GUIOption<Object>>();
     for ( PluginInterface plugin : plugins ) {
       try {
-        GUIOption<Object> loaded = registry.loadClass( plugin, GUIOption.class );
-        if ( loaded != null ) {
-          leditables.add( loaded );
-        }
+        leditables.add( registry.loadClass( plugin, GUIOption.class ) );
       } catch ( Exception e ) {
         LogChannel.GENERAL.logError( "Unexpected error loading class for plugin " + plugin.getName(), e );
       }
@@ -641,15 +638,6 @@ public class PropsUI extends Props {
     return new RGB( r, g, b );
   }
 
-  public boolean isSVGEnabled() {
-    String enabled = properties.getProperty( STRING_SVG_ENABLED, YES );
-    return YES.equalsIgnoreCase( enabled ); // Default: svg is enabled
-  }
-
-  public void setSVGEnabled( boolean svg ) {
-    properties.setProperty( STRING_SVG_ENABLED, svg ? YES : NO );
-  }
-
   public void setIconSize( int size ) {
     properties.setProperty( STRING_ICON_SIZE, "" + size );
   }
@@ -826,7 +814,7 @@ public class PropsUI extends Props {
   }
 
   public boolean isAntiAliasingEnabled() {
-    String anti = properties.getProperty( STRING_ANTI_ALIASING, YES );
+    String anti = properties.getProperty( STRING_ANTI_ALIASING, NO );
     return YES.equalsIgnoreCase( anti ); // Default: don't do anti-aliasing
   }
 
@@ -874,6 +862,7 @@ public class PropsUI extends Props {
     GUIResource gui = GUIResource.getInstance();
     Font font = null;
     Color background = null;
+    // Color tabColor = null;
 
     switch ( style ) {
       case WIDGET_STYLE_DEFAULT:
@@ -898,18 +887,17 @@ public class PropsUI extends Props {
         background = gui.getColorBackground();
         font = gui.getFontGraph();
         break;
-      case WIDGET_STYLE_TOOLBAR:
-        background = GUIResource.getInstance().getColorDemoGray();
-        break;
       case WIDGET_STYLE_TAB:
-        background = GUIResource.getInstance().getColorWhite();
+        background = gui.getColorBackground();
+        // font = gui.getFontDefault();
         CTabFolder tabFolder = (CTabFolder) control;
         tabFolder.setSimple( false );
-        tabFolder.setBorderVisible( true );
-        // need to make a copy of the tab selection background color to get around PDI-13940
-        Color c = GUIResource.getInstance().getColorTab();
-        Color tabColor = new Color( c.getDevice(), c.getRed(), c.getGreen(), c.getBlue() );
-        tabFolder.setSelectionBackground( tabColor );
+        tabFolder.setBorderVisible( false );
+
+        // Set a small vertical gradient
+        tabFolder.setSelectionBackground( new Color[] {
+          display.getSystemColor( SWT.COLOR_WIDGET_NORMAL_SHADOW ),
+          display.getSystemColor( SWT.COLOR_WIDGET_LIGHT_SHADOW ), }, new int[] { 55, }, true );
         break;
       default:
         background = gui.getColorBackground();

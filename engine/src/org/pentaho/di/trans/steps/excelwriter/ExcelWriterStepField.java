@@ -59,15 +59,10 @@ public class ExcelWriterStepField implements Cloneable {
     return name.compareTo( field.getName() );
   }
 
-  public boolean equals( Object obj ) {
+  public boolean equal( Object obj ) {
     ExcelWriterStepField field = (ExcelWriterStepField) obj;
 
     return name.equals( field.getName() );
-  }
-
-  @Deprecated
-  public boolean equal( Object obj ) {
-    return equals( obj );
   }
 
   public Object clone() {

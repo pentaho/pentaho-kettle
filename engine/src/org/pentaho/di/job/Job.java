@@ -34,11 +34,6 @@ import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -100,6 +95,7 @@ import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.www.AddExportServlet;
+import org.pentaho.di.www.AddJobServlet;
 import org.pentaho.di.www.RegisterJobServlet;
 import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartJobServlet;
@@ -410,9 +406,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * Threads main loop: called by Thread.start();
    */
   public void run() {
-
-    ExecutorService heartbeat = null; // this job's heartbeat scheduled executor
-
     try {
       stopped = new AtomicBoolean( false );
       finished = new AtomicBoolean( false );
@@ -429,9 +422,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       // Run the job
       //
       fireJobStartListeners();
-
-      heartbeat = startHeartbeat( getHeartbeatIntervalInSeconds() );
-
       result = execute();
     } catch ( Throwable je ) {
       log.logError( BaseMessages.getString( PKG, "Job.Log.ErrorExecJob", je.getMessage() ), je );
@@ -452,9 +442,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       stopped.set( false );
     } finally {
       try {
-
-        shutdownHeartbeat( heartbeat );
-
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobFinish.id, this );
 
         fireJobFinishListeners();
@@ -2398,77 +2385,5 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   public void setStartJobEntryResult( Result startJobEntryResult ) {
     this.startJobEntryResult = startJobEntryResult;
-  }
-
-  protected ExecutorService startHeartbeat( final long intervalInSeconds ) {
-
-    final ScheduledExecutorService heartbeat = Executors.newSingleThreadScheduledExecutor( new ThreadFactory() {
-
-      @Override
-      public Thread newThread( Runnable r ) {
-        Thread thread = new Thread( r, "Job Heartbeat Thread for: " + getName() );
-        thread.setDaemon( true );
-        return thread;
-      }
-     } );
-
-    heartbeat.scheduleAtFixedRate( new Runnable() {
-      public void run() {
-
-        if( Job.this.isFinished() ){
-          log.logBasic( "Shutting down heartbeat signal for " + jobMeta.getName() );
-          shutdownHeartbeat( heartbeat );
-          return;
-        }
-
-        try {
-
-          log.logDebug( "Triggering heartbeat signal for " + jobMeta.getName() + " at every " + intervalInSeconds + " seconds" );
-          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobHeartbeat.id, Job.this );
-
-        } catch ( KettleException e ) {
-           log.logError( e.getMessage(), e );
-        }
-      }
-    }, intervalInSeconds /* initial delay */, intervalInSeconds /* interval delay */, TimeUnit.SECONDS );
-
-    return heartbeat;
-  }
-
-  protected void shutdownHeartbeat( ExecutorService heartbeat ){
-
-    if( heartbeat != null ) {
-
-      try {
-        heartbeat.shutdownNow(); // prevents waiting tasks from starting and attempts to stop currently executing ones
-
-      } catch( Throwable t ) {
-        /* do nothing */
-      }
-    }
-  }
-
-  private int getHeartbeatIntervalInSeconds() {
-
-    JobMeta meta = this.jobMeta;
-
-    // 1 - check if there's a user defined value ( job-specific ) heartbeat periodic interval;
-    // 2 - check if there's a default defined value ( job-specific ) heartbeat periodic interval;
-    // 3 - use default Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS if none of the above have been set
-
-    try {
-
-      if ( meta != null ) {
-
-        return Const.toInt( meta.getParameterValue( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
-            Const.toInt(  meta.getParameterDefault( Const.VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS ),
-                Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS ) );
-      }
-
-    } catch( Exception e ){
-      /* do nothing, return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS */
-    }
-
-    return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS;
   }
 }

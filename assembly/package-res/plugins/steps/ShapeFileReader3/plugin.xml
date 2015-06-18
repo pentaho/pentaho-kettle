@@ -2,7 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin
    id="ShapeFileReader"
-   iconfile="ESRI.svg"
+   iconfile="SFR.png"
    description="ESRI Shapefile Reader"
    tooltip="Reads shape file data from an ESRI shape file and linked DBF file"
    category="Input"

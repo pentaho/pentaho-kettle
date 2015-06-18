@@ -45,8 +45,9 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
   public BodyHttpServlet() {
     messages = new PackageMessages( this.getClass() );
   }
-
-  protected boolean useXML( HttpServletRequest request ) {
+  
+  protected boolean useXML(HttpServletRequest request)
+  {
     return "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
   }
 
@@ -63,7 +64,7 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
     PrintWriter out = new PrintWriter( response.getOutputStream() );
 
     try {
-
+      
       if ( useXML ) {
         startXml( response, out );
       } else {
@@ -71,9 +72,9 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
       }
 
       WebResult result = generateBody( request, response, useXML );
-      if ( result != null ) {
+      if(result!=null){
         out.println( result.getXML() );
-      }
+      }      
 
     } catch ( Exception e ) {
       String st = ExceptionUtils.getFullStackTrace( e );
@@ -128,4 +129,5 @@ public abstract class BodyHttpServlet extends BaseHttpServlet implements CartePl
   private String getTitle() {
     return messages.getString( "Title" );
   }
+
 }

@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.repository;
 
+import java.util.Enumeration;
 import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
@@ -30,8 +31,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.SpoonFactory;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.repository.controllers.RepositoriesController;
-import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -48,7 +49,19 @@ public class RepositoriesDialog {
   private RepositoriesController repositoriesController = new RepositoriesController();
   private XulDomContainer container;
   private ILoginCallback callback;
-  private ResourceBundle resourceBundle = new XulSpoonResourceBundle( CLZ );
+  private ResourceBundle resourceBundle = new ResourceBundle() {
+
+    @Override
+    public Enumeration<String> getKeys() {
+      return null;
+    }
+
+    @Override
+    protected Object handleGetObject( String key ) {
+      return BaseMessages.getString( CLZ, key );
+    }
+
+  };
 
   public RepositoriesDialog( Shell shell, String preferredRepositoryName, ILoginCallback callback ) {
     try {

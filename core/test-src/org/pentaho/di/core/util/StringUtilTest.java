@@ -158,7 +158,6 @@ public class StringUtilTest extends TestCase {
     assertTrue( StringUtil.isVariable( "%%somename%%" ) );
     assertTrue( StringUtil.isVariable( "$[somename]" ) );
     assertFalse( StringUtil.isVariable( "somename" ) );
-    assertFalse( StringUtil.isVariable( null ) );
 
   }
 }

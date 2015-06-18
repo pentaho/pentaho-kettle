@@ -680,16 +680,15 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
             logDebug( BaseMessages.getString( PKG, "JobSFTP.Log.GettingFiles", filelist[i], realTargetDirectory ) );
           }
 
-          FileObject targetFile = KettleVFS.getFileObject(
-            realTargetDirectory + Const.FILE_SEPARATOR + filelist[i], this );
-          sftpclient.get( targetFile, filelist[i] );
+          String targetFilename = realTargetDirectory + Const.FILE_SEPARATOR + filelist[i];
+          sftpclient.get( targetFilename, filelist[i] );
           filesRetrieved++;
 
           if ( isaddresult ) {
             // Add to the result files...
             ResultFile resultFile =
               new ResultFile(
-                ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob
+                ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( targetFilename, this ), parentJob
                   .getJobname(), toString() );
             result.getResultFiles().put( resultFile.getFile().toString(), resultFile );
             if ( log.isDetailed() ) {

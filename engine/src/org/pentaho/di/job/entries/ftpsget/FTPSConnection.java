@@ -22,16 +22,17 @@
 
 package org.pentaho.di.job.entries.ftpsget;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs.FileObject;
 import org.ftp4che.FTPConnection;
 import org.ftp4che.FTPConnectionFactory;
@@ -155,7 +156,6 @@ public class FTPSConnection implements FTPListener {
       connection.addFTPStatusListener( this );
       connection.connect();
     } catch ( Exception e ) {
-      connection = null;
       throw new KettleException( BaseMessages.getString( PKG, "JobFTPS.Error.Connecting", hostName ), e );
     }
   }
@@ -191,7 +191,7 @@ public class FTPSConnection implements FTPListener {
     if ( Const.isEmpty( tt ) ) {
       return connection_type_Desc[0];
     }
-    if ( tt.equalsIgnoreCase( connection_type_Code[ 1 ] ) ) {
+    if ( tt.equalsIgnoreCase( connection_type_Code[1] ) ) {
       return connection_type_Desc[1];
     } else {
       return connection_type_Desc[0];
@@ -404,29 +404,35 @@ public class FTPSConnection implements FTPListener {
   }
 
   /**
+   *
    * this method is used to download a file from a remote host
    *
-   * @param file          remote file to download
-   * @param localFilename target filename
+   * @param file
+   *          remote file to download
+   * @param localFilename
+   *          target filename in local host
    * @throws KettleException
    */
   public void downloadFile( FTPFile file, String localFilename ) throws KettleException {
     try {
-      FileObject localFile = KettleVFS.getFileObject( localFilename );
-      writeToFile( connection.downloadStream( file ), localFile.getContent().getOutputStream(), localFilename );
+      File localFile = new File( localFilename );
+      writeToFile( connection.downloadStream( file ), localFile );
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
   }
 
-  private void writeToFile( InputStream is, OutputStream os, String filename ) throws KettleException {
+  private void writeToFile( InputStream is, File file ) throws KettleException {
     try {
-      IOUtils.copy(is, os);
+      DataOutputStream out = new DataOutputStream( new BufferedOutputStream( new FileOutputStream( file ) ) );
+      int c;
+      while ( ( c = is.read() ) != -1 ) {
+        out.writeByte( c );
+      }
+      is.close();
+      out.close();
     } catch ( IOException e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "JobFTPS.Error.WritingToFile", filename ), e );
-    } finally {
-      IOUtils.closeQuietly( is );
-      IOUtils.closeQuietly( os );
+      throw new KettleException( BaseMessages.getString( PKG, "JobFTPS.Error.WritingToFile", file.getName() ), e );
     }
   }
 

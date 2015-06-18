@@ -270,10 +270,6 @@ public class NumberRangeMeta extends BaseStepMeta implements StepMetaInterface {
     rules.add( rule );
   }
 
-  public void setRules( List<NumberRangeRule> rules ) {
-    this.rules = rules;
-  }
-
   public boolean supportsErrorHandling() {
     return true;
   }

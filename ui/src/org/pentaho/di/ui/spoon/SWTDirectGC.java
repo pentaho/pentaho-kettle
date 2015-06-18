@@ -37,16 +37,13 @@ import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
-import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.util.ImageUtil;
-import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 /**
  * SWTGC draws on an Image. This class draws directly on an SWT GC. getImage() returns null as a consequence of not
@@ -59,7 +56,6 @@ public class SWTDirectGC implements GCInterface {
   protected Color background;
 
   protected Color black;
-  protected Color white;
   protected Color red;
   protected Color yellow;
   protected Color orange;
@@ -70,20 +66,12 @@ public class SWTDirectGC implements GCInterface {
   protected Color lightGray;
   protected Color darkGray;
   protected Color lightBlue;
-  protected Color crystal;
-  protected Color hopDefault;
-  protected Color hopOK;
 
   private GC gc;
 
   private int iconsize;
 
-  //TODO should be changed to PropsUI usage
-  private int small_icon_size = ConstUI.SMALL_ICON_SIZE;
-
-  private Map<String, SwtUniversalImage> images;
-
-  private float currentMagnification = 1.0f;
+  private Map<String, Image> images;
 
   private List<Color> colors;
   private List<Font> fonts;
@@ -103,7 +91,6 @@ public class SWTDirectGC implements GCInterface {
 
     this.background = GUIResource.getInstance().getColorGraph();
     this.black = GUIResource.getInstance().getColorBlack();
-    this.white = GUIResource.getInstance().getColorWhite();
     this.red = GUIResource.getInstance().getColorRed();
     this.yellow = GUIResource.getInstance().getColorYellow();
     this.orange = GUIResource.getInstance().getColorOrange();
@@ -114,9 +101,7 @@ public class SWTDirectGC implements GCInterface {
     this.lightGray = GUIResource.getInstance().getColorLightGray();
     this.darkGray = GUIResource.getInstance().getColorDarkGray();
     this.lightBlue = GUIResource.getInstance().getColorLightBlue();
-    this.crystal = GUIResource.getInstance().getColorCrystalTextPentaho();
-    this.hopDefault = GUIResource.getInstance().getColorHopDefault();
-    this.hopOK = GUIResource.getInstance().getColorHopOK();
+
   }
 
   public void dispose() {
@@ -136,92 +121,52 @@ public class SWTDirectGC implements GCInterface {
     gc.drawLine( x, y, x2, y2 );
   }
 
-  public void drawImage( String location, ClassLoader classLoader, int x, int y ) {
-    Image img = SwtSvgImageUtil.getImage( PropsUI.getDisplay(), classLoader, location,
-      Math.round( small_icon_size * currentMagnification ),
-      Math.round( small_icon_size * currentMagnification ) );
-    if ( img != null ) {
-      Rectangle bounds = img.getBounds();
-      gc.drawImage( img, 0, 0, bounds.width, bounds.height, x, y, small_icon_size, small_icon_size );
-    }
-  }
-
-  @Override
   public void drawImage( EImage image, int x, int y ) {
-    drawImage( image, x, y, currentMagnification );
-  }
 
-  public void drawImage( EImage image, int x, int y, float magnification ) {
-    Image img =
-        getNativeImage( image ).getAsBitmapForSize( gc.getDevice(), Math.round( small_icon_size * magnification ),
-            Math.round( small_icon_size * magnification ) );
-    if ( img != null ) {
-      Rectangle bounds = img.getBounds();
-      gc.drawImage( img, 0, 0, bounds.width, bounds.height, x, y, small_icon_size, small_icon_size );
-    }
-  }
-
-  @Override
-  public void drawImage( EImage image, int x, int y, float magnification, double angle ) {
-    Image img =
-        getNativeImage( image ).getAsBitmapForSize( gc.getDevice(), Math.round( small_icon_size * magnification ),
-            Math.round( small_icon_size * magnification ), angle );
-    if ( img != null ) {
-      Rectangle bounds = img.getBounds();
-      int hx = Math.round( bounds.width / magnification );
-      int hy = Math.round( bounds.height / magnification );
-      gc.drawImage( img, 0, 0, bounds.width, bounds.height, x - hx / 2, y - hy / 2, hx, hy );
-    }
+    Image img = getNativeImage( image );
+    gc.drawImage( img, x, y );
   }
 
   public Point getImageBounds( EImage image ) {
-    return new Point( small_icon_size, small_icon_size );
+    Image img = getNativeImage( image );
+    Rectangle r = img.getBounds();
+    return new Point( r.width, r.height );
   }
 
-  public static final SwtUniversalImage getNativeImage( EImage image ) {
+  public static final Image getNativeImage( EImage image ) {
     switch ( image ) {
       case LOCK:
-        return GUIResource.getInstance().getSwtImageLocked();
+        return GUIResource.getInstance().getImageLocked();
       case STEP_ERROR:
-        return GUIResource.getInstance().getSwtImageStepError();
+        return GUIResource.getInstance().getImageStepError();
       case EDIT:
-        return GUIResource.getInstance().getSwtImageEdit();
+        return GUIResource.getInstance().getImageEdit();
       case CONTEXT_MENU:
-        return GUIResource.getInstance().getSwtImageContextMenu();
+        return GUIResource.getInstance().getImageContextMenu();
       case TRUE:
-        return GUIResource.getInstance().getSwtImageTrue();
+        return GUIResource.getInstance().getImageTrue();
       case FALSE:
-        return GUIResource.getInstance().getSwtImageFalse();
+        return GUIResource.getInstance().getImageFalse();
       case ERROR:
-        return GUIResource.getInstance().getSwtImageErrorHop();
+        return GUIResource.getInstance().getImageErrorHop();
       case INFO:
-        return GUIResource.getInstance().getSwtImageInfoHop();
+        return GUIResource.getInstance().getImageInfoHop();
       case TARGET:
-        return GUIResource.getInstance().getSwtImageHopTarget();
+        return GUIResource.getInstance().getImageHopTarget();
       case INPUT:
-        return GUIResource.getInstance().getSwtImageHopInput();
+        return GUIResource.getInstance().getImageHopInput();
       case OUTPUT:
-        return GUIResource.getInstance().getSwtImageHopOutput();
+        return GUIResource.getInstance().getImageHopOutput();
       case ARROW:
-        return GUIResource.getInstance().getSwtImageArrow();
+        return GUIResource.getInstance().getImageArrow();
       case COPY_ROWS:
-        return GUIResource.getInstance().getSwtImageCopyHop();
+        return GUIResource.getInstance().getImageCopyHop();
       case PARALLEL:
-        return GUIResource.getInstance().getSwtImageParallelHop();
+        return GUIResource.getInstance().getImageParallelHop();
       case UNCONDITIONAL:
-        return GUIResource.getInstance().getSwtImageUnconditionalHop();
+        return GUIResource.getInstance().getImageUnconditionalHop();
       case BUSY:
-        return GUIResource.getInstance().getSwtImageBusy();
-      case ARROW_DEFAULT:
-        return GUIResource.getInstance().getDefaultArrow();
-      case ARROW_OK:
-        return GUIResource.getInstance().getOkArrow();
-      case ARROW_ERROR:
-        return GUIResource.getInstance().getErrorArrow();
-      case ARROW_DISABLED:
-        return GUIResource.getInstance().getDisabledArrow();
-      case ARROW_CANDIDATE:
-        return GUIResource.getInstance().getCandidateArrow();
+        return GUIResource.getInstance().getImageBusy();
       default:
         break;
     }
@@ -295,8 +240,6 @@ public class SWTDirectGC implements GCInterface {
         return background;
       case BLACK:
         return black;
-      case WHITE:
-        return white;
       case RED:
         return red;
       case YELLOW:
@@ -317,12 +260,6 @@ public class SWTDirectGC implements GCInterface {
         return darkGray;
       case LIGHTBLUE:
         return lightBlue;
-      case CRYSTAL:
-        return crystal;
-      case HOP_DEFAULT:
-        return hopDefault;
-      case HOP_OK:
-        return hopOK;
       default:
         break;
     }
@@ -342,6 +279,7 @@ public class SWTDirectGC implements GCInterface {
         break;
       default:
         break;
+
     }
   }
 
@@ -359,9 +297,6 @@ public class SWTDirectGC implements GCInterface {
         break;
       case DOT:
         gc.setLineStyle( SWT.LINE_DOT );
-        break;
-      case DASH:
-        gc.setLineStyle( SWT.LINE_DASH );
         break;
       case PARALLEL:
         gc.setLineAttributes( new LineAttributes(
@@ -384,7 +319,6 @@ public class SWTDirectGC implements GCInterface {
     transform.translate( translationX + shadowsize * magnification, translationY + shadowsize * magnification );
     transform.scale( magnification, magnification );
     gc.setTransform( transform );
-    currentMagnification = magnification;
   }
 
   public Point textExtent( String text ) {
@@ -392,11 +326,12 @@ public class SWTDirectGC implements GCInterface {
     return new Point( p.x, p.y );
   }
 
-  public void drawStepIcon( int x, int y, StepMeta stepMeta, float magnification ) {
+  public void drawStepIcon( int x, int y, StepMeta stepMeta ) {
+    // Draw a blank rectangle to prevent alpha channel problems...
+    //
+    gc.fillRectangle( x, y, iconsize, iconsize );
     String steptype = stepMeta.getStepID();
-    Image im =
-        images.get( steptype ).getAsBitmapForSize( gc.getDevice(), Math.round( iconsize * magnification ),
-            Math.round( iconsize * magnification ) );
+    Image im = images.get( steptype );
     if ( im != null ) { // Draw the icon!
 
       org.eclipse.swt.graphics.Rectangle bounds = im.getBounds();
@@ -404,47 +339,32 @@ public class SWTDirectGC implements GCInterface {
     }
   }
 
-  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy, float magnification ) {
+  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
     if ( jobEntryCopy == null ) {
       return; // Don't draw anything
     }
 
-    SwtUniversalImage swtImage = null;
-
-    int w = Math.round( iconsize * magnification );
-    int h = Math.round( iconsize * magnification );
+    Image image = null;
 
     if ( jobEntryCopy.isSpecial() ) {
       if ( jobEntryCopy.isStart() ) {
-        swtImage = GUIResource.getInstance().getSwtImageStart();
+        image = GUIResource.getInstance().getImageStart();
       }
       if ( jobEntryCopy.isDummy() ) {
-        swtImage = GUIResource.getInstance().getSwtImageDummy();
+        image = GUIResource.getInstance().getImageDummy();
       }
     } else {
       String configId = jobEntryCopy.getEntry().getPluginId();
       if ( configId != null ) {
-        swtImage = GUIResource.getInstance().getImagesJobentries().get( configId );
+        image = GUIResource.getInstance().getImagesJobentries().get( configId );
       }
     }
-    if ( swtImage == null ) {
+    if ( image == null ) {
       return;
     }
 
-    Image image = swtImage.getAsBitmapForSize( gc.getDevice(), w, h );
-
     org.eclipse.swt.graphics.Rectangle bounds = image.getBounds();
     gc.drawImage( image, 0, 0, bounds.width, bounds.height, x, y, iconsize, iconsize );
-  }
-
-  @Override
-  public void drawJobEntryIcon( int x, int y, JobEntryCopy jobEntryCopy ) {
-    drawJobEntryIcon( x, y , jobEntryCopy, currentMagnification );
-  }
-
-  @Override
-  public void drawStepIcon( int x, int y, StepMeta stepMeta ) {
-    drawStepIcon( x, y, stepMeta, currentMagnification );
   }
 
   public void setAntialias( boolean antiAlias ) {

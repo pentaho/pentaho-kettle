@@ -26,13 +26,6 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 
-/**
- * This class is no longer used
- *
- * Data Service client code is now available in the pdi-dataservice-plugin project
- *
- */
-@Deprecated
 public class FieldVariableMapping {
 
   public enum MappingType {

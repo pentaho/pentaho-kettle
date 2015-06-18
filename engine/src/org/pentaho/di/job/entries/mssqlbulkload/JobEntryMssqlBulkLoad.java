@@ -590,7 +590,10 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
                 // Of course, the table should have been created already before the bulk load operation
                 db.disconnect();
                 result.setNrErrors( 1 );
-                logError( BaseMessages.getString( PKG, "JobMssqlBulkLoad.Error.TableNotExists", realTablename ) );
+                if ( log.isDetailed() ) {
+                  logDetailed( BaseMessages
+                    .getString( PKG, "JobMssqlBulkLoad.Error.TableNotExists", realTablename ) );
+                }
               }
             } catch ( KettleDatabaseException dbe ) {
               db.disconnect();

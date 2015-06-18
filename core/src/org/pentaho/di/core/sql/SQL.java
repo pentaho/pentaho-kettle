@@ -56,9 +56,6 @@ public class SQL {
   private String orderClause;
   private SQLFields orderFields;
 
-  private String limitClause;
-  private SQLLimit limitValues;
-
   /**
    * Create a new SQL object by parsing the supplied SQL string. This is a simple implementation with only one table
    * allows
@@ -95,34 +92,29 @@ public class SQL {
     if ( foundClause.getRest() == null ) {
       return;
     }
-    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "FROM", "WHERE", "GROUP BY", "ORDER BY", "LIMIT" );
+    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "FROM", "WHERE", "GROUP BY", "ORDER BY" );
     serviceClause = foundClause.getClause();
     parseServiceClause();
     if ( foundClause.getRest() == null ) {
       return;
     }
-    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "WHERE", "GROUP BY", "ORDER BY", "LIMIT" );
+    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "WHERE", "GROUP BY", "ORDER BY" );
     whereClause = foundClause.getClause();
     if ( foundClause.getRest() == null ) {
       return;
     }
-    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "GROUP BY", "HAVING", "ORDER BY", "LIMIT" );
+    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "GROUP BY", "HAVING", "ORDER BY" );
     groupClause = foundClause.getClause();
     if ( foundClause.getRest() == null ) {
       return;
     }
-    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "HAVING", "ORDER BY", "LIMIT" );
+    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "HAVING", "ORDER BY" );
     havingClause = foundClause.getClause();
     if ( foundClause.getRest() == null ) {
       return;
     }
-    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "ORDER BY", "LIMIT" );
+    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "ORDER BY" );
     orderClause = foundClause.getClause();
-    if ( foundClause.getRest() == null ) {
-      return;
-    }
-    foundClause = ThinUtil.findClauseWithRest( foundClause.getRest(), "LIMIT" );
-    limitClause = foundClause.getClause();
   }
 
   private void parseServiceClause() throws KettleSQLException {
@@ -193,9 +185,6 @@ public class SQL {
     }
     if ( !Const.isEmpty( orderClause ) ) {
       orderFields = new SQLFields( serviceAlias, rowMeta, orderClause, true, selectFields );
-    }
-    if ( !Const.isEmpty( limitClause ) ) {
-      limitValues = new SQLLimit( limitClause );
     }
   }
 
@@ -284,37 +273,6 @@ public class SQL {
    */
   public void setOrderClause( String orderClause ) {
     this.orderClause = orderClause;
-  }
-
-  /**
-   * @return the limitClause
-   */
-  public String getLimitClause() {
-    return limitClause;
-  }
-
-  /**
-   * @param limitClause the orderClause to set
-   */
-  public void setLimitClause( String limitClause ) {
-    this.limitClause = limitClause;
-  }
-
-  /**
-   *
-   * @return the limitValues
-   */
-  public SQLLimit getLimitValues() {
-    return limitValues;
-  }
-
-  /**
-   *
-   * @param limitValues the limitValues to set
-   *
-   */
-  public void setLimitValues( SQLLimit limitValues ) {
-    this.limitValues = limitValues;
   }
 
   /**

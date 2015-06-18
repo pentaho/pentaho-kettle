@@ -23,6 +23,8 @@
 package org.pentaho.di.ui.trans.steps.sftpput;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -54,6 +56,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.job.entries.sftpput.JobEntrySFTPPUT;
@@ -63,7 +66,6 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.sftpput.SFTPPutMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
-import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -347,8 +349,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
     fdlPassword.top = new FormAttachment( wUserName, margin );
     fdlPassword.right = new FormAttachment( middle, -margin );
     wlPassword.setLayoutData( fdlPassword );
-    wPassword = new PasswordTextVar( transMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wPassword = new TextVar( transMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wPassword );
+    wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
     fdPassword.left = new FormAttachment( middle, 0 );
@@ -427,8 +430,9 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
     wkeyfilePass =
       new LabelTextVar(
         transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.keyfilePass.Label" ), BaseMessages
-          .getString( PKG, "SFTPPUT.keyfilePass.Tooltip" ), true );
+          .getString( PKG, "SFTPPUT.keyfilePass.Tooltip" ) );
     props.setLook( wkeyfilePass );
+    wkeyfilePass.setEchoChar( '*' );
     wkeyfilePass.addModifyListener( lsMod );
     fdkeyfilePass = new FormData();
     fdkeyfilePass.left = new FormAttachment( 0, -margin );
@@ -504,14 +508,22 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
     wProxyPassword =
       new LabelTextVar(
         transMeta, wServerSettings, BaseMessages.getString( PKG, "SFTPPUT.ProxyPassword.Label" ), BaseMessages
-          .getString( PKG, "SFTPPUT.ProxyPassword.Tooltip" ), true );
+          .getString( PKG, "SFTPPUT.ProxyPassword.Tooltip" ) );
     props.setLook( wProxyPassword );
+    wProxyPassword.setEchoChar( '*' );
     wProxyPassword.addModifyListener( lsMod );
     fdProxyPasswd = new FormData();
     fdProxyPasswd.left = new FormAttachment( 0, -2 * margin );
     fdProxyPasswd.top = new FormAttachment( wProxyUsername, margin );
     fdProxyPasswd.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPasswd );
+
+    // OK, if the password contains a variable, we don't want to have the password hidden...
+    wProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        checkProxyPasswordVisible();
+      }
+    } );
 
     // Test connection button
     wTest = new Button( wServerSettings, SWT.PUSH );
@@ -1051,6 +1063,17 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
     input.setRemoteFilenameFieldName( wRemoteFileName.getText() );
 
     dispose();
+  }
+
+  public void checkProxyPasswordVisible() {
+    String password = wProxyPassword.getText();
+    List<String> list = new ArrayList<String>();
+    StringUtil.getUsedVariables( password, list, true );
+    if ( list.size() == 0 ) {
+      wProxyPassword.setEchoChar( '*' );
+    } else {
+      wProxyPassword.setEchoChar( '\0' ); // Show it all...
+    }
   }
 
   private void setDefaulProxyPort() {

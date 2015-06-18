@@ -253,14 +253,16 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
     wPassword =
       new LabelTextVar( jobMeta, wServerSettings, BaseMessages.getString(
         PKG, "JobSendNagiosPassiveCheck.Password.Label" ), BaseMessages
-        .getString( "JobSendNagiosPassiveCheck.Password.Tooltip" ), true );
+        .getString( "JobSendNagiosPassiveCheck.Password.Tooltip" ) );
     props.setLook( wPassword );
+    wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
     fdPassword.left = new FormAttachment( 0, 0 );
     fdPassword.top = new FormAttachment( wPort, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
+    wPassword.setEchoChar( '*' );
 
     // Server wConnectionTimeOut line
     wConnectionTimeOut =

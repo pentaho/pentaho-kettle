@@ -71,14 +71,13 @@ public class RepositoryDirectoryUI {
     RepositoryDirectoryInterface dir, String filterString, Pattern pattern ) throws KettleDatabaseException {
     ti.setText( dir.getName() );
     ti.setData( dir );
-    ti.setData( "isFolder", true );
+    ti.setForeground( dircolor );
 
     // First, we draw the directories
     for ( int i = 0; i < dir.getNrSubdirectories(); i++ ) {
       RepositoryDirectory subdir = dir.getSubdirectory( i );
       TreeItem subti = new TreeItem( ti, SWT.NONE );
       subti.setImage( GUIResource.getInstance().getImageArrow() );
-      subti.setData( "isFolder", true );
       getTreeWithNames(
         subti, rep, dircolor, sortPosition, includeDeleted, ascending, getTransformations, getJobs, subdir,
         filterString, pattern );
@@ -170,7 +169,7 @@ public class RepositoryDirectoryUI {
 
           SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
           tiObject.setText( 0, Const.NVL( repositoryObject.getName(), "" ) );
-          tiObject.setText( 1, Const.NVL( repositoryObject.getObjectType().getTypeDescription(), "" ).toUpperCase() );
+          tiObject.setText( 1, Const.NVL( repositoryObject.getObjectType().getTypeDescription(), "" ) );
           tiObject.setText( 2, Const.NVL( repositoryObject.getModifiedUser(), "" ) );
           tiObject.setText( 3, repositoryObject.getModifiedDate() != null ? simpleDateFormat
             .format( repositoryObject.getModifiedDate() ) : "" );

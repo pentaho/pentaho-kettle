@@ -2645,7 +2645,6 @@ public class RepositoryExplorerDialog extends Dialog {
       //
       SelectDirectoryDialog sdd = new SelectDirectoryDialog( shell, SWT.NONE, rep );
       RepositoryDirectoryInterface baseDirectory = sdd.open();
-      
       if ( baseDirectory != null ) {
         // Finally before importing, ask for a version comment (if applicable)
         //
@@ -2654,11 +2653,12 @@ public class RepositoryExplorerDialog extends Dialog {
         while ( !versionOk ) {
           versionComment =
             RepositorySecurityUI.getVersionComment( shell, rep, "Import of files into ["
-              + baseDirectory.getPath() + "]", "", true );
+              + baseDirectory.getPath() + "]" );
 
           // if the version comment is null, the user hit cancel, exit.
           if ( rep != null
-            && rep.getSecurityProvider() != null && versionComment == null ) {
+            && rep.getSecurityProvider() != null && rep.getSecurityProvider().allowsVersionComments()
+            && versionComment == null ) {
             return;
           }
           if ( Const.isEmpty( versionComment ) && rep.getSecurityProvider().isVersionCommentMandatory() ) {

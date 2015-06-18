@@ -626,8 +626,4 @@ public class ValueMetaTest extends TestCase {
     assertTrue( one.compare( string1, two, string5 ) != 0 );
     assertTrue( one.compare( string5, two, string6 ) == 0 );
   }
-
-  public void testValueMetaInheritance() {
-    assertTrue( new ValueMeta() instanceof ValueMetaInterface );
-  }
 }

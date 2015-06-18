@@ -146,9 +146,8 @@ public class TextFileInputMetaLoadSaveTest {
 
     assertTrue( !commonAttributes.isEmpty() || !( xmlAttributes.isEmpty() || repoAttributes.isEmpty() ) );
 
-    tester =
-        new TransStepLoadSaveTester<TextFileInputMeta>( TextFileInputMeta.class, commonAttributes, xmlAttributes,
-            repoAttributes, getters, setters, attributeValidators, typeValidators );
+    tester = new TransStepLoadSaveTester<TextFileInputMeta>( TextFileInputMeta.class, commonAttributes, xmlAttributes, repoAttributes, getters, setters,
+      attributeValidators, typeValidators ) ;
   }
 
   @Test
@@ -167,9 +166,8 @@ public class TextFileInputMetaLoadSaveTest {
       return new TextFileInputField( UUID.randomUUID().toString(), new Random().nextInt(), new Random().nextInt() );
     }
 
-    @Override
-    public boolean validateTestObject( TextFileInputField testObject, Object actual ) {
-      if ( !( actual instanceof TextFileInputField ) ) {
+    @Override public boolean validateTestObject( TextFileInputField testObject, Object actual ) {
+      if (!(actual instanceof TextFileInputField)) {
         return false;
       }
 

@@ -356,8 +356,9 @@ public class JobEntrySNMPTrapDialog extends JobEntryDialog implements JobEntryDi
     wPassphrase =
       new LabelTextVar(
         jobMeta, wAdvancedSettings, BaseMessages.getString( PKG, "JobSNMPTrap.Passphrase.Label" ),
-        BaseMessages.getString( PKG, "JobSNMPTrap.Passphrase.Tooltip" ), true );
+        BaseMessages.getString( PKG, "JobSNMPTrap.Passphrase.Tooltip" ) );
     props.setLook( wPassphrase );
+    wPassphrase.setEchoChar( '*' );
     wPassphrase.addModifyListener( lsMod );
     fdPassphrase = new FormData();
     fdPassphrase.left = new FormAttachment( 0, 0 );

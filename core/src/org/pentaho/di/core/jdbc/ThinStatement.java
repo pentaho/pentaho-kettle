@@ -32,13 +32,6 @@ import java.sql.Statement;
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.variables.Variables;
 
-/**
- * This class is no longer used
- *
- * Data Service client code is now available in the pdi-dataservice-plugin project
- *
- */
-@Deprecated
 public class ThinStatement implements Statement {
 
   protected ThinConnection connection;

@@ -54,6 +54,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.TreeSelection;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 public class SpoonTreeDelegate extends SpoonDelegate {
   public SpoonTreeDelegate( Spoon spoon ) {
@@ -127,7 +128,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               if ( path[2].equals( Spoon.STRING_CLUSTERS ) ) {
                 object = new TreeSelection( path[2], ClusterSchema.class, transMeta );
               }
-              executeExtensionPoint( new SpoonTreeDelegateExtension( transMeta, path, 3, objects ) );
+              executeExtensionPoint( new SpoonTreeDelegateExtension(transMeta, path, 3, objects ) );
             }
             if ( path[0].equals( Spoon.STRING_JOBS ) ) { // Jobs title
 
@@ -141,7 +142,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               if ( path[2].equals( Spoon.STRING_SLAVES ) ) {
                 object = new TreeSelection( path[2], SlaveServer.class, jobMeta );
               }
-              executeExtensionPoint( new SpoonTreeDelegateExtension( jobMeta, path, 3, objects ) );
+              executeExtensionPoint( new SpoonTreeDelegateExtension(jobMeta, path, 3, objects ) );
             }
             break;
 
@@ -174,7 +175,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
                 if ( path[2].equals( Spoon.STRING_CLUSTERS ) ) {
                   object = new TreeSelection( path[3], transMeta.findClusterSchema( path[3] ), transMeta );
                 }
-                executeExtensionPoint( new SpoonTreeDelegateExtension( transMeta, path, 4, objects ) );
+                executeExtensionPoint( new SpoonTreeDelegateExtension(transMeta, path, 4, objects ) );
               }
             }
             if ( path[0].equals( Spoon.STRING_JOBS ) ) { // The name of a job
@@ -194,7 +195,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               if ( jobMeta != null && path[2].equals( Spoon.STRING_SLAVES ) ) {
                 object = new TreeSelection( path[3], jobMeta.findSlaveServer( path[3] ), jobMeta );
               }
-              executeExtensionPoint( new SpoonTreeDelegateExtension( jobMeta, path, 4, objects ) );
+              executeExtensionPoint( new SpoonTreeDelegateExtension(jobMeta, path, 4, objects ) );
             }
             break;
 

@@ -448,43 +448,6 @@ public class SQLTest extends TestCase {
 
   }
 
-  public void testSql18() throws KettleSQLException {
-
-    String sqlString = "SELECT A, B, C\nFROM Service\nWHERE B > 5\nORDER BY B DESC\nLIMIT 5    OFFSET    10";
-    SQL sql = new SQL( sqlString );
-    RowMetaInterface rowMeta = generateTest4RowMeta();
-    sql.parse( rowMeta );
-
-    assertEquals( 5, sql.getLimitValues().getLimit() );
-    assertEquals( 10, sql.getLimitValues().getOffset() );
-
-    sqlString = "SELECT A, B, C\nFROM Service\nWHERE B > 5\nORDER BY B DESC\nLIMIT 10, 5";
-    sql = new SQL( sqlString );
-    rowMeta = generateTest4RowMeta();
-    sql.parse( rowMeta );
-
-    assertEquals( 5, sql.getLimitValues().getLimit() );
-    assertEquals( 10, sql.getLimitValues().getOffset() );
-
-    sqlString = "SELECT A, B, C\nFROM Service\nWHERE B > 5\nORDER BY B DESC\nLIMIT 5";
-    sql = new SQL( sqlString );
-    rowMeta = generateTest4RowMeta();
-    sql.parse( rowMeta );
-
-    assertEquals( 5, sql.getLimitValues().getLimit() );
-
-    sqlString = "SELECT A, B, C\nFROM Service\nWHERE B > 5\nORDER BY B DESC\nLIMIT ERROR5";
-    sql = new SQL( sqlString );
-    rowMeta = generateTest4RowMeta();
-
-    try {
-      sql.parse( rowMeta );
-      fail();
-    } catch ( KettleSQLException e ) {
-      // Should throw a KettleSQLException
-    }
-  }
-
   public static RowMetaInterface generateTest2RowMeta() {
     RowMetaInterface rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMeta( "A", ValueMetaInterface.TYPE_STRING, 50 ) );

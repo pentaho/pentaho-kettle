@@ -49,7 +49,6 @@
   
   <servlet id="registerSlave"> <description>Register a slave server</description> <classname>org.pentaho.di.www.RegisterSlaveServlet</classname> </servlet>
   <servlet id="getSlaves"> <description>List all registered slave servers</description> <classname>org.pentaho.di.www.GetSlavesServlet</classname> </servlet>
-  <servlet id="stopCarte"> <description>Stop Carte Server</description> <classname>org.pentaho.di.www.StopCarteServlet</classname> </servlet>
   <servlet id="properties"> <description>Get properties from kettle.properties</description> <classname>org.pentaho.di.www.GetPropertiesServlet</classname> </servlet>
 
   <!-- Easier remote execution ... -->

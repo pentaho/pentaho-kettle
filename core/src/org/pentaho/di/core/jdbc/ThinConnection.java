@@ -45,13 +45,6 @@ import java.util.concurrent.Executor;
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.variables.Variables;
 
-/**
- * This class is no longer used
- *
- * Data Service client code is now available in the pdi-dataservice-plugin project
- *
- */
-@Deprecated
 public class ThinConnection implements Connection {
 
   public static final String ARG_WEBAPPNAME = "webappname";
@@ -443,8 +436,8 @@ public class ThinConnection implements Connection {
    * @param password
    *          the password to set
    */
-  public void setPassword( String password ) {
-    this.password = password;
+  public void setPassword( String passsword ) {
+    this.password = passsword;
   }
 
   /**

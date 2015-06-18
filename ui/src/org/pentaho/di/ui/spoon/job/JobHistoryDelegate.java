@@ -212,7 +212,6 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       fetchAllButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById( "fetch-all-history" );
 
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
-      spoon.props.setLook( swtToolBar, Props.WIDGET_STYLE_TOOLBAR );
       swtToolBar.layout( true, true );
     } catch ( Throwable t ) {
       log.logError( Const.getStackTracker( t ) );

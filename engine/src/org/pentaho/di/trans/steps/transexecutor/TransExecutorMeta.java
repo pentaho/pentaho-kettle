@@ -22,20 +22,22 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -69,10 +71,6 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Meta-data for the Trans Executor step.
@@ -432,17 +430,17 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
     executionLogChannelIdField = rep.getStepAttributeString( id_step, "execution_log_channelid_field" );
 
     outputRowsSourceStep = rep.getStepAttributeString( id_step, "result_rows_target_step" );
-    int nrFields = rep.countNrStepAttributes( id_step, "result_rows_field_name" );
+    int nrFields = rep.countNrStepAttributes( id_step, "result_rows_field" );
     outputRowsField = new String[ nrFields ];
     outputRowsType = new int[ nrFields ];
     outputRowsLength = new int[ nrFields ];
     outputRowsPrecision = new int[ nrFields ];
 
     for ( int i = 0; i < nrFields; i++ ) {
-      outputRowsField[ i ] = rep.getStepAttributeString( id_step, i, "result_rows_field_name" );
-      outputRowsType[ i ] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "result_rows_field_type" ) );
-      outputRowsLength[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_field_length" );
-      outputRowsPrecision[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_field_precision" );
+      outputRowsField[ i ] = rep.getStepAttributeString( id_step, i, "result_rows_field" );
+      outputRowsType[ i ] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "result_rows_type" ) );
+      outputRowsLength[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_length" );
+      outputRowsPrecision[ i ] = (int) rep.getStepAttributeInteger( id_step, i, "result_rows_precision" );
     }
 
     resultFilesTargetStep = rep.getStepAttributeString( id_step, F_RESULT_FILE_TARGET_STEP );
@@ -547,52 +545,81 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
   void prepareExecutionResultsFields( RowMetaInterface row, StepMeta nextStep ) throws KettleStepException {
     if ( nextStep != null && executionResultTargetStepMeta != null ) {
-      addFieldToRow( row, executionTimeField, ValueMetaInterface.TYPE_INTEGER, 15, 0 );
-      addFieldToRow( row, executionResultField, ValueMetaInterface.TYPE_BOOLEAN );
-      addFieldToRow( row, executionNrErrorsField, ValueMetaInterface.TYPE_INTEGER, 9, 0 );
-      addFieldToRow( row, executionLinesReadField, ValueMetaInterface.TYPE_INTEGER, 9, 0 );
-      addFieldToRow( row, executionLinesWrittenField, ValueMetaInterface.TYPE_INTEGER, 9, 0 );
-      addFieldToRow( row, executionLinesInputField, ValueMetaInterface.TYPE_INTEGER, 9, 0 );
-      addFieldToRow( row, executionLinesOutputField, ValueMetaInterface.TYPE_INTEGER, 9, 0 );
-      addFieldToRow( row, executionLinesRejectedField, ValueMetaInterface.TYPE_INTEGER, 9, 0 );
-      addFieldToRow( row, executionLinesUpdatedField, ValueMetaInterface.TYPE_INTEGER, 9, 0 );
-      addFieldToRow( row, executionLinesDeletedField, ValueMetaInterface.TYPE_INTEGER, 9, 0 );
-      addFieldToRow( row, executionFilesRetrievedField, ValueMetaInterface.TYPE_INTEGER, 9, 0 );
-      addFieldToRow( row, executionExitStatusField, ValueMetaInterface.TYPE_INTEGER, 3, 0 );
-      addFieldToRow( row, executionLogTextField, ValueMetaInterface.TYPE_STRING );
-      addFieldToRow( row, executionLogChannelIdField, ValueMetaInterface.TYPE_STRING, 50, 0 );
-
-    }
-  }
-
-  protected void addFieldToRow( RowMetaInterface row, String fieldName, int type ) throws KettleStepException {
-    addFieldToRow( row, fieldName, type, -1, -1 );
-  }
-
-  protected void addFieldToRow( RowMetaInterface row, String fieldName, int type, int length, int precision )
-    throws KettleStepException {
-    if ( !Const.isEmpty( fieldName ) ) {
-      try {
-        ValueMetaInterface value = ValueMetaFactory.createValueMeta( fieldName, type, length, precision );
-        value.setOrigin( getParentStepMeta().getName() );
+      if ( !Const.isEmpty( executionTimeField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionTimeField, ValueMeta.TYPE_INTEGER, 15, 0 );
         row.addValueMeta( value );
-      } catch ( KettlePluginException e ) {
-        throw new KettleStepException( BaseMessages.getString( PKG,
-          "TransExecutorMeta.ValueMetaInterfaceCreation", fieldName ), e );
+      }
+      if ( !Const.isEmpty( executionResultField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionResultField, ValueMeta.TYPE_BOOLEAN );
+        row.addValueMeta( value );
+      }
+      if ( !Const.isEmpty( executionNrErrorsField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionNrErrorsField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
+      }
+      if ( !Const.isEmpty( executionLinesReadField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesReadField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
+      }
+      if ( !Const.isEmpty( executionLinesWrittenField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesWrittenField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
+      }
+      if ( !Const.isEmpty( executionLinesInputField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesInputField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
+      }
+      if ( !Const.isEmpty( executionLinesOutputField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesOutputField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
+      }
+      if ( !Const.isEmpty( executionLinesRejectedField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesRejectedField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
+      }
+      if ( !Const.isEmpty( executionLinesUpdatedField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesUpdatedField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
+      }
+      if ( !Const.isEmpty( executionLinesDeletedField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLinesDeletedField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
+      }
+      if ( !Const.isEmpty( executionFilesRetrievedField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionFilesRetrievedField, ValueMeta.TYPE_INTEGER, 9, 0 );
+        row.addValueMeta( value );
+      }
+      if ( !Const.isEmpty( executionExitStatusField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionExitStatusField, ValueMeta.TYPE_INTEGER, 3, 0 );
+        row.addValueMeta( value );
+      }
+      if ( !Const.isEmpty( executionLogTextField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLogTextField, ValueMeta.TYPE_STRING );
+        value.setLargeTextField( true );
+        row.addValueMeta( value );
+      }
+      if ( !Const.isEmpty( executionLogChannelIdField ) ) {
+        ValueMetaInterface value = new ValueMeta( executionLogChannelIdField, ValueMeta.TYPE_STRING, 50, 0 );
+        row.addValueMeta( value );
       }
     }
   }
 
-  void prepareExecutionResultsFileFields( RowMetaInterface row, StepMeta nextStep ) throws KettleStepException {
+  void prepareExecutionResultsFileFields( RowMetaInterface row, StepMeta nextStep ) {
     if ( nextStep != null
       && resultFilesTargetStepMeta != null && nextStep.equals( resultFilesTargetStepMeta ) ) {
-      addFieldToRow( row, resultFilesFileNameField, ValueMetaInterface.TYPE_STRING );
+      if ( !Const.isEmpty( resultFilesFileNameField ) ) {
+        ValueMetaInterface value = new ValueMeta( "filename", ValueMeta.TYPE_STRING, 255, 0 );
+        row.addValueMeta( value );
+      }
     }
   }
 
   void prepareResultsRowsFields( RowMetaInterface row ) throws KettleStepException {
     for ( int i = 0; i < outputRowsField.length; i++ ) {
-      addFieldToRow( row, outputRowsField[ i ], outputRowsType[ i ], outputRowsLength[ i ], outputRowsPrecision[ i ] );
+      ValueMetaInterface value =
+        new ValueMeta( outputRowsField[ i ], outputRowsType[ i ], outputRowsLength[ i ], outputRowsPrecision[ i ] );
+      row.addValueMeta( value );
     }
   }
 

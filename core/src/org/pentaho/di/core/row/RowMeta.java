@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -80,9 +81,11 @@ public class RowMeta implements RowMetaInterface {
   /**
    * This method copies the row metadata and sets all values to the specified type (usually String)
    *
-   * @param targetType The target type
+   * @param targetType
+   *          The target type
    * @return The cloned metadata
-   * @throws if the target type could not be loaded from the plugin registry
+   * @throws if
+   *           the target type could not be loaded from the plugin registry
    */
   @Override
   public RowMetaInterface cloneToType( int targetType ) throws KettleValueException {
@@ -120,7 +123,8 @@ public class RowMeta implements RowMetaInterface {
   }
 
   /**
-   * @param valueMetaList the list of valueMeta to set
+   * @param valueMetaList
+   *          the list of valueMeta to set
    */
   @Override
   public void setValueMetaList( List<ValueMetaInterface> valueMetaList ) {
@@ -129,7 +133,7 @@ public class RowMeta implements RowMetaInterface {
     valueIndexMap.clear();
     for ( int i = 0; i < this.valueMetaList.size(); i++ ) {
       ValueMetaInterface valueMeta = this.valueMetaList.get( i );
-      if ( !Const.isEmpty( valueMeta.getName() ) ) {
+      if( !Const.isEmpty( valueMeta.getName() ) ) {
         valueIndexMap.put( valueMeta.getName().toLowerCase(), i );
       }
     }
@@ -159,7 +163,8 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Add a metadata value. If a value with the same name already exists, it gets renamed.
    *
-   * @param meta The metadata value to add
+   * @param meta
+   *          The metadata value to add
    */
   @Override
   public void addValueMeta( ValueMetaInterface meta ) {
@@ -170,8 +175,10 @@ public class RowMeta implements RowMetaInterface {
    * Add a metadata value on a certain location in the row. If a value with the same name already exists, it gets
    * renamed. Remember to change the data row according to this.
    *
-   * @param index The index where the metadata value needs to be put in the row
-   * @param meta  The metadata value to add to the row
+   * @param index
+   *          The index where the metadata value needs to be put in the row
+   * @param meta
+   *          The metadata value to add to the row
    */
   @Override
   public void addValueMeta( int index, ValueMetaInterface meta ) {
@@ -180,10 +187,10 @@ public class RowMeta implements RowMetaInterface {
       if ( !exists( meta ) ) {
         newMeta = meta;
       } else {
-        newMeta = renameValueMetaIfInRow( meta, null );
+        newMeta = renameValueMetaIfInRow( meta );
       }
       valueMetaList.add( index, newMeta );
-      if ( !Const.isEmpty( newMeta.getName() ) ) {
+      if( !Const.isEmpty( newMeta.getName() ) ) {
         valueIndexMap.put( newMeta.getName().toLowerCase(), index );
       }
     }
@@ -192,7 +199,8 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Get the value metadata on the specified index.
    *
-   * @param index The index to get the value metadata from
+   * @param index
+   *          The index to get the value metadata from
    * @return The value metadata specified by the index.
    */
   @Override
@@ -207,15 +215,17 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Replaces a value meta entry in the row metadata with another one
    *
-   * @param index     The index in the row to replace at
-   * @param valueMeta the metadata to replace with
+   * @param index
+   *          The index in the row to replace at
+   * @param valueMeta
+   *          the metadata to replace with
    */
   @Override
   public void setValueMeta( int index, ValueMetaInterface valueMeta ) {
     if ( valueMeta != null ) {
       valueMetaList.set( index, valueMeta );
       // add value meta to cache if name is not null
-      if ( !Const.isEmpty( valueMeta.getName() ) ) {
+      if( !Const.isEmpty( valueMeta.getName() ) ) {
         valueIndexMap.put( valueMeta.getName().toLowerCase(), index );
       }
     }
@@ -224,10 +234,13 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Get a String value from a row of data. Convert data if this needed.
    *
-   * @param rowRow the row of data
-   * @param index  the index
+   * @param rowRow
+   *          the row of data
+   * @param index
+   *          the index
    * @return The string found on that position in the row
-   * @throws KettleValueException in case there was a problem converting the data.
+   * @throws KettleValueException
+   *           in case there was a problem converting the data.
    */
   @Override
   public String getString( Object[] dataRow, int index ) throws KettleValueException {
@@ -241,10 +254,13 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Get an Integer value from a row of data. Convert data if this needed.
    *
-   * @param rowRow the row of data
-   * @param index  the index
+   * @param rowRow
+   *          the row of data
+   * @param index
+   *          the index
    * @return The integer found on that position in the row
-   * @throws KettleValueException in case there was a problem converting the data.
+   * @throws KettleValueException
+   *           in case there was a problem converting the data.
    */
   @Override
   public Long getInteger( Object[] dataRow, int index ) throws KettleValueException {
@@ -258,10 +274,13 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Get a Number value from a row of data. Convert data if this needed.
    *
-   * @param rowRow the row of data
-   * @param index  the index
+   * @param rowRow
+   *          the row of data
+   * @param index
+   *          the index
    * @return The number found on that position in the row
-   * @throws KettleValueException in case there was a problem converting the data.
+   * @throws KettleValueException
+   *           in case there was a problem converting the data.
    */
   @Override
   public Double getNumber( Object[] dataRow, int index ) throws KettleValueException {
@@ -275,10 +294,13 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Get a Date value from a row of data. Convert data if this needed.
    *
-   * @param rowRow the row of data
-   * @param index  the index
+   * @param rowRow
+   *          the row of data
+   * @param index
+   *          the index
    * @return The date found on that position in the row
-   * @throws KettleValueException in case there was a problem converting the data.
+   * @throws KettleValueException
+   *           in case there was a problem converting the data.
    */
   @Override
   public Date getDate( Object[] dataRow, int index ) throws KettleValueException {
@@ -292,10 +314,13 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Get a BigNumber value from a row of data. Convert data if this needed.
    *
-   * @param rowRow the row of data
-   * @param index  the index
+   * @param rowRow
+   *          the row of data
+   * @param index
+   *          the index
    * @return The bignumber found on that position in the row
-   * @throws KettleValueException in case there was a problem converting the data.
+   * @throws KettleValueException
+   *           in case there was a problem converting the data.
    */
   @Override
   public BigDecimal getBigNumber( Object[] dataRow, int index ) throws KettleValueException {
@@ -309,10 +334,13 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Get a Boolean value from a row of data. Convert data if this needed.
    *
-   * @param rowRow the row of data
-   * @param index  the index
+   * @param rowRow
+   *          the row of data
+   * @param index
+   *          the index
    * @return The boolean found on that position in the row
-   * @throws KettleValueException in case there was a problem converting the data.
+   * @throws KettleValueException
+   *           in case there was a problem converting the data.
    */
   @Override
   public Boolean getBoolean( Object[] dataRow, int index ) throws KettleValueException {
@@ -326,10 +354,13 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Get a Binary value from a row of data. Convert data if this needed.
    *
-   * @param rowRow the row of data
-   * @param index  the index
+   * @param rowRow
+   *          the row of data
+   * @param index
+   *          the index
    * @return The binary found on that position in the row
-   * @throws KettleValueException in case there was a problem converting the data.
+   * @throws KettleValueException
+   *           in case there was a problem converting the data.
    */
   @Override
   public byte[] getBinary( Object[] dataRow, int index ) throws KettleValueException {
@@ -343,10 +374,13 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Determines whether a value in a row is null. A value is null when the object is null or when it's an empty String
    *
-   * @param dataRow The row of data
-   * @param index   the index to reference
+   * @param dataRow
+   *          The row of data
+   * @param index
+   *          the index to reference
    * @return true if the value on the index is null.
-   * @throws KettleValueException in case there is a conversion error (only thrown in case of lazy conversion)
+   * @throws KettleValueException
+   *           in case there is a conversion error (only thrown in case of lazy conversion)
    */
   @Override
   public boolean isNull( Object[] dataRow, int index ) throws KettleValueException {
@@ -359,7 +393,8 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * @return a cloned Object[] object.
-   * @throws KettleValueException in case something is not quite right with the expected data
+   * @throws KettleValueException
+   *           in case something is not quite right with the expected data
    */
   @Override
   public Object[] cloneRow( Object[] objects ) throws KettleValueException {
@@ -368,7 +403,8 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * @return a cloned Object[] object.
-   * @throws KettleValueException in case something is not quite right with the expected data
+   * @throws KettleValueException
+   *           in case something is not quite right with the expected data
    */
   @Override
   public Object[] cloneRow( Object[] objects, Object[] newObjects ) throws KettleValueException {
@@ -418,17 +454,18 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Searches the index of a value meta with a given name
    *
-   * @param valueName the name of the value metadata to look for
+   * @param valueName
+   *          the name of the value metadata to look for
    * @return the index or -1 in case we didn't find the value
    */
   @Override
   public int indexOfValue( String valueName ) {
-    if ( valueName == null ) {
+    if( valueName == null ) {
       return -1;
     }
     String key = valueName.toLowerCase();
     Integer index = valueIndexMap.get( key );
-    if ( index != null ) {
+    if( index != null ) {
       ValueMetaInterface value = valueMetaList.get( index );
       if ( !valueName.equalsIgnoreCase( value.getName() ) ) {
         index = null;
@@ -450,7 +487,8 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Searches for a value with a certain name in the value meta list
    *
-   * @param valueName The value name to search for
+   * @param valueName
+   *          The value name to search for
    * @return The value metadata or null if nothing was found
    */
   @Override
@@ -473,23 +511,11 @@ public class RowMeta implements RowMetaInterface {
    * Merge the values of row r to this Row. The values that are not yet in the row are added unchanged. The values that
    * are in the row are renamed to name_2, name_3, etc.
    *
-   * @param r The row to be merged with this row
+   * @param r
+   *          The row to be merged with this row
    */
   @Override
   public void mergeRowMeta( RowMetaInterface r ) {
-    mergeRowMeta( r, null );
-  }
-
-  /**
-   * Merge the values of row r to this Row. The fields that are not yet in the row are added unchanged. The fields that
-   * are in the row are renamed to name_2, name_3, etc. If the fields are renamed, the provided originStepName will be
-   * assigned as the origin step for those fields.
-   *
-   * @param r The row to be merged with this row
-   * @param originStepName The name to use as the origin step
-   */
-  @Override
-  public void mergeRowMeta( RowMetaInterface r, String originStepName ) {
     for ( int x = 0; x < r.size(); x++ ) {
       ValueMetaInterface field = r.getValueMeta( x );
       if ( searchValueMeta( field.getName() ) == null ) {
@@ -497,12 +523,12 @@ public class RowMeta implements RowMetaInterface {
       } else {
         // We want to rename the field to Name[2], Name[3], ...
         //
-        addValueMeta( renameValueMetaIfInRow( field, originStepName ) );
+        addValueMeta( renameValueMetaIfInRow( field ) );
       }
     }
   }
 
-  private ValueMetaInterface renameValueMetaIfInRow( ValueMetaInterface valueMeta, String originStep ) {
+  private ValueMetaInterface renameValueMetaIfInRow( ValueMetaInterface valueMeta ) {
     // We want to rename the field to Name[2], Name[3], ...
     //
     int index = 1;
@@ -517,12 +543,10 @@ public class RowMeta implements RowMetaInterface {
     //
     ValueMetaInterface copy = valueMeta.clone();
 
-    // OK, this is the new name and origin to pick
+    // OK, this is the new name to pick
     //
     copy.setName( name );
-    if ( originStep != null ) {
-      copy.setOrigin( originStep );
-    }
+
     return copy;
   }
 
@@ -545,7 +569,8 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Write ONLY the specified data to the outputStream
    *
-   * @throws KettleFileException in case things go awry
+   * @throws KettleFileException
+   *           in case things go awry
    */
   @Override
   public void writeData( DataOutputStream outputStream, Object[] data ) throws KettleFileException {
@@ -569,7 +594,8 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Write ONLY the specified metadata to the outputStream
    *
-   * @throws KettleFileException in case things go awry
+   * @throws KettleFileException
+   *           in case things go awry
    */
   @Override
   public void writeMeta( DataOutputStream outputStream ) throws KettleFileException {
@@ -682,9 +708,11 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Get the string representation of the data in a row of data
    *
-   * @param row the row of data to convert to string
+   * @param row
+   *          the row of data to convert to string
    * @return the row of data in string form
-   * @throws KettleValueException in case of a conversion error
+   * @throws KettleValueException
+   *           in case of a conversion error
    */
   @Override
   public String getString( Object[] row ) throws KettleValueException {
@@ -704,7 +732,8 @@ public class RowMeta implements RowMetaInterface {
    * Get an array of strings showing the name of the values in the row padded to a maximum length, followed by the types
    * of the values.
    *
-   * @param maxlen The length to which the name will be padded.
+   * @param maxlen
+   *          The length to which the name will be padded.
    * @return an array of strings: the names and the types of the fieldnames in the row.
    */
   @Override
@@ -723,9 +752,12 @@ public class RowMeta implements RowMetaInterface {
    * Compare 2 rows with each other using certain values in the rows and also considering the specified ascending
    * clauses of the value metadata.
    *
-   * @param rowData1 The first row of data
-   * @param rowData2 The second row of data
-   * @param fieldnrs the fields to compare on (in that order)
+   * @param rowData1
+   *          The first row of data
+   * @param rowData2
+   *          The second row of data
+   * @param fieldnrs
+   *          the fields to compare on (in that order)
    * @return 0 if the rows are considered equal, -1 is data1 is smaller, 1 if data2 is smaller.
    * @throws KettleValueException
    */
@@ -747,9 +779,12 @@ public class RowMeta implements RowMetaInterface {
    * Compare 2 rows with each other for equality using certain values in the rows and also considering the case
    * sensitivity flag.
    *
-   * @param rowData1 The first row of data
-   * @param rowData2 The second row of data
-   * @param fieldnrs the fields to compare on (in that order)
+   * @param rowData1
+   *          The first row of data
+   * @param rowData2
+   *          The second row of data
+   * @param fieldnrs
+   *          the fields to compare on (in that order)
    * @return true if the rows are considered equal, false if they are not.
    * @throws KettleValueException
    */
@@ -771,16 +806,19 @@ public class RowMeta implements RowMetaInterface {
    * Compare 2 rows with each other using certain values in the rows and also considering the specified ascending
    * clauses of the value metadata.
    *
-   * @param rowData1  The first row of data
-   * @param rowData2  The second row of data
-   * @param fieldnrs1 The indexes of the values to compare in the first row
-   * @param fieldnrs2 The indexes of the values to compare with in the second row
+   * @param rowData1
+   *          The first row of data
+   * @param rowData2
+   *          The second row of data
+   * @param fieldnrs1
+   *          The indexes of the values to compare in the first row
+   * @param fieldnrs2
+   *          The indexes of the values to compare with in the second row
    * @return 0 if the rows are considered equal, -1 is data1 is smaller, 1 if data2 is smaller.
    * @throws KettleValueException
    */
   @Override
-  public int compare( Object[] rowData1, Object[] rowData2, int[] fieldnrs1, int[] fieldnrs2 )
-    throws KettleValueException {
+  public int compare( Object[] rowData1, Object[] rowData2, int[] fieldnrs1, int[] fieldnrs2 ) throws KettleValueException {
     int len = ( fieldnrs1.length < fieldnrs2.length ) ? fieldnrs1.length : fieldnrs2.length;
     for ( int i = 0; i < len; i++ ) {
       ValueMetaInterface valueMeta = getValueMeta( fieldnrs1[i] );
@@ -798,17 +836,22 @@ public class RowMeta implements RowMetaInterface {
    * Compare 2 rows with each other using certain values in the rows and also considering the specified ascending
    * clauses of the value metadata.
    *
-   * @param rowData1  The first row of data
-   * @param rowMeta2  the metadata of the second row of data
-   * @param rowData2  The second row of data
-   * @param fieldnrs1 The indexes of the values to compare in the first row
-   * @param fieldnrs2 The indexes of the values to compare with in the second row
+   * @param rowData1
+   *          The first row of data
+   * @param rowMeta2
+   *          the metadata of the second row of data
+   * @param rowData2
+   *          The second row of data
+   * @param fieldnrs1
+   *          The indexes of the values to compare in the first row
+   * @param fieldnrs2
+   *          The indexes of the values to compare with in the second row
    * @return 0 if the rows are considered equal, -1 is data1 is smaller, 1 if data2 is smaller.
    * @throws KettleValueException
    */
   @Override
   public int compare( Object[] rowData1, RowMetaInterface rowMeta2, Object[] rowData2, int[] fieldnrs1,
-                      int[] fieldnrs2 ) throws KettleValueException {
+    int[] fieldnrs2 ) throws KettleValueException {
     int len = ( fieldnrs1.length < fieldnrs2.length ) ? fieldnrs1.length : fieldnrs2.length;
     for ( int i = 0; i < len; i++ ) {
       ValueMetaInterface valueMeta1 = getValueMeta( fieldnrs1[i] );
@@ -827,8 +870,10 @@ public class RowMeta implements RowMetaInterface {
    * Compare 2 rows with each other using all values in the rows and also considering the specified ascending clauses of
    * the value metadata.
    *
-   * @param rowData1 The first row of data
-   * @param rowData2 The second row of data
+   * @param rowData1
+   *          The first row of data
+   * @param rowData2
+   *          The second row of data
    * @return 0 if the rows are considered equal, -1 is data1 is smaller, 1 if data2 is smaller.
    * @throws KettleValueException
    */
@@ -851,9 +896,11 @@ public class RowMeta implements RowMetaInterface {
    * the individual hashCodes which can result in a lot of collisions for similar types of data (e.g. [A,B] == [B,A] and
    * is not suitable for normal use. It is kept to provide backward compatibility with CombinationLookup.lookupValues()
    *
-   * @param rowData The data to calculate a hashCode with
+   * @param rowData
+   *          The data to calculate a hashCode with
    * @return the calculated hashCode
-   * @throws KettleValueException in case there is a data conversion error
+   * @throws KettleValueException
+   *           in case there is a data conversion error
    * @deprecated
    */
   @Override
@@ -877,9 +924,11 @@ public class RowMeta implements RowMetaInterface {
    * value (as Date yyyy-MM-dd), the hashCodes will be different resulting in the two rows not being considered equal
    * via the hashCode even though compare() or equals() might consider them to be.
    *
-   * @param rowData The data to calculate a hashCode with
+   * @param rowData
+   *          The data to calculate a hashCode with
    * @return the calculated hashCode
-   * @throws KettleValueException in case there is a data conversion error
+   * @throws KettleValueException
+   *           in case there is a data conversion error
    */
   @Override
   public int hashCode( Object[] rowData ) throws KettleValueException {
@@ -892,9 +941,11 @@ public class RowMeta implements RowMetaInterface {
    * ValueMeta converting them into the same value (e.g. ['2008-01-01:12:30'] and ['2008-01-01:00:00'] as Date
    * yyyy-MM-dd)
    *
-   * @param rowData The data to calculate a hashCode with
+   * @param rowData
+   *          The data to calculate a hashCode with
    * @return the calculated hashCode
-   * @throws KettleValueException in case there is a data conversion error
+   * @throws KettleValueException
+   *           in case there is a data conversion error
    */
   @Override
   public int convertedValuesHashCode( Object[] rowData ) throws KettleValueException {
@@ -912,8 +963,10 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Serialize a row of data to byte[]
    *
-   * @param metadata the metadata to use
-   * @param row      the row of data
+   * @param metadata
+   *          the metadata to use
+   * @param row
+   *          the row of data
    * @return a serialized form of the data as a byte array
    */
   public static final byte[] extractData( RowMetaInterface metadata, Object[] row ) {
@@ -932,8 +985,10 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Create a row of data bases on a serialized format (byte[])
    *
-   * @param data     the serialized data
-   * @param metadata the metadata to use
+   * @param data
+   *          the serialized data
+   * @param metadata
+   *          the metadata to use
    * @return a new row of data
    */
   public static final Object[] getRow( RowMetaInterface metadata, byte[] data ) {
@@ -962,7 +1017,8 @@ public class RowMeta implements RowMetaInterface {
 
   /**
    * @return an XML representation of the row metadata
-   * @throws IOException Thrown in case there is an (Base64/GZip) encoding problem
+   * @throws IOException
+   *           Thrown in case there is an (Base64/GZip) encoding problem
    */
   @Override
   public String getMetaXML() throws IOException {
@@ -982,8 +1038,10 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Create a new row metadata object from XML
    *
-   * @param node the XML node to deserialize from
-   * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
+   * @param node
+   *          the XML node to deserialize from
+   * @throws IOException
+   *           Thrown in case there is an (Base64/GZip) decoding problem
    */
   public RowMeta( Node node ) throws KettleException {
     this();
@@ -995,9 +1053,11 @@ public class RowMeta implements RowMetaInterface {
   }
 
   /**
-   * @param rowData the row of data to serialize as XML
+   * @param rowData
+   *          the row of data to serialize as XML
    * @return an XML representation of the row data
-   * @throws IOException Thrown in case there is an (Base64/GZip) encoding problem
+   * @throws IOException
+   *           Thrown in case there is an (Base64/GZip) encoding problem
    */
   @Override
   public String getDataXML( Object[] rowData ) throws IOException {
@@ -1017,9 +1077,11 @@ public class RowMeta implements RowMetaInterface {
   /**
    * Convert an XML node into binary data using the row metadata supplied.
    *
-   * @param node The data row node
+   * @param node
+   *          The data row node
+   * @throws IOException
+   *           Thrown in case there is an (Base64/GZip) decoding problem
    * @return a row of data, converted from XML
-   * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
    */
   @Override
   public Object[] getRow( Node node ) throws KettleException {

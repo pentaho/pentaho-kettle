@@ -476,17 +476,14 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
     }
 
     Database db = repository.connectionDelegate.getDatabase();
-    boolean firstAttribute = true;
+
     Enumeration<Object> keys = properties.keys();
     while ( keys.hasMoreElements() ) {
       String code = (String) keys.nextElement();
       String attribute = (String) properties.get( code );
 
       RowMetaAndData attributeData = createAttributeRow( idDatabase, code, attribute );
-      if ( firstAttribute ) {
-        db.prepareInsert( attributeData.getRowMeta(), KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE );
-        firstAttribute = false;
-      }
+      db.prepareInsert( attributeData.getRowMeta(), KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE );
       db.setValuesInsert( attributeData );
       db.insertRow( db.getPrepStatementInsert(), true, false );
     }

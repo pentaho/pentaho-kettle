@@ -196,7 +196,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
 
   @Override
   public String getImage() {
-    return "ui/images/folder.svg";
+    return "images/treeClosed.png";
   }
 
   public void delete() throws Exception {

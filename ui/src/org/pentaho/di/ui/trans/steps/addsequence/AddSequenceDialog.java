@@ -215,8 +215,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
       wConnection.select( 0 );
     }
     wConnection.addModifyListener( lsMod );
-    wConnection.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
+
+    wConnection.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
         activeSequence();
       }
     } );

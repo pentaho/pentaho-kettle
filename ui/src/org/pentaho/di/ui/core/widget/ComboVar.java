@@ -104,8 +104,7 @@ public class ComboVar extends Composite {
     // add a text field on it...
     wCombo = new CCombo( this, flags );
 
-    controlDecoration = new ControlDecoration( wCombo, SWT.CENTER | SWT.RIGHT );
-
+    controlDecoration = new ControlDecoration( wCombo, SWT.TOP | SWT.RIGHT );
     Image image = GUIResource.getInstance().getImageVariable();
     controlDecoration.setImage( image );
     controlDecoration.setDescriptionText( BaseMessages.getString( PKG, "TextVar.tooltip.InsertVariable" ) );

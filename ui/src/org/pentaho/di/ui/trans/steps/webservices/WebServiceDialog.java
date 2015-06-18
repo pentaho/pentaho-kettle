@@ -84,10 +84,10 @@ import org.pentaho.di.trans.steps.webservices.wsdl.WsdlOperation;
 import org.pentaho.di.trans.steps.webservices.wsdl.WsdlOperationContainer;
 import org.pentaho.di.trans.steps.webservices.wsdl.WsdlParamContainer;
 import org.pentaho.di.trans.steps.webservices.wsdl.XsdType;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -661,6 +661,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     wProxyPort.setText( meta.getProxyPort() == null ? "" : meta.getProxyPort() );
     wHttpLogin.setText( meta.getHttpLogin() == null ? "" : meta.getHttpLogin() );
     wHttpPassword.setText( meta.getHttpPassword() == null ? "" : meta.getHttpPassword() );
+    DatabaseDialog.checkPasswordVisible( wHttpPassword.getTextWidget() );
     wStep.setText( Integer.toString( meta.getCallStep() ) );
     wPassInputData.setSelection( meta.isPassingInputData() );
     wCompatible.setSelection( meta.isCompatible() );
@@ -1110,9 +1111,10 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     fdlHttpPassword.left = new FormAttachment( 0, 0 );
     fdlHttpPassword.right = new FormAttachment( middle, -margin );
     wlHttpPassword.setLayoutData( fdlHttpPassword );
-    wHttpPassword = new PasswordTextVar( transMeta, gHttpAuth, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wHttpPassword = new TextVar( transMeta, gHttpAuth, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wHttpPassword.addModifyListener( lsMod );
     wHttpPassword.setToolTipText( BaseMessages.getString( PKG, "WebServiceDialog.HttpPassword.Tooltip" ) );
+    wHttpPassword.setEchoChar( '*' );
     props.setLook( wHttpPassword );
     FormData fdHttpPassword = new FormData();
     fdHttpPassword.top = new FormAttachment( wHttpLogin, margin );
@@ -1198,6 +1200,11 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
     compositeTabWebService.layout();
     tabItemWebService.setControl( compositeTabWebService );
 
+    wHttpPassword.addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wHttpPassword.getTextWidget() );
+      }
+    } );
     wURL.addListener( SWT.Selection, new Listener() {
       public void handleEvent( Event e ) {
         getData();

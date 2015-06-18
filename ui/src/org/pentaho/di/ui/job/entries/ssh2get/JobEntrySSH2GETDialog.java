@@ -54,6 +54,7 @@ import org.pentaho.di.job.entries.ssh2get.JobEntrySSH2GET;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelText;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
@@ -390,14 +391,21 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
     // Password line
     wPassword =
       new LabelTextVar( jobMeta, wHost, BaseMessages.getString( PKG, "JobSSH2GET.Password.Label" ), BaseMessages
-        .getString( PKG, "JobSSH2GET.Password.Tooltip" ), true );
+        .getString( PKG, "JobSSH2GET.Password.Tooltip" ) );
     props.setLook( wPassword );
+    wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
     fdPassword.left = new FormAttachment( 0, 0 );
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
+
+    wPassword.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
+      }
+    } );
 
     // Timeout line
     wTimeout =
@@ -543,14 +551,21 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
     // HttpProxyPassword line
     wHTTPProxyPassword = new LabelTextVar( jobMeta, wHTTPProxyGroup,
       BaseMessages.getString( PKG, "JobSSH2GET.HttpProxyPassword.Label" ),
-      BaseMessages.getString( PKG, "JobSSH2GET.HttpProxyPassword.Tooltip" ), true );
+      BaseMessages.getString( PKG, "JobSSH2GET.HttpProxyPassword.Tooltip" ) );
     props.setLook( wHTTPProxyPassword );
+    wHTTPProxyPassword.setEchoChar( '*' );
     wHTTPProxyPassword.addModifyListener( lsMod );
     fdHTTPProxyPassword = new FormData();
     fdHTTPProxyPassword.left = new FormAttachment( 0, 0 );
     fdHTTPProxyPassword.top = new FormAttachment( wHTTPProxyUsername, margin );
     fdHTTPProxyPassword.right = new FormAttachment( 100, 0 );
     wHTTPProxyPassword.setLayoutData( fdHTTPProxyPassword );
+
+    wHTTPProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wHTTPProxyPassword.getTextWidget() );
+      }
+    } );
 
     fdHTTPProxyGroup = new FormData();
     fdHTTPProxyGroup.left = new FormAttachment( 0, margin );
@@ -653,14 +668,21 @@ public class JobEntrySSH2GETDialog extends JobEntryDialog implements JobEntryDia
     wkeyfilePass =
       new LabelTextVar(
         jobMeta, wPublicKey, BaseMessages.getString( PKG, "JobSSH2GET.keyfilePass.Label" ), BaseMessages
-          .getString( PKG, "JobSSH2GET.keyfilePass.Tooltip" ), true );
+          .getString( PKG, "JobSSH2GET.keyfilePass.Tooltip" ) );
     props.setLook( wkeyfilePass );
+    wkeyfilePass.setEchoChar( '*' );
     wkeyfilePass.addModifyListener( lsMod );
     fdkeyfilePass = new FormData();
     fdkeyfilePass.left = new FormAttachment( 0, 0 );
     fdkeyfilePass.top = new FormAttachment( wKeyFilename, margin );
     fdkeyfilePass.right = new FormAttachment( 100, 0 );
     wkeyfilePass.setLayoutData( fdkeyfilePass );
+
+    wkeyfilePass.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wkeyfilePass.getTextWidget() );
+      }
+    } );
 
     fdPublicKey = new FormData();
     fdPublicKey.left = new FormAttachment( 0, margin );

@@ -212,7 +212,12 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     List<SlaveServer> slaveServers ) throws KettleException {
     try {
       serverName = rep.getJobEntryAttributeString( id_jobentry, "servername" );
-      serverPort = rep.getJobEntryAttributeString( id_jobentry, "serverport" );
+      int intServerPort = (int) rep.getJobEntryAttributeInteger( id_jobentry, "serverport" );
+      serverPort = rep.getJobEntryAttributeString( id_jobentry, "serverport" ); // backward compatible.
+      if ( intServerPort > 0 && Const.isEmpty( serverPort ) ) {
+        serverPort = Integer.toString( intServerPort );
+      }
+
       userName = rep.getJobEntryAttributeString( id_jobentry, "username" );
       password =
         Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString( id_jobentry, "password" ) );

@@ -1,12 +1,12 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="stretch">
 
   <toolbar id="nav-toolbar" mode="icons">
-    <toolbarbutton id="show-error-lines" label="${TransLog.Button.ShowErrorLines}" image="images/show-error-lines.svg"
+    <toolbarbutton id="show-error-lines" label="${TransLog.Button.ShowErrorLines}" image="images/show-error-lines.png"
       tooltiptext="${TransLog.Button.ShowErrorLines}" onclick="translog.showErrors()" />
-    <toolbarbutton id="clear-log" label="${TransLog.Button.ClearLog}" image="images/trash.svg"
+    <toolbarbutton id="clear-log" label="${TransLog.Button.ClearLog}" image="images/clear-log.png"
       tooltiptext="${TransLog.Button.ClearLog}" onclick="translog.clearLog()" />
     <toolbarseparator />
-    <toolbarbutton id="log-settings" label="${TransLog.Button.LogSettings}" image="images/log-settings.svg"
+    <toolbarbutton id="log-settings" label="${TransLog.Button.LogSettings}" image="images/log-settings.png"
       tooltiptext="${TransLog.Button.LogSettings}" onclick="translog.showLogSettings()" />
   </toolbar>
 

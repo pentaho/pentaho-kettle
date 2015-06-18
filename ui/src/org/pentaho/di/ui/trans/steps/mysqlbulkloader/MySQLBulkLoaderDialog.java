@@ -410,7 +410,6 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
         if ( wReplace.getSelection() ) {
           wIgnore.setSelection( false );
         }
-        input.setChanged();
       }
     } );
 
@@ -437,7 +436,6 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
         if ( wIgnore.getSelection() ) {
           wReplace.setSelection( false );
         }
-        input.setChanged();
       }
     } );
 
@@ -458,12 +456,6 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
     fdLocal.top = new FormAttachment( wIgnore, margin * 2 );
     fdLocal.right = new FormAttachment( 100, 0 );
     wLocal.setLayoutData( fdLocal );
-    wLocal.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent arg0 ) {
-        input.setChanged();
-      }
-    } );
 
     // THE BUTTONS
     wOK = new Button( shell, SWT.PUSH );

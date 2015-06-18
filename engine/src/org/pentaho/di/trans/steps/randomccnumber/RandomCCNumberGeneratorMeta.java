@@ -146,20 +146,12 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
     return fieldCCSize;
   }
 
-  public void setFieldCCSize( String[] ccSize ) {
-    this.fieldCCSize = ccSize;
-  }
-
   /**
-   * @deprecated Use setFieldCCLength instead
+   * @param fieldType
+   *          The fieldType to set.
    */
-  @Deprecated
   public void setFieldType( String[] fieldType ) {
     this.fieldCCLength = fieldType;
-  }
-
-  public void setFieldCCLength( String[] ccLength ) {
-    this.fieldCCLength = ccLength;
   }
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {

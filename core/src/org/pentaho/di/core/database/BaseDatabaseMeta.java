@@ -27,7 +27,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -618,10 +617,6 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
   @Override
   public int getDefaultDatabasePort() {
     return -1; // No default port or not used.
-  }
-
-  @Override public Map<String, String> getDefaultOptions() {
-    return Collections.emptyMap();
   }
 
   /**

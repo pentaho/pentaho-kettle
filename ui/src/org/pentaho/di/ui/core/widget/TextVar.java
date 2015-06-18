@@ -29,7 +29,6 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
@@ -51,25 +50,25 @@ import org.pentaho.di.ui.core.gui.GUIResource;
  * @since 17-may-2006
  */
 public class TextVar extends Composite {
-  protected static Class<?> PKG = TextVar.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = TextVar.class; // for i18n purposes, needed by Translator2!!
 
-  protected String toolTipText;
+  private String toolTipText;
 
   // private static final PropsUI props = PropsUI.getInstance();
 
-  protected ControlDecoration controlDecoration;
+  private ControlDecoration controlDecoration;
 
-  protected GetCaretPositionInterface getCaretPositionInterface;
+  private GetCaretPositionInterface getCaretPositionInterface;
 
-  protected InsertTextInterface insertTextInterface;
+  private InsertTextInterface insertTextInterface;
 
-  protected ControlSpaceKeyAdapter controlSpaceKeyAdapter;
+  private ControlSpaceKeyAdapter controlSpaceKeyAdapter;
 
-  protected VariableSpace variables;
+  private VariableSpace variables;
 
-  protected Text wText;
+  private Text wText;
 
-  protected ModifyListener modifyListenerTooltipText;
+  private ModifyListener modifyListenerTooltipText;
 
   public TextVar( VariableSpace space, Composite composite, int flags ) {
     this( space, composite, flags, null, null, null );
@@ -80,33 +79,13 @@ public class TextVar extends Composite {
   }
 
   public TextVar( VariableSpace space, Composite composite, int flags,
-      GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface ) {
+    GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface ) {
     this( space, composite, flags, null, getCaretPositionInterface, insertTextInterface );
   }
 
   public TextVar( VariableSpace space, Composite composite, int flags, String toolTipText,
-      GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface ) {
+    GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface ) {
     super( composite, SWT.NONE );
-    initialize( space, composite, flags, toolTipText, getCaretPositionInterface, insertTextInterface, null );
-  }
-
-  public TextVar( Composite composite, VariableSpace space, int flags,
-      GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface,
-      SelectionListener selectionListener ) {
-    this( space, composite, flags, null, getCaretPositionInterface, insertTextInterface, selectionListener );
-  }
-
-  public TextVar( VariableSpace space, Composite composite, int flags, String toolTipText,
-      GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface,
-      SelectionListener selectionListener ) {
-    super( composite, SWT.NONE );
-    initialize( space, composite, flags, toolTipText, getCaretPositionInterface, insertTextInterface, selectionListener );
-  }
-
-  protected void initialize( VariableSpace space, Composite composite, int flags, String toolTipText,
-      GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface,
-      SelectionListener selectionListener ) {
-   
     this.toolTipText = toolTipText;
     this.getCaretPositionInterface = getCaretPositionInterface;
     this.insertTextInterface = insertTextInterface;
@@ -124,7 +103,7 @@ public class TextVar extends Composite {
 
     // add a text field on it...
     wText = new Text( this, flags );
-    controlDecoration = new ControlDecoration( wText, SWT.CENTER | SWT.RIGHT, this );
+    controlDecoration = new ControlDecoration( wText, SWT.TOP | SWT.RIGHT, this );
     Image image = GUIResource.getInstance().getImageVariable();
     controlDecoration.setImage( image );
     controlDecoration.setDescriptionText( BaseMessages.getString( PKG, "TextVar.tooltip.InsertVariable" ) );
@@ -174,7 +153,7 @@ public class TextVar extends Composite {
     this.insertTextInterface = insertTextInterface;
   }
 
-  protected ModifyListener getModifyListenerTooltipText( final Text textField ) {
+  private ModifyListener getModifyListenerTooltipText( final Text textField ) {
     return new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         if ( textField.getEchoChar() == '\0' ) { // Can't show passwords ;-)

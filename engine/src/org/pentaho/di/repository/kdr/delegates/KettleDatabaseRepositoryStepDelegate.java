@@ -79,13 +79,6 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
       quote( KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE ),
       quote( KettleDatabaseRepository.FIELD_STEP_TYPE_CODE ), codes );
   }
-  
-  public Map<String, LongObjectId> getStepTypeCodeToIdMap() throws KettleException {
-    return repository.connectionDelegate.getValueToIdMap(
-        quoteTable( KettleDatabaseRepository.TABLE_R_STEP_TYPE ),
-        quote( KettleDatabaseRepository.FIELD_STEP_TYPE_ID_STEP_TYPE ),
-        quote( KettleDatabaseRepository.FIELD_STEP_TYPE_CODE ) );
-  }
 
   public synchronized ObjectId getStepID( String name, ObjectId id_transformation ) throws KettleException {
     return repository.connectionDelegate.getIDWithValue(

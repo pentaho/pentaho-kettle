@@ -29,7 +29,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.CheckResult;
@@ -764,163 +763,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
-    try {
-      acceptingFilenames = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "accept_filenames" ) );
-      passingThruFields = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "passing_through_fields" ) );
-      acceptingField = XMLHandler.getTagValue( stepnode, "accept_field" );
-      acceptingStepName = XMLHandler.getTagValue( stepnode, "accept_stepname" );
-
-      separator = XMLHandler.getTagValue( stepnode, "separator" );
-      enclosure = XMLHandler.getTagValue( stepnode, "enclosure" );
-      breakInEnclosureAllowed = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "enclosure_breaks" ) );
-      escapeCharacter = XMLHandler.getTagValue( stepnode, "escapechar" );
-      header = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "header" ) );
-      nrHeaderLines = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_headerlines" ), 1 );
-      footer = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "footer" ) );
-      nrFooterLines = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_footerlines" ), 1 );
-      lineWrapped = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "line_wrapped" ) );
-      nrWraps = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_wraps" ), 1 );
-      layoutPaged = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "layout_paged" ) );
-      nrLinesPerPage = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_lines_per_page" ), 1 );
-      nrLinesDocHeader = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_lines_doc_header" ), 1 );
-      String addToResult = XMLHandler.getTagValue( stepnode, "add_to_result_filenames" );
-      if ( Const.isEmpty( addToResult ) ) {
-        isaddresult = true;
-      } else {
-        isaddresult = "Y".equalsIgnoreCase( addToResult );
-      }
-
-      String nempty = XMLHandler.getTagValue( stepnode, "noempty" );
-      noEmptyLines = YES.equalsIgnoreCase( nempty ) || nempty == null;
-      includeFilename = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include" ) );
-      filenameField = XMLHandler.getTagValue( stepnode, "include_field" );
-      includeRowNumber = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownum" ) );
-      rowNumberByFile = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownumByFile" ) );
-      rowNumberField = XMLHandler.getTagValue( stepnode, "rownum_field" );
-      fileFormat = XMLHandler.getTagValue( stepnode, "format" );
-      encoding = XMLHandler.getTagValue( stepnode, "encoding" );
-
-      Node filenode = XMLHandler.getSubNode( stepnode, "file" );
-      Node fields = XMLHandler.getSubNode( stepnode, "fields" );
-      Node filtersNode = XMLHandler.getSubNode( stepnode, "filters" );
-      int nrfiles = XMLHandler.countNodes( filenode, "name" );
-      int nrfields = XMLHandler.countNodes( fields, "field" );
-      int nrfilters = XMLHandler.countNodes( filtersNode, "filter" );
-
-      allocate( nrfiles, nrfields, nrfilters );
-
-      for ( int i = 0; i < nrfiles; i++ ) {
-        Node filenamenode = XMLHandler.getSubNodeByNr( filenode, "name", i );
-        Node filemasknode = XMLHandler.getSubNodeByNr( filenode, "filemask", i );
-        Node excludefilemasknode = XMLHandler.getSubNodeByNr( filenode, "exclude_filemask", i );
-        Node fileRequirednode = XMLHandler.getSubNodeByNr( filenode, "file_required", i );
-        Node includeSubFoldersnode = XMLHandler.getSubNodeByNr( filenode, "include_subfolders", i );
-        fileName[i] = loadSource( filenode, filenamenode, i );
-        fileMask[i] = XMLHandler.getNodeValue( filemasknode );
-        excludeFileMask[i] = XMLHandler.getNodeValue( excludefilemasknode );
-        fileRequired[i] = XMLHandler.getNodeValue( fileRequirednode );
-        includeSubFolders[i] = XMLHandler.getNodeValue( includeSubFoldersnode );
-      }
-
-      fileType = XMLHandler.getTagValue( stepnode, "file", "type" );
-      fileCompression = XMLHandler.getTagValue( stepnode, "file", "compression" );
-      if ( fileCompression == null ) {
-        fileCompression = "None";
-        if ( YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "zipped" ) ) ) {
-          fileCompression = "Zip";
-        }
-      }
-
-      // Backward compatibility : just one filter
-      if ( XMLHandler.getTagValue( stepnode, "filter" ) != null ) {
-        filter = new TextFileFilter[1];
-        filter[0] = new TextFileFilter();
-
-        filter[0].setFilterPosition( Const.toInt( XMLHandler.getTagValue( stepnode, "filter_position" ), -1 ) );
-        filter[0].setFilterString( XMLHandler.getTagValue( stepnode, "filter_string" ) );
-        filter[0].setFilterLastLine( YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "filter_is_last_line" ) ) );
-        filter[0].setFilterPositive( YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "filter_is_positive" ) ) );
-      } else {
-        for ( int i = 0; i < nrfilters; i++ ) {
-          Node fnode = XMLHandler.getSubNodeByNr( filtersNode, "filter", i );
-          filter[i] = new TextFileFilter();
-
-          filter[i].setFilterPosition( Const.toInt( XMLHandler.getTagValue( fnode, "filter_position" ), -1 ) );
-
-          String filterString = XMLHandler.getTagValue( fnode, "filter_string" );
-          if ( filterString != null && filterString.startsWith( STRING_BASE64_PREFIX ) ) {
-            filter[i].setFilterString( new String( Base64.decodeBase64( filterString.substring(
-                STRING_BASE64_PREFIX.length() ).getBytes() ) ) );
-          } else {
-            filter[i].setFilterString( filterString );
-          }
-
-          filter[i].setFilterLastLine( YES.equalsIgnoreCase( XMLHandler.getTagValue( fnode, "filter_is_last_line" ) ) );
-          filter[i].setFilterPositive( YES.equalsIgnoreCase( XMLHandler.getTagValue( fnode, "filter_is_positive" ) ) );
-        }
-      }
-
-      for ( int i = 0; i < nrfields; i++ ) {
-        Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
-        TextFileInputField field = new TextFileInputField();
-
-        field.setName( XMLHandler.getTagValue( fnode, "name" ) );
-        field.setType( ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) ) );
-        field.setFormat( XMLHandler.getTagValue( fnode, "format" ) );
-        field.setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
-        field.setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
-        field.setGroupSymbol( XMLHandler.getTagValue( fnode, "group" ) );
-        field.setNullString( XMLHandler.getTagValue( fnode, "nullif" ) );
-        field.setIfNullValue( XMLHandler.getTagValue( fnode, "ifnull" ) );
-        field.setPosition( Const.toInt( XMLHandler.getTagValue( fnode, "position" ), -1 ) );
-        field.setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
-        field.setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
-        field.setTrimType( ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
-        field.setRepeated( YES.equalsIgnoreCase( XMLHandler.getTagValue( fnode, "repeat" ) ) );
-
-        inputFields[i] = field;
-      }
-
-      // Is there a limit on the number of rows we process?
-      rowLimit = Const.toLong( XMLHandler.getTagValue( stepnode, "limit" ), 0L );
-
-      errorIgnored = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "error_ignored" ) );
-      skipBadFiles = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "skip_bad_files" ) );
-      fileErrorField = XMLHandler.getTagValue( stepnode, "file_error_field" );
-      fileErrorMessageField = XMLHandler.getTagValue( stepnode, "file_error_message_field" );
-      errorLineSkipped = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "error_line_skipped" ) );
-      errorCountField = XMLHandler.getTagValue( stepnode, "error_count_field" );
-      errorFieldsField = XMLHandler.getTagValue( stepnode, "error_fields_field" );
-      errorTextField = XMLHandler.getTagValue( stepnode, "error_text_field" );
-      warningFilesDestinationDirectory = XMLHandler.getTagValue( stepnode, "bad_line_files_destination_directory" );
-      warningFilesExtension = XMLHandler.getTagValue( stepnode, "bad_line_files_extension" );
-      errorFilesDestinationDirectory = XMLHandler.getTagValue( stepnode, "error_line_files_destination_directory" );
-      errorFilesExtension = XMLHandler.getTagValue( stepnode, "error_line_files_extension" );
-      lineNumberFilesDestinationDirectory =
-          XMLHandler.getTagValue( stepnode, "line_number_files_destination_directory" );
-      lineNumberFilesExtension = XMLHandler.getTagValue( stepnode, "line_number_files_extension" );
-      // Backward compatible
-
-      dateFormatLenient = !NO.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "date_format_lenient" ) );
-      String dateLocale = XMLHandler.getTagValue( stepnode, "date_format_locale" );
-      if ( dateLocale != null ) {
-        dateFormatLocale = EnvUtil.createLocale( dateLocale );
-      } else {
-        dateFormatLocale = Locale.getDefault();
-      }
-
-      shortFileFieldName = XMLHandler.getTagValue( stepnode, "shortFileFieldName" );
-      pathFieldName = XMLHandler.getTagValue( stepnode, "pathFieldName" );
-      hiddenFieldName = XMLHandler.getTagValue( stepnode, "hiddenFieldName" );
-      lastModificationTimeFieldName = XMLHandler.getTagValue( stepnode, "lastModificationTimeFieldName" );
-      uriNameFieldName = XMLHandler.getTagValue( stepnode, "uriNameFieldName" );
-      rootUriNameFieldName = XMLHandler.getTagValue( stepnode, "rootUriNameFieldName" );
-      extensionFieldName = XMLHandler.getTagValue( stepnode, "extensionFieldName" );
-      sizeFieldName = XMLHandler.getTagValue( stepnode, "sizeFieldName" );
-    } catch ( Exception e ) {
-      throw new KettleXMLException( "Unable to load step info from XML", e );
-    }
-  } 
+    readData( stepnode );
+  }
 
   public Object clone() {
     TextFileInputMeta retval = (TextFileInputMeta) super.clone();
@@ -1210,7 +1054,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
     retval.append( "    <file>" ).append( Const.CR );
     for ( int i = 0; i < fileName.length; i++ ) {
-      saveSource( retval, fileName[i] );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "name", fileName[i] ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "filemask", fileMask[i] ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "exclude_filemask", excludeFileMask[i] ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "file_required", fileRequired[i] ) );
@@ -1304,6 +1148,169 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     return retval.toString();
   }
 
+  private void readData( Node stepnode ) throws KettleXMLException {
+    try {
+      acceptingFilenames = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "accept_filenames" ) );
+      passingThruFields = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "passing_through_fields" ) );
+      acceptingField = XMLHandler.getTagValue( stepnode, "accept_field" );
+      acceptingStepName = XMLHandler.getTagValue( stepnode, "accept_stepname" );
+
+      separator = XMLHandler.getTagValue( stepnode, "separator" );
+      enclosure = XMLHandler.getTagValue( stepnode, "enclosure" );
+      breakInEnclosureAllowed = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "enclosure_breaks" ) );
+      escapeCharacter = XMLHandler.getTagValue( stepnode, "escapechar" );
+      header = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "header" ) );
+      nrHeaderLines = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_headerlines" ), 1 );
+      footer = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "footer" ) );
+      nrFooterLines = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_footerlines" ), 1 );
+      lineWrapped = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "line_wrapped" ) );
+      nrWraps = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_wraps" ), 1 );
+      layoutPaged = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "layout_paged" ) );
+      nrLinesPerPage = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_lines_per_page" ), 1 );
+      nrLinesDocHeader = Const.toInt( XMLHandler.getTagValue( stepnode, "nr_lines_doc_header" ), 1 );
+      String addToResult = XMLHandler.getTagValue( stepnode, "add_to_result_filenames" );
+      if ( Const.isEmpty( addToResult ) ) {
+        isaddresult = true;
+      } else {
+        isaddresult = "Y".equalsIgnoreCase( addToResult );
+      }
+
+      String nempty = XMLHandler.getTagValue( stepnode, "noempty" );
+      noEmptyLines = YES.equalsIgnoreCase( nempty ) || nempty == null;
+      includeFilename = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include" ) );
+      filenameField = XMLHandler.getTagValue( stepnode, "include_field" );
+      includeRowNumber = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownum" ) );
+      rowNumberByFile = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownumByFile" ) );
+      rowNumberField = XMLHandler.getTagValue( stepnode, "rownum_field" );
+      fileFormat = XMLHandler.getTagValue( stepnode, "format" );
+      encoding = XMLHandler.getTagValue( stepnode, "encoding" );
+
+      Node filenode = XMLHandler.getSubNode( stepnode, "file" );
+      Node fields = XMLHandler.getSubNode( stepnode, "fields" );
+      Node filtersNode = XMLHandler.getSubNode( stepnode, "filters" );
+      int nrfiles = XMLHandler.countNodes( filenode, "name" );
+      int nrfields = XMLHandler.countNodes( fields, "field" );
+      int nrfilters = XMLHandler.countNodes( filtersNode, "filter" );
+
+      allocate( nrfiles, nrfields, nrfilters );
+
+      for ( int i = 0; i < nrfiles; i++ ) {
+        Node filenamenode = XMLHandler.getSubNodeByNr( filenode, "name", i );
+        Node filemasknode = XMLHandler.getSubNodeByNr( filenode, "filemask", i );
+        Node excludefilemasknode = XMLHandler.getSubNodeByNr( filenode, "exclude_filemask", i );
+        Node fileRequirednode = XMLHandler.getSubNodeByNr( filenode, "file_required", i );
+        Node includeSubFoldersnode = XMLHandler.getSubNodeByNr( filenode, "include_subfolders", i );
+        fileName[i] = XMLHandler.getNodeValue( filenamenode );
+        fileMask[i] = XMLHandler.getNodeValue( filemasknode );
+        excludeFileMask[i] = XMLHandler.getNodeValue( excludefilemasknode );
+        fileRequired[i] = XMLHandler.getNodeValue( fileRequirednode );
+        includeSubFolders[i] = XMLHandler.getNodeValue( includeSubFoldersnode );
+      }
+
+      fileType = XMLHandler.getTagValue( stepnode, "file", "type" );
+      fileCompression = XMLHandler.getTagValue( stepnode, "file", "compression" );
+      if ( fileCompression == null ) {
+        fileCompression = "None";
+        if ( YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "zipped" ) ) ) {
+          fileCompression = "Zip";
+        }
+      }
+
+      // Backward compatibility : just one filter
+      if ( XMLHandler.getTagValue( stepnode, "filter" ) != null ) {
+        filter = new TextFileFilter[1];
+        filter[0] = new TextFileFilter();
+
+        filter[0].setFilterPosition( Const.toInt( XMLHandler.getTagValue( stepnode, "filter_position" ), -1 ) );
+        filter[0].setFilterString( XMLHandler.getTagValue( stepnode, "filter_string" ) );
+        filter[0].setFilterLastLine( YES.equalsIgnoreCase( XMLHandler
+          .getTagValue( stepnode, "filter_is_last_line" ) ) );
+        filter[0].setFilterPositive( YES
+          .equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "filter_is_positive" ) ) );
+      } else {
+        for ( int i = 0; i < nrfilters; i++ ) {
+          Node fnode = XMLHandler.getSubNodeByNr( filtersNode, "filter", i );
+          filter[i] = new TextFileFilter();
+
+          filter[i].setFilterPosition( Const.toInt( XMLHandler.getTagValue( fnode, "filter_position" ), -1 ) );
+
+          String filterString = XMLHandler.getTagValue( fnode, "filter_string" );
+          if ( filterString != null && filterString.startsWith( STRING_BASE64_PREFIX ) ) {
+            filter[i].setFilterString( new String( Base64.decodeBase64( filterString.substring(
+              STRING_BASE64_PREFIX.length() ).getBytes() ) ) );
+          } else {
+            filter[i].setFilterString( filterString );
+          }
+
+          filter[i].setFilterLastLine( YES
+            .equalsIgnoreCase( XMLHandler.getTagValue( fnode, "filter_is_last_line" ) ) );
+          filter[i].setFilterPositive( YES
+            .equalsIgnoreCase( XMLHandler.getTagValue( fnode, "filter_is_positive" ) ) );
+        }
+      }
+
+      for ( int i = 0; i < nrfields; i++ ) {
+        Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
+        TextFileInputField field = new TextFileInputField();
+
+        field.setName( XMLHandler.getTagValue( fnode, "name" ) );
+        field.setType( ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) ) );
+        field.setFormat( XMLHandler.getTagValue( fnode, "format" ) );
+        field.setCurrencySymbol( XMLHandler.getTagValue( fnode, "currency" ) );
+        field.setDecimalSymbol( XMLHandler.getTagValue( fnode, "decimal" ) );
+        field.setGroupSymbol( XMLHandler.getTagValue( fnode, "group" ) );
+        field.setNullString( XMLHandler.getTagValue( fnode, "nullif" ) );
+        field.setIfNullValue( XMLHandler.getTagValue( fnode, "ifnull" ) );
+        field.setPosition( Const.toInt( XMLHandler.getTagValue( fnode, "position" ), -1 ) );
+        field.setLength( Const.toInt( XMLHandler.getTagValue( fnode, "length" ), -1 ) );
+        field.setPrecision( Const.toInt( XMLHandler.getTagValue( fnode, "precision" ), -1 ) );
+        field.setTrimType( ValueMeta.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
+        field.setRepeated( YES.equalsIgnoreCase( XMLHandler.getTagValue( fnode, "repeat" ) ) );
+
+        inputFields[i] = field;
+      }
+
+      // Is there a limit on the number of rows we process?
+      rowLimit = Const.toLong( XMLHandler.getTagValue( stepnode, "limit" ), 0L );
+
+      errorIgnored = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "error_ignored" ) );
+      skipBadFiles = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "skip_bad_files" ) );
+      fileErrorField = XMLHandler.getTagValue( stepnode, "file_error_field" );
+      fileErrorMessageField = XMLHandler.getTagValue( stepnode, "file_error_message_field" );
+      errorLineSkipped = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "error_line_skipped" ) );
+      errorCountField = XMLHandler.getTagValue( stepnode, "error_count_field" );
+      errorFieldsField = XMLHandler.getTagValue( stepnode, "error_fields_field" );
+      errorTextField = XMLHandler.getTagValue( stepnode, "error_text_field" );
+      warningFilesDestinationDirectory = XMLHandler.getTagValue( stepnode, "bad_line_files_destination_directory" );
+      warningFilesExtension = XMLHandler.getTagValue( stepnode, "bad_line_files_extension" );
+      errorFilesDestinationDirectory = XMLHandler.getTagValue( stepnode, "error_line_files_destination_directory" );
+      errorFilesExtension = XMLHandler.getTagValue( stepnode, "error_line_files_extension" );
+      lineNumberFilesDestinationDirectory =
+        XMLHandler.getTagValue( stepnode, "line_number_files_destination_directory" );
+      lineNumberFilesExtension = XMLHandler.getTagValue( stepnode, "line_number_files_extension" );
+      // Backward compatible
+
+      dateFormatLenient = !NO.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "date_format_lenient" ) );
+      String dateLocale = XMLHandler.getTagValue( stepnode, "date_format_locale" );
+      if ( dateLocale != null ) {
+        dateFormatLocale = EnvUtil.createLocale( dateLocale );
+      } else {
+        dateFormatLocale = Locale.getDefault();
+      }
+
+      shortFileFieldName = XMLHandler.getTagValue( stepnode, "shortFileFieldName" );
+      pathFieldName = XMLHandler.getTagValue( stepnode, "pathFieldName" );
+      hiddenFieldName = XMLHandler.getTagValue( stepnode, "hiddenFieldName" );
+      lastModificationTimeFieldName = XMLHandler.getTagValue( stepnode, "lastModificationTimeFieldName" );
+      uriNameFieldName = XMLHandler.getTagValue( stepnode, "uriNameFieldName" );
+      rootUriNameFieldName = XMLHandler.getTagValue( stepnode, "rootUriNameFieldName" );
+      extensionFieldName = XMLHandler.getTagValue( stepnode, "extensionFieldName" );
+      sizeFieldName = XMLHandler.getTagValue( stepnode, "sizeFieldName" );
+    } catch ( Exception e ) {
+      throw new KettleXMLException( "Unable to load step info from XML", e );
+    }
+  }
+
   public String getLookupStepname() {
     if ( acceptingFilenames && acceptingStep != null && !Const.isEmpty( acceptingStep.getName() ) ) {
       return acceptingStep.getName();
@@ -1372,7 +1379,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
       allocate( nrfiles, nrfields, nrfilters );
 
       for ( int i = 0; i < nrfiles; i++ ) {
-        fileName[i] = loadSourceRep( rep, id_step, i );
+        fileName[i] = rep.getStepAttributeString( id_step, i, "file_name" );
         fileMask[i] = rep.getStepAttributeString( id_step, i, "file_mask" );
         excludeFileMask[i] = rep.getStepAttributeString( id_step, i, "exclude_file_mask" );
         fileRequired[i] = rep.getStepAttributeString( id_step, i, "file_required" );
@@ -1497,7 +1504,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute( id_transformation, id_step, "limit", rowLimit );
 
       for ( int i = 0; i < fileName.length; i++ ) {
-        saveSourceRep( rep, id_transformation, id_step, i, fileName[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "file_name", fileName[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "file_mask", fileMask[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "exclude_file_mask", excludeFileMask[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "file_required", fileRequired[i] );
@@ -2041,25 +2048,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 
   @VisibleForTesting
-  public void setFileNameForTest( String[] fileName ) {
+  public void setFileNameForTest(String[] fileName) {
     allocateFiles( fileName.length );
     setFileName( fileName );
-  }
-  
-  protected String loadSource( Node filenode, Node filenamenode, int i ) {
-    return XMLHandler.getNodeValue( filenamenode );
-  }
-
-  protected void saveSource( StringBuffer retVal, String source ) {
-    retVal.append( "      " ).append( XMLHandler.addTagValue( "name", source ) );
-  }
-
-  protected String loadSourceRep( Repository rep, ObjectId id_step, int i ) throws KettleException {
-    return rep.getStepAttributeString( id_step, i, "file_name" );
-  }
-  
-  protected void saveSourceRep( Repository rep, ObjectId id_transformation, ObjectId id_step, int i, String fileName )
-    throws KettleException {
-    rep.saveStepAttribute( id_transformation, id_step, i, "file_name", fileName ); //this should be in subclass
   }
 }

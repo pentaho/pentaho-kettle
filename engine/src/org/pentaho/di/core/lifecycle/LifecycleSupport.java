@@ -22,7 +22,11 @@
 
 package org.pentaho.di.core.lifecycle;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.plugins.LifecyclePluginType;
@@ -31,13 +35,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.plugins.PluginTypeListener;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 public class LifecycleSupport {
-  @VisibleForTesting protected static PluginRegistry registry = PluginRegistry.getInstance();
   private Set<LifecycleListener> lifeListeners;
   private boolean started;
   private LifeEventHandler handler;
@@ -87,6 +85,7 @@ public class LifecycleSupport {
    */
   static <T> Set<T> loadPlugins( Class<? extends PluginTypeInterface> pluginType, Class<T> mainPluginClass ) {
     Set<T> pluginInstances = new HashSet<T>();
+    PluginRegistry registry = PluginRegistry.getInstance();
     List<PluginInterface> plugins = registry.getPlugins( pluginType );
     for ( PluginInterface plugin : plugins ) {
       try {

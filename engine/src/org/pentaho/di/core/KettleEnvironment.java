@@ -22,8 +22,6 @@
 
 package org.pentaho.di.core;
 
-import com.google.common.base.Throwables;
-import com.google.common.util.concurrent.SettableFuture;
 import org.pentaho.di.core.auth.AuthenticationConsumerPluginType;
 import org.pentaho.di.core.auth.AuthenticationProviderPluginType;
 import org.pentaho.di.core.compress.CompressionPluginType;
@@ -45,9 +43,6 @@ import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.RowDistributionPluginType;
 
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
-
 /**
  * The KettleEnvironment class contains settings and properties for all of Kettle. Initialization of the environment is
  * done by calling the init() method, which reads in properties file(s), registers plugins, etc. Initialization should
@@ -59,8 +54,7 @@ public class KettleEnvironment {
   private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!
 
   /** Indicates whether the Kettle environment has been initialized. */
-  private static AtomicReference<SettableFuture<Boolean>> initialized = new AtomicReference<SettableFuture<Boolean>>( null );
-  private static KettleLifecycleSupport kettleLifecycleSupport;
+  private static Boolean initialized;
 
   /**
    * Initializes the Kettle environment. This method will attempt to configure Simple JNDI, by simply calling
@@ -89,8 +83,7 @@ public class KettleEnvironment {
    *           Any errors that occur during initialization will throw a KettleException.
    */
   public static void init( boolean simpleJndi ) throws KettleException {
-    SettableFuture<Boolean> ready;
-    if ( initialized.compareAndSet( null, ready = SettableFuture.create() ) ) {
+    if ( initialized == null ) {
 
       // This creates .kettle and kettle.properties...
       //
@@ -128,17 +121,8 @@ public class KettleEnvironment {
       // Initialize the Lifecycle Listeners
       //
       initLifecycleListeners();
-      ready.set( true );
-    } else {
-      // A different thread is initializing
-      ready = initialized.get();
-      // Block until environment is initialized
-      try {
-        ready.get();
-      } catch ( Throwable e ) {
-        Throwables.propagateIfPossible( e );
-        throw new KettleException( e );
-      }
+
+      initialized = true;
     }
   }
 
@@ -149,32 +133,22 @@ public class KettleEnvironment {
    *           when a lifecycle listener throws an exception
    */
   private static void initLifecycleListeners() throws KettleException {
-    kettleLifecycleSupport = new KettleLifecycleSupport();
-    kettleLifecycleSupport.onEnvironmentInit();
-    final KettleLifecycleSupport s = kettleLifecycleSupport;
+    final KettleLifecycleSupport s = new KettleLifecycleSupport();
+    s.onEnvironmentInit();
 
     // Register a shutdown hook to invoke the listener's onExit() methods
     Runtime.getRuntime().addShutdownHook( new Thread() {
       public void run() {
-        shutdown( s );
+        try {
+          s.onEnvironmentShutdown();
+        } catch ( Throwable t ) {
+          System.err.println( BaseMessages.getString(
+            PKG, "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners" ) );
+          t.printStackTrace();
+        }
       }
     } );
 
-  }
-  
-  // Shutdown the Kettle environment programmatically
-  public static void shutdown() {
-    shutdown( kettleLifecycleSupport );
-  }
-
-  private static void shutdown( KettleLifecycleSupport kettleLifecycleSupport ) {
-    try {
-      kettleLifecycleSupport.onEnvironmentShutdown();
-    } catch ( Throwable t ) {
-      System.err.println( BaseMessages.getString( PKG,
-          "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners" ) );
-      t.printStackTrace();
-    }
   }
 
   /**
@@ -183,11 +157,10 @@ public class KettleEnvironment {
    * @return true if initialized, false otherwise
    */
   public static boolean isInitialized() {
-    Future<Boolean> future = initialized.get();
-    try {
-      return future != null && future.get();
-    } catch ( Throwable e ) {
+    if ( initialized == null ) {
       return false;
+    } else {
+      return true;
     }
   }
 

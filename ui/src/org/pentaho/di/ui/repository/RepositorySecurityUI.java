@@ -97,16 +97,13 @@ public class RepositorySecurityUI {
     return verifyOperations( shell, repository, true, operations );
   }
 
-  public static String getVersionComment( Shell shell, Repository repository, String operationDescription,
-      String fullPath, boolean forceEntry ) {
-    //forceEntry is used to force the comment prompt when multiple files will be affected.  It 
-    //removes a web service call per file.
+  public static String getVersionComment( Shell shell, Repository repository, String operationDescription ) {
     if ( repository == null ) {
       return null;
     }
 
     RepositorySecurityProvider provider = repository.getSecurityProvider();
-    if ( forceEntry || provider.allowsVersionComments( fullPath ) ) {
+    if ( provider.allowsVersionComments() ) {
 
       String explanation = "Enter a comment ";
       if ( provider.isVersionCommentMandatory() ) {

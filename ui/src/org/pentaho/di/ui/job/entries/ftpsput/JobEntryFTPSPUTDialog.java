@@ -55,9 +55,9 @@ import org.pentaho.di.job.entries.ftpsput.JobEntryFTPSPUT;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
-import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
@@ -370,14 +370,21 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     fdlPassword.top = new FormAttachment( wUserName, margin );
     fdlPassword.right = new FormAttachment( middle, 0 );
     wlPassword.setLayoutData( fdlPassword );
-    wPassword = new PasswordTextVar( jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wPassword = new TextVar( jobMeta, wServerSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wPassword );
+    wPassword.setEchoChar( '*' );
     wPassword.addModifyListener( lsMod );
     fdPassword = new FormData();
     fdPassword.left = new FormAttachment( middle, margin );
     fdPassword.top = new FormAttachment( wUserName, margin );
     fdPassword.right = new FormAttachment( 100, 0 );
     wPassword.setLayoutData( fdPassword );
+
+    wPassword.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wPassword.getTextWidget() );
+      }
+    } );
 
     // Proxy host line
     wProxyHost =
@@ -422,7 +429,7 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     wProxyPassword =
       new LabelTextVar(
         jobMeta, wServerSettings, BaseMessages.getString( PKG, "JobFTPSPUT.ProxyPassword.Label" ),
-        BaseMessages.getString( PKG, "JobFTPSPUT.ProxyPassword.Tooltip" ), true );
+        BaseMessages.getString( PKG, "JobFTPSPUT.ProxyPassword.Tooltip" ) );
     props.setLook( wProxyPassword );
     wProxyPassword.addModifyListener( lsMod );
     fdProxyPasswd = new FormData();
@@ -430,6 +437,12 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
     fdProxyPasswd.top = new FormAttachment( wProxyUsername, margin );
     fdProxyPasswd.right = new FormAttachment( 100, 0 );
     wProxyPassword.setLayoutData( fdProxyPasswd );
+
+    wProxyPassword.getTextWidget().addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        DatabaseDialog.checkPasswordVisible( wProxyPassword.getTextWidget() );
+      }
+    } );
 
     wlConnectionType = new Label( wServerSettings, SWT.RIGHT );
     wlConnectionType.setText( BaseMessages.getString( PKG, "JobFTPSPUT.ConnectionType.Label" ) );
@@ -860,7 +873,14 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
       mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.Connected.OK", wServerName.getText() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPSPUT.Connected.Title.Ok" ) );
       mb.open();
+    } else {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.Connected.NOK.ConnectionBad", wServerName.getText() )
+        + Const.CR );
+      mb.setText( BaseMessages.getString( PKG, "JobFTPSPUT.Connected.Title.Bad" ) );
+      mb.open();
     }
+
   }
 
   private void checkRemoteFolder( String remoteFoldername ) {
@@ -870,14 +890,19 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
         mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.FolderExists.OK", remoteFoldername ) + Const.CR );
         mb.setText( BaseMessages.getString( PKG, "JobFTPSPUT.FolderExists.Title.Ok" ) );
         mb.open();
+      } else {
+        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+        mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.FolderExists.NOK", remoteFoldername ) + Const.CR );
+        mb.setText( BaseMessages.getString( PKG, "JobFTPSPUT.FolderExists.Title.Bad" ) );
+        mb.open();
       }
     }
   }
 
   private boolean connectToFTP( boolean checkfolder, String remoteFoldername ) {
-    String realServername = null;
+    boolean retval = false;
     try {
-      realServername = jobMeta.environmentSubstitute( wServerName.getText() );
+      String realServername = jobMeta.environmentSubstitute( wServerName.getText() );
       int realPort = Const.toInt( jobMeta.environmentSubstitute( wServerPort.getText() ), 0 );
       String realUsername = jobMeta.environmentSubstitute( wUserName.getText() );
       String realPassword = jobMeta.environmentSubstitute( wPassword.getText() );
@@ -915,27 +940,17 @@ public class JobEntryFTPSPUTDialog extends JobEntryDialog implements JobEntryDia
         // move to spool dir ...
         if ( !Const.isEmpty( remoteFoldername ) ) {
           String realFtpDirectory = jobMeta.environmentSubstitute( remoteFoldername );
-          return connection.isDirectoryExists( realFtpDirectory );
+          retval = connection.isDirectoryExists( realFtpDirectory );
         }
       }
-      return true;
+      retval = true;
     } catch ( Exception e ) {
-      if ( connection != null ) {
-        try {
-          connection.disconnect();
-        } catch ( Exception ignored ) {
-          // We've tried quitting the FTPS Client exception
-          // nothing else to be done if the FTPS Client was already disconnected
-        }
-        connection = null;
-      }
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.ErrorConnect.NOK", realServername,
-          e.getMessage() ) + Const.CR );
+      mb.setMessage( BaseMessages.getString( PKG, "JobFTPSPUT.ErrorConnect.NOK", e.getMessage() ) + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "JobFTPSPUT.ErrorConnect.Title.Bad" ) );
       mb.open();
     }
-    return false;
+    return retval;
   }
 
   public void dispose() {

@@ -66,7 +66,6 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
 import org.pentaho.di.core.database.util.DatabaseLogExceptionFactory;
-import org.pentaho.di.core.database.util.DatabaseUtil;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -145,12 +144,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Number of times a connection was opened using this object. Only used in the context of a database connection map
    */
-  private volatile int opened;
+  private int opened;
 
   /**
    * The copy is equal to opened at the time of creation.
    */
-  private volatile int copy;
+  private int copy;
 
   private String connectionGroup;
   private String partitionId;
@@ -164,22 +163,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   private int nrExecutedCommits;
 
   private static List<ValueMetaInterface> valueMetaPluginClasses;
-  
-  static {
-    try {
-      valueMetaPluginClasses = ValueMetaFactory.getValueMetaPluginClasses();
-      Collections.sort( valueMetaPluginClasses, new Comparator<ValueMetaInterface>() {
-        @Override
-        public int compare( ValueMetaInterface o1, ValueMetaInterface o2 ) {
-          // Reverse the sort list
-          return ( Integer.valueOf( o1.getType() ).compareTo( Integer.valueOf( o2.getType() ) ) ) * -1;
-        }
-      } );
-    } catch ( Exception e ) {
-      throw new RuntimeException( "Unable to get list of instantiated value meta plugin classes", e );
-    }
-  }
-  
+
   /**
    * Construct a new Database Connection
    *
@@ -209,8 +193,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     rowlimit = 0;
 
     written = 0;
-
-    opened = copy = 0;
 
     if ( log.isDetailed() ) {
       log.logDetailed( "New database connection defined" );
@@ -246,15 +228,14 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
     written = 0;
 
-    opened = copy = 0;
-
     if ( log.isDetailed() ) {
       log.logDetailed( "New database connection defined" );
     }
   }
 
   /**
-   * This implementation is NullPointerException subject, and may not follow fundamental equals contract.
+   * This implementation is NullPointerException subject, and
+   * may not follow fundamental equals contract.
    * <p/>
    * Databases equality is based on {@link DatabaseMeta} equality.
    */
@@ -346,15 +327,31 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         this.connectionGroup = group;
         this.partitionId = partitionId;
 
+        DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
+
         // Try to find the connection for the group
-        Database lookup = DatabaseConnectionMap.getInstance().getOrStoreIfAbsent( group, partitionId, this );
+        Database lookup = map.getDatabase( group, partitionId, this );
         if ( lookup == null ) {
-          // There was no mapped value before
-          lookup = this;
+          // We already opened this connection for the
+          // partition & database in this group
+          // Do a normal connect and then store this database object for later
+          // re-use.
+          normalConnect( partitionId );
+          opened++;
+          copy = opened;
+
+          map.storeDatabase( group, partitionId, this );
+        } else {
+          connection = lookup.getConnection();
+          lookup.setOpened( lookup.getOpened() + 1 ); // if this counter hits 0
+          // again, close the
+          // connection.
+          copy = lookup.getOpened();
         }
-        this.connection = lookup.getOrCreateSharedConnection( partitionId );
-        // opened in volatile, thus we can access it directly
-        this.copy = lookup.opened;
+
+        // If we have a connection group or transaction ID, disable auto commit!
+        //
+        setAutoCommit( false );
       } else {
         // Proceed with a normal connect
         normalConnect( partitionId );
@@ -370,21 +367,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       log.snap( Metrics.METRIC_DATABASE_CONNECT_STOP, databaseMeta.getName() );
 
     }
-  }
-
-  private synchronized Connection getOrCreateSharedConnection( String partitionId ) throws KettleDatabaseException {
-    // inside synchronized block we can increment 'opened' directly
-    this.opened++;
-
-    if ( this.connection == null ) {
-      normalConnect( partitionId );
-      this.copy = this.opened;
-
-      // If we have a connection group or transaction ID, disable auto commit!
-      //
-      setAutoCommit( false );
-    }
-    return this.connection;
   }
 
   /**
@@ -414,23 +396,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         } catch ( Exception e ) {
           throw new KettleDatabaseException( "Error occurred while trying to connect to the database", e );
         }
-      } else if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
-        final String jndiName = environmentSubstitute( databaseMeta.getDatabaseName() );
-        try {
-          connectUsingJNDIDataSource( jndiName );
-        } catch ( KettleDatabaseException kde ) {
-          // This was a new path that was added. If in case we did not find this datasource in JNDI,
-          // we were throwing exception and exiting out of this method. We will attempt to load this datasource
-          // using the classs if JNDI lookup fail. This is how it was working in 5.3
-          if ( log.isDetailed() ) {
-            log.logDetailed( "Unable to find datasource using JNDI. Cause: " + kde.getLocalizedMessage() );
-          }
-          connectUsingClass();
-        }
       } else {
-        connectUsingClass();
+        connectUsingClass( databaseMeta.getDriverClass(), partitionId );
+        if ( log.isDetailed() ) {
+          log.logDetailed( "Connected to database." );
+        }
       }
-      // See if we need to execute extra SQL statement...
+      // See if we need to execute extra SQL statemtent...
       String sql = environmentSubstitute( databaseMeta.getConnectSQL() );
 
       // only execute if the SQL is not empty, null and is not just a bunch of
@@ -453,7 +425,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @param dataSourceName
    * @throws KettleDatabaseException
    */
-  private void connectUsingNamedDataSource( String dataSourceName ) throws KettleDatabaseException {
+  private void initWithNamedDataSource( String dataSourceName ) throws KettleDatabaseException {
     connection = null;
     DataSource dataSource =
       DataSourceProviderFactory.getDataSourceProviderInterface().getNamedDataSource( dataSourceName );
@@ -461,40 +433,14 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       try {
         connection = dataSource.getConnection();
       } catch ( SQLException e ) {
-        throw new KettleDatabaseException( "Invalid named connection " + dataSourceName + " : " + e.getMessage() );
+        throw new KettleDatabaseException( "Invalid JNDI connection " + dataSourceName + " : " + e.getMessage() );
       }
       if ( connection == null ) {
-        throw new KettleDatabaseException( "Invalid named connection " + dataSourceName );
+        throw new KettleDatabaseException( "Invalid JNDI connection " + dataSourceName );
       }
     } else {
-      throw new KettleDatabaseException( "Invalid named connection " + dataSourceName );
+      throw new KettleDatabaseException( "Invalid JNDI connection " + dataSourceName );
     }
-  }
-
-  /**
-   * Initialize by getting the connection from a javax.sql.DataSource.
-   * <p/>
-   * This method now _does_not_use the DataSourceProviderFactory to get the provider of DataSource objects.
-   *
-   * @param jndiName
-   * @throws KettleDatabaseException
-   */
-  private void connectUsingJNDIDataSource( String jndiName ) throws KettleDatabaseException {
-    Connection connection = null;
-    DataSource dataSource = ( new DatabaseUtil() ).getNamedDataSource( jndiName );
-    if ( dataSource != null ) {
-      try {
-        connection = dataSource.getConnection();
-      } catch ( SQLException e ) {
-        throw new KettleDatabaseException( "Invalid JNDI connection " + jndiName + " : " + e.getMessage() );
-      }
-      if ( connection == null ) {
-        throw new KettleDatabaseException( "Invalid JNDI connection " + jndiName );
-      }
-    } else {
-      throw new KettleDatabaseException( "Invalid JNDI connection " + jndiName );
-    }
-    this.connection = connection;
   }
 
   /**
@@ -504,6 +450,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @return true if the connect was successful, false if something went wrong.
    */
   private void connectUsingClass( String classname, String partitionId ) throws KettleDatabaseException {
+    // first see if this is a JNDI connection
+    if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
+      initWithNamedDataSource( environmentSubstitute( databaseMeta.getDatabaseName() ) );
+      return;
+    }
+
     // Install and load the jdbc Driver
     PluginInterface plugin =
       PluginRegistry.getInstance().getPlugin( DatabasePluginType.class, databaseMeta.getDatabaseInterface() );
@@ -534,10 +486,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
     } catch ( NoClassDefFoundError e ) {
       throw new KettleDatabaseException( BaseMessages.getString( PKG,
-        "Database.Exception.UnableToFindClassMissingDriver", classname, plugin.getName() ), e );
+        "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName() ), e );
     } catch ( ClassNotFoundException e ) {
       throw new KettleDatabaseException( BaseMessages.getString( PKG,
-        "Database.Exception.UnableToFindClassMissingDriver", classname, plugin.getName() ), e );
+        "Database.Exception.UnableToFindClassMissingDriver", databaseMeta.getDriverClass(), plugin.getName() ), e );
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Exception while loading class", e );
     }
@@ -833,8 +785,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
-   * this is a copy of {@link #commit(boolean)} - but delegates exception handling to caller. Can be possibly be removed
-   * in future.
+   * this is a copy of {@link #commit(boolean)} - but delegates exception handling to caller.
+   * Can be possibly be removed in future.
    *
    * @param force
    * @throws KettleDatabaseException
@@ -904,8 +856,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @param tableName  The name of the table in which we want to insert rows
    * @throws KettleDatabaseException if something went wrong.
    */
-  public void prepareInsert( RowMetaInterface rowMeta, String schemaName, String tableName )
-    throws KettleDatabaseException {
+  public void prepareInsert( RowMetaInterface rowMeta, String schemaName, String tableName ) throws KettleDatabaseException {
     if ( rowMeta.size() == 0 ) {
       throw new KettleDatabaseException( "No fields in row, can't insert!" );
     }
@@ -938,12 +889,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @throws KettleDatabaseException
    */
   public PreparedStatement prepareSQL( String sql, boolean returnKeys ) throws KettleDatabaseException {
-    DatabaseInterface databaseInterface = databaseMeta.getDatabaseInterface();
-    boolean supportsAutoGeneratedKeys = !( databaseInterface instanceof DatabaseInterfaceExtended )
-      || ( (DatabaseInterfaceExtended) databaseInterface ).supportsAutoGeneratedKeys();
-
     try {
-      if ( returnKeys && supportsAutoGeneratedKeys ) {
+      if ( returnKeys ) {
         return connection.prepareStatement( databaseMeta.stripCR( sql ), Statement.RETURN_GENERATED_KEYS );
       } else {
         return connection.prepareStatement( databaseMeta.stripCR( sql ) );
@@ -1014,8 +961,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     setValues( rowMeta, data, prepStatementLookup );
   }
 
-  public void setProcValues( RowMetaInterface rowMeta, Object[] data, int[] argnrs, String[] argdir, boolean result )
-    throws KettleDatabaseException {
+  public void setProcValues( RowMetaInterface rowMeta, Object[] data, int[] argnrs, String[] argdir, boolean result ) throws KettleDatabaseException {
     int pos;
 
     if ( result ) {
@@ -1025,9 +971,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
 
     for ( int i = 0; i < argnrs.length; i++ ) {
-      if ( argdir[ i ].equalsIgnoreCase( "IN" ) || argdir[ i ].equalsIgnoreCase( "INOUT" ) ) {
-        ValueMetaInterface valueMeta = rowMeta.getValueMeta( argnrs[ i ] );
-        Object value = data[ argnrs[ i ] ];
+      if ( argdir[i].equalsIgnoreCase( "IN" ) || argdir[i].equalsIgnoreCase( "INOUT" ) ) {
+        ValueMetaInterface valueMeta = rowMeta.getValueMeta( argnrs[i] );
+        Object value = data[argnrs[i]];
 
         setValue( cstmt, valueMeta, value, pos );
         pos++;
@@ -1037,8 +983,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
   }
 
-  public void setValue( PreparedStatement ps, ValueMetaInterface v, Object object, int pos )
-    throws KettleDatabaseException {
+  public void setValue( PreparedStatement ps, ValueMetaInterface v, Object object, int pos ) throws KettleDatabaseException {
 
     v.setPreparedStatementValue( databaseMeta, ps, pos, object );
 
@@ -1048,12 +993,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     setValues( row.getRowMeta(), row.getData(), ps );
   }
 
-  public void setValues( RowMetaInterface rowMeta, Object[] data, PreparedStatement ps )
-    throws KettleDatabaseException {
+  public void setValues( RowMetaInterface rowMeta, Object[] data, PreparedStatement ps ) throws KettleDatabaseException {
     // now set the values in the row!
     for ( int i = 0; i < rowMeta.size(); i++ ) {
       ValueMetaInterface v = rowMeta.getValueMeta( i );
-      Object object = data[ i ];
+      Object object = data[i];
 
       try {
         setValue( ps, v, object, i + 1 );
@@ -1069,14 +1013,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @param rowMeta
    * @param data
    */
-  public void setValues( RowMetaInterface rowMeta, Object[] data, PreparedStatement ps, int ignoreThisValueIndex )
-    throws KettleDatabaseException {
+  public void setValues( RowMetaInterface rowMeta, Object[] data, PreparedStatement ps, int ignoreThisValueIndex ) throws KettleDatabaseException {
     // now set the values in the row!
     int index = 0;
     for ( int i = 0; i < rowMeta.size(); i++ ) {
       if ( i != ignoreThisValueIndex ) {
         ValueMetaInterface v = rowMeta.getValueMeta( i );
-        Object object = data[ i ];
+        Object object = data[i];
 
         try {
           setValue( ps, v, object, index + 1 );
@@ -1127,8 +1070,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return getNextSequenceValue( null, sequenceName, keyfield );
   }
 
-  public Long getNextSequenceValue( String schemaName, String sequenceName, String keyfield )
-    throws KettleDatabaseException {
+  public Long getNextSequenceValue( String schemaName, String sequenceName, String keyfield ) throws KettleDatabaseException {
     Long retval = null;
 
     String schemaSequence = databaseMeta.getQuotedSchemaTableCombination( schemaName, sequenceName );
@@ -1160,8 +1102,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     insertRow( null, tableName, fields, data );
   }
 
-  public void insertRow( String schemaName, String tableName, RowMetaInterface fields, Object[] data )
-    throws KettleDatabaseException {
+  public void insertRow( String schemaName, String tableName, RowMetaInterface fields, Object[] data ) throws KettleDatabaseException {
     prepareInsert( fields, schemaName, tableName );
     setValuesInsert( fields, data );
     insertRow();
@@ -1227,11 +1168,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   public boolean insertRow( PreparedStatement ps, boolean batch ) throws KettleDatabaseException {
     return insertRow( ps, batch, true );
   }
-
+  
   public boolean getUseBatchInsert( boolean batch ) throws KettleDatabaseException {
     try {
-      return batch && getDatabaseMetaData().supportsBatchUpdates() && databaseMeta.supportsBatchUpdates()
-        && Const.isEmpty( connectionGroup );
+      return batch && getDatabaseMetaData().supportsBatchUpdates() &&
+          databaseMeta.supportsBatchUpdates() && Const.isEmpty( connectionGroup );
     } catch ( SQLException e ) {
       throw createKettleDatabaseBatchException( "Error determining whether to use batch", e );
     }
@@ -1242,8 +1183,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    *
    * @param ps           The prepared statement
    * @param batch        True if you want to use batch inserts (size = commit size)
-   * @param handleCommit True if you want to handle the commit here after the commit size (False e.g. in case the step
-   *                     handles this, see TableOutput)
+   * @param handleCommit True if you want to handle the commit here after the commit size (False e.g. in case the step handles
+   *                     this, see TableOutput)
    * @return true if the rows are safe: if batch of rows was sent to the database OR if a commit was done.
    * @throws KettleDatabaseException
    */
@@ -1672,8 +1613,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return openQuery( sql, params, data, ResultSet.FETCH_FORWARD );
   }
 
-  public ResultSet openQuery( String sql, RowMetaInterface params, Object[] data, int fetch_mode )
-    throws KettleDatabaseException {
+  public ResultSet openQuery( String sql, RowMetaInterface params, Object[] data, int fetch_mode ) throws KettleDatabaseException {
     return openQuery( sql, params, data, fetch_mode, false );
   }
 
@@ -1761,8 +1701,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       || ( databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults() ) );
   }
 
-  public ResultSet openQuery( PreparedStatement ps, RowMetaInterface params, Object[] data )
-    throws KettleDatabaseException {
+  public ResultSet openQuery( PreparedStatement ps, RowMetaInterface params, Object[] data ) throws KettleDatabaseException {
     ResultSet res;
 
     // Create a Statement
@@ -1834,8 +1773,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * See if the table specified exists by reading
    *
-   * @param tablename The name of the table to check.<br> This is supposed to be the properly quoted name of the table
-   *                  or the complete schema-table name combination.
+   * @param tablename The name of the table to check.<br>
+   *                  This is supposed to be the properly quoted name of the table or the complete schema-table name
+   *                  combination.
    * @return true if the table exists, false if it doesn't.
    */
   public boolean checkTableExists( String tablename ) throws KettleDatabaseException {
@@ -1875,8 +1815,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * See if the column specified exists by reading
    *
    * @param columnname The name of the column to check.
-   * @param tablename  The name of the table to check.<br> This is supposed to be the properly quoted name of the table
-   *                   or the complete schema-table name combination.
+   * @param tablename  The name of the table to check.<br>
+   *                   This is supposed to be the properly quoted name of the table or the complete schema-table name
+   *                   combination.
    * @return true if the table exists, false if it doesn't.
    */
   public boolean checkColumnExists( String columnname, String tablename ) throws KettleDatabaseException {
@@ -1963,8 +1904,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @param idx_fields The fields on which the indexe is checked
    * @return True if the index exists
    */
-  public boolean checkIndexExists( String schemaName, String tableName, String[] idx_fields )
-    throws KettleDatabaseException {
+  public boolean checkIndexExists( String schemaName, String tableName, String[] idx_fields ) throws KettleDatabaseException {
     String tablename = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
     if ( !checkTableExists( tablename ) ) {
       return false;
@@ -1983,8 +1923,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public String getCreateIndexStatement( String schemaname, String tablename, String indexname,
-                                         String[] idx_fields, boolean tk, boolean unique, boolean bitmap,
-                                         boolean semi_colon ) {
+                                         String[] idx_fields, boolean tk, boolean unique, boolean bitmap, boolean semi_colon ) {
     String cr_index = "";
     DatabaseInterface databaseInterface = databaseMeta.getDatabaseInterface();
 
@@ -2012,7 +1951,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       if ( i > 0 ) {
         cr_index += ", ";
       }
-      cr_index += databaseMeta.quoteField( idx_fields[ i ] );
+      cr_index += databaseMeta.quoteField( idx_fields[i] );
     }
     cr_index += ")" + Const.CR;
 
@@ -2067,12 +2006,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         // AS400
         //
         if ( databaseMeta.supportsSequenceNoMaxValueOption() && max_value.trim().equals( "-1" ) ) {
-          DatabaseInterface databaseInterface = databaseMeta.getDatabaseInterface();
-          if ( databaseInterface instanceof DatabaseInterfaceExtended ) {
-            cr_seq += ( (DatabaseInterfaceExtended) databaseInterface ).getSequenceNoMaxValueOption() + Const.CR;
-          } else {
-            cr_seq += "NOMAXVALUE" + Const.CR;
-          }
+          cr_seq += "NOMAXVALUE" + Const.CR;
         } else {
           // set the max value
           cr_seq += "MAXVALUE " + max_value + Const.CR;
@@ -2087,8 +2021,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return cr_seq;
   }
 
-  public RowMetaInterface getQueryFields( String sql, boolean param, RowMetaInterface inform, Object[] data )
-    throws KettleDatabaseException {
+  public RowMetaInterface getQueryFields( String sql, boolean param, RowMetaInterface inform, Object[] data ) throws KettleDatabaseException {
     RowMetaInterface fields;
     DBCache dbcache = DBCache.getInstance();
 
@@ -2169,7 +2102,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       if ( ( inform == null
         // Hack for MSSQL jtds 1.2 when using xxx NOT IN yyy we have to use a
         // prepared statement (see BugID 3214)
-        && databaseMeta.getDatabaseInterface() instanceof MSSQLServerDatabaseMeta )
+        && ( databaseMeta.getDatabaseInterface() instanceof MSSQLServerDatabaseMeta || databaseMeta
+        .getDatabaseInterface() instanceof KettleDatabaseMeta ) )
         || databaseMeta.getDatabaseInterface().supportsResultSetMetadataRetrievalOnly() ) {
         sel_stmt = connection.createStatement( ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY );
 
@@ -2207,7 +2141,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         ResultSet r = ps.executeQuery();
         ResultSetMetaData metadata = ps.getMetaData();
         // If the PreparedStatement can't get us the metadata, try using the ResultSet's metadata
-        if ( metadata == null ) {
+        if( metadata == null ) {
           metadata = r.getMetaData();
         }
         fields = getRowInfo( metadata, false, false );
@@ -2247,8 +2181,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @param ignoreLength   true if you want to ignore the length (workaround for MySQL bug/problem)
    * @param lazyConversion true if lazy conversion needs to be enabled where possible
    */
-  private RowMetaInterface getRowInfo( ResultSetMetaData rm, boolean ignoreLength, boolean lazyConversion )
-    throws KettleDatabaseException {
+  private RowMetaInterface getRowInfo( ResultSetMetaData rm, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException {
     try {
       log.snap( Metrics.METRIC_DATABASE_GET_ROW_META_START, databaseMeta.getName() );
 
@@ -2274,10 +2207,26 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   private ValueMetaInterface getValueFromSQLType( ResultSetMetaData rm, int i, boolean ignoreLength,
-                                                  boolean lazyConversion )
-    throws KettleDatabaseException, SQLException {
+                                                  boolean lazyConversion ) throws KettleDatabaseException, SQLException {
     // TODO If we do lazy conversion, we need to find out about the encoding
     //
+
+    // Some housekeeping stuff...
+    //
+    if ( valueMetaPluginClasses == null ) {
+      try {
+        valueMetaPluginClasses = ValueMetaFactory.getValueMetaPluginClasses();
+        Collections.sort( valueMetaPluginClasses, new Comparator<ValueMetaInterface>() {
+          @Override
+          public int compare( ValueMetaInterface o1, ValueMetaInterface o2 ) {
+            // Reverse the sort list
+            return ( Integer.valueOf( o1.getType() ).compareTo( Integer.valueOf( o2.getType() ) ) ) * -1;
+          }
+        } );
+      } catch ( Exception e ) {
+        throw new KettleDatabaseException( "Unable to get list of instantiated value meta plugin classes", e );
+      }
+    }
 
     // Extract the name from the result set meta data...
     //
@@ -2385,8 +2334,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @param rs The resultset to get the row from
    * @return one row or null if no row was found on the resultset or if an error occurred.
    */
-  public Object[] getRow( ResultSet rs, ResultSetMetaData dummy, RowMetaInterface rowInfo )
-    throws KettleDatabaseException {
+  public Object[] getRow( ResultSet rs, ResultSetMetaData dummy, RowMetaInterface rowInfo ) throws KettleDatabaseException {
     long startTime = System.currentTimeMillis();
 
     try {
@@ -2398,7 +2346,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         for ( int i = 0; i < nrcols; i++ ) {
           ValueMetaInterface val = rowInfo.getValueMeta( i );
 
-          data[ i ] = databaseMeta.getValueFromResultSet( rs, val, i );
+          data[i] = databaseMeta.getValueFromResultSet( rs, val, i );
         }
       } else {
         data = null;
@@ -2446,8 +2394,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
   // Lookup certain fields in a table
   public void setLookup( String schemaName, String tableName, String[] codes, String[] condition, String[] gets,
-                         String[] rename, String orderby, boolean checkForMultipleResults )
-    throws KettleDatabaseException {
+                         String[] rename, String orderby, boolean checkForMultipleResults ) throws KettleDatabaseException {
     try {
       log.snap( Metrics.METRIC_DATABASE_SET_LOOKUP_START, databaseMeta.getName() );
 
@@ -2459,9 +2406,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         if ( i != 0 ) {
           sql += ", ";
         }
-        sql += databaseMeta.quoteField( gets[ i ] );
-        if ( rename != null && rename[ i ] != null && !gets[ i ].equalsIgnoreCase( rename[ i ] ) ) {
-          sql += " AS " + databaseMeta.quoteField( rename[ i ] );
+        sql += databaseMeta.quoteField( gets[i] );
+        if ( rename != null && rename[i] != null && !gets[i].equalsIgnoreCase( rename[i] ) ) {
+          sql += " AS " + databaseMeta.quoteField( rename[i] );
         }
       }
 
@@ -2471,13 +2418,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         if ( i != 0 ) {
           sql += " AND ";
         }
-        sql += databaseMeta.quoteField( codes[ i ] );
-        if ( "BETWEEN".equalsIgnoreCase( condition[ i ] ) ) {
+        sql += databaseMeta.quoteField( codes[i] );
+        if ( "BETWEEN".equalsIgnoreCase( condition[i] ) ) {
           sql += " BETWEEN ? AND ? ";
-        } else if ( "IS NULL".equalsIgnoreCase( condition[ i ] ) || "IS NOT NULL".equalsIgnoreCase( condition[ i ] ) ) {
-          sql += " " + condition[ i ] + " ";
+        } else if ( "IS NULL".equalsIgnoreCase( condition[i] ) || "IS NOT NULL".equalsIgnoreCase( condition[i] ) ) {
+          sql += " " + condition[i] + " ";
         } else {
-          sql += " " + condition[ i ] + " ? ";
+          sql += " " + condition[i] + " ? ";
         }
       }
 
@@ -2521,7 +2468,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         if ( i != 0 ) {
           sql.append( ",   " );
         }
-        sql.append( databaseMeta.quoteField( sets[ i ] ) );
+        sql.append( databaseMeta.quoteField( sets[i] ) );
         sql.append( " = ?" ).append( Const.CR );
       }
 
@@ -2531,13 +2478,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         if ( i != 0 ) {
           sql.append( "AND   " );
         }
-        sql.append( databaseMeta.quoteField( codes[ i ] ) );
-        if ( "BETWEEN".equalsIgnoreCase( condition[ i ] ) ) {
+        sql.append( databaseMeta.quoteField( codes[i] ) );
+        if ( "BETWEEN".equalsIgnoreCase( condition[i] ) ) {
           sql.append( " BETWEEN ? AND ? " );
-        } else if ( "IS NULL".equalsIgnoreCase( condition[ i ] ) || "IS NOT NULL".equalsIgnoreCase( condition[ i ] ) ) {
-          sql.append( ' ' ).append( condition[ i ] ).append( ' ' );
+        } else if ( "IS NULL".equalsIgnoreCase( condition[i] ) || "IS NOT NULL".equalsIgnoreCase( condition[i] ) ) {
+          sql.append( ' ' ).append( condition[i] ).append( ' ' );
         } else {
-          sql.append( ' ' ).append( condition[ i ] ).append( " ? " );
+          sql.append( ' ' ).append( condition[i] ).append( " ? " );
         }
       }
 
@@ -2593,13 +2540,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         if ( i != 0 ) {
           sql += "AND   ";
         }
-        sql += codes[ i ];
-        if ( "BETWEEN".equalsIgnoreCase( condition[ i ] ) ) {
+        sql += codes[i];
+        if ( "BETWEEN".equalsIgnoreCase( condition[i] ) ) {
           sql += " BETWEEN ? AND ? ";
-        } else if ( "IS NULL".equalsIgnoreCase( condition[ i ] ) || "IS NOT NULL".equalsIgnoreCase( condition[ i ] ) ) {
-          sql += " " + condition[ i ] + " ";
+        } else if ( "IS NULL".equalsIgnoreCase( condition[i] ) || "IS NOT NULL".equalsIgnoreCase( condition[i] ) ) {
+          sql += " " + condition[i] + " ";
         } else {
-          sql += " " + condition[ i ] + " ? ";
+          sql += " " + condition[i] + " ? ";
         }
       }
 
@@ -2656,7 +2603,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         cstmt = connection.prepareCall( sql );
         pos = 1;
         if ( !Const.isEmpty( returnvalue ) ) {
-          switch( returntype ) {
+          switch ( returntype ) {
             case ValueMetaInterface.TYPE_NUMBER:
               cstmt.registerOutParameter( pos, java.sql.Types.DOUBLE );
               break;
@@ -2681,8 +2628,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           pos++;
         }
         for ( int i = 0; i < arg.length; i++ ) {
-          if ( argdir[ i ].equalsIgnoreCase( "OUT" ) || argdir[ i ].equalsIgnoreCase( "INOUT" ) ) {
-            switch( argtype[ i ] ) {
+          if ( argdir[i].equalsIgnoreCase( "OUT" ) || argdir[i].equalsIgnoreCase( "INOUT" ) ) {
+            switch ( argtype[i] ) {
               case ValueMetaInterface.TYPE_NUMBER:
                 cstmt.registerOutParameter( i + pos, java.sql.Types.DOUBLE );
                 break;
@@ -2720,11 +2667,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public Object[] getLookup( boolean failOnMultipleResults ) throws KettleDatabaseException {
-    return getLookup( failOnMultipleResults, false );
-  }
-
-  public Object[] getLookup( boolean failOnMultipleResults, boolean lazyConversion ) throws KettleDatabaseException {
-    return getLookup( prepStatementLookup, failOnMultipleResults, lazyConversion );
+    return getLookup( prepStatementLookup, failOnMultipleResults );
   }
 
   public Object[] getLookup( PreparedStatement ps ) throws KettleDatabaseException {
@@ -2735,17 +2678,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public Object[] getLookup( PreparedStatement ps, boolean failOnMultipleResults ) throws KettleDatabaseException {
-    return getLookup( ps, failOnMultipleResults, false );
-  }
-
-  public Object[] getLookup( PreparedStatement ps, boolean failOnMultipleResults, boolean lazyConversion )
-    throws KettleDatabaseException {
     ResultSet res = null;
     try {
       log.snap( Metrics.METRIC_DATABASE_GET_LOOKUP_START, databaseMeta.getName() );
       res = ps.executeQuery();
 
-      Object[] ret = getRow( res, lazyConversion );
+      Object[] ret = getRow( res );
 
       if ( failOnMultipleResults ) {
         if ( ret != null && res.next() ) {
@@ -2791,8 +2729,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return getDDL( tablename, fields, null, false, null, true );
   }
 
-  public String getDDL( String tablename, RowMetaInterface fields, String tk, boolean use_autoinc, String pk )
-    throws KettleDatabaseException {
+  public String getDDL( String tablename, RowMetaInterface fields, String tk, boolean use_autoinc, String pk ) throws KettleDatabaseException {
     return getDDL( tablename, fields, tk, use_autoinc, pk, true );
   }
 
@@ -2822,17 +2759,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @param use_autoinc true if we need to use auto-increment fields for a primary key
    * @param pk          the name of the primary/technical key field
    * @param semicolon   append semicolon to the statement
+   * @param pkc         primary key composite ( name of the key fields)
    * @return the SQL needed to create the specified table and fields.
    */
   public String getCreateTableStatement( String tableName, RowMetaInterface fields, String tk,
                                          boolean use_autoinc, String pk, boolean semicolon ) {
-    StringBuilder retval = new StringBuilder();
-    DatabaseInterface databaseInterface = databaseMeta.getDatabaseInterface();
-    if ( databaseInterface instanceof DatabaseInterfaceExtended ) {
-      retval.append( ( (DatabaseInterfaceExtended) databaseInterface ).getCreateTableStatement() );
-    } else {
-      retval.append( "CREATE TABLE " );
-    }
+    StringBuilder retval = new StringBuilder( "CREATE TABLE " );
 
     retval.append( tableName + Const.CR );
     retval.append( "(" ).append( Const.CR );
@@ -3083,7 +3015,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         int precision = pmd.getScale( i );
         ValueMeta val;
 
-        switch( sqltype ) {
+        switch ( sqltype ) {
           case java.sql.Types.CHAR:
           case java.sql.Types.VARCHAR:
             val = new ValueMeta( name, ValueMetaInterface.TYPE_STRING );
@@ -3141,7 +3073,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     for ( int x = 0; x < sql.length(); x++ ) {
       char c = sql.charAt( x );
 
-      switch( c ) {
+      switch ( c ) {
         case '\'':
           quote_opened = !quote_opened;
           break;
@@ -3184,8 +3116,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return par;
   }
 
-  public void writeLogRecord( LogTableCoreInterface logTable, LogStatus status, Object subject, Object parent )
-    throws KettleDatabaseException {
+  public void writeLogRecord( LogTableCoreInterface logTable, LogStatus status, Object subject, Object parent ) throws KettleDatabaseException {
     try {
       RowMetaAndData logRecord = logTable.getLogRecord( status, subject, parent );
       if ( logRecord == null ) {
@@ -3202,7 +3133,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       if ( update ) {
         RowMetaInterface updateRowMeta = new RowMeta();
-        Object[] updateRowData = new Object[ rowMeta.size() ];
+        Object[] updateRowData = new Object[rowMeta.size()];
         ValueMetaInterface keyValueMeta = rowMeta.getValueMeta( 0 );
         StringBuffer sqlBuff = new StringBuffer( 250 );
         sqlBuff.append( "UPDATE " ).append( schemaTable ).append( " SET " );
@@ -3216,12 +3147,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           sqlBuff.append( databaseMeta.quoteField( valueMeta.getName() ) ).append( "=? " );
 
           updateRowMeta.addValueMeta( valueMeta );
-          updateRowData[ i - 1 ] = rowData[ i ];
+          updateRowData[i - 1] = rowData[i];
         }
         sqlBuff.append( "WHERE " ).append( databaseMeta.quoteField( keyValueMeta.getName() ) ).append( "=? " );
 
         updateRowMeta.addValueMeta( keyValueMeta );
-        updateRowData[ rowMeta.size() - 1 ] = rowData[ 0 ];
+        updateRowData[rowMeta.size() - 1] = rowData[0];
 
         String sql = sqlBuff.toString();
         execStatement( sql, updateRowMeta, updateRowData );
@@ -3281,8 +3212,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
   }
 
-  public Object[] getLastLogDate( String logtable, String name, boolean job, LogStatus status )
-    throws KettleDatabaseException {
+  public Object[] getLastLogDate( String logtable, String name, boolean job, LogStatus status ) throws KettleDatabaseException {
     Object[] row = null;
 
     String jobtrans = job ? databaseMeta.quoteField( "JOBNAME" ) : databaseMeta.quoteField( "TRANSNAME" );
@@ -3305,7 +3235,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
       RowMetaInterface r = new RowMeta();
       r.addValueMeta( new ValueMeta( "TRANSNAME", ValueMetaInterface.TYPE_STRING ) );
-      setValues( r, new Object[] { name } );
+      setValues( r, new Object[]{ name } );
 
       ResultSet res = pstmt.executeQuery();
       if ( res != null ) {
@@ -3322,8 +3252,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     return row;
   }
 
-  public synchronized Long getNextValue( Hashtable<String, Counter> counters, String tableName, String val_key )
-    throws KettleDatabaseException {
+  public synchronized Long getNextValue( Hashtable<String, Counter> counters, String tableName, String val_key ) throws KettleDatabaseException {
     return getNextValue( counters, null, tableName, val_key );
   }
 
@@ -3409,8 +3338,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @return An ArrayList of rows.
    * @throws KettleDatabaseException if something goes wrong.
    */
-  public List<Object[]> getRows( String sql, int limit, ProgressMonitorListener monitor )
-    throws KettleDatabaseException {
+  public List<Object[]> getRows( String sql, int limit, ProgressMonitorListener monitor ) throws KettleDatabaseException {
 
     return getRows( sql, null, null, ResultSet.FETCH_FORWARD, false, limit, monitor );
   }
@@ -3429,8 +3357,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @throws KettleDatabaseException if something goes wrong.
    */
   public List<Object[]> getRows( String sql, RowMetaInterface params, Object[] data, int fetch_mode,
-                                 boolean lazyConversion, int limit, ProgressMonitorListener monitor )
-    throws KettleDatabaseException {
+                                 boolean lazyConversion, int limit, ProgressMonitorListener monitor ) throws KettleDatabaseException {
     if ( monitor != null ) {
       monitor.setTaskName( "Opening query..." );
     }
@@ -3448,8 +3375,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @return An ArrayList of rows.
    * @throws KettleDatabaseException if something goes wrong.
    */
-  public List<Object[]> getRows( ResultSet rset, int limit, ProgressMonitorListener monitor )
-    throws KettleDatabaseException {
+  public List<Object[]> getRows( ResultSet rset, int limit, ProgressMonitorListener monitor ) throws KettleDatabaseException {
     try {
       List<Object[]> result = new ArrayList<Object[]>();
       boolean stop = false;
@@ -3499,8 +3425,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @return An ArrayList of rows.
    * @throws KettleDatabaseException in case something goes wrong
    */
-  public List<Object[]> getFirstRows( String table_name, int limit, ProgressMonitorListener monitor )
-    throws KettleDatabaseException {
+  public List<Object[]> getFirstRows( String table_name, int limit, ProgressMonitorListener monitor ) throws KettleDatabaseException {
     String sql = "SELECT";
     if ( databaseMeta.getDatabaseInterface() instanceof NeoviewDatabaseMeta ) {
       sql += " [FIRST " + limit + "]";
@@ -3531,7 +3456,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         types.add( ttype );
       }
 
-      return types.toArray( new String[ types.size() ] );
+      return types.toArray( new String[types.size()] );
     } catch ( SQLException e ) {
       throw new KettleDatabaseException( "Unable to get table types from database!", e );
     }
@@ -3558,7 +3483,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         }
       }
     }
-    return res.toArray( new String[ res.size() ] );
+    return res.toArray( new String[res.size()] );
   }
 
   public Map<String, Collection<String>> getTableMap() throws KettleDatabaseException {
@@ -3652,7 +3577,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         }
       }
     }
-    return res.toArray( new String[ res.size() ] );
+    return res.toArray( new String[res.size()] );
   }
 
   public Map<String, Collection<String>> getViewMap() throws KettleDatabaseException {
@@ -3751,7 +3676,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         }
       }
     }
-    return res.toArray( new String[ res.size() ] );
+    return res.toArray( new String[res.size()] );
   }
 
   public Map<String, Collection<String>> getSynonymMap() throws KettleDatabaseException {
@@ -3871,7 +3796,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       log.logDetailed( "read :" + catalogList.size() + " schemas from db meta-data." );
     }
 
-    return catalogList.toArray( new String[ catalogList.size() ] );
+    return catalogList.toArray( new String[catalogList.size()] );
   }
 
   public String[] getCatalogs() throws KettleDatabaseException {
@@ -3899,7 +3824,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       log.logDetailed( "read :" + catalogList.size() + " catalogs from db meta-data." );
     }
 
-    return catalogList.toArray( new String[ catalogList.size() ] );
+    return catalogList.toArray( new String[catalogList.size()] );
   }
 
   public String[] getProcedures() throws KettleDatabaseException {
@@ -3908,9 +3833,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       // System.out.println("SQL= "+sql);
       List<Object[]> procs = getRows( sql, 1000 );
       // System.out.println("Found "+procs.size()+" rows");
-      String[] str = new String[ procs.size() ];
+      String[] str = new String[procs.size()];
       for ( int i = 0; i < procs.size(); i++ ) {
-        str[ i ] = procs.get( i )[ 0 ].toString();
+        str[i] = procs.get( i )[0].toString();
       }
       return str;
     } else {
@@ -3919,7 +3844,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         DatabaseMetaData dbmd = getDatabaseMetaData();
         rs = dbmd.getProcedures( null, null, null );
         List<Object[]> rows = getRows( rs, 0, null );
-        String[] result = new String[ rows.size() ];
+        String[] result = new String[rows.size()];
         for ( int i = 0; i < rows.size(); i++ ) {
           Object[] row = rows.get( i );
           String procCatalog = rowMeta.getString( row, "PROCEDURE_CAT", null );
@@ -3935,7 +3860,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
           name += procName;
 
-          result[ i ] = name;
+          result[i] = name;
         }
         return result;
       } catch ( Exception e ) {
@@ -3966,8 +3891,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * Lock a tables in the database for write operations
    *
-   * @param tableNames The tables to lock. These need to be the appropriately quoted fully qualified (schema+table)
-   *                   names.
+   * @param tableNames The tables to lock. These need to be the appropriately quoted fully qualified (schema+table) names.
    * @throws KettleDatabaseException
    */
   public void lockTables( String[] tableNames ) throws KettleDatabaseException {
@@ -3996,9 +3920,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
     // Quote table names too...
     //
-    String[] quotedTableNames = new String[ tableNames.length ];
+    String[] quotedTableNames = new String[tableNames.length];
     for ( int i = 0; i < tableNames.length; i++ ) {
-      quotedTableNames[ i ] = databaseMeta.getQuotedSchemaTableCombination( null, tableNames[ i ] );
+      quotedTableNames[i] = databaseMeta.getQuotedSchemaTableCombination( null, tableNames[i] );
     }
 
     // Get the SQL to unlock the (quoted) tables
@@ -4019,7 +3943,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * @param opened the opened to set
    */
-  public synchronized void setOpened( int opened ) {
+  public void setOpened( int opened ) {
     this.opened = opened;
   }
 
@@ -4061,7 +3985,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   /**
    * @param copy the copy to set
    */
-  public synchronized void setCopy( int copy ) {
+  public void setCopy( int copy ) {
     this.copy = copy;
   }
 
@@ -4081,8 +4005,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   @Override
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData ) throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
 
@@ -4160,7 +4083,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       if ( resultname != null && resultname.length() != 0 ) {
         ValueMeta vMeta = new ValueMeta( resultname, resulttype );
         Object v = null;
-        switch( resulttype ) {
+        switch ( resulttype ) {
           case ValueMetaInterface.TYPE_BOOLEAN:
             v = Boolean.valueOf( cstmt.getBoolean( pos ) );
             break;
@@ -4202,10 +4125,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         pos++;
       }
       for ( int i = 0; i < arg.length; i++ ) {
-        if ( argdir[ i ].equalsIgnoreCase( "OUT" ) || argdir[ i ].equalsIgnoreCase( "INOUT" ) ) {
-          ValueMetaInterface vMeta = ValueMetaFactory.createValueMeta( arg[ i ], argtype[ i ] );
+        if ( argdir[i].equalsIgnoreCase( "OUT" ) || argdir[i].equalsIgnoreCase( "INOUT" ) ) {
+          ValueMetaInterface vMeta = ValueMetaFactory.createValueMeta( arg[i], argtype[i] );
           Object v = null;
-          switch( argtype[ i ] ) {
+          switch ( argtype[i] ) {
             case ValueMetaInterface.TYPE_BOOLEAN:
               v = Boolean.valueOf( cstmt.getBoolean( pos + i ) );
               break;
@@ -4367,12 +4290,12 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       }
       ins.append( ") VALUES (" );
 
-      java.text.SimpleDateFormat[] fieldDateFormatters = new java.text.SimpleDateFormat[ fields.size() ];
+      java.text.SimpleDateFormat[] fieldDateFormatters = new java.text.SimpleDateFormat[fields.size()];
 
       // new add values ...
       for ( int i = 0; i < fields.size(); i++ ) {
         ValueMetaInterface valueMeta = fields.getValueMeta( i );
-        Object valueData = r[ i ];
+        Object valueData = r[i];
 
         if ( i > 0 ) {
           ins.append( "," );
@@ -4385,7 +4308,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         } else {
           // Normal cases...
           //
-          switch( valueMeta.getType() ) {
+          switch ( valueMeta.getType() ) {
             case ValueMetaInterface.TYPE_BOOLEAN:
             case ValueMetaInterface.TYPE_STRING:
               String string = valueMeta.getString( valueData );
@@ -4401,10 +4324,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
               if ( Const.isEmpty( dateFormat ) ) {
                 if ( databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta ) {
-                  if ( fieldDateFormatters[ i ] == null ) {
-                    fieldDateFormatters[ i ] = new java.text.SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
+                  if ( fieldDateFormatters[i] == null ) {
+                    fieldDateFormatters[i] = new java.text.SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
                   }
-                  ins.append( "TO_DATE('" ).append( fieldDateFormatters[ i ].format( date ) ).append(
+                  ins.append( "TO_DATE('" ).append( fieldDateFormatters[i].format( date ) ).append(
                     "', 'YYYY/MM/DD HH24:MI:SS')" );
                 } else {
                   ins.append( "'" + fields.getString( r, i ) + "'" );
@@ -4505,7 +4428,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           + tablename + "]", e );
       }
     }
-    return names.toArray( new String[ names.size() ] );
+    return names.toArray( new String[names.size()] );
   }
 
   /**
@@ -4519,9 +4442,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       String sql = databaseMeta.getSQLListOfSequences();
       if ( sql != null ) {
         List<Object[]> seqs = getRows( sql, 0 );
-        String[] str = new String[ seqs.size() ];
+        String[] str = new String[seqs.size()];
         for ( int i = 0; i < seqs.size(); i++ ) {
-          str[ i ] = seqs.get( i )[ 0 ].toString();
+          str[i] = seqs.get( i )[0].toString();
         }
         return str;
       }
@@ -4707,29 +4630,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   public void setForcingSeparateLogging( boolean forcingSeparateLogging ) {
     if ( log != null ) {
       log.setForcingSeparateLogging( forcingSeparateLogging );
-    }
-  }
-
-  private void connectUsingClass() throws KettleDatabaseException {
-    // TODO connectUsingNamedDataSource can be called here but the current implementation of
-    // org.pentaho.platform.plugin.action.kettle.PlatformKettleDataSourceProvider can cause collision of name and
-    // JNDI name. See also [PDI-13633], [SP-1776].
-    // We will first try to find the connection in the named datasources. If we can't find it there,
-    // we will connect using the class.
-    try {
-      if ( log.isDetailed() ) {
-        log.logDetailed( "Attempting to find connection in Named Datasources" );
-      }
-      connectUsingNamedDataSource( environmentSubstitute( databaseMeta.getDatabaseName() ) );
-    } catch ( KettleDatabaseException kde ) {
-      if ( log.isDetailed() ) {
-        log.logDetailed( "Unable to find datasource in Named Datasources."
-          + " Finally will try to attempt connecting using class " );
-      }
-      connectUsingClass( databaseMeta.getDriverClass(), partitionId );
-    }
-    if ( log.isDetailed() ) {
-      log.logDetailed( "Connected to database." );
     }
   }
 }

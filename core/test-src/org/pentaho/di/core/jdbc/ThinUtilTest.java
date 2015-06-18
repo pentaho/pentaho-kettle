@@ -31,7 +31,6 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleSQLException;
-import org.pentaho.di.core.row.ValueMetaAndData;
 
 public class ThinUtilTest {
   @Test
@@ -53,18 +52,6 @@ public class ThinUtilTest {
   @Test
   public void testFindClauseSkipsChars() throws KettleSQLException {
     assertNull( ThinUtil.findClause( "'Select' * From Test", "SELECT", "FROM" ) );
-  }
-
-  @Test
-  public void testAttemptDateValueExtraction() throws Exception {
-    ValueMetaAndData timestamp = ThinUtil.attemptDateValueExtraction( "TIMESTAMP '2014-01-01 00:00:00'" );
-    ValueMetaAndData date = ThinUtil.attemptDateValueExtraction( "DATE '2014-01-01'" );
-
-    assertNotNull( timestamp );
-    assertEquals( "2014-01-01 00:00:00", timestamp.toString() );
-
-    assertNotNull( date );
-    assertEquals( "2014-01-01", date.toString() );
   }
 
   @Test
