@@ -215,4 +215,16 @@ public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements Databa
     return false;
   }
 
+ /**
+  *@return true if the database supports synonyms
+  */
+  public boolean supportsSequences() { return true; }
+
+ /**
+  *Get the SQL to get the next value of a sequence.
+  *@param sequenceName The sequence name
+  *@return the SQL to get the next value of a sequence.
+  */
+    public String getSQLNextSequenceValue(String sequenceName) { return "SELECT "+sequenceName+".NEXTVAL"; }
+
 }
