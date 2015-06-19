@@ -925,23 +925,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
         // Read a number of lines...
         for ( int i = 0; i < repeats && !data.doneReading; i++ ) {
-          String line = getLine( log, data.isr, data.encodingType, data.fileFormatType, data.lineStringBuilder );
-          if ( line != null ) {
-            // Filter row?
-            boolean isFilterLastLine = false;
-            boolean filterOK = checkFilterRow( line, isFilterLastLine );
-            if ( filterOK ) {
-              // logRowlevel("LINE READ: "+line);
-              data.lineBuffer.add( new TextFileLine( line, lineNumberInFile, data.file ) );
-            } else {
-              if ( isFilterLastLine ) {
-                data.doneReading = true;
-              }
-              repeats++; // grab another line, this one got filtered
-            }
-          } else {
-            data.doneReading = true;
-          }
+          tryToReadLine( true );
         }
       }
     }
@@ -1082,6 +1066,11 @@ public class TextFileInput extends BaseStep implements StepInterface {
               if ( data.lineBuffer.size() > 0 ) {
                 extra = data.lineBuffer.get( 0 ).line;
                 data.lineBuffer.remove( 0 );
+              } else {
+                tryToReadLine( true );
+                if ( !data.lineBuffer.isEmpty() ) {
+                  extra = data.lineBuffer.remove( 0 ).line;
+                }
               }
               textLine.line += extra;
             }
@@ -1431,7 +1420,10 @@ public class TextFileInput extends BaseStep implements StepInterface {
        */
       int bufferSize = 1;
       bufferSize += meta.hasHeader() ? meta.getNrHeaderLines() : 0;
-      bufferSize += meta.isLayoutPaged() ? meta.getNrLinesPerPage() * ( Math.max( 0, meta.getNrWraps() ) + 1 ) : 0;
+      bufferSize += meta.isLayoutPaged()
+        ? meta.getNrLinesPerPage() * ( Math.max( 0, meta.getNrWraps() ) + 1 )
+        : Math.max( 0, meta.getNrWraps() ); // it helps when we have wrapped input w/o header
+
       bufferSize += meta.hasFooter() ? meta.getNrFooterLines() : 0;
 
       // See if we need to skip the document header lines...
@@ -1445,30 +1437,11 @@ public class TextFileInput extends BaseStep implements StepInterface {
         }
       }
 
-      String line;
       for ( int i = 0; i < bufferSize && !data.doneReading; i++ ) {
-        line = getLine( log, data.isr, data.encodingType, data.fileFormatType, data.lineStringBuilder );
-        if ( line != null ) {
-          // when there is no header, check the filter for the first line
-          if ( !meta.hasHeader() || i >= meta.getNrHeaderLines() ) {
-            // Filter row?
-            boolean isFilterLastLine = false;
-            boolean filterOK = checkFilterRow( line, isFilterLastLine );
-            if ( filterOK ) {
-              data.lineBuffer.add( new TextFileLine( line, lineNumberInFile, data.file ) ); // Store it in the
-              // line buffer...
-            } else {
-              bufferSize++; // grab another line, this one got filtered
-            }
-          } else { // there is a header, so don't checkFilterRow
-
-            if ( !meta.noEmptyLines() || line.length() != 0 ) {
-              data.lineBuffer.add( new TextFileLine( line, lineNumberInFile, data.file ) ); // Store it in the line
-                                                                                            // buffer...
-            }
-          }
-        } else {
-          data.doneReading = true;
+        boolean wasNotFiltered = tryToReadLine( !meta.hasHeader() || i >= meta.getNrHeaderLines() );
+        if ( !wasNotFiltered ) {
+          // grab another line, this one got filtered
+          bufferSize++;
         }
       }
 
@@ -1488,6 +1461,34 @@ public class TextFileInput extends BaseStep implements StepInterface {
       }
       setErrors( getErrors() + 1 );
       return false;
+    }
+    return true;
+  }
+
+  private boolean tryToReadLine( boolean applyFilter ) throws KettleFileException {
+    String line;
+    line = getLine( log, data.isr, data.encodingType, data.fileFormatType, data.lineStringBuilder );
+    if ( line != null ) {
+      // when there is no header, check the filter for the first line
+      if ( applyFilter ) {
+        // Filter row?
+        boolean isFilterLastLine = false;
+        boolean filterOK = checkFilterRow( line, isFilterLastLine );
+        if ( filterOK ) {
+          data.lineBuffer.add( new TextFileLine( line, lineNumberInFile, data.file ) ); // Store it in the
+          // line buffer...
+        } else {
+          return false;
+        }
+      } else { // don't checkFilterRow
+
+        if ( !meta.noEmptyLines() || line.length() != 0 ) {
+          data.lineBuffer.add( new TextFileLine( line, lineNumberInFile, data.file ) ); // Store it in the line
+                                                                                        // buffer...
+        }
+      }
+    } else {
+      data.doneReading = true;
     }
     return true;
   }
