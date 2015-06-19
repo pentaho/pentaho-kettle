@@ -373,8 +373,8 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
     final Runnable runnable = new Runnable() {
       public void run() {
         try {
-          String[] prevSteps = transMeta.getPrevStepNames( stepname );
-          String stepName = prevSteps[inputStreamIndex];
+          CCombo wInputStep = wInputStepArray[inputStreamIndex];
+          String stepName = wInputStep.getText();
           StepMeta stepMeta = transMeta.findStep( stepName );
           if ( stepMeta != null ) {
             prev = transMeta.getStepFields( stepMeta );
@@ -391,7 +391,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
         }
       }
     };
-    new Thread( runnable ).start();
+    Display.getDefault().asyncExec( runnable );
 
     Button getKeyButton = new Button( subShell, SWT.PUSH );
     getKeyButton.setText( BaseMessages.getString( PKG, "MultiMergeJoinDialog.KeyFields.Button" ) );
