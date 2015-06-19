@@ -22,13 +22,9 @@
 
 package org.pentaho.di.trans.steps.multimerge;
 
-import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Set;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -39,9 +35,11 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -72,93 +70,123 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
-  private void processFirstRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+  private boolean processFirstRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (MultiMergeJoinMeta) smi;
     data = (MultiMergeJoinData) sdi;
-    // Find the RowSet to read from
-    //
-    String[] prevStepNames = getTransMeta().getPrevStepNames( getStepname() );
-    Set<String> infoStepNameSet = new HashSet<String>();
-    if ( prevStepNames != null ) {
-      Collections.addAll( infoStepNameSet, prevStepNames );
-    }
-    String[] infoStepNames = meta.getStepIOMeta().getInfoStepnames();
-    infoStepNameSet.retainAll( Arrays.asList( infoStepNames ) );
 
-    int streamSize = infoStepNameSet.size();
-    String[] inputStepNames = infoStepNameSet.toArray( new String[streamSize] );
+    TransMeta transMeta = getTransMeta();
+    TransHopMeta transHopMeta;
+
+    StepIOMetaInterface stepIOMeta = meta.getStepIOMeta();
+    List<StreamInterface> infoStreams = stepIOMeta.getInfoStreams();
+    StreamInterface stream;
+    StepMeta toStepMeta = meta.getParentStepMeta();
+    StepMeta fromStepMeta;
+
+    ArrayList<String> inputStepNameList = new ArrayList<String>();
+    String[] inputStepNames = meta.getInputSteps();
     String inputStepName;
 
+    for ( int i = 0; i < infoStreams.size(); i++ ) {
+      inputStepName = inputStepNames[i];
+      stream = infoStreams.get( i );
+      fromStepMeta = stream.getStepMeta();
+      if ( fromStepMeta == null ) {
+        //should not arrive here, shoud typically have been caught by init.
+        throw new KettleException(
+          BaseMessages.getString( PKG, "MultiMergeJoin.Log.UnableToFindReferenceStream", inputStepName ) );
+      }
+      //check the hop
+      transHopMeta = transMeta.findTransHop( fromStepMeta,  toStepMeta, true );
+      //there is no hop: this is unexpected.
+      if ( transHopMeta == null ) {
+        //should not arrive here, shoud typically have been caught by init.
+        throw new KettleException(
+          BaseMessages.getString( PKG, "MultiMergeJoin.Log.UnableToFindReferenceStream", inputStepName ) );
+      } else if ( transHopMeta.isEnabled() ) {
+        inputStepNameList.add( inputStepName );
+      } else {
+        logDetailed( BaseMessages.getString( PKG, "MultiMergeJoin.Log.IgnoringStep", inputStepName ) );
+      }
+    }
+
+    int streamSize = inputStepNameList.size();
+    if ( streamSize == 0 ) {
+      return false;
+    }
+
+    String keyField;
+    String[] keyFields;
+
     data.rowSets = new RowSet[streamSize];
+    RowSet rowSet;
+    Object[] row;
     data.rows = new Object[streamSize][];
     data.metas = new RowMetaInterface[streamSize];
     data.rowLengths = new int[streamSize];
-    data.queue =
-      new PriorityQueue<MultiMergeJoinData.QueueEntry>( streamSize, new MultiMergeJoinData.QueueComparator(
-        data ) );
+    MultiMergeJoinData.QueueComparator comparator = new MultiMergeJoinData.QueueComparator( data );
+    data.queue = new PriorityQueue<MultiMergeJoinData.QueueEntry>( streamSize, comparator );
     data.results = new ArrayList<List<Object[]>>( streamSize );
+    MultiMergeJoinData.QueueEntry queueEntry;
     data.queueEntries = new MultiMergeJoinData.QueueEntry[streamSize];
     data.drainIndices = new int[streamSize];
-    for ( int i = 0; i < streamSize; i++ ) {
+    data.keyNrs = new int[streamSize][];
+    data.dummy = new Object[streamSize][];
+
+    RowMetaInterface rowMeta;
+    data.outputRowMeta = new RowMeta();
+    for ( int i = 0, j = 0; i < inputStepNames.length; i++ ) {
       inputStepName = inputStepNames[i];
-      data.queueEntries[i] = new MultiMergeJoinData.QueueEntry();
-      data.queueEntries[i].index = i;
+      if ( !inputStepNameList.contains( inputStepName ) ) {
+        //ignore step with disabled hop.
+        continue;
+      }
+
+      queueEntry = new MultiMergeJoinData.QueueEntry();
+      queueEntry.index = j;
+      data.queueEntries[j] = queueEntry;
+
       data.results.add( new ArrayList<Object[]>() );
-      data.rowSets[i] = findInputRowSet( inputStepName );
-      if ( data.rowSets[i] == null ) {
+
+      rowSet = findInputRowSet( inputStepName );
+      if ( rowSet == null ) {
         throw new KettleException( BaseMessages.getString(
           PKG, "MultiMergeJoin.Exception.UnableToFindSpecifiedStep", inputStepName ) );
       }
-      data.rows[i] = getRowFrom( data.rowSets[i] );
-      if ( data.rows[i] == null ) {
-        data.metas[i] = getTransMeta().getStepFields( inputStepName );
+      data.rowSets[j] = rowSet;
+
+      row = getRowFrom( rowSet );
+      data.rows[j] = row;
+      if ( row == null ) {
+        rowMeta = getTransMeta().getStepFields( inputStepName );
+        data.metas[j] = rowMeta;
       } else {
-        data.queueEntries[i].row = data.rows[i];
-        data.metas[i] = data.rowSets[i].getRowMeta();
-      }
+        queueEntry.row = row;
+        rowMeta = rowSet.getRowMeta();
 
-      data.rowLengths[i] = data.metas[i].size();
-    }
-
-    //
-    data.outputRowMeta = new RowMeta();
-    for ( int i = 0; i < streamSize; i++ ) {
-      data.outputRowMeta.mergeRowMeta( data.metas[i].clone() );
-    }
-
-    data.keyNrs = new int[streamSize][];
-
-    for ( int j = 0; j < streamSize; j++ ) {
-      if ( data.rows[j] != null ) {
-        /*
-         * // Find the key indexes: data.keyNrs[j] = new int[meta.getKeyFields().length]; for (int
-         * i=0;i<meta.getKeyFields().length; i++) { data.keyNrs[j][i] =
-         * data.metas[j].indexOfValue(meta.getKeyFields()[i]); if (data.keyNrs[j][i]<0) { String message =
-         * BaseMessages.getString(PKG,
-         * "MultiMergeJoin.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields()[i]); logError(message);
-         * throw new KettleStepException(message); } }
-         */
-        String[] keyFields = meta.getKeyFields()[j].split( "," );
-        data.keyNrs[j] = new int[keyFields.length];
-        for ( int i = 0; i < keyFields.length; i++ ) {
-          data.keyNrs[j][i] = data.metas[j].indexOfValue( keyFields[i] );
-          if ( data.keyNrs[j][i] < 0 ) {
+        keyField = meta.getKeyFields()[i];
+        String[] keyFieldParts = keyField.split( "," );
+        String keyFieldPart;
+        data.keyNrs[j] = new int[keyFieldParts.length];
+        for ( int k = 0; k < keyFieldParts.length; k++ ) {
+          keyFieldPart = keyFieldParts[k];
+          data.keyNrs[j][k] = rowMeta.indexOfValue( keyFieldPart );
+          if ( data.keyNrs[j][k] < 0 ) {
             String message =
-              BaseMessages.getString( PKG, "MultiMergeJoin.Exception.UnableToFindFieldInReferenceStream", meta
-                .getKeyFields()[i] );
+              BaseMessages.getString( PKG, "MultiMergeJoin.Exception.UnableToFindFieldInReferenceStream", keyFieldPart, inputStepName );
             logError( message );
             throw new KettleStepException( message );
           }
         }
+        data.metas[j] = rowMeta;
         data.queue.add( data.queueEntries[j] );
       }
+      data.outputRowMeta.mergeRowMeta( rowMeta.clone() );
+      data.rowLengths[j] = rowMeta.size();
+      data.dummy[j] = RowDataUtil.allocateRowData( rowMeta.size() );
+      j++;
     }
-
-    data.dummy = new Object[streamSize][];
-    for ( int i = 0; i < streamSize; i++ ) {
-      // Calculate dummy... defaults to null
-      data.dummy[i] = RowDataUtil.allocateRowData( data.metas[i].size() );
-    }
+    return true;
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
@@ -166,7 +194,10 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
     data = (MultiMergeJoinData) sdi;
 
     if ( first ) {
-      processFirstRow( smi, sdi );
+      if ( !processFirstRow( smi, sdi ) ) {
+        setOutputDone();
+        return false;
+      }
       first = false;
     }
 
@@ -352,10 +383,16 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
     data = (MultiMergeJoinData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      List<StreamInterface> infoStreams = meta.getStepIOMeta().getInfoStreams();
+      StepIOMetaInterface stepIOMeta = meta.getStepIOMeta();
+      String[] inputStepNames = meta.getInputSteps();
+      String inputStepName;
+      List<StreamInterface> infoStreams = stepIOMeta.getInfoStreams();
+      StreamInterface stream;
       for ( int i = 0; i < infoStreams.size(); i++ ) {
-        if ( infoStreams.get( i ).getStepMeta() == null ) {
-          logError( BaseMessages.getString( PKG, "MultiMergeJoin.Log.BothTrueAndFalseNeeded" ) );
+        inputStepName = inputStepNames[i];
+        stream = infoStreams.get( i );
+        if ( stream.getStepMeta() == null ) {
+          logError( BaseMessages.getString( PKG, "MultiMergeJoin.Log.UnableToFindReferenceStream", inputStepName ) );
           return false;
         }
       }
