@@ -1,0 +1,11 @@
+<registry-extensions>
+
+  <registry-extension id="PdiOsgiBridge">
+    <description>PDI-OSGI-Bridge Extension</description>
+    <tooltip/>
+    <classname>org.pentaho.di.osgi.registryExtension.OSGIPluginRegistryExtension</classname>
+    <meta-classname/>
+    <version-browser-classname/>
+  </registry-extension>
+
+</registry-extensions>

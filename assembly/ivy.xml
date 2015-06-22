@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ivy-module version="2.0">
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
   <info organisation="${ivy.artifact.group}" module="${ivy.artifact.id}" revision="${project.revision}" />
   <configurations>
     <conf name="default" />
@@ -9,6 +9,7 @@
     <conf name="oss-licenses" />
     <conf name="plugins"/>
     <conf name="launcher" />
+    <conf name="pentaho-system" />
   </configurations>
 
   <publications>
@@ -23,6 +24,8 @@
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"        rev="${project.revision}" changing="true" force="true">
       <exclude name="swt-linux-x86_64"/>
     </dependency>
+
+    <dependency org="pentaho" name="pdi-osgi-bridge-core" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
 
     <!-- Kettle plugin dependencies-->
     <dependency org="${ivy.artifact.group}" name="market" rev="${project.revision}" changing="true" conf="plugins->default">
@@ -46,8 +49,9 @@
     <dependency org="${ivy.artifact.group}" name="pdi-google-analytics-plugin-ce" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="pdi-google-analytics-plugin-ce" type="zip"/>
     </dependency>
-    <dependency org="pentaho" name="pdi-osgi-bridge-assembly" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" conf="plugins->default">
-      <artifact name="pdi-osgi-bridge-assembly" type="zip"/>
+
+    <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${project.revision}" changing="true" conf="pentaho-system->default" m:classifier="client">
+      <artifact name="pentaho-karaf-assembly" type="zip" m:classifier="client"/>
     </dependency>
 
     <!-- Pentaho dependencies (non-Kettle), launcher, shim, etc. -->
