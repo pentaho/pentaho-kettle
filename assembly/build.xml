@@ -29,13 +29,32 @@
 	
   <property name="pdf.docs.dir" value="${approot.stage.dir}/docs/English" />
 
-  <target name="dist" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,package" description="Builds and packages the application"/>
+  <target name="dist" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,resolve-pentaho-system,package" description="Builds and packages the application"/>
   	
   <target name="assemble-full" depends="init,resolve-all,assemble-plugins,assemble" description="Builds the application" />
 	
   <target name="assemble-no-plugins" depends="init,resolve-all,assemble" description="Builds the application" />
 
   <target name="resolve-all" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins"/>
+
+  <property name="system.dir" value="${stage.dir}/${package.root.dir}/system" />
+
+  <target name="resolve-pentaho-system" depends="install-ivy">
+    <ivy:resolve file="${ivyfile}" conf="pentaho-system" />
+    <ivy:retrieve conf="pentaho-system" pattern="${system.dir}/[module].[ext]" />
+    <for param="system">
+      <path id="system-list">
+        <fileset dir="${system.dir}">
+          <include name="*.zip"/>
+        </fileset>
+      </path>
+      <sequential>
+        <unzip src="@{system}" dest="${system.dir}" overwrite="true"/>
+        <delete file="@{system}"/>
+      </sequential>
+    </for>
+    <move file="${system.dir}/pentaho-karaf-assembly" tofile="${system.dir}/karaf" />
+  </target>
 
   <!-- - - - - - - - - - - - - - - - - - 
     target: resolve-pdf-docs
