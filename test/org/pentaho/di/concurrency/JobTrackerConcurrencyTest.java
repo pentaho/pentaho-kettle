@@ -20,12 +20,14 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.core.gui;
+package org.pentaho.di.concurrency;
 
+import org.apache.commons.collections.ListUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -35,17 +37,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -123,18 +119,8 @@ public class JobTrackerConcurrencyTest {
       updaters.add( new Updater( tracker, updatersCycles, generator, "job-entry-%d" ) );
     }
 
-    TestRunner runner =
-      new TestRunner( updaters, concat( getters, searchers ), condition );
-    runner.runConcurrentTest();
-
-    List<Exception> exceptions = runner.getExceptions();
-    if ( !exceptions.isEmpty() ) {
-      for ( Exception exception : exceptions ) {
-        exception.printStackTrace();
-      }
-      fail( "There is expected no exceptions during the test, but " + exceptions.size() + " exception occurred" );
-    }
-
+    //noinspection unchecked
+    ConcurrencyTestRunner.runAndCheckNoExceptionRaised( updaters, ListUtils.union( getters, searchers ), condition );
     assertEquals( updatersAmount * updatersCycles, generator.get() );
   }
 
@@ -145,76 +131,52 @@ public class JobTrackerConcurrencyTest {
     return copy;
   }
 
-  private static <T> List<T> concat( List<? extends T>... lists ) {
-    List<T> result = new ArrayList<T>();
-    for ( List<? extends T> list : lists ) {
-      result.addAll( list );
-    }
-    return result;
-  }
 
-  private static class Getter implements Callable<Exception> {
-    private final AtomicBoolean condition;
+  private static class Getter extends StopOnErrorCallable<Object> {
     private final JobTracker tracker;
     private final Random random;
 
     public Getter( AtomicBoolean condition, JobTracker tracker ) {
-      this.condition = condition;
+      super( condition );
       this.tracker = tracker;
       this.random = new Random();
     }
 
     @Override
-    public Exception call() throws Exception {
-      Exception exception = null;
+    public Object doCall() throws Exception {
       while ( condition.get() ) {
-        try {
-          int amount = tracker.nrJobTrackers();
-          if ( amount == 0 ) {
-            continue;
-          }
-          int i = random.nextInt( amount );
-          JobTracker t = tracker.getJobTracker( i );
-          if ( t == null ) {
-            throw new IllegalStateException(
-              String.format( "Returned tracker must not be null. Index = %d, trackers' amount = %d", i, amount ) );
-          }
-        } catch ( Exception e ) {
-          condition.set( false );
-          exception = e;
-          break;
+        int amount = tracker.nrJobTrackers();
+        if ( amount == 0 ) {
+          continue;
+        }
+        int i = random.nextInt( amount );
+        JobTracker t = tracker.getJobTracker( i );
+        if ( t == null ) {
+          throw new IllegalStateException(
+            String.format( "Returned tracker must not be null. Index = %d, trackers' amount = %d", i, amount ) );
         }
       }
-      return exception;
+      return null;
     }
   }
 
 
-  private static class Searcher implements Callable<Exception> {
-    private final AtomicBoolean condition;
+  private static class Searcher extends StopOnErrorCallable<Object> {
     private final JobTracker tracker;
     private final JobEntryCopy copy;
 
     public Searcher( AtomicBoolean condition, JobTracker tracker, JobEntryCopy copy ) {
-      this.condition = condition;
+      super( condition );
       this.tracker = tracker;
       this.copy = copy;
     }
 
-    @Override
-    public Exception call() throws Exception {
-      Exception exception = null;
+    @Override Object doCall() throws Exception {
       while ( condition.get() ) {
-        try {
-          tracker.findJobTracker( copy );
-          // can be null, it is OK here
-        } catch ( Exception e ) {
-          condition.set( false );
-          exception = e;
-          break;
-        }
+        // can be null, it is OK here
+        tracker.findJobTracker( copy );
       }
-      return exception;
+      return null;
     }
   }
 
@@ -249,65 +211,5 @@ public class JobTrackerConcurrencyTest {
       }
       return exception;
     }
-
   }
-
-  private static class TestRunner {
-    private final List<? extends Callable<Exception>> monitoredTasks;
-    private final List<? extends Callable<Exception>> backgroundTasks;
-    private final AtomicBoolean condition;
-
-    private final List<Exception> exceptions;
-
-    public TestRunner( List<? extends Callable<Exception>> monitoredTasks,
-                       List<? extends Callable<Exception>> backgroundTasks, AtomicBoolean condition ) {
-      this.monitoredTasks = monitoredTasks;
-      this.backgroundTasks = backgroundTasks;
-      this.condition = condition;
-      this.exceptions = new ArrayList<Exception>();
-    }
-
-    public void runConcurrentTest() throws Exception {
-      final int tasksAmount = monitoredTasks.size() + backgroundTasks.size();
-      final ExecutorService executors = Executors.newFixedThreadPool( tasksAmount );
-      try {
-        CompletionService<Exception> service = new ExecutorCompletionService<Exception>( executors );
-        for ( Callable<Exception> task : backgroundTasks ) {
-          service.submit( task );
-        }
-        List<Future<Exception>> monitored = new ArrayList<Future<Exception>>( monitoredTasks.size() );
-        for ( Callable<Exception> task : monitoredTasks ) {
-          monitored.add( service.submit( task ) );
-        }
-
-        while ( condition.get() && !isDone( monitored ) ) {
-          Thread.sleep( 200 );
-        }
-        condition.set( false );
-
-        for ( int i = 0; i < tasksAmount; i++ ) {
-          Exception exception = service.take().get();
-          if ( exception != null ) {
-            exceptions.add( exception );
-          }
-        }
-      } finally {
-        executors.shutdown();
-      }
-    }
-
-    private boolean isDone( List<Future<Exception>> futures ) {
-      for ( Future<Exception> future : futures ) {
-        if ( !future.isDone() ) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    public List<Exception> getExceptions() {
-      return exceptions;
-    }
-  }
-
 }

@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.core.plugins;
+package org.pentaho.di.concurrency;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,22 +31,18 @@ import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.PluginTypeInterface;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -100,22 +96,13 @@ public class PluginRegistryConcurrencyTest {
     List<Getter> getters = new ArrayList<Getter>( gettersAmount );
     for ( int i = 0; i < gettersAmount; i++ ) {
       Class<? extends PluginTypeInterface> type = ( i % 2 == 0 ) ? type1 : type2;
-      getters.add( new Getter( type, condition ) );
+      getters.add( new Getter( condition, type ) );
     }
 
     PluginTypeInterface type = mock( PluginTypeInterface.class );
 
-    TestRunner runner =
-      new TestRunner( singletonList( new Registrar( type.getClass(), 1, "" ) ), getters, condition );
-    runner.runConcurrentTest();
-
-    List<Exception> exceptions = runner.getExceptions();
-    if ( !exceptions.isEmpty() ) {
-      for ( Exception exception : exceptions ) {
-        exception.printStackTrace();
-      }
-      fail( "There is expected no exceptions during the test" );
-    }
+    ConcurrencyTestRunner.runAndCheckNoExceptionRaised(
+      singletonList( new Registrar( condition, type.getClass(), 1, "" ) ), getters, condition );
   }
 
 
@@ -128,41 +115,33 @@ public class PluginRegistryConcurrencyTest {
     List<Getter> getters = new ArrayList<Getter>( gettersAmount );
     for ( int i = 0; i < gettersAmount; i++ ) {
       Class<? extends PluginTypeInterface> type = ( i % 2 == 0 ) ? type1 : type2;
-      getters.add( new Getter( type, condition ) );
+      getters.add( new Getter( condition, type ) );
     }
 
     List<Registrar> registrars = asList(
-      new Registrar( type1, cycles, type1.getName() ),
-      new Registrar( type2, cycles, type2.getName() )
+      new Registrar( condition, type1, cycles, type1.getName() ),
+      new Registrar( condition, type2, cycles, type2.getName() )
     );
 
-    TestRunner runner = new TestRunner( registrars, getters, condition );
-    runner.runConcurrentTest();
-
-    List<Exception> exceptions = runner.getExceptions();
-    if ( !exceptions.isEmpty() ) {
-      for ( Exception exception : exceptions ) {
-        exception.printStackTrace();
-      }
-      fail( "There is expected no exceptions during the test" );
-    }
+    ConcurrencyTestRunner.runAndCheckNoExceptionRaised( registrars, getters, condition );
   }
 
 
-  private class Registrar implements Callable<Exception> {
+  private class Registrar extends StopOnErrorCallable<Object> {
     private final Class<? extends PluginTypeInterface> type;
     private final int cycles;
     private final String nameSeed;
 
-    public Registrar( Class<? extends PluginTypeInterface> type, int cycles, String nameSeed ) {
+    public Registrar( AtomicBoolean condition, Class<? extends PluginTypeInterface> type, int cycles,
+                      String nameSeed ) {
+      super( condition );
       this.type = type;
       this.cycles = cycles;
       this.nameSeed = nameSeed;
     }
 
     @Override
-    public Exception call() throws Exception {
-      Exception exception = null;
+    Object doCall() throws Exception {
       List<PluginInterface> registered = new ArrayList<PluginInterface>( cycles );
       try {
         for ( int i = 0; i < cycles; i++ ) {
@@ -180,97 +159,28 @@ public class PluginRegistryConcurrencyTest {
 
           PluginRegistry.getInstance().registerPlugin( type, mock );
         }
-      } catch ( Exception e ) {
-        exception = e;
       } finally {
         // push up registered instances for future clean-up
         addUsedPlugins( type, registered );
       }
-      return exception;
+      return null;
     }
   }
 
-  private static class Getter implements Callable<Exception> {
+  private static class Getter extends StopOnErrorCallable<Object> {
     private final Class<? extends PluginTypeInterface> type;
-    private final AtomicBoolean condition;
 
-    public Getter( Class<? extends PluginTypeInterface> type, AtomicBoolean condition ) {
+    public Getter( AtomicBoolean condition, Class<? extends PluginTypeInterface> type ) {
+      super( condition );
       this.type = type;
-      this.condition = condition;
     }
 
     @Override
-    public Exception call() throws Exception {
-      Exception exception = null;
+    Object doCall() throws Exception {
       while ( condition.get() ) {
-        try {
-          PluginRegistry.getInstance().getPlugins( type );
-        } catch ( Exception e ) {
-          condition.set( false );
-          exception = e;
-          break;
-        }
+        PluginRegistry.getInstance().getPlugins( type );
       }
-      return exception;
-    }
-  }
-
-
-  private static class TestRunner {
-    private final List<? extends Callable<Exception>> monitoredTasks;
-    private final List<? extends Callable<Exception>> backgroundTasks;
-    private final AtomicBoolean condition;
-
-    private final List<Exception> exceptions;
-
-    public TestRunner( List<? extends Callable<Exception>> monitoredTasks,
-                       List<? extends Callable<Exception>> backgroundTasks, AtomicBoolean condition ) {
-      this.monitoredTasks = monitoredTasks;
-      this.backgroundTasks = backgroundTasks;
-      this.condition = condition;
-      this.exceptions = new ArrayList<Exception>();
-    }
-
-    public void runConcurrentTest() throws Exception {
-      final int tasksAmount = monitoredTasks.size() + backgroundTasks.size();
-      final ExecutorService executors = Executors.newFixedThreadPool( tasksAmount );
-      try {
-        CompletionService<Exception> service = new ExecutorCompletionService<Exception>( executors );
-        for ( Callable<Exception> task : backgroundTasks ) {
-          service.submit( task );
-        }
-        List<Future<Exception>> monitored = new ArrayList<Future<Exception>>( monitoredTasks.size() );
-        for ( Callable<Exception> task : monitoredTasks ) {
-          monitored.add( service.submit( task ) );
-        }
-
-        while ( condition.get() && !isDone( monitored ) ) {
-          // wait
-        }
-        condition.set( false );
-
-        for ( int i = 0; i < tasksAmount; i++ ) {
-          Exception exception = service.take().get();
-          if ( exception != null ) {
-            exceptions.add( exception );
-          }
-        }
-      } finally {
-        executors.shutdown();
-      }
-    }
-
-    private boolean isDone( List<Future<Exception>> futures ) {
-      for ( Future<Exception> future : futures ) {
-        if ( !future.isDone() ) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    public List<Exception> getExceptions() {
-      return exceptions;
+      return null;
     }
   }
 }

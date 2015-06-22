@@ -603,7 +603,7 @@
 
 
   <target name="tests-all"
-          depends="tests-clean, tests-stage, tests-core, tests-trans, tests-run, tests-blackbox"/>
+          depends="tests-clean, tests-stage, tests-core, tests-trans, tests-run, tests-blackbox, tests-concurrency"/>
 
   <target name="tests-stage-init" depends="init, resolve, init-tests, init-test-reports">
     <mkdir dir="${dist.dir}"/>
@@ -906,6 +906,43 @@
       </fileset>
       <report format="frames" todir="${testreports.html.dir}"/>
     </junitreport>
+  </target>
+
+  <!--
+  ===========================================
+     tests : junit concurrency tests
+  ============================================
+  -->
+  <target name="tests-concurrency" depends="compile-integration-tests" description="Execute the concurrency tests">
+
+    <junit printsummary="no" dir="${basedir}/${dist.dir}" fork="yes" forkmode="perTest"
+           jvm="java" maxmemory="512M" showoutput="yes">
+      <classpath>
+        <fileset dir="${dist.dir}/${lib.dir}" includes="kettle-core*.jar,kettle-engine*.jar"/>
+        <fileset dir="test/libext/" includes="*.jar"/>
+        <pathelement path="${testClasses}"/>
+        <pathelement path="${dist.dir}/testfiles"/>
+        <fileset dir="${dist.dir}/${lib.dir}" includes="*.jar *.zip"/>
+        <fileset dir="${dist.dir}/${libswt}" includes="*.jar *.zip"/>
+        <fileset dir="${dist.dir}/${libswt}/win32/" includes="*.jar *.zip"/>
+      </classpath>
+
+      <formatter type="xml"/>
+
+      <batchtest todir="${testreports.xml.dir}" haltonerror="false">
+        <fileset dir="${testsrc.dir}">
+          <include name="org/pentaho/di/concurrency/**/*Test.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+
+    <junitreport todir="${testreports.html.dir}">
+      <fileset dir="${testreports.xml.dir}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${testreports.html.dir}"/>
+    </junitreport>
+
   </target>
 
   <!--
