@@ -22,6 +22,9 @@
 
 package org.pentaho.di.trans.steps.replacestring;
 
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +32,14 @@ import java.util.Map;
 import java.util.Random;
 
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
@@ -37,8 +47,12 @@ import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntegerArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.metastore.api.IMetaStore;
 
 public class ReplaceStringMetaTest {
+
+  private static final String FIELD_NAME = "test";
+  private static final String ENCODING_NAME = "UTF-8";
 
   public class UseRegExLoadSaveValidator implements FieldLoadSaveValidator<Integer> {
     public Integer getTestObject() {
@@ -67,6 +81,29 @@ public class ReplaceStringMetaTest {
     public boolean validateTestObject( Integer testObject, Object actual ) {
       return testObject.equals( actual );
     }
+  }
+
+  @Test
+  public void testGetFields() throws KettleStepException {
+    ReplaceStringMeta meta = new ReplaceStringMeta();
+    meta.setFieldInStream( new String[] { FIELD_NAME } );
+    meta.setFieldOutStream( new String[] { FIELD_NAME } );
+
+    ValueMetaInterface inputFieldMeta = mock( ValueMetaInterface.class );
+    when( inputFieldMeta.getStringEncoding() ).thenReturn( ENCODING_NAME );
+
+    RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
+    when( inputRowMeta.searchValueMeta( anyString() ) ).thenReturn( inputFieldMeta );
+
+    StepMeta nextStep = mock( StepMeta.class );
+    VariableSpace space = mock( VariableSpace.class );
+    Repository repository = mock( Repository.class );
+    IMetaStore metaStore = mock( IMetaStore.class );
+    meta.getFields( inputRowMeta, "test", null, nextStep, space, repository, metaStore );
+
+    ArgumentCaptor<ValueMetaInterface> argument = ArgumentCaptor.forClass( ValueMetaInterface.class );
+    verify( inputRowMeta ).addValueMeta( argument.capture() );
+    assertEquals( ENCODING_NAME, argument.getValue().getStringEncoding() );
   }
 
   @Test
