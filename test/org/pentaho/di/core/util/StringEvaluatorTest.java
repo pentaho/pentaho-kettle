@@ -181,31 +181,7 @@ public class StringEvaluatorTest extends TestCase {
   }
 
   public void testCustomNumberFormats() {
-    // Need to load the ValueMeta plugins
-    PluginRegistry registry = PluginRegistry.getInstance();
-    assertNotNull( "Registry singleton was not found!", registry );
-
-    // Register a new plugin type...
-    //
-    PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
-
-    // Plugin Registry should initialize without exception
-    Exception initException = null;
-    try {
-      PluginRegistry.init();
-    } catch ( Exception e ) {
-      initException = e;
-    }
-    assertNull( initException );
-
-    // There will always be a PluginRegistryPluginType, so see if we enough plugin types here.
-    //
-    List<Class<? extends PluginTypeInterface>> pluginTypes = registry.getPluginTypes();
-    assertTrue( "At least two plugin types expected in the registry", pluginTypes.size() > 1 );
-
-    // ... and have at least 1 ValueMetaPlugin
-    List<PluginInterface> valueMetaPlugins = registry.getPlugins( ValueMetaPluginType.class );
-    assertTrue( "Size of plugins list expected to be >1", valueMetaPlugins.size() > 1 );
+    loadValueMetaPlugins();
 
     // Now get to the real testing
     Locale orig = Locale.getDefault();
@@ -239,5 +215,47 @@ public class StringEvaluatorTest extends TestCase {
     assertEquals( 0, StringEvaluator.determinePrecision( null ) );
     assertEquals( 4, StringEvaluator.determinePrecision( "0.##00 $" ) );
     assertEquals( 4, StringEvaluator.determinePrecision( "##,##0.#0## $" ) );
+  }
+
+  public void testLength_IfEvaluationResultIsNumber() {
+    loadValueMetaPlugins();
+    StringEvaluator eval = new StringEvaluator();
+
+    String[] numbers = new String[] { "1010.10101010", "10.01", "4,309.88" };
+    for ( String value : numbers ) {
+      eval.evaluateString( value );
+    }
+    StringEvaluationResult result = eval.getAdvicedResult();
+    assertEquals( "Number", result.getConversionMeta().getTypeDesc() );
+    assertEquals( 8, result.getConversionMeta().getPrecision() );
+    assertEquals( 13, result.getConversionMeta().getLength() );
+  }
+
+  private void loadValueMetaPlugins() {
+    // Need to load the ValueMeta plugins
+    PluginRegistry registry = PluginRegistry.getInstance();
+    assertNotNull( "Registry singleton was not found!", registry );
+
+    // Register a new plugin type...
+    //
+    PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
+
+    // Plugin Registry should initialize without exception
+    Exception initException = null;
+    try {
+      PluginRegistry.init();
+    } catch ( Exception e ) {
+      initException = e;
+    }
+    assertNull( initException );
+
+    // There will always be a PluginRegistryPluginType, so see if we enough plugin types here.
+    //
+    List<Class<? extends PluginTypeInterface>> pluginTypes = registry.getPluginTypes();
+    assertTrue( "At least two plugin types expected in the registry", pluginTypes.size() > 1 );
+
+    // ... and have at least 1 ValueMetaPlugin
+    List<PluginInterface> valueMetaPlugins = registry.getPlugins( ValueMetaPluginType.class );
+    assertTrue( "Size of plugins list expected to be >1", valueMetaPlugins.size() > 1 );
   }
 }

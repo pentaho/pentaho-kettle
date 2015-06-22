@@ -331,6 +331,9 @@ public class StringEvaluator {
       ValueMetaInterface conversionMeta = result.getConversionMeta();
       if ( conversionMeta.isNumber() && conversionMeta.getCurrencySymbol() == null ) {
         conversionMeta.setPrecision( maxPrecision );
+        if ( maxPrecision > 0 && maxLength > 0 ) {
+          conversionMeta.setLength( maxLength );
+        }
       }
 
       return result;
