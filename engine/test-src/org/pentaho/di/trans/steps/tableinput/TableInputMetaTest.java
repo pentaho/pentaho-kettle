@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.tableinput;
 
 import org.junit.Test;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -32,6 +33,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -56,6 +59,9 @@ public class TableInputMetaTest {
     TableInputMetaHandler meta = new TableInputMetaHandler();
     meta.setLazyConversionActive( true );
     DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    DatabaseInterface di = mock(DatabaseInterface.class);
+    when(di.supportsLazyConversion()).thenReturn(true);
+    when(dbMeta.getDatabaseInterface()).thenReturn(di);
     meta.setDatabaseMeta( dbMeta );
     Database mockDB = meta.getDatabase();
     when( mockDB.getQueryFields( anyString(), anyBoolean() ) ).thenReturn( createMockFields() );
@@ -78,5 +84,28 @@ public class TableInputMetaTest {
     ValueMetaInterface valueMeta = new ValueMeta( "field1", ValueMeta.TYPE_STRING );
     rowMetaInterface.addValueMeta( valueMeta );
     return rowMetaInterface;
+  }
+
+  @Test
+  public void testLazyConversionMetaTest() throws Exception {
+    DatabaseMeta dm = mock(DatabaseMeta.class);
+    DatabaseInterface di = mock(DatabaseInterface.class);
+    when(di.supportsLazyConversion()).thenReturn(true);
+    when(dm.getDatabaseInterface()).thenReturn(di);
+
+    TableInputMeta tim = new TableInputMeta();
+    tim.setDatabaseMeta(dm);
+
+    tim.setLazyConversionActive(true);
+    assertTrue(tim.isLazyConversion());
+    tim.setLazyConversionActive(false);
+    assertFalse(tim.isLazyConversion());
+
+    when(di.supportsLazyConversion()).thenReturn(false);
+
+    tim.setLazyConversionActive(true);
+    assertFalse(tim.isLazyConversion());
+    tim.setLazyConversionActive(false);
+    assertFalse(tim.isLazyConversion());
   }
 }
