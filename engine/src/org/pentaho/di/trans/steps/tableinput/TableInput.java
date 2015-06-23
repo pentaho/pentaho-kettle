@@ -142,7 +142,7 @@ public class TableInput extends BaseStep implements StepInterface {
     } else {
       if ( data.thisrow != null ) { // We can expect more rows
 
-        data.nextrow = data.db.getRow( data.rs, meta.isLazyConversionActive() );
+        data.nextrow = data.db.getRow( data.rs, meta.isLazyConversion() );
         if ( data.nextrow != null ) {
           incrementLinesInput();
         }
@@ -221,11 +221,11 @@ public class TableInput extends BaseStep implements StepInterface {
       logDetailed( "SQL query : " + sql );
     }
     if ( parametersMeta.isEmpty() ) {
-      data.rs = data.db.openQuery( sql, null, null, ResultSet.FETCH_FORWARD, meta.isLazyConversionActive() );
+      data.rs = data.db.openQuery( sql, null, null, ResultSet.FETCH_FORWARD, meta.isLazyConversion() );
     } else {
       data.rs =
         data.db.openQuery( sql, parametersMeta, parameters, ResultSet.FETCH_FORWARD, meta
-          .isLazyConversionActive() );
+          .isLazyConversion() );
     }
     if ( data.rs == null ) {
       logError( "Couldn't open Query [" + sql + "]" );

@@ -132,6 +132,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
       public void modifyText( ModifyEvent e ) {
         changedInDialog = false; // for prompting if dialog is simply closed
         input.setChanged();
+
+        updateLazyConversionCheckbox();
       }
     };
     changed = input.hasChanged();
@@ -437,6 +439,15 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
       }
     }
     return stepname;
+  }
+
+  private void updateLazyConversionCheckbox(){
+    DatabaseMeta databaseMeta = transMeta.findDatabase( wConnection.getText() );
+    if ( databaseMeta != null && databaseMeta.getDatabaseInterface().supportsLazyConversion() ) {
+      wLazyConversion.setEnabled( true );
+    } else {
+      wLazyConversion.setEnabled( false );
+    }
   }
 
   public void setPosition() {
