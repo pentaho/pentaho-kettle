@@ -1,0 +1,92 @@
+<!--===========================================================================
+  This is the build file for the Pentaho Data Integration (Kettle)
+  Google Analytics plugin
+  
+  This build file will use the subfloor.xml file as the default build
+  process and should only override the tasks that need to differ from
+  the common build file.
+  
+  See common_build.xml for more details
+============================================================================-->
+<project name="ms-access-bulk-loader-plugin" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+
+  <description>
+    This build file is used to create the MS Access Bulk Loader Plugin
+    and works with the subfloor.xml file.
+  </description>
+
+  <!-- The continuous target is used by CI ... this is the list of -->
+  <!-- tasks that the CI machine will run.                         -->
+  <!-- DO NOT change the CI machine's ant task .. change this list -->
+  <target name="continuous" depends="clean-all,resolve,publish" />
+
+  <!-- Import the common_build.xml file which contains all the default tasks -->
+  <import file="build-res/subfloor-pkg.xml" />
+
+  <!--
+    AS STATED ABOVE, THE ONLY TASKS THAT SHOULD EXIST IN THIS BUILD FILE ARE
+    THE TASKS THAT NEED TO DIFFER FROM THE DEFAULT IMPLEMENTATION OF THE TASKS
+    FOUND IN common_build.xml.
+  -->
+  <target name="default" depends="clean-all,resolve,dist" />
+
+  <target name="create-dot-classpath" depends="resolve,subfloor.create-dot-classpath" />
+
+  <target name="stage" depends="jar" description="generate all the kettle plugin jars">
+
+    <echo>Staging the Kettle plugin ${ivy.artifact.id} ...</echo>
+
+    <!-- copy plugin jar -->
+    <mkdir dir="bin/stage/${ivy.artifact.id}" />
+    <copy todir="bin/stage/${ivy.artifact.id}" file="dist/${ivy.artifact.id}-${project.revision}.jar" />
+
+    <!-- external libs (jdbc etc) -->
+    <mkdir dir="bin/stage/${ivy.artifact.id}/lib" />
+    <if>
+      <available file="lib" type="dir" />
+      <then>
+        <echo>Copying files from lib....</echo>
+        <copy todir="bin/stage/${ivy.artifact.id}/lib">
+          <fileset dir="lib" includes="**/*" />
+        </copy>
+      </then>
+    </if>
+
+    <!-- any other res files -->
+    <if>
+      <available file="res" />
+      <then>
+        <copy todir="bin/stage/${ivy.artifact.id}">
+          <fileset dir="res" includes="**/*" excludes="**/.vpn" />
+        </copy>
+      </then>
+    </if>
+
+    <!-- Update the version.xml with the current version of this plugin -->
+    <if>
+      <available file="bin/stage/${ivy.artifact.id}/version.xml" />
+      <then>
+        <replace file="bin/stage/${ivy.artifact.id}/version.xml" token="@TRUNK@" value="${project.revision}" />
+      </then>
+    </if>
+  </target>
+
+  <!--=======================================================================
+          resolve-dev
+            
+          Resolves for development and compilation.
+        =====================================================================-->
+  <target name="resolve-dev" depends="install-ivy">
+    <ivy:resolve file="${ivyfile}" conf="dev" />
+    <ivy:retrieve conf="dev" pattern="${dev-lib.dir}/[module]-[revision](-[classifier]).[ext]" />
+    <touch file="${dev-lib.dir}/.kettle-ignore" />
+  </target>
+
+  <target name="resolve" depends="subfloor.resolve,resolve-dev" />
+  <target name="package" depends="stage" description="generate all the kettle plugin jars">
+    <echo>Creating the Kettle plugin zip for ${ivy.artifact.id} ...</echo>
+    <zip destfile="dist/${ivy.artifact.id}-${project.revision}.zip" basedir="bin/stage" includes="**/*" excludes="**/dev-lib/*" />
+  </target>
+
+</project>

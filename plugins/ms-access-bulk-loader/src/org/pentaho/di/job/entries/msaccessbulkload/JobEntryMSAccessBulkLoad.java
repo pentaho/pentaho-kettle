@@ -66,6 +66,12 @@ import com.healthmarketscience.jackcess.Database;
  * @since 24-07-2008
  *
  */
+
+@org.pentaho.di.core.annotations.JobEntry( id = "MS_ACCESS_BULK_LOAD",
+categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated",
+i18nPackageName = "org.pentaho.di.job.entries.msaccessbulkload", image = "BLKMSACC.svg",
+name = "JobEntryMSAccessBulkLoad.Name.Default", description = "JobEntryMSAccessBulkLoad.Tooltip" )
+
 public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryMSAccessBulkLoad.class; // for i18n purposes, needed by Translator2!!
 
