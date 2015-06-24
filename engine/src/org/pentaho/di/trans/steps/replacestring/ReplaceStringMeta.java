@@ -359,6 +359,11 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
         // We have a new field
         valueMeta = new ValueMeta( fieldName, ValueMeta.TYPE_STRING );
         valueMeta.setOrigin( name );
+        //set encoding to new field from source field http://jira.pentaho.com/browse/PDI-11839
+        ValueMetaInterface sourceField = inputRowMeta.searchValueMeta( fieldInStream[i] );
+        if ( sourceField != null ) {
+          valueMeta.setStringEncoding( sourceField.getStringEncoding() );
+        }
         inputRowMeta.addValueMeta( valueMeta );
       } else {
         valueMeta = inputRowMeta.searchValueMeta( fieldInStream[i] );
