@@ -54,7 +54,7 @@ import org.pentaho.di.version.BuildVersion;
 
 /**
  * Displays the Kettle splash screen
- *
+ * 
  * @author Matt
  * @since 14-mrt-2005
  */
@@ -79,6 +79,10 @@ public class Splash {
   private static LogChannelInterface log;
 
   public Splash( Display display ) throws KettleException {
+    this( display, new Shell( display, SWT.APPLICATION_MODAL ) );
+  }
+
+  protected Splash( Display display, Shell splashShell ) throws KettleException {
     log = new LogChannel( Spoon.APP_NAME );
 
     Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
@@ -98,7 +102,7 @@ public class Splash {
     versionWarningBackgroundColor = new Color( display, 255, 255, 255 );
     versionWarningForegroundColor = new Color( display, 220, 177, 20 );
 
-    splash = new Shell( display, SWT.APPLICATION_MODAL );
+    splash = splashShell;
     splash.setImage( kettle_icon );
 
     splash.setText( BaseMessages.getString( PKG, "SplashDialog.Title" ) ); // "Pentaho Data Integration"
@@ -106,15 +110,15 @@ public class Splash {
     splash.addPaintListener( new PaintListener() {
       public void paintControl( PaintEvent e ) {
         String versionText =
-          BaseMessages.getString( PKG, "SplashDialog.Version" ) + " " + BuildVersion.getInstance().getVersion();
+            BaseMessages.getString( PKG, "SplashDialog.Version" ) + " " + BuildVersion.getInstance().getVersion();
 
         StringBuilder sb = new StringBuilder();
         String line = null;
 
         try {
           BufferedReader reader =
-            new BufferedReader( new InputStreamReader( Splash.class.getClassLoader().getResourceAsStream(
-              "org/pentaho/di/ui/core/dialog/license/license.txt" ) ) );
+              new BufferedReader( new InputStreamReader( Splash.class.getClassLoader().getResourceAsStream(
+                  "org/pentaho/di/ui/core/dialog/license/license.txt" ) ) );
 
           while ( ( line = reader.readLine() ) != null ) {
             sb.append( line + System.getProperty( "line.separator" ) );
