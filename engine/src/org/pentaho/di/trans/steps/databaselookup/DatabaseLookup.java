@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.TimedRow;
@@ -210,7 +210,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     return outputRow;
   }
 
-  private void storeRowInCache( RowMetaInterface lookupMeta, Object[] lookupRow, Object[] add ) {
+  @VisibleForTesting
+  void storeRowInCache( RowMetaInterface lookupMeta, Object[] lookupRow, Object[] add ) {
 
     RowMetaAndData rowMetaAndData = new RowMetaAndData( lookupMeta, lookupRow );
     // DEinspanjer 2009-02-01 XXX: I want to write a test case to prove this point before checking in.
@@ -263,7 +264,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     }
   }
 
-  private Object[] getRowFromCache( RowMetaInterface lookupMeta, Object[] lookupRow ) throws KettleException {
+  @VisibleForTesting
+  Object[] getRowFromCache( RowMetaInterface lookupMeta, Object[] lookupRow ) throws KettleException {
     if ( data.allEquals ) {
       // only do the hashtable lookup when all equals otherwise conditions >, <, <> will give wrong results
       TimedRow timedRow = data.look.get( new RowMetaAndData( data.lookupMeta, lookupRow ) );
@@ -276,9 +278,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         // Not all conditions are "=" so we are going to have to evaluate row by row
         // A sorted list or index might be a good solution here...
         //
-        Enumeration<RowMetaAndData> keys = data.look.keys();
-        while ( keys.hasMoreElements() ) {
-          RowMetaAndData key = keys.nextElement();
+        for ( RowMetaAndData key : data.look.keySet() ) {
           // Now verify that the key is matching our conditions...
           //
           boolean match = true;
@@ -365,9 +365,9 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
 
       if ( meta.isCached() ) {
         if ( meta.getCacheSize() > 0 ) {
-          data.look = new Hashtable<RowMetaAndData, TimedRow>( (int) ( meta.getCacheSize() * 1.5 ) );
+          data.look = new LinkedHashMap<RowMetaAndData, TimedRow>( (int) ( meta.getCacheSize() * 1.5 ) );
         } else {
-          data.look = new Hashtable<RowMetaAndData, TimedRow>();
+          data.look = new LinkedHashMap<RowMetaAndData, TimedRow>();
         }
       }
 
