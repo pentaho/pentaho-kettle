@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -58,6 +59,12 @@ import org.w3c.dom.Node;
  * @author ngoodman
  *
  */
+
+@Step( id = "LucidDBStreamingLoader", image = "BLKLS.svg",
+i18nPackageName = "org.pentaho.di.trans.steps.luciddbstreamingloader", name = "LucidDBStreamingLoaderMeta.Name",
+description = "LucidDBStreamingLoaderMeta.Description",
+categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
+
 public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = LucidDBStreamingLoaderMeta.class; // for i18n
 
