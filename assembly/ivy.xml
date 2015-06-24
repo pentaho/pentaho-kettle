@@ -52,6 +52,9 @@
     <dependency org="${ivy.artifact.group}" name="ms-access-bulk-loader-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="ms-access-bulk-loader-plugin" type="zip"/>
     </dependency>
+    <dependency org="${ivy.artifact.group}" name="lucid-db-streaming-loader-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="lucid-db-streaming-loader-plugin" type="zip"/>
+    </dependency>
     
     
     <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${project.revision}" changing="true" conf="pentaho-system->default" m:classifier="client">
