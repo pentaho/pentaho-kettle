@@ -49,7 +49,11 @@
     <dependency org="${ivy.artifact.group}" name="pdi-google-analytics-plugin-ce" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="pdi-google-analytics-plugin-ce" type="zip"/>
     </dependency>
-
+    <dependency org="${ivy.artifact.group}" name="ms-access-bulk-loader-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="ms-access-bulk-loader-plugin" type="zip"/>
+    </dependency>
+    
+    
     <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${project.revision}" changing="true" conf="pentaho-system->default" m:classifier="client">
       <artifact name="pentaho-karaf-assembly" type="zip" m:classifier="client"/>
     </dependency>
