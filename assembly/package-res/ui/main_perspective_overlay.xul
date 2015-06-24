@@ -36,7 +36,6 @@
 
     <menupopup id="view-perspectives-popup" visible="true"/>
     
-        <menuitem id="help-tip" visible="true"/>
         <menuitem id="help-welcome" visible="true"/>
         <menuseparator id="help-separator-1" visible="true"/>
         <menuitem id="help-plugins" visible="true"/>

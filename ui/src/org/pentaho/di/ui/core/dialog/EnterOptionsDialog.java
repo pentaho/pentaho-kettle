@@ -151,8 +151,6 @@ public class EnterOptionsDialog extends Dialog {
 
   private Button wBranding;
 
-  private Button wShowTips;
-
   private Button wShowWelcome;
 
   private Button wUseCache;
@@ -1072,31 +1070,13 @@ public class EnterOptionsDialog extends Dialog {
     fdMaxNrHistLines.top = new FormAttachment( wMaxLogLineTimeout, margin );
     wMaxNrHistLines.setLayoutData( fdMaxNrHistLines );
 
-    // Show tips on startup?
-    Label wlShowTips = new Label( wGeneralComp, SWT.RIGHT );
-    wlShowTips.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.ShowTipsStartup.Label" ) );
-    props.setLook( wlShowTips );
-    FormData fdlShowTips = new FormData();
-    fdlShowTips.left = new FormAttachment( 0, 0 );
-    fdlShowTips.top = new FormAttachment( wMaxNrHistLines, margin );
-    fdlShowTips.right = new FormAttachment( middle, -margin );
-    wlShowTips.setLayoutData( fdlShowTips );
-    wShowTips = new Button( wGeneralComp, SWT.CHECK );
-    props.setLook( wShowTips );
-    wShowTips.setSelection( props.showTips() );
-    FormData fdShowTips = new FormData();
-    fdShowTips.left = new FormAttachment( middle, 0 );
-    fdShowTips.top = new FormAttachment( wMaxNrHistLines, margin );
-    fdShowTips.right = new FormAttachment( 100, 0 );
-    wShowTips.setLayoutData( fdShowTips );
-
     // Show welcome page on startup?
     Label wlShowWelcome = new Label( wGeneralComp, SWT.RIGHT );
     wlShowWelcome.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.ShowWelcomePage.Label" ) );
     props.setLook( wlShowWelcome );
     FormData fdlShowWelcome = new FormData();
     fdlShowWelcome.left = new FormAttachment( 0, 0 );
-    fdlShowWelcome.top = new FormAttachment( wShowTips, margin );
+    fdlShowWelcome.top = new FormAttachment( wMaxNrHistLines, margin );
     fdlShowWelcome.right = new FormAttachment( middle, -margin );
     wlShowWelcome.setLayoutData( fdlShowWelcome );
     wShowWelcome = new Button( wGeneralComp, SWT.CHECK );
@@ -1104,7 +1084,7 @@ public class EnterOptionsDialog extends Dialog {
     wShowWelcome.setSelection( props.showWelcomePageOnStartup() );
     FormData fdShowWelcome = new FormData();
     fdShowWelcome.left = new FormAttachment( middle, 0 );
-    fdShowWelcome.top = new FormAttachment( wShowTips, margin );
+    fdShowWelcome.top = new FormAttachment( wMaxNrHistLines, margin );
     fdShowWelcome.right = new FormAttachment( 100, 0 );
     wShowWelcome.setLayoutData( fdShowWelcome );
 
@@ -1622,7 +1602,6 @@ public class EnterOptionsDialog extends Dialog {
       wMaxLogLineTimeout.getText(), Const.MAX_LOG_LINE_TIMEOUT_MINUTES ) );
     props.setMaxNrLinesInHistory( Const.toInt( wMaxNrHistLines.getText(), Const.MAX_NR_HISTORY_LINES ) );
 
-    props.setShowTips( wShowTips.getSelection() );
     props.setShowWelcomePageOnStartup( wShowWelcome.getSelection() );
     props.setUseDBCache( wUseCache.getSelection() );
     props.setOpenLastFile( wOpenLast.getSelection() );

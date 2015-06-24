@@ -182,7 +182,6 @@
     
     <menu id="help" label="${Spoon.Menu.Help}">
       <menupopup id="help-popup">
-        <menuitem id="help-tip" label="${Spoon.Menu.Help.Tip}" command="spoon.showTips()" />
         <menuitem id="help-welcome" label="${Spoon.Menu.Help.Welcome}" command="spoon.showWelcomePage()" />
         <menuitem id="help-welcome" label="${Spoon.Menu.Help.Documentation}" command="spoon.showDocumentMap()" />
         <menuseparator id="help-separator-1"/>

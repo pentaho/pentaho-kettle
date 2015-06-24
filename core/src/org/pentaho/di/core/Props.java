@@ -109,8 +109,6 @@ public class Props implements Cloneable {
   public static final String STRING_SASH_W1 = "SashWeight1";
   public static final String STRING_SASH_W2 = "SashWeight2";
 
-  public static final String STRING_SHOW_TIPS = "ShowTips";
-  public static final String STRING_TIP_NR = "TipNr";
   public static final String STRING_AUTO_SAVE = "AutoSave";
   public static final String STRING_SAVE_CONF = "SaveConfirmation";
   public static final String STRING_AUTO_SPLIT = "AutoSplit";

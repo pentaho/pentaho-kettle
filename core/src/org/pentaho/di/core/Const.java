@@ -2563,23 +2563,6 @@ public class Const {
   }
 
   /**
-   * Returning the internationalized tips of the days. They get created once on first request.
-   *
-   * @return
-   */
-  public static String[] getTips() {
-    if ( tips == null ) {
-      int tipsOfDayCount = toInt( BaseMessages.getString( PKG, "Const.TipOfDay.Count" ), 0 );
-      tips = new String[tipsOfDayCount];
-      for ( int i = 1; i <= tipsOfDayCount; i++ ) {
-        tips[i - 1] = BaseMessages.getString( PKG, "Const.TipOfDay" + Integer.toString( i ) );
-      }
-    }
-
-    return tips;
-  }
-
-  /**
    * Returning the localized date conversion formats. They get created once on first request.
    *
    * @return

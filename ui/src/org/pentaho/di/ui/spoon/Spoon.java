@@ -292,7 +292,6 @@ import org.pentaho.di.ui.spoon.dialog.CheckTransProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.LogSettingsDialog;
 import org.pentaho.di.ui.spoon.dialog.MetaStoreExplorerDialog;
 import org.pentaho.di.ui.spoon.dialog.SaveProgressDialog;
-import org.pentaho.di.ui.spoon.dialog.TipsDialog;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.spoon.partition.PartitionMethodSelector;
 import org.pentaho.di.ui.spoon.partition.PartitionSettings;
@@ -1663,10 +1662,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void copyJob() {
     copyJob( getActiveJob() );
-  }
-
-  public void showTips() {
-    new TipsDialog( shell ).open();
   }
 
   public void showWelcomePage() {
@@ -6858,7 +6853,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           doc.getElementById( "action" ).setVisible( etlPerspective );
           doc.getElementById( "tools" ).setVisible( etlPerspective );
           doc.getElementById( "help" ).setVisible( etlPerspective );
-          doc.getElementById( "help-tip" ).setVisible( etlPerspective );
           doc.getElementById( "help-welcome" ).setVisible( etlPerspective );
           doc.getElementById( "help-plugins" ).setVisible( true );
         }
@@ -7971,12 +7965,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     // enable perspective switching
     SpoonPerspectiveManager.getInstance().setForcePerspective( false );
 
-    if ( props.showTips() ) {
-      TipsDialog tip = new TipsDialog( shell );
-
-      hideSplash();
-      tip.open();
-    }
     if ( splash != null ) {
       splash.dispose();
       splash = null;

@@ -754,23 +754,6 @@ public class PropsUI extends Props {
     return new int[] { w1, w2 };
   }
 
-  public void setTipNr( int nr ) {
-    properties.setProperty( STRING_TIP_NR, "" + nr );
-  }
-
-  public int getTipNr() {
-    return Const.toInt( properties.getProperty( STRING_TIP_NR ), 0 );
-  }
-
-  public void setShowTips( boolean show ) {
-    properties.setProperty( STRING_SHOW_TIPS, show ? YES : NO );
-  }
-
-  public boolean showTips() {
-    String show = properties.getProperty( STRING_SHOW_TIPS );
-    return !NO.equalsIgnoreCase( show );
-  }
-
   public void setOpenLastFile( boolean open ) {
     properties.setProperty( STRING_OPEN_LAST_FILE, open ? YES : NO );
   }
