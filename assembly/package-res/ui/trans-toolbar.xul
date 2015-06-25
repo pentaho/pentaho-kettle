@@ -91,7 +91,14 @@
         <menuitem id="trans-graph-entry-sniff-error" label="${TransGraph.PopupMenu.SniffError}" command="transgraph.sniffError()" /> 
       </menupopup>
     </menu>
-    
+
+    <menuseparator />
+    <menuitem id="trans-graph-entry-verify" label="${TransGraph.PopupMenu.CheckSelectedSteps}" command="transgraph.checkSelectedSteps()" />
+
+    <menuseparator />
+    <menuitem id="trans-graph-entry-errors" label="${TransGraph.PopupMenu.Error}" command="transgraph.errorHandling()" />
+    <menuitem id="trans-graph-entry-preview" label="${TransGraph.PopupMenu.Preview}" command="transgraph.preview()" />
+
     <menuseparator />
     <menu id="trans-graph-entry-align" label="${TransGraph.PopupMenu.AllignDistribute}">
       <menupopup id="trans-graph-entry-align-popup">
@@ -114,13 +121,9 @@
       </menupopup>
     </menu>
     <menuseparator />
-    <menuitem id="trans-graph-entry-verify" label="${TransGraph.PopupMenu.CheckSelectedSteps}" command="transgraph.checkSelectedSteps()" />
     <menuitem id="trans-graph-entry-mapping" label="${TransGraph.PopupMenu.GenerateMappingToThisStep}" command="transgraph.generateMappingToThisStep()" />
     <menuitem id="trans-graph-entry-partitioning" label="${TransGraph.PopupMenu.Partitioning}" command="transgraph.partitioning()" />
     <menuitem id="trans-graph-entry-clustering" label="${TransGraph.PopupMenu.Clustering}" command="transgraph.clustering()" />
-    <menuitem id="trans-graph-entry-errors" label="${TransGraph.PopupMenu.Error}" command="transgraph.errorHandling()" />
-    <menuseparator />
-    <menuitem id="trans-graph-entry-preview" label="${TransGraph.PopupMenu.Preview}" command="transgraph.preview()" />
   </menupopup>
 
   <menupopup id="trans-graph-hop">

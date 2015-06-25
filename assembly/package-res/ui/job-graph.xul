@@ -32,11 +32,12 @@
     <menuitem id="job-graph-entry-edit" label="${JobGraph.PopupMenu.JobEntry.Edit}" command="jobgraph.editEntryClick()" />
     <menuitem id="job-graph-entry-edit-description" label="${JobGraph.PopupMenu.JobEntry.EditDescription}"
       command="jobgraph.editEntryDescription()" />
-    <menuitem id="job-graph-entry-parallel" type="checkbox" label="${JobGraph.PopupMenu.JobEntry.LaunchParallel}"
-      command="jobgraph.editEntryParallel()" />
     <menuseparator />
-    <menuitem id="job-graph-entry-duplicate" label="${JobGraph.PopupMenu.JobEntry.Duplicate}" command="jobgraph.duplicateEntry()" />
     <menuitem id="job-graph-entry-copy" acceltext="CTRL-C" accesskey="ctrl-c" label="${JobGraph.PopupMenu.JobEntry.CopyToClipboard}" command="jobgraph.copyEntry()" />
+    <menuitem id="job-graph-entry-duplicate" label="${JobGraph.PopupMenu.JobEntry.Duplicate}" command="jobgraph.duplicateEntry()" />
+    <menuitem id="job-graph-entry-delete" label="${JobGraph.PopupMenu.JobEntry.Delete}" command="jobgraph.deleteEntry()" />
+    <menuitem id="job-graph-entry-hide" label="${JobGraph.PopupMenu.JobEntry.Hide}" command="jobgraph.hideEntry()" />
+    <menuitem id="job-graph-entry-detach" label="${JobGraph.PopupMenu.Hop.Detach}" command="jobgraph.detachEntry()" />
     <menuseparator />
     <menu id="job-graph-entry-align" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute}">
       <menupopup id="job-graph-entry-align-popup">
@@ -58,9 +59,9 @@
           accesskey="alt-home" command="jobgraph.snaptogrid()" />
       </menupopup>
     </menu>
-    <menuitem id="job-graph-entry-detach" label="${JobGraph.PopupMenu.Hop.Detach}" command="jobgraph.detachEntry()" />
-    <menuitem id="job-graph-entry-hide" label="${JobGraph.PopupMenu.JobEntry.Hide}" command="jobgraph.hideEntry()" />
-    <menuitem id="job-graph-entry-delete" label="${JobGraph.PopupMenu.JobEntry.Delete}" command="jobgraph.deleteEntry()" />
+    <menuseparator />
+    <menuitem id="job-graph-entry-parallel" type="checkbox" label="${JobGraph.PopupMenu.JobEntry.LaunchParallel}"
+      command="jobgraph.editEntryParallel()" />
   </menupopup>
 
   <menupopup id="job-graph-hop">
@@ -100,7 +101,7 @@
     <menuitem id="job-graph-background-select-all" acceltext="CTRL-A" accesskey="ctrl-a" label="${JobGraph.PopupMenu.SelectAll}" command="jobgraph.selectAll()" />
     <menuitem id="job-graph-background-clear-selection" label="${JobGraph.PopupMenu.ClearSelection}" command="jobgraph.clearSelection()" />
     <menuseparator />
-    <menuitem id="job-graph-background-settings" acceltext="CTRL-J" accesskey="ctrl-j" label="${JobGraph.PopupMenu.Settings}" command="jobgraph.editJobProperties()" />
+    <menuitem id="job-graph-background-settings" acceltext="CTRL-T" accesskey="ctrl-t" label="${JobGraph.PopupMenu.Settings}" command="jobgraph.editJobProperties()" />
   </menupopup>
 
 </window>
