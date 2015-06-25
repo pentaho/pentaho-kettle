@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.scriptvalues_mod;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -33,7 +31,6 @@ import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.UniqueTag;
 import org.pentaho.di.compatibility.Row;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.compatibility.ValueUsedListener;
@@ -45,7 +42,6 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -54,6 +50,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.core.util.JavaScriptUtils;
 
 /**
  * Executes a JavaScript on the values in the input stream. Selected calculated values can then be put on the output
@@ -98,7 +95,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
   public Script script;
 
   public ScriptValuesMod( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                          Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -115,8 +112,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
     }
 
     // Allocate fields_used
-    data.fields_used = new int[nr];
-    data.values_used = new Value[nr];
+    data.fields_used = new int[ nr ];
+    data.values_used = new Value[ nr ];
 
     nr = 0;
     // Count the occurrences of the values.
@@ -131,7 +128,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
           logDetailed( BaseMessages.getString(
             PKG, "ScriptValuesMod.Log.UsedValueName", String.valueOf( i ), valname ) );
         }
-        data.fields_used[nr] = i;
+        data.fields_used[ nr ] = i;
         nr++;
       }
     }
@@ -157,23 +154,23 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
       // Get the indexes of the replaced fields...
       //
-      data.replaceIndex = new int[meta.getFieldname().length];
+      data.replaceIndex = new int[ meta.getFieldname().length ];
       for ( int i = 0; i < meta.getFieldname().length; i++ ) {
-        if ( meta.getReplace()[i] ) {
-          data.replaceIndex[i] = rowMeta.indexOfValue( meta.getFieldname()[i] );
-          if ( data.replaceIndex[i] < 0 ) {
-            if ( Const.isEmpty( meta.getFieldname()[i] ) ) {
+        if ( meta.getReplace()[ i ] ) {
+          data.replaceIndex[ i ] = rowMeta.indexOfValue( meta.getFieldname()[ i ] );
+          if ( data.replaceIndex[ i ] < 0 ) {
+            if ( Const.isEmpty( meta.getFieldname()[ i ] ) ) {
               throw new KettleStepException( BaseMessages.getString(
-                PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getFieldname()[i] ) );
+                PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getFieldname()[ i ] ) );
             }
-            data.replaceIndex[i] = rowMeta.indexOfValue( meta.getRename()[i] );
-            if ( data.replaceIndex[i] < 0 ) {
+            data.replaceIndex[ i ] = rowMeta.indexOfValue( meta.getRename()[ i ] );
+            if ( data.replaceIndex[ i ] < 0 ) {
               throw new KettleStepException( BaseMessages.getString(
-                PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getRename()[i] ) );
+                PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", meta.getRename()[ i ] ) );
             }
           }
         } else {
-          data.replaceIndex[i] = -1;
+          data.replaceIndex[ i ] = -1;
         }
       }
 
@@ -208,8 +205,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
 
       // Adding the existing Scripts to the Context
       for ( int i = 0; i < meta.getNumberOfJSScripts(); i++ ) {
-        Scriptable jsR = Context.toObject( jsScripts[i].getScript(), data.scope );
-        data.scope.put( jsScripts[i].getScriptName(), data.scope, jsR );
+        Scriptable jsR = Context.toObject( jsScripts[ i ].getScript(), data.scope );
+        data.scope.put( jsScripts[ i ].getScriptName(), data.scope, jsR );
       }
 
       // Adding the Name of the Transformation to the Context
@@ -233,13 +230,13 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
         // Add the used fields...
         //
         for ( int i = 0; i < data.fields_used.length; i++ ) {
-          ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fields_used[i] );
-          Object valueData = row[data.fields_used[i]];
+          ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fields_used[ i ] );
+          Object valueData = row[ data.fields_used[ i ] ];
 
           if ( meta.isCompatible() ) {
-            data.values_used[i] = valueMeta.createOriginalValue( valueData );
+            data.values_used[ i ] = valueMeta.createOriginalValue( valueData );
 
-            Scriptable jsarg = Context.toObject( data.values_used[i], data.scope );
+            Scriptable jsarg = Context.toObject( data.values_used[ i ], data.scope );
             data.scope.put( valueMeta.getName(), data.scope, jsarg );
           } else {
             Object normalStorageValueData = valueMeta.convertToNormalStorageType( valueData );
@@ -263,8 +260,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
         try {
           if ( meta.getAddClasses() != null ) {
             for ( int i = 0; i < meta.getAddClasses().length; i++ ) {
-              Object jsOut = Context.javaToJS( meta.getAddClasses()[i].getAddObject(), data.scope );
-              ScriptableObject.putProperty( data.scope, meta.getAddClasses()[i].getJSName(), jsOut );
+              Object jsOut = Context.javaToJS( meta.getAddClasses()[ i ].getAddObject(), data.scope );
+              ScriptableObject.putProperty( data.scope, meta.getAddClasses()[ i ].getJSName(), jsOut );
             }
           }
         } catch ( Exception e ) {
@@ -359,13 +356,13 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
         }
 
         for ( int i = 0; i < data.fields_used.length; i++ ) {
-          ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fields_used[i] );
-          Object valueData = row[data.fields_used[i]];
+          ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fields_used[ i ] );
+          Object valueData = row[ data.fields_used[ i ] ];
 
           if ( meta.isCompatible() ) {
-            data.values_used[i] = valueMeta.createOriginalValue( valueData );
+            data.values_used[ i ] = valueMeta.createOriginalValue( valueData );
 
-            Scriptable jsarg = Context.toObject( data.values_used[i], data.scope );
+            Scriptable jsarg = Context.toObject( data.values_used[ i ], data.scope );
             data.scope.put( valueMeta.getName(), data.scope, jsarg );
           } else {
             Object normalStorageValueData = valueMeta.convertToNormalStorageType( valueData );
@@ -415,12 +412,12 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
       if ( iTranStat == CONTINUE_TRANSFORMATION ) {
         bRC = true;
         for ( int i = 0; i < meta.getFieldname().length; i++ ) {
-          Object result = data.scope.get( meta.getFieldname()[i], data.scope );
+          Object result = data.scope.get( meta.getFieldname()[ i ], data.scope );
           Object valueData = getValueFromJScript( result, i );
-          if ( data.replaceIndex[i] < 0 ) {
-            outputRow[outputIndex++] = valueData;
+          if ( data.replaceIndex[ i ] < 0 ) {
+            outputRow[ outputIndex++ ] = valueData;
           } else {
-            outputRow[data.replaceIndex[i]] = valueData;
+            outputRow[ data.replaceIndex[ i ] ] = valueData;
           }
         }
 
@@ -430,8 +427,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
         //
         if ( meta.isCompatible() ) {
           for ( int i = 0; i < data.values_used.length; i++ ) {
-            ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fields_used[i] );
-            outputRow[data.fields_used[i]] = valueMeta.getValueData( data.values_used[i] );
+            ValueMetaInterface valueMeta = rowMeta.getValueMeta( data.fields_used[ i ] );
+            outputRow[ data.fields_used[ i ] ] = valueMeta.getValueData( data.values_used[ i ] );
           }
 
           // Grab the variables in the "row" object too.
@@ -439,13 +436,13 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
           for ( Integer index : usedRowValues.keySet() ) {
             Value value = usedRowValues.get( index );
             ValueMetaInterface valueMeta = rowMeta.getValueMeta( index );
-            outputRow[index] = valueMeta.getValueData( value );
+            outputRow[ index ] = valueMeta.getValueData( value );
           }
 
         }
         putRow( data.outputRowMeta, outputRow );
       } else {
-        switch ( iTranStat ) {
+        switch( iTranStat ) {
           case SKIP_TRANSFORMATION:
             // eat this row.
             bRC = true;
@@ -480,186 +477,14 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
   }
 
   public Object getValueFromJScript( Object result, int i ) throws KettleValueException {
-    if ( meta.getFieldname()[i] != null && meta.getFieldname()[i].length() > 0 ) {
+    String fieldName = meta.getFieldname()[ i ];
+    if ( !Const.isEmpty( fieldName ) ) {
       // res.setName(meta.getRename()[i]);
       // res.setType(meta.getType()[i]);
 
       try {
-        if ( result != null ) {
-          String classType = result.getClass().getName();
-          switch ( meta.getType()[i] ) {
-            case ValueMetaInterface.TYPE_NUMBER:
-              if ( classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
-                return null;
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" ) ) {
-                try {
-                  // Is it a java Value class ?
-                  Value v = (Value) Context.jsToJava( result, Value.class );
-                  return v.getNumber();
-                } catch ( Exception e ) {
-                  String string = Context.toString( result );
-                  return new Double( Double.parseDouble( Const.trim( string ) ) );
-                }
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeNumber" ) ) {
-                Number nb = Context.toNumber( result );
-                return new Double( nb.doubleValue() );
-              } else {
-                Number nb = (Number) result;
-                return new Double( nb.doubleValue() );
-              }
-
-            case ValueMetaInterface.TYPE_INTEGER:
-              if ( classType.equalsIgnoreCase( "java.lang.Byte" ) ) {
-                return new Long( ( (java.lang.Byte) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Short" ) ) {
-                return new Long( ( (Short) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Integer" ) ) {
-                return new Long( ( (Integer) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Long" ) ) {
-                return new Long( ( (Long) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Double" ) ) {
-                return new Long( ( (Double) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.String" ) ) {
-                return new Long( ( new Long( (String) result ) ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
-                return null;
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeNumber" ) ) {
-                Number nb = Context.toNumber( result );
-                return new Long( nb.longValue() );
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" ) ) {
-                // Is it a Value?
-                //
-                try {
-                  Value value = (Value) Context.jsToJava( result, Value.class );
-                  return value.getInteger();
-                } catch ( Exception e2 ) {
-                  String string = Context.toString( result );
-                  return new Long( Long.parseLong( Const.trim( string ) ) );
-                }
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.UniqueTag" ) ) {
-                return Long.valueOf( Long.parseLong( ( (UniqueTag) result ).toString() ) );
-              } else {
-                return Long.valueOf( Long.parseLong( result.toString() ) );
-              }
-
-            case ValueMetaInterface.TYPE_STRING:
-              if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" )
-                || classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
-                // Is it a java Value class ?
-                try {
-                  Value v = (Value) Context.jsToJava( result, Value.class );
-                  return v.toString();
-                } catch ( Exception ev ) {
-                  // convert to a string should work in most cases...
-                  //
-                  String string = Context.toString( result );
-                  return string;
-                }
-              } else {
-                // A String perhaps?
-                String string = Context.toString( result );
-                return string;
-              }
-
-            case ValueMetaInterface.TYPE_DATE:
-              double dbl = 0;
-              if ( classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
-                return null;
-              } else {
-                if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeDate" ) ) {
-                  dbl = Context.toNumber( result );
-                } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" )
-                  || classType.equalsIgnoreCase( "java.util.Date" ) ) {
-                  // Is it a java Date() class ?
-                  try {
-                    Date dat = (Date) Context.jsToJava( result, java.util.Date.class );
-                    dbl = dat.getTime();
-                  } catch ( Exception e ) {
-                    // Is it a Value?
-                    //
-                    try {
-                      Value value = (Value) Context.jsToJava( result, Value.class );
-                      return value.getDate();
-                    } catch ( Exception e2 ) {
-                      try {
-                        String string = Context.toString( result );
-                        return XMLHandler.stringToDate( string );
-                      } catch ( Exception e3 ) {
-                        throw new KettleValueException( "Can't convert a string to a date" );
-                      }
-                    }
-                  }
-                } else if ( classType.equalsIgnoreCase( "java.lang.Double" ) ) {
-                  dbl = ( (Double) result ).doubleValue();
-                } else {
-                  String string = (String) Context.jsToJava( result, String.class );
-                  dbl = Double.parseDouble( string );
-                }
-                long lng = Math.round( dbl );
-                Date dat = new Date( lng );
-                return dat;
-              }
-
-            case ValueMetaInterface.TYPE_BOOLEAN:
-              return result;
-
-            case ValueMetaInterface.TYPE_BIGNUMBER:
-              if ( classType.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
-                return null;
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeNumber" ) ) {
-                Number nb = Context.toNumber( result );
-                return new BigDecimal( nb.longValue() );
-              } else if ( classType.equalsIgnoreCase( "org.mozilla.javascript.NativeJavaObject" ) ) {
-                // Is it a BigDecimal class ?
-                try {
-                  BigDecimal bd = (BigDecimal) Context.jsToJava( result, BigDecimal.class );
-                  return bd;
-                } catch ( Exception e ) {
-                  try {
-                    Value v = (Value) Context.jsToJava( result, Value.class );
-                    if ( !v.isNull() ) {
-                      return v.getBigNumber();
-                    } else {
-                      return null;
-                    }
-                  } catch ( Exception e2 ) {
-                    String string = (String) Context.jsToJava( result, String.class );
-                    return new BigDecimal( string );
-                  }
-                }
-              } else if ( classType.equalsIgnoreCase( "java.lang.Byte" ) ) {
-                return new BigDecimal( ( (java.lang.Byte) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Short" ) ) {
-                return new BigDecimal( ( (Short) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Integer" ) ) {
-                return new BigDecimal( ( (Integer) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Long" ) ) {
-                return new BigDecimal( ( (Long) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.Double" ) ) {
-                return new BigDecimal( ( (Double) result ).longValue() );
-              } else if ( classType.equalsIgnoreCase( "java.lang.String" ) ) {
-                return new BigDecimal( ( new Long( (String) result ) ).longValue() );
-              } else {
-                throw new RuntimeException( "JavaScript conversion to BigNumber not implemented for " + classType );
-              }
-
-            case ValueMetaInterface.TYPE_BINARY: {
-              return Context.jsToJava( result, byte[].class );
-            }
-            case ValueMetaInterface.TYPE_NONE: {
-              throw new RuntimeException( "No data output data type was specified for new field ["
-                + meta.getFieldname()[i] + "]" );
-            }
-            default:
-              return Context.jsToJava( result, Object.class );
-              /*
-               * { throw new RuntimeException("JavaScript conversion not implemented for type " + meta.getType()[i] +
-               * " (" + ValueMeta.getTypeDesc(meta.getType()[i]) + ")"); }
-               */
-          }
-        } else {
-          return null;
-        }
+        return ( result == null ) ? null
+          : JavaScriptUtils.convertFromJs( result, meta.getType()[ i ], fieldName );
       } catch ( Exception e ) {
         throw new KettleValueException( BaseMessages.getString( PKG, "ScriptValuesMod.Log.JavascriptError" ), e );
       }
@@ -744,15 +569,15 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
       // Get the actual Scripts from our MetaData
       jsScripts = meta.getJSScripts();
       for ( int j = 0; j < jsScripts.length; j++ ) {
-        switch ( jsScripts[j].getScriptType() ) {
+        switch( jsScripts[ j ].getScriptType() ) {
           case ScriptValuesScript.TRANSFORM_SCRIPT:
-            strTransformScript = jsScripts[j].getScript();
+            strTransformScript = jsScripts[ j ].getScript();
             break;
           case ScriptValuesScript.START_SCRIPT:
-            strStartScript = jsScripts[j].getScript();
+            strStartScript = jsScripts[ j ].getScript();
             break;
           case ScriptValuesScript.END_SCRIPT:
-            strEndScript = jsScripts[j].getScript();
+            strEndScript = jsScripts[ j ].getScript();
             break;
           default:
             break;

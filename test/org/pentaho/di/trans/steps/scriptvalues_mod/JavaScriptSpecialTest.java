@@ -64,7 +64,7 @@ public class JavaScriptSpecialTest extends TestCase {
     ValueMetaInterface[] valuesMeta = { new ValueMeta( "string", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
-      rm.addValueMeta( valuesMeta[i] );
+      rm.addValueMeta( valuesMeta[ i ] );
     }
 
     return rm;
@@ -99,10 +99,10 @@ public class JavaScriptSpecialTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    { new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "bool", ValueMeta.TYPE_BOOLEAN ) };
+      { new ValueMeta( "string", ValueMeta.TYPE_STRING ), new ValueMeta( "bool", ValueMeta.TYPE_BOOLEAN ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
-      rm.addValueMeta( valuesMeta[i] );
+      rm.addValueMeta( valuesMeta[ i ] );
     }
 
     return rm;
@@ -153,13 +153,13 @@ public class JavaScriptSpecialTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    {
-      new ValueMeta( "int_in", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "number_in", ValueMeta.TYPE_NUMBER ),
-      new ValueMeta( "string_in", ValueMeta.TYPE_STRING ), };
+      {
+        new ValueMeta( "int_in", ValueMeta.TYPE_INTEGER ),
+        new ValueMeta( "number_in", ValueMeta.TYPE_NUMBER ),
+        new ValueMeta( "string_in", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
-      rm.addValueMeta( valuesMeta[i] );
+      rm.addValueMeta( valuesMeta[ i ] );
     }
 
     return rm;
@@ -187,16 +187,16 @@ public class JavaScriptSpecialTest extends TestCase {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    {
-      new ValueMeta( "int_in", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "number_in", ValueMeta.TYPE_NUMBER ),
-      new ValueMeta( "string_in", ValueMeta.TYPE_STRING ), new ValueMeta( "long1", ValueMeta.TYPE_INTEGER ),
-      new ValueMeta( "number1", ValueMeta.TYPE_NUMBER ), new ValueMeta( "string1", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "long2", ValueMeta.TYPE_INTEGER ), new ValueMeta( "number2", ValueMeta.TYPE_NUMBER ),
-      new ValueMeta( "string2", ValueMeta.TYPE_STRING ), };
+      {
+        new ValueMeta( "int_in", ValueMeta.TYPE_INTEGER ),
+        new ValueMeta( "number_in", ValueMeta.TYPE_NUMBER ),
+        new ValueMeta( "string_in", ValueMeta.TYPE_STRING ), new ValueMeta( "long1", ValueMeta.TYPE_INTEGER ),
+        new ValueMeta( "number1", ValueMeta.TYPE_NUMBER ), new ValueMeta( "string1", ValueMeta.TYPE_STRING ),
+        new ValueMeta( "long2", ValueMeta.TYPE_INTEGER ), new ValueMeta( "number2", ValueMeta.TYPE_NUMBER ),
+        new ValueMeta( "string2", ValueMeta.TYPE_STRING ), };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
-      rm.addValueMeta( valuesMeta[i] );
+      rm.addValueMeta( valuesMeta[ i ] );
     }
 
     return rm;
@@ -253,9 +253,9 @@ public class JavaScriptSpecialTest extends TestCase {
       if ( rm1.size() != rm2.size() ) {
         fail( "row nr " + idx + " is not equal" );
       }
-      int[] fields = new int[rm1.size()];
+      int[] fields = new int[ rm1.size() ];
       for ( int ydx = 0; ydx < rm1.size(); ydx++ ) {
-        fields[ydx] = ydx;
+        fields[ ydx ] = ydx;
       }
       try {
         if ( rm1.getRowMeta().compare( r1, r2, fields ) != 0 ) {
@@ -405,7 +405,7 @@ public class JavaScriptSpecialTest extends TestCase {
     ScriptValuesScript[] js =
       new ScriptValuesScript[] { new ScriptValuesScript(
         ScriptValuesScript.TRANSFORM_SCRIPT, "script", "trans_Status = CONTINUE_TRANSFORMATION;\n"
-          + "if (getProcessCount(\"r\") > 3) {\n" + " \ttrans_Status = SKIP_TRANSFORMATION;\n" + "}" ) };
+        + "if (getProcessCount(\"r\") > 3) {\n" + " \ttrans_Status = SKIP_TRANSFORMATION;\n" + "}" ) };
     svm.setJSScripts( js );
     svm.setFieldname( new String[] {} );
     svm.setRename( new String[] {} );
@@ -595,7 +595,7 @@ public class JavaScriptSpecialTest extends TestCase {
 
     //Populate Row
     DateFormat format = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
-    list.add(  new RowMetaAndData( rm, new Object[] { format.parse( "2014-01-01 00:00:00" ) } ) );
+    list.add( new RowMetaAndData( rm, new Object[] { format.parse( "2014-01-01 00:00:00" ) } ) );
 
     return list;
   }
@@ -615,7 +615,7 @@ public class JavaScriptSpecialTest extends TestCase {
     rm.addValueMeta( new ValueMeta( "new_minute", ValueMeta.TYPE_DATE ) );
     rm.addValueMeta( new ValueMeta( "new_second", ValueMeta.TYPE_DATE ) );
 
-    DateFormat format = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss");
+    DateFormat format = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
     Object[] r1 = new Object[] {
       format.parse( "2014-01-01 00:00:00" ), //input
       format.parse( "2014-01-06 00:00:00" ), //weekday
@@ -627,7 +627,7 @@ public class JavaScriptSpecialTest extends TestCase {
       format.parse( "2014-01-01 00:05:00" ), //minute
       format.parse( "2014-01-01 00:00:05" ), //second
     };
-    list.add(  new RowMetaAndData( rm, r1) );
+    list.add( new RowMetaAndData( rm, r1 ) );
 
     return list;
   }
@@ -644,7 +644,7 @@ public class JavaScriptSpecialTest extends TestCase {
     ScriptValuesScript[] js =
       new ScriptValuesScript[] { new ScriptValuesScript(
         ScriptValuesScript.TRANSFORM_SCRIPT, "script",
-          "var new_weekday = dateAdd( input, 'wd', 3 );\n" // PDI-13486
+        "var new_weekday = dateAdd( input, 'wd', 3 );\n" // PDI-13486
           + "var new_year = dateAdd( input, 'y', 5 );\n"
           + "var new_month = dateAdd( input, 'm', 5 );\n"
           + "var new_week = dateAdd( input, 'w', 5 );\n"
