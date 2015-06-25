@@ -245,6 +245,7 @@ import org.pentaho.di.ui.core.PrintSpool;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.auth.AuthProviderDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
+import org.pentaho.di.ui.core.dialog.AboutDialog;
 import org.pentaho.di.ui.core.dialog.CheckResultDialog;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.EnterOptionsDialog;
@@ -5887,119 +5888,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return saved;
   }
 
-  // Put here to support testing, but you cannot instance Spoon from a
-  // JUnit test case without a bunch of work. I abandoned the attempt to
-  // create a Spoon test case to test this. mb
-  public StringBuilder getHelpAboutText() {
-    String releaseText = Const.RELEASE.getMessage();
-    StringBuilder messageBuilder = new StringBuilder();
-    BuildVersion buildVersion = BuildVersion.getInstance();
-
-    // buildVersionInfo correspond to
-    // ${release.major.number}.${release.minor.number}.${release.milestone.number}.${build.id}
-    String buildVersionInfo = buildVersion.getVersion();
-
-    if ( Const.isEmpty( buildVersionInfo ) ) {
-      buildVersionInfo = "Unknown";
-    }
-
-    // suppose buildVersion consists of releaseInfo and commit id
-    String releaseInfo = "";
-    String buildStatus = "";
-
-    // build the result message
-    messageBuilder.append( BaseMessages.getString( PKG, "System.ProductInfo" ) );
-    messageBuilder.append( releaseText );
-    messageBuilder.append( " - " );
-
-    // Regex represents the string that contains a git 40-character checksum hash
-    String containingChecksumRegex = ".+\\b([a-f0-9]{40})\\b";
-
-    // check if string contains VCS checksum
-    if ( !buildVersionInfo.matches( containingChecksumRegex ) ) {
-      releaseInfo = buildVersionInfo;
-    } else {
-      // The next actions will not have sense when we will have separate string for commit id in manifest file in
-      // kettle-engine jar
-      String[] buildVsionInfoElts = buildVersionInfo.split( "\\." );
-      int elementCount = buildVsionInfoElts.length;
-
-      for ( int i = 0; i < elementCount; i++ ) {
-        String currentElement = buildVsionInfoElts[i];
-
-        // check if current element VCS checksum
-        if ( currentElement.length() != 40 ) {
-          releaseInfo += currentElement + ".";
-        } else {
-          buildStatus = currentElement;
-        }
-      }
-      // delete dot symbol at the end position
-      releaseInfo = new String( releaseInfo.substring( 0, releaseInfo.length() - 1 ) );
-    }
-
-    messageBuilder.append( releaseInfo );
-    messageBuilder.append( Const.CR );
-    messageBuilder.append( Const.CR );
-    messageBuilder.append( Const.CR );
-    messageBuilder.append( BaseMessages.getString( PKG, "System.CompanyInfo", "" + ( ( new Date() ).getYear() + 1900 ) ) );
-    messageBuilder.append( Const.CR );
-    messageBuilder.append( BaseMessages.getString( PKG, "System.ProductWebsiteUrl" ) );
-    messageBuilder.append( Const.CR );
-    messageBuilder.append( Const.CR );
-    messageBuilder.append( Const.CR );
-    messageBuilder.append( "Build version : " );
-    messageBuilder.append( releaseInfo );
-
-    if ( !buildStatus.isEmpty() ) {
-      messageBuilder.append( Const.CR );
-      messageBuilder.append( "Commit ID : " );
-      messageBuilder.append( buildStatus );
-    }
-
-    messageBuilder.append( Const.CR );
-    messageBuilder.append( "Build date : " );
-
-    String inputStringDate = buildVersion.getBuildDate();
-    String outputStringDate = "";
-    SimpleDateFormat inputFormat = null;
-    SimpleDateFormat otputFormat = null;
-
-    if ( inputStringDate.matches( "^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}.\\d{3}$" ) ) {
-      inputFormat = new SimpleDateFormat( "yyyy/MM/dd hh:mm:ss.SSS" );
-    }
-    if ( inputStringDate.matches( "^\\d{4}-\\d{1,2}-\\d{1,2}\\_\\d{1,2}-\\d{2}-\\d{2}$" ) ) {
-      inputFormat = new SimpleDateFormat( "yyyy-MM-dd_hh-mm-ss" );
-    }
-    if ( inputStringDate.matches( "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}.\\d{2}.\\d{2}$" ) ) {
-      inputFormat = new SimpleDateFormat( "yyyy-MM-dd hh.mm.ss" );
-    }
-    otputFormat = new SimpleDateFormat( "MMMM d, yyyy hh:mm:ss" );
-    try {
-      if ( inputFormat != null ) {
-        Date date = inputFormat.parse( inputStringDate );
-        outputStringDate = otputFormat.format( date );
-      } else {
-        // If date isn't correspond to formats above just show date in origin format
-        outputStringDate = inputStringDate;
-      }
-    } catch ( ParseException e ) {
-      // Just show date in origin format
-      outputStringDate = inputStringDate;
-    }
-    messageBuilder.append( outputStringDate );
-    return messageBuilder;
-  }
-
   public void helpAbout() {
-    MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION | SWT.CENTER | SWT.SHEET );
-    StringBuilder messageBuilder = getHelpAboutText();
-    // set the text in the message box
-    mb.setMessage( messageBuilder.toString() );
-    mb.setText( APP_NAME );
-
-    // now open the message box
-    mb.open();
+    try {
+      AboutDialog aboutDialog = new AboutDialog( getShell() );
+      aboutDialog.open();
+    } catch ( KettleException e ) {
+      log.logError( "Error opening about dialog", e );
+    }
   }
 
   /**
