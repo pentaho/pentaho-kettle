@@ -178,6 +178,7 @@
 	
 	    <!-- Karaf Dependencies -->
     <dependency org="org.apache.karaf" name="org.apache.karaf.main" rev="3.0.3"  transitive="false"/>
+    <dependency org="org.apache.karaf" name="org.apache.karaf.util" rev="3.0.3"  transitive="false"/>
     <dependency org="org.apache.karaf.jaas" name="org.apache.karaf.jaas.boot" rev="2.4.2"  transitive="false"/>
     <dependency org="org.apache.felix" name="org.apache.felix.main" rev="4.2.1"  transitive="false"/>
 
