@@ -2579,6 +2579,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           // item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-distribute");
           // item.setSelected(stepMeta.isDistributes());
 
+          item = (XulMenuitem) doc.getElementById("trans-graph-entry-partitioning");
+          item.setDisabled( spoon.getPartitionSchemasNames( transMeta ).isEmpty() );
+
           item = (XulMenuitem) doc.getElementById( "trans-graph-entry-data-movement-copy" );
           item.setSelected( !stepMeta.isDistributes() );
 
