@@ -202,6 +202,9 @@
     <!-- Other third-party dependencies -->
     <dependency org="asm"                  name="asm"                   rev="3.2"           transitive="false"/>
     <dependency org="net.sf.saxon"         name="saxon-dom"             rev="9.1.0.8"       transitive="false"/>
+    <dependency org="com.tinkerpop.blueprints" name="blueprints-core"   rev="2.6.0"         transitive="false"/>
+    <dependency org="commons-configuration" name="commons-configuration" rev="1.9"          transitive="false"/>
+
     <exclude org="javax.servlet"   module="servlet-api"/>
   </dependencies>
 </ivy-module>
