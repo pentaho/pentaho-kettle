@@ -28,7 +28,9 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.pentaho.di.trans.steps.StepMockUtil;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,9 +49,19 @@ public class GaInputStepTest {
   public void getNextDataEntry_WithPaging() throws Exception {
     final int recordsCount = 30;
 
-    GaInputStep step = StepMockUtil.getStep( GaInputStep.class, GaInputStepMeta.class, "GaInputStepTest" );
+    final String stepName = "GaInputStepTest";
+
+    StepMeta stepMeta = new StepMeta( stepName, stepName, new GaInputStepMeta() );
+
+    Trans trans = mock( Trans.class );
+
+    TransMeta transMeta = mock( TransMeta.class );
+    when( transMeta.findStep( stepName ) ).thenReturn( stepMeta );
 
     GaInputStepData data = new GaInputStepData();
+
+    GaInputStep step = new GaInputStep( stepMeta, data, 0, transMeta, trans );
+
     FieldUtils.writeField( FieldUtils.getField( GaInputStep.class, "data", true ), step, data, true );
 
     Analytics.Data.Ga.Get mockQuery = prepareMockQuery( recordsCount );
