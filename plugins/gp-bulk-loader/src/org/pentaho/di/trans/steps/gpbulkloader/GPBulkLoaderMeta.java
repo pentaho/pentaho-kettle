@@ -29,6 +29,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -59,6 +60,16 @@ import org.w3c.dom.Node;
  *
  * @author Sven Boden
  */
+
+
+@Step( id = "GPBulkLoader", image = "BLKGPL.svg",
+i18nPackageName = "org.pentaho.di.trans.steps.gpbulkloader", name = "GPBulkLoaderMeta.Name",
+description = "GPBulkLoaderMeta.Description",
+categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated",
+documentationUrl = "http://wiki.pentaho.com/display/PMOPEN/GreenPlum+bulk+loader" )
+
+
+
 public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
   ProvidesDatabaseConnectionInformation {
   private static Class<?> PKG = GPBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
