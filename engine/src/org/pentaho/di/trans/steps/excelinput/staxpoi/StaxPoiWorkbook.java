@@ -26,23 +26,27 @@
 
 package org.pentaho.di.trans.steps.excelinput.staxpoi;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
 
 public class StaxPoiWorkbook implements KWorkbook {
+
+  private LogChannelInterface log;
 
   private XSSFReader reader;
 
@@ -52,54 +56,66 @@ public class StaxPoiWorkbook implements KWorkbook {
   // mapping of the sheet object with its ID/Name
   private Map<String, StaxPoiSheet> openSheetsMap;
 
+  private OPCPackage opcpkg;
+
   public StaxPoiWorkbook() {
     openSheetsMap = new HashMap<String, StaxPoiSheet>();
+    this.log = KettleLogStore.getLogChannelInterfaceFactory().create( this );
   }
 
   public StaxPoiWorkbook( String filename, String encoding ) throws KettleException {
     this();
     try {
-      OPCPackage pkg = OPCPackage.open( filename );
-      openFile( pkg, encoding );
+      opcpkg = OPCPackage.open( filename );
+      openFile( opcpkg, encoding );
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
-
   }
 
   public StaxPoiWorkbook( InputStream inputStream, String encoding ) throws KettleException {
     this();
     try {
-      OPCPackage pkg = OPCPackage.open( inputStream );
-      openFile( pkg, encoding );
+      opcpkg = OPCPackage.open( inputStream );
+      openFile( opcpkg, encoding );
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
   }
 
   private void openFile( OPCPackage pkg, String encoding ) throws KettleException {
+    InputStream workbookData = null;
+    XMLStreamReader workbookReader = null;
     try {
       reader = new XSSFReader( pkg );
       sheetNameIDMap = new HashMap<String, String>();
-      List<String> sheetList = new ArrayList<String>();
-      InputStream workbookData;
       workbookData = reader.getWorkbookData();
       XMLInputFactory factory = XMLInputFactory.newInstance();
-      XMLStreamReader workbookReader = factory.createXMLStreamReader( workbookData );
+      workbookReader = factory.createXMLStreamReader( workbookData );
       while ( workbookReader.hasNext() ) {
-        if ( workbookReader.next() == XMLStreamConstants.START_ELEMENT
-          && workbookReader.getLocalName().equals( "sheet" ) ) {
+        if ( workbookReader.next() == XMLStreamConstants.START_ELEMENT && workbookReader.getLocalName().equals( "sheet" ) ) {
           String sheetName = workbookReader.getAttributeValue( null, "name" );
-          String sheetID =
-            workbookReader.getAttributeValue(
-              "http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id" );
-          sheetList.add( sheetName );
+          String sheetID = workbookReader.getAttributeValue( "http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id" );
           sheetNameIDMap.put( sheetName, sheetID );
         }
       }
-      workbookData.close();
     } catch ( Exception e ) {
       throw new KettleException( e );
+    } finally {
+      if ( workbookReader != null ) {
+        try {
+          workbookReader.close();
+        } catch ( XMLStreamException e ) {
+          throw new KettleException( e );
+        }
+      }
+      if ( workbookData != null ) {
+        try {
+          workbookData.close();
+        } catch ( IOException e ) {
+          throw new KettleException( e );
+        }
+      }
     }
   }
 
@@ -129,9 +145,15 @@ public class StaxPoiWorkbook implements KWorkbook {
     for ( StaxPoiSheet sheet : openSheetsMap.values() ) {
       try {
         sheet.close();
-      } catch ( Exception e ) {
-        e.printStackTrace();
+      } catch ( IOException e ) {
+        log.logError( "Could not close workbook", e );
+      } catch ( XMLStreamException e ) {
+        log.logError( "Could not close xmlstream", e );
       }
+    }
+    if ( opcpkg != null ) {
+      //We should not save change in xlsx because it is input step.
+      opcpkg.revert();
     }
   }
 
