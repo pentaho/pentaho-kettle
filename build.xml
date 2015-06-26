@@ -789,6 +789,8 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptStringTest"
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.sort.SortRowsTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.sftpput.SFTPPutIntegrationTest"
+            haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.tableoutput.TableOutputTest"
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.tableinput.TableInputTest"

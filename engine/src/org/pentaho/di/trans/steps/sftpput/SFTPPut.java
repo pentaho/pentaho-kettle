@@ -25,12 +25,15 @@ package org.pentaho.di.trans.steps.sftpput;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -108,9 +111,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
         // Let's try to establish SFTP connection....
         // Create sftp client to host ...
         data.sftpclient =
-          new SFTPClient(
-            InetAddress.getByName( realServerName ), Const.toInt( realServerPort, 22 ), realUsername,
-            realKeyFilename, realPassPhrase );
+          createSftpClient( realServerName, realServerPort, realUsername, realKeyFilename, realPassPhrase );
 
         // connection successfully established
         if ( isDetailed() ) {
@@ -170,6 +171,8 @@ public class SFTPPut extends BaseStep implements StepInterface {
           PKG, "SFTPPut.Error.CanNotFindField", remoteFoldernameFieldName ) );
       }
 
+      checkRemoteFilenameField( meta.getRemoteFilenameFieldName(), data );
+
       // Move to folder
       if ( meta.getAfterFTPS() == JobEntrySFTPPUT.AFTER_FTPSPUT_MOVE ) {
         String realDestinationFoldernameFieldName = environmentSubstitute( meta.getDestinationFolderFieldName() );
@@ -195,6 +198,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
 
     InputStream inputStream = null;
     FileObject destinationFolder = null;
+    String destinationFilename;
     FileObject file = null;
 
     try {
@@ -206,6 +210,13 @@ public class SFTPPut extends BaseStep implements StepInterface {
       if ( meta.isInputStream() ) {
         // Source data is a stream
         inputStream = new ByteArrayInputStream( sourceData.getBytes() );
+
+        if ( data.indexOfRemoteFilename == -1 ) {
+          // for the case when put data is transferred via input field
+          // it is mandatory to specify remote file name
+          throw new KettleStepException( BaseMessages.getString( PKG, "SFTPPut.Error.RemoteFilenameFieldMissing" ) );
+        }
+        destinationFilename = getInputRowMeta().getString( r, data.indexOfRemoteFilename );
       } else {
         // source data is a file
         // let's check file
@@ -217,6 +228,9 @@ public class SFTPPut extends BaseStep implements StepInterface {
         }
         // get stream from file
         inputStream = KettleVFS.getInputStream( file );
+
+        // Destination filename
+        destinationFilename = file.getName().getBaseName();
       }
 
       if ( file != null ) {
@@ -241,9 +255,6 @@ public class SFTPPut extends BaseStep implements StepInterface {
 
       // move to spool dir ...
       setSFTPDirectory( getInputRowMeta().getString( r, data.indexOfRemoteDirectory ) );
-
-      // Destination filename
-      String destinationFilename = file.getName().getBaseName();
 
       // Upload a stream
       data.sftpclient.put( inputStream, destinationFilename );
@@ -295,6 +306,29 @@ public class SFTPPut extends BaseStep implements StepInterface {
       }
     }
     return true;
+  }
+
+  @VisibleForTesting
+  void checkRemoteFilenameField( String remoteFilenameFieldName, SFTPPutData data )
+    throws KettleStepException {
+    remoteFilenameFieldName = environmentSubstitute( remoteFilenameFieldName );
+    if ( !Const.isEmpty( remoteFilenameFieldName ) ) {
+      data.indexOfRemoteFilename = getInputRowMeta().indexOfValue( remoteFilenameFieldName );
+      if ( data.indexOfRemoteFilename == -1 ) {
+        // remote file name field is set, but was not found
+        throw new KettleStepException( BaseMessages.getString(
+          PKG, "SFTPPut.Error.CanNotFindField", remoteFilenameFieldName ) );
+      }
+    }
+  }
+
+  @VisibleForTesting
+  SFTPClient createSftpClient( String realServerName, String realServerPort, String realUsername,
+                               String realKeyFilename, String realPassPhrase )
+    throws KettleJobException, UnknownHostException {
+    return new SFTPClient(
+      InetAddress.getByName( realServerName ), Const.toInt( realServerPort, 22 ), realUsername,
+      realKeyFilename, realPassPhrase );
   }
 
   protected void finishTheJob( FileObject file, String sourceData, FileObject destinationFolder ) throws KettleException {
