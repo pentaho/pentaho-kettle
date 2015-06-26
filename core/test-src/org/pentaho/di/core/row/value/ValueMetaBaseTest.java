@@ -33,6 +33,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.pentaho.di.core.row.ValueMetaInterface.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -97,17 +98,18 @@ public class ValueMetaBaseTest {
 
   @Test
   public void testCtorNameAndType() {
-    ValueMetaBase base = new ValueMetaBase( "myStringType", ValueMetaInterface.TYPE_STRING );
+    ValueMetaBase base = new ValueMetaBase( "myStringType", TYPE_STRING );
     assertEquals( base.getName(), "myStringType" );
-    assertEquals( base.getType(), ValueMetaInterface.TYPE_STRING );
+    assertEquals( base.getType(), TYPE_STRING );
     assertEquals( base.getTypeDesc(), "String" );
   }
 
+  @Test
   public void test4ArgCtor() {
     ValueMetaBase base =
-      new ValueMetaBase( "Hello, is it me you're looking for?", ValueMetaInterface.TYPE_BOOLEAN, 4, 9 );
+      new ValueMetaBase( "Hello, is it me you're looking for?", TYPE_BOOLEAN, 4, 9 );
     assertEquals( base.getName(), "Hello, is it me you're looking for?" );
-    assertEquals( base.getType(), ValueMetaInterface.TYPE_BOOLEAN );
+    assertEquals( base.getType(), TYPE_BOOLEAN );
     assertEquals( base.getLength(), 4 );
     assertEquals( base.getPrecision(), -1 );
     assertEquals( base.getStorageType(), ValueMetaInterface.STORAGE_TYPE_NORMAL );
@@ -129,7 +131,7 @@ public class ValueMetaBaseTest {
     Mockito.when( metaData.getColumnType( 1 ) ).thenReturn( Types.DATE );
     Mockito.when( metaData.getColumnType( 2 ) ).thenReturn( Types.TIME );
 
-    obj.type = ValueMetaInterface.TYPE_DATE;
+    obj.type = TYPE_DATE;
     // call to testing method
     obj.getValueFromResultSet( databaseInterface, resultSet, 0 );
     // for jdbc Date type getDate method called
@@ -145,34 +147,52 @@ public class ValueMetaBaseTest {
     Encoder encoder = ESAPI.encoder();
 
     BigDecimal bigDecimal = BigDecimal.ONE;
-    ValueMetaBase valueDoubleMetaBase = new ValueMetaBase( String.valueOf( bigDecimal ), ValueMetaInterface.TYPE_BIGNUMBER, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( bigDecimal )  ) + "</value-data>" + LINE_SEPARATOR, valueDoubleMetaBase.getDataXML( bigDecimal ) );
+    ValueMetaBase valueDoubleMetaBase =
+      new ValueMetaBase( String.valueOf( bigDecimal ), TYPE_BIGNUMBER, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    assertEquals(
+      "<value-data>" + encoder.encodeForXML( String.valueOf( bigDecimal ) ) + "</value-data>" + LINE_SEPARATOR,
+      valueDoubleMetaBase.getDataXML( bigDecimal ) );
 
     boolean valueBoolean = Boolean.TRUE;
-    ValueMetaBase valueBooleanMetaBase = new ValueMetaBase( String.valueOf( valueBoolean ), ValueMetaInterface.TYPE_BOOLEAN, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( valueBoolean )  ) + "</value-data>" + LINE_SEPARATOR, valueBooleanMetaBase.getDataXML( valueBoolean ) );
+    ValueMetaBase valueBooleanMetaBase =
+      new ValueMetaBase( String.valueOf( valueBoolean ), TYPE_BOOLEAN, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    assertEquals(
+      "<value-data>" + encoder.encodeForXML( String.valueOf( valueBoolean ) ) + "</value-data>" + LINE_SEPARATOR,
+      valueBooleanMetaBase.getDataXML( valueBoolean ) );
 
     Date date = new Date( 0 );
-    ValueMetaBase dateMetaBase = new ValueMetaBase( date.toString(), ValueMetaInterface.TYPE_DATE, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    ValueMetaBase dateMetaBase =
+      new ValueMetaBase( date.toString(), TYPE_DATE, ValueMetaInterface.STORAGE_TYPE_NORMAL );
     SimpleDateFormat formaterData = new SimpleDateFormat( ValueMetaBase.DEFAULT_DATE_FORMAT_MASK );
-    assertEquals( "<value-data>" +  encoder.encodeForXML( formaterData.format( date ) )  + "</value-data>" + LINE_SEPARATOR, dateMetaBase.getDataXML( date ) );
+    assertEquals(
+      "<value-data>" + encoder.encodeForXML( formaterData.format( date ) ) + "</value-data>" + LINE_SEPARATOR,
+      dateMetaBase.getDataXML( date ) );
 
     InetAddress inetAddress = InetAddress.getByName( "127.0.0.1" );
-    ValueMetaBase inetAddressMetaBase = new ValueMetaBase( inetAddress.toString(), ValueMetaInterface.TYPE_INET, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" +  encoder.encodeForXML( inetAddress.toString() )  + "</value-data>" + LINE_SEPARATOR, inetAddressMetaBase.getDataXML( inetAddress  ) );
+    ValueMetaBase inetAddressMetaBase =
+      new ValueMetaBase( inetAddress.toString(), TYPE_INET, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    assertEquals( "<value-data>" + encoder.encodeForXML( inetAddress.toString() ) + "</value-data>" + LINE_SEPARATOR,
+      inetAddressMetaBase.getDataXML( inetAddress ) );
 
     long value = Long.MAX_VALUE;
-    ValueMetaBase integerMetaBase = new ValueMetaBase( String.valueOf( value ), ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( value )  ) + "</value-data>" + LINE_SEPARATOR, integerMetaBase.getDataXML( value ) );
+    ValueMetaBase integerMetaBase = new ValueMetaBase( String.valueOf( value ), TYPE_INTEGER,
+      ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    assertEquals( "<value-data>" + encoder.encodeForXML( String.valueOf( value ) ) + "</value-data>" + LINE_SEPARATOR,
+      integerMetaBase.getDataXML( value ) );
 
     String stringValue = "TEST_STRING";
-    ValueMetaBase valueMetaBase = new ValueMetaBase( stringValue, ValueMetaInterface.TYPE_STRING, ValueMetaInterface.STORAGE_TYPE_NORMAL );
-    assertEquals( "<value-data>" + encoder.encodeForXML( stringValue ) + "</value-data>" + LINE_SEPARATOR, valueMetaBase.getDataXML( stringValue ) );
+    ValueMetaBase valueMetaBase =
+      new ValueMetaBase( stringValue, TYPE_STRING, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    assertEquals( "<value-data>" + encoder.encodeForXML( stringValue ) + "</value-data>" + LINE_SEPARATOR,
+      valueMetaBase.getDataXML( stringValue ) );
 
     Timestamp timestamp = new Timestamp( 0 );
-    ValueMetaBase valueMetaBaseTimeStamp = new ValueMetaBase( timestamp.toString(), ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    ValueMetaBase valueMetaBaseTimeStamp = new ValueMetaBase( timestamp.toString(), ValueMetaInterface.TYPE_TIMESTAMP,
+      ValueMetaInterface.STORAGE_TYPE_NORMAL );
     SimpleDateFormat formater = new SimpleDateFormat( ValueMetaBase.DEFAULT_TIMESTAMP_FORMAT_MASK );
-    assertEquals( "<value-data>" + encoder.encodeForXML( formater.format( timestamp ) ) + "</value-data>" + LINE_SEPARATOR, valueMetaBaseTimeStamp.getDataXML( timestamp ) );
+    assertEquals(
+      "<value-data>" + encoder.encodeForXML( formater.format( timestamp ) ) + "</value-data>" + LINE_SEPARATOR,
+      valueMetaBaseTimeStamp.getDataXML( timestamp ) );
   }
 
   @Test
@@ -204,7 +224,7 @@ public class ValueMetaBaseTest {
       obj.getValueFromSQLType( dbMeta, TEST_NAME, metaData, binaryColumnIndex, false, false );
     assertNotNull( binaryValueMeta );
     assertTrue( TEST_NAME.equals( binaryValueMeta.getName() ) );
-    assertTrue( ValueMetaInterface.TYPE_BINARY == binaryValueMeta.getType() );
+    assertTrue( TYPE_BINARY == binaryValueMeta.getType() );
     assertTrue( expectedBinarylength == binaryValueMeta.getLength() );
     assertFalse( binaryValueMeta.isLargeTextField() );
 
@@ -213,7 +233,7 @@ public class ValueMetaBaseTest {
       obj.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
     assertNotNull( varbinaryValueMeta );
     assertTrue( TEST_NAME.equals( varbinaryValueMeta.getName() ) );
-    assertTrue( ValueMetaInterface.TYPE_BINARY == varbinaryValueMeta.getType() );
+    assertTrue( TYPE_BINARY == varbinaryValueMeta.getType() );
     assertTrue( expectedVarBinarylength == varbinaryValueMeta.getLength() );
     assertFalse( varbinaryValueMeta.isLargeTextField() );
 
@@ -224,16 +244,16 @@ public class ValueMetaBaseTest {
     final int varbinaryColumnIndex = 2;
 
     ValueMetaBase valueMetaBase = new ValueMetaBase(),
-        valueMetaBaseSpy = spy( valueMetaBase );
+      valueMetaBaseSpy = spy( valueMetaBase );
     DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
     DatabaseInterface databaseInterface = Mockito.mock( DatabaseInterface.class );
-    doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface( );
+    doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
 
     ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
     valueMetaBaseSpy.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
 
     verify( databaseInterface, Mockito.times( 1 ) ).customizeValueFromSQLType( any( ValueMetaInterface.class ),
-        any( ResultSetMetaData.class ), anyInt() );
+      any( ResultSetMetaData.class ), anyInt() );
   }
 
   @Test
@@ -247,7 +267,7 @@ public class ValueMetaBaseTest {
     Mockito.when( metaData.getColumnType( 1 ) ).thenReturn( Types.TIME );
     Mockito.when( resultSet.getTime( 1 ) ).thenReturn( new Time( 0 ) );
     Mockito.when( valueMetaInterface.getOriginalColumnType() ).thenReturn( Types.TIME );
-    Mockito.when( valueMetaInterface.getType() ).thenReturn( ValueMetaInterface.TYPE_DATE );
+    Mockito.when( valueMetaInterface.getType() ).thenReturn( TYPE_DATE );
 
     DatabaseInterface databaseInterface = new Vertica5DatabaseMeta();
     Object ret = databaseInterface.getValueFromResultSet( resultSet, valueMetaInterface, 0 );
@@ -287,10 +307,12 @@ public class ValueMetaBaseTest {
     int trim_type = 0;
     Object result;
 
-    result = outValueMetaString.convertDataFromString( inputValueEmptyString, inValueMetaString, nullIf, ifNull, trim_type );
+    result =
+      outValueMetaString.convertDataFromString( inputValueEmptyString, inValueMetaString, nullIf, ifNull, trim_type );
     assertEquals( "Conversion from empty string to string must return empty string", result, StringUtils.EMPTY );
 
-    result = outValueMetaString.convertDataFromString( inputValueNullString, inValueMetaString, nullIf, ifNull, trim_type );
+    result =
+      outValueMetaString.convertDataFromString( inputValueNullString, inValueMetaString, nullIf, ifNull, trim_type );
     assertEquals( "Conversion from null string must return null", result, null );
   }
 
@@ -304,7 +326,8 @@ public class ValueMetaBaseTest {
     int trim_type = 0;
     Object result;
 
-    result = outValueMetaDate.convertDataFromString( inputValueEmptyString, inValueMetaString, nullIf, ifNull, trim_type );
+    result =
+      outValueMetaDate.convertDataFromString( inputValueEmptyString, inValueMetaString, nullIf, ifNull, trim_type );
     assertEquals( "Conversion from empty string to date must return null", result, null );
   }
 
@@ -322,14 +345,15 @@ public class ValueMetaBaseTest {
 
   @Test
   public void testIsNumeric() {
-    assertTrue( ValueMetaBase.isNumeric( ValueMetaInterface.TYPE_INTEGER ) );
-    assertTrue( ValueMetaBase.isNumeric( ValueMetaInterface.TYPE_NUMBER ) );
-    assertTrue( ValueMetaBase.isNumeric( ValueMetaInterface.TYPE_BIGNUMBER ) );
-    assertFalse( ValueMetaBase.isNumeric( ValueMetaInterface.TYPE_INET ) );
-    assertFalse( ValueMetaBase.isNumeric( ValueMetaInterface.TYPE_BOOLEAN ) );
-    assertFalse( ValueMetaBase.isNumeric( ValueMetaInterface.TYPE_BINARY ) );
-    assertFalse( ValueMetaBase.isNumeric( ValueMetaInterface.TYPE_DATE ) );
-    assertFalse( ValueMetaBase.isNumeric( ValueMetaInterface.TYPE_STRING ) );
+    int[] numTypes = { TYPE_INTEGER, TYPE_NUMBER, TYPE_BIGNUMBER };
+    for ( int type : numTypes ) {
+      assertTrue( Integer.toString( type ), ValueMetaBase.isNumeric( type ) );
+    }
+
+    int[] notNumTypes = { TYPE_INET, TYPE_BOOLEAN, TYPE_BINARY, TYPE_DATE, TYPE_STRING };
+    for ( int type : notNumTypes ) {
+      assertFalse( Integer.toString( type ), ValueMetaBase.isNumeric( type ) );
+    }
   }
 
   @Test
@@ -428,7 +452,7 @@ public class ValueMetaBaseTest {
 
   @Test
   public void testCompareIntegers() throws KettleValueException {
-    ValueMetaBase intMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaBase intMeta = new ValueMetaBase( "int", TYPE_INTEGER );
     Long int1 = new Long( 6223372036854775804L );
     Long int2 = new Long( -6223372036854775804L );
     assertEquals( 1, intMeta.compare( int1, int2 ) );
@@ -459,7 +483,7 @@ public class ValueMetaBaseTest {
 
   @Test
   public void testCompareDate() throws KettleValueException {
-    ValueMetaBase dateMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_DATE );
+    ValueMetaBase dateMeta = new ValueMetaBase( "int", TYPE_DATE );
     Date date1 = new Date( 6223372036854775804L );
     Date date2 = new Date( -6223372036854775804L );
     assertEquals( 1, dateMeta.compare( date1, date2 ) );
