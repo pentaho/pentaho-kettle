@@ -230,6 +230,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
     return true;
   }
 
+  // made not private for testing purposes
   List<String> getNextDataEntry() throws KettleException {
     // no query prepared yet?
     if ( data.query == null ) {
@@ -260,8 +261,8 @@ public class GaInputStep extends BaseStep implements StepInterface {
         int startIndex = ( data.query.getStartIndex() == null ) ? 1 : data.query.getStartIndex();
         int totalResults = ( data.feed.getTotalResults() == null ) ? 0 : data.feed.getTotalResults();
 
-        int newStartIndex = startIndex + data.entryIndex + 1;
-        if ( ( newStartIndex ) <= totalResults ) {
+        int newStartIndex = startIndex + data.entryIndex;
+        if ( newStartIndex <= totalResults ) {
           // need to query for next page
           data.query.setStartIndex( newStartIndex );
           data.feed = data.query.execute();
