@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.databaselookup;
 
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.TimedRow;
@@ -36,7 +36,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * @since 24-jan-2005
  */
 public class DatabaseLookupData extends BaseStepData implements StepDataInterface {
-  public Hashtable<RowMetaAndData, TimedRow> look; // to store values in used to look up things...
+  public LinkedHashMap<RowMetaAndData, TimedRow> look; // to store values in used to look up things...
   public Database db;
 
   public Object[] nullif; // Not found: default values...
