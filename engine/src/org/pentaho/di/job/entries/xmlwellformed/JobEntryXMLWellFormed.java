@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -73,18 +73,22 @@ import org.xml.sax.helpers.DefaultHandler;
 public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryXMLWellFormed.class; // for i18n purposes, needed by Translator2!!
 
-  public String SUCCESS_IF_AT_LEAST_X_FILES_WELL_FORMED = "success_when_at_least";
-  public String SUCCESS_IF_BAD_FORMED_FILES_LESS = "success_if_bad_formed_files_less";
-  public String SUCCESS_IF_NO_ERRORS = "success_if_no_errors";
+  public static String SUCCESS_IF_AT_LEAST_X_FILES_WELL_FORMED = "success_when_at_least";
+  public static String SUCCESS_IF_BAD_FORMED_FILES_LESS = "success_if_bad_formed_files_less";
+  public static String SUCCESS_IF_NO_ERRORS = "success_if_no_errors";
 
-  public String ADD_ALL_FILENAMES = "all_filenames";
-  public String ADD_WELL_FORMED_FILES_ONLY = "only_well_formed_filenames";
-  public String ADD_BAD_FORMED_FILES_ONLY = "only_bad_formed_filenames";
+  public static String ADD_ALL_FILENAMES = "all_filenames";
+  public static String ADD_WELL_FORMED_FILES_ONLY = "only_well_formed_filenames";
+  public static String ADD_BAD_FORMED_FILES_ONLY = "only_bad_formed_filenames";
 
+  @Deprecated
   public boolean arg_from_previous;
+  @Deprecated
   public boolean include_subfolders;
 
+  @Deprecated
   public String[] source_filefolder;
+  @Deprecated
   public String[] wildcard;
   private String nr_errors_less_than;
   private String success_condition;
@@ -120,7 +124,7 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
   }
 
   public String getXML() {
-    StringBuffer retval = new StringBuffer( 300 );
+    StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "arg_from_previous", arg_from_previous ) );
@@ -128,16 +132,16 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
     retval.append( "      " ).append( XMLHandler.addTagValue( "nr_errors_less_than", nr_errors_less_than ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "success_condition", success_condition ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "resultfilenames", resultfilenames ) );
-    retval.append( "      <fields>" ).append( Const.CR );
+    retval.append( "      " ).append( XMLHandler.openTag( "fields" ) ).append( Const.CR );
     if ( source_filefolder != null ) {
       for ( int i = 0; i < source_filefolder.length; i++ ) {
-        retval.append( "        <field>" ).append( Const.CR );
+        retval.append( "        " ).append( XMLHandler.openTag( "field" ) ).append( Const.CR );
         retval.append( "          " ).append( XMLHandler.addTagValue( "source_filefolder", source_filefolder[i] ) );
         retval.append( "          " ).append( XMLHandler.addTagValue( "wildcard", wildcard[i] ) );
-        retval.append( "        </field>" ).append( Const.CR );
+        retval.append( "        " ).append( XMLHandler.closeTag( "field" ) ).append( Const.CR );
       }
     }
-    retval.append( "      </fields>" ).append( Const.CR );
+    retval.append( "      " ).append(  XMLHandler.closeTag( "fields" ) ).append( Const.CR );
 
     return retval.toString();
   }
@@ -582,8 +586,16 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
     return getIt;
   }
 
+  public boolean isIncludeSubfolders() {
+    return include_subfolders;
+  }
+
   public void setIncludeSubfolders( boolean include_subfoldersin ) {
     this.include_subfolders = include_subfoldersin;
+  }
+
+  public boolean isArgFromPrevious() {
+    return arg_from_previous;
   }
 
   public void setArgFromPrevious( boolean argfrompreviousin ) {
@@ -592,6 +604,22 @@ public class JobEntryXMLWellFormed extends JobEntryBase implements Cloneable, Jo
 
   public void setNrErrorsLessThan( String nr_errors_less_than ) {
     this.nr_errors_less_than = nr_errors_less_than;
+  }
+
+  public String[] getSourceFileFolders() {
+    return source_filefolder;
+  }
+
+  public void setSourceFileFolders( String[] filefolders ) {
+    this.source_filefolder = filefolders;
+  }
+
+  public String[] getSourceWildcards() {
+    return wildcard;
+  }
+
+  public void setSourceWildcards( String[] wildcards ) {
+    this.wildcard = wildcards;
   }
 
   public String getNrErrorsLessThan() {

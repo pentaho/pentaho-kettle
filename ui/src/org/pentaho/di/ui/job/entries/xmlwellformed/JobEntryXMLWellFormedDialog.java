@@ -267,7 +267,7 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
     wlPrevious.setLayoutData( fdlPrevious );
     wPrevious = new Button( wSettings, SWT.CHECK );
     props.setLook( wPrevious );
-    wPrevious.setSelection( jobEntry.arg_from_previous );
+    wPrevious.setSelection( jobEntry.isArgFromPrevious() );
     wPrevious.setToolTipText( BaseMessages.getString( PKG, "JobXMLWellFormed.Previous.Tooltip" ) );
     fdPrevious = new FormData();
     fdPrevious.left = new FormAttachment( middle, 0 );
@@ -429,8 +429,8 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
     wlFields.setLayoutData( fdlFields );
 
     int rows =
-      jobEntry.source_filefolder == null ? 1 : ( jobEntry.source_filefolder.length == 0
-        ? 0 : jobEntry.source_filefolder.length );
+      jobEntry.getSourceFileFolders() == null ? 1 : ( jobEntry.getSourceFileFolders().length == 0
+        ? 0 : jobEntry.getSourceFileFolders().length );
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf =
@@ -761,29 +761,29 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
   public void getData() {
     wName.setText( Const.nullToEmpty( jobEntry.getName() ) );
 
-    if ( jobEntry.source_filefolder != null ) {
-      for ( int i = 0; i < jobEntry.source_filefolder.length; i++ ) {
+    if ( jobEntry.getSourceFileFolders() != null ) {
+      for ( int i = 0; i < jobEntry.getSourceFileFolders().length; i++ ) {
         TableItem ti = wFields.table.getItem( i );
-        if ( jobEntry.source_filefolder[i] != null ) {
-          ti.setText( 1, jobEntry.source_filefolder[i] );
+        if ( jobEntry.getSourceFileFolders()[i] != null ) {
+          ti.setText( 1, jobEntry.getSourceFileFolders()[i] );
         }
 
-        if ( jobEntry.wildcard[i] != null ) {
-          ti.setText( 2, jobEntry.wildcard[i] );
+        if ( jobEntry.getSourceWildcards()[i] != null ) {
+          ti.setText( 2, jobEntry.getSourceWildcards()[i] );
         }
       }
       wFields.setRowNums();
       wFields.optWidth( true );
     }
-    wPrevious.setSelection( jobEntry.arg_from_previous );
-    wIncludeSubfolders.setSelection( jobEntry.include_subfolders );
+    wPrevious.setSelection( jobEntry.isArgFromPrevious() );
+    wIncludeSubfolders.setSelection( jobEntry.isIncludeSubfolders() );
 
     wNrErrorsLessThan.setText( Const.NVL( jobEntry.getNrErrorsLessThan(), "10" ) );
 
     if ( jobEntry.getSuccessCondition() != null ) {
-      if ( jobEntry.getSuccessCondition().equals( jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_WELL_FORMED ) ) {
+      if ( jobEntry.getSuccessCondition().equals( JobEntryXMLWellFormed.SUCCESS_IF_AT_LEAST_X_FILES_WELL_FORMED ) ) {
         wSuccessCondition.select( 1 );
-      } else if ( jobEntry.getSuccessCondition().equals( jobEntry.SUCCESS_IF_BAD_FORMED_FILES_LESS ) ) {
+      } else if ( jobEntry.getSuccessCondition().equals( JobEntryXMLWellFormed.SUCCESS_IF_BAD_FORMED_FILES_LESS ) ) {
         wSuccessCondition.select( 2 );
       } else {
         wSuccessCondition.select( 0 );
@@ -793,9 +793,9 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
     }
 
     if ( jobEntry.getResultFilenames() != null ) {
-      if ( jobEntry.getResultFilenames().equals( jobEntry.ADD_WELL_FORMED_FILES_ONLY ) ) {
+      if ( jobEntry.getResultFilenames().equals( JobEntryXMLWellFormed.ADD_WELL_FORMED_FILES_ONLY ) ) {
         wAddFilenameToResult.select( 1 );
-      } else if ( jobEntry.getResultFilenames().equals( jobEntry.ADD_BAD_FORMED_FILES_ONLY ) ) {
+      } else if ( jobEntry.getResultFilenames().equals( JobEntryXMLWellFormed.ADD_BAD_FORMED_FILES_ONLY ) ) {
         wAddFilenameToResult.select( 2 );
       } else {
         wAddFilenameToResult.select( 0 );
@@ -830,19 +830,19 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
     jobEntry.setNrErrorsLessThan( wNrErrorsLessThan.getText() );
 
     if ( wSuccessCondition.getSelectionIndex() == 1 ) {
-      jobEntry.setSuccessCondition( jobEntry.SUCCESS_IF_AT_LEAST_X_FILES_WELL_FORMED );
+      jobEntry.setSuccessCondition( JobEntryXMLWellFormed.SUCCESS_IF_AT_LEAST_X_FILES_WELL_FORMED );
     } else if ( wSuccessCondition.getSelectionIndex() == 2 ) {
-      jobEntry.setSuccessCondition( jobEntry.SUCCESS_IF_BAD_FORMED_FILES_LESS );
+      jobEntry.setSuccessCondition( JobEntryXMLWellFormed.SUCCESS_IF_BAD_FORMED_FILES_LESS );
     } else {
-      jobEntry.setSuccessCondition( jobEntry.SUCCESS_IF_NO_ERRORS );
+      jobEntry.setSuccessCondition( JobEntryXMLWellFormed.SUCCESS_IF_NO_ERRORS );
     }
 
     if ( wAddFilenameToResult.getSelectionIndex() == 1 ) {
-      jobEntry.setResultFilenames( jobEntry.ADD_WELL_FORMED_FILES_ONLY );
+      jobEntry.setResultFilenames( JobEntryXMLWellFormed.ADD_WELL_FORMED_FILES_ONLY );
     } else if ( wAddFilenameToResult.getSelectionIndex() == 2 ) {
-      jobEntry.setResultFilenames( jobEntry.ADD_BAD_FORMED_FILES_ONLY );
+      jobEntry.setResultFilenames( JobEntryXMLWellFormed.ADD_BAD_FORMED_FILES_ONLY );
     } else {
-      jobEntry.setResultFilenames( jobEntry.ADD_ALL_FILENAMES );
+      jobEntry.setResultFilenames( JobEntryXMLWellFormed.ADD_ALL_FILENAMES );
     }
 
     int nritems = wFields.nrNonEmpty();
@@ -853,18 +853,20 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
         nr++;
       }
     }
-    jobEntry.source_filefolder = new String[nr];
-    jobEntry.wildcard = new String[nr];
+    String[] source_filefolder = new String[nr];
+    String[] wildcard = new String[nr];
     nr = 0;
     for ( int i = 0; i < nritems; i++ ) {
       String source = wFields.getNonEmpty( i ).getText( 1 );
       String wild = wFields.getNonEmpty( i ).getText( 2 );
       if ( source != null && source.length() != 0 ) {
-        jobEntry.source_filefolder[nr] = source;
-        jobEntry.wildcard[nr] = wild;
+        source_filefolder[nr] = source;
+        wildcard[nr] = wild;
         nr++;
       }
     }
+    jobEntry.setSourceFileFolders( source_filefolder );
+    jobEntry.setSourceWildcards( wildcard );
     dispose();
   }
 
