@@ -358,11 +358,6 @@ public class Const {
   public static final String MENU_LOG_FILE = "menu";
 
   /**
-   * A number of tips that are shown when the application first starts.
-   */
-  private static String[] tips;
-
-  /**
    * An array of date conversion formats
    */
   private static String[] dateFormats;
