@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.job.entries.ssh2get;
+package org.pentaho.di.job.entries;
 
 public class FTPUtils {
   public static String FILE_SEPARATOR = "/";
