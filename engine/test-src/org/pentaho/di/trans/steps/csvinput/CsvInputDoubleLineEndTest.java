@@ -26,19 +26,12 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
@@ -49,7 +42,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
  * @author Pavel Sakun
  * @see CsvInput
  */
-public class CsvInputDoubleLineEndTest {
+public class CsvInputDoubleLineEndTest extends CsvInputUnitTestBase {
   private static final String ASCII = "windows-1252";
   private static final String UTF8 = "UTF-8";
   private static final String UTF16LE = "UTF-16LE";
@@ -60,7 +53,6 @@ public class CsvInputDoubleLineEndTest {
 
   @BeforeClass
   public static void setUp() throws KettleException {
-    KettleEnvironment.init();
     stepMockHelper =
       new StepMockHelper<CsvInputMeta, CsvInputData>( "CsvInputTest", CsvInputMeta.class, CsvInputData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
@@ -89,7 +81,7 @@ public class CsvInputDoubleLineEndTest {
   }
 
   private void doTest( final String fileEncoding, final String stepEncoding, final String testData ) throws Exception {
-    String testFilePath = createTestFile( fileEncoding, testData );
+    String testFilePath = createTestFile( fileEncoding, testData ).getAbsolutePath();
 
     CsvInputMeta meta = createStepMeta( testFilePath, stepEncoding );
     CsvInputData data = new CsvInputData();
@@ -104,7 +96,7 @@ public class CsvInputDoubleLineEndTest {
       @Override
       public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
         for ( int i = 0; i < rowMeta.size(); i++ ) {
-          assertEquals( "Value", row[i] );
+          assertEquals( "Value", row[ i ] );
         }
       }
     } );
@@ -130,26 +122,7 @@ public class CsvInputDoubleLineEndTest {
     return meta;
   }
 
-  private String createTestFile( final String encoding, final String content ) throws IOException {
-    File tempFile = File.createTempFile( "PDI_tmp", ".tmp" );
-    tempFile.deleteOnExit();
-
-    Writer osw = new PrintWriter( tempFile, encoding );
-    osw.write( content );
-    osw.close();
-
-    return tempFile.getAbsolutePath();
-  }
-
   private TextFileInputField[] getInputFileFields() {
-    TextFileInputField field1 = new TextFileInputField();
-    field1.setName( "Field1" );
-    field1.setType( ValueMetaInterface.TYPE_STRING );
-
-    TextFileInputField field2 = new TextFileInputField();
-    field2.setName( "Field2" );
-    field2.setType( ValueMetaInterface.TYPE_STRING );
-
-    return new TextFileInputField[] { field1, field2 };
+    return createInputFileFields( "Field1", "Field2" );
   }
 }
