@@ -43,6 +43,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -54,6 +55,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.FTPUtils;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
@@ -79,7 +81,14 @@ import com.trilead.ssh2.SFTPv3FileHandle;
  * @since 17-12-2007
  *
  */
-
+@JobEntry(  
+    id = "JobEntrySSH2GET",
+    image = "SHG.svg",
+    i18nPackageName="org.pentaho.di.job.entries.ssh2get",
+    name="JobSSH2GET.TypeDesc",
+    description = "JobSSH2GET.Tooltip",
+    categoryDescription="i18n:org.pentaho.di.job:JobCategory.Category.Deprecated"
+)
 public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntrySSH2GET.class; // for i18n purposes, needed by Translator2!!
 
