@@ -571,6 +571,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     }
     this.selected = stepMeta.selected;
     this.distributes = stepMeta.distributes;
+    this.setRowDistribution( stepMeta.getRowDistribution() );
     this.copiesString = stepMeta.copiesString;
     this.copiesCache = null; // force re-calculation
     if ( stepMeta.location != null ) {

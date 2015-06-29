@@ -32,6 +32,7 @@ import org.pentaho.di.trans.steps.abort.AbortMeta;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -42,8 +43,9 @@ import static org.mockito.Mockito.when;
  */
 public class StepMetaTest {
 
-  private static final String STEP_ID = "step_id";
+  private static final Random rand = new Random();
 
+  private static final String STEP_ID = "step_id";
 
   @Test
   public void cloning() throws Exception {
@@ -67,6 +69,12 @@ public class StepMetaTest {
     meta.setTerminator( true );
     meta.setClusterSchemaName( "clusterSchemaName" );
 
+    boolean shouldDistribute = rand.nextBoolean();
+    meta.setDistributes( shouldDistribute );
+    if( shouldDistribute ) {
+      meta.setRowDistribution( selectRowDistribution() );
+    }
+
     Map<String, Map<String, String>> attributes = new HashMap<String, Map<String, String>>();
     Map<String, String> map1 = new HashMap<String, String>();
     map1.put( "1", "1" );
@@ -83,6 +91,10 @@ public class StepMetaTest {
     meta.setClusterSchema( new ClusterSchema( "cluster_schema", Collections.<SlaveServer>emptyList() ) );
 
     return meta;
+  }
+
+  private static RowDistributionInterface selectRowDistribution() {
+    return new FakeRowDistribution();
   }
 
   private static StepPartitioningMeta createStepPartitioningMeta( String method, String schemaName ) throws Exception {
