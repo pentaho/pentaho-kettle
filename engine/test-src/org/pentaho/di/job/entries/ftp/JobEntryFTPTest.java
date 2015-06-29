@@ -23,15 +23,21 @@
 package org.pentaho.di.job.entries.ftp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.regex.Pattern;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.job.Job;
@@ -147,4 +153,66 @@ public class JobEntryFTPTest {
     assertTrue( "There should be errors", 0 != result.getNrErrors() );
   }
 
+  @Test
+  public void testTargetFilenameNoDateTime() {
+    File destFolder = new TemporaryFolder().newFolder("pdi5558");
+    destFolder.deleteOnExit();
+    JobEntryFTP entry = new JobEntryFTP();
+    entry.setTargetDirectory( destFolder.getAbsolutePath() );
+    entry.setAddDateBeforeExtension( false );
+
+    assertNull( entry.returnTargetFilename( null ) );
+    assertEquals( destFolder.getAbsolutePath() + Const.FILE_SEPARATOR + "testFile",
+      entry.returnTargetFilename( "testFile" ) );
+    assertEquals( destFolder.getAbsolutePath() + Const.FILE_SEPARATOR + "testFile.txt",
+      entry.returnTargetFilename( "testFile.txt" ) );
+  }
+
+  @Test
+  public void testTargetFilenameWithDateTime() {
+    SimpleDateFormat yyyyMMdd = new SimpleDateFormat( "yyyyMMdd" );
+    SimpleDateFormat HHmmssSSS = new SimpleDateFormat( "HHmmssSSS" );
+    SimpleDateFormat yyyyMMddHHmmssSSS = new SimpleDateFormat( "yyyyMMdd_HHmmssSSS" );
+    File destFolder = new TemporaryFolder().newFolder("pdi5558");
+    destFolder.deleteOnExit();
+    String destFolderName = destFolder.getAbsolutePath();
+    JobEntryFTP entry = new JobEntryFTP();
+    entry.setTargetDirectory( destFolderName );
+    entry.setAddDateBeforeExtension( true );
+
+    //Test Date-Only
+    entry.setDateInFilename( true );
+    assertNull( entry.returnTargetFilename( null ) );
+    assertEquals( "Test Add Date without file extension",
+      destFolderName + Const.FILE_SEPARATOR + "testFile_" + yyyyMMdd.format( new Date() ),
+      entry.returnTargetFilename( "testFile" ) );
+    assertEquals( "Test Add Date with file extension",
+      destFolderName + Const.FILE_SEPARATOR + "testFile_" + yyyyMMdd.format( new Date() ) + ".txt",
+      entry.returnTargetFilename( "testFile.txt" ) );
+
+    //Test Date-and-Time
+    entry.setTimeInFilename( true );
+    String beforeString = destFolderName + Const.FILE_SEPARATOR + "testFile_" + yyyyMMddHHmmssSSS.format( new Date() ) + ".txt";
+    String actualValue = entry.returnTargetFilename( "testFile.txt" );
+    String afterString = destFolderName + Const.FILE_SEPARATOR + "testFile_" + yyyyMMddHHmmssSSS.format( new Date() ) + ".txt";
+
+    Pattern expectedFormat = Pattern.compile(
+      Pattern.quote( destFolderName + Const.FILE_SEPARATOR + "testFile_" + yyyyMMdd.format( new Date() ) + "_" )
+      + "([\\d]{9})\\.txt" );
+    assertTrue( "Output file matches expected format", expectedFormat.matcher( actualValue ).matches() );
+    assertTrue( "The actual time is not too early for test run", actualValue.compareTo( beforeString ) >= 0 );
+    assertTrue( "The actual time is not too late for test run", actualValue.compareTo( afterString ) <= 0 );
+
+    //Test Time-Only
+    entry.setDateInFilename( false );
+    beforeString = destFolderName + Const.FILE_SEPARATOR + "testFile_" + HHmmssSSS.format( new Date() ) + ".txt";
+    actualValue = entry.returnTargetFilename( "testFile.txt" );
+    afterString = destFolderName + Const.FILE_SEPARATOR + "testFile_" + HHmmssSSS.format( new Date() ) + ".txt";
+
+    expectedFormat = Pattern.compile(
+      Pattern.quote( destFolderName + Const.FILE_SEPARATOR + "testFile_" ) + "([\\d]{9})\\.txt" );
+    assertTrue( "Output file matches expected format", expectedFormat.matcher( actualValue ).matches() );
+    assertTrue( "The actual time is not too early for test run", actualValue.compareTo( beforeString ) >= 0 );
+    assertTrue( "The actual time is not too late for test run", actualValue.compareTo( afterString ) <= 0 );
+  }
 }
