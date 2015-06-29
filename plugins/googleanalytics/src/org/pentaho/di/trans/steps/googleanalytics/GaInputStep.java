@@ -69,7 +69,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // stores the indices where to look for the key fields in the input rows
-      data.conversionMeta = new ValueMetaInterface[meta.getFeedField().length];
+      data.conversionMeta = new ValueMetaInterface[ meta.getFeedField().length ];
 
       for ( int i = 0; i < meta.getFeedField().length; i++ ) {
 
@@ -79,11 +79,11 @@ public class GaInputStep extends BaseStep implements StepInterface {
         ValueMetaInterface conversionMeta;
 
         conversionMeta = ValueMetaFactory.cloneValueMeta( returnMeta, ValueMetaInterface.TYPE_STRING );
-        conversionMeta.setConversionMask( meta.getConversionMask()[i] );
+        conversionMeta.setConversionMask( meta.getConversionMask()[ i ] );
         conversionMeta.setDecimalSymbol( "." ); // google analytics is en-US
         conversionMeta.setGroupingSymbol( null ); // google analytics uses no grouping symbol
 
-        data.conversionMeta[i] = conversionMeta;
+        data.conversionMeta[ i ] = conversionMeta;
       }
     }
 
@@ -95,9 +95,9 @@ public class GaInputStep extends BaseStep implements StepInterface {
     if ( entry != null && ( meta.getRowLimit() <= 0 || getLinesWritten() < meta.getRowLimit() ) ) { // another record to
       // fill the output fields with look up data
       for ( int i = 0, j = 0; i < meta.getFeedField().length; i++ ) {
-        String fieldName = environmentSubstitute( meta.getFeedField()[i] );
+        String fieldName = environmentSubstitute( meta.getFeedField()[ i ] );
         Object dataObject;
-        String type = environmentSubstitute( meta.getFeedFieldType()[i] );
+        String type = environmentSubstitute( meta.getFeedFieldType()[ i ] );
 
         // We handle fields differently depending on whether its a Dimension/Metric, Data Source Property, or
         // Data Source Field. Also the API doesn't exactly match the concepts anymore (see individual comments below),
@@ -130,7 +130,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
           // Assume it's a Dimension or Metric, we've covered the rest of the cases above.
           dataObject = entry.get( j++ );
         }
-        outputRow[i] = data.outputRowMeta.getValueMeta( i ).convertData( data.conversionMeta[i], dataObject );
+        outputRow[ i ] = data.outputRowMeta.getValueMeta( i ).convertData( data.conversionMeta[ i ], dataObject );
       }
 
       // copy row to possible alternate rowset(s)
@@ -162,7 +162,8 @@ public class GaInputStep extends BaseStep implements StepInterface {
         return null;
       }
       query = dataApi.ga().get(
-        meta.isUseCustomTableId() ? environmentSubstitute( meta.getGaCustomTableId() ) : meta.getGaProfileTableId(), //ids
+        meta.isUseCustomTableId() ? environmentSubstitute( meta.getGaCustomTableId() ) : meta.getGaProfileTableId(),
+        //ids
         environmentSubstitute( meta.getStartDate() ), // start date
         environmentSubstitute( meta.getEndDate() ), // end date
         metrics  // metrics
@@ -229,7 +230,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
     return true;
   }
 
-  private List<String> getNextDataEntry() throws KettleException {
+  List<String> getNextDataEntry() throws KettleException {
     // no query prepared yet?
     if ( data.query == null ) {
 
@@ -249,15 +250,20 @@ public class GaInputStep extends BaseStep implements StepInterface {
         throw new KettleException( e2 );
       }
 
-    } else if ( data.feed != null && data.entryIndex >= data.feed.getItemsPerPage() ) {
+    } else if ( data.feed != null &&
+      // getItemsPerPage():
+      //    Its value ranges from 1 to 10,000 with a value of 1000 by default, or otherwise
+      //    specified by the max-results query parameter
+      data.entryIndex + 1 >= data.feed.getItemsPerPage() ) {
       try {
         // query is there, check whether we hit the last entry and re-query as necessary
-        int startIndex = ( data.query.getStartIndex() == null ) ? 0 : data.query.getStartIndex();
+        int startIndex = ( data.query.getStartIndex() == null ) ? 1 : data.query.getStartIndex();
         int totalResults = ( data.feed.getTotalResults() == null ) ? 0 : data.feed.getTotalResults();
 
-        if ( ( startIndex + data.entryIndex ) <= totalResults ) {
+        int newStartIndex = startIndex + data.entryIndex + 1;
+        if ( ( newStartIndex ) <= totalResults ) {
           // need to query for next page
-          data.query.setStartIndex( startIndex + data.entryIndex );
+          data.query.setStartIndex( newStartIndex );
           data.feed = data.query.execute();
           data.entryIndex = 0;
         }
