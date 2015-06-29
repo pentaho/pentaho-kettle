@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,10 +24,12 @@ package org.pentaho.di.trans.steps.exceloutput;
 
 import java.awt.Dimension;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
+import jxl.biff.StringHelper;
 import jxl.format.CellFormat;
 import jxl.format.Colour;
 import jxl.format.UnderlineStyle;
@@ -70,7 +72,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
   private ExcelOutputData data;
 
   public ExcelOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -86,9 +88,9 @@ public class ExcelOutput extends BaseStep implements StepInterface {
 
       if ( meta.isAutoSizeColums() ) {
         if ( meta.getOutputFields() != null && meta.getOutputFields().length > 0 ) {
-          data.fieldsWidth = new int[meta.getOutputFields().length];
+          data.fieldsWidth = new int[ meta.getOutputFields().length ];
         } else {
-          data.fieldsWidth = new int[data.previousMeta.size()];
+          data.fieldsWidth = new int[ data.previousMeta.size() ];
         }
       }
 
@@ -169,11 +171,11 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       if ( first ) {
         first = false;
 
-        data.fieldnrs = new int[meta.getOutputFields().length];
+        data.fieldnrs = new int[ meta.getOutputFields().length ];
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
-          data.fieldnrs[i] = data.previousMeta.indexOfValue( meta.getOutputFields()[i].getName() );
-          if ( data.fieldnrs[i] < 0 ) {
-            logError( "Field [" + meta.getOutputFields()[i].getName() + "] couldn't be found in the input stream!" );
+          data.fieldnrs[ i ] = data.previousMeta.indexOfValue( meta.getOutputFields()[ i ].getName() );
+          if ( data.fieldnrs[ i ] < 0 ) {
+            logError( "Field [" + meta.getOutputFields()[ i ].getName() + "] couldn't be found in the input stream!" );
             setErrors( 1 );
             stopAll();
             return false;
@@ -186,7 +188,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
          * Write all values in stream to text file.
          */
         for ( int i = 0; i < data.previousMeta.size(); i++ ) {
-          v = r[i];
+          v = r[ i ];
           if ( !writeField( v, data.previousMeta.getValueMeta( i ), null, i ) ) {
             return false;
           }
@@ -201,9 +203,10 @@ public class ExcelOutput extends BaseStep implements StepInterface {
          * Only write the fields specified!
          */
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
-          v = r[data.fieldnrs[i]];
+          v = r[ data.fieldnrs[ i ] ];
 
-          if ( !writeField( v, data.previousMeta.getValueMeta( data.fieldnrs[i] ), meta.getOutputFields()[i], i ) ) {
+          if ( !writeField( v, data.previousMeta.getValueMeta( data.fieldnrs[ i ] ), meta.getOutputFields()[ i ],
+            i ) ) {
             return false;
           }
         }
@@ -329,8 +332,8 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         if ( !isHeader && v != null ) {
           vlen = v.toString().trim().length();
         }
-        if ( vlen > 0 && vlen > data.fieldsWidth[column] ) {
-          data.fieldsWidth[column] = vlen + 1;
+        if ( vlen > 0 && vlen > data.fieldsWidth[ column ] ) {
+          data.fieldsWidth[ column ] = vlen + 1;
         }
       }
 
@@ -342,7 +345,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
           data.formats.put( hashName, data.headerCellFormat ); // save for next time around...
         }
       } else {
-        switch ( vMeta.getType() ) {
+        switch( vMeta.getType() ) {
           case ValueMetaInterface.TYPE_DATE: {
             if ( v != null && vMeta.getDate( v ) != null ) {
               if ( cellFormat == null ) {
@@ -448,7 +451,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       // If we have fields specified: list them in this order!
       if ( meta.getOutputFields() != null && meta.getOutputFields().length > 0 ) {
         for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
-          String fieldName = meta.getOutputFields()[i].getName();
+          String fieldName = meta.getOutputFields()[ i ].getName();
           ValueMetaInterface vMeta = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
           writeField( fieldName, vMeta, null, i, true );
         }
@@ -456,7 +459,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         if ( data.previousMeta != null ) // Just put all field names in the header/footer
         {
           for ( int i = 0; i < data.previousMeta.size(); i++ ) {
-            String fieldName = data.previousMeta.getFieldNames()[i];
+            String fieldName = data.previousMeta.getFieldNames()[ i ];
             ValueMetaInterface vMeta = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
             writeField( fieldName, vMeta, null, i, true );
           }
@@ -511,7 +514,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
 
             // Let's see if this sheet already exist...
             for ( int i = 0; i < listSheets.length; i++ ) {
-              if ( listSheets[i].equals( data.realSheetname ) ) {
+              if ( listSheets[ i ].equals( data.realSheetname ) ) {
                 // let's remove sheet
                 data.workbook.removeSheet( i );
               }
@@ -607,11 +610,12 @@ public class ExcelOutput extends BaseStep implements StepInterface {
             // auto resize columns
             int nrfields = data.fieldsWidth.length;
             for ( int i = 0; i < nrfields; i++ ) {
-              data.sheet.setColumnView( i, data.fieldsWidth[i] );
+              data.sheet.setColumnView( i, data.fieldsWidth[ i ] );
             }
           }
           data.fieldsWidth = null;
         }
+        data.ws.setWriteAccess( reEncodeWriteAccessIfNecessary( data.ws.getWriteAccess() ) );
         data.workbook.write();
         data.workbook.close();
         data.workbook = null;
@@ -786,7 +790,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         data.headerImageWidth = m.getWidth() * 0.016;
         data.headerImageHeight = m.getHeight() * 0.0625;
 
-        byte[] imageData = new byte[(int) imageFile.getContent().getSize()];
+        byte[] imageData = new byte[ (int) imageFile.getContent().getSize() ];
         KettleVFS.getInputStream( imageFile ).read( imageData );
 
         data.headerImage = new WritableImage( 0, 0, data.headerImageWidth, data.headerImageHeight, imageData );
@@ -823,5 +827,30 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     if ( meta.getRowBackGroundColor() != ExcelOutputMeta.FONT_COLOR_NONE ) {
       data.rowFontBackgoundColour = ExcelFontMap.getColour( meta.getRowBackGroundColor(), null );
     }
+  }
+  /*
+   * Returns the writeAccess, re-encoded if necessary
+   * fixes http://jira.pentaho.com/browse/PDI-14022
+   **/
+  private String reEncodeWriteAccessIfNecessary( String writeAccess ) {
+
+    if ( writeAccess == null || writeAccess.length() == 0 ) {
+      return writeAccess;
+    }
+    byte[] data = new byte[112];
+    try {
+      // jxl reads writeAccess with "UnicodeLittle" encoding, but will try to write later with "file.encoding"
+      // this throws an ArrayIndexOutOfBoundsException in *nix systems
+      StringHelper.getBytes( writeAccess, data, 0 );
+    } catch ( ArrayIndexOutOfBoundsException e ) {
+      try {
+        // properly re-encoding string from UnicodeLittle, removing BOM characters
+        return new String( writeAccess.getBytes( "UnicodeLittle" ),
+                System.getProperty( "file.encoding" ) ).substring( 2 );
+      } catch ( UnsupportedEncodingException e1 ) {
+        logError( Const.getStackTracker( e ) );
+      }
+    }
+    return writeAccess;
   }
 }
