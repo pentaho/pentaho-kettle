@@ -195,7 +195,12 @@ public class SwtSvgImageUtil {
    * Internal image loading by ClassLoader.getResourceAsStream.
    */
   private static SwtUniversalImage loadFromClassLoader( Display display, ClassLoader classLoader, String location ) {
-    InputStream s = classLoader.getResourceAsStream( location );
+    InputStream s = null;
+    try {
+      s = classLoader.getResourceAsStream( location );
+    } catch ( Throwable t ) {
+      log.logDebug( "Unable to load image from classloader [" + location + "]" );
+    }
     if ( s == null ) {
       return null;
     }
@@ -216,7 +221,12 @@ public class SwtSvgImageUtil {
       // Have to provide some fallback
       cl = SwtSvgImageUtil.class.getClassLoader();
     }
-    URL res = cl.getResource( location );
+    URL res = null;
+    try {
+      res = cl.getResource( location );
+    } catch ( Throwable t ) {
+      log.logDebug( "Unable to load image from classloader [" + location + "]" );
+    }
     if ( res == null ) {
       return null;
     }
