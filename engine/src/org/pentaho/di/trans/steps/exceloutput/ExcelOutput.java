@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,10 +24,12 @@ package org.pentaho.di.trans.steps.exceloutput;
 
 import java.awt.Dimension;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
+import jxl.biff.StringHelper;
 import jxl.format.CellFormat;
 import jxl.format.Colour;
 import jxl.format.UnderlineStyle;
@@ -578,12 +580,12 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       }
 
       try {
-          setFonts();
+        setFonts();
       } catch ( Exception we ) {
-          logError( "Error preparing fonts, colors for header and rows: " + we.toString() );
-          return retval;
+        logError( "Error preparing fonts, colors for header and rows: " + we.toString() );
+        return retval;
       }
-      
+
       data.headerWrote = false;
       data.splitnr++;
       data.oneFileOpened = true;
@@ -618,6 +620,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
           }
           data.fieldsWidth = null;
         }
+        data.ws.setWriteAccess( reEncodeWriteAccessIfNecessary( data.ws.getWriteAccess() ) );
         data.workbook.write();
         data.workbook.close();
         data.workbook = null;
@@ -822,5 +825,30 @@ public class ExcelOutput extends BaseStep implements StepInterface {
     if ( meta.getRowBackGroundColor() != ExcelOutputMeta.FONT_COLOR_NONE ) {
       data.rowFontBackgoundColour = ExcelFontMap.getColour( meta.getRowBackGroundColor(), null );
     }
+  }
+  /*
+   * Returns the writeAccess, re-encoded if necessary
+   * fixes http://jira.pentaho.com/browse/PDI-14022
+   **/
+  private String reEncodeWriteAccessIfNecessary( String writeAccess ) {
+
+    if ( writeAccess == null || writeAccess.length() == 0 ) {
+      return writeAccess;
+    }
+    byte[] data = new byte[112];
+    try {
+      // jxl reads writeAccess with "UnicodeLittle" encoding, but will try to write later with "file.encoding"
+      // this throws an ArrayIndexOutOfBoundsException in *nix systems
+      StringHelper.getBytes( writeAccess, data, 0 );
+    } catch ( ArrayIndexOutOfBoundsException e ) {
+      try {
+        // properly re-encoding string from UnicodeLittle, removing BOM characters
+        return new String( writeAccess.getBytes( "UnicodeLittle" ),
+                System.getProperty( "file.encoding" ) ).substring( 2 );
+      } catch ( UnsupportedEncodingException e1 ) {
+        logError( Const.getStackTracker( e ) );
+      }
+    }
+    return writeAccess;
   }
 }
