@@ -2211,4 +2211,9 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterface {
     }
     return fieldname;
   }
+
+  @Override
+  public boolean supportsLazyConversion() {
+      return true;
+  }
 }

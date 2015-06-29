@@ -1141,4 +1141,9 @@ public interface DatabaseInterface extends Cloneable {
    * @return a String safe for usage as a column name without the need for quoting
    */
   public String getSafeFieldname( String fieldname );
+
+  /**
+   * @return true if the database supports the lazy conversion
+   */
+  public boolean supportsLazyConversion();
 }

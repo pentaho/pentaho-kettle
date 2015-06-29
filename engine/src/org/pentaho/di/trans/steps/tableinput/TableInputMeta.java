@@ -245,7 +245,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
         db.disconnect();
       }
     }
-    if ( isLazyConversionActive() ) {
+    if ( isLazyConversion() ) {
       for ( int i = 0; i < row.size(); i++ ) {
         ValueMetaInterface v = row.getValueMeta( i );
         try {
@@ -515,6 +515,13 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setLazyConversionActive( boolean lazyConversionActive ) {
     this.lazyConversionActive = lazyConversionActive;
+  }
+
+  /**
+   * @return true if need to do lazy conversion 
+   */
+  public boolean isLazyConversion() {
+    return isLazyConversionActive() && databaseMeta.getDatabaseInterface().supportsLazyConversion();
   }
 
   /**
