@@ -55,7 +55,6 @@ import org.pentaho.di.trans.steps.tableoutput.TableOutputTest;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorTest;
 import org.pentaho.di.trans.steps.valuemapper.ValueMapperTest;
 import org.pentaho.di.trans.steps.webservices.WebServiceTest;
-import org.pentaho.di.ui.dialog.TipsDialogTest;
 
 /**
  * Regression tests for the PDI framework.
@@ -103,7 +102,6 @@ public class AllRegressionTests {
     suite.addTestSuite( CsvInput2Test.class );
     suite.addTestSuite( WebServiceTest.class );
     suite.addTest( new JUnit4TestAdapter( GPLoadTest.class ) );
-    suite.addTest( new JUnit4TestAdapter( TipsDialogTest.class ) );
     suite.addTest( new JUnit4TestAdapter( TransExecutorTest.class ) );
 
     // Temporarily disable this test, it never worked on Windows or Unix so
