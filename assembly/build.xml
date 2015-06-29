@@ -35,7 +35,7 @@
 	
   <target name="assemble-no-plugins" depends="init,resolve-all,assemble" description="Builds the application" />
 
-  <target name="resolve-all" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins"/>
+  <target name="resolve-all" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,resolve-pentaho-system"/>
 
   <property name="system.dir" value="${stage.dir}/${package.root.dir}/system" />
 
