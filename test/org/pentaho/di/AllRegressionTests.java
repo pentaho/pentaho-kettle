@@ -74,7 +74,7 @@ public class AllRegressionTests {
     // So adding testcases in the right order is important.
     //
 
-    suite.addTestSuite( StringEvaluatorTest.class );
+    suite.addTest( new JUnit4TestAdapter( StringEvaluatorTest.class ) );
     suite.addTestSuite( ParameterSimpleTransTest.class );
     suite.addTestSuite( ValueDataUtilTest.class );
     suite.addTest( new JUnit4TestAdapter( DatabaseTest.class ) );
