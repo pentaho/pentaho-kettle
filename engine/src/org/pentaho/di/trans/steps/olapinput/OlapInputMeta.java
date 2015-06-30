@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -97,7 +98,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       olap4jUrl = XMLHandler.getTagValue( stepnode, "url" );
       username = XMLHandler.getTagValue( stepnode, "username" );
-      password = XMLHandler.getTagValue( stepnode, "password" );
+      password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "password" ) );
       catalog = XMLHandler.getTagValue( stepnode, "catalog" );
       mdx = XMLHandler.getTagValue( stepnode, "mdx" );
 
@@ -153,12 +154,13 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
   public String getXML() {
     StringBuffer retval = new StringBuffer();
 
-    retval.append( "    " + XMLHandler.addTagValue( "url", olap4jUrl ) );
-    retval.append( "    " + XMLHandler.addTagValue( "username", username ) );
-    retval.append( "    " + XMLHandler.addTagValue( "password", password ) );
-    retval.append( "    " + XMLHandler.addTagValue( "mdx", mdx ) );
-    retval.append( "    " + XMLHandler.addTagValue( "catalog", catalog ) );
-    retval.append( "    " + XMLHandler.addTagValue( "variables_active", variableReplacementActive ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "url", olap4jUrl ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "username", username ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "password",
+      Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "mdx", mdx ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "catalog", catalog ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "variables_active", variableReplacementActive ) );
 
     return retval.toString();
   }
@@ -167,7 +169,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
     try {
       olap4jUrl = rep.getStepAttributeString( id_step, "url" );
       username = rep.getStepAttributeString( id_step, "username" );
-      password = rep.getStepAttributeString( id_step, "password" );
+      password = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "password" ) );
       mdx = rep.getStepAttributeString( id_step, "mdx" );
       catalog = rep.getStepAttributeString( id_step, "catalog" );
       variableReplacementActive = rep.getStepAttributeBoolean( id_step, "variables_active" );
@@ -181,7 +183,8 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       rep.saveStepAttribute( id_transformation, id_step, "url", olap4jUrl );
       rep.saveStepAttribute( id_transformation, id_step, "username", username );
-      rep.saveStepAttribute( id_transformation, id_step, "password", password );
+      rep.saveStepAttribute( id_transformation, id_step, "password",
+        Encr.encryptPasswordIfNotUsingVariables( password ) );
       rep.saveStepAttribute( id_transformation, id_step, "catalog", catalog );
       rep.saveStepAttribute( id_transformation, id_step, "mdx", mdx );
       rep.saveStepAttribute( id_transformation, id_step, "variables_active", variableReplacementActive );
