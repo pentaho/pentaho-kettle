@@ -163,6 +163,13 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
         input.setChanged();
       }
     };
+
+    SelectionAdapter lsSel = new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+      }
+    };
+
     changed = input.hasChanged();
 
     FormLayout formLayout = new FormLayout();
@@ -413,6 +420,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
     fdQuoteString.bottom = new FormAttachment( wlFields, -2 * margin );
     fdQuoteString.right = new FormAttachment( middle, 0 );
     wQuoteString.setLayoutData( fdQuoteString );
+    wQuoteString.addSelectionListener( lsSel );
 
     // Setup the "Bind parameters" label and checkbox
     //
@@ -454,8 +462,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
     fdVariables.bottom = new FormAttachment( wSetParams, -margin );
     fdVariables.right = new FormAttachment( middle, 0 );
     wVariables.setLayoutData( fdVariables );
-    // wVariables.addSelectionListener(new SelectionAdapter() { public void
-    // widgetSelected(SelectionEvent arg0) { setSQLToolTip(); } });
+    wVariables.addSelectionListener( lsSel );
 
     // Setup the "Single statement" label and checkbox
     //
@@ -472,6 +479,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
     fdSingleStatement.bottom = new FormAttachment( wVariables, -margin );
     fdSingleStatement.right = new FormAttachment( middle, 0 );
     wSingleStatement.setLayoutData( fdSingleStatement );
+    wSingleStatement.addSelectionListener( lsSel );
 
     // Setup the "execute for each row" label and checkbox
     //
@@ -488,6 +496,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
     fdEachRow.bottom = new FormAttachment( wSingleStatement, -margin );
     fdEachRow.right = new FormAttachment( middle, 0 );
     wEachRow.setLayoutData( fdEachRow );
+    wEachRow.addSelectionListener( lsSel );
 
     // Position label under the SQL editor
     //
@@ -577,6 +586,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 
     getData();
     setExecutedEachInputRow();
+    setExecutedSetParams();
     changedInDialog = false; // for prompting if dialog is simply closed
     input.setChanged( changed );
 
