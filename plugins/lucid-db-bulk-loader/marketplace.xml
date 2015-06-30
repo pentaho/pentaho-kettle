@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<market xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/pentaho/marketplace-metadata/master/marketplace.xsd">
+  <market_entry>
+  <id>pdi-lucid-db-bulk-loader</id>
+  <type>Step</type>
+  <name>PDI LucidDB Bulk Loader (Deprecated)</name>
+  <category> 
+    <name>Deprecated</name>
+    <parent>
+      <name>PDI Plugins</name>
+    </parent>
+  </category>
+
+  <description>DEPRECATED. Load data into LucidDB by using their bulk load command in streaming mode. (Doesn't work on Windows!)</description>
+  <author>Pentaho</author>
+  <forum_url>forums.pentaho.com/forumdisplay.php?135-Pentaho-Data-Integration-Kettle</forum_url>
+  <license_name>Apache License 2.0</license_name>
+  <license_text>For more details see:
+    http://www.apache.org/licenses/LICENSE-2.0.html</license_text>
+  <support_level>NOT_SUPPORTED</support_level>
+  <support_message>This step has been deprecated and removed from the distribution.</support_message>
+  <support_organization>Pentaho</support_organization>
+  <versions>
+    <version>
+      <branch>TRUNK</branch>
+      <version>0.0</version>
+      <package_url>http://nexus.pentaho.org/content/groups/omni/pentaho-kettle/lucid-db-bulk-loader-plugin/6.0-NIGHTLY/lucid-db-bulk-loader-plugin-6.0-NIGHTLY.zip</package_url>
+      <description>Deprecated</description>
+      <changelog>Changes</changelog>
+      <build_id>0</build_id>
+      <development_stage>
+        <lane>Community</lane>
+        <phase>1</phase>
+      </development_stage>
+    </version>
+  </versions>
+</market_entry>
+  
+</market>
