@@ -22,13 +22,10 @@
 
 package org.pentaho.di.trans.steps.googleanalytics;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -298,11 +295,11 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
   // helper method to allocate the arrays
   public void allocate( int nrkeys ) {
 
-    feedField = new String[nrkeys];
-    outputField = new String[nrkeys];
-    outputType = new int[nrkeys];
-    feedFieldType = new String[nrkeys];
-    conversionMask = new String[nrkeys];
+    feedField = new String[ nrkeys ];
+    outputField = new String[ nrkeys ];
+    outputType = new int[ nrkeys ];
+    feedFieldType = new String[ nrkeys ];
+    conversionMask = new String[ nrkeys ];
   }
 
   public void getFields( RowMetaInterface r, String origin, RowMetaInterface[] info, StepMeta nextStep,
@@ -312,7 +309,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     r.clear();
     // append the outputFields to the output
     for ( int i = 0; i < outputField.length; i++ ) {
-      ValueMetaInterface v = new ValueMeta( outputField[i], outputType[i] );
+      ValueMetaInterface v = new ValueMeta( outputField[ i ], outputType[ i ] );
       // that would influence the output
       // v.setConversionMask(conversionMask[i]);
       v.setOrigin( origin );
@@ -332,11 +329,11 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     retval.allocate( nrKeys );
 
     for ( int i = 0; i < nrKeys; i++ ) {
-      retval.feedField[i] = feedField[i];
-      retval.outputField[i] = outputField[i];
-      retval.outputType[i] = outputType[i];
-      retval.feedFieldType[i] = feedFieldType[i];
-      retval.conversionMask[i] = conversionMask[i];
+      retval.feedField[ i ] = feedField[ i ];
+      retval.outputField[ i ] = outputField[ i ];
+      retval.outputType[ i ] = outputType[ i ];
+      retval.feedFieldType[ i ] = feedFieldType[ i ];
+      retval.conversionMask[ i ] = conversionMask[ i ];
     }
 
     return retval;
@@ -373,12 +370,12 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
     for ( int i = 0; i < feedField.length; i++ ) {
       retval.append( "      <feedField>" ).append( Const.CR );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "feedFieldType", feedFieldType[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "feedField", feedField[i] ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "outField", outputField[i] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "feedFieldType", feedFieldType[ i ] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "feedField", feedField[ i ] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "outField", outputField[ i ] ) );
       retval
-        .append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( outputType[i] ) ) );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "conversionMask", conversionMask[i] ) );
+        .append( "        " ).append( XMLHandler.addTagValue( "type", ValueMeta.getTypeDesc( outputType[ i ] ) ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "conversionMask", conversionMask[ i ] ) );
       retval.append( "      </feedField>" ).append( Const.CR );
     }
     return retval.toString();
@@ -428,14 +425,14 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < nrFields; i++ ) {
         Node knode = XMLHandler.getSubNodeByNr( stepnode, "feedField", i );
 
-        feedFieldType[i] = XMLHandler.getTagValue( knode, "feedFieldType" );
-        feedField[i] = XMLHandler.getTagValue( knode, "feedField" );
-        outputField[i] = XMLHandler.getTagValue( knode, "outField" );
-        outputType[i] = ValueMeta.getType( XMLHandler.getTagValue( knode, "type" ) );
-        conversionMask[i] = XMLHandler.getTagValue( knode, "conversionMask" );
+        feedFieldType[ i ] = XMLHandler.getTagValue( knode, "feedFieldType" );
+        feedField[ i ] = XMLHandler.getTagValue( knode, "feedField" );
+        outputField[ i ] = XMLHandler.getTagValue( knode, "outField" );
+        outputType[ i ] = ValueMeta.getType( XMLHandler.getTagValue( knode, "type" ) );
+        conversionMask[ i ] = XMLHandler.getTagValue( knode, "conversionMask" );
 
-        if ( outputType[i] < 0 ) {
-          outputType[i] = ValueMetaInterface.TYPE_STRING;
+        if ( outputType[ i ] < 0 ) {
+          outputType[ i ] = ValueMetaInterface.TYPE_STRING;
         }
 
       }
@@ -446,7 +443,8 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
       String user = rep.getStepAttributeString( id_step, "user" );
       String pass = rep.getStepAttributeString( id_step, "pass" );
@@ -484,14 +482,14 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
       for ( int i = 0; i < nrFields; i++ ) {
 
-        feedFieldType[i] = rep.getStepAttributeString( id_step, i, "feedFieldType" );
-        feedField[i] = rep.getStepAttributeString( id_step, i, "feedField" );
-        outputField[i] = rep.getStepAttributeString( id_step, i, "outField" );
-        outputType[i] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "type" ) );
-        conversionMask[i] = rep.getStepAttributeString( id_step, i, "conversionMask" );
+        feedFieldType[ i ] = rep.getStepAttributeString( id_step, i, "feedFieldType" );
+        feedField[ i ] = rep.getStepAttributeString( id_step, i, "feedField" );
+        outputField[ i ] = rep.getStepAttributeString( id_step, i, "outField" );
+        outputType[ i ] = ValueMeta.getType( rep.getStepAttributeString( id_step, i, "type" ) );
+        conversionMask[ i ] = rep.getStepAttributeString( id_step, i, "conversionMask" );
 
-        if ( outputType[i] < 0 ) {
-          outputType[i] = ValueMetaInterface.TYPE_STRING;
+        if ( outputType[ i ] < 0 ) {
+          outputType[ i ] = ValueMetaInterface.TYPE_STRING;
         }
       }
     } catch ( Exception e ) {
@@ -499,7 +497,8 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "oauthServiceAccount", oauthServiceAccount );
       rep.saveStepAttribute( id_transformation, id_step, "oauthKeyFile", oauthKeyFile );
@@ -522,11 +521,11 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "rowLimit", rowLimit );
 
       for ( int i = 0; i < feedField.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "feedFieldType", feedFieldType[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "feedField", feedField[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "outField", outputField[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "conversionMask", conversionMask[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "type", ValueMeta.getTypeDesc( outputType[i] ) );
+        rep.saveStepAttribute( id_transformation, id_step, i, "feedFieldType", feedFieldType[ i ] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "feedField", feedField[ i ] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "outField", outputField[ i ] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "conversionMask", conversionMask[ i ] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "type", ValueMeta.getTypeDesc( outputType[ i ] ) );
 
       }
 
