@@ -23,9 +23,8 @@
 package org.pentaho.di.core.lifecycle;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Functions;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Maps;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -54,8 +53,11 @@ public class KettleLifecycleSupport {
   public KettleLifecycleSupport() {
     Set<KettleLifecycleListener> listeners =
       LifecycleSupport.loadPlugins( KettleLifecyclePluginType.class, KettleLifecycleListener.class );
-    kettleLifecycleListeners =
-      new ConcurrentHashMap<KettleLifecycleListener, Boolean>( Maps.asMap( listeners, Functions.constant( false ) ) );
+    kettleLifecycleListeners = new ConcurrentHashMap<KettleLifecycleListener, Boolean>();
+
+    for( KettleLifecycleListener kll: listeners ) {
+      kettleLifecycleListeners.put( kll, false );
+    }
 
     registry.addPluginListener( KettleLifecyclePluginType.class, new PluginTypeListener() {
 
