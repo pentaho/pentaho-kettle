@@ -33,7 +33,7 @@
     
     <dependency org="org.apache.commons"  name="commons-compress"    rev="1.4"              transitive="false"/>
     <dependency org="dom4j"               name="dom4j"               rev="1.6.1"            transitive="false"/>
-    <dependency org="org.mortbay.jetty"   name="jetty"               rev="6.1.21"           transitive="false"/>
+    <dependency org="org.eclipse.jetty" name="jetty-util" rev="8.1.15.v20140411" transitive="false"/>
     <dependency org="jug-lgpl"            name="jug-lgpl"            rev="2.0.0"            transitive="false"/>
     <dependency org="com.jcraft"          name="jsch"                rev="0.1.46"           transitive="false"/>
     <dependency org="ognl"                name="ognl"                rev="2.6.9"            transitive="false"/>
