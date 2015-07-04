@@ -24,7 +24,7 @@ package org.pentaho.di.core.encryption;
 
 import java.math.BigInteger;
 
-import org.mortbay.jetty.security.Password;
+import org.eclipse.jetty.util.security.Password;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;

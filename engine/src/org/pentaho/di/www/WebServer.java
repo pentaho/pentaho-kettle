@@ -22,20 +22,22 @@
 
 package org.pentaho.di.www;
 
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.handler.ContextHandlerCollection;
-import org.mortbay.jetty.handler.ResourceHandler;
-import org.mortbay.jetty.plus.jaas.JAASUserRealm;
-import org.mortbay.jetty.security.Constraint;
-import org.mortbay.jetty.security.ConstraintMapping;
-import org.mortbay.jetty.security.HashUserRealm;
-import org.mortbay.jetty.security.SecurityHandler;
-import org.mortbay.jetty.security.SslSocketConnector;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.plus.jaas.JAASLoginService;
+import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.util.security.Password;
+import org.eclipse.jetty.security.ConstraintMapping;
+import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.server.ssl.SslSocketConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler; 
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
@@ -154,19 +156,19 @@ public class WebServer {
 
     // Set up the security handler, optionally with JAAS
     //
-    SecurityHandler securityHandler = new SecurityHandler();
-
+    ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
+    
     if ( System.getProperty( "loginmodulename" ) != null
         && System.getProperty( "java.security.auth.login.config" ) != null ) {
-      JAASUserRealm jaasRealm = new JAASUserRealm( "Kettle" );
-      jaasRealm.setLoginModuleName( System.getProperty( "loginmodulename" ) );
-      securityHandler.setUserRealm( jaasRealm );
+      JAASLoginService jaasLoginService = new JAASLoginService( "Kettle" );
+      jaasLoginService.setLoginModuleName( System.getProperty( "loginmodulename" ) );
+      securityHandler.setLoginService( jaasLoginService );
     } else {
-      HashUserRealm hashUserRealm;
+      HashLoginService hashLoginService;
       SlaveServer slaveServer = transformationMap.getSlaveServerConfig().getSlaveServer();
       if ( !Const.isEmpty( slaveServer.getPassword() ) ) {
-        hashUserRealm = new HashUserRealm( "Kettle" );
-        hashUserRealm.put( slaveServer.getUsername(), slaveServer.getPassword() );
+        hashLoginService = new HashLoginService( "Kettle" );
+        hashLoginService.putUser( slaveServer.getUsername(), new Password(slaveServer.getPassword()),  new String[] {});
       } else {
         // See if there is a kettle.pwd file in the KETTLE_HOME directory:
         if ( Const.isEmpty( passwordFile ) ) {
@@ -177,9 +179,9 @@ public class WebServer {
             passwordFile = Const.getKettleLocalCartePasswordFile();
           }
         }
-        hashUserRealm = new HashUserRealm( "Kettle", passwordFile );
+        hashLoginService = new HashLoginService( "Kettle", passwordFile );
       }
-      securityHandler.setUserRealm( hashUserRealm );
+      securityHandler.setLoginService( hashLoginService );
     }
 
     securityHandler.setConstraintMappings( new ConstraintMapping[] { constraintMapping } );
@@ -190,7 +192,7 @@ public class WebServer {
 
     // Root
     //
-    Context root = new Context( contexts, GetRootServlet.CONTEXT_PATH, Context.SESSIONS );
+    ServletContextHandler root = new ServletContextHandler( contexts, GetRootServlet.CONTEXT_PATH, ServletContextHandler.SESSIONS );
     GetRootServlet rootServlet = new GetRootServlet();
     rootServlet.setJettyMode( true );
     root.addServlet( new ServletHolder( rootServlet ), "/*" );
@@ -203,7 +205,7 @@ public class WebServer {
       servlet.setup( transformationMap, jobMap, socketRepository, detections );
       servlet.setJettyMode( true );
 
-      Context servletContext = new Context( contexts, servlet.getContextPath(), Context.SESSIONS );
+      ServletContextHandler servletContext = new ServletContextHandler( contexts, servlet.getContextPath(), ServletContextHandler.SESSIONS );
       ServletHolder servletHolder = new ServletHolder( (Servlet) servlet );
       servletContext.addServlet( servletHolder, "/*" );
     }
@@ -227,9 +229,11 @@ public class WebServer {
     //
     ResourceHandler resourceHandler = new ResourceHandler();
     resourceHandler.setResourceBase( "temp" );
-
     // add all handlers/contexts to server
-    server.setHandlers( new Handler[] { securityHandler, contexts, resourceHandler, } );
+
+    HandlerList handlers = new HandlerList();
+    handlers.setHandlers(new Handler[] { securityHandler, contexts, resourceHandler });
+    server.setHandler(handlers);
 
     // Start execution
     createListeners();

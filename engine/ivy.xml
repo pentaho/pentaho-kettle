@@ -59,8 +59,6 @@
     <dependency org="com.sun.jersey"                   name="jersey-bundle"        rev="1.16"            transitive="false"/>
     <dependency org="com.sun.jersey"                   name="jersey-client"        rev="1.16"            transitive="false"/>
     <dependency org="com.sun.jersey"                   name="jersey-core"          rev="1.16"            transitive="false"/>
-    <dependency org="org.mortbay.jetty"                name="jetty-plus"           rev="6.1.21"          transitive="false"/>
-    <dependency org="org.mortbay.jetty"                name="jetty-util"           rev="6.1.21"          transitive="false"/>
     <dependency org="jexcelapi"                        name="jxl"                  rev="2.6.12"          transitive="false"/>     
     <dependency org="ldapjdk"                          name="ldapjdk"              rev="20000524"        transitive="false"/>
     <dependency org="monetdb"                          name="monetdb-jdbc"         rev="2.8"             transitive="false"/>
@@ -104,8 +102,13 @@
     <dependency org="org.mnode.mstor"                  name="mstor"                rev="0.9.13"          transitive="false"/>
     <dependency org="org.xerial.snappy"                name="snappy-java"          rev="1.1.0"           transitive="true"/>
     <dependency org="commons-cli"											 name="commons-cli"					 rev="1.2" 						 transitive="false"/>   
-
-    
+	<dependency org="org.eclipse.jetty" name="jetty-plus" rev="8.1.15.v20140411" transitive="false" conf="default->default"/>
+    <dependency org="org.eclipse.jetty" name="jetty-server" rev="8.1.15.v20140411"  conf="default->default">
+    	<exclude org="org.eclipse.jetty.orbit" name="javax.servlet-3.0.0.v201112011016"/>
+    </dependency>
+	<dependency org="org.eclipse.jetty" name="jetty-security" rev="8.1.15.v20140411" transitive="false"  conf="default->default"/>
+	<dependency org="org.eclipse.jetty" name="jetty-servlet" rev="8.1.15.v20140411" transitive="false"  conf="default->default"/>
+	<dependency org="org.eclipse.jetty" name="jetty-xml" rev="8.1.15.v20140411" transitive="false"  conf="default->default"/>
     <!-- OLAP4J is bringing in an older version of beanutils-core than is needed -->
     <dependency org="commons-beanutils"   name="commons-beanutils-core" rev="1.8.0"         transitive="false"/>
     
@@ -116,5 +119,7 @@
     <dependency org="junit"               name="junit"         rev="4.7"     conf="test->default" transitive="false"/>
     <dependency org="org.mockito"         name="mockito-all"   rev="1.9.5"   conf="test->default" transitive="false" />
     
+	<exclude org="org.eclipse.jetty.orbit" module="javax.servlet"/>
+  
   </dependencies>
 </ivy-module>
