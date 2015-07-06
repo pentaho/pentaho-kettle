@@ -65,7 +65,7 @@ public class CsvInput extends BaseStep implements StepInterface {
   private CsvInputData data;
 
   public CsvInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                   Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -243,7 +243,7 @@ public class CsvInput extends BaseStep implements StepInterface {
 
       if ( data.filenames.length > 0 ) {
         logBasic( BaseMessages.getString(
-          PKG, "CsvInput.Log.ParallelFileNrAndPositionFeedback", data.filenames[data.filenr], Long
+          PKG, "CsvInput.Log.ParallelFileNrAndPositionFeedback", data.filenames[ data.filenr ], Long
             .toString( data.fileSizes.get( data.filenr ) ), Long.toString( data.bytesToSkipInFirstFile ), Long
             .toString( data.blockToRead ) ) );
       }
@@ -278,7 +278,7 @@ public class CsvInput extends BaseStep implements StepInterface {
       row = getRow(); // Grab another row...
     }
 
-    data.filenames = filenames.toArray( new String[filenames.size()] );
+    data.filenames = filenames.toArray( new String[ filenames.size() ] );
 
     logBasic( BaseMessages.getString( PKG, "CsvInput.Log.ReadingFromNrFiles", Integer
       .toString( data.filenames.length ) ) );
@@ -320,7 +320,7 @@ public class CsvInput extends BaseStep implements StepInterface {
 
       // Open the next one...
       //
-      FileObject fileObject = KettleVFS.getFileObject( data.filenames[data.filenr], getTransMeta() );
+      FileObject fileObject = KettleVFS.getFileObject( data.filenames[ data.filenr ], getTransMeta() );
       if ( !( fileObject instanceof LocalFile ) ) {
         // We can only use NIO on local files at the moment, so that's what we limit ourselves to.
         //
@@ -328,7 +328,7 @@ public class CsvInput extends BaseStep implements StepInterface {
       }
 
       if ( meta.isLazyConversionActive() ) {
-        data.binaryFilename = data.filenames[data.filenr].getBytes();
+        data.binaryFilename = data.filenames[ data.filenr ].getBytes();
       }
 
       data.fis = new FileInputStream( KettleVFS.getFilename( fileObject ) );
@@ -367,7 +367,7 @@ public class CsvInput extends BaseStep implements StepInterface {
         // Standard flat file : skip header
         if ( !data.parallel || data.bytesToSkipInFirstFile <= 0 ) {
           readOneRow( true, false ); // skip this row.
-          logBasic( BaseMessages.getString( PKG, "CsvInput.Log.HeaderRowSkipped", data.filenames[data.filenr - 1] ) );
+          logBasic( BaseMessages.getString( PKG, "CsvInput.Log.HeaderRowSkipped", data.filenames[ data.filenr - 1 ] ) );
         }
       }
 
@@ -390,10 +390,9 @@ public class CsvInput extends BaseStep implements StepInterface {
   /**
    * Read a single row of data from the file...
    *
-   * @param skipRow
-   *          if row should be skipped: header row or part of row in case of parallel read
-   * @param ignoreEnclosures
-   *          if enclosures should be ignored, i.e. in case of we need to skip part of the row during parallel read
+   * @param skipRow          if row should be skipped: header row or part of row in case of parallel read
+   * @param ignoreEnclosures if enclosures should be ignored, i.e. in case of we need to skip part of the row during
+   *                         parallel read
    * @return a row of data...
    * @throws KettleException
    */
@@ -487,7 +486,6 @@ public class CsvInput extends BaseStep implements StepInterface {
                 // We found an enclosure character.
                 // Read another byte...
                 if ( data.moveEndBufferPointer() ) {
-                  enclosureFound = false;
                   break;
                 }
 
@@ -537,7 +535,7 @@ public class CsvInput extends BaseStep implements StepInterface {
 
         if ( !skipRow ) {
           if ( meta.isLazyConversionActive() ) {
-            outputRowData[outputIndex++] = field;
+            outputRowData[ outputIndex++ ] = field;
           } else {
             // We're not lazy so we convert the data right here and now.
             // The convert object uses binary storage as such we just have to ask the native type from it.
@@ -545,11 +543,11 @@ public class CsvInput extends BaseStep implements StepInterface {
             //
             ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta( outputIndex );
             try {
-              outputRowData[outputIndex++] = sourceValueMeta.convertBinaryStringToNativeType( field );
+              outputRowData[ outputIndex++ ] = sourceValueMeta.convertBinaryStringToNativeType( field );
             } catch ( KettleValueException e ) {
               // There was a conversion error,
               //
-              outputRowData[outputIndex++] = null;
+              outputRowData[ outputIndex++ ] = null;
 
               if ( conversionExceptions == null ) {
                 conversionExceptions = new ArrayList<Exception>();
@@ -561,7 +559,7 @@ public class CsvInput extends BaseStep implements StepInterface {
             }
           }
         } else {
-          outputRowData[outputIndex++] = null; // nothing for the header, no conversions here.
+          outputRowData[ outputIndex++ ] = null; // nothing for the header, no conversions here.
         }
 
         // OK, move on to the next field...
@@ -614,14 +612,14 @@ public class CsvInput extends BaseStep implements StepInterface {
       //
       if ( meta.isIncludingFilename() && !Const.isEmpty( meta.getFilenameField() ) ) {
         if ( meta.isLazyConversionActive() ) {
-          outputRowData[data.filenameFieldIndex] = data.binaryFilename;
+          outputRowData[ data.filenameFieldIndex ] = data.binaryFilename;
         } else {
-          outputRowData[data.filenameFieldIndex] = data.filenames[data.filenr - 1];
+          outputRowData[ data.filenameFieldIndex ] = data.filenames[ data.filenr - 1 ];
         }
       }
 
       if ( data.isAddingRowNumber ) {
-        outputRowData[data.rownumFieldIndex] = data.rowNumber++;
+        outputRowData[ data.rownumFieldIndex ] = data.rowNumber++;
       }
 
       if ( !ignoreEnclosures ) {
@@ -729,7 +727,7 @@ public class CsvInput extends BaseStep implements StepInterface {
         }
       }
 
-      switch ( data.encodingType ) {
+      switch( data.encodingType ) {
         case DOUBLE_BIG_ENDIAN:
           data.crLfMatcher = new MultiByteBigCrLfMatcher();
           break;
@@ -750,21 +748,16 @@ public class CsvInput extends BaseStep implements StepInterface {
   /**
    * This method is borrowed from TextFileInput
    *
-   * @param log
-   *          logger
-   * @param line
-   *          line to analyze
-   * @param delimiter
-   *          delimiter used
-   * @param enclosure
-   *          enclosure used
-   * @param escapeCharacter
-   *          escape character used
+   * @param log             logger
+   * @param line            line to analyze
+   * @param delimiter       delimiter used
+   * @param enclosure       enclosure used
+   * @param escapeCharacter escape character used
    * @return list of string detected
    * @throws KettleException
    */
   public static String[] guessStringsFromLine( LogChannelInterface log, String line, String delimiter,
-    String enclosure, String escapeCharacter ) throws KettleException {
+                                               String enclosure, String escapeCharacter ) throws KettleException {
     List<String> strings = new ArrayList<String>();
 
     String pol; // piece of line
@@ -944,6 +937,6 @@ public class CsvInput extends BaseStep implements StepInterface {
         .toString() ), e );
     }
 
-    return strings.toArray( new String[strings.size()] );
+    return strings.toArray( new String[ strings.size() ] );
   }
 }
