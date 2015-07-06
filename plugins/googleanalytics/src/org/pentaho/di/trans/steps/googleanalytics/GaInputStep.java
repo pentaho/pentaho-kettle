@@ -230,6 +230,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
     return true;
   }
 
+  // made not private for testing purposes
   List<String> getNextDataEntry() throws KettleException {
     // no query prepared yet?
     if ( data.query == null ) {
@@ -250,18 +251,18 @@ public class GaInputStep extends BaseStep implements StepInterface {
         throw new KettleException( e2 );
       }
 
-    } else if ( data.feed != null &&
+    } else if ( data.feed != null
       // getItemsPerPage():
       //    Its value ranges from 1 to 10,000 with a value of 1000 by default, or otherwise
       //    specified by the max-results query parameter
-      data.entryIndex + 1 >= data.feed.getItemsPerPage() ) {
+      && data.entryIndex + 1 >= data.feed.getItemsPerPage() ) {
       try {
         // query is there, check whether we hit the last entry and re-query as necessary
         int startIndex = ( data.query.getStartIndex() == null ) ? 1 : data.query.getStartIndex();
         int totalResults = ( data.feed.getTotalResults() == null ) ? 0 : data.feed.getTotalResults();
 
-        int newStartIndex = startIndex + data.entryIndex + 1;
-        if ( ( newStartIndex ) <= totalResults ) {
+        int newStartIndex = startIndex + data.entryIndex;
+        if ( newStartIndex <= totalResults ) {
           // need to query for next page
           data.query.setStartIndex( newStartIndex );
           data.feed = data.query.execute();
