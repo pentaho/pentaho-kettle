@@ -22,11 +22,13 @@
 
 package org.pentaho.di.cluster;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
+import static org.junit.Assert.*;
 import org.pentaho.di.core.KettleEnvironment;
 
-public class CarteLauncherTest extends TestCase {
+public class CarteLauncherTest {
+
+  @Test( timeout = 10 * 60 * 1000 )
   public void testLaunchStopSlaveServer() throws Exception {
     KettleEnvironment.init();
 
