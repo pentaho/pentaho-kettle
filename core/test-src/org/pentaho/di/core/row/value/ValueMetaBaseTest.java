@@ -52,7 +52,6 @@ import org.mockito.Mockito;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.core.database.DatabaseInterfaceExtended;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.NetezzaDatabaseMeta;
 import org.pentaho.di.core.database.Vertica5DatabaseMeta;
@@ -233,12 +232,7 @@ public class ValueMetaBaseTest {
     ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
     valueMetaBaseSpy.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
 
-    DatabaseInterfaceExtended databaseInterfaceExtended = Mockito.mock( DatabaseInterfaceExtended.class );
-    doReturn( databaseInterfaceExtended ).when( dbMeta ).getDatabaseInterface();
-
-    valueMetaBaseSpy.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
-
-    verify( databaseInterfaceExtended, Mockito.times( 1 ) ).customizeValueFromSQLType( any( ValueMetaInterface.class ),
+    verify( databaseInterface, Mockito.times( 1 ) ).customizeValueFromSQLType( any( ValueMetaInterface.class ),
         any( ResultSetMetaData.class ), anyInt() );
   }
 
