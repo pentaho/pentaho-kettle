@@ -23,7 +23,9 @@
 package org.pentaho.di.ui.trans.steps.sftpput;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -53,6 +55,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
@@ -1108,34 +1111,12 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 
   }
 
-  private boolean connectToSFTP( boolean checkFolder, String Remotefoldername ) {
-    boolean retval = false;
+  @VisibleForTesting
+  boolean connectToSFTP( boolean checkFolder, String Remotefoldername ) {
+    boolean retval = true;
     try {
       if ( sftpclient == null ) {
-        // Create sftp client to host ...
-        sftpclient =
-          new SFTPClient(
-            InetAddress.getByName(
-              transMeta.environmentSubstitute( wServerName.getText() ) ),
-            Const.toInt( transMeta.environmentSubstitute( wServerPort.getText() ), 22 ),
-            transMeta.environmentSubstitute( wUserName.getText() ),
-            transMeta.environmentSubstitute( wKeyFilename.getText() ),
-            transMeta.environmentSubstitute( wkeyfilePass.getText() ) );
-        // Set proxy?
-        String realProxyHost = transMeta.environmentSubstitute( wProxyHost.getText() );
-        if ( !Const.isEmpty( realProxyHost ) ) {
-          // Set proxy
-          sftpclient.setProxy(
-            realProxyHost,
-            transMeta.environmentSubstitute( wProxyPort.getText() ),
-            transMeta.environmentSubstitute( wProxyUsername.getText() ),
-            transMeta.environmentSubstitute( wProxyPassword.getText() ),
-            wProxyType.getText() );
-        }
-        // login to ftp host ...
-        sftpclient.login( transMeta.environmentSubstitute( wPassword.getText() ) );
-
-        retval = true;
+        sftpclient = createSFTPClient();
       }
       if ( checkFolder ) {
         retval = sftpclient.folderExists( Remotefoldername );
@@ -1148,8 +1129,36 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
         + Const.CR );
       mb.setText( BaseMessages.getString( PKG, "SFTPPUT.ErrorConnect.Title.Bad" ) );
       mb.open();
+      retval = false;
     }
     return retval;
+  }
+
+  SFTPClient createSFTPClient() throws UnknownHostException, KettleJobException {
+    // Create sftp client to host ...
+    sftpclient =
+      new SFTPClient(
+        InetAddress.getByName(
+          transMeta.environmentSubstitute( wServerName.getText() ) ),
+        Const.toInt( transMeta.environmentSubstitute( wServerPort.getText() ), 22 ),
+        transMeta.environmentSubstitute( wUserName.getText() ),
+        transMeta.environmentSubstitute( wKeyFilename.getText() ),
+        transMeta.environmentSubstitute( wkeyfilePass.getText() ) );
+    // Set proxy?
+    String realProxyHost = transMeta.environmentSubstitute( wProxyHost.getText() );
+    if ( !Const.isEmpty( realProxyHost ) ) {
+      // Set proxy
+      sftpclient.setProxy(
+        realProxyHost,
+        transMeta.environmentSubstitute( wProxyPort.getText() ),
+        transMeta.environmentSubstitute( wProxyUsername.getText() ),
+        transMeta.environmentSubstitute( wProxyPassword.getText() ),
+        wProxyType.getText() );
+    }
+    // login to ftp host ...
+    sftpclient.login( transMeta.environmentSubstitute( wPassword.getText() ) );
+
+    return sftpclient;
   }
 
   private void getFields() {
