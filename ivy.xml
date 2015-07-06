@@ -23,7 +23,7 @@
     <dependency org="${ivy.artifact.group}"    name="kettle-engine-test"   rev="${project.revision}" changing="true" transitive="false" conf="test->default"/>
     <dependency org="junit"                    name="junit"                rev="4.7"    transitive="false" conf="test->default"/>
     <dependency org="org.mockito"              name="mockito-all"          rev="1.9.5"  transitive="false" conf="test->default"/>
-    <dependency org="org.mortbay.jetty"        name="jetty-servlet-tester" rev="6.1.21" transitive="false" conf="test->default"/>
+    <dependency org="org.eclipse.jetty"        name="test-jetty-servlet" rev="8.1.15.v20140411" transitive="true" conf="test->default"/>
     <dependency org="net.sourceforge.nekohtml" name="nekohtml"             rev="1.9.7"  transitive="false" conf="test->default"/>
     <dependency org="com.puppycrawl.tools"     name="checkstyle"           rev="5.7"    transitive="true"  conf="checkstyle->default"/>
 
