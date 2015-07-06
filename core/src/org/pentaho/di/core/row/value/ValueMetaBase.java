@@ -54,7 +54,6 @@ import java.util.TimeZone;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.core.database.DatabaseInterfaceExtended;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GreenplumDatabaseMeta;
 import org.pentaho.di.core.database.MySQLDatabaseMeta;
@@ -4581,15 +4580,13 @@ public class ValueMetaBase implements ValueMetaInterface {
         }
       }
 
-      ValueMetaInterface newV = v;
-      if ( databaseMeta.getDatabaseInterface() instanceof DatabaseInterfaceExtended ) {
-        try {
-          newV = ( (DatabaseInterfaceExtended) databaseMeta.getDatabaseInterface() ).customizeValueFromSQLType( v, rm, index );
-        } catch ( SQLException e ) {
-          throw new SQLException( e );
-        }
+      ValueMetaInterface newV = null;
+      try {
+        newV = databaseMeta.getDatabaseInterface().customizeValueFromSQLType( v, rm, index );
+      } catch ( SQLException e ) {
+        throw new SQLException( e );
       }
-      return newV;
+      return newV == null ? v : newV;
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Error determining value metadata from SQL resultset metadata", e );
     }
