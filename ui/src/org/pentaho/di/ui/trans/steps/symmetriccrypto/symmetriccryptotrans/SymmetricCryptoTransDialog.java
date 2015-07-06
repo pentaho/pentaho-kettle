@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -535,14 +535,6 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
 
     wStepname.addSelectionListener( lsDef );
 
-    // Whenever something changes, set the tooltip to the expanded version
-    // of the filename:
-    wSecretKey.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        wSecretKey.setToolTipText( transMeta.environmentSubstitute( wSecretKey.getText() ) );
-      }
-    } );
-
     wTabFolder.setSelection( 0 );
 
     // Set the shell size, based upon previous time...
@@ -617,8 +609,8 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
   public void getData() {
     wOperation.setText( SymmetricCryptoTransMeta.getOperationTypeDesc( input.getOperationType() ) );
     wAlgorithm.setText( Const.NVL( input.getAlgorithm(), SymmetricCryptoMeta.TYPE_ALGORYTHM_CODE[0] ) );
-    if ( input.getMessageFied() != null ) {
-      wMessage.setText( input.getMessageFied() );
+    if ( input.getMessageField() != null ) {
+      wMessage.setText( input.getMessageField() );
     }
     if ( input.getResultfieldname() != null ) {
       wResultField.setText( input.getResultfieldname() );
