@@ -81,7 +81,7 @@ import com.trilead.ssh2.SFTPv3FileHandle;
  *
  */
 @JobEntry(  
-    id = "JobEntrySSH2PUT",
+    id = "SSH2_PUT",
     image = "SHP.svg",
     i18nPackageName="org.pentaho.di.job.entries.ssh2put",
     name="JobSSH2PUT.TypeDesc",
