@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,15 +23,6 @@
 
 package org.pentaho.di.core;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.laf.BasePropertyHandler;
-import org.pentaho.di.version.BuildVersion;
-
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.io.BufferedReader;
@@ -39,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -60,6 +52,15 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.laf.BasePropertyHandler;
+import org.pentaho.di.version.BuildVersion;
 
 /**
  * This class is used to define a number of default values for various settings throughout Kettle. It also contains a
@@ -343,6 +344,15 @@ public class Const {
   public static final String NULL_NONE = "";
 
   /**
+   * Rounding mode, not implemented in {@code BigDecimal}. Method java.lang.Math.round(double) processes this way. <br/>
+   * Rounding mode to round towards {@literal "nearest neighbor"} unless both neighbors are equidistant, in which case
+   * round ceiling. <br/>
+   * Behaves as for {@code ROUND_CEILING} if the discarded fraction is &ge; 0.5; otherwise, behaves as for
+   * {@code ROUND_FLOOR}. Note that this is the most common arithmetical rounding mode.
+   */
+  public static final int ROUND_HALF_CEILING = -1;
+
+  /**
    * The base name of the Chef logfile
    */
   public static final String CHEF_LOG_FILE = "chef";
@@ -406,7 +416,7 @@ public class Const {
 
   /** Name of the kettle parameters file */
   public static final String KETTLE_PROPERTIES = "kettle.properties";
-  
+
   /** Name of the kettle shared data file */
   public static final String SHARED_DATA_FILE = "shared.xml";
 
@@ -1030,17 +1040,17 @@ public class Const {
    * A variable to configure jetty option: lowResourcesMaxIdleTime for Carte
    */
   public static final String KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME = "KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME";
-  
+
   /**
-  * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
-  * overflow while rounding
-  *
-  * @param f
-  *          The value to round
-  * @param places
-  *          The number of decimal places
-  * @return The rounded floating point value
-  */
+   * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
+   * overflow while rounding
+   *
+   * @param f
+   *          The value to round
+   * @param places
+   *          The number of decimal places
+   * @return The rounded floating point value
+   */
 
   public static final double round( double f, int places ) {
     return round( f, places, java.math.BigDecimal.ROUND_HALF_EVEN );
@@ -1058,7 +1068,6 @@ public class Const {
    *          The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
    * @return The rounded floating point value
    */
-
   public static final double round( double f, int places, int roundingMode ) {
     // We can't round non-numbers or infinite values
     //
@@ -1068,9 +1077,32 @@ public class Const {
 
     // Do the rounding...
     //
-    java.math.BigDecimal bdtemp = java.math.BigDecimal.valueOf( f );
-    bdtemp = bdtemp.setScale( places, roundingMode );
+    java.math.BigDecimal bdtemp = round( java.math.BigDecimal.valueOf( f ), places, roundingMode );
     return bdtemp.doubleValue();
+  }
+
+  /**
+   * rounds BigDecimal f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid
+   * integer overflow while rounding
+   *
+   * @param f
+   *          The value to round
+   * @param places
+   *          The number of decimal places
+   * @param roundingMode
+   *          The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
+   * @return The rounded floating point value
+   */
+  public static final BigDecimal round( BigDecimal f, int places, int roundingMode ) {
+    if ( roundingMode == ROUND_HALF_CEILING ) {
+      if ( f.signum() >= 0 ) {
+        return round( f, places, BigDecimal.ROUND_HALF_UP );
+      } else {
+        return round( f, places, BigDecimal.ROUND_HALF_DOWN );
+      }
+    } else {
+      return f.setScale( places, roundingMode );
+    }
   }
 
   /*
@@ -1721,8 +1753,7 @@ public class Const {
   public static final String getKettleDirectory() {
     return getUserHomeDirectory() + FILE_SEPARATOR + getUserBaseDir();
   }
-  
-   
+
   /**
    * Determines the Kettle directory in the user's home directory.
    *
