@@ -82,7 +82,7 @@ import com.trilead.ssh2.SFTPv3FileHandle;
  *
  */
 @JobEntry(  
-    id = "JobEntrySSH2GET",
+    id = "SSH2_GET",
     image = "SHG.svg",
     i18nPackageName="org.pentaho.di.job.entries.ssh2get",
     name="JobSSH2GET.TypeDesc",
