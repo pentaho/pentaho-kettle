@@ -816,6 +816,15 @@ public class PropsUI extends Props {
   public void setAntiAliasingEnabled( boolean anti ) {
     properties.setProperty( STRING_ANTI_ALIASING, anti ? YES : NO );
   }
+  
+  public boolean isShowCanvasGridEnabled() {
+    String showCanvas = properties.getProperty( STRING_SHOW_CANVAS_GRID, NO );
+    return YES.equalsIgnoreCase( showCanvas ); // Default: don't show canvas grid
+  }
+
+  public void setShowCanvasGridEnabled( boolean anti ) {
+    properties.setProperty( STRING_SHOW_CANVAS_GRID, anti ? YES : NO );
+  }
 
   public boolean showExitWarning() {
     String show = properties.getProperty( STRING_SHOW_EXIT_WARNING, YES );
@@ -1067,7 +1076,7 @@ public class PropsUI extends Props {
   }
 
   public int getCanvasGridSize() {
-    return Const.toInt( properties.getProperty( CANVAS_GRID_SIZE, "1" ), 1 );
+    return Const.toInt( properties.getProperty( CANVAS_GRID_SIZE, "16" ), 16 );
   }
 
   public void setCanvasGridSize( int gridSize ) {
