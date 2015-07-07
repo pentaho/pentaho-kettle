@@ -120,9 +120,6 @@
 	<dependency org="pentaho-doc" name="config_pdi_server" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
 		<artifact name="config_pdi_server" type="pdf" />
 	</dependency>
-	<dependency org="pentaho-doc" name="getting_started_with_instaview" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
-		<artifact name="getting_started_with_instaview" type="pdf" />
-	</dependency>
 	<dependency org="pentaho-doc" name="getting_started_with_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
 		<artifact name="getting_started_with_pdi" type="pdf" />
 	</dependency>
