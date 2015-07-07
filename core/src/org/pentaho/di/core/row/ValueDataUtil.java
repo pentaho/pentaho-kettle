@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,8 @@ import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.RefinedSoundex;
 import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
@@ -54,6 +56,65 @@ import com.wcohen.ss.JaroWinkler;
 import com.wcohen.ss.NeedlemanWunsch;
 
 public class ValueDataUtil {
+
+  private static final Log log = LogFactory.getLog( ValueDataUtil.class );
+
+  /**
+   * System property sets rounding mode of calculator's function ROUND(A,B)
+   * <ul>
+   * <li>
+   * -DROUND_2_MODE=ROUND_HALF_EVEN - provides backward compatibility.</li>
+   * <li>
+   * -DROUND_2_MODE=ROUND_HALF_CEILING or not specified - makes the effect of ROUND(A,B) like ROUND(A).</li>
+   * <li>
+   * If incorrect value set - default value used (ROUND_CEILING).</li>
+   * </ul>
+   * See (PDI-9920)
+   */
+  private static final String SYS_PROPERTY_ROUND_2_MODE = "ROUND_2_MODE";
+  /**
+   * Value of system property ROUND_2_MODE
+   * Provides correct rounding (PDI-9920)
+   */
+  private static final String SYS_PROPERTY_ROUND_2_MODE_DEFAULT_VALUE = "ROUND_HALF_CEILING";
+  private static final int ROUND_2_MODE_DEFAULT_VALUE = Const.ROUND_HALF_CEILING;
+  /**
+   * Value of system property ROUND_2_MODE
+   * Provides backward compatibility (PDI-9920)
+   */
+  private static final String SYS_PROPERTY_ROUND_2_MODE_BACKWARD_COMPATIBILITY_VALUE = "ROUND_HALF_EVEN";
+  private static final int ROUND_2_MODE_BACKWARD_COMPATIBILITY_VALUE = BigDecimal.ROUND_HALF_EVEN;
+
+  /**
+   * Rounding mode of the ROUND function with 2 arguments (value, precision).
+   * <ul>
+   * <li>
+   * {@code org.pentaho.di.core.Const.ROUND_HALF_CEILING} - ditto as ROUND(value).</li>
+   * <li>{@code java.math.BigDecimal.ROUND_HALF_EVEN} - backward compatibility</li>
+   * </ul>
+   */
+  private static int ROUND_2_MODE = readRound2Mode();
+
+  private static int readRound2Mode() {
+    int round2Mode = ROUND_2_MODE_DEFAULT_VALUE;
+    final String rpaValue = System.getProperty( SYS_PROPERTY_ROUND_2_MODE );
+    if ( Const.isEmpty( rpaValue ) ) {
+      round2Mode = ROUND_2_MODE_DEFAULT_VALUE;
+      log.debug( "System property is omitted: ROUND_2_MODE. Default value used: " + SYS_PROPERTY_ROUND_2_MODE_DEFAULT_VALUE + "." );
+    } else if ( SYS_PROPERTY_ROUND_2_MODE_DEFAULT_VALUE.equals( rpaValue ) ) {
+      round2Mode = ROUND_2_MODE_DEFAULT_VALUE;
+      log.debug( "System property read: ROUND_2_MODE=" + ROUND_2_MODE_DEFAULT_VALUE + " (default value)" );
+    } else if ( SYS_PROPERTY_ROUND_2_MODE_BACKWARD_COMPATIBILITY_VALUE.equalsIgnoreCase( rpaValue ) ) {
+      round2Mode = ROUND_2_MODE_BACKWARD_COMPATIBILITY_VALUE;
+      log.debug( "System property read: ROUND_2_MODE=" + SYS_PROPERTY_ROUND_2_MODE_BACKWARD_COMPATIBILITY_VALUE
+          + " (backward compatibility value)" );
+    } else {
+      log.warn( "Incorrect value of system property read: ROUND_2_MODE=" + rpaValue + ". Set to " + SYS_PROPERTY_ROUND_2_MODE_DEFAULT_VALUE
+          + " instead." );
+    }
+    return round2Mode;
+  }
+
   /**
    * @deprecated Use {@link Const#ltrim(String)} instead
    */
@@ -898,7 +959,8 @@ public class ValueDataUtil {
    * @throws KettleValueException
    */
   public static Object round( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
-    return round( metaA, dataA, metaB, dataB, BigDecimal.ROUND_HALF_EVEN );
+    final Object r = round( metaA, dataA, metaB, dataB, ROUND_2_MODE );
+    return r;
   }
 
   /**
@@ -925,19 +987,46 @@ public class ValueDataUtil {
 
     switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double( Const.round( metaA.getNumber( dataA ).doubleValue(), metaB
-          .getInteger( dataB ).intValue(), roundingMode ) );
+        return new Double( Const.round( metaA.getNumber( dataA ).doubleValue(), metaB.getInteger( dataB ).intValue(),
+            roundingMode ) );
       case ValueMetaInterface.TYPE_INTEGER:
         return metaA.getInteger( dataA );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-
-        // Round it to the desired number of digits.
-        BigDecimal number = metaA.getBigNumber( dataA );
-        return number.setScale( metaB.getInteger( dataB ).intValue(), roundingMode );
-
+        return Const.round( metaA.getBigNumber( dataA ), metaB.getInteger( dataB ).intValue(), roundingMode );
       default:
         throw new KettleValueException( "The 'round' function only works on numeric data" );
     }
+  }
+
+  /**
+   * Rounding with decimal places with a given rounding method
+   *
+   * @param metaA
+   *          Metadata of value to round
+   * @param dataA
+   *          Value to round
+   * @param metaB
+   *          Metadata of decimal places
+   * @param dataB
+   *          decimal places
+   * @param metaC
+   *          Metadata of rounding mode
+   * @param dataC
+   *          rounding mode, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
+   * @return The rounded value
+   * @throws KettleValueException
+   */
+  public static Object round( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB,
+      ValueMetaInterface metaC, Object dataC ) throws KettleValueException {
+    if ( dataA == null || dataB == null || dataC == null ) {
+      return null;
+    }
+    Long valueC = metaC.getInteger( dataC );
+    if ( valueC == null || valueC < Const.ROUND_HALF_CEILING || valueC > BigDecimal.ROUND_HALF_EVEN ) {
+      throw new KettleValueException( "The 'round_custom' arg C has incorrect value: " + valueC );
+    }
+    int roundingMode = valueC.intValue();
+    return round( metaA, dataA, metaB, dataB, roundingMode );
   }
 
   public static Object ceil( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {

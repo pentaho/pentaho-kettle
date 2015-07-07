@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.row;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,9 +45,65 @@ import org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction;
  * @author sboden
  *
  */
-public class ValueDataUtilTest extends TestCase {
+public class ValueDataUtilBackwardCompatibilityTest extends TestCase {
   private static String yyyy_MM_dd = "yyyy-MM-dd";
 
+  private static final String SYS_PROPERTY_ROUND_2_MODE = "ROUND_2_MODE";
+  private static final int OBSOLETE_ROUND_2_MODE = BigDecimal.ROUND_HALF_EVEN;
+  private static final int DEFAULT_ROUND_2_MODE = Const.ROUND_HALF_CEILING;
+  private static final int ORIGINAL_ROUND_2_MODE = getRound2Mode();
+
+  @Override
+  protected void setUp() throws Exception {
+    assertEquals(DEFAULT_ROUND_2_MODE, getRound2Mode());
+    setRound2Mode( OBSOLETE_ROUND_2_MODE );
+    assertEquals(OBSOLETE_ROUND_2_MODE, getRound2Mode());
+  }
+
+  @Override
+  protected void tearDown() throws Exception {
+    setRound2Mode( ORIGINAL_ROUND_2_MODE );
+    assertEquals(DEFAULT_ROUND_2_MODE, getRound2Mode());
+  }
+
+  /**
+   * Get value of private static field ValueDataUtil.ROUND_2_MODE.
+   * 
+   * @return
+   */
+  private static int getRound2Mode() {
+    int value = -1;
+    try {
+      Class<ValueDataUtil> cls = ValueDataUtil.class;
+      Field f = cls.getDeclaredField( SYS_PROPERTY_ROUND_2_MODE );
+      f.setAccessible( true );
+      value = (Integer) f.get( null );
+      f.setAccessible( false );
+    } catch ( Exception e ) {
+      throw new RuntimeException( e );
+    }
+    return value;
+  }
+
+  /**
+   * Set new value of value of private static field ValueDataUtil.ROUND_2_MODE.
+   * 
+   * @param newValue
+   */
+  private static void setRound2Mode( int newValue ) {
+    try {
+      Class<ValueDataUtil> cls = ValueDataUtil.class;
+      Field f = cls.getDeclaredField( SYS_PROPERTY_ROUND_2_MODE );
+      f.setAccessible( true );
+      f.set( null, newValue );
+      f.setAccessible( false );
+    } catch ( Exception e ) {
+      throw new RuntimeException( e );
+    }
+  }
+
+  
+  
   // private enum DateCalc {WORKING_DAYS, DATE_DIFF};
 
   /**
@@ -520,13 +577,13 @@ public class ValueDataUtilTest extends TestCase {
     assertEquals( Double.valueOf( "10.0" ), calculate( "12.0", "-1", ValueMetaInterface.TYPE_NUMBER,
         CalculatorMetaFunction.CALC_ROUND_2 ) );
     // half
-    assertEquals( Double.valueOf( "12.35" ), calculate( "12.345", "2", ValueMetaInterface.TYPE_NUMBER,
+    assertEquals( Double.valueOf( "12.34" ), calculate( "12.345", "2", ValueMetaInterface.TYPE_NUMBER,
         CalculatorMetaFunction.CALC_ROUND_2 ) );
     assertEquals( Double.valueOf( "12.36" ), calculate( "12.355", "2", ValueMetaInterface.TYPE_NUMBER,
         CalculatorMetaFunction.CALC_ROUND_2 ) );
     assertEquals( Double.valueOf( "-12.34" ), calculate( "-12.345", "2", ValueMetaInterface.TYPE_NUMBER,
         CalculatorMetaFunction.CALC_ROUND_2 ) );
-    assertEquals( Double.valueOf( "-12.35" ), calculate( "-12.355", "2", ValueMetaInterface.TYPE_NUMBER,
+    assertEquals( Double.valueOf( "-12.36" ), calculate( "-12.355", "2", ValueMetaInterface.TYPE_NUMBER,
         CalculatorMetaFunction.CALC_ROUND_2 ) );
 
     // Test Kettle Integer (Java Long) types
@@ -542,13 +599,13 @@ public class ValueDataUtilTest extends TestCase {
     //assertEquals( Long.valueOf( "100" ), calculate( "120", "-2", ValueMetaInterface.TYPE_INTEGER,
     //    CalculatorMetaFunction.CALC_ROUND_2 ) );
     // half
-    //assertEquals( Long.valueOf( "12350" ), calculate( "12345", "-1", ValueMetaInterface.TYPE_INTEGER,
+    //assertEquals( Long.valueOf( "12340" ), calculate( "12345", "-1", ValueMetaInterface.TYPE_INTEGER,
     //    CalculatorMetaFunction.CALC_ROUND_2 ) );
     //assertEquals( Long.valueOf( "12360" ), calculate( "12355", "-1", ValueMetaInterface.TYPE_INTEGER,
     //    CalculatorMetaFunction.CALC_ROUND_2 ) );
     //assertEquals( Long.valueOf( "-12340" ), calculate( "-12345", "-1", ValueMetaInterface.TYPE_INTEGER,
     //    CalculatorMetaFunction.CALC_ROUND_2 ) );
-    //assertEquals( Long.valueOf( "-12350" ), calculate( "-12355", "-1", ValueMetaInterface.TYPE_INTEGER,
+    //assertEquals( Long.valueOf( "-12360" ), calculate( "-12355", "-1", ValueMetaInterface.TYPE_INTEGER,
     //    CalculatorMetaFunction.CALC_ROUND_2 ) );
 
     // Test Kettle big Number types
@@ -564,13 +621,13 @@ public class ValueDataUtilTest extends TestCase {
     assertEquals( BigDecimal.valueOf( Double.valueOf( "10.0" ) ), calculate( "12.0", "-1",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_2 ) );
     // half
-    assertEquals( BigDecimal.valueOf( Double.valueOf( "12.35" ) ), calculate( "12.345", "2",
+    assertEquals( BigDecimal.valueOf( Double.valueOf( "12.34" ) ), calculate( "12.345", "2",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_2 ) );
     assertEquals( BigDecimal.valueOf( Double.valueOf( "12.36" ) ), calculate( "12.355", "2",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_2 ) );
     assertEquals( BigDecimal.valueOf( Double.valueOf( "-12.34" ) ), calculate( "-12.345", "2",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_2 ) );
-    assertEquals( BigDecimal.valueOf( Double.valueOf( "-12.35" ) ), calculate( "-12.355", "2",
+    assertEquals( BigDecimal.valueOf( Double.valueOf( "-12.36" ) ), calculate( "-12.355", "2",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_2 ) );
   }
 
