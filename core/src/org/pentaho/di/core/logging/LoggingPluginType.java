@@ -156,7 +156,8 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
 
   @Override
   protected String extractName( Annotation annotation ) {
-    return null;
+    String name = ( (LoggingPlugin) annotation ).name();
+    return Const.isEmpty( name ) ? extractID( annotation ) : name;
   }
 
   @Override

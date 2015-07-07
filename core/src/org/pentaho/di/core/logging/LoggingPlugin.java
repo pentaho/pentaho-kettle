@@ -45,4 +45,6 @@ public @interface LoggingPlugin {
   String id();
 
   String classLoaderGroup() default "";
+
+  String name() default "";
 }
