@@ -207,6 +207,11 @@ OPT="$OPT $PENTAHO_DI_JAVA_OPTIONS -Djava.library.path=$LIBPATH -DKETTLE_HOME=$K
 # ** Run...    **
 # ***************
 "$_PENTAHO_JAVA" $OPT -jar "$STARTUP" -lib $LIBPATH "${1+$@}"
+# save exit code for main
+exit_code=$?
 
 # return to the catalog from which spoon.sh has been started
 cd $INITIALDIR
+
+# return pentaho exit code
+exit ${exit_code}
