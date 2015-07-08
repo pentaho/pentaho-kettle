@@ -56,6 +56,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
@@ -454,6 +455,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    * @throws KettleDatabaseException
    */
   private void connectUsingNamedDataSource( String dataSourceName ) throws KettleDatabaseException {
+    if ( StringUtils.isEmpty( dataSourceName ) ) {
+      throw new KettleDatabaseException( "Empty connection name" );
+    }
     connection = null;
     DataSource dataSource =
       DataSourceProviderFactory.getDataSourceProviderInterface().getNamedDataSource( dataSourceName );
