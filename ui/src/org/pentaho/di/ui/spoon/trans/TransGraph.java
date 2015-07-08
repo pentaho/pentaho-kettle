@@ -3026,11 +3026,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     GCInterface gc = new SWTGC( device, new Point( x, y ), iconsize );
 
+    int gridSize = 
+        PropsUI.getInstance().isShowCanvasGridEnabled() ? PropsUI.getInstance().getCanvasGridSize() : 1;  
+    
     TransPainter transPainter =
         new TransPainter( gc, transMeta, new Point( x, y ), new SwtScrollBar( hori ), new SwtScrollBar( vert ),
             candidate, drop_candidate, selectionRegion, areaOwners, mouseOverSteps,
-            PropsUI.getInstance().getIconSize(), PropsUI.getInstance().getLineWidth(), PropsUI.getInstance()
-                .getCanvasGridSize(), PropsUI.getInstance().getShadowSize(), PropsUI.getInstance()
+            PropsUI.getInstance().getIconSize(), PropsUI.getInstance().getLineWidth(), gridSize, PropsUI.getInstance().getShadowSize(), PropsUI.getInstance()
                 .isAntiAliasingEnabled(), PropsUI.getInstance().getNoteFont().getName(), PropsUI.getInstance()
                 .getNoteFont().getHeight(), trans, PropsUI.getInstance().isIndicateSlowTransStepsEnabled() );
 
