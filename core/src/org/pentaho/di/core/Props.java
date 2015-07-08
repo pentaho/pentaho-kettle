@@ -590,8 +590,8 @@ public class Props implements Cloneable {
   }
 
   public boolean areOnlyUsedConnectionsSavedToXML() {
-    String show = properties.getProperty( STRING_ONLY_USED_DB_TO_XML, "N" );
-    return !"N".equalsIgnoreCase( show ); // Default: save all connections
+    String show = properties.getProperty( STRING_ONLY_USED_DB_TO_XML, "Y" );
+    return "Y".equalsIgnoreCase( show ); // Default: save all connections
   }
 
   public void setOnlyUsedConnectionsSavedToXML( boolean onlyUsedConnections ) {
