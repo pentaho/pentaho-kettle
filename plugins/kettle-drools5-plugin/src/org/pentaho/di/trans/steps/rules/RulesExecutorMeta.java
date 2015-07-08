@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -49,14 +50,28 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterface {
+/**
+ * This Transformation Step allows a user to execute a rule set against an individual rule or a collection of rules.
+ *
+ * Additional columns can be added to the output from the rules and these (of course) can be used for routing if
+ * desired.
+ *
+ * @author cboyden
+ *
+ */
+@Step(id = "RuleExecutor",
+        image = "rules.png",
+        i18nPackageName="org.pentaho.di.trans.steps.rules",
+        name="RulesExecutor.StepConfigruationDialog.Title",
+        description = "RulesExecutor.StepConfigruationDialog.TooltipDesc",
+        categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting")
+public class RulesExecutorMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = Rules.class; // for i18n purposes
 
   // Contain storage keys in single location to cut down on save/load bugs
   private static enum StorageKeys {
     NODE_FIELDS( "fields" ), SUBNODE_FIELD( "field" ), COLUMN_NAME( "column-name" ), COLUMN_TYPE( "column-type" ),
-      RULE_FILE(
-        "rule-file" ), RULE_DEFINITION( "rule-definition" );
+      RULE_FILE( "rule-file" ), RULE_DEFINITION( "rule-definition" );
 
     private final String storageKey;
 
@@ -113,12 +128,12 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
     TransMeta transMeta, Trans trans ) {
-    return new RulesAccumulator( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+    return new RulesExecutor( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   @Override
   public StepDataInterface getStepData() {
-    return new RulesAccumulatorData();
+    return new RulesExecutorData();
   }
 
   @Override
@@ -133,8 +148,8 @@ public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterf
 
         String name = XMLHandler.getTagValue( fnode, StorageKeys.COLUMN_NAME.toString() );
         int type = ValueMeta.getType( XMLHandler.getTagValue( fnode, StorageKeys.COLUMN_TYPE.toString() ) );
-        vm = ValueMetaFactory.createValueMeta( name, type );
 
+        vm = ValueMetaFactory.createValueMeta( name, type );
         getRuleResultColumns().add( vm );
       }
 
