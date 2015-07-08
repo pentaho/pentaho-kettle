@@ -868,7 +868,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
           try {
             GaData dataFeed = query.execute();
 
-            if ( dataFeed.getRows().size() < 1 ) {
+            if ( dataFeed == null || dataFeed.getRows() == null || dataFeed.getRows().size() < 1 ) {
 
               MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
               mb.setText( "Query yields empty feed" );
