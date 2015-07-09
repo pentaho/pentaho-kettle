@@ -2187,6 +2187,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               }
               toolTip.setImage( image );
               toolTip.setText( name + Const.CR + Const.CR + tip );
+              toolTip.setBackgroundColor( GUIResource.getInstance().getColor( 255, 254, 225 ) );
+              toolTip.setForegroundColor( GUIResource.getInstance().getColor( 0, 0, 0 ) );
               toolTip.show( new org.eclipse.swt.graphics.Point( move.x + 10, move.y + 10 ) );
             }
           }
@@ -2200,6 +2202,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                       display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
               toolTip.setImage( image );
               toolTip.setText( name + Const.CR + Const.CR + tip );
+              toolTip.setBackgroundColor( GUIResource.getInstance().getColor( 255, 254, 225 ) );
+              toolTip.setForegroundColor( GUIResource.getInstance().getColor( 0, 0, 0 ) );
               toolTip.show( new org.eclipse.swt.graphics.Point( move.x + 10, move.y + 10 ) );
             }
           }
@@ -2218,8 +2222,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } );
 
     toolTip = new DefaultToolTip( variableComposite, ToolTip.RECREATE, true );
-    toolTip.setBackgroundColor( GUIResource.getInstance().getColor( 255, 254, 225 ) );
-    toolTip.setForegroundColor( GUIResource.getInstance().getColor( 0, 0, 0 ) );
     toolTip.setRespectMonitorBounds( true );
     toolTip.setRespectDisplayBounds( true );
     toolTip.setPopupDelay( 350 );
