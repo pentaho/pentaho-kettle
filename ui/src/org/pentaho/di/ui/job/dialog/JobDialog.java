@@ -74,7 +74,6 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
@@ -88,7 +87,7 @@ import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.FieldDisabledListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
+import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.HelpUtils;
 
@@ -549,22 +548,14 @@ public class JobDialog extends Dialog {
     wbDirectory.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
         RepositoryDirectoryInterface directoryFrom = jobMeta.getRepositoryDirectory();
-        if ( directoryFrom == null ) {
-          directoryFrom = new RepositoryDirectory();
+        RepositoryDirectoryInterface rd = RepositoryDirectoryUI.chooseDirectory( shell, rep, directoryFrom );
+        if ( rd == null ) {
+          return;
         }
-        ObjectId idDirectoryFrom = directoryFrom.getObjectId();
-
-        SelectDirectoryDialog sdd = new SelectDirectoryDialog( shell, SWT.NONE, rep );
-        RepositoryDirectoryInterface rd = sdd.open();
-        if ( rd != null ) {
-          if ( idDirectoryFrom != rd.getObjectId() ) {
-            // We need to change this in the repository as well!!
-            // We do this when the user pressed OK
-            newDirectory = rd;
-            wDirectory.setText( rd.getPath() );
-          }
-          // Else same directory!
-        }
+        // We need to change this in the repository as well!!
+        // We do this when the user pressed OK
+        newDirectory = rd;
+        wDirectory.setText( rd.getPath() );
       }
     } );
 
@@ -1658,7 +1649,7 @@ public class JobDialog extends Dialog {
   public static PluginInterface getPlugin( JobEntryInterface jobEntryInterface ) {
     return PluginRegistry.getInstance().getPlugin( JobEntryPluginType.class, jobEntryInterface );
   }
-  
+
   public static Image getImage( Shell shell, PluginInterface plugin ) {
     String id = plugin.getIds()[0];
     if ( id != null ) {
@@ -1667,7 +1658,7 @@ public class JobDialog extends Dialog {
     }
     return null;
   }
-  
+
   public void setDirectoryChangeAllowed( boolean directoryChangeAllowed ) {
     this.directoryChangeAllowed = directoryChangeAllowed;
   }
