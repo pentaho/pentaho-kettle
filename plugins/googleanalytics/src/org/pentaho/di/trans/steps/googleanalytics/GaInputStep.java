@@ -215,16 +215,23 @@ public class GaInputStep extends BaseStep implements StepInterface {
       }
     }
 
+    String appName = environmentSubstitute( meta.getGaAppName() );
+    String serviceAccount = environmentSubstitute( meta.getOAuthServiceAccount() );
+    String OAuthKeyFile = environmentSubstitute( meta.getOAuthKeyFile() );
+
+    if ( log.isDetailed() ) {
+      logDetailed( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AppName.Label" ) + ": " + appName );
+      logDetailed( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.OauthAccount.Label" ) + ": " + serviceAccount );
+      logDetailed( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.KeyFile.Label" ) + ": " + OAuthKeyFile );
+    }
+
     try {
       // Create an Analytics object, and fetch what we can for later (account name, e.g.)
-      analytics = GoogleAnalyticsApiFacade.createFor(
-        environmentSubstitute( meta.getGaAppName() ),
-        environmentSubstitute( meta.getOAuthServiceAccount() ),
-        environmentSubstitute( meta.getOAuthKeyFile() )
-      ).getAnalytics();
+      analytics = GoogleAnalyticsApiFacade.createFor( appName, serviceAccount, OAuthKeyFile ).getAnalytics();
       // There is necessarily an account name associated with this, so any NPEs or other exceptions mean bail out
       accountName = analytics.management().accounts().list().execute().getItems().iterator().next().getName();
     } catch ( Exception e ) {
+      logError( e.toString() );
       return false;
     }
     return true;
