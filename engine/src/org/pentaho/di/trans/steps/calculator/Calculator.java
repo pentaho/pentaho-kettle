@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -296,6 +296,12 @@ public class Calculator extends BaseStep implements StepInterface {
             break;
           case CalculatorMetaFunction.CALC_ROUND_2: // ROUND( A , B )
             calcData[index] = ValueDataUtil.round( metaA, dataA, metaB, dataB );
+            break;
+          case CalculatorMetaFunction.CALC_ROUND_CUSTOM_1: // ROUND( A , B )
+            calcData[index] = ValueDataUtil.round( metaA, dataA, metaB.getNumber( dataB ).intValue() );
+            break;
+          case CalculatorMetaFunction.CALC_ROUND_CUSTOM_2: // ROUND( A , B, C )
+            calcData[index] = ValueDataUtil.round( metaA, dataA, metaB, dataB, metaC.getNumber( dataC ).intValue() );
             break;
           case CalculatorMetaFunction.CALC_ROUND_STD_1: // ROUND( A )
             calcData[index] = ValueDataUtil.round( metaA, dataA, java.math.BigDecimal.ROUND_HALF_UP );

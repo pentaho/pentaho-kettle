@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -124,10 +124,13 @@ public class CalculatorMetaFunction implements Cloneable {
   public static final int CALC_HOUR_OF_DAY = 82;
   public static final int CALC_MINUTE_OF_HOUR = 83;
   public static final int CALC_SECOND_OF_MINUTE = 84;
+  public static final int CALC_ROUND_CUSTOM_1 = 85;
+  public static final int CALC_ROUND_CUSTOM_2 = 86;
 
   public static final String[] calc_desc = {
     "-", "CONSTANT", "COPY_FIELD", "ADD", "SUBTRACT", "MULTIPLY", "DIVIDE", "SQUARE", "SQUARE_ROOT",
     "PERCENT_1", "PERCENT_2", "PERCENT_3", "COMBINATION_1", "COMBINATION_2", "ROUND_1", "ROUND_2",
+    "ROUND_CUSTOM_1", "ROUND_CUSTOM_2",
     "ROUND_STD_1", "ROUND_STD_2", "CEIL", "FLOOR", "NVL", "ADD_DAYS", "YEAR_OF_DATE", "MONTH_OF_DATE",
     "DAY_OF_YEAR", "DAY_OF_MONTH", "DAY_OF_WEEK", "WEEK_OF_YEAR", "WEEK_OF_YEAR_ISO8601",
     "YEAR_OF_DATE_ISO8601", "BYTE_TO_HEX_ENCODE", "HEX_TO_BYTE_DECODE", "CHAR_TO_HEX_ENCODE",
@@ -149,6 +152,8 @@ public class CalculatorMetaFunction implements Cloneable {
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.Hypotenuse" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.Round" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.Round2" ),
+    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom" ),
+    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom2" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundStd" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundStd2" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.Ceil" ),
@@ -374,6 +379,8 @@ public class CalculatorMetaFunction implements Cloneable {
     calcDefaultResultType[ CalculatorMetaFunction.CALC_HOUR_OF_DAY ] = ValueMetaInterface.TYPE_INTEGER;
     calcDefaultResultType[ CalculatorMetaFunction.CALC_MINUTE_OF_HOUR ] = ValueMetaInterface.TYPE_INTEGER;
     calcDefaultResultType[ CalculatorMetaFunction.CALC_SECOND_OF_MINUTE ] = ValueMetaInterface.TYPE_INTEGER;
+    calcDefaultResultType[ CalculatorMetaFunction.CALC_ROUND_CUSTOM_1 ] = ValueMetaInterface.TYPE_NUMBER;
+    calcDefaultResultType[ CalculatorMetaFunction.CALC_ROUND_CUSTOM_2 ] = ValueMetaInterface.TYPE_NUMBER;
   }
 
   private String fieldName;
