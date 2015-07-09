@@ -74,6 +74,11 @@ public class ImageUtil {
   public static InputStream getImageInputStream( Display display, String location ) {
     // assume the classloader for the active thread
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    if ( cl == null ) {
+      // Can't count on Thread.currentThread().getContextClassLoader() being non-null on Mac
+      // Have to provide some fallback
+      cl = ImageUtil.class.getClassLoader();
+    }
     URL res = cl.getResource( location );
     if ( res != null ) {
       try {
