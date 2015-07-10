@@ -1105,6 +1105,26 @@ public class Const {
     }
   }
 
+  /**
+   * rounds long f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
+   * overflow while rounding
+   *
+   * @param f
+   *          The value to round
+   * @param places
+   *          The number of decimal places
+   * @param roundingMode
+   *          The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
+   * @return The rounded floating point value
+   */
+  public static final long round( long f, int places, int roundingMode ) {
+    if ( places >= 0 ) {
+      return f;
+    }
+    BigDecimal bdtemp = round( BigDecimal.valueOf( f ), places, roundingMode );
+    return bdtemp.longValue();
+  }
+
   /*
    * OLD code: caused a lot of problems with very small and very large numbers. It's a miracle it worked at all. Go
    * ahead, have a laugh... public static final float round(double f, int places) { float temp = (float) (f *
