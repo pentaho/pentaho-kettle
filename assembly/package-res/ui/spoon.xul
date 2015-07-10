@@ -19,7 +19,7 @@
       tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="spoon.saveFileAs()"/>
     <toolbarseparator />
     <toolbarspacer flex="1"/>
-    <toolbarbutton id="toolbar-perspectives" image="images/arrow_down.svg" menu="toolbar-perspectives-popup" />
+    <toolbarbutton id="toolbar-perspectives" image="images/9x9_arrow_down.svg" menu="toolbar-perspectives-popup" />
   </toolbar>
   
   <menupopup id="toolbar-perspectives-popup">
