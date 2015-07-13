@@ -19,6 +19,9 @@
       tooltiptext="${Spoon.Tooltip.SaveDifferentNameTranformation}" onclick="spoon.saveFileAs()"/>
     <toolbarseparator />
     <toolbarspacer flex="1"/>
+    <toolbaritem id="toolbar-perspectives-old">
+      <label value="${Spoon.Perspectives}:"/>
+    </toolbaritem>
     <toolbarbutton id="toolbar-perspectives" image="images/9x9_arrow_down.svg" menu="toolbar-perspectives-popup" />
   </toolbar>
   
