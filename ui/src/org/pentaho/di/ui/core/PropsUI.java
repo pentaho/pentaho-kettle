@@ -95,6 +95,8 @@ public class PropsUI extends Props {
 
   private static final String CANVAS_GRID_SIZE = "CanvasGridSize";
 
+  private static final String NEW_PERSPECTIVE_RENDER_TYPE = "perspectiveRenderType";
+
   private static List<GUIOption<Object>> editables;
 
   /**
@@ -1081,6 +1083,10 @@ public class PropsUI extends Props {
 
   public void setCanvasGridSize( int gridSize ) {
     properties.setProperty( CANVAS_GRID_SIZE, Integer.toString( gridSize ) );
+  }
+
+  public boolean isNewPerspectiveRenderType() {
+    return "dropdown".equals( properties.getProperty( NEW_PERSPECTIVE_RENDER_TYPE, "dropdown" ) );
   }
 
   public static void setLocation( GUIPositionInterface guiElement, int x, int y ) {
