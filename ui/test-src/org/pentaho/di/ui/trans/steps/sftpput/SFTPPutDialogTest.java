@@ -21,18 +21,18 @@
  ******************************************************************************/
 package org.pentaho.di.ui.trans.steps.sftpput;
 
-import org.eclipse.swt.widgets.Display;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.pentaho.di.core.exception.KettleJobException;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.sftpput.SFTPPutMeta;
 import org.pentaho.di.ui.core.PropsUI;
 
-import java.net.UnknownHostException;
+import java.lang.reflect.Field;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.doReturn;
@@ -42,25 +42,46 @@ import static org.mockito.Mockito.spy;
 /**
  * Created by Yury_Ilyukevich on 7/1/2015.
  */
-@Ignore("Turned off unless Yuri Ilyukevich fixes it")
 public class SFTPPutDialogTest {
 
-  private Shell shellMock = mock( Shell.class );
-  private TransMeta trMetaMock = mock( TransMeta.class );
-  private SFTPClient sftp = mock( SFTPClient.class );
-  private SFTPPutDialog sod;
-
+  private static boolean changedPropsUi;
 
   @BeforeClass
-  public static void beforeClass() throws Exception {
-    Display display = Display.getDefault();
-    PropsUI.init( display, 1 );
+  public static void hackPropsUi() throws Exception {
+    Field props = getPropsField();
+    if ( props == null ) {
+      throw new IllegalStateException( "Cannot find 'props' field in " + Props.class.getName() );
+    }
+
+    Object value = FieldUtils.readStaticField( props, true );
+    if ( value == null ) {
+      PropsUI mock = mock( PropsUI.class );
+      FieldUtils.writeStaticField( props, mock, true );
+      changedPropsUi = true;
+    } else {
+      changedPropsUi = false;
+    }
   }
 
+  @AfterClass
+  public static void restoreNullInPropsUi() throws Exception {
+    if ( changedPropsUi ) {
+      Field props = getPropsField();
+      FieldUtils.writeStaticField( props, null, true );
+    }
+  }
+
+  private static Field getPropsField() {
+    return FieldUtils.getDeclaredField( Props.class, "props", true );
+  }
+
+
   @Test
-  public void connectToSFTPTest() throws KettleJobException, UnknownHostException {
-    SFTPPutMeta in = new SFTPPutMeta();
-    sod = new SFTPPutDialog( shellMock, in, trMetaMock, "Name" );
+  public void connectToSFTP_SeveralTimes_AlwaysReturnTrue() throws Exception {
+    SFTPClient sftp = mock( SFTPClient.class );
+
+    SFTPPutDialog sod =
+      new SFTPPutDialog( mock( Shell.class ), new SFTPPutMeta(), mock( TransMeta.class ), "SFTPPutDialogTest" );
     SFTPPutDialog sodSpy = spy( sod );
     doReturn( sftp ).when( sodSpy ).createSFTPClient();
 
