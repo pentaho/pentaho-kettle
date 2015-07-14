@@ -95,6 +95,8 @@ public class PropsUI extends Props {
 
   private static final String CANVAS_GRID_SIZE = "CanvasGridSize";
 
+  private static final String LEGACY_PERSPECTIVE_MODE = "LegacyPerspectiveMode";
+
   private static List<GUIOption<Object>> editables;
 
   /**
@@ -1081,6 +1083,10 @@ public class PropsUI extends Props {
 
   public void setCanvasGridSize( int gridSize ) {
     properties.setProperty( CANVAS_GRID_SIZE, Integer.toString( gridSize ) );
+  }
+
+  public boolean isLegacyPerspectiveMode() {
+    return "Y".equalsIgnoreCase( properties.getProperty( LEGACY_PERSPECTIVE_MODE, "N" ) );
   }
 
   public static void setLocation( GUIPositionInterface guiElement, int x, int y ) {
