@@ -210,6 +210,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="junit.haltonfailure" value="no" description="Fail the build if a test fails"/>
   <property name="junit.haltonerror" value="no" description="Fail the build if a error occurs"/>
   <property name="junit.maxmemory" value="256M" description="Heap size when Junit is run in fork mode"/>
+  <property name="junit.jvmargs" value="-ea" description="Arguments to the java process spawned by the junit task."/>
   <property name="junit.forkmode"
             value="perTest"
             description="Defines whether JUnit forks a new JVM for each test. Use 'once' for faster test runs, and 'perTest' for complete tests."/>
@@ -321,6 +322,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="jacoco.report.dir" location="${bin.dir}/reports/jacoco" />
   <property name="jacoco.execfile.path" location="${jacoco.report.dir}/jacoco.exec"/>
   <property name="jacoco.it.execfile.path" location="${jacoco.report.dir}/jacoco-it.exec"/>
+  <property name="junit.test.pattern" value="**/*Test.java"/>
 
   <!-- Maven properties -->
   <property name="maven.options" value="-q"/>
@@ -421,12 +423,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <fileset dir="${lib.dir}">
       <include name="**/*.jar"/>
     </fileset>
+    <path refid="classpath.custom"/>
+  </path>
+
+  <!-- This is an empty placeholder that sub-projects can override -->
+  <path id="classpath.custom">
   </path>
 
   <!-- Setup the classpath used for testing -->
   <path id="test.classpath">
     <pathelement path="${testclasses.dir}"/>
     <pathelement path="${classes.dir}"/>
+    <path refid="test.classpath.custom"/>
     <fileset dir="${devlib.dir}">
       <include name="**/*.jar"/>
     </fileset>
@@ -438,6 +446,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </fileset>
   </path>
 
+  <!-- This is an empty placeholder that sub-projects can override -->
+  <path id="test.classpath.custom">
+  </path>
 
   <!--=======================================================================
       default
@@ -1560,6 +1571,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
            printsummary="yes">
       <sysproperty key="java.awt.headless" value="${headless.unittest}"/>
 
+      <jvmarg line="${junit.jvmargs}"/>
+
       <syspropertyset>
         <propertyref prefix="junit.sysprop."/>
         <mapper type="glob" from="junit.sysprop.*" to="*"/>
@@ -1570,7 +1583,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase"/>
       <batchtest fork="yes" todir="${testreports.xml.dir}" unless="testcase">
         <fileset dir="${testsrc.dir}" casesensitive="yes">
-          <include name="**/*Test.java"/>
+          <include name="${junit.test.pattern}"/>
         </fileset>
       </batchtest>
     </junit>
@@ -1772,7 +1785,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Compiles and runs all the tests for the project
       ====================================================================-->
-  <target name="jacoco" depends="install-jacoco,compile,compile-tests, init-test-reports"
+  <target name="jacoco" depends="install-jacoco,compile,compile-tests,init-test-reports"
           description="Compiles and runs unit tests with Jacoco code coverage.">
 
     <mkdir dir = "${jacoco.report.dir}" />
@@ -1819,6 +1832,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
              printsummary="yes">
         <sysproperty key="java.awt.headless" value="${headless.unittest}"/>
 
+        <jvmarg line="${junit.jvmargs}"/>
+
         <syspropertyset>
           <propertyref prefix="junit.sysprop."/>
           <mapper type="glob" from="junit.sysprop.*" to="*"/>
@@ -1831,7 +1846,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase"/>
         <batchtest fork="yes" todir="${testreports.xml.dir}" unless="testcase">
           <fileset dir="${testsrc.dir}" casesensitive="yes">
-            <include name="**/*Test.java"/>
+            <include name="${junit.test.pattern}"/>
           </fileset>
         </batchtest>
       </junit>
@@ -1975,6 +1990,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
            haltonfailure="${junit.haltonfailure}">
       <sysproperty key="java.awt.headless" value="${headless.unittest}"/>
 
+      <jvmarg line="${junit.jvmargs}"/>
+
       <!-- Specify the name of the coverage data file to use. -->
       <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.data.dir}/cobertura.ser"/>
 
@@ -1995,7 +2012,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase"/>
       <batchtest todir="${testreports.xml.dir}" unless="testcase">
         <fileset dir="${testsrc.dir}" casesensitive="yes">
-          <include name="**/*Test.java"/>
+          <include name="${junit.test.pattern}"/>
         </fileset>
       </batchtest>
     </junit>
