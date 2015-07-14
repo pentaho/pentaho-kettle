@@ -406,7 +406,7 @@ public class Const {
 
   /** Name of the kettle parameters file */
   public static final String KETTLE_PROPERTIES = "kettle.properties";
-  
+
   /** Name of the kettle shared data file */
   public static final String SHARED_DATA_FILE = "shared.xml";
 
@@ -715,8 +715,11 @@ public class Const {
   public static final String KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER =
     "KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER";
 
+  public static final String KETTLE_COMPATIBILITY_MERGE_ROWS_USE_REFERENCE_STREAM_WHEN_IDENTICAL =
+    "KETTLE_COMPATIBILITY_MERGE_ROWS_USE_REFERENCE_STREAM_WHEN_IDENTICAL";
+
   /**
-   * You can use this variable to speed up hostname lookup. 
+   * You can use this variable to speed up hostname lookup.
    * Hostname lookup is performed by Kettle so that it is capable of logging the server on which a job or transformation is executed.
    */
   public static final String KETTLE_SYSTEM_HOSTNAME = "KETTLE_SYSTEM_HOSTNAME";
@@ -1014,7 +1017,7 @@ public class Const {
    * A variable to configure jetty option: lowResourcesMaxIdleTime for Carte
    */
   public static final String KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME = "KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME";
-  
+
   /**
   * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
   * overflow while rounding
@@ -1705,8 +1708,8 @@ public class Const {
   public static final String getKettleDirectory() {
     return getUserHomeDirectory() + FILE_SEPARATOR + getUserBaseDir();
   }
-  
-   
+
+
   /**
    * Determines the Kettle directory in the user's home directory.
    *
