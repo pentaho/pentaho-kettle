@@ -1857,8 +1857,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         item = (XulMenuitem) doc.getElementById( "job-graph-entry-align-snap" );
 
         item.setAcceltext( "ALT-HOME" );
-        item.setLabel( BaseMessages.getString( PKG, "JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid" )
-          + ConstUI.GRID_SIZE + ")" );
+        item.setLabel( BaseMessages.getString( PKG, "JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid" ) );
         item.setAccesskey( "alt-home" );
 
         XulMenu aMenu = (XulMenu) doc.getElementById( "job-graph-entry-align" );

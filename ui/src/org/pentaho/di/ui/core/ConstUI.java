@@ -55,7 +55,7 @@ public class ConstUI {
   /**
    * Default grid size to which the graphical views snap.
    */
-  public static final int GRID_SIZE = 20;
+  public static final int GRID_SIZE = 16;
 
   /**
    * The minimal size of a note on a graphical view (width & height)

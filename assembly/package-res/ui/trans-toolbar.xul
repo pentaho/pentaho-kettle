@@ -128,9 +128,9 @@
 
   <menupopup id="trans-graph-hop">
     <menuitem id="trans-graph-hop-edit" label="${TransGraph.PopupMenu.EditHop}" command="transgraph.editHop()" />
-    <menuitem id="trans-graph-hop-flip" label="${TransGraph.PopupMenu.FlipDirection}" command="transgraph.flipHopDirection()" />
     <menuitem id="trans-graph-hop-enabled" label="${TransGraph.PopupMenu.DisableHop}" command="transgraph.enableHop() " />
     <menuitem id="trans-graph-hop-delete" acceltext="del" accesskey="del" label="${TransGraph.PopupMenu.DeleteHop}" command="transgraph.deleteHop()" />
+    <menuitem id="trans-graph-hop-flip" label="${TransGraph.PopupMenu.FlipDirection}" command="transgraph.flipHopDirection()" />
     <menu id="trans-graph-graph-hop-bulk" label="${TransGraph.PopupMenu.BulkHop}">
       <menupopup id="trans-graph-entry-hop-bulk">
         <menuitem id="trans-graph-entry-hop-enable-selected" label="${TransGraph.PopupMenu.HopEnableSelected}" command="transgraph.enableHopsBetweenSelectedSteps()" />
