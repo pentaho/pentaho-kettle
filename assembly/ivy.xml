@@ -209,6 +209,13 @@
     <dependency org="org.codehaus.enunciate" name="enunciate-jersey-rt" rev="1.27"          transitive="false" />
     <dependency org="org.codehaus.enunciate" name="enunciate-core-annotations" rev="1.27"   transitive="false" />
 
+    <!-- This is a internal build artifact to resolve spring-beans issue using JRE8 -->
+    <dependency org="pentaho" name="pentaho-spring-core" rev="2.5.6" transitive="false"/>
+    <dependency org="pentaho" name="pentaho-spring" rev="2.5.6" transitive="false"/>
+
+    <exclude org="org.springframework" module="spring-core"/> 
+    <exclude org="org.springframework" module="spring"/> 
+
     <exclude org="javax.servlet"   module="servlet-api"/>
   </dependencies>
 </ivy-module>
