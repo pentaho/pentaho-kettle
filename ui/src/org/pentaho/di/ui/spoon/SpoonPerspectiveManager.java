@@ -35,10 +35,15 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.apache.commons.io.IOUtils;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.MenuManager;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
@@ -58,7 +63,6 @@ import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDeck;
 import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
-import org.pentaho.ui.xul.swt.tags.SwtToolbaritem;
 
 /**
  * Singleton Object controlling SpoonPerspectives.
@@ -112,17 +116,17 @@ public class SpoonPerspectiveManager {
     private final XulToolbar mainToolbar;
 
     private final SwtToolbarbutton btn;
-    private final ToolItem item;
+    private final Combo perspectivesCombo;
     private final String name;
 
     public PerspectiveInitializer( SpoonPerspective per, XulVbox box, XulToolbar mainToolbar, SwtToolbarbutton btn,
-        ToolItem item, String name ) {
+        Combo perspectivesCombo, String name ) {
       super();
       this.per = per;
       this.box = box;
       this.mainToolbar = mainToolbar;
       this.btn = btn;
-      this.item = item;
+      this.perspectivesCombo = perspectivesCombo;
       this.name = name;
     }
 
@@ -136,8 +140,8 @@ public class SpoonPerspectiveManager {
           if ( btn != null ) {
             btn.setSelected( true );
           }
-          if ( item != null ) {
-            item.setText( name );
+          if ( perspectivesCombo != null ) {
+            perspectivesCombo.setText( name );
           }
         }
 
@@ -355,25 +359,33 @@ public class SpoonPerspectiveManager {
       }
     }
 
-    ToolItem perspectivesItem = null;
-    MenuManager menu = null;
+    Combo perspectivesCombo = null;
 
     if ( PropsUI.getInstance().isLegacyPerspectiveMode() ) {
       log.logDebug( "Use legacy perspective switcher" );
-      // remove new button
-      mainToolbar.removeChild( domContainer.getDocumentRoot().getElementById( "toolbar-perspectives" ) );
     } else {
       log.logDebug( "Use new perspective switcher" );
-      // render dropdown perspectives
-      perspectivesItem =
-          (ToolItem) domContainer.getDocumentRoot().getElementById( "toolbar-perspectives" ).getManagedObject();
-      menu =
-          (MenuManager) domContainer.getDocumentRoot().getElementById( "toolbar-perspectives-popup" )
-              .getManagedObject();
-      // and remove old button
-      SwtToolbaritem oldLabel =
-          (SwtToolbaritem) domContainer.getDocumentRoot().getElementById( "toolbar-perspectives-old" );
-      oldLabel.getItem().dispose();
+      // create dropdown for perspectives
+      ToolBar toolbar = (ToolBar) mainToolbar.getManagedObject();
+
+      perspectivesCombo = new Combo( toolbar, SWT.DROP_DOWN | SWT.READ_ONLY );
+      final Combo c = perspectivesCombo;
+      perspectivesCombo.addSelectionListener( new SelectionAdapter() {
+        public void widgetSelected( SelectionEvent arg0 ) {
+          Spoon.getInstance().loadPerspective( c.getText() );
+        }
+      } );
+
+      perspectivesCombo.addKeyListener( new KeyAdapter() {
+        public void keyPressed( KeyEvent event ) {
+          if ( event.character == SWT.CR ) {
+            Spoon.getInstance().loadPerspective( c.getText() );
+          }
+        }
+      } );
+      ToolItem sep = new ToolItem( toolbar, SWT.SEPARATOR );
+      sep.setWidth( 180 );
+      sep.setControl( perspectivesCombo );
     }
 
     for ( final SpoonPerspective per : getPerspectives() ) {
@@ -421,17 +433,7 @@ public class SpoonPerspectiveManager {
         }
       } else {
         // new button
-        menu.add( new Action( name ) {
-          @Override
-          public void run() {
-            Spoon.getInstance().loadPerspective( per.getId() );
-          }
-
-          @Override
-          public String getId() {
-            return per.getId();
-          }
-        } );
+        perspectivesCombo.add(name);
       }
 
       XulVbox box = deck.createVBoxCard();
@@ -440,7 +442,7 @@ public class SpoonPerspectiveManager {
       deck.addChild( box );
 
       PerspectiveInitializer perspectiveInitializer =
-          new PerspectiveInitializer( per, box, mainToolbar, btn, perspectivesItem, name );
+          new PerspectiveInitializer( per, box, mainToolbar, btn, perspectivesCombo, name );
       // Need to force init for main perspective even if it won't be shown
       if ( perspectiveIdx == y || y == 0 ) {
         if ( perspectiveIdx == y ) {
@@ -469,6 +471,5 @@ public class SpoonPerspectiveManager {
         // TODO Auto-generated catch block
       }
     }
-
   }
 }
