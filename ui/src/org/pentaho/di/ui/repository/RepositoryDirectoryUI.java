@@ -24,7 +24,6 @@ package org.pentaho.di.ui.repository;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -249,10 +248,9 @@ public class RepositoryDirectoryUI {
 
     SelectDirectoryDialog sdd = new SelectDirectoryDialog( shell, SWT.NONE, rep );
 
-    //PDI-13867: root dir is restricted.
-    HashSet<String> restrictedPaths = new HashSet<String>();
-    restrictedPaths.add( directoryFrom.findRoot().getPath() );
-    sdd.setRestrictedPaths( restrictedPaths );
+    //PDI-13867: root dir and its direct subdirectories are restricted.
+    RepositoryDirectoryInterface root = directoryFrom.findRoot();
+    sdd.setDirectoryPrefix( "/home/" );
 
     //TODO: expand and select directoryFrom in the dialog.
 
