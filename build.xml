@@ -774,6 +774,7 @@
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.mapping.RunMapping" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.mapping.MappingTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.mergerows.MergeRowsTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.metainject.MetaInjectTest"
             haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.nullif.NullIfTest" haltonerror="false"/>
