@@ -886,7 +886,7 @@ public class ValueDataUtil {
   }
 
   /**
-   * Rounding with no decimal places (using default rounding method ROUND_HALF_EVEN)
+   * Rounding with no decimal places (using default rounding method ROUND_HALF_CEILING)
    *
    * @param metaA
    *          Metadata of value to round
@@ -931,14 +931,13 @@ public class ValueDataUtil {
     }
 
     switch ( metaA.getType() ) {
+    // Use overloaded Const.round(value, precision, mode)
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double( Const.round( metaA.getNumber( dataA ).doubleValue(), 0, roundingMode ) );
+        return new Double( Const.round( metaA.getNumber( dataA ), 0, roundingMode ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return metaA.getInteger( dataA );
+        return new Long( Const.round( metaA.getInteger( dataA ), 0, roundingMode ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        // Round it to 0 digits.
-        BigDecimal number = metaA.getBigNumber( dataA );
-        return number.setScale( 0, roundingMode );
+        return Const.round( metaA.getBigNumber( dataA ), 0, roundingMode );
       default:
         throw new KettleValueException( "The 'round' function only works on numeric data" );
     }
@@ -958,7 +957,8 @@ public class ValueDataUtil {
    * @return The rounded value
    * @throws KettleValueException
    */
-  public static Object round( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
+  public static Object round( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB )
+    throws KettleValueException {
     final Object r = round( metaA, dataA, metaB, dataB, ROUND_2_MODE );
     return r;
   }
@@ -980,7 +980,7 @@ public class ValueDataUtil {
    * @throws KettleValueException
    */
   public static Object round( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB,
-    int roundingMode ) throws KettleValueException {
+      int roundingMode ) throws KettleValueException {
     if ( dataA == null || dataB == null ) {
       return null;
     }
@@ -990,7 +990,8 @@ public class ValueDataUtil {
         return new Double( Const.round( metaA.getNumber( dataA ).doubleValue(), metaB.getInteger( dataB ).intValue(),
             roundingMode ) );
       case ValueMetaInterface.TYPE_INTEGER:
-        return metaA.getInteger( dataA );
+        return new Long( Const.round( metaA.getInteger( dataA ).longValue(), metaB.getInteger( dataB ).intValue(),
+            roundingMode ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
         return Const.round( metaA.getBigNumber( dataA ), metaB.getInteger( dataB ).intValue(), roundingMode );
       default:
