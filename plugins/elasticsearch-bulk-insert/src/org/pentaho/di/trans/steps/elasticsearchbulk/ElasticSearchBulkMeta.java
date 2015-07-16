@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -56,6 +57,14 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+@Step( id = "ElasticSearchBulk",
+  i18nPackageName = "org.pentaho.di.trans.steps.elasticsearch",
+  name = "ElasticSearchBulk.TypeLongDesc.ElasticSearchBulk",
+  description = "ElasticSearchBulk.TypeTooltipDesc.ElasticSearchBulk",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk",
+  image = "ESB.svg",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/ElasticSearch+Bulk+Insert"
+)
 public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInterface {
 
   private static Class<?> PKG = ElasticSearchBulkMeta.class; // for i18n purposes
