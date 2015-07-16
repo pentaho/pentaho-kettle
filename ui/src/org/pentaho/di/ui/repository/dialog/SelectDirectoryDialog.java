@@ -22,6 +22,9 @@
 
 package org.pentaho.di.ui.repository.dialog;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
@@ -84,16 +87,14 @@ public class SelectDirectoryDialog extends Dialog {
 
   private boolean readOnly;
 
-  private String directoryPrefix;
+  private Set<String> restrictedPaths = Collections.<String>emptySet();
 
-  public void setDirectoryPrefix( String directoryPrefix ) {
-    this.directoryPrefix = directoryPrefix;
+  public void setRestrictedPaths( Set<String> restrictedPaths ) {
+    this.restrictedPaths = restrictedPaths;
   }
 
   private boolean isRestrictedPath( String path ) {
-    String directoryPrefix = Const.NVL( this.directoryPrefix, "" );
-    int index = path.indexOf( directoryPrefix );
-    return index != 0;
+    return restrictedPaths.contains( path );
   }
 
   public SelectDirectoryDialog( Shell parent, int style, Repository rep ) {
