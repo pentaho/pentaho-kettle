@@ -73,7 +73,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransMeta;
@@ -93,7 +92,7 @@ import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.FieldDisabledListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
+import org.pentaho.di.ui.repository.RepositoryDirectoryUI;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
@@ -565,26 +564,15 @@ public class TransDialog extends Dialog {
     wbDirectory.setLayoutData( fdbDirectory );
     wbDirectory.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        if ( rep != null ) {
-          RepositoryDirectoryInterface directoryFrom = transMeta.getRepositoryDirectory();
-          if ( directoryFrom == null ) {
-            directoryFrom = new RepositoryDirectory();
-          }
-          ObjectId idDirectoryFrom = directoryFrom.getObjectId();
-
-          SelectDirectoryDialog sdd = new SelectDirectoryDialog( shell, SWT.NONE, rep );
-          RepositoryDirectoryInterface rd = sdd.open();
-          if ( rd != null ) {
-            if ( idDirectoryFrom != rd.getObjectId() ) {
-              // We need to change this in the repository as well!!
-              // We do this when the user pressed OK
-              newDirectory = rd;
-              wDirectory.setText( rd.getPath() );
-            }
-            // else: Same directory!
-
-          }
+        RepositoryDirectoryInterface directoryFrom = transMeta.getRepositoryDirectory();
+        RepositoryDirectoryInterface rd = RepositoryDirectoryUI.chooseDirectory( shell, rep, directoryFrom );
+        if ( rd == null ) {
+          return;
         }
+        // We need to change this in the repository as well!!
+        // We do this when the user pressed OK
+        newDirectory = rd;
+        wDirectory.setText( rd.getPath() );
       }
     } );
 
