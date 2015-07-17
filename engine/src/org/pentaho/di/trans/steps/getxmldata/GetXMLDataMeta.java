@@ -72,82 +72,132 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   public static final String AT = "@";
   public static final String N0DE_SEPARATOR = "/";
 
-  /** Array of filenames */
+  /**
+   * Array of filenames
+   */
   private String[] fileName;
 
-  /** Wildcard or filemask (regular expression) */
+  /**
+   * Wildcard or filemask (regular expression)
+   */
   private String[] fileMask;
 
-  /** Array of boolean values as string, indicating if a file is required. */
+  /**
+   * Array of boolean values as string, indicating if a file is required.
+   */
   private String[] fileRequired;
 
-  /** Wildcard or filemask to exclude (regular expression) */
+  /**
+   * Wildcard or filemask to exclude (regular expression)
+   */
   private String[] excludeFileMask;
 
-  /** Flag indicating that we should include the filename in the output */
+  /**
+   * Flag indicating that we should include the filename in the output
+   */
   private boolean includeFilename;
 
-  /** The name of the field in the output containing the filename */
+  /**
+   * The name of the field in the output containing the filename
+   */
   private String filenameField;
 
-  /** Flag indicating that a row number field should be included in the output */
+  /**
+   * Flag indicating that a row number field should be included in the output
+   */
   private boolean includeRowNumber;
 
-  /** The name of the field in the output containing the row number */
+  /**
+   * The name of the field in the output containing the row number
+   */
   private String rowNumberField;
 
-  /** The maximum number or lines to read */
+  /**
+   * The maximum number or lines to read
+   */
   private long rowLimit;
 
-  /** The XPath location to loop over */
+  /**
+   * The XPath location to loop over
+   */
   private String loopxpath;
 
-  /** The fields to import... */
+  /**
+   * The fields to import...
+   */
   private GetXMLDataField[] inputFields;
 
-  /** The encoding to use for reading: null or empty string means system default encoding */
+  /**
+   * The encoding to use for reading: null or empty string means system default encoding
+   */
   private String encoding;
 
-  /** Is In fields */
+  /**
+   * Is In fields
+   */
   private String xmlField;
 
-  /** Is In fields */
+  /**
+   * Is In fields
+   */
   private boolean inFields;
 
-  /** Is a File */
+  /**
+   * Is a File
+   */
   private boolean IsAFile;
 
-  /** Flag: add result filename **/
+  /**
+   * Flag: add result filename
+   **/
   private boolean addResultFile;
 
-  /** Flag: set Namespace aware **/
+  /**
+   * Flag: set Namespace aware
+   **/
   private boolean nameSpaceAware;
 
-  /** Flag: set XML Validating **/
+  /**
+   * Flag: set XML Validating
+   **/
   private boolean validating;
 
-  /** Flag : do we process use tokens? */
+  /**
+   * Flag : do we process use tokens?
+   */
   private boolean usetoken;
 
-  /** Flag : do we ignore empty files */
+  /**
+   * Flag : do we ignore empty files
+   */
   private boolean IsIgnoreEmptyFile;
 
-  /** Array of boolean values as string, indicating if we need to fetch sub folders. */
+  /**
+   * Array of boolean values as string, indicating if we need to fetch sub folders.
+   */
   private String[] includeSubFolders;
 
-  /** Flag : do not fail if no file */
+  /**
+   * Flag : do not fail if no file
+   */
   private boolean doNotFailIfNoFile;
 
-  /** Flag : ignore comments */
+  /**
+   * Flag : ignore comments
+   */
   private boolean ignorecomments;
 
-  /** Flag : read url as source */
+  /**
+   * Flag : read url as source
+   */
   private boolean readurl;
 
   // Given this path activates the streaming algorithm to process large files
   private String prunePath;
 
-  /** Additional fields **/
+  /**
+   * Additional fields
+   **/
   private String shortFileFieldName;
   private String pathFieldName;
   private String hiddenFieldName;
@@ -169,8 +219,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param field
-   *          The shortFileFieldName to set.
+   * @param field The shortFileFieldName to set.
    */
   public void setShortFileNameField( String field ) {
     shortFileFieldName = field;
@@ -184,8 +233,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param field
-   *          The pathFieldName to set.
+   * @param field The pathFieldName to set.
    */
   public void setPathField( String field ) {
     this.pathFieldName = field;
@@ -199,8 +247,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param field
-   *          The hiddenFieldName to set.
+   * @param field The hiddenFieldName to set.
    */
   public void setIsHiddenField( String field ) {
     hiddenFieldName = field;
@@ -214,8 +261,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param field
-   *          The lastModificationTimeFieldName to set.
+   * @param field The lastModificationTimeFieldName to set.
    */
   public void setLastModificationDateField( String field ) {
     lastModificationTimeFieldName = field;
@@ -229,8 +275,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param field
-   *          The uriNameFieldName to set.
+   * @param field The uriNameFieldName to set.
    */
   public void setUriField( String field ) {
     uriNameFieldName = field;
@@ -244,8 +289,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param field
-   *          The rootUriNameFieldName to set.
+   * @param field The rootUriNameFieldName to set.
    */
   public void setRootUriField( String field ) {
     rootUriNameFieldName = field;
@@ -259,8 +303,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param field
-   *          The extensionFieldName to set.
+   * @param field The extensionFieldName to set.
    */
   public void setExtensionField( String field ) {
     extensionFieldName = field;
@@ -274,8 +317,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param field
-   *          The sizeFieldName to set.
+   * @param field The sizeFieldName to set.
    */
   public void setSizeField( String field ) {
     sizeFieldName = field;
@@ -296,8 +338,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param validating
-   *          the validating flag to set
+   * @param validating the validating flag to set
    */
   public void setValidating( boolean validating ) {
     this.validating = validating;
@@ -311,8 +352,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param readurl
-   *          the readurl flag to set
+   * @param readurl the readurl flag to set
    */
   public void setReadUrl( boolean readurl ) {
     this.readurl = readurl;
@@ -330,8 +370,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param inputFields
-   *          The input fields to set.
+   * @param inputFields The input fields to set.
    */
   public void setInputFields( GetXMLDataField[] inputFields ) {
     this.inputFields = inputFields;
@@ -345,8 +384,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param excludeFileMask
-   *          The excludeFileMask to set.
+   * @param excludeFileMask The excludeFileMask to set.
    */
   public void setExcludeFileMask( String[] excludeFileMask ) {
     this.excludeFileMask = excludeFileMask;
@@ -374,8 +412,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param inFields
-   *          set the inFields.
+   * @param inFields set the inFields.
    */
   public void setInFields( boolean inFields ) {
     this.inFields = inFields;
@@ -389,8 +426,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param fileMask
-   *          The fileMask to set.
+   * @param fileMask The fileMask to set.
    */
   public void setFileMask( String[] fileMask ) {
     this.fileMask = fileMask;
@@ -402,13 +438,13 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void setFileRequired( String[] fileRequiredin ) {
     for ( int i = 0; i < fileRequiredin.length; i++ ) {
-      this.fileRequired[i] = getRequiredFilesCode( fileRequiredin[i] );
+      this.fileRequired[ i ] = getRequiredFilesCode( fileRequiredin[ i ] );
     }
   }
 
   public void setIncludeSubFolders( String[] includeSubFoldersin ) {
     for ( int i = 0; i < includeSubFoldersin.length; i++ ) {
-      this.includeSubFolders[i] = getRequiredFilesCode( includeSubFoldersin[i] );
+      this.includeSubFolders[ i ] = getRequiredFilesCode( includeSubFoldersin[ i ] );
     }
   }
 
@@ -420,8 +456,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param fileName
-   *          The fileName to set.
+   * @param fileName The fileName to set.
    */
   public void setFileName( String[] fileName ) {
     this.fileName = fileName;
@@ -435,8 +470,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param filenameField
-   *          The filenameField to set.
+   * @param filenameField The filenameField to set.
    */
   public void setFilenameField( String filenameField ) {
     this.filenameField = filenameField;
@@ -450,8 +484,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param includeFilename
-   *          The includeFilename to set.
+   * @param includeFilename The includeFilename to set.
    */
   public void setIncludeFilename( boolean includeFilename ) {
     this.includeFilename = includeFilename;
@@ -465,8 +498,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param includeRowNumber
-   *          The includeRowNumber to set.
+   * @param includeRowNumber The includeRowNumber to set.
    */
   public void setIncludeRowNumber( boolean includeRowNumber ) {
     this.includeRowNumber = includeRowNumber;
@@ -480,8 +512,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param rowLimit
-   *          The rowLimit to set.
+   * @param rowLimit The rowLimit to set.
    */
   public void setRowLimit( long rowLimit ) {
     this.rowLimit = rowLimit;
@@ -495,16 +526,14 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param loopxpath
-   *          The loopxpath to set.
+   * @param loopxpath The loopxpath to set.
    */
   public void setLoopXPath( String loopxpath ) {
     this.loopxpath = loopxpath;
   }
 
   /**
-   * @param usetoken
-   *          the "use token" flag to set
+   * @param usetoken the "use token" flag to set
    */
   public void setuseToken( boolean usetoken ) {
     this.usetoken = usetoken;
@@ -525,8 +554,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param IsIgnoreEmptyFile
-   *          the IsIgnoreEmptyFile to set
+   * @param IsIgnoreEmptyFile the IsIgnoreEmptyFile to set
    */
   public void setIgnoreEmptyFile( boolean IsIgnoreEmptyFile ) {
     this.IsIgnoreEmptyFile = IsIgnoreEmptyFile;
@@ -540,8 +568,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param doNotFailIfNoFile
-   *          the doNotFailIfNoFile to set
+   * @param doNotFailIfNoFile the doNotFailIfNoFile to set
    */
   public void setdoNotFailIfNoFile( boolean doNotFailIfNoFile ) {
     this.doNotFailIfNoFile = doNotFailIfNoFile;
@@ -555,16 +582,14 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param ignorecomments
-   *          the ignorecomments to set
+   * @param ignorecomments the ignorecomments to set
    */
   public void setIgnoreComments( boolean ignorecomments ) {
     this.ignorecomments = ignorecomments;
   }
 
   /**
-   * @param nameSpaceAware
-   *          the name space aware flag to set
+   * @param nameSpaceAware the name space aware flag to set
    */
   public void setNamespaceAware( boolean nameSpaceAware ) {
     this.nameSpaceAware = nameSpaceAware;
@@ -585,8 +610,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param rowNumberField
-   *          The rowNumberField to set.
+   * @param rowNumberField The rowNumberField to set.
    */
   public void setRowNumberField( String rowNumberField ) {
     this.rowNumberField = rowNumberField;
@@ -600,8 +624,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param encoding
-   *          the encoding to set
+   * @param encoding the encoding to set
    */
   public void setEncoding( String encoding ) {
     this.encoding = encoding;
@@ -627,8 +650,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param prunePath
-   *          the prunePath to set
+   * @param prunePath the prunePath to set
    */
   public void setPrunePath( String prunePath ) {
     this.prunePath = prunePath;
@@ -647,16 +669,16 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
     retval.allocate( nrFiles, nrFields );
 
     for ( int i = 0; i < nrFiles; i++ ) {
-      retval.fileName[i] = fileName[i];
-      retval.fileMask[i] = fileMask[i];
-      retval.excludeFileMask[i] = excludeFileMask[i];
-      retval.fileRequired[i] = fileRequired[i];
-      retval.includeSubFolders[i] = includeSubFolders[i];
+      retval.fileName[ i ] = fileName[ i ];
+      retval.fileMask[ i ] = fileMask[ i ];
+      retval.excludeFileMask[ i ] = excludeFileMask[ i ];
+      retval.fileRequired[ i ] = fileRequired[ i ];
+      retval.includeSubFolders[ i ] = includeSubFolders[ i ];
     }
 
     for ( int i = 0; i < nrFields; i++ ) {
-      if ( inputFields[i] != null ) {
-        retval.inputFields[i] = (GetXMLDataField) inputFields[i].clone();
+      if ( inputFields[ i ] != null ) {
+        retval.inputFields[ i ] = (GetXMLDataField) inputFields[ i ].clone();
       }
     }
     return retval;
@@ -682,18 +704,18 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.append( "    <file>" ).append( Const.CR );
     for ( int i = 0; i < fileName.length; i++ ) {
-      retval.append( "      " ).append( XMLHandler.addTagValue( "name", fileName[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "filemask", fileMask[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "exclude_filemask", excludeFileMask[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "file_required", fileRequired[i] ) );
-      retval.append( "      " ).append( XMLHandler.addTagValue( "include_subfolders", includeSubFolders[i] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "name", fileName[ i ] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "filemask", fileMask[ i ] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "exclude_filemask", excludeFileMask[ i ] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "file_required", fileRequired[ i ] ) );
+      retval.append( "      " ).append( XMLHandler.addTagValue( "include_subfolders", includeSubFolders[ i ] ) );
 
     }
     retval.append( "    </file>" ).append( Const.CR );
 
     retval.append( "    <fields>" ).append( Const.CR );
     for ( int i = 0; i < inputFields.length; i++ ) {
-      GetXMLDataField field = inputFields[i];
+      GetXMLDataField field = inputFields[ i ];
       retval.append( field.getXML() );
     }
     retval.append( "    </fields>" ).append( Const.CR );
@@ -718,23 +740,23 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
 
   public String getRequiredFilesDesc( String tt ) {
     if ( Const.isEmpty( tt ) ) {
-      return RequiredFilesDesc[0];
+      return RequiredFilesDesc[ 0 ];
     }
-    if ( tt.equalsIgnoreCase( RequiredFilesCode[1] ) ) {
-      return RequiredFilesDesc[1];
+    if ( tt.equalsIgnoreCase( RequiredFilesCode[ 1 ] ) ) {
+      return RequiredFilesDesc[ 1 ];
     } else {
-      return RequiredFilesDesc[0];
+      return RequiredFilesDesc[ 0 ];
     }
   }
 
   public String getRequiredFilesCode( String tt ) {
     if ( tt == null ) {
-      return RequiredFilesCode[0];
+      return RequiredFilesCode[ 0 ];
     }
-    if ( tt.equals( RequiredFilesDesc[1] ) ) {
-      return RequiredFilesCode[1];
+    if ( tt.equals( RequiredFilesDesc[ 1 ] ) ) {
+      return RequiredFilesCode[ 1 ];
     } else {
-      return RequiredFilesCode[0];
+      return RequiredFilesCode[ 0 ];
     }
   }
 
@@ -770,17 +792,17 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
         Node excludefilemasknode = XMLHandler.getSubNodeByNr( filenode, "exclude_filemask", i );
         Node fileRequirednode = XMLHandler.getSubNodeByNr( filenode, "file_required", i );
         Node includeSubFoldersnode = XMLHandler.getSubNodeByNr( filenode, "include_subfolders", i );
-        fileName[i] = XMLHandler.getNodeValue( filenamenode );
-        fileMask[i] = XMLHandler.getNodeValue( filemasknode );
-        excludeFileMask[i] = XMLHandler.getNodeValue( excludefilemasknode );
-        fileRequired[i] = XMLHandler.getNodeValue( fileRequirednode );
-        includeSubFolders[i] = XMLHandler.getNodeValue( includeSubFoldersnode );
+        fileName[ i ] = XMLHandler.getNodeValue( filenamenode );
+        fileMask[ i ] = XMLHandler.getNodeValue( filemasknode );
+        excludeFileMask[ i ] = XMLHandler.getNodeValue( excludefilemasknode );
+        fileRequired[ i ] = XMLHandler.getNodeValue( fileRequirednode );
+        includeSubFolders[ i ] = XMLHandler.getNodeValue( includeSubFoldersnode );
       }
 
       for ( int i = 0; i < nrFields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
         GetXMLDataField field = new GetXMLDataField( fnode );
-        inputFields[i] = field;
+        inputFields[ i ] = field;
       }
 
       // Is there a limit on the number of rows we process?
@@ -810,15 +832,15 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void allocate( int nrfiles, int nrfields ) {
     allocateFiles( nrfiles );
-    inputFields = new GetXMLDataField[nrfields];
+    inputFields = new GetXMLDataField[ nrfields ];
   }
 
   public void allocateFiles( int nrfiles ) {
-    fileName = new String[nrfiles];
-    fileMask = new String[nrfiles];
-    excludeFileMask = new String[nrfiles];
-    fileRequired = new String[nrfiles];
-    includeSubFolders = new String[nrfiles];
+    fileName = new String[ nrfiles ];
+    fileMask = new String[ nrfiles ];
+    excludeFileMask = new String[ nrfiles ];
+    fileRequired = new String[ nrfiles ];
+    includeSubFolders = new String[ nrfiles ];
   }
 
   public void setDefault() {
@@ -852,15 +874,15 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
     allocate( nrFiles, nrFields );
 
     for ( int i = 0; i < nrFiles; i++ ) {
-      fileName[i] = "filename" + ( i + 1 );
-      fileMask[i] = "";
-      excludeFileMask[i] = "";
-      fileRequired[i] = RequiredFilesCode[0];
-      includeSubFolders[i] = RequiredFilesCode[0];
+      fileName[ i ] = "filename" + ( i + 1 );
+      fileMask[ i ] = "";
+      excludeFileMask[ i ] = "";
+      fileRequired[ i ] = RequiredFilesCode[ 0 ];
+      includeSubFolders[ i ] = RequiredFilesCode[ 0 ];
     }
 
     for ( int i = 0; i < nrFields; i++ ) {
-      inputFields[i] = new GetXMLDataField( "field" + ( i + 1 ) );
+      inputFields[ i ] = new GetXMLDataField( "field" + ( i + 1 ) );
     }
 
     rowLimit = 0;
@@ -871,10 +893,10 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     int i;
     for ( i = 0; i < inputFields.length; i++ ) {
-      GetXMLDataField field = inputFields[i];
+      GetXMLDataField field = inputFields[ i ];
 
       int type = field.getType();
       if ( type == ValueMeta.TYPE_NONE ) {
@@ -967,7 +989,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
 
     try {
       includeFilename = rep.getStepAttributeBoolean( id_step, "include" );
@@ -995,11 +1018,11 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
       allocate( nrFiles, nrFields );
 
       for ( int i = 0; i < nrFiles; i++ ) {
-        fileName[i] = rep.getStepAttributeString( id_step, i, "file_name" );
-        fileMask[i] = rep.getStepAttributeString( id_step, i, "file_mask" );
-        excludeFileMask[i] = rep.getStepAttributeString( id_step, i, "exclude_file_mask" );
-        fileRequired[i] = rep.getStepAttributeString( id_step, i, "file_required" );
-        includeSubFolders[i] = rep.getStepAttributeString( id_step, i, "include_subfolders" );
+        fileName[ i ] = rep.getStepAttributeString( id_step, i, "file_name" );
+        fileMask[ i ] = rep.getStepAttributeString( id_step, i, "file_mask" );
+        excludeFileMask[ i ] = rep.getStepAttributeString( id_step, i, "exclude_file_mask" );
+        fileRequired[ i ] = rep.getStepAttributeString( id_step, i, "file_required" );
+        includeSubFolders[ i ] = rep.getStepAttributeString( id_step, i, "include_subfolders" );
       }
 
       for ( int i = 0; i < nrFields; i++ ) {
@@ -1022,7 +1045,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
           id_step, i, "field_trim_type" ) ) );
         field.setRepeated( rep.getStepAttributeBoolean( id_step, i, "field_repeat" ) );
 
-        inputFields[i] = field;
+        inputFields[ i ] = field;
       }
       inFields = rep.getStepAttributeBoolean( id_step, "IsInFields" );
       IsAFile = rep.getStepAttributeBoolean( id_step, "IsAFile" );
@@ -1044,7 +1067,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "include", includeFilename );
       rep.saveStepAttribute( id_transformation, id_step, "include_field", filenameField );
@@ -1065,15 +1089,15 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "encoding", encoding );
 
       for ( int i = 0; i < fileName.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "file_name", fileName[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "file_mask", fileMask[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "exclude_file_mask", excludeFileMask[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "file_required", fileRequired[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "include_subfolders", includeSubFolders[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "file_name", fileName[ i ] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "file_mask", fileMask[ i ] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "exclude_file_mask", excludeFileMask[ i ] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "file_required", fileRequired[ i ] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "include_subfolders", includeSubFolders[ i ] );
       }
 
       for ( int i = 0; i < inputFields.length; i++ ) {
-        GetXMLDataField field = inputFields[i];
+        GetXMLDataField field = inputFields[ i ];
 
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field.getName() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_xpath", field.getXPath() );
@@ -1115,16 +1139,16 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
 
   private boolean[] includeSubFolderBoolean() {
     int len = fileName.length;
-    boolean[] includeSubFolderBoolean = new boolean[len];
+    boolean[] includeSubFolderBoolean = new boolean[ len ];
     for ( int i = 0; i < len; i++ ) {
-      includeSubFolderBoolean[i] = YES.equalsIgnoreCase( includeSubFolders[i] );
+      includeSubFolderBoolean[ i ] = YES.equalsIgnoreCase( includeSubFolders[ i ] );
     }
     return includeSubFolderBoolean;
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+                     Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // See if we get input...
@@ -1184,7 +1208,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-    Trans trans ) {
+                                Trans trans ) {
     return new GetXMLData( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
@@ -1202,19 +1226,16 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
    * For now, we'll simply turn it into an absolute path and pray that the file is on a shared drive or something like
    * that.
    *
-   * @param space
-   *          the variable space to use
+   * @param space                   the variable space to use
    * @param definitions
    * @param resourceNamingInterface
-   * @param repository
-   *          The repository to optionally load other resources from (to be converted to XML)
-   * @param metaStore
-   *          the metaStore in which non-kettle metadata could reside.
-   *
+   * @param repository              The repository to optionally load other resources from (to be converted to XML)
+   * @param metaStore               the metaStore in which non-kettle metadata could reside.
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+                                 ResourceNamingInterface resourceNamingInterface, Repository repository,
+                                 IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...
@@ -1240,11 +1261,11 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
 
           // Still here: set a new list of absolute filenames!
           //
-          fileName = newFilenames.toArray( new String[newFilenames.size()] );
-          fileMask = new String[newFilenames.size()]; // all null since converted to absolute path.
-          fileRequired = new String[newFilenames.size()]; // all null, turn to "Y" :
+          fileName = newFilenames.toArray( new String[ newFilenames.size() ] );
+          fileMask = new String[ newFilenames.size() ]; // all null since converted to absolute path.
+          fileRequired = new String[ newFilenames.size() ]; // all null, turn to "Y" :
           for ( int i = 0; i < newFilenames.size(); i++ ) {
-            fileRequired[i] = "Y";
+            fileRequired[ i ] = "Y";
           }
         }
       }
@@ -1259,4 +1280,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
     return new GetXMLDataMetaInjection( this );
   }
 
+  @Override
+  public TransMeta.TransformationType[] getSupportedTransformationTypes() {
+    return new TransMeta.TransformationType[] { TransMeta.TransformationType.Normal };
+  }
 }
