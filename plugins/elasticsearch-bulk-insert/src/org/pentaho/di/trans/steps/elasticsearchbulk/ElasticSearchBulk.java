@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,16 +30,16 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
-import org.elasticsearch.ElasticSearchException;
-import org.elasticsearch.ElasticSearchTimeoutException;
+import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.ElasticsearchTimeoutException;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.bulk.BulkItemResponse;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequest.OpType;
+import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.client.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -110,7 +110,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   private IndexRequest.OpType opType = OpType.CREATE;
 
   public ElasticSearchBulk( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-    TransMeta transMeta, Trans trans ) {
+                            TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -197,9 +197,8 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   }
 
   /**
-   *
-   *
-   * @param outputRowData
+   * @param rowMeta The metadata for the row to be indexed
+   * @param row     The data for the row to be indexed
    */
 
   private boolean indexRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
@@ -341,10 +340,10 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
       } else {
         response = actionFuture.actionGet();
       }
-    } catch ( ElasticSearchException e ) {
+    } catch ( ElasticsearchException e ) {
       String msg =
         BaseMessages.getString( PKG, "ElasticSearchBulk.Error.BatchExecuteFail", e.getLocalizedMessage() );
-      if ( e instanceof ElasticSearchTimeoutException ) {
+      if ( e instanceof ElasticsearchTimeoutException ) {
         msg = BaseMessages.getString( PKG, "ElasticSearchBulk.Error.Timeout" );
       }
       logError( msg );
@@ -374,7 +373,6 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
 
   /**
    * @param response
-   * @param errorNbr
    * @return <code>true</code> if no errors
    */
   private boolean handleResponse( BulkResponse response ) {
@@ -391,16 +389,16 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
       for ( BulkItemResponse item : response ) {
         if ( item.isFailed() ) {
           // log
-          logDetailed( item.failureMessage() );
+          logDetailed( item.getFailureMessage() );
           errorsInBatch++;
           if ( getStepMeta().isDoingErrorHandling() ) {
-            rejectRow( item.itemId(), item.failureMessage() );
+            rejectRow( item.getItemId(), item.getFailureMessage() );
           }
         } else if ( useOutput ) {
           if ( idOutFieldName != null ) {
-            addIdToRow( item.getId(), item.itemId() );
+            addIdToRow( item.getId(), item.getItemId() );
           }
-          echoRow( item.itemId() );
+          echoRow( item.getItemId() );
         }
       }
     }
