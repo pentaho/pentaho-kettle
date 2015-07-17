@@ -264,8 +264,7 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
   }
 
   /**
-   * @param batch
-   *          size.
+   * @param value The batch size to set
    */
   public void setBatchSize( String value ) {
     this.batchSize = value;

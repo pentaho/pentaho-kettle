@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,12 +51,14 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.elasticsearch.action.ListenableActionFuture;
+import org.elasticsearch.action.admin.cluster.state.ClusterStateRequestBuilder;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
-import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequestBuilder;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
+import org.elasticsearch.action.admin.indices.recovery.RecoveryRequestBuilder;
+import org.elasticsearch.action.admin.indices.recovery.RecoveryResponse;
 import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.action.admin.cluster.state.ClusterStateRequestBuilder;
-import org.elasticsearch.client.action.admin.indices.status.IndicesStatusRequestBuilder;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterState;
@@ -64,7 +66,6 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.discovery.MasterNotDiscoveredException;
-import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.pentaho.di.core.Const;
@@ -222,7 +223,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     wCancel = new Button( shell, SWT.PUSH );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-    setButtonPositions( new Button[] { wOK, wCancel }, margin, null );
+    setButtonPositions( new Button[]{ wOK, wCancel }, margin, null );
 
     fdTabFolder = new FormData();
     fdTabFolder.left = new FormAttachment( 0, 0 );
@@ -360,10 +361,10 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
       }
     } );
 
-    Control[] connectionControls = new Control[] { wIndex, wType };
+    Control[] connectionControls = new Control[]{ wIndex, wType };
     placeControls( wIndexGroup, connectionControls );
 
-    BaseStepDialog.positionBottomButtons( wIndexGroup, new Button[] { wTest }, Const.MARGIN, wType );
+    BaseStepDialog.positionBottomButtons( wIndexGroup, new Button[]{ wTest }, Const.MARGIN, wType );
 
     fdIndexGroup = new FormData();
     fdIndexGroup.left = new FormAttachment( 0, Const.MARGIN );
@@ -396,7 +397,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
       }
     } );
 
-    setButtonPositions( new Button[] { wTestCl }, Const.MARGIN, null );
+    setButtonPositions( new Button[]{ wTestCl }, Const.MARGIN, null );
 
     ColumnInfo[] columnsMeta = new ColumnInfo[2];
     columnsMeta[0] =
@@ -495,11 +496,11 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     };
     wGet.addListener( SWT.Selection, lsGet );
 
-    setButtonPositions( new Button[] { wGet }, Const.MARGIN, null );
+    setButtonPositions( new Button[]{ wGet }, Const.MARGIN, null );
 
     final int fieldsRowCount = model.getFields().keySet().size();
 
-    String[] names = this.fieldNames != null ? this.fieldNames : new String[] { "" };
+    String[] names = this.fieldNames != null ? this.fieldNames : new String[]{ "" };
     ColumnInfo[] columnsMeta = new ColumnInfo[2];
     columnsMeta[0] =
       new ColumnInfo(
@@ -663,7 +664,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     wJsonField.setEnabled( wIsJson.getSelection() );
 
     Control[] settingsControls =
-      new Control[] {
+      new Control[]{
         wlBatchSize, wBatchSize, wlStopOnError, wStopOnError, wTimeOut, wIdInField, wlIsOverwrite,
         wIsOverwrite, wlUseOutput, wUseOutput, wIdOutField, wlIsJson, wIsJson, wJsonField };
     placeControls( wSettingsGroup, settingsControls );
@@ -706,7 +707,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     try {
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null ) {
-        BaseStepDialog.getFieldsFromPrevious( r, table, 1, new int[] { 1, 2 }, null, 0, 0, null );
+        BaseStepDialog.getFieldsFromPrevious( r, table, 1, new int[]{ 1, 2 }, null, 0, 0, null );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
@@ -752,8 +753,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
   /**
    * Read the data from the ElasticSearchBulkMeta object and show it in this dialog.
    *
-   * @param in
-   *          The ElasticSearchBulkMeta object to obtain the data from.
+   * @param in The ElasticSearchBulkMeta object to obtain the data from.
    */
   public void getData( ElasticSearchBulkMeta in ) {
     wIndex.setText( Const.NVL( in.getIndex(), "" ) );
@@ -915,10 +915,16 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
             showError( BaseMessages.getString( PKG, "ElasticSearchBulk.Error.NoIndex" ) );
             break;
           }
-          IndicesStatusRequestBuilder indicesBld = admin.indices().prepareStatus( tempMeta.getIndex() );
-          ListenableActionFuture<IndicesStatusResponse> lafInd = indicesBld.execute();
-          // IndicesStatusResponse isr =
-          lafInd.actionGet();
+          // First check to see if the index exists
+          IndicesExistsRequestBuilder indicesExistBld = admin.indices().prepareExists( tempMeta.getIndex() );
+          IndicesExistsResponse indicesExistResponse = indicesExistBld.execute().get();
+          if ( !indicesExistResponse.isExists() ) {
+            showError( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Error.NoIndex" ) );
+            return;
+          }
+
+          RecoveryRequestBuilder indicesBld = admin.indices().prepareRecoveries( tempMeta.getIndex() );
+          ListenableActionFuture<RecoveryResponse> lafInd = indicesBld.execute();
           String shards = "" + lafInd.get().getSuccessfulShards() + "/" + lafInd.get().getTotalShards();
           showMessage( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TestIndex.TestOK", shards ) );
           break;
@@ -939,11 +945,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     } catch ( MasterNotDiscoveredException e ) {
       showError( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Error.NoNodesFound" ) );
     } catch ( Exception e ) {
-      if ( e.getCause() instanceof IndexMissingException ) {
-        showError( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Error.NoIndex" ) );
-      } else {
-        showError( e.getLocalizedMessage() );
-      }
+      showError( e.getLocalizedMessage() );
     } finally {
       if ( client != null ) {
         client.close();
