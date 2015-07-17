@@ -933,7 +933,24 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
       // connect to Salesforce
       connection.connect();
       // return fieldsname for the module
-      return connection.getFields( selectedModule );
+      
+      com.sforce.soap.partner.Field [] rawFieldList = connection.getObjectFields(selectedModule);
+      ArrayList<String> finalFieldList = new ArrayList<String>();
+      for (com.sforce.soap.partner.Field f : rawFieldList) {
+    	  // Leave out fields that can't be updated and relationship fields
+    	  if (!f.isCalculated() && f.isUpdateable() && f.getType() != com.sforce.soap.partner.FieldType.fromString("reference")) {
+    		  // It is good to go
+    		  finalFieldList.add(f.getName());
+    	  }
+      }  
+      for (com.sforce.soap.partner.Field f : rawFieldList) {
+    	  // Now get the updatable reference fields as well
+    	  if (!f.isCalculated() && f.isUpdateable() && f.getType() == com.sforce.soap.partner.FieldType.fromString("reference")) {
+    		  // Use a placeholder external id
+    		  finalFieldList.add(String.format("%s:%s/%s", f.getReferenceTo(0),wUpsertField.getText().trim(),f.getRelationshipName()));
+    	  }
+      }  
+      return finalFieldList.toArray(new String[finalFieldList.size()]);
     } catch ( Exception e ) {
       throw new KettleException( "Erreur getting fields from module [" + url + "]!", e );
     } finally {
