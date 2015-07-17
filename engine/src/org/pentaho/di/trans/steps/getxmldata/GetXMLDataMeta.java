@@ -1259,4 +1259,8 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface {
     return new GetXMLDataMetaInjection( this );
   }
 
+  @Override
+  public TransMeta.TransformationType[] getSupportedTransformationTypes() {
+      return new TransMeta.TransformationType[] { TransMeta.TransformationType.Normal };
+  }
 }
