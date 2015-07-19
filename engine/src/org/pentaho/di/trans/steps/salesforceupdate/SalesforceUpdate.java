@@ -29,6 +29,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -113,7 +114,11 @@ public class SalesforceUpdate extends BaseStep implements StepInterface {
   }
 
   private void writeToSalesForce( Object[] rowData ) throws KettleException {
-    try {
+	String  upsertFieldNameTemp[] = null;
+	String upsertModuleFieldName = null;
+	String fieldToNullFieldName = null;
+	
+	try {
 
       if ( log.isDetailed() ) {
         logDetailed( "Called writeToSalesForce with " + data.iBufferPos + " out of " + meta.getBatchSizeInt() );
@@ -127,15 +132,34 @@ public class SalesforceUpdate extends BaseStep implements StepInterface {
 
         // Add fields to update
         for ( int i = 0; i < data.nrfields; i++ ) {
-          boolean valueIsNull = data.inputRowMeta.isNull( rowData, data.fieldnrs[i] );
-          if ( valueIsNull ) {
+         // boolean valueIsNull = data.inputRowMeta.isNull( rowData, data.fieldnrs[i] );
+
+          ValueMetaInterface valueMeta = data.inputRowMeta.getValueMeta( data.fieldnrs[i] );
+          Object object = rowData[data.fieldnrs[i]];
+
+          if ( valueMeta.isNull( object ) ) {
             // The value is null
             // We need to keep track of this field
-            fieldsToNull.add( meta.getUpdateLookup()[i] );
+        	fieldToNullFieldName = meta.getUpdateLookup()[i];
+        	if (!meta.getUseExternalId()[i]) {
+                fieldsToNull.add( fieldToNullFieldName );
+        	} else {
+        		// This is a external id formatted field in the form sobject:extern_id_lookup_field/module_fieldname
+        		// so we want to check if there is a '/' in the field name if so get the string following that 
+        		upsertFieldNameTemp = fieldToNullFieldName.split("\\/");
+        		upsertModuleFieldName = upsertFieldNameTemp[upsertFieldNameTemp.length-1];
+        		if (upsertModuleFieldName.endsWith("__r")) {
+        			upsertModuleFieldName = upsertModuleFieldName.substring(0,upsertModuleFieldName.length()-3) + "__c";
+			} else { //If the fieldName does not end with __r it must be standard
+				upsertModuleFieldName = upsertModuleFieldName + "Id";
+        		}
+                fieldsToNull.add( upsertModuleFieldName);
+        	}
+           
           } else {
-            updatefields.add( SalesforceConnection.createMessageElement(
-              meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]], meta.getUseExternalId()[i] ) );
-          }
+              updatefields.add( SalesforceConnection.createMessageElement(
+                meta.getUpdateLookup()[i], rowData[data.fieldnrs[i]], meta.getUseExternalId()[i] ) );
+            }
         }
 
         // build the SObject
