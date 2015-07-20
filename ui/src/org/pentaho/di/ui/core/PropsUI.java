@@ -184,6 +184,10 @@ public class PropsUI extends Props {
     List<PluginInterface> plugins = registry.getPlugins( LifecyclePluginType.class );
     List<GUIOption<Object>> leditables = new ArrayList<GUIOption<Object>>();
     for ( PluginInterface plugin : plugins ) {
+      if ( !plugin.getClassMap().keySet().contains( GUIOption.class ) ) {
+        continue;
+      }
+
       try {
         GUIOption<Object> loaded = registry.loadClass( plugin, GUIOption.class );
         if ( loaded != null ) {
