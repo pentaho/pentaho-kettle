@@ -193,6 +193,9 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
 
   private static final void applyChanges( Shell shell, List list, Control control, int position,
     InsertTextInterface insertTextInterface ) {
+    if ( list.getSelectionCount() <= 0 ) {
+      return;
+    }
     String extra = "${" + list.getSelection()[0] + "}";
     if ( insertTextInterface != null ) {
       insertTextInterface.insertText( extra, position );
@@ -201,9 +204,6 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
         return;
       }
 
-      if ( list.getSelectionCount() <= 0 ) {
-        return;
-      }
       if ( control instanceof Text ) {
         ( (Text) control ).insert( extra );
       } else if ( control instanceof CCombo ) {
