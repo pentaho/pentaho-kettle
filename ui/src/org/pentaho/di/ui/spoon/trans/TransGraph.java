@@ -93,6 +93,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
@@ -202,7 +203,6 @@ import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.jface.tags.JfaceMenuitem;
 import org.pentaho.ui.xul.jface.tags.JfaceMenupopup;
-import org.pentaho.di.core.SwtUniversalImage;
 
 /**
  * This class handles the display of the transformations in a graphical way using icons, arrows, etc. One transformation
@@ -3008,14 +3008,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       e.gc.setForeground( GUIResource.getInstance().getColorCrystalTextPentaho() );
       e.gc.setFont( GUIResource.getInstance().getFontMedium() );
 
-      String message = BaseMessages.getString( PKG, "TransGraph.EmptyTrans.Message" );
-      Image pentahoImage = GUIResource.getInstance().getImageDropHere();
-      org.eclipse.swt.graphics.Point messageSize = e.gc.textExtent( message );
-      int leftPosition = ( area.x - messageSize.x - pentahoImage.getBounds().width - 10 ) / 2;
-      int topPosition = ( area.y - messageSize.y ) / 2;
-      e.gc.drawText( message, leftPosition, topPosition );
-      e.gc.drawImage( pentahoImage, leftPosition - pentahoImage.getBounds().width - 10, topPosition + messageSize.y / 2
-          - pentahoImage.getBounds().height / 2 );
+      Image pentahoImage = GUIResource.getInstance().getImageTransCanvas();
+      int leftPosition = ( area.x - pentahoImage.getBounds().width ) / 2;
+      int topPosition = ( area.y - pentahoImage.getBounds().height ) / 2;
+      e.gc.drawImage( pentahoImage, leftPosition, topPosition );
     }
     img.dispose();
 
