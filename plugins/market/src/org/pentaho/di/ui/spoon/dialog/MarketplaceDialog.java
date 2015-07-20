@@ -258,6 +258,12 @@ public class MarketplaceDialog extends Dialog {
                       upgradeButton.setVisible( false );
                     }
                   }
+                  BaseStepDialog.positionBottomButtons( composite, new Button[] { button, upgradeButton }, margin,
+                      button );
+                  FormData installedButtonFormData = (FormData) button.getLayoutData();
+                  FormData upgradeButtonFormData = (FormData) upgradeButton.getLayoutData();
+                  installedButtonFormData.right = null;
+                  upgradeButtonFormData.right = null;
                 } catch ( KettleException ke ) {
                   new ErrorDialog( shell, BaseMessages.getString( MARKET_PKG, "Market.error" ), BaseMessages.getString(
                       MARKET_PKG, "Market.installUninstall.error" ), ke );
@@ -547,6 +553,10 @@ public class MarketplaceDialog extends Dialog {
 
     BaseStepDialog.positionBottomButtons( composite, new Button[] { installedButton, upgradeButton }, margin,
         lastControl );
+    FormData installedButtonFormData = (FormData) installedButton.getLayoutData();
+    FormData upgradeButtonFormData = (FormData) upgradeButton.getLayoutData();
+    installedButtonFormData.right = null;
+    upgradeButtonFormData.right = null;
     boolean showUpgradeButton =
         marketEntry.isInstalled()
             && ( marketEntry.getInstalledVersion() == null || marketEntry.getVersion() == null || marketEntry
