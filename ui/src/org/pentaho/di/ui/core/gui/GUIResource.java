@@ -50,7 +50,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SwtUniversalImage;
-import org.pentaho.di.core.SwtUniversalImageBitmap;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
@@ -368,6 +367,10 @@ public class GUIResource {
   private Image imageHadoop;
 
   private Image imageDropHere;
+  
+  private Image imageTransCanvas;
+  
+  private Image imageJobCanvas;
 
   private Image imageAddAll;
 
@@ -599,6 +602,8 @@ public class GUIResource {
       imageHelpWeb.dispose();
       imageHadoop.dispose();
       imageDropHere.dispose();
+      imageTransCanvas.dispose();
+      imageJobCanvas.dispose();
       imageAddAll.dispose();
       imageAddSingle.dispose();
       imageRemoveAll.dispose();
@@ -1059,6 +1064,12 @@ public class GUIResource {
 
     // "ui/images/drop_here.png
     imageDropHere = loadAsResource( display, BasePropertyHandler.getProperty( "DropHere_image" ), 0 );
+    
+    // "ui/images/trans_canvas.svg
+    imageTransCanvas = loadAsResource( display, BasePropertyHandler.getProperty( "TransCanvas_image" ), 400 );
+
+    // "ui/images/job_canvas.svg
+    imageJobCanvas = loadAsResource( display, BasePropertyHandler.getProperty( "JobCanvas_image" ), 400 );
 
     // "ui/images/add_all.png
     imageAddAll = loadAsResource( display, BasePropertyHandler.getProperty( "AddAll_image" ), 12 );
@@ -2373,6 +2384,22 @@ public class GUIResource {
 
   public Image getImageDropHere() {
     return imageDropHere;
+  }
+
+  public Image getImageTransCanvas() {
+    return imageTransCanvas;
+  }
+
+  public void setImageTransCanvas( Image imageTransCanvas ) {
+    this.imageTransCanvas = imageTransCanvas;
+  }
+
+  public Image getImageJobCanvas() {
+    return imageJobCanvas;
+  }
+
+  public void setImageJobCanvas( Image imageJobCanvas ) {
+    this.imageJobCanvas = imageJobCanvas;
   }
 
   public void setImageAddAll( Image imageAddAll ) {
