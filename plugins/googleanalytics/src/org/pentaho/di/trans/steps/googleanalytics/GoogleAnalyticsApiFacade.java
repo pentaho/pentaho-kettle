@@ -50,27 +50,30 @@ import org.pentaho.di.core.util.Assert;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 
 
 public class GoogleAnalyticsApiFacade {
-
   private Analytics analytics;
+  private final HttpTransport httpTransport;
 
   public static GoogleAnalyticsApiFacade createFor(
     String application, String oauthServiceAccount, String oauthKeyFile )
-    throws IOException, GeneralSecurityException {
+      throws IOException, GeneralSecurityException, URISyntaxException {
+
+    URI keyFileURI = new URI( oauthKeyFile );
+    File keyFile = keyFileURI.isAbsolute() ? new File( keyFileURI ) : new File( oauthKeyFile );
 
     return new GoogleAnalyticsApiFacade(
       GoogleNetHttpTransport.newTrustedTransport(),
       JacksonFactory.getDefaultInstance(),
       application,
       oauthServiceAccount,
-      new File( oauthKeyFile )
+      keyFile
     );
   }
-
-  private final HttpTransport httpTransport;
 
   public GoogleAnalyticsApiFacade( HttpTransport httpTransport, JsonFactory jsonFactory, String application,
                                    String oathServiceEmail, File keyFile )
