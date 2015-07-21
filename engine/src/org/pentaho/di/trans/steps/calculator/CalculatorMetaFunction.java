@@ -130,7 +130,6 @@ public class CalculatorMetaFunction implements Cloneable {
   public static final String[] calc_desc = {
     "-", "CONSTANT", "COPY_FIELD", "ADD", "SUBTRACT", "MULTIPLY", "DIVIDE", "SQUARE", "SQUARE_ROOT",
     "PERCENT_1", "PERCENT_2", "PERCENT_3", "COMBINATION_1", "COMBINATION_2", "ROUND_1", "ROUND_2",
-    "ROUND_CUSTOM_1", "ROUND_CUSTOM_2",
     "ROUND_STD_1", "ROUND_STD_2", "CEIL", "FLOOR", "NVL", "ADD_DAYS", "YEAR_OF_DATE", "MONTH_OF_DATE",
     "DAY_OF_YEAR", "DAY_OF_MONTH", "DAY_OF_WEEK", "WEEK_OF_YEAR", "WEEK_OF_YEAR_ISO8601",
     "YEAR_OF_DATE_ISO8601", "BYTE_TO_HEX_ENCODE", "HEX_TO_BYTE_DECODE", "CHAR_TO_HEX_ENCODE",
@@ -142,7 +141,8 @@ public class CalculatorMetaFunction implements Cloneable {
     "DATE_WORKING_DIFF", "ADD_MONTHS", "CHECK_XML_FILE_WELL_FORMED", "CHECK_XML_WELL_FORMED",
     "GET_FILE_ENCODING", "DAMERAU_LEVENSHTEIN", "NEEDLEMAN_WUNSH", "JARO", "JARO_WINKLER", "SOUNDEX",
     "REFINED_SOUNDEX", "ADD_HOURS", "ADD_MINUTES", "DATE_DIFF_MSEC", "DATE_DIFF_SEC", "DATE_DIFF_MN",
-    "DATE_DIFF_HR", "HOUR_OF_DAY", "MINUTE_OF_HOUR", "SECOND_OF_MINUTE", };
+    "DATE_DIFF_HR", "HOUR_OF_DAY", "MINUTE_OF_HOUR", "SECOND_OF_MINUTE",
+    "ROUND_CUSTOM_1", "ROUND_CUSTOM_2", };
 
   public static final String[] calcLongDesc = {
     "-", BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.SetFieldToConstant" ),
@@ -152,8 +152,6 @@ public class CalculatorMetaFunction implements Cloneable {
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.Hypotenuse" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.Round" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.Round2" ),
-    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom" ),
-    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom2" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundStd" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundStd2" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.Ceil" ),
@@ -221,7 +219,9 @@ public class CalculatorMetaFunction implements Cloneable {
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.DateDiffHr" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.HourOfDay" ),
     BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.MinuteOfHour" ),
-    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.SecondOfMinute" ), };
+    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.SecondOfMinute" ),
+    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom" ),
+    BaseMessages.getString( PKG, "CalculatorMetaFunction.CalcFunctions.RoundCustom2" ), };
 
   public static final int[] calcDefaultResultType = new int[ calc_desc.length ];
 
