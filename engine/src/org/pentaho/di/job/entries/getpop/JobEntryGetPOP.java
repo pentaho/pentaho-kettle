@@ -1348,11 +1348,11 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
       if ( isDebug() ) {
         switch( folderType ) {
           case JobEntryGetPOP.FOLDER_OUTPUT:
-            throw new KettleException( BaseMessages.getString(
-              PKG, "JobGetMailsFromPOP.Log.OutputFolderExists", folderName ) );
+            logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Log.OutputFolderExists", folderName ) );
+            break;
           case JobEntryGetPOP.FOLDER_ATTACHMENTS:
-            throw new KettleException( BaseMessages.getString(
-              PKG, "JobGetMailsFromPOP.Log.AttachmentFolderExists", folderName ) );
+            logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Log.AttachmentFolderExists", folderName ) );
+            break;
         }
       }
     } else {
