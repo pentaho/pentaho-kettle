@@ -23,7 +23,6 @@
     <!--  Pentaho (internal, non-Kettle) dependencies -->
     <dependency org="pentaho"                              name="pentaho-registry"                      rev="${dependency.pentaho-registry.revision}" changing="true" />
     <dependency org="pentaho"                              name="mondrian"                              rev="${dependency.mondrian.revision}" changing="true"/>
-    <dependency org="pentaho"                              name="salesforce-partner"                    rev="24.0"/>
     <dependency org="pentaho-library"                      name="libfonts"                              rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="true"/>
     <dependency org="pentaho"                              name="metastore"                             rev="${dependency.pentaho-metastore.revision}" changing="true" transitive="false"/>
     
