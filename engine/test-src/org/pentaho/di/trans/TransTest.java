@@ -28,7 +28,9 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -38,7 +40,6 @@ import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs.FileObject;
-import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -182,9 +183,12 @@ public class TransTest {
     when( mockTransMeta.getParameterValue( testParam ) ).thenReturn( testParamValue );
     FileObject ktr = KettleVFS.createTempFile( "parameters", ".ktr", "ram://" );
     OutputStream outputStream = ktr.getContent().getOutputStream( true );
-    StringInputStream stringInputStream = new StringInputStream( "<transformation></transformation>" );
-    IOUtils.copy( stringInputStream, outputStream );
-    outputStream.close();
+    try {
+      InputStream inputStream = new ByteArrayInputStream( "<transformation></transformation>".getBytes() );
+      IOUtils.copy( inputStream, outputStream );
+    } finally {
+      outputStream.close();
+    }
     Trans trans = new Trans( mockTransMeta, null, null, null, ktr.getURL().toURI().toString() );
     assertEquals( testParamValue, trans.getParameterValue( testParam ) );
   }
