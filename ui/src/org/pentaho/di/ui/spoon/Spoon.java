@@ -193,6 +193,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.ImportRules;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
+import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
@@ -1493,17 +1494,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       List<StepMeta> stepMetas = transMeta.getSelectedSteps();
       if ( stepMetas != null && stepMetas.size() > 0 ) {
         copySteps();
-        for ( StepMeta stepMeta : stepMetas ) {
-          delStep( transMeta, stepMeta );
-        }
+        delSteps( transMeta, stepMetas.toArray( new StepMeta[stepMetas.size()] ) );
       }
     } else if ( jobActive ) {
       List<JobEntryCopy> jobEntryCopies = jobMeta.getSelectedEntries();
       if ( jobEntryCopies != null && jobEntryCopies.size() > 0 ) {
         copyJobentries();
-        for ( JobEntryCopy jobEntryCopy : jobEntryCopies ) {
-          deleteJobEntryCopies( jobMeta, jobEntryCopy );
-        }
+        deleteJobEntryCopies( jobMeta, jobEntryCopies.toArray( new JobEntryCopy[jobEntryCopies.size()] ) );
       }
     }
   }
@@ -7186,9 +7183,24 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     if ( undoInterface instanceof TransMeta ) {
       delegates.trans.undoTransformationAction( (TransMeta) undoInterface, ta );
+      if ( ta.getType() == TransAction.TYPE_ACTION_DELETE_STEP ) {
+        setUndoMenu( undoInterface ); // something changed: change the menu
+        ta = undoInterface.previousUndo();
+        if ( ta != null && ta.getType() == TransAction.TYPE_ACTION_DELETE_HOP ) {
+          delegates.trans.undoTransformationAction( (TransMeta) undoInterface, ta );
+        }
+      }
+
     }
     if ( undoInterface instanceof JobMeta ) {
       delegates.jobs.undoJobAction( (JobMeta) undoInterface, ta );
+      if ( ta.getType() == TransAction.TYPE_ACTION_DELETE_JOB_ENTRY ) {
+        setUndoMenu( undoInterface ); // something changed: change the menu
+        ta = undoInterface.previousUndo();
+        if ( ta != null && ta.getType() == TransAction.TYPE_ACTION_DELETE_JOB_HOP ) {
+          delegates.jobs.undoJobAction( (JobMeta) undoInterface, ta );
+        }
+      }
     }
 
     // Put what we undo in focus
@@ -8514,6 +8526,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     delegates.jobs.editJobEntry( jobMeta, je );
   }
 
+  public void deleteJobEntryCopies( JobMeta jobMeta, JobEntryCopy[] jobEntry ) {
+    delegates.jobs.deleteJobEntryCopies( jobMeta, jobEntry );
+  }
+  
   public void deleteJobEntryCopies( JobMeta jobMeta, JobEntryCopy jobEntry ) {
     delegates.jobs.deleteJobEntryCopies( jobMeta, jobEntry );
   }
@@ -8668,6 +8684,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void dupeStep( TransMeta transMeta, StepMeta stepMeta ) {
     delegates.steps.dupeStep( transMeta, stepMeta );
+  }
+
+  public void delSteps( TransMeta transformation, StepMeta[] steps ) {
+    delegates.steps.delSteps( transformation, steps );
   }
 
   public void delStep( TransMeta transMeta, StepMeta stepMeta ) {

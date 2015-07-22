@@ -154,7 +154,6 @@ import org.pentaho.di.ui.spoon.TabMapEntry;
 import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
-import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.trans.DelayListener;
 import org.pentaho.di.ui.spoon.trans.DelayTimer;
@@ -1546,26 +1545,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       return;
     }
 
-    // Load the list of steps
-    //
-    List<String> stepList = new ArrayList<String>();
-    for ( int i = 0; i < copies.size(); ++i ) {
-      stepList.add( copies.get( i ).toString() );
-    }
-
-    // Display the delete confirmation message box
-    MessageBox mb =
-      new DeleteMessageBox(
-        shell, BaseMessages.getString( PKG, "Spoon.Dialog.DeletionConfirm.Message" ), stepList );
-    int answer = mb.open();
-    if ( answer == SWT.YES ) {
-      // Perform the delete
-      for ( int i = 0; i < copies.size(); i++ ) {
-        spoon.deleteJobEntryCopies( jobMeta, copies.get( i ) );
-      }
-      spoon.refreshTree();
-      spoon.refreshGraph();
-    }
+    JobEntryCopy[] jobEntries = copies.toArray( new JobEntryCopy[copies.size()] );
+    spoon.deleteJobEntryCopies( jobMeta, jobEntries );
   }
 
   public void clearSettings() {
