@@ -22,16 +22,14 @@
 
   <menupopup id="job-graph-entry">
     <menuitem id="job-graph-entry-newhop" label="${JobGraph.PopupMenu.JobEntry.NewHop}" command="jobgraph.newHopClick()" />
-    
+    <menuitem id="job-graph-entry-edit" label="${JobGraph.PopupMenu.JobEntry.Edit}" command="jobgraph.editEntryClick()" />
+    <menuitem id="job-graph-entry-edit-description" label="${JobGraph.PopupMenu.JobEntry.EditDescription}"
+      command="jobgraph.editEntryDescription()" />
     <menu id="job-graph-entry-launch" label="${JobGraph.PopupMenu.JobEntry.OpenReferencedObject}">
       <menupopup id="job-graph-entry-launch-popup">
          <menuitem id="job-graph-entry-launch-popup-nothing" label="${JobGraph.PopupMenu.JobEntry.Launch.Nothing}" command="jobgraph.launchStuff()" />
 	  </menupopup>
 	</menu>
-	      
-    <menuitem id="job-graph-entry-edit" label="${JobGraph.PopupMenu.JobEntry.Edit}" command="jobgraph.editEntryClick()" />
-    <menuitem id="job-graph-entry-edit-description" label="${JobGraph.PopupMenu.JobEntry.EditDescription}"
-      command="jobgraph.editEntryDescription()" />
     <menuseparator />
     <menuitem id="job-graph-entry-copy" acceltext="CTRL-C" accesskey="ctrl-c" label="${JobGraph.PopupMenu.JobEntry.CopyToClipboard}" command="jobgraph.copyEntry()" />
     <menuitem id="job-graph-entry-duplicate" label="${JobGraph.PopupMenu.JobEntry.Duplicate}" command="jobgraph.duplicateEntry()" />
