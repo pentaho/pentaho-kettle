@@ -55,7 +55,7 @@ public class ExtensionPointMapTest {
     assertEquals( 1, ExtensionPointMap.getInstance().getMap().size() );
     verify( pluginInterface, times( 2 ) ).loadClass( any( Class.class ) );
 
-    ExtensionPointMap.getInstance().removeExtensionPoint( pluginInterface );
+    PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, pluginInterface );
     assertEquals( 0, ExtensionPointMap.getInstance().getMap().size() );
     verify( pluginInterface, times( 2 ) ).loadClass( any( Class.class ) );
   }

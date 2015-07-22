@@ -22,7 +22,6 @@ package org.pentaho.di.core.extension;
 
 import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
-import org.pentaho.di.core.plugins.PluginTypeInterface;
 
 public interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
 }
