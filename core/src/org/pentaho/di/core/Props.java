@@ -123,6 +123,7 @@ public class Props implements Cloneable {
   public static final String STRING_ONLY_ACTIVE_STEPS = "OnlyActiveSteps";
   public static final String STRING_START_SHOW_REPOSITORIES = "ShowRepositoriesAtStartup";
   public static final String STRING_ANTI_ALIASING = "EnableAntiAliasing54";
+  public static final String STRING_SHOW_CANVAS_GRID = "ShowCanvasGrid";
   public static final String STRING_SHOW_EXIT_WARNING = "ShowExitWarning";
   public static final String STRING_SHOW_OS_LOOK = "ShowOSLook54";
   public static final String STRING_LAST_ARGUMENT = "LastArgument";
@@ -589,8 +590,8 @@ public class Props implements Cloneable {
   }
 
   public boolean areOnlyUsedConnectionsSavedToXML() {
-    String show = properties.getProperty( STRING_ONLY_USED_DB_TO_XML, "N" );
-    return !"N".equalsIgnoreCase( show ); // Default: save all connections
+    String show = properties.getProperty( STRING_ONLY_USED_DB_TO_XML, "Y" );
+    return "Y".equalsIgnoreCase( show ); // Default: save all connections
   }
 
   public void setOnlyUsedConnectionsSavedToXML( boolean onlyUsedConnections ) {

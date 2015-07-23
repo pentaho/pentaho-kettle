@@ -22,12 +22,8 @@
 
 package org.pentaho.di.core.extension;
 
-import java.util.List;
-
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.plugins.PluginInterface;
-import org.pentaho.di.core.plugins.PluginRegistry;
 
 public class ExtensionPointHandler {
 
@@ -44,17 +40,10 @@ public class ExtensionPointHandler {
    * @throws KettleException
    *           In case something goes wrong in the plugin and we need to stop what we're doing.
    */
-  public static void callExtensionPoint( final LogChannelInterface log, final String id, final Object object ) throws KettleException {
-    PluginRegistry registry = PluginRegistry.getInstance();
-    List<PluginInterface> extensionPointPlugins = registry.getPlugins( ExtensionPointPluginType.class );
-    for ( PluginInterface extensionPointPlugin : extensionPointPlugins ) {
-      if ( id.equals( extensionPointPlugin.getName() ) ) {
-        ExtensionPointInterface extensionPoint =
-          (ExtensionPointInterface) registry.loadClass( extensionPointPlugin );
-        log.logDetailed( "Handling extension point for plugin with id '"
-          + extensionPointPlugin.getIds()[0] + "' and extension point id '" + id + "'" );
-        extensionPoint.callExtensionPoint( log, object );
-      }
+  public static void callExtensionPoint( final LogChannelInterface log, final String id, final Object object )
+    throws KettleException {
+    for ( ExtensionPointInterface extensionPoint : ExtensionPointMap.getInstance().get( id ).values() ) {
+      extensionPoint.callExtensionPoint( log, object );
     }
   }
 }

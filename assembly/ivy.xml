@@ -49,6 +49,9 @@
     <dependency org="${ivy.artifact.group}" name="pdi-google-analytics-plugin-ce" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="pdi-google-analytics-plugin-ce" type="zip"/>
     </dependency>
+    <dependency org="${ivy.artifact.group}" name="pdi-salesforce-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="pdi-salesforce-plugin" type="zip"/>
+    </dependency>
     <dependency org="${ivy.artifact.group}" name="ms-access-bulk-loader-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="ms-access-bulk-loader-plugin" type="zip"/>
     </dependency>
@@ -57,6 +60,9 @@
     </dependency>
     <dependency org="${ivy.artifact.group}" name="gp-bulk-loader-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="gp-bulk-loader-plugin" type="zip"/>
+    </dependency>
+    <dependency org="${ivy.artifact.group}" name="elasticsearch-bulk-insert-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="elasticsearch-bulk-insert-plugin" type="zip"/>
     </dependency>
     <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${project.revision}" changing="true" conf="pentaho-system->default" m:classifier="client">
       <artifact name="pentaho-karaf-assembly" type="zip" m:classifier="client"/>
@@ -119,9 +125,6 @@
 	</dependency>
 	<dependency org="pentaho-doc" name="config_pdi_server" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
 		<artifact name="config_pdi_server" type="pdf" />
-	</dependency>
-	<dependency org="pentaho-doc" name="getting_started_with_instaview" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
-		<artifact name="getting_started_with_instaview" type="pdf" />
 	</dependency>
 	<dependency org="pentaho-doc" name="getting_started_with_pdi" rev="${dependency.documentation.revision}" conf="pdf-docs->default">
 		<artifact name="getting_started_with_pdi" type="pdf" />
@@ -208,6 +211,16 @@
     <dependency org="com.fasterxml.jackson.core" name="jackson-annotations" rev="2.3.3"     transitive="false"/>
     <dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="2.3.3"        transitive="false"/>
     <dependency org="com.fasterxml.jackson.core" name="jackson-core" rev="2.3.3"            transitive="false"/>
+    <!-- To support Enunciate Annotations in Resource classes -->
+    <dependency org="org.codehaus.enunciate" name="enunciate-jersey-rt" rev="1.27"          transitive="false" />
+    <dependency org="org.codehaus.enunciate" name="enunciate-core-annotations" rev="1.27"   transitive="false" />
+
+    <!-- This is a internal build artifact to resolve spring-beans issue using JRE8 -->
+    <dependency org="pentaho" name="pentaho-spring-core" rev="2.5.6" transitive="false"/>
+    <dependency org="pentaho" name="pentaho-spring" rev="2.5.6" transitive="false"/>
+
+    <exclude org="org.springframework" module="spring-core"/> 
+    <exclude org="org.springframework" module="spring"/> 
 
     <exclude org="javax.servlet"   module="servlet-api"/>
   </dependencies>

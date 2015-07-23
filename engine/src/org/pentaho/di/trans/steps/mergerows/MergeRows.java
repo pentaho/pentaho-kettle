@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.mergerows;
 
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -57,6 +58,7 @@ public class MergeRows extends BaseStep implements StepInterface {
 
   private MergeRowsMeta meta;
   private MergeRowsData data;
+  private boolean useRefWhenIdentical = false;
 
   public MergeRows( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
     Trans trans ) {
@@ -66,7 +68,6 @@ public class MergeRows extends BaseStep implements StepInterface {
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (MergeRowsMeta) smi;
     data = (MergeRowsData) sdi;
-
     if ( first ) {
       first = false;
 
@@ -74,9 +75,21 @@ public class MergeRows extends BaseStep implements StepInterface {
       //
       List<StreamInterface> infoStreams = meta.getStepIOMeta().getInfoStreams();
 
+      //oneRowSet is the "Reference" stream
       data.oneRowSet = findInputRowSet( infoStreams.get( 0 ).getStepname() );
+      //twoRowSet is the "Comparison" stream
       data.twoRowSet = findInputRowSet( infoStreams.get( 1 ).getStepname() );
 
+      //rowSetWhenIdentical is use in case the comparison is IDENTICAL.
+      //this should be the "Comparison" stream but can be the "Reference" stream for backward compatibility (PDI-736)
+      String useRefWhenIdenticalVar = Const.NVL( System.getProperty( Const.KETTLE_COMPATIBILITY_MERGE_ROWS_USE_REFERENCE_STREAM_WHEN_IDENTICAL ), "N" );
+      if ( "N".equalsIgnoreCase( useRefWhenIdenticalVar ) ) {
+        //use the reference stream (as per documentation)
+        useRefWhenIdentical = false;
+      } else {
+        //use the comparison stream (for backward compatibility)
+        useRefWhenIdentical = true;
+      }
       data.one = getRowFrom( data.oneRowSet );
       data.two = getRowFrom( data.twoRowSet );
 
@@ -165,8 +178,13 @@ public class MergeRows extends BaseStep implements StepInterface {
 
         int compareValues = data.oneRowSet.getRowMeta().compare( data.one, data.two, data.valueNrs );
         if ( compareValues == 0 ) {
-          outputRow = data.one;
-          outputIndex = data.oneRowSet.getRowMeta().size();
+          if ( useRefWhenIdentical ) {  //backwards compatible behavior: use the reference stream (PDI-736)
+            outputRow = data.one;
+            outputIndex = data.oneRowSet.getRowMeta().size();
+          } else {
+            outputRow = data.two;       //documented behavior: use the comparison stream (PDI-736)
+            outputIndex = data.twoRowSet.getRowMeta().size();
+          }
           flagField = VALUE_IDENTICAL;
         } else {
           // Return the compare (most recent) row

@@ -1160,6 +1160,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
 
     newTransMeta.getDatabases().addAll( jobMeta.getDatabases() );
     newTransMeta.setRepository( rep );
+    newTransMeta.setRepositoryDirectory( jobMeta.getRepositoryDirectory() );
     newTransMeta.setMetaStore( metaStore );
 
     TransDialog transDialog = new TransDialog( shell, SWT.NONE, newTransMeta, rep );

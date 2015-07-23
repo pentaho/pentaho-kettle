@@ -98,11 +98,11 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.AreaOwner;
+import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
-import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
@@ -1857,8 +1857,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         item = (XulMenuitem) doc.getElementById( "job-graph-entry-align-snap" );
 
         item.setAcceltext( "ALT-HOME" );
-        item.setLabel( BaseMessages.getString( PKG, "JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid" )
-          + ConstUI.GRID_SIZE + ")" );
+        item.setLabel( BaseMessages.getString( PKG, "JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid" ) );
         item.setAccesskey( "alt-home" );
 
         XulMenu aMenu = (XulMenu) doc.getElementById( "job-graph-entry-align" );
@@ -2745,14 +2744,11 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       e.gc.setBackground( GUIResource.getInstance().getColorBackground() );
       e.gc.setFont( GUIResource.getInstance().getFontMedium() );
 
-      String message = BaseMessages.getString( PKG, "JobGraph.EmptyJob.Message" );
-      Image pentahoImage = GUIResource.getInstance().getImageDropHere();
-      org.eclipse.swt.graphics.Point messageSize = e.gc.textExtent( message );
-      int leftPosition = ( area.x - messageSize.x - pentahoImage.getBounds().width - 10 ) / 2;
-      int topPosition = ( area.y - messageSize.y ) / 2;
-      e.gc.drawText( message, leftPosition, topPosition );
-      e.gc.drawImage( pentahoImage, leftPosition - pentahoImage.getBounds().width - 10, topPosition
-        + messageSize.y / 2 - pentahoImage.getBounds().height / 2 );
+      Image pentahoImage = GUIResource.getInstance().getImageJobCanvas();
+      int leftPosition = ( area.x - pentahoImage.getBounds().width ) / 2;
+      int topPosition = ( area.y - pentahoImage.getBounds().height ) / 2;
+      e.gc.drawImage( pentahoImage, leftPosition, topPosition );
+      
     }
     img.dispose();
 
@@ -2761,11 +2757,14 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   public Image getJobImage( Device device, int x, int y, float magnificationFactor ) {
     GCInterface gc = new SWTGC( device, new Point( x, y ), iconsize );
 
+    int gridSize = 
+        PropsUI.getInstance().isShowCanvasGridEnabled() ? PropsUI.getInstance().getCanvasGridSize() : 1;  
+    
     JobPainter jobPainter =
       new JobPainter(
         gc, jobMeta, new Point( x, y ), new SwtScrollBar( hori ), new SwtScrollBar( vert ), hop_candidate,
         drop_candidate, selectionRegion, areaOwners, mouseOverEntries, PropsUI.getInstance().getIconSize(),
-        PropsUI.getInstance().getLineWidth(), PropsUI.getInstance().getCanvasGridSize(), PropsUI
+        PropsUI.getInstance().getLineWidth(), gridSize, PropsUI
           .getInstance().getShadowSize(), PropsUI.getInstance().isAntiAliasingEnabled(), PropsUI
           .getInstance().getNoteFont().getName(), PropsUI.getInstance().getNoteFont().getHeight() );
 

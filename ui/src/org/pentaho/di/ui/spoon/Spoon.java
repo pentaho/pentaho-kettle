@@ -31,11 +31,10 @@ import java.io.FileInputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -2213,6 +2212,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               }
               toolTip.setImage( image );
               toolTip.setText( name + Const.CR + Const.CR + tip );
+              toolTip.setBackgroundColor( GUIResource.getInstance().getColor( 255, 254, 225 ) );
+              toolTip.setForegroundColor( GUIResource.getInstance().getColor( 0, 0, 0 ) );
               toolTip.show( new org.eclipse.swt.graphics.Point( move.x + 10, move.y + 10 ) );
             }
           }
@@ -2226,6 +2227,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                       display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
               toolTip.setImage( image );
               toolTip.setText( name + Const.CR + Const.CR + tip );
+              toolTip.setBackgroundColor( GUIResource.getInstance().getColor( 255, 254, 225 ) );
+              toolTip.setForegroundColor( GUIResource.getInstance().getColor( 0, 0, 0 ) );
               toolTip.show( new org.eclipse.swt.graphics.Point( move.x + 10, move.y + 10 ) );
             }
           }
@@ -2244,8 +2247,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } );
 
     toolTip = new DefaultToolTip( variableComposite, ToolTip.RECREATE, true );
-    toolTip.setBackgroundColor( GUIResource.getInstance().getColor( 255, 254, 225 ) );
-    toolTip.setForegroundColor( GUIResource.getInstance().getColor( 0, 0, 0 ) );
     toolTip.setRespectMonitorBounds( true );
     toolTip.setRespectDisplayBounds( true );
     toolTip.setPopupDelay( 350 );
@@ -2320,27 +2321,27 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         item.setText( baseCategory );
         item.setImage( GUIResource.getInstance().getImageFolder() );
 
+        List<PluginInterface> sortedCat = new ArrayList<PluginInterface>();
         for ( PluginInterface baseStep : baseSteps ) {
           if ( baseStep.getCategory().equalsIgnoreCase( baseCategory ) ) {
-            final Image stepImage =
-              GUIResource.getInstance().getImagesStepsSmall().get( baseStep.getIds()[ 0 ] );
-            String pluginName = baseStep.getName();
-            String pluginDescription = baseStep.getDescription();
-
+            sortedCat.add( baseStep );
+          }
+        }
+        Collections.sort( sortedCat, new Comparator<PluginInterface>() {
+          public int compare( PluginInterface p1, PluginInterface p2 ) {
+            return p1.getName().compareTo( p2.getName() );
+          }
+        } );
+        for ( PluginInterface p : sortedCat ) {
+          final Image stepImage =
+              GUIResource.getInstance().getImagesStepsSmall().get( p.getIds()[ 0 ] );
+            String pluginName = p.getName();
+            String pluginDescription = p.getDescription();
             if ( !filterMatch( pluginName ) && !filterMatch( pluginDescription ) ) {
               continue;
             }
-
-            TreeItem stepItem = createTreeItem( item, pluginName, stepImage );
-            stepItem.addListener( SWT.Selection, new Listener() {
-
-              public void handleEvent( Event event ) {
-                System.out.println( "Tree item Listener fired" );
-              }
-            } );
-
+            createTreeItem( item, pluginName, stepImage );
             coreStepToolTipMap.put( pluginName, pluginDescription );
-          }
         }
       }
 

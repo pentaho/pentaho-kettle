@@ -1682,6 +1682,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
   protected void newJob() {
     JobMeta newJobMeta = new JobMeta();
     newJobMeta.getDatabases().addAll( transMeta.getDatabases() );
+    newJobMeta.setRepository( transMeta.getRepository() );
+    newJobMeta.setRepositoryDirectory( transMeta.getRepositoryDirectory() );
     JobDialog jobDialog = new JobDialog( shell, SWT.NONE, newJobMeta, repository );
     if ( jobDialog.open() != null ) {
       Spoon spoon = Spoon.getInstance();
