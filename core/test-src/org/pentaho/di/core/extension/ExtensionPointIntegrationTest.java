@@ -61,7 +61,7 @@ public class ExtensionPointIntegrationTest {
     // check that all extension points are executed
     final LogChannelInterface log = mock( LogChannelInterface.class );
     for ( KettleExtensionPoint ep : KettleExtensionPoint.values() ) {
-      final ExtensionPointInterface currentEP = ExtensionPointMap.getInstance().get( ep.id );
+      final ExtensionPointInterface currentEP = ExtensionPointMap.getInstance().get( ep.id ).get( "id" + ep.id );
       assertFalse( currentEP.getClass().getField( EXECUTED_FIELD_NAME ).getBoolean( currentEP ) );
       ExtensionPointHandler.callExtensionPoint( log, ep.id, null );
       assertTrue( currentEP.getClass().getField( EXECUTED_FIELD_NAME ).getBoolean( currentEP ) );
@@ -69,7 +69,7 @@ public class ExtensionPointIntegrationTest {
 
     // check modification of extension point
     final KettleExtensionPoint jobAfterOpen = KettleExtensionPoint.JobAfterOpen;
-    final ExtensionPointInterface int1 = ExtensionPointMap.getInstance().get( jobAfterOpen.id );
+    final ExtensionPointInterface int1 = ExtensionPointMap.getInstance().get( jobAfterOpen.id ).get( "id" + jobAfterOpen.id );
     ExtensionPointPluginType.getInstance().registerCustom( createClassRuntime( jobAfterOpen, "Edited" ), "custom", "id"
             + jobAfterOpen.id, jobAfterOpen.id,
         "no description", null );
@@ -79,7 +79,7 @@ public class ExtensionPointIntegrationTest {
     // check removal of extension point
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, PluginRegistry.getInstance().getPlugin(
         ExtensionPointPluginType.class, "id" + jobAfterOpen.id ) );
-    assertNull( ExtensionPointMap.getInstance().get( jobAfterOpen.id ) );
+    assertTrue( ExtensionPointMap.getInstance().get( jobAfterOpen.id ).isEmpty() );
     assertEquals( KettleExtensionPoint.values().length - 1, ExtensionPointMap.getInstance().getMap().size() );
   }
 

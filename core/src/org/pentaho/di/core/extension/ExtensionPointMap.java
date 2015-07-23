@@ -21,17 +21,16 @@
  ******************************************************************************/
 package org.pentaho.di.core.extension;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.pentaho.di.core.exception.KettlePluginException;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeListener;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class maintains a map of ExtensionPointInterface object to its name.
@@ -40,11 +39,11 @@ public class ExtensionPointMap {
 
   private static ExtensionPointMap INSTANCE = new ExtensionPointMap();
 
-  private Map<String, ExtensionPointInterface> extensionPointPluginMap;
+  private Table<String, String, ExtensionPointInterface> extensionPointPluginMap;
   private static LogChannelInterface log = new LogChannel( "ExtensionPointMap" );
 
   private ExtensionPointMap() {
-    extensionPointPluginMap = new HashMap<String, ExtensionPointInterface>();
+    extensionPointPluginMap = HashBasedTable.create();
     final PluginRegistry registry = PluginRegistry.getInstance();
     registry.addPluginListener( ExtensionPointPluginType.class, new PluginTypeListener() {
 
@@ -81,8 +80,8 @@ public class ExtensionPointMap {
    * 
    * @return
    */
-  public Map<String, ExtensionPointInterface> getMap() {
-    return extensionPointPluginMap;
+  public Map<String, Map<String, ExtensionPointInterface>> getMap() {
+    return extensionPointPluginMap.rowMap();
   }
 
   /**
@@ -93,21 +92,13 @@ public class ExtensionPointMap {
   public void addExtensionPoint( PluginInterface extensionPointPlugin ) {
     final PluginRegistry registry = PluginRegistry.getInstance();
     try {
-      ExtensionPointInterface extensionPoint = (ExtensionPointInterface) registry.loadClass( extensionPointPlugin );
-      addExtensionPoint( extensionPointPlugin.getName(), extensionPoint );
-    } catch ( KettlePluginException e ) {
+      ExtensionPointInterface extensionPoint = registry.loadClass( extensionPointPlugin, ExtensionPointInterface.class );
+      for ( String id : extensionPointPlugin.getIds() ) {
+        extensionPointPluginMap.put( extensionPointPlugin.getName(), id, extensionPoint );
+      }
+    } catch ( Exception e ) {
       log.logError( "Unable to load extension point for name = [" + ( extensionPointPlugin != null ? extensionPointPlugin.getName() : "null" ) + "]", e );
     }
-  }
-
-  /**
-   * Add the extension point plugin to the map
-   * 
-   * @param id
-   * @param extensionPoint
-   */
-  private void addExtensionPoint( String id, ExtensionPointInterface extensionPoint ) {
-    extensionPointPluginMap.put( id, extensionPoint );
   }
 
   /**
@@ -116,7 +107,9 @@ public class ExtensionPointMap {
    * @param extensionPointPlugin
    */
   public void removeExtensionPoint( PluginInterface extensionPointPlugin ) {
-    extensionPointPluginMap.remove( extensionPointPlugin.getName() );
+    for ( String id : extensionPointPlugin.getIds() ) {
+      extensionPointPluginMap.remove( extensionPointPlugin.getName(), id );
+    }
   }
 
   /**
@@ -125,15 +118,15 @@ public class ExtensionPointMap {
    * @param id
    * @return
    */
-  public ExtensionPointInterface get( String id ) {
-    return extensionPointPluginMap.get( id );
+  public Map<String, ExtensionPointInterface> get( String id ) {
+    return extensionPointPluginMap.row( id );
   }
 
   /**
    * Reinitialize the extension point plugins map
    */
   public void reInitialize() {
-    extensionPointPluginMap = new HashMap<String, ExtensionPointInterface>();
+    extensionPointPluginMap = HashBasedTable.create();
     final PluginRegistry registry = PluginRegistry.getInstance();
     List<PluginInterface> extensionPointPlugins = registry.getPlugins( ExtensionPointPluginType.class );
     for ( PluginInterface extensionPointPlugin : extensionPointPlugins ) {
