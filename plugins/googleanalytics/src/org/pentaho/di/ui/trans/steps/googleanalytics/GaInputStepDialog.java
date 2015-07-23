@@ -66,6 +66,7 @@ import org.pentaho.di.trans.steps.googleanalytics.GaInputStepMeta;
 import org.pentaho.di.trans.steps.googleanalytics.GoogleAnalyticsApiFacade;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -888,12 +889,12 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
                   item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_DATE ) );
                   item.setText( 5, "yyyyMMdd" );
                 } else if ( name.equalsIgnoreCase( "ga:daysSinceLastVisit" )
-                  || name.equalsIgnoreCase( "ga:visitLength" )
-                  || name.equalsIgnoreCase( "ga:visitCount" ) ) {
+                    || name.equalsIgnoreCase( "ga:visitLength" )
+                    || name.equalsIgnoreCase( "ga:visitCount" ) ) {
                   item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_INTEGER ) );
                   item.setText( 5, "#;-#" );
                 } else if ( name.equalsIgnoreCase( "ga:latitude" )
-                  || name.equalsIgnoreCase( "ga:longitude" ) ) {
+                    || name.equalsIgnoreCase( "ga:longitude" ) ) {
                   item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_NUMBER ) );
                   item.setText( 5, "#.#;-#.#" );
                 } else {
@@ -909,13 +910,13 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
                 // depending on type
                 if ( dataType.compareToIgnoreCase( "currency" ) == 0
-                  || dataType.compareToIgnoreCase( "float" ) == 0
-                  || dataType.compareToIgnoreCase( "percent" ) == 0
-                  || dataType.compareToIgnoreCase( "us_currency" ) == 0 ) {
+                    || dataType.compareToIgnoreCase( "float" ) == 0
+                    || dataType.compareToIgnoreCase( "percent" ) == 0
+                    || dataType.compareToIgnoreCase( "us_currency" ) == 0 ) {
                   item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_NUMBER ) );
                   item.setText( 5, "#.#;-#.#" );
                 } else if ( dataType.compareToIgnoreCase( "time" ) == 0
-                  || dataType.compareToIgnoreCase( "integer" ) == 0 ) {
+                    || dataType.compareToIgnoreCase( "integer" ) == 0 ) {
                   item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_INTEGER ) );
                   item.setText( 5, "#;-#" );
                 } else {
@@ -964,21 +965,14 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
             item.setText( 3, GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_NAME );
             item.setText( 4, ValueMeta.getTypeDesc( ValueMeta.TYPE_STRING ) );
             item.setText( 5, "" );
-            i++;
 
             wFields.removeEmptyRows();
             wFields.setRowNums();
             wFields.optWidth( true );
             input.setChanged();
-
-          } catch ( IOException e2 ) {
-            MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setText( "IO Error" );
-            mb.setMessage( "Could not contact Google Analytics service. "
-              + "Please make sure that there's no network connectivity problem." );
-            mb.open();
-            e2.printStackTrace();
-            return;
+          } catch ( IOException ioe ) {
+            new ErrorDialog( shell, BaseMessages.getString( PKG, "GoogleAnalyticsDialog.RequestError.DialogTitle" ),
+                BaseMessages.getString( PKG, "GoogleAnalyticsDialog.RequestError.DialogMessage" ), ioe );
           }
         }
       }
