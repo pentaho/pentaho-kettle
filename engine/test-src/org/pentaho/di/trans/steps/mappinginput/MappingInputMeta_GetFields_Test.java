@@ -49,7 +49,8 @@ public class MappingInputMeta_GetFields_Test {
       simpleRename(),
       renameAndSort(),
       noRenames(),
-      noInputRowMeta()
+      noInputRowMeta(),
+      alreadyRenamed()
     );
   }
 
@@ -103,6 +104,15 @@ public class MappingInputMeta_GetFields_Test {
     String[] expected = new String[] { "field1", "field2" };
 
     return createCaseData( null, null, fields, expected );
+  }
+
+  private static Object[] alreadyRenamed() {
+    RowMeta inputRowMeta = createRowMeta( "field1", "renamed" );
+    List<MappingValueRename> renames = singletonList( new MappingValueRename( "field2", "renamed" ) );
+    String[] fields = new String[] { "field1", "renamed" };
+    String[] expected = new String[] { "field1", "renamed" };
+
+    return createCaseData( inputRowMeta, renames, fields, expected );
   }
 
 
