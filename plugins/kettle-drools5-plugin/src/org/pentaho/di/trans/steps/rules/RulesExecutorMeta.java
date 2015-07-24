@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -58,7 +59,12 @@ import org.w3c.dom.Node;
  * @author cboyden
  *
  */
-
+@Step( id = "RuleExecutor",
+        image = "rules_exec.svg",
+        i18nPackageName="org.pentaho.di.trans.steps.rules",
+        name="RulesExecutor.StepConfigruationDialog.Title",
+        description = "RulesExecutor.StepConfigruationDialog.TooltipDesc",
+        categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting" )
 public class RulesExecutorMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = Rules.class; // for i18n purposes
 
