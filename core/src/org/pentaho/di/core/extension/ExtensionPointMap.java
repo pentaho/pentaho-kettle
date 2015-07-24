@@ -37,10 +37,10 @@ import java.util.Map;
  */
 public class ExtensionPointMap {
 
+  private static LogChannelInterface log = new LogChannel( "ExtensionPointMap" );
   private static ExtensionPointMap INSTANCE = new ExtensionPointMap();
 
   private Table<String, String, ExtensionPointInterface> extensionPointPluginMap;
-  private static LogChannelInterface log = new LogChannel( "ExtensionPointMap" );
 
   private ExtensionPointMap() {
     extensionPointPluginMap = HashBasedTable.create();
@@ -97,7 +97,7 @@ public class ExtensionPointMap {
         extensionPointPluginMap.put( extensionPointPlugin.getName(), id, extensionPoint );
       }
     } catch ( Exception e ) {
-      log.logError( "Unable to load extension point for name = [" + ( extensionPointPlugin != null ? extensionPointPlugin.getName() : "null" ) + "]", e );
+      getLog().logError( "Unable to load extension point for name = [" + ( extensionPointPlugin != null ? extensionPointPlugin.getName() : "null" ) + "]", e );
     }
   }
 
@@ -132,5 +132,12 @@ public class ExtensionPointMap {
     for ( PluginInterface extensionPointPlugin : extensionPointPlugins ) {
       addExtensionPoint( extensionPointPlugin );
     }
+  }
+
+  public static LogChannelInterface getLog(){
+    if( log == null ) {
+      log = new LogChannel( "ExtensionPointMap" );
+    }
+    return log;
   }
 }
