@@ -21,7 +21,10 @@
  ******************************************************************************/
 package org.pentaho.di.core.extension;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -38,13 +41,14 @@ import java.util.Map;
 public class ExtensionPointMap {
 
   private static LogChannelInterface log = new LogChannel( "ExtensionPointMap" );
-  private static ExtensionPointMap INSTANCE = new ExtensionPointMap();
+  private static ExtensionPointMap INSTANCE = new ExtensionPointMap( PluginRegistry.getInstance() );
 
-  private Table<String, String, ExtensionPointInterface> extensionPointPluginMap;
+  private final PluginRegistry registry;
+  private Table<String, String, Supplier<ExtensionPointInterface>> extensionPointPluginMap;
 
-  private ExtensionPointMap() {
+  private ExtensionPointMap( PluginRegistry pluginRegistry ) {
+    this.registry = pluginRegistry;
     extensionPointPluginMap = HashBasedTable.create();
-    final PluginRegistry registry = PluginRegistry.getInstance();
     registry.addPluginListener( ExtensionPointPluginType.class, new PluginTypeListener() {
 
       @Override
@@ -80,7 +84,7 @@ public class ExtensionPointMap {
    * 
    * @return
    */
-  public Map<String, Map<String, ExtensionPointInterface>> getMap() {
+  public Map<String, Map<String, Supplier<ExtensionPointInterface>>> getMap() {
     return extensionPointPluginMap.rowMap();
   }
 
@@ -90,14 +94,8 @@ public class ExtensionPointMap {
    * @param extensionPointPlugin
    */
   public void addExtensionPoint( PluginInterface extensionPointPlugin ) {
-    final PluginRegistry registry = PluginRegistry.getInstance();
-    try {
-      ExtensionPointInterface extensionPoint = registry.loadClass( extensionPointPlugin, ExtensionPointInterface.class );
-      for ( String id : extensionPointPlugin.getIds() ) {
-        extensionPointPluginMap.put( extensionPointPlugin.getName(), id, extensionPoint );
-      }
-    } catch ( Exception e ) {
-      getLog().logError( "Unable to load extension point for name = [" + ( extensionPointPlugin != null ? extensionPointPlugin.getName() : "null" ) + "]", e );
+    for ( String id : extensionPointPlugin.getIds() ) {
+      extensionPointPluginMap.put( extensionPointPlugin.getName(), id, createLazyLoader( extensionPointPlugin ) );
     }
   }
 
@@ -119,7 +117,8 @@ public class ExtensionPointMap {
    * @return
    */
   public Map<String, ExtensionPointInterface> get( String id ) {
-    return extensionPointPluginMap.row( id );
+    return Maps.transformValues( extensionPointPluginMap.row( id ),
+      Suppliers.<ExtensionPointInterface>supplierFunction() );
   }
 
   /**
@@ -131,6 +130,28 @@ public class ExtensionPointMap {
     List<PluginInterface> extensionPointPlugins = registry.getPlugins( ExtensionPointPluginType.class );
     for ( PluginInterface extensionPointPlugin : extensionPointPlugins ) {
       addExtensionPoint( extensionPointPlugin );
+    }
+  }
+
+  Supplier<ExtensionPointInterface> createLazyLoader( PluginInterface extensionPointPlugin ) {
+    return Suppliers.memoize( new ExtensionPointLoader( extensionPointPlugin ) );
+  }
+
+  private class ExtensionPointLoader implements Supplier<ExtensionPointInterface> {
+    private final PluginInterface extensionPointPlugin;
+
+    private ExtensionPointLoader( PluginInterface extensionPointPlugin ) {
+      this.extensionPointPlugin = extensionPointPlugin;
+    }
+
+    @Override public ExtensionPointInterface get() {
+      try {
+        return registry.loadClass( extensionPointPlugin, ExtensionPointInterface.class );
+      } catch ( Exception e ) {
+        getLog().logError( "Unable to load extension point for name = [" + ( extensionPointPlugin != null ?
+          extensionPointPlugin.getName() : "null" ) + "]", e );
+        return null;
+      }
     }
   }
 
