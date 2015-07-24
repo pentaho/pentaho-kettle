@@ -408,8 +408,8 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
       if ( databaseType != null ) {
         List<IMetaStoreElement> databaseElements = metaStore.getElements( PentahoDefaults.NAMESPACE, databaseType );
         for ( IMetaStoreElement databaseElement : databaseElements ) {
-          addOrReplaceDatabase( DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(
-            metaStore, databaseElement ) );
+          addDatabase( DatabaseMetaStoreUtil.loadDatabaseMetaFromDatabaseElement(
+            metaStore, databaseElement ), false );
         }
       }
 
@@ -1023,10 +1023,14 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
    */
   @Override
   public void addOrReplaceDatabase( DatabaseMeta databaseMeta ) {
+    addDatabase( databaseMeta, true );
+  }
+
+  protected void addDatabase( DatabaseMeta databaseMeta, boolean replace ) {
     int index = databases.indexOf( databaseMeta );
     if ( index < 0 ) {
       addDatabase( databaseMeta );
-    } else {
+    } else if ( replace ) {
       DatabaseMeta previous = getDatabase( index );
       previous.replaceMeta( databaseMeta );
     }
