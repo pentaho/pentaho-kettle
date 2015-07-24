@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -48,6 +49,13 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+@Step( id = "RuleAccumulator",
+        image = "rules_acc.svg",
+        i18nPackageName="org.pentaho.di.trans.steps.rules",
+        name="RulesAccumulator.StepConfigruationDialog.Title",
+        description = "RulesAccumulator.StepConfigruationDialog.TooltipDesc",
+        categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting" )
 
 public class RulesAccumulatorMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = Rules.class; // for i18n purposes

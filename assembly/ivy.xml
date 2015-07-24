@@ -31,6 +31,9 @@
     <dependency org="${ivy.artifact.group}" name="market" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="market" type="zip"/>
     </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-drools5-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+      <artifact name="kettle-drools5-plugin" type="zip"/>
+    </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-gpload-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-gpload-plugin" type="zip"/>
     </dependency>
