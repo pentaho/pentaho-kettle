@@ -402,7 +402,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     fdSpreadSheetType.top = new FormAttachment( 0, 0 );
     wSpreadSheetType.setLayoutData( fdSpreadSheetType );
     for ( SpreadSheetType type : SpreadSheetType.values() ) {
-      wSpreadSheetType.add( type.getDescription() );
+      wSpreadSheetType.add( inputDialogDescription( type ) );
     }
 
     // Filename line
@@ -1139,7 +1139,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
           }
 
           dialog.setFilterNames( new String[] {
-            BaseMessages.getString( PKG, "ExcelInputDialog.FilterNames.ExcelFiles" ),
+            inputDialogDescription( type ),
             BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
 
           if ( dialog.open() != null ) {
@@ -2411,5 +2411,9 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     //
     // / END OF ADDITIONAL FIELDS TAB
     //
+  }
+  
+  private String inputDialogDescription( SpreadSheetType type ) {
+    return BaseMessages.getString( PKG, "ExcelInputDialog.SpreadSheetType." + type.toString() );
   }
 }
