@@ -28,6 +28,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,20 +53,24 @@ public class ExtensionPointMapTest {
   public void constructorTest() throws Exception {
     PluginRegistry.getInstance().registerPlugin( ExtensionPointPluginType.class, pluginInterface );
     assertEquals( 1, ExtensionPointMap.getInstance().getMap().size() );
-    verify( pluginInterface, times( 1 ) ).loadClass( any( Class.class ) );
 
     PluginRegistry.getInstance().registerPlugin( ExtensionPointPluginType.class, pluginInterface );
     assertEquals( 1, ExtensionPointMap.getInstance().getMap().size() );
-    verify( pluginInterface, times( 2 ) ).loadClass( any( Class.class ) );
 
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, pluginInterface );
     assertEquals( 0, ExtensionPointMap.getInstance().getMap().size() );
-    verify( pluginInterface, times( 2 ) ).loadClass( any( Class.class ) );
+
+    // Verify lazy loading
+    verify( pluginInterface, never() ).loadClass( any( Class.class ) );
   }
 
   @Test
   public void addExtensionPointTest() throws KettlePluginException {
     ExtensionPointMap.getInstance().addExtensionPoint( pluginInterface );
     assertEquals( ExtensionPointMap.getInstance().get( TEST_NAME ).get( "testID" ), extensionPoint );
+
+    // Verify cached instance
+    assertEquals( ExtensionPointMap.getInstance().get( TEST_NAME ).get( "testID" ), extensionPoint );
+    verify( pluginInterface, times( 1 ) ).loadClass( any( Class.class ) );
   }
 }

@@ -23,44 +23,52 @@
 package org.pentaho.di.trans.steps.rules;
 
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
-import org.drools.ObjectFilter;
 import org.drools.builder.KnowledgeBuilder;
 import org.drools.builder.KnowledgeBuilderFactory;
 import org.drools.builder.ResourceType;
 import org.drools.definition.KnowledgePackage;
 import org.drools.io.Resource;
 import org.drools.io.ResourceFactory;
+import org.drools.runtime.ObjectFilter;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.steps.rules.Rules.Row;
+import org.pentaho.di.trans.steps.rules.Rules.Column;
 
-public class RulesAccumulatorData extends BaseStepData implements StepDataInterface {
-  private static Class<?> PKG = RulesAccumulator.class; // for i18n purposes
+/**
+ * This Transformation Step allows a user to execute a rule set against an individual rule or a collection of rules.
+ *
+ * Additional columns can be added to the output from the rules and these (of course) can be used for routing if
+ * desired.
+ *
+ * @author cboyden
+ *
+ */
+
+public class RulesExecutorData extends BaseStepData implements StepDataInterface {
+  private static Class<?> PKG = RulesExecutor.class; // for i18n purposes
 
   private RowMetaInterface outputRowMeta;
-  private RowMetaInterface inputRowMeta;
 
   private KnowledgeBuilder kbuilder;
 
   private KnowledgeBase kbase;
 
-  private List<Object[]> results;
+  private Column[] columnList;
+
+  private Map<String, Column> resultMap = new HashMap<String, Column>();
 
   private String ruleString;
-
-  private List<Row> rowList = new ArrayList<Row>();
-  private List<Row> resultList = new ArrayList<Row>();
 
   public String getRuleString() {
     return ruleString;
@@ -89,6 +97,12 @@ public class RulesAccumulatorData extends BaseStepData implements StepDataInterf
   }
 
   public void initializeRules() {
+
+    // To ensure the plugin classloader use for dependency resolution
+    ClassLoader orig = Thread.currentThread().getContextClassLoader();
+    ClassLoader loader = getClass().getClassLoader();
+    Thread.currentThread().setContextClassLoader( loader );
+
     Resource ruleSet = null;
     if ( ruleString != null ) {
       ruleSet = ResourceFactory.newReaderResource( new StringReader( ruleString ) );
@@ -108,68 +122,87 @@ public class RulesAccumulatorData extends BaseStepData implements StepDataInterf
     kbase = KnowledgeBaseFactory.newKnowledgeBase();
     // Cache the knowledge base as its creation is intensive
     kbase.addKnowledgePackages( pkgs );
+
+    // reset classloader back to original
+    Thread.currentThread().setContextClassLoader( orig );
   }
 
-  public void initializeInput( RowMetaInterface _inputRowMeta ) {
-    if ( _inputRowMeta == null ) {
+  public void initializeColumns( RowMetaInterface inputRowMeta ) {
+    if ( inputRowMeta == null ) {
       BaseMessages.getString( PKG, "RulesData.InitializeColumns.InputRowMetaIsNull" );
       return;
     }
 
-    this.inputRowMeta = _inputRowMeta;
+    // Create objects for insertion into the rules engine
+    List<ValueMetaInterface> columns = inputRowMeta.getValueMetaList();
+
+    // This array must 1-1 match the row[] feteched by getRow()
+    columnList = new Column[columns.size()];
+
+    for ( int i = 0; i < columns.size(); i++ ) {
+      ValueMetaInterface column = columns.get( i );
+
+      Column c = new Column( true );
+      c.setName( column.getName() );
+      c.setType( column.getTypeDesc() );
+      c.setPayload( null );
+
+      columnList[i] = c;
+    }
   }
 
-  public void loadRow( Object[] r ) throws Exception {
-    // Store rows for processing
-    Map<String, Object> columns = new Hashtable<String, Object>();
-    for ( String field : inputRowMeta.getFieldNames() ) {
-      columns.put( field, r[inputRowMeta.indexOfValue( field )] );
+  public void loadRow( Object[] r ) {
+    for ( int i = 0; i < columnList.length; i++ ) {
+      columnList[i].setPayload( r[i] );
+    }
+    resultMap.clear();
+  }
+
+  public void execute() {
+    StatefulKnowledgeSession session = initNewKnowledgeSession();
+
+    Collection<Object> oList = fetchColumns( session );
+    for ( Object o : oList ) {
+      resultMap.put( ( (Column) o ).getName(), (Column) o );
     }
 
-    rowList.add( new Row( columns, true ) );
+    session.dispose();
   }
 
-  public List<Row> getResultRows() {
-    return resultList;
+  protected StatefulKnowledgeSession initNewKnowledgeSession() {
+    StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
+    for ( int i = 0; i < columnList.length; i++ ) {
+      session.insert( columnList[i] );
+    }
+
+    session.fireAllRules();
+    return session;
   }
 
-  public void execute() throws Exception {
-    if ( kbase != null ) {
-      StatefulKnowledgeSession session = kbase.newStatefulKnowledgeSession();
-
-      for ( Row row : rowList ) {
-        session.insert( row );
-      }
-
-      session.fireAllRules();
-
-      Collection<Object> oList = session.getObjects( new ObjectFilter() {
-        @Override
-        public boolean accept( Object o ) {
-          if ( o instanceof Row && !( (Row) o ).isExternalSource() ) {
-            return true;
-          }
-          return false;
+  protected Collection<Object> fetchColumns( StatefulKnowledgeSession session ) {
+    Collection<Object> oList = session.getObjects( new ObjectFilter() {
+      @Override
+      public boolean accept( Object o ) {
+        if ( o instanceof Column && !( (Column) o ).isExternalSource() ) {
+          return true;
         }
-      } );
-
-      for ( Object o : oList ) {
-        resultList.add( (Row) o );
+        return false;
       }
-
-      session.dispose();
-    }
+    } );
+    return oList;
   }
 
   /**
-   * Get the list of rows generated by the Rules execution
    *
-   * @return List of rows generated
+   * @param columnName
+   *          Column.payload associated with the result, or null if not found
+   * @return
    */
-  public List<Object[]> fetchResults() {
-    return results;
+  public Object fetchResult( String columnName ) {
+    return resultMap.get( columnName );
   }
 
   public void shutdown() {
   }
+
 }

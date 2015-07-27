@@ -37,11 +37,6 @@
     <dependency org="com.enterprisedt"                 name="edtftpj"              rev="2.1.0"           transitive="false"/>
     <dependency org="com.googlecode.jsendnsca"         name="jsendnsca"            rev="2.0.1"           transitive="false"/>
     <dependency org="com.healthmarketscience.jackcess" name="jackcess"             rev="1.2.6"           transitive="false"/>
-    <dependency org="org.drools"                       name="drools-api"           rev="5.0.1"           transitive="false"/>
-    <dependency org="org.drools"                       name="drools-core"          rev="5.0.1"           transitive="false"/>
-    <dependency org="org.drools"                       name="drools-compiler"      rev="5.0.1"           transitive="false"/>
-    <dependency org="org.mvel"                         name="mvel2"                rev="2.0.10"          transitive="false"/>
-    <dependency org="org.eclipse.jdt"                  name="core"                 rev="3.4.2.v_883_R34x" transitive="false"/>
     <dependency org="feed4j"                           name="feed4j"               rev="1.0"             transitive="false"/>
     <dependency org="ftp4che"                          name="ftp4che"              rev="0.7.1"           transitive="false"/>
     <dependency org="georss-rome"                      name="georss-rome"          rev="0.9.8"           transitive="false"/>

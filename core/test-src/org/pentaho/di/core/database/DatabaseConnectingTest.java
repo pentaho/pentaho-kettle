@@ -102,19 +102,20 @@ public class DatabaseConnectingTest {
   @Test
   public void connect_GroupIsEqual_InParallel() throws Exception {
     final Connection shared = mock( Connection.class );
-    final int threadsAmount = 30;
+    final int dbsAmount = 300;
+    final int threadsAmount = 50;
 
-    List<DatabaseStub> dbs = new ArrayList<DatabaseStub>( threadsAmount );
-    Set<Integer> copies = new HashSet<Integer>( threadsAmount );
+    List<DatabaseStub> dbs = new ArrayList<DatabaseStub>( dbsAmount );
+    Set<Integer> copies = new HashSet<Integer>( dbsAmount );
     ExecutorService pool = Executors.newFixedThreadPool( threadsAmount );
     try {
       CompletionService<DatabaseStub> service = new ExecutorCompletionService<DatabaseStub>( pool );
-      for ( int i = 0; i < threadsAmount; i++ ) {
+      for ( int i = 0; i < dbsAmount; i++ ) {
         service.submit( createStubDatabase( shared ) );
         copies.add( i + 1 );
       }
 
-      for ( int i = 0; i < threadsAmount; i++ ) {
+      for ( int i = 0; i < dbsAmount; i++ ) {
         DatabaseStub db = service.take().get();
         assertEquals( shared, db.getConnection() );
         dbs.add( db );
@@ -125,9 +126,9 @@ public class DatabaseConnectingTest {
 
     for ( DatabaseStub db : dbs ) {
       String message =
-        String.format( "There should be %d shares of the connection, but found %d", threadsAmount, db.getOpened() );
+        String.format( "There should be %d shares of the connection, but found %d", dbsAmount, db.getOpened() );
       // 0 is for those instances that use the shared connection
-      assertTrue( message, db.getOpened() == 0 || db.getOpened() == threadsAmount );
+      assertTrue( message, db.getOpened() == 0 || db.getOpened() == dbsAmount );
 
       assertTrue( "Each instance should have a unique 'copy' value", copies.remove( db.getCopy() ) );
     }

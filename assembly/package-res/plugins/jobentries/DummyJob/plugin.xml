@@ -4,17 +4,12 @@
    iconfile="DPL.svg"
    description="Dummy Job Entry"
    tooltip="This is a dummy plugin test job entry"
-   category="General"
+   category="Deprecated"
    classname="pdi.jobentry.dummy.JobEntryDummy">
    <libraries>
     <library name="dummyjob.jar"/>
     </libraries>
     
-   <localized_category>
-     <category locale="en_US">General</category>
-     <category locale="nl_NL">Algemeen</category>
-     <category locale="fr_FR">Général</category>
-   </localized_category>
    <localized_description>
      <description locale="en_US">Example plugin</description>
    </localized_description>

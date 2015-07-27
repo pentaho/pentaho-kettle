@@ -24,7 +24,10 @@ package org.pentaho.di.ui.core.dialog;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -109,7 +112,7 @@ public class Splash {
 
     splash.addPaintListener( new PaintListener() {
       public void paintControl( PaintEvent e ) {
-        String versionText =
+        String fullVersionText =
             BaseMessages.getString( PKG, "SplashDialog.Version" ) + " " + BuildVersion.getInstance().getVersion();
 
         StringBuilder sb = new StringBuilder();
@@ -133,19 +136,47 @@ public class Splash {
 
         // If this is a Milestone or RC release, warn the user
         if ( Const.RELEASE.equals( Const.ReleaseType.MILESTONE ) ) {
-          versionText = BaseMessages.getString( PKG, "SplashDialog.DeveloperRelease" ) + " - " + versionText;
+          fullVersionText = BaseMessages.getString( PKG, "SplashDialog.DeveloperRelease" ) + " - " + fullVersionText;
           drawVersionWarning( e );
         } else if ( Const.RELEASE.equals( Const.ReleaseType.RELEASE_CANDIDATE ) ) {
-          versionText = BaseMessages.getString( PKG, "SplashDialog.ReleaseCandidate" ) + " - " + versionText;
+          fullVersionText = BaseMessages.getString( PKG, "SplashDialog.ReleaseCandidate" ) + " - " + fullVersionText;
         } else if ( Const.RELEASE.equals( Const.ReleaseType.PREVIEW ) ) {
-          versionText = BaseMessages.getString( PKG, "SplashDialog.PreviewRelease" ) + " - " + versionText;
+          fullVersionText = BaseMessages.getString( PKG, "SplashDialog.PreviewRelease" ) + " - " + fullVersionText;
         } else if ( Const.RELEASE.equals( Const.ReleaseType.GA ) ) {
-          versionText = BaseMessages.getString( PKG, "SplashDialog.GA" ) + " - " + versionText;
+          fullVersionText = BaseMessages.getString( PKG, "SplashDialog.GA" ) + " - " + fullVersionText;
         }
 
         e.gc.setFont( verFont );
-        e.gc.drawText( versionText, 290, 205, true );
+        e.gc.drawText( fullVersionText, 290, 205, true );
 
+        String inputStringDate = BuildVersion.getInstance().getBuildDate();
+        String outputStringDate = "";
+        SimpleDateFormat inputFormat = null;
+        SimpleDateFormat outputFormat = null;
+    
+        if ( inputStringDate.matches( "^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}.\\d{3}$" ) ) {
+          inputFormat = new SimpleDateFormat( "yyyy/MM/dd hh:mm:ss.SSS" );
+        }
+        if ( inputStringDate.matches( "^\\d{4}-\\d{1,2}-\\d{1,2}\\_\\d{1,2}-\\d{2}-\\d{2}$" ) ) {
+          inputFormat = new SimpleDateFormat( "yyyy-MM-dd_hh-mm-ss" );
+        }
+        if ( inputStringDate.matches( "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}.\\d{2}.\\d{2}$" ) ) {
+          inputFormat = new SimpleDateFormat( "yyyy-MM-dd hh.mm.ss" );
+        }
+        outputFormat = new SimpleDateFormat( "MMMM d, yyyy hh:mm:ss" );
+        try {
+          if ( inputFormat != null ) {
+            Date date = inputFormat.parse( inputStringDate );
+            outputStringDate = outputFormat.format( date );
+          } else {
+            // If date isn't correspond to formats above just show date in origin format
+            outputStringDate = inputStringDate;
+          }
+        } catch ( ParseException pe ) {
+          // Just show date in origin format
+          outputStringDate = inputStringDate;
+        }        
+        
         // try using the desired font size for the license text
         e.gc.setFont( licFont );
 
@@ -159,7 +190,14 @@ public class Splash {
           e.gc.setFont( licFont );
         }
 
-        e.gc.drawText( licenseText, 290, 290, true );
+        e.gc.drawText( licenseText, 290, 275, true );
+
+        // use the same font/size as the license text
+        String version = BaseMessages.getString( PKG, "SplashDialog.BuildVersion" ) + " " + 
+            BuildVersion.getInstance().getVersion();
+        String buildDate = BaseMessages.getString( PKG, "SplashDialog.BuildDate" ) + " " + outputStringDate;
+        e.gc.drawText( version, 290, 235, true );
+        e.gc.drawText( buildDate, 290, 250, true );
       }
     } );
 

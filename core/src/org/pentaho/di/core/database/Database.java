@@ -164,7 +164,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   private int nrExecutedCommits;
 
   private static List<ValueMetaInterface> valueMetaPluginClasses;
-  
+
   static {
     try {
       valueMetaPluginClasses = ValueMetaFactory.getValueMetaPluginClasses();
@@ -179,7 +179,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       throw new RuntimeException( "Unable to get list of instantiated value meta plugin classes", e );
     }
   }
-  
+
   /**
    * Construct a new Database Connection
    *
@@ -352,9 +352,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           // There was no mapped value before
           lookup = this;
         }
-        this.connection = lookup.getOrCreateSharedConnection( partitionId );
-        // opened in volatile, thus we can access it directly
-        this.copy = lookup.opened;
+        lookup.shareConnectionWith( partitionId, this );
       } else {
         // Proceed with a normal connect
         normalConnect( partitionId );
@@ -372,7 +370,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
   }
 
-  private synchronized Connection getOrCreateSharedConnection( String partitionId ) throws KettleDatabaseException {
+  private synchronized void shareConnectionWith( String partitionId, Database anotherDb ) throws KettleDatabaseException {
     // inside synchronized block we can increment 'opened' directly
     this.opened++;
 
@@ -384,7 +382,9 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       //
       setAutoCommit( false );
     }
-    return this.connection;
+
+    anotherDb.connection = this.connection;
+    anotherDb.copy = this.opened;
   }
 
   /**

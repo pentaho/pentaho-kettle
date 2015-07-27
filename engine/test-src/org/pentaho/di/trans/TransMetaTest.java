@@ -30,16 +30,19 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 public class TransMetaTest {
 
@@ -106,6 +109,27 @@ public class TransMetaTest {
 
     assertEquals( 1, thisStepsFields.size() );
     assertEquals( overriddenValue, thisStepsFields.getValueMeta( 0 ).getName() );
+  }
+
+  @Test
+  public void testDatabaseNotOverridden() throws Exception {
+    final String name = "db meta";
+
+    DatabaseMeta dbMetaShared = new DatabaseMeta();
+    dbMetaShared.setName( name );
+    dbMetaShared.setHostname( "host" );
+    DatabaseMeta dbMetaStore = new DatabaseMeta();
+    dbMetaStore.setName( name );
+    dbMetaStore.setHostname( "anotherhost");
+    IMetaStore mstore = new MemoryMetaStore();
+    DatabaseMetaStoreUtil.createDatabaseElement( mstore, dbMetaStore );
+
+    TransMeta trans = new TransMeta();
+    trans.addOrReplaceDatabase( dbMetaShared );
+    trans.setMetaStore( mstore );
+    trans.importFromMetaStore();
+    DatabaseMeta dbMeta = trans.findDatabase( name );
+    assertEquals( dbMetaShared.getHostname(), dbMeta.getHostname() );
   }
 
   private static StepMeta mockStepMeta( String name ) {
