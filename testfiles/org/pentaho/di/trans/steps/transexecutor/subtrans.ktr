@@ -62,7 +62,6 @@
     <partitionschemas>
     </partitionschemas>
     <slaveservers>
-         <slaveserver><name>8081</name><hostname>localhost</hostname><port>8081</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>Y</master></slaveserver>
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
@@ -74,7 +73,7 @@
   <notepads>
   </notepads>
   <order>
-  <hop> <from>Generate Rows</from><to>Dummy</to><enabled>Y</enabled> </hop>
+  <hop> <from>Generate Rows</from><to>Copy rows to result</to><enabled>Y</enabled> </hop>
   </order>
   <step>
     <name>Generate Rows</name>
@@ -108,15 +107,15 @@
     <last_time_field>FiveSecondsAgo</last_time_field>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>164</xloc>
-      <yloc>134</yloc>
+      <xloc>176</xloc>
+      <yloc>128</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Dummy</name>
-    <type>Dummy</type>
+    <name>Copy rows to result</name>
+    <type>RowsToResult</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -127,8 +126,8 @@
            </partitioning>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>314</xloc>
-      <yloc>136</yloc>
+      <xloc>288</xloc>
+      <yloc>128</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
