@@ -67,6 +67,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepInterface;
@@ -82,6 +83,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.metastore.api.IMetaStore;
 
@@ -90,83 +92,135 @@ import org.pentaho.metastore.api.IMetaStore;
  */
 public class BaseStepDialog extends Dialog {
 
-  /** The package name used for internationalization */
+  /**
+   * The package name used for internationalization
+   */
   private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!
 
-  /** The logging object interface for this dialog. */
+  /**
+   * The logging object interface for this dialog.
+   */
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject(
     "Step dialog", LoggingObjectType.STEPDIALOG, null );
 
-  /** The variable bindings for this dialog. */
+  /**
+   * The variable bindings for this dialog.
+   */
   protected static VariableSpace variables = new Variables();
 
-  /** The step name. */
+  /**
+   * The step name.
+   */
   protected String stepname;
 
-  /** The Step name label. */
+  /**
+   * The Step name label.
+   */
   protected Label wlStepname;
 
-  /** The Step name UI component. */
+  /**
+   * The Step name UI component.
+   */
   protected Text wStepname;
 
-  /** The FormData for the step name and its label. */
+  /**
+   * The FormData for the step name and its label.
+   */
   protected FormData fdlStepname, fdStepname;
 
-  /** Common dialog buttons. */
+  /**
+   * Common dialog buttons.
+   */
   protected Button wOK, wGet, wPreview, wSQL, wCreate, wCancel;
 
-  /** FormData for the common dialog buttons. */
+  /**
+   * FormData for the common dialog buttons.
+   */
   protected FormData fdOK, fdGet, fdPreview, fdSQL, fdCreate, fdCancel;
 
-  /** Listeners for the common dialog buttons. */
+  /**
+   * Listeners for the common dialog buttons.
+   */
   protected Listener lsOK, lsGet, lsPreview, lsSQL, lsCreate, lsCancel;
 
-  /** The metadata for the associated transformation. */
+  /**
+   * The metadata for the associated transformation.
+   */
   protected TransMeta transMeta;
 
-  /** A reference to the shell. */
+  /**
+   * A reference to the shell.
+   */
   protected Shell shell;
 
-  /** A listener adapter for default widget selection. */
+  /**
+   * A listener adapter for default widget selection.
+   */
   protected SelectionAdapter lsDef;
 
-  /** A listener for dialog resizing. */
+  /**
+   * A listener for dialog resizing.
+   */
   protected Listener lsResize;
 
-  /** Whether the dialog (and its backup) have changed. */
+  /**
+   * Whether the dialog (and its backup) have changed.
+   */
   protected boolean changed, backupChanged;
 
-  /** The base step meta. */
+  /**
+   * The base step meta.
+   */
   protected StepMetaInterface baseStepMeta;
 
-  /** The UI properties. */
+  /**
+   * The UI properties.
+   */
   protected PropsUI props;
 
-  /** The associated repository. */
+  /**
+   * The associated repository.
+   */
   protected Repository repository;
 
-  /** The MetaStore to use */
+  /**
+   * The MetaStore to use
+   */
   protected IMetaStore metaStore;
 
-  /** The step meta for this dialog. */
+  /**
+   * The step meta for this dialog.
+   */
   protected StepMeta stepMeta;
 
-  /** The log channel for this dialog. */
+  /**
+   * The log channel for this dialog.
+   */
   protected LogChannel log;
 
-  /** A constant indicating a center button alignment. */
+  /**
+   * A constant indicating a center button alignment.
+   */
   protected static final int BUTTON_ALIGNMENT_CENTER = 0;
 
-  /** A constant indicating a left button alignment. */
+  /**
+   * A constant indicating a left button alignment.
+   */
   protected static final int BUTTON_ALIGNMENT_LEFT = 1;
 
-  /** A constant indicating a right button alignment. */
+  /**
+   * A constant indicating a right button alignment.
+   */
   protected static final int BUTTON_ALIGNMENT_RIGHT = 2;
 
-  /** The button alignment (defaults to center). */
+  /**
+   * The button alignment (defaults to center).
+   */
   protected static int buttonAlignment = BUTTON_ALIGNMENT_CENTER;
 
-  /** A reference to a database dialog. */
+  /**
+   * A reference to a database dialog.
+   */
   protected DatabaseDialog databaseDialog;
 
   static {
@@ -177,14 +231,10 @@ public class BaseStepDialog extends Dialog {
   /**
    * Instantiates a new base step dialog.
    *
-   * @param parent
-   *          the parent shell
-   * @param baseStepMeta
-   *          the associated base step metadata
-   * @param transMeta
-   *          the associated transformation metadata
-   * @param stepname
-   *          the step name
+   * @param parent       the parent shell
+   * @param baseStepMeta the associated base step metadata
+   * @param transMeta    the associated transformation metadata
+   * @param stepname     the step name
    */
   public BaseStepDialog( Shell parent, BaseStepMeta baseStepMeta, TransMeta transMeta, String stepname ) {
     super( parent, SWT.NONE );
@@ -201,14 +251,10 @@ public class BaseStepDialog extends Dialog {
   /**
    * Instantiates a new base step dialog.
    *
-   * @param parent
-   *          the parent shell
-   * @param baseStepMeta
-   *          the associated base step metadata
-   * @param transMeta
-   *          the associated transformation metadata
-   * @param stepname
-   *          the step name
+   * @param parent       the parent shell
+   * @param baseStepMeta the associated base step metadata
+   * @param transMeta    the associated transformation metadata
+   * @param stepname     the step name
    */
   public BaseStepDialog( Shell parent, StepMetaInterface baseStepMeta, TransMeta transMeta, String stepname ) {
     super( parent, SWT.NONE );
@@ -225,14 +271,10 @@ public class BaseStepDialog extends Dialog {
   /**
    * Instantiates a new base step dialog.
    *
-   * @param parent
-   *          the parent shell
-   * @param nr
-   *          the number of rows
-   * @param in
-   *          the base step metadata
-   * @param tr
-   *          the transformation metadata
+   * @param parent the parent shell
+   * @param nr     the number of rows
+   * @param in     the base step metadata
+   * @param tr     the transformation metadata
    */
   public BaseStepDialog( Shell parent, int nr, BaseStepMeta in, TransMeta tr ) {
     this( parent, in, tr, null );
@@ -241,10 +283,8 @@ public class BaseStepDialog extends Dialog {
   /**
    * Sets the shell image.
    *
-   * @param shell
-   *          the shell
-   * @param stepMetaInterface
-   *          the step meta interface (because of the legacy code)
+   * @param shell             the shell
+   * @param stepMetaInterface the step meta interface (because of the legacy code)
    */
   public void setShellImage( Shell shell, StepMetaInterface stepMetaInterface ) {
     setShellImage( shell );
@@ -269,12 +309,9 @@ public class BaseStepDialog extends Dialog {
   /**
    * Sets the button positions.
    *
-   * @param buttons
-   *          the buttons
-   * @param margin
-   *          the margin between buttons
-   * @param lastControl
-   *          the last control
+   * @param buttons     the buttons
+   * @param margin      the margin between buttons
+   * @param lastControl the last control
    */
   protected void setButtonPositions( Button[] buttons, int margin, Control lastControl ) {
     BaseStepDialog.positionBottomButtons( shell, buttons, margin, lastControl );
@@ -283,96 +320,90 @@ public class BaseStepDialog extends Dialog {
   /**
    * Position the specified buttons at the bottom of the parent composite. Also, make the buttons all the same width:
    * the width of the largest button.
-   * <P>
+   * <p/>
    * The default alignment for buttons in the system will be used. This is set as an LAF property with the key
    * <code>Button_Position</code> and has the valid values of <code>left, center, right</code> with <code>center</code>
    * being the default.
    *
-   * @param composite
-   *          the composite
-   * @param buttons
-   *          The buttons to position.
-   * @param margin
-   *          The margin between the buttons in pixels
-   * @param lastControl
-   *          the last control
+   * @param composite   the composite
+   * @param buttons     The buttons to position.
+   * @param margin      The margin between the buttons in pixels
+   * @param lastControl the last control
    */
   public static final void positionBottomButtons( Composite composite, Button[] buttons, int margin,
-    Control lastControl ) {
+                                                  Control lastControl ) {
     // call positionBottomButtons method the system button alignment
     positionBottomButtons( composite, buttons, margin, buttonAlignment, lastControl );
   }
-  
+
   public static final void positionBottomRightButtons( Composite composite, Button[] buttons, int margin,
-      Control lastControl ) {
-      positionBottomButtons( composite, buttons, margin, BUTTON_ALIGNMENT_RIGHT, lastControl );
-    }
-  
+                                                       Control lastControl ) {
+    positionBottomButtons( composite, buttons, margin, BUTTON_ALIGNMENT_RIGHT, lastControl );
+  }
+
   private static final void positionBottomButtons( Composite composite, Button[] buttons, int margin, int alignment,
-      Control lastControl ) {
-      // Determine the largest button in the array
-      Rectangle largest = null;
-      for ( int i = 0; i < buttons.length; i++ ) {
-        buttons[i].pack( true );
-        Rectangle r = buttons[i].getBounds();
-        if ( largest == null || r.width > largest.width ) {
-          largest = r;
-        }
-
-        // Also, set the tooltip the same as the name if we don't have one...
-        if ( buttons[i].getToolTipText() == null ) {
-          buttons[i].setToolTipText( Const.replace( buttons[i].getText(), "&", "" ) );
-        }
+                                                   Control lastControl ) {
+    // Determine the largest button in the array
+    Rectangle largest = null;
+    for ( int i = 0; i < buttons.length; i++ ) {
+      buttons[ i ].pack( true );
+      Rectangle r = buttons[ i ].getBounds();
+      if ( largest == null || r.width > largest.width ) {
+        largest = r;
       }
 
-      // Make buttons a bit larger... (nicer)
-      largest.width += 10;
-      if ( ( largest.width % 2 ) == 1 ) {
-        largest.width++;
-      }
-
-      // Compute the left side of the 1st button
-      switch ( alignment ) {
-        case BUTTON_ALIGNMENT_CENTER:
-          centerButtons( buttons, largest.width, margin, lastControl );
-          break;
-        case BUTTON_ALIGNMENT_LEFT:
-          leftAlignButtons( buttons, largest.width, margin, lastControl );
-          break;
-        case BUTTON_ALIGNMENT_RIGHT:
-          rightAlignButtons( buttons, largest.width, margin, lastControl );
-          break;
-        default:
-          break;
-      }
-      if ( Const.isOSX() ) {
-        Shell parentShell = composite.getShell();
-        final List<TableView> tableViews = new ArrayList<TableView>();
-        getTableViews( parentShell, tableViews );
-        for ( final Button button : buttons ) {
-          // We know the table views
-          // We also know that if a button is hit, the table loses focus
-          // In that case, we can apply the content of an open text editor...
-          //
-          button.addSelectionListener( new SelectionAdapter() {
-
-            public void widgetSelected( SelectionEvent e ) {
-              for ( TableView view : tableViews ) {
-                view.applyOSXChanges();
-              }
-            }
-          } );
-        }
+      // Also, set the tooltip the same as the name if we don't have one...
+      if ( buttons[ i ].getToolTipText() == null ) {
+        buttons[ i ].setToolTipText( Const.replace( buttons[ i ].getText(), "&", "" ) );
       }
     }
+
+    // Make buttons a bit larger... (nicer)
+    largest.width += 10;
+    if ( ( largest.width % 2 ) == 1 ) {
+      largest.width++;
+    }
+
+    // Compute the left side of the 1st button
+    switch( alignment ) {
+      case BUTTON_ALIGNMENT_CENTER:
+        centerButtons( buttons, largest.width, margin, lastControl );
+        break;
+      case BUTTON_ALIGNMENT_LEFT:
+        leftAlignButtons( buttons, largest.width, margin, lastControl );
+        break;
+      case BUTTON_ALIGNMENT_RIGHT:
+        rightAlignButtons( buttons, largest.width, margin, lastControl );
+        break;
+      default:
+        break;
+    }
+    if ( Const.isOSX() ) {
+      Shell parentShell = composite.getShell();
+      final List<TableView> tableViews = new ArrayList<TableView>();
+      getTableViews( parentShell, tableViews );
+      for ( final Button button : buttons ) {
+        // We know the table views
+        // We also know that if a button is hit, the table loses focus
+        // In that case, we can apply the content of an open text editor...
+        //
+        button.addSelectionListener( new SelectionAdapter() {
+
+          public void widgetSelected( SelectionEvent e ) {
+            for ( TableView view : tableViews ) {
+              view.applyOSXChanges();
+            }
+          }
+        } );
+      }
+    }
+  }
 
   /**
    * Gets the table views.
    *
-   * @param parentControl
-   *          the parent control
-   * @param tableViews
-   *          the table views
+   * @param parentControl the parent control
+   * @param tableViews    the table views
    * @return the table views
    */
   private static final void getTableViews( Control parentControl, List<TableView> tableViews ) {
@@ -398,13 +429,9 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Returns the default alignment for the buttons. This is set in the LAF properties with the key
-   * <code>Button_Position</code>. The valid values are:
-   * <UL>
-   * <LI><code>left</code>
-   * <LI><code>center</code>
-   * <LI><code>right</code>
-   * </UL>
-   * NOTE: if the alignment is not provided or contains an invalid value, <code>center</code> will be used as a default
+   * <code>Button_Position</code>. The valid values are: <UL> <LI><code>left</code> <LI><code>center</code>
+   * <LI><code>right</code> </UL> NOTE: if the alignment is not provided or contains an invalid value,
+   * <code>center</code> will be used as a default
    *
    * @return a constant which indicates the button alignment
    */
@@ -423,14 +450,10 @@ public class BaseStepDialog extends Dialog {
    * Creats a default FormData object with the top / bottom / and left set (this is done to cut down on repetative code
    * lines.
    *
-   * @param button
-   *          the button to which this form data will be applied
-   * @param width
-   *          the width of the button
-   * @param margin
-   *          the margin between buttons
-   * @param lastControl
-   *          the last control above the buttons
+   * @param button      the button to which this form data will be applied
+   * @param width       the width of the button
+   * @param margin      the margin between buttons
+   * @param lastControl the last control above the buttons
    * @return the newly created FormData object
    */
   private static FormData createDefaultFormData( Button button, int width, int margin, Control lastControl ) {
@@ -447,78 +470,66 @@ public class BaseStepDialog extends Dialog {
   /**
    * Aligns the buttons as left-aligned on the dialog.
    *
-   * @param buttons
-   *          the array of buttons to align
-   * @param width
-   *          the standardized width of all the buttons
-   * @param margin
-   *          the margin between buttons
-   * @param lastControl
-   *          (optional) the bottom most control used for aligning the buttons relative to the bottom of the controls on
-   *          the dialog
+   * @param buttons     the array of buttons to align
+   * @param width       the standardized width of all the buttons
+   * @param margin      the margin between buttons
+   * @param lastControl (optional) the bottom most control used for aligning the buttons relative to the bottom of the
+   *                    controls on the dialog
    */
   protected static void leftAlignButtons( Button[] buttons, int width, int margin, Control lastControl ) {
     for ( int i = 0; i < buttons.length; ++i ) {
-      FormData formData = createDefaultFormData( buttons[i], width, margin, lastControl );
+      FormData formData = createDefaultFormData( buttons[ i ], width, margin, lastControl );
 
       // Set the left side of the buttons (either offset from the edge, or relative to the previous button)
       if ( i == 0 ) {
         formData.left = new FormAttachment( 0, margin );
       } else {
-        formData.left = new FormAttachment( buttons[i - 1], margin );
+        formData.left = new FormAttachment( buttons[ i - 1 ], margin );
       }
 
       // Apply the layout data
-      buttons[i].setLayoutData( formData );
+      buttons[ i ].setLayoutData( formData );
     }
   }
 
   /**
    * Aligns the buttons as right-aligned on the dialog.
    *
-   * @param buttons
-   *          the array of buttons to align
-   * @param width
-   *          the standardized width of all the buttons
-   * @param margin
-   *          the margin between buttons
-   * @param lastControl
-   *          (optional) the bottom most control used for aligning the buttons relative to the bottom of the controls on
-   *          the dialog
+   * @param buttons     the array of buttons to align
+   * @param width       the standardized width of all the buttons
+   * @param margin      the margin between buttons
+   * @param lastControl (optional) the bottom most control used for aligning the buttons relative to the bottom of the
+   *                    controls on the dialog
    */
   protected static void rightAlignButtons( Button[] buttons, int width, int margin, Control lastControl ) {
     for ( int i = buttons.length - 1; i >= 0; --i ) {
-      FormData formData = createDefaultFormData( buttons[i], width, margin, lastControl );
+      FormData formData = createDefaultFormData( buttons[ i ], width, margin, lastControl );
 
       // Set the right side of the buttons (either offset from the edge, or relative to the previous button)
       if ( i == buttons.length - 1 ) {
         formData.left = new FormAttachment( 100, -( width + margin ) );
       } else {
-        formData.left = new FormAttachment( buttons[i + 1], -( 2 * ( width + margin ) ) - margin );
+        formData.left = new FormAttachment( buttons[ i + 1 ], -( 2 * ( width + margin ) ) - margin );
       }
 
       // Apply the layout data
-      buttons[i].setLayoutData( formData );
+      buttons[ i ].setLayoutData( formData );
     }
   }
 
   /**
    * Aligns the buttons as centered on the dialog.
    *
-   * @param buttons
-   *          the array of buttons to align
-   * @param width
-   *          the standardized width of all the buttons
-   * @param margin
-   *          the margin between buttons
-   * @param lastControl
-   *          (optional) the bottom most control used for aligning the buttons relative to the bottom of the controls on
-   *          the dialog
+   * @param buttons     the array of buttons to align
+   * @param width       the standardized width of all the buttons
+   * @param margin      the margin between buttons
+   * @param lastControl (optional) the bottom most control used for aligning the buttons relative to the bottom of the
+   *                    controls on the dialog
    */
   protected static void centerButtons( Button[] buttons, int width, int margin, Control lastControl ) {
     // Setup the middle button
     int middleButtonIndex = buttons.length / 2;
-    FormData formData = createDefaultFormData( buttons[middleButtonIndex], width, margin, lastControl );
+    FormData formData = createDefaultFormData( buttons[ middleButtonIndex ], width, margin, lastControl );
 
     // See if we have an even or odd number of buttons...
     int leftOffset = 0;
@@ -531,28 +542,27 @@ public class BaseStepDialog extends Dialog {
       leftOffset = -( width + margin ) / 2;
     }
     formData.left = new FormAttachment( 50, leftOffset );
-    buttons[middleButtonIndex].setLayoutData( formData );
+    buttons[ middleButtonIndex ].setLayoutData( formData );
 
     // Do the buttons to the right of the middle
     for ( int i = middleButtonIndex + 1; i < buttons.length; ++i ) {
-      formData = createDefaultFormData( buttons[i], width, margin, lastControl );
-      formData.left = new FormAttachment( buttons[i - 1], margin );
-      buttons[i].setLayoutData( formData );
+      formData = createDefaultFormData( buttons[ i ], width, margin, lastControl );
+      formData.left = new FormAttachment( buttons[ i - 1 ], margin );
+      buttons[ i ].setLayoutData( formData );
     }
 
     // Do the buttons to the left of the middle
     for ( int i = middleButtonIndex - 1; i >= 0; --i ) {
-      formData = createDefaultFormData( buttons[i], width, margin, lastControl );
-      formData.left = new FormAttachment( buttons[i + 1], -( 2 * ( width + margin ) ) - margin );
-      buttons[i].setLayoutData( formData );
+      formData = createDefaultFormData( buttons[ i ], width, margin, lastControl );
+      formData.left = new FormAttachment( buttons[ i + 1 ], -( 2 * ( width + margin ) ) - margin );
+      buttons[ i ].setLayoutData( formData );
     }
   }
 
   /**
    * Gets the modify listener tooltip text.
    *
-   * @param textField
-   *          the text field
+   * @param textField the text field
    * @return the modify listener tooltip text
    */
   public static final ModifyListener getModifyListenerTooltipText( final Text textField ) {
@@ -567,8 +577,7 @@ public class BaseStepDialog extends Dialog {
   /**
    * Adds the databases to the Combo Box component.
    *
-   * @param wConnection
-   *          the Combo Box component
+   * @param wConnection the Combo Box component
    */
   public void addDatabases( CCombo wConnection ) {
     addDatabases( wConnection, null );
@@ -577,10 +586,8 @@ public class BaseStepDialog extends Dialog {
   /**
    * Adds the databases with the specified type to the Combo Box component.
    *
-   * @param wConnection
-   *          the Combo Box component
-   * @param databaseType
-   *          the database type
+   * @param wConnection  the Combo Box component
+   * @param databaseType the database type
    */
   public void addDatabases( CCombo wConnection, Class<? extends DatabaseInterface> databaseType ) {
     for ( int i = 0; i < transMeta.nrDatabases(); i++ ) {
@@ -594,10 +601,8 @@ public class BaseStepDialog extends Dialog {
   /**
    * Selects the database with the specified name in the Combo Box component.
    *
-   * @param wConnection
-   *          the Combo Box component
-   * @param name
-   *          the name of the database to select
+   * @param wConnection the Combo Box component
+   * @param name        the name of the database to select
    */
   public void selectDatabase( CCombo wConnection, String name ) {
     int idx = wConnection.indexOf( name );
@@ -609,14 +614,10 @@ public class BaseStepDialog extends Dialog {
   /**
    * Adds the connection line.
    *
-   * @param parent
-   *          the parent UI component
-   * @param previous
-   *          the previous UI component
-   * @param middle
-   *          the middle
-   * @param margin
-   *          the margin
+   * @param parent   the parent UI component
+   * @param previous the previous UI component
+   * @param middle   the middle
+   * @param margin   the margin
    * @return the the Combo Box component for the given parameters
    */
   public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin ) {
@@ -626,20 +627,15 @@ public class BaseStepDialog extends Dialog {
   /**
    * Adds the connection line.
    *
-   * @param parent
-   *          the parent UI component
-   * @param previous
-   *          the previous UI component
-   * @param middle
-   *          the middle
-   * @param margin
-   *          the margin
-   * @param databaseType
-   *          the database type
+   * @param parent       the parent UI component
+   * @param previous     the previous UI component
+   * @param middle       the middle
+   * @param margin       the margin
+   * @param databaseType the database type
    * @return the Combo Box component for the given parameters
    */
   public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin,
-    Class<? extends DatabaseInterface> databaseType ) {
+                                   Class<? extends DatabaseInterface> databaseType ) {
     return addConnectionLine( parent, previous, middle, margin, new Label( parent, SWT.RIGHT ), new Button(
       parent, SWT.PUSH ), new Button( parent, SWT.PUSH ), new Button( parent, SWT.PUSH ), databaseType );
   }
@@ -647,24 +643,18 @@ public class BaseStepDialog extends Dialog {
   /**
    * Adds the connection line.
    *
-   * @param parent
-   *          the parent UI component
-   * @param previous
-   *          the previous UI component
-   * @param middle
-   *          the middle
-   * @param margin
-   *          the margin
-   * @param wlConnection
-   *          the connection label
-   * @param wbnConnection
-   *          the "new connection" button
-   * @param wbeConnection
-   *          the "edit connection" button
+   * @param parent        the parent UI component
+   * @param previous      the previous UI component
+   * @param middle        the middle
+   * @param margin        the margin
+   * @param wlConnection  the connection label
+   * @param wbnConnection the "new connection" button
+   * @param wbeConnection the "edit connection" button
    * @return the Combo Box component for the given parameters
    */
   public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin, final Label wlConnection,
-    final Button wbwConnection, final Button wbnConnection, final Button wbeConnection ) {
+                                   final Button wbwConnection, final Button wbnConnection,
+                                   final Button wbeConnection ) {
     return addConnectionLine(
       parent, previous, middle, margin, wlConnection, wbwConnection, wbnConnection, wbeConnection, null );
   }
@@ -672,27 +662,19 @@ public class BaseStepDialog extends Dialog {
   /**
    * Adds the connection line.
    *
-   * @param parent
-   *          the parent UI component
-   * @param previous
-   *          the previous UI component
-   * @param middle
-   *          the middle
-   * @param margin
-   *          the margin
-   * @param wlConnection
-   *          the connection label
-   * @param wbnConnection
-   *          the "new connection" button
-   * @param wbeConnection
-   *          the "edit connection" button
-   * @param databaseType
-   *          the database type
+   * @param parent        the parent UI component
+   * @param previous      the previous UI component
+   * @param middle        the middle
+   * @param margin        the margin
+   * @param wlConnection  the connection label
+   * @param wbnConnection the "new connection" button
+   * @param wbeConnection the "edit connection" button
+   * @param databaseType  the database type
    * @return the Combo Box component for the given parameters
    */
   public CCombo addConnectionLine( Composite parent, Control previous, int middle, int margin,
-    final Label wlConnection, final Button wbwConnection, final Button wbnConnection,
-    final Button wbeConnection, final Class<? extends DatabaseInterface> databaseType ) {
+                                   final Label wlConnection, final Button wbwConnection, final Button wbnConnection,
+                                   final Button wbeConnection, final Class<? extends DatabaseInterface> databaseType ) {
     final CCombo wConnection;
     final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection, fdbwConnection;
 
@@ -815,8 +797,7 @@ public class BaseStepDialog extends Dialog {
   /**
    * Gets the database dialog.
    *
-   * @param shell
-   *          the shell
+   * @param shell the shell
    * @return the database dialog
    */
   protected DatabaseDialog getDatabaseDialog( Shell shell ) {
@@ -849,8 +830,7 @@ public class BaseStepDialog extends Dialog {
   /**
    * Sets the repository associated with this dialog.
    *
-   * @param repository
-   *          The repository to set.
+   * @param repository The repository to set.
    */
   public void setRepository( Repository repository ) {
     this.repository = repository;
@@ -859,20 +839,16 @@ public class BaseStepDialog extends Dialog {
   /**
    * Sets the minimal shell height.
    *
-   * @param shell
-   *          the shell
-   * @param controls
-   *          the controls to measure
-   * @param margin
-   *          the margin between the components
-   * @param extra
-   *          the extra padding
+   * @param shell    the shell
+   * @param controls the controls to measure
+   * @param margin   the margin between the components
+   * @param extra    the extra padding
    */
   public static void setMinimalShellHeight( Shell shell, Control[] controls, int margin, int extra ) {
     int height = 0;
 
     for ( int i = 0; i < controls.length; i++ ) {
-      Rectangle bounds = controls[i].getBounds();
+      Rectangle bounds = controls[ i ].getBounds();
       height += bounds.height + margin;
     }
     height += extra;
@@ -882,8 +858,7 @@ public class BaseStepDialog extends Dialog {
   /**
    * Sets the size of this dialog with respect to the given shell.
    *
-   * @param shell
-   *          the new size
+   * @param shell the new size
    */
   public static void setSize( Shell shell ) {
     setSize( shell, -1, -1, true );
@@ -892,14 +867,10 @@ public class BaseStepDialog extends Dialog {
   /**
    * Sets the size of this dialog with respect to the given parameters.
    *
-   * @param shell
-   *          the shell
-   * @param minWidth
-   *          the minimum width
-   * @param minHeight
-   *          the minimum height
-   * @param packIt
-   *          true to pack the dialog components, false otherwise
+   * @param shell     the shell
+   * @param minWidth  the minimum width
+   * @param minHeight the minimum height
+   * @param packIt    true to pack the dialog components, false otherwise
    */
   public static void setSize( Shell shell, int minWidth, int minHeight, boolean packIt ) {
     PropsUI props = PropsUI.getInstance();
@@ -939,20 +910,19 @@ public class BaseStepDialog extends Dialog {
   /**
    * Sets the traverse order for the given controls.
    *
-   * @param controls
-   *          the new traverse order
+   * @param controls the new traverse order
    */
   public static final void setTraverseOrder( final Control[] controls ) {
     for ( int i = 0; i < controls.length; i++ ) {
       final int controlNr = i;
       if ( i < controls.length - 1 ) {
-        controls[i].addTraverseListener( new TraverseListener() {
+        controls[ i ].addTraverseListener( new TraverseListener() {
           public void keyTraversed( TraverseEvent te ) {
             te.doit = false;
             // set focus on the next control.
             // What is the next control?
             int thisOne = controlNr + 1;
-            while ( !controls[thisOne].isEnabled() ) {
+            while ( !controls[ thisOne ].isEnabled() ) {
               thisOne++;
               if ( thisOne >= controls.length ) {
                 thisOne = 0;
@@ -961,25 +931,25 @@ public class BaseStepDialog extends Dialog {
                 return; // already tried all others, time to quit.
               }
             }
-            controls[thisOne].setFocus();
+            controls[ thisOne ].setFocus();
           }
         } );
       } else { // Link last item to first.
 
-        controls[i].addTraverseListener( new TraverseListener() {
+        controls[ i ].addTraverseListener( new TraverseListener() {
           public void keyTraversed( TraverseEvent te ) {
             te.doit = false;
             // set focus on the next control.
             // set focus on the next control.
             // What is the next control : 0
             int thisOne = 0;
-            while ( !controls[thisOne].isEnabled() ) {
+            while ( !controls[ thisOne ].isEnabled() ) {
               thisOne++;
               if ( thisOne >= controls.length ) {
                 return; // already tried all others, time to quit.
               }
             }
-            controls[thisOne].setFocus();
+            controls[ thisOne ].setFocus();
           }
         } );
       }
@@ -989,28 +959,20 @@ public class BaseStepDialog extends Dialog {
   /**
    * Gets unused fields from previous steps and inserts them as rows into a table view.
    *
-   * @param transMeta
-   *          the transformation metadata
-   * @param stepMeta
-   *          the step metadata
-   * @param tableView
-   *          the table view
-   * @param keyColumn
-   *          the key column
-   * @param nameColumn
-   *          the name column
-   * @param dataTypeColumn
-   *          the data type column
-   * @param lengthColumn
-   *          the length column
-   * @param precisionColumn
-   *          the precision column
-   * @param listener
-   *          a listener for tables insert events
+   * @param transMeta       the transformation metadata
+   * @param stepMeta        the step metadata
+   * @param tableView       the table view
+   * @param keyColumn       the key column
+   * @param nameColumn      the name column
+   * @param dataTypeColumn  the data type column
+   * @param lengthColumn    the length column
+   * @param precisionColumn the precision column
+   * @param listener        a listener for tables insert events
    */
   public static final void getFieldsFromPrevious( TransMeta transMeta, StepMeta stepMeta, TableView tableView,
-    int keyColumn, int[] nameColumn, int[] dataTypeColumn, int lengthColumn, int precisionColumn,
-    TableItemInsertListener listener ) {
+                                                  int keyColumn, int[] nameColumn, int[] dataTypeColumn,
+                                                  int lengthColumn, int precisionColumn,
+                                                  TableItemInsertListener listener ) {
     try {
       RowMetaInterface row = transMeta.getPrevStepFields( stepMeta );
       if ( row != null ) {
@@ -1027,27 +989,21 @@ public class BaseStepDialog extends Dialog {
   /**
    * Gets unused fields from previous steps and inserts them as rows into a table view.
    *
-   * @param row
-   *          the input fields
-   * @param tableView
-   *          the table view to modify
-   * @param keyColumn
-   *          the column in the table view to match with the names of the fields, checks for existance if >0
-   * @param nameColumn
-   *          the column numbers in which the name should end up in
-   * @param dataTypeColumn
-   *          the target column numbers in which the data type should end up in
-   * @param lengthColumn
-   *          the length column where the length should end up in (if >0)
-   * @param precisionColumn
-   *          the length column where the precision should end up in (if >0)
-   * @param listener
-   *          A listener that you can use to do custom modifications to the inserted table item, based on a value from
-   *          the provided row
+   * @param row             the input fields
+   * @param tableView       the table view to modify
+   * @param keyColumn       the column in the table view to match with the names of the fields, checks for existance if
+   *                        >0
+   * @param nameColumn      the column numbers in which the name should end up in
+   * @param dataTypeColumn  the target column numbers in which the data type should end up in
+   * @param lengthColumn    the length column where the length should end up in (if >0)
+   * @param precisionColumn the length column where the precision should end up in (if >0)
+   * @param listener        A listener that you can use to do custom modifications to the inserted table item, based on
+   *                        a value from the provided row
    */
   public static final void getFieldsFromPrevious( RowMetaInterface row, TableView tableView, int keyColumn,
-    int[] nameColumn, int[] dataTypeColumn, int lengthColumn, int precisionColumn,
-    TableItemInsertListener listener ) {
+                                                  int[] nameColumn, int[] dataTypeColumn, int lengthColumn,
+                                                  int precisionColumn,
+                                                  TableItemInsertListener listener ) {
     if ( row == null || row.size() == 0 ) {
       return; // nothing to do
     }
@@ -1109,11 +1065,11 @@ public class BaseStepDialog extends Dialog {
         TableItem tableItem = new TableItem( table, SWT.NONE );
 
         for ( int c = 0; c < nameColumn.length; c++ ) {
-          tableItem.setText( nameColumn[c], Const.NVL( v.getName(), "" ) );
+          tableItem.setText( nameColumn[ c ], Const.NVL( v.getName(), "" ) );
         }
         if ( dataTypeColumn != null ) {
           for ( int c = 0; c < dataTypeColumn.length; c++ ) {
-            tableItem.setText( dataTypeColumn[c], v.getTypeDesc() );
+            tableItem.setText( dataTypeColumn[ c ], v.getTypeDesc() );
           }
         }
         if ( lengthColumn > 0 ) {
@@ -1142,12 +1098,9 @@ public class BaseStepDialog extends Dialog {
   /**
    * Gets fields from previous steps and populate a ComboVar.
    *
-   * @param comboVar
-   *          the Combo Box (with Variables) to populate
-   * @param transMeta
-   *          the transformation metadata
-   * @param stepMeta
-   *          the step metadata
+   * @param comboVar  the Combo Box (with Variables) to populate
+   * @param transMeta the transformation metadata
+   * @param stepMeta  the step metadata
    */
   public static final void getFieldsFromPrevious( ComboVar comboVar, TransMeta transMeta, StepMeta stepMeta ) {
     String selectedField = null;
@@ -1180,26 +1133,20 @@ public class BaseStepDialog extends Dialog {
   /**
    * Create a new field mapping between source and target steps.
    *
-   * @param shell
-   *          the shell of the parent window
-   * @param sourceFields
-   *          the source fields
-   * @param targetFields
-   *          the target fields
-   * @param fieldMapping
-   *          the list of source to target mappings to default to (can be empty but not null)
-   *
-   * @throws KettleException
-   *           in case something goes wrong during the field mapping
-   *
+   * @param shell        the shell of the parent window
+   * @param sourceFields the source fields
+   * @param targetFields the target fields
+   * @param fieldMapping the list of source to target mappings to default to (can be empty but not null)
+   * @throws KettleException in case something goes wrong during the field mapping
    */
   public static final void generateFieldMapping( Shell shell, RowMetaInterface sourceFields,
-    RowMetaInterface targetFields, List<SourceToTargetMapping> fieldMapping ) throws KettleException {
+                                                 RowMetaInterface targetFields,
+                                                 List<SourceToTargetMapping> fieldMapping ) throws KettleException {
     // Build the mapping: let the user decide!!
     String[] source = sourceFields.getFieldNames();
     for ( int i = 0; i < source.length; i++ ) {
       ValueMetaInterface v = sourceFields.getValueMeta( i );
-      source[i] += EnterMappingDialog.STRING_ORIGIN_SEPARATOR + v.getOrigin() + ")";
+      source[ i ] += EnterMappingDialog.STRING_ORIGIN_SEPARATOR + v.getOrigin() + ")";
     }
     String[] target = targetFields.getFieldNames();
 
@@ -1250,8 +1197,7 @@ public class BaseStepDialog extends Dialog {
   /**
    * Log the message at a minimal logging level.
    *
-   * @param message
-   *          the message to log
+   * @param message the message to log
    */
   public void logMinimal( String message ) {
     log.logMinimal( message );
@@ -1260,10 +1206,8 @@ public class BaseStepDialog extends Dialog {
   /**
    * Log the message with arguments at a minimal logging level.
    *
-   * @param message
-   *          the message
-   * @param arguments
-   *          the arguments
+   * @param message   the message
+   * @param arguments the arguments
    */
   public void logMinimal( String message, Object... arguments ) {
     log.logMinimal( message, arguments );
@@ -1272,8 +1216,7 @@ public class BaseStepDialog extends Dialog {
   /**
    * Log the message at a basic logging level.
    *
-   * @param message
-   *          the message
+   * @param message the message
    */
   public void logBasic( String message ) {
     log.logBasic( message );
@@ -1282,10 +1225,8 @@ public class BaseStepDialog extends Dialog {
   /**
    * Log the message with arguments at a basic logging level.
    *
-   * @param message
-   *          the message
-   * @param arguments
-   *          the arguments
+   * @param message   the message
+   * @param arguments the arguments
    */
   public void logBasic( String message, Object... arguments ) {
     log.logBasic( message, arguments );
@@ -1294,8 +1235,7 @@ public class BaseStepDialog extends Dialog {
   /**
    * Log the message at a detailed logging level.
    *
-   * @param message
-   *          the message
+   * @param message the message
    */
   public void logDetailed( String message ) {
     log.logDetailed( message );
@@ -1304,10 +1244,8 @@ public class BaseStepDialog extends Dialog {
   /**
    * Log the message with arguments at a detailed logging level.
    *
-   * @param message
-   *          the message
-   * @param arguments
-   *          the arguments
+   * @param message   the message
+   * @param arguments the arguments
    */
   public void logDetailed( String message, Object... arguments ) {
     log.logDetailed( message, arguments );
@@ -1316,8 +1254,7 @@ public class BaseStepDialog extends Dialog {
   /**
    * Log the message at a debug logging level.
    *
-   * @param message
-   *          the message
+   * @param message the message
    */
   public void logDebug( String message ) {
     log.logDebug( message );
@@ -1326,10 +1263,8 @@ public class BaseStepDialog extends Dialog {
   /**
    * Log the message with arguments at a debug logging level.
    *
-   * @param message
-   *          the message
-   * @param arguments
-   *          the arguments
+   * @param message   the message
+   * @param arguments the arguments
    */
   public void logDebug( String message, Object... arguments ) {
     log.logDebug( message, arguments );
@@ -1338,8 +1273,7 @@ public class BaseStepDialog extends Dialog {
   /**
    * Log the message at a rowlevel logging level.
    *
-   * @param message
-   *          the message
+   * @param message the message
    */
   public void logRowlevel( String message ) {
     log.logRowlevel( message );
@@ -1348,10 +1282,8 @@ public class BaseStepDialog extends Dialog {
   /**
    * Log the message with arguments at a rowlevel logging level.
    *
-   * @param message
-   *          the message
-   * @param arguments
-   *          the arguments
+   * @param message   the message
+   * @param arguments the arguments
    */
   public void logRowlevel( String message, Object... arguments ) {
     log.logRowlevel( message, arguments );
@@ -1360,8 +1292,7 @@ public class BaseStepDialog extends Dialog {
   /**
    * Log the message at a error logging level.
    *
-   * @param message
-   *          the message
+   * @param message the message
    */
   public void logError( String message ) {
     log.logError( message );
@@ -1370,10 +1301,8 @@ public class BaseStepDialog extends Dialog {
   /**
    * Log the message with the associated Throwable object at a error logging level.
    *
-   * @param message
-   *          the message
-   * @param e
-   *          the e
+   * @param message the message
+   * @param e       the e
    */
   public void logError( String message, Throwable e ) {
     log.logError( message, e );
@@ -1382,10 +1311,8 @@ public class BaseStepDialog extends Dialog {
   /**
    * Log the message with arguments at a error logging level.
    *
-   * @param message
-   *          the message
-   * @param arguments
-   *          the arguments
+   * @param message   the message
+   * @param arguments the arguments
    */
   public void logError( String message, Object... arguments ) {
     log.logError( message, arguments );
@@ -1414,5 +1341,9 @@ public class BaseStepDialog extends Dialog {
 
   public void setMetaStore( IMetaStore metaStore ) {
     this.metaStore = metaStore;
+  }
+
+  protected String getPathOf( RepositoryElementMetaInterface object ) {
+    return DialogUtils.getPathOf( object );
   }
 }
