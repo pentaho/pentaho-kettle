@@ -1,8 +1,8 @@
-/*! ******************************************************************************
+/*******************************************************************************
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,13 @@
 
 package org.pentaho.di.core.logging;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.pentaho.di.core.Const;
+
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.LinkedList;
 
 /**
  * This class keeps the last N lines in a buffer
@@ -286,6 +286,10 @@ public class LoggingBuffer {
     return buffer.iterator();
   }
 
+  /**
+   * It looks like this method is not used in the project.
+   */
+  @Deprecated
   public String dump() {
     StringBuffer buf = new StringBuffer( 50000 );
     synchronized ( buffer ) {
