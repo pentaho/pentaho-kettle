@@ -1238,13 +1238,12 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     setActive();
   }
 
-  private void getByReferenceData( RepositoryElementMetaInterface jobInf ) {
-    String path = jobInf.getRepositoryDirectory().getPath();
-    if ( !path.endsWith( "/" ) ) {
-      path += "/";
+  private void updateByReferenceField( RepositoryElementMetaInterface element ) {
+    String path = getPathOf( element );
+    if ( path == null ) {
+      path = "";
     }
-    path += jobInf.getName();
-    wByReference.setText( path );
+    wbByReference.setText( path );
   }
 
   protected void selectJobByReference() {
@@ -1253,7 +1252,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
       sod.open();
       RepositoryElementMetaInterface repositoryObject = sod.getRepositoryObject();
       if ( repositoryObject != null ) {
-        getByReferenceData( repositoryObject );
+        updateByReferenceField( repositoryObject );
         referenceObjectId = repositoryObject.getObjectId();
         specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
         setRadioButtons();
@@ -1480,9 +1479,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
   private void getByReferenceData( ObjectId referenceObjectId ) {
     try {
       RepositoryObject jobInf = rep.getObjectInformation( referenceObjectId, RepositoryObjectType.JOB );
-      if ( jobInf != null ) {
-        getByReferenceData( jobInf );
-      }
+      updateByReferenceField( jobInf );
     } catch ( KettleException e ) {
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "JobEntryJobDialog.Exception.UnableToReferenceObjectId.Title" ),

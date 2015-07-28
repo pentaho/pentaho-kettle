@@ -42,10 +42,12 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
+import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.metastore.api.IMetaStore;
 
 /**
@@ -319,4 +321,7 @@ public class JobEntryDialog extends Dialog {
     this.metaStore = metaStore;
   }
 
+  protected String getPathOf( RepositoryElementMetaInterface object ) {
+    return DialogUtils.getPathOf( object );
+  }
 }
