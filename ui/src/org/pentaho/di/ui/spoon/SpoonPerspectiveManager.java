@@ -41,11 +41,11 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -370,22 +370,13 @@ public class SpoonPerspectiveManager {
       final ToolBar toolbar = (ToolBar) mainToolbar.getManagedObject();
 
       perspectivesCombo = new CCombo( toolbar, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
-
-      perspectivesCombo.addSelectionListener(new SelectionListener() {
-        public void widgetSelected( SelectionEvent se ) {
-          toolbar.forceFocus();
-        }
-        
-        public void widgetDefaultSelected( SelectionEvent se ) {
-          toolbar.forceFocus();
-        }
-      });
       PropsUI.getInstance().setLook( perspectivesCombo );
 
       final CCombo c = perspectivesCombo;
       perspectivesCombo.addSelectionListener( new SelectionAdapter() {
         public void widgetSelected( SelectionEvent se ) {
-          Spoon.getInstance().loadPerspective( c.getText() );
+          Spoon.getInstance().loadPerspective( c.getData( c.getText() ).toString() );
+          toolbar.forceFocus();
         }
       } );
       
@@ -398,7 +389,11 @@ public class SpoonPerspectiveManager {
       } );
       ToolItem sep = new ToolItem( toolbar, SWT.SEPARATOR );
       sep.setWidth( 120 );
+      if ( Const.isLinux() ) {
+        sep.setWidth( 150 );
+      }
       sep.setControl( perspectivesCombo );
+      toolbar.forceFocus();
     }
 
     for ( final SpoonPerspective per : getPerspectives() ) {
@@ -447,6 +442,7 @@ public class SpoonPerspectiveManager {
       } else {
         // new button
         perspectivesCombo.add( name );
+        perspectivesCombo.setData( name, per.getId() );
       }
 
       XulVbox box = deck.createVBoxCard();
