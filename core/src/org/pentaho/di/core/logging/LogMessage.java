@@ -131,6 +131,7 @@ public class LogMessage implements LogMessageInterface {
   }
 
   @Override
+  @Deprecated
   public String toString() {
     if ( message == null ) {
       return subject;
@@ -147,22 +148,28 @@ public class LogMessage implements LogMessageInterface {
     return level;
   }
 
+  @Deprecated
   public void setLevel( LogLevel level ) {
     this.level = level;
   }
 
   /**
-   * @return the message
+   * @return The formatted message.
    */
   @Override
   public String getMessage() {
-    return message;
+    if ( arguments != null && arguments.length > 0 ) {
+      return MessageFormat.format( message, arguments );
+    } else {
+      return message;
+    }
   }
 
   /**
    * @param message
    *          the message to set
    */
+  @Deprecated
   public void setMessage( String message ) {
     this.message = message;
   }
@@ -179,6 +186,7 @@ public class LogMessage implements LogMessageInterface {
    * @param subject
    *          the subject to set
    */
+  @Deprecated
   public void setSubject( String subject ) {
     this.subject = subject;
   }
@@ -195,6 +203,7 @@ public class LogMessage implements LogMessageInterface {
    * @param logChannelId
    *          the logChannelId to set
    */
+  @Deprecated
   public void setLogChannelId( String logChannelId ) {
     this.logChannelId = logChannelId;
   }
@@ -211,6 +220,7 @@ public class LogMessage implements LogMessageInterface {
    * @param arguments
    *          the arguments to set
    */
+  @Deprecated
   public void setArguments( Object[] arguments ) {
     this.arguments = arguments;
   }
