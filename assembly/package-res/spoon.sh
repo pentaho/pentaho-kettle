@@ -212,6 +212,9 @@ if [ $OS = "linux" ]; then
 else
     "$_PENTAHO_JAVA" $OPT -jar "$STARTUP" -lib $LIBPATH "${1+$@}"
 fi
+EXIT_CODE=$?
 
 # return to the catalog from which spoon.sh has been started
 cd $INITIALDIR
+
+exit $EXIT_CODE
