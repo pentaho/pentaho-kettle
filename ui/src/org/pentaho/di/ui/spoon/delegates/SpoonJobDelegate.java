@@ -289,7 +289,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
     // Hops belonging to the deleting jobEntries are placed in a single transaction and removed.
     List<JobHopMeta> jobHops = new ArrayList<JobHopMeta>();
-    int[] hopIndexes = new int[job.nrJobHops()];    
+    int[] hopIndexes = new int[job.nrJobHops()];
     int hopIndex = 0;
     main: for ( int i = job.nrJobHops() - 1; i >= 0; i-- ) {
       JobHopMeta hi = job.getJobHop( i );
@@ -305,10 +305,12 @@ public class SpoonJobDelegate extends SpoonDelegate {
       }
       hopIndex++;
     }
-    JobHopMeta[] hops = jobHops.toArray( new JobHopMeta[ jobHops.size()] );
-    spoon.addUndoDelete( job, hops, hopIndexes );
-  
-    //Deleting jobEntries are placed all in a single transaction and removed.
+    if ( !jobHops.isEmpty() ) {
+      JobHopMeta[] hops = jobHops.toArray( new JobHopMeta[jobHops.size()] );
+      spoon.addUndoDelete( job, hops, hopIndexes );
+    }
+
+    // Deleting jobEntries are placed all in a single transaction and removed.
     int[] positions = new int[jobEntries.length];
     for ( int i = 0; i < jobEntries.length; i++ ) {
       int pos = job.indexOfJobEntry( jobEntries[i] );
