@@ -199,10 +199,10 @@ public class SpoonStepsDelegate extends SpoonDelegate {
   }
 
   public void delSteps( TransMeta transformation, StepMeta[] steps ) {
-    
+
     // Hops belonging to the deleting steps are placed in a single transaction and removed.
     List<TransHopMeta> transHops = new ArrayList<TransHopMeta>();
-    int[] hopIndexes = new int[transformation.nrTransHops()];    
+    int[] hopIndexes = new int[transformation.nrTransHops()];
     int hopIndex = 0;
     main: for ( int i = transformation.nrTransHops() - 1; i >= 0; i-- ) {
       TransHopMeta hi = transformation.getTransHop( i );
@@ -218,9 +218,11 @@ public class SpoonStepsDelegate extends SpoonDelegate {
       }
       hopIndex++;
     }
-    TransHopMeta[] hops = transHops.toArray( new TransHopMeta[ transHops.size()] );
-    spoon.addUndoDelete( transformation, hops, hopIndexes );
-    
+    if ( !transHops.isEmpty() ) {
+      TransHopMeta[] hops = transHops.toArray( new TransHopMeta[transHops.size()] );
+      spoon.addUndoDelete( transformation, hops, hopIndexes );
+    }
+
     // Deleting steps are placed all in a single transaction and removed.
     int[] positions = new int[steps.length];
     for ( int i = 0; i < steps.length; i++ ) {
