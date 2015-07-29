@@ -185,7 +185,6 @@ import org.pentaho.di.ui.spoon.SwtScrollBar;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
-import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.EnterPreviewRowsDialog;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
@@ -2886,29 +2885,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       return;
     }
 
-    // Get the list of steps that would be deleted
-    List<String> stepList = new ArrayList<String>();
-    for ( int i = transMeta.nrSteps() - 1; i >= 0; i-- ) {
-      StepMeta stepMeta = transMeta.getStep( i );
-      if ( stepMeta.isSelected() || ( stMeta != null && stMeta.equals( stepMeta ) ) ) {
-        stepList.add( stepMeta.getName() );
-      }
-    }
-
-    // Create and display the delete confirmation dialog
-    MessageBox mb =
-        new DeleteMessageBox( shell, BaseMessages.getString( PKG, "TransGraph.Dialog.Warning.DeleteSteps.Message" ),
-            stepList );
-    int result = mb.open();
-    if ( result == SWT.YES ) {
-      // Delete the steps
-      for ( int i = transMeta.nrSteps() - 1; i >= 0; i-- ) {
-        StepMeta stepMeta = transMeta.getStep( i );
-        if ( stepMeta.isSelected() || ( stMeta != null && stMeta.equals( stepMeta ) ) ) {
-          spoon.delStep( transMeta, stepMeta );
-        }
-      }
-    }
+    StepMeta[] steps = selection.toArray( new StepMeta[selection.size()] );
+    spoon.delSteps( transMeta, steps );
   }
 
   public void editDescription( StepMeta stepMeta ) {

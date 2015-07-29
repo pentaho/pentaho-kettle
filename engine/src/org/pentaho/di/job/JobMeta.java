@@ -1355,7 +1355,11 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
    *          the hi
    */
   public void addJobHop( int p, JobHopMeta hi ) {
-    jobhops.add( p, hi );
+    try {
+      jobhops.add( p, hi );
+    } catch ( IndexOutOfBoundsException e ) {
+      jobhops.add( hi );
+    }
     changedHops = true;
   }
 
@@ -2834,4 +2838,9 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
   public void setExtraLogTables( List<LogTableInterface> extraLogTables ) {
     this.extraLogTables = extraLogTables;
   }
+  
+  public boolean containsJobCopy( JobEntryCopy jobCopy ) {
+    return jobcopies.contains( jobCopy );
+  }
+  
 }

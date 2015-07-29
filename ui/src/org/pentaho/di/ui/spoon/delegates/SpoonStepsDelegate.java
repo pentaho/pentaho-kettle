@@ -24,6 +24,7 @@ package org.pentaho.di.ui.spoon.delegates;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -197,6 +198,42 @@ public class SpoonStepsDelegate extends SpoonDelegate {
     return stepname;
   }
 
+  public void delSteps( TransMeta transformation, StepMeta[] steps ) {
+    
+    // Hops belonging to the deleting steps are placed in a single transaction and removed.
+    List<TransHopMeta> transHops = new ArrayList<TransHopMeta>();
+    int[] hopIndexes = new int[transformation.nrTransHops()];    
+    int hopIndex = 0;
+    main: for ( int i = transformation.nrTransHops() - 1; i >= 0; i-- ) {
+      TransHopMeta hi = transformation.getTransHop( i );
+      for ( int j = 0; j < steps.length; j++ ) {
+        if ( hi.getFromStep().equals( steps[j] ) || hi.getToStep().equals( steps[j] ) ) {
+          int idx = transformation.indexOfTransHop( hi );
+          transHops.add( (TransHopMeta) hi.clone() );
+          hopIndexes[hopIndex] = idx;
+          transformation.removeTransHop( idx );
+          spoon.refreshTree();
+          continue main;
+        }
+      }
+      hopIndex++;
+    }
+    TransHopMeta[] hops = transHops.toArray( new TransHopMeta[ transHops.size()] );
+    spoon.addUndoDelete( transformation, hops, hopIndexes );
+    
+    // Deleting steps are placed all in a single transaction and removed.
+    int[] positions = new int[steps.length];
+    for ( int i = 0; i < steps.length; i++ ) {
+      int pos = transformation.indexOfStep( steps[i] );
+      transformation.removeStep( pos );
+      positions[i] = pos;
+    }
+    spoon.addUndoDelete( transformation, steps, positions );
+
+    spoon.refreshTree();
+    spoon.refreshGraph();
+  }
+  
   public void delStep( TransMeta transMeta, StepMeta stepMeta ) {
     spoon.getLog().logDebug(
       toString(), BaseMessages.getString( PKG, "Spoon.Log.DeleteStep" ) + stepMeta.getName() ); // "Delete
@@ -221,7 +258,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
 
     spoon.refreshTree();
     spoon.refreshGraph();
-  }
+  }  
 
   public StepDialogInterface getStepDialog( StepMetaInterface stepMeta, TransMeta transMeta, String stepName ) throws KettleException {
     String dialogClassName = stepMeta.getDialogClassName();

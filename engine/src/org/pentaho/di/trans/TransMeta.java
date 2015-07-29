@@ -825,7 +825,11 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *          The hop to be added.
    */
   public void addTransHop( int p, TransHopMeta hi ) {
-    hops.add( p, hi );
+    try {
+      hops.add( p, hi );
+    } catch ( IndexOutOfBoundsException e ) {
+      hops.add( hi );
+    }
     changed_hops = true;
   }
 
@@ -6199,5 +6203,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     for ( StepMetaChangeListenerInterface listener : stepChangeListeners ) {
       listener.onStepChange( this, oldMeta, newMeta );
     }
+  }
+  
+  public boolean containsStepMeta( StepMeta stepMeta ) {
+    return steps.contains( stepMeta );
   }
 }
