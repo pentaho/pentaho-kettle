@@ -22,12 +22,12 @@
 package org.pentaho.di.core.logging;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * Test for {@link KettleLogLayout}.
  */
-public class KettleLogLayoutTest extends TestCase {
+public class KettleLogLayoutTest {
 
   @Test
   public void testFormat() throws Exception {
