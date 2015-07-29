@@ -130,6 +130,7 @@ public class TransPreviewProgressDialog {
 
     // This transformation is ready to run in preview!
     trans = new Trans( transMeta );
+    trans.setPreview( true );
 
     // Prepare the execution...
     //

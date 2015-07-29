@@ -1,8 +1,8 @@
-/*! ******************************************************************************
+/*******************************************************************************
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 package org.pentaho.di.core.logging;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.pentaho.di.core.Const.KETTLE_LOG_MARK_MAPPINGS;
 
 import org.junit.After;
@@ -92,6 +93,27 @@ public class LogMessageTest {
     assertTrue( "TRANS_SUBJECT".equals( logMessage.getSubject() ) );
 
     LoggingRegistry.getInstance().removeIncludingChildren( simpleLogChannelId );
+  }
+
+  @Test
+  public void testToString() throws Exception {
+    LogMessage msg = new LogMessage( "Log message",
+        "Channel 01",
+        LogLevel.DEBUG );
+    msg.setSubject( "Simple" );
+
+    assertEquals( "Simple - Log message", msg.toString( ) );
+  }
+
+  @Test
+  public void testToString_withOneArgument() throws Exception {
+    LogMessage msg = new LogMessage( "Log message for {0}",
+        "Channel 01",
+        new String[]{"Test"},
+        LogLevel.DEBUG );
+    msg.setSubject( "Subject" );
+
+    assertEquals( "Subject - Log message for Test", msg.toString( ) );
   }
 
   private void turnOnLogMarkMapping() {
