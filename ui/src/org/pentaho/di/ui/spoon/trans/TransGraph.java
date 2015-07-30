@@ -2578,7 +2578,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           // item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-distribute");
           // item.setSelected(stepMeta.isDistributes());
 
-          item = (XulMenuitem) doc.getElementById("trans-graph-entry-partitioning");
+          item = (XulMenuitem) doc.getElementById( "trans-graph-entry-partitioning" );
           item.setDisabled( spoon.getPartitionSchemasNames( transMeta ).isEmpty() );
 
           item = (XulMenuitem) doc.getElementById( "trans-graph-entry-data-movement-copy" );
@@ -3000,9 +3000,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     GCInterface gc = new SWTGC( device, new Point( x, y ), iconsize );
 
-    int gridSize = 
-        PropsUI.getInstance().isShowCanvasGridEnabled() ? PropsUI.getInstance().getCanvasGridSize() : 1;  
-    
+    int gridSize =
+        PropsUI.getInstance().isShowCanvasGridEnabled() ? PropsUI.getInstance().getCanvasGridSize() : 1;
+
     TransPainter transPainter =
         new TransPainter( gc, transMeta, new Point( x, y ), new SwtScrollBar( hori ), new SwtScrollBar( vert ),
             candidate, drop_candidate, selectionRegion, areaOwners, mouseOverSteps,
@@ -3764,6 +3764,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         trans.setSafeModeEnabled( executionConfiguration.isSafeModeEnabled() );
         trans.setPreview( true );
         trans.setGatheringMetrics( executionConfiguration.isGatheringMetrics() );
+        trans.setMetaStore( spoon.getMetaStore() );
         trans.prepareExecution( args );
         trans.setRepository( spoon.rep );
 
