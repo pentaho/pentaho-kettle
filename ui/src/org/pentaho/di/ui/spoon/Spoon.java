@@ -7230,10 +7230,28 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     if ( undoInterface instanceof TransMeta ) {
       delegates.trans.redoTransformationAction( (TransMeta) undoInterface, ta );
+      if ( ta.getType() == TransAction.TYPE_ACTION_DELETE_HOP ) {
+        setUndoMenu( undoInterface ); // something changed: change the menu
+        ta = undoInterface.viewNextUndo();
+        if ( ta != null && ta.getType() == TransAction.TYPE_ACTION_DELETE_STEP) {
+          ta = undoInterface.nextUndo();
+          delegates.trans.redoTransformationAction( (TransMeta) undoInterface, ta );
+        }
+      }
+
     }
     if ( undoInterface instanceof JobMeta ) {
       delegates.jobs.redoJobAction( (JobMeta) undoInterface, ta );
-    }
+      if ( ta.getType() == TransAction.TYPE_ACTION_DELETE_JOB_HOP ) {
+        setUndoMenu( undoInterface ); // something changed: change the menu
+        ta = undoInterface.viewNextUndo();
+        if ( ta != null && ta.getType() == TransAction.TYPE_ACTION_DELETE_JOB_ENTRY) {
+          ta = undoInterface.nextUndo();
+          delegates.jobs.redoJobAction( (JobMeta) undoInterface, ta );
+        }
+      }
+    }    
+    
 
     // Put what we redo in focus
     if ( undoInterface instanceof TransMeta ) {
