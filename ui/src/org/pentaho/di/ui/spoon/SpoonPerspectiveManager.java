@@ -388,9 +388,12 @@ public class SpoonPerspectiveManager {
         }
       } );
       ToolItem sep = new ToolItem( toolbar, SWT.SEPARATOR );
-      sep.setWidth( 120 );
       if ( Const.isLinux() ) {
         sep.setWidth( 150 );
+      } else if ( Const.isOSX() ) {
+        sep.setWidth( 120 );
+      } else {
+        sep.setWidth( 140 );
       }
       sep.setControl( perspectivesCombo );
       toolbar.forceFocus();
