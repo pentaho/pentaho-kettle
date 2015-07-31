@@ -1789,7 +1789,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   }
 
   public void deleteEntry() {
-    spoon.deleteJobEntryCopies( jobMeta, getJobEntry() );
+    delSelected();
     redraw();
   }
 
