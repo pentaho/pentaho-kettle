@@ -66,6 +66,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class ExcelWriterStep extends BaseStep implements StepInterface {
 
+  public static final String STREAMER_FORCE_RECALC_PROP_NAME = "KETTLE_EXCEL_WRITER_STREAMER_FORCE_RECALCULATE";
+
   private ExcelWriterStepData data;
   private ExcelWriterStepMeta meta;
 
@@ -236,7 +238,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
   }
 
   // recalculates all formula fields for the entire workbook
-  private void recalculateAllWorkbookFormulas() {
+  // package-local visibility for testing purposes
+  void recalculateAllWorkbookFormulas() {
 
     if ( data.wb instanceof XSSFWorkbook ) {
       // XLSX needs full reevaluation
@@ -257,7 +260,11 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         HSSFSheet sheet = ( (HSSFWorkbook) data.wb ).getSheetAt( sheetNum );
         sheet.setForceFormulaRecalculation( true );
       }
-
+    } else {
+      String forceRecalc = System.getProperty( STREAMER_FORCE_RECALC_PROP_NAME );
+      if ( "Y".equals( forceRecalc ) ) {
+        data.wb.setForceFormulaRecalculation( true );
+      }
     }
 
   }
