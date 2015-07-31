@@ -477,11 +477,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       .safeAppendDirectory( BasePropertyHandler.getProperty( "documentationDirBase", "docs/" ),
           BaseMessages.getString( PKG, "Spoon.Title.STRING_DOCUMENT_MAP" ) );
 
-  // "docs/English/getting_started_with_instaview.pdf";
-  private static final String FILE_DOCUMENT_INSTAVIEW = Const
-      .safeAppendDirectory( BasePropertyHandler.getProperty( "documentationDirBase", "docs/" ),
-          BaseMessages.getString( PKG, "Spoon.Title.STRING_DOCUMENT_INSTAVIEW" ) );
-
   private static final String UNDO_MENU_ITEM = "edit-undo";
 
   private static final String REDO_MENU_ITEM = "edit-redo";
@@ -1708,28 +1703,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } catch ( MalformedURLException e1 ) {
       log.logError( Const.getStackTracker( e1 ) );
     }
-  }
-
-  public static final String getInstaviewURL() {
-    String strURL = null;
-    try {
-      String webstartRoot = System.getProperty( "spoon.webstartroot" );
-      // see if we are in webstart mode
-      if ( webstartRoot != null ) {
-        URL url = new URL( webstartRoot + '/' + FILE_DOCUMENT_INSTAVIEW );
-        strURL = url.toString();
-      } else {
-        // see if we can find the welcome file on the file system
-        File file = new File( FILE_DOCUMENT_INSTAVIEW );
-        if ( file.exists() ) {
-          // ./docs/English/getting_started_with_instaview.pdf
-          strURL = file.toURI().toURL().toString();
-        }
-      }
-    } catch ( MalformedURLException e1 ) {
-      log.logError( Const.getStackTracker( e1 ) );
-    }
-    return strURL;
   }
 
   public void showDocumentMap() {
