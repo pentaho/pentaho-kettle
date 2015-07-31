@@ -67,7 +67,7 @@ abstract class LoadSaveBase<T> {
       new DefaultFieldLoadSaveValidatorFactory( fieldLoadSaveValidatorMethodMap, fieldLoadSaveValidatorTypeMap );
   }
 
-  T createMeta() {
+  public T createMeta() {
     try {
       return clazz.newInstance();
     } catch ( Exception e ) {
