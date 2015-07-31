@@ -228,17 +228,11 @@ public class CarteSingleton {
 
         carteSingleton = new CarteSingleton( slaveServerConfig );
 
-        Trans trans = Carte.generateTestTransformation();
-
         String carteObjectId = UUID.randomUUID().toString();
         SimpleLoggingObject servletLoggingObject =
           new SimpleLoggingObject( "CarteSingleton", LoggingObjectType.CARTE, null );
         servletLoggingObject.setContainerObjectId( carteObjectId );
         servletLoggingObject.setLogLevel( LogLevel.BASIC );
-
-        carteSingleton.getTransformationMap().addTransformation(
-          trans.getName(), carteObjectId, trans,
-          new TransConfiguration( trans.getTransMeta(), new TransExecutionConfiguration() ) );
 
         return carteSingleton;
       } else {
