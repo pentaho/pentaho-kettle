@@ -261,7 +261,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         sheet.setForceFormulaRecalculation( true );
       }
     } else {
-      String forceRecalc = System.getProperty( STREAMER_FORCE_RECALC_PROP_NAME );
+      String forceRecalc = getVariable( STREAMER_FORCE_RECALC_PROP_NAME, "N" );
       if ( "Y".equals( forceRecalc ) ) {
         data.wb.setForceFormulaRecalculation( true );
       }
@@ -491,7 +491,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           String author =
             data.commentauthorfieldnrs[ fieldNr ] >= 0
               ? data.inputRowMeta.getValueMeta( data.commentauthorfieldnrs[ fieldNr ] ).getString(
-              row[ data.commentauthorfieldnrs[ fieldNr ] ] ) : "Kettle PDI";
+                row[ data.commentauthorfieldnrs[ fieldNr ] ] ) : "Kettle PDI";
           cell.setCellComment( createCellComment( author, comment ) );
         }
       }

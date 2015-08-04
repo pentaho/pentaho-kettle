@@ -66,27 +66,23 @@ public class ExcelWriterStep_FormulaRecalculationTest {
   }
 
   @Test
-  public void forcesToRecalculate_Sxssf_PropertyIsNotSet() throws Exception {
+  public void forcesToRecalculate_Sxssf_PropertyIsCleared() throws Exception {
     forcesToRecalculate_Sxssf( "N", false );
   }
 
+  @Test
+  public void forcesToRecalculate_Sxssf_PropertyIsNotSet() throws Exception {
+    forcesToRecalculate_Sxssf( null, false );
+  }
+
   private void forcesToRecalculate_Sxssf( String property, boolean expectedFlag ) throws Exception {
-    String prop = System.getProperty( STREAMER_FORCE_RECALC_PROP_NAME );
-    try {
-      System.setProperty( STREAMER_FORCE_RECALC_PROP_NAME, property );
-      data.wb = spy( new SXSSFWorkbook() );
-      step.recalculateAllWorkbookFormulas();
-      if ( expectedFlag ) {
-        verify( data.wb ).setForceFormulaRecalculation( expectedFlag );
-      } else {
-        verify( data.wb, never() ).setForceFormulaRecalculation( anyBoolean() );
-      }
-    } finally {
-      if ( prop == null ) {
-        System.clearProperty( STREAMER_FORCE_RECALC_PROP_NAME );
-      } else {
-        System.setProperty( STREAMER_FORCE_RECALC_PROP_NAME, prop );
-      }
+    step.setVariable( STREAMER_FORCE_RECALC_PROP_NAME, property );
+    data.wb = spy( new SXSSFWorkbook() );
+    step.recalculateAllWorkbookFormulas();
+    if ( expectedFlag ) {
+      verify( data.wb ).setForceFormulaRecalculation( true );
+    } else {
+      verify( data.wb, never() ).setForceFormulaRecalculation( anyBoolean() );
     }
   }
 
