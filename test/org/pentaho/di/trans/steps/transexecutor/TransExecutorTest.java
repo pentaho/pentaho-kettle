@@ -51,7 +51,7 @@ public class TransExecutorTest {
   private static final String EXPECTED_SUBTRANS_OUTPUT_PATTERN = "aa";
   private static final int EXPECTED_SUBTRANS_OUTPUT_AMOUNT = 10;
 
-  private static final String SUBTRANS_PATH = TransExecutorTest.class.getResource( "subtrans.ktr" ).toString();
+  private static final String SUBTRANS_PATH = "testfiles/org/pentaho/di/trans/steps/transexecutor/subtrans.ktr";
 
 
   @BeforeClass
@@ -139,13 +139,13 @@ public class TransExecutorTest {
     );
   }
 
-  private static Trans createTrans(TransMeta transMeta) throws Exception {
+  private static Trans createTrans( TransMeta transMeta ) throws Exception {
     Trans trans = new Trans( transMeta );
     trans.prepareExecution( null );
     return trans;
   }
 
-  private RowStepCollector listenExecutor(Trans trans) {
+  private RowStepCollector listenExecutor( Trans trans ) {
     StepInterface transExecutorStep = trans.getStepInterface( transExecutor.getName(), 0 );
     RowStepCollector rc = new RowStepCollector();
     transExecutorStep.addRowListener( rc );
@@ -206,7 +206,7 @@ public class TransExecutorTest {
 
     assertFalse( endRc.getRowsWritten().isEmpty() );
     // execution time field
-    assertNotNull( endRc.getRowsWritten().get( 0 ).getData()[0] );
+    assertNotNull( endRc.getRowsWritten().get( 0 ).getData()[ 0 ] );
   }
 
 }
