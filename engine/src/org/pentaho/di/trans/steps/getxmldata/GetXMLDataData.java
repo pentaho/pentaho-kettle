@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.dom4j.Document;
 import org.dom4j.tree.AbstractNode;
 import org.pentaho.di.core.fileinput.FileInputList;

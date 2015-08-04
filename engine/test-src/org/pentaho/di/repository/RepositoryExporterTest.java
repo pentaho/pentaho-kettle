@@ -35,7 +35,7 @@ import javax.xml.xpath.XPathFactory;
 
 import junit.framework.Assert;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

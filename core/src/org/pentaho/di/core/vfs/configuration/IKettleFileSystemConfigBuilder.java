@@ -24,7 +24,7 @@ package org.pentaho.di.core.vfs.configuration;
 
 import java.io.IOException;
 
-import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs2.FileSystemOptions;
 
 /**
  * @author cboyden

@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

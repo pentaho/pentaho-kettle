@@ -22,7 +22,7 @@
 
 package org.pentaho.di.ui.i18n;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 
 /**
  * Contains the occurrence of a key in a java source code file

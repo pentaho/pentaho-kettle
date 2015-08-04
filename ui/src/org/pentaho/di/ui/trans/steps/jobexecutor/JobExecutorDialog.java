@@ -25,7 +25,7 @@ package org.pentaho.di.ui.trans.steps.jobexecutor;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;

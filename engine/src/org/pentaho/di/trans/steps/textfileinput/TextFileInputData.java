@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.compress.CompressionInputStream;
 import org.pentaho.di.core.fileinput.FileInputList;

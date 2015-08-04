@@ -32,7 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;

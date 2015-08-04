@@ -39,7 +39,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;

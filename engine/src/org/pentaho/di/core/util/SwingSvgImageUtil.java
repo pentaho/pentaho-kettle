@@ -28,8 +28,8 @@ import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.core.SwingUniversalImage;
 import org.pentaho.di.core.SwingUniversalImageBitmap;
 import org.pentaho.di.core.SwingUniversalImageSvg;

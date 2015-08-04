@@ -24,7 +24,7 @@ package org.pentaho.di.trans.step.errorhandling;
 
 import java.util.List;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.exception.KettleException;
 
 public class CompositeFileErrorHandler implements FileErrorHandler {

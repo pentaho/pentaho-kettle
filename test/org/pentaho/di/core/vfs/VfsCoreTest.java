@@ -28,7 +28,7 @@ import java.io.OutputStreamWriter;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 
 public class VfsCoreTest extends TestCase {

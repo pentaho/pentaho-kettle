@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.textfileinput;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 
 public class TextFileLine {
   String line;

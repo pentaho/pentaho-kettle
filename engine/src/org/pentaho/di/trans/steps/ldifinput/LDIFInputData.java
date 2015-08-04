@@ -36,7 +36,7 @@ import netscape.ldap.LDAPAttribute;
 import netscape.ldap.util.LDIF;
 import netscape.ldap.util.LDIFRecord;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;

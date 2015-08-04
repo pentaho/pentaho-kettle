@@ -24,7 +24,7 @@ package org.pentaho.di.resource;
 
 import static org.junit.Assert.*;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.Const;

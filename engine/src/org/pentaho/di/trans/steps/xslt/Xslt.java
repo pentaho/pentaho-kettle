@@ -33,8 +33,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileType;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileType;
 import org.apache.xml.utils.DefaultErrorHandler;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;

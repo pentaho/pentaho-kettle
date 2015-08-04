@@ -24,7 +24,7 @@ package org.pentaho.di.core.playlist;
 
 import java.io.IOException;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.step.errorhandling.AbstractFileErrorHandler;
 
