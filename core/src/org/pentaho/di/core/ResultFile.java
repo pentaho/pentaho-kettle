@@ -24,7 +24,7 @@ package org.pentaho.di.core;
 
 import java.util.Date;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;

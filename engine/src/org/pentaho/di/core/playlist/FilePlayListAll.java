@@ -22,7 +22,7 @@
 
 package org.pentaho.di.core.playlist;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 
 public class FilePlayListAll implements FilePlayList {
 

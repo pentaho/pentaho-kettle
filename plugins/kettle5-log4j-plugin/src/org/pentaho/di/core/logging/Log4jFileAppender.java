@@ -25,7 +25,7 @@ package org.pentaho.di.core.logging;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.ErrorHandler;

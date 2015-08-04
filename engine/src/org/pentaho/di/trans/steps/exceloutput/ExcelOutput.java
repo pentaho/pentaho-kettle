@@ -41,7 +41,7 @@ import jxl.write.WritableFont;
 import jxl.write.WritableFont.FontName;
 import jxl.write.WritableImage;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;

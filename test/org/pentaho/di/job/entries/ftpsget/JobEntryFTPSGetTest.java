@@ -22,7 +22,7 @@
 
 package org.pentaho.di.job.entries.ftpsget;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

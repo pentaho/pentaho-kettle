@@ -28,7 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.ini4j.Wini;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;

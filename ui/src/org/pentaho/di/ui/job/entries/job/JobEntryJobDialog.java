@@ -25,7 +25,7 @@ package org.pentaho.di.ui.job.entries.job;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;

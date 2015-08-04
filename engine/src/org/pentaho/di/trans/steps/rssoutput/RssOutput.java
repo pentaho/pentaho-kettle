@@ -27,7 +27,7 @@ import java.io.FileWriter;
 import java.io.Writer;
 import java.util.Date;
 
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;

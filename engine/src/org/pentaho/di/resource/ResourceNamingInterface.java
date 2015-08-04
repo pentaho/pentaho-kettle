@@ -24,8 +24,8 @@ package org.pentaho.di.resource;
 
 import java.util.Map;
 
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.core.variables.VariableSpace;
 
 public interface ResourceNamingInterface {

@@ -26,7 +26,7 @@ import java.io.File;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;

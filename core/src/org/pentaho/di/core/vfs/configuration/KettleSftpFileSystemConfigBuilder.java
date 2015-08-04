@@ -25,11 +25,12 @@ package org.pentaho.di.core.vfs.configuration;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.vfs.FileSystemOptions;
-import org.apache.commons.vfs.provider.FileNameParser;
-import org.apache.commons.vfs.provider.URLFileName;
-import org.apache.commons.vfs.provider.sftp.SftpFileNameParser;
-import org.apache.commons.vfs.provider.sftp.SftpFileSystem;
+import org.apache.commons.vfs2.FileSystemOptions;
+import org.apache.commons.vfs2.FileSystem;
+import org.apache.commons.vfs2.provider.FileNameParser;
+import org.apache.commons.vfs2.provider.URLFileName;
+import org.apache.commons.vfs2.provider.sftp.SftpFileNameParser;
+import org.apache.commons.vfs2.provider.sftp.SftpFileSystem;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 
@@ -73,7 +74,7 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
   }
 
   @Override
-  protected Class<?> getConfigClass() {
+  protected Class<? extends FileSystem> getConfigClass() {
     // Return the VFS driver class that will recognize the parameters processed by this component
     return SftpFileSystem.class;
   }

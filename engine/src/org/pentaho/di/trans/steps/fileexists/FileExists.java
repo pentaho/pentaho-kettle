@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.fileexists;
 
-import org.apache.commons.vfs.FileType;
+import org.apache.commons.vfs2.FileType;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
