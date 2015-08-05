@@ -7105,12 +7105,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         filename = rep != null ? transMeta.getName() : transMeta.getFilename();
         directory = transMeta.getRepositoryDirectory().toString();
         openType = LastUsedFile.OPENED_ITEM_TYPE_MASK_GRAPH;
+        entry.setObjectName( transMeta.getName() );
       } else if ( entry.getObjectType() == ObjectType.JOB_GRAPH ) {
         fileType = LastUsedFile.FILE_TYPE_JOB;
         JobMeta jobMeta = (JobMeta) entry.getObject().getManagedObject();
         filename = rep != null ? jobMeta.getName() : jobMeta.getFilename();
         directory = jobMeta.getRepositoryDirectory().toString();
         openType = LastUsedFile.OPENED_ITEM_TYPE_MASK_GRAPH;
+        entry.setObjectName( jobMeta.getName() );        
       }
 
       if ( fileType != null ) {
