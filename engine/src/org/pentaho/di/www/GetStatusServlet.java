@@ -24,6 +24,7 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter; 
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadMXBean;
@@ -199,7 +200,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       response.setContentType( "text/html;charset=UTF-8" );
     }
 
-    PrintStream out = new PrintStream( response.getOutputStream() );
+    PrintWriter out = response.getWriter();
 
     List<CarteObjectEntry> transEntries = getTransformationMap().getTransformationObjects();
     List<CarteObjectEntry> jobEntries = getJobMap().getJobObjects();
