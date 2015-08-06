@@ -25,7 +25,7 @@ package org.pentaho.di.trans.step;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 
 /**
  * This is a single metadata attribute for step metadata injection.
@@ -59,7 +59,7 @@ public class StepInjectionMetaEntry implements Cloneable {
   @Override
   public String toString() {
     return "{"
-      + key + ":" + ValueMeta.getTypeDesc( valueType ) + ( value == null ? "" : "(" + value.toString() + ")" )
+      + key + ":" + ValueMetaFactory.getValueMetaName( valueType ) + ( value == null ? "" : "(" + value.toString() + ")" )
       + "}";
   }
 

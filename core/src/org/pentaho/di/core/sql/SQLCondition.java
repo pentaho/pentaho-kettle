@@ -32,9 +32,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 public class SQLCondition {
 
@@ -200,11 +199,8 @@ public class SQLCondition {
    * Creates a Condition object which will act as a container for a Parameter key/value.
    */
   private Condition createParameterCondition( int orConditionOperator, String parameterName, String parameterValue ) {
-    Condition
-        subCondition =
-        new Condition( parameterName, Condition.FUNC_TRUE, parameterName,
-            new ValueMetaAndData( new ValueMeta( "string", ValueMetaInterface.TYPE_STRING ),
-                Const.NVL( parameterValue, "" ) ) );
+    Condition subCondition = new Condition( parameterName, Condition.FUNC_TRUE, parameterName,
+      new ValueMetaAndData( new ValueMetaString( "string" ), Const.NVL( parameterValue, "" ) ) );
     subCondition.setOperator( orConditionOperator );
     return subCondition;
   }
@@ -312,9 +308,7 @@ public class SQLCondition {
 
         valueString.append( part );
       }
-      value =
-          new ValueMetaAndData( new ValueMeta( "constant-in-list", ValueMetaInterface.TYPE_STRING ),
-              valueString.toString() );
+      value = new ValueMetaAndData( new ValueMetaString( "constant-in-list" ), valueString.toString() );
     } else {
 
       // Mondrian, analyzer CONTAINS hack:

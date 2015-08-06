@@ -26,6 +26,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 
 /**
  * Used to define the behaviour and the content of a Table column in a TableView object.
@@ -86,7 +88,7 @@ public class ColumnInfo {
     allignement = SWT.LEFT;
     readonly = false;
     hide_negative = false;
-    valueMeta = new ValueMeta( colname, ValueMetaInterface.TYPE_STRING );
+    valueMeta = new ValueMetaString( colname );
   }
 
   /**
@@ -108,7 +110,7 @@ public class ColumnInfo {
     allignement = SWT.LEFT;
     readonly = false;
     hide_negative = false;
-    valueMeta = new ValueMeta( colname, ValueMetaInterface.TYPE_STRING );
+    valueMeta = new ValueMetaString( colname );
   }
 
   /**
@@ -131,9 +133,9 @@ public class ColumnInfo {
     this.readonly = false;
     this.hide_negative = false;
     if ( numeric ) {
-      valueMeta = new ValueMeta( colname, ValueMetaInterface.TYPE_INTEGER );
+      valueMeta = new ValueMetaInteger( colname );
     } else {
-      valueMeta = new ValueMeta( colname, ValueMetaInterface.TYPE_STRING );
+      valueMeta = new ValueMetaString( colname );
     }
   }
 

@@ -46,6 +46,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
@@ -988,9 +989,9 @@ public class RowMeta implements RowMetaInterface {
   public RowMeta( Node node ) throws KettleException {
     this();
 
-    int nrValues = XMLHandler.countNodes( node, ValueMeta.XML_META_TAG );
+    int nrValues = XMLHandler.countNodes( node, ValueMetaBase.XML_META_TAG );
     for ( int i = 0; i < nrValues; i++ ) {
-      addValueMeta( new ValueMeta( XMLHandler.getSubNodeByNr( node, ValueMeta.XML_META_TAG, i ) ) );
+      addValueMeta( new ValueMeta( XMLHandler.getSubNodeByNr( node, ValueMetaBase.XML_META_TAG, i ) ) );
     }
   }
 
@@ -1026,7 +1027,7 @@ public class RowMeta implements RowMetaInterface {
     Object[] rowData = RowDataUtil.allocateRowData( size() );
 
     for ( int i = 0; i < size(); i++ ) {
-      Node valueDataNode = XMLHandler.getSubNodeByNr( node, ValueMeta.XML_DATA_TAG, i );
+      Node valueDataNode = XMLHandler.getSubNodeByNr( node, ValueMetaBase.XML_DATA_TAG, i );
       rowData[i] = getValueMeta( i ).getValue( valueDataNode );
     }
     return rowData;

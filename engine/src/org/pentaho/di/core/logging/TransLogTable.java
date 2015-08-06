@@ -31,6 +31,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -351,8 +352,9 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
    *          the log status to use
    * @param subject
    *          the subject to query, in this case a Trans object
+   * @throws KettleValueException 
    */
-  public RowMetaAndData getLogRecord( LogStatus status, Object subject, Object parent ) {
+  public RowMetaAndData getLogRecord( LogStatus status, Object subject, Object parent ) throws KettleValueException {
     if ( subject == null || subject instanceof Trans ) {
       Trans trans = (Trans) subject;
       Result result = null;

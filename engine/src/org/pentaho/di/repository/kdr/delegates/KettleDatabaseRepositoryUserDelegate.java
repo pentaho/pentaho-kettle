@@ -27,8 +27,9 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleAuthException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
@@ -136,14 +137,12 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
 
   public RowMetaAndData fillTableRow( IUser userInfo ) {
     RowMetaAndData r = new RowMetaAndData();
-    r.addValue( new ValueMeta( "ID_USER", ValueMetaInterface.TYPE_INTEGER ), userInfo.getObjectId() );
-    r.addValue( new ValueMeta( "LOGIN", ValueMetaInterface.TYPE_STRING ), userInfo.getLogin() );
-    r.addValue( new ValueMeta( "PASSWORD", ValueMetaInterface.TYPE_STRING ), Encr.encryptPassword( userInfo
-      .getPassword() ) );
-    r.addValue( new ValueMeta( "NAME", ValueMetaInterface.TYPE_STRING ), userInfo.getUsername() );
-    r.addValue( new ValueMeta( "DESCRIPTION", ValueMetaInterface.TYPE_STRING ), userInfo.getDescription() );
-    r.addValue( new ValueMeta( "ENABLED", ValueMetaInterface.TYPE_BOOLEAN ), Boolean
-      .valueOf( userInfo.isEnabled() ) );
+    r.addValue( new ValueMetaInteger( "ID_USER" ), userInfo.getObjectId() );
+    r.addValue( new ValueMetaString( "LOGIN" ), userInfo.getLogin() );
+    r.addValue( new ValueMetaString( "PASSWORD" ), Encr.encryptPassword( userInfo.getPassword() ) );
+    r.addValue( new ValueMetaString( "NAME" ), userInfo.getUsername() );
+    r.addValue( new ValueMetaString( "DESCRIPTION" ), userInfo.getDescription() );
+    r.addValue( new ValueMetaBoolean( "ENABLED" ), Boolean.valueOf( userInfo.isEnabled() ) );
     return r;
   }
 
@@ -171,10 +170,8 @@ public class KettleDatabaseRepositoryUserDelegate extends KettleDatabaseReposito
         + quote( KettleDatabaseRepository.FIELD_USER_ID_USER ) + " = ?";
 
     RowMetaAndData table = new RowMetaAndData();
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_USER_NAME, ValueMetaInterface.TYPE_STRING ), newname );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_USER_ID_USER, ValueMetaInterface.TYPE_INTEGER ), id_user );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_USER_NAME ), newname );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_USER_ID_USER ), id_user );
 
     repository.connectionDelegate.getDatabase().execStatement( sql, table.getRowMeta(), table.getData() );
   }

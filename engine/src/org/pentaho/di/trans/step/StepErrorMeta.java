@@ -28,8 +28,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
@@ -296,23 +297,23 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
 
     String nrErr = variables.environmentSubstitute( getNrErrorsValuename() );
     if ( !Const.isEmpty( nrErr ) ) {
-      ValueMetaInterface v = new ValueMeta( nrErr, ValueMetaInterface.TYPE_INTEGER );
+      ValueMetaInterface v = new ValueMetaInteger( nrErr );
       v.setLength( 3 );
       row.addValueMeta( v );
     }
     String errDesc = variables.environmentSubstitute( getErrorDescriptionsValuename() );
     if ( !Const.isEmpty( errDesc ) ) {
-      ValueMetaInterface v = new ValueMeta( errDesc, ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( errDesc );
       row.addValueMeta( v );
     }
     String errFields = variables.environmentSubstitute( getErrorFieldsValuename() );
     if ( !Const.isEmpty( errFields ) ) {
-      ValueMetaInterface v = new ValueMeta( errFields, ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( errFields );
       row.addValueMeta( v );
     }
     String errCodes = variables.environmentSubstitute( getErrorCodesValuename() );
     if ( !Const.isEmpty( errCodes ) ) {
-      ValueMetaInterface v = new ValueMeta( errCodes, ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface v = new ValueMetaString( errCodes );
       row.addValueMeta( v );
     }
 

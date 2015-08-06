@@ -25,8 +25,7 @@ package org.pentaho.di.core.reflection;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class StringSearchResult {
@@ -68,14 +67,10 @@ public class StringSearchResult {
 
   public static final RowMetaInterface getResultRowMeta() {
     RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "SearchResult.TransOrJob" ), ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "SearchResult.StepDatabaseNotice" ), ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "SearchResult.String" ), ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "SearchResult.FieldName" ), ValueMetaInterface.TYPE_STRING ) );
+    rowMeta.addValueMeta( new ValueMetaString( BaseMessages.getString( PKG, "SearchResult.TransOrJob" ) ) );
+    rowMeta.addValueMeta( new ValueMetaString( BaseMessages.getString( PKG, "SearchResult.StepDatabaseNotice" ) ) );
+    rowMeta.addValueMeta( new ValueMetaString( BaseMessages.getString( PKG, "SearchResult.String" ) ) );
+    rowMeta.addValueMeta( new ValueMetaString( BaseMessages.getString( PKG, "SearchResult.FieldName" ) ) );
     return rowMeta;
   }
 

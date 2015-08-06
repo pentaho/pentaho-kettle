@@ -59,8 +59,11 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
@@ -3048,46 +3051,46 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     Object[] data = new Object[9];
     int nr = 0;
 
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.Stepname" ), ValueMetaInterface.TYPE_STRING ) );
+    r.addValueMeta( new ValueMetaString(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.Stepname" ) ) );
     data[nr] = sname;
     nr++;
 
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.Copy" ), ValueMetaInterface.TYPE_NUMBER ) );
+    r.addValueMeta( new ValueMetaNumber(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.Copy" ) ) );
     data[nr] = new Double( copynr );
     nr++;
 
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesReaded" ), ValueMetaInterface.TYPE_NUMBER ) );
+    r.addValueMeta( new ValueMetaNumber(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesReaded" ) ) );
     data[nr] = new Double( lines_read );
     nr++;
 
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesWritten" ), ValueMetaInterface.TYPE_NUMBER ) );
+    r.addValueMeta( new ValueMetaNumber(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesWritten" ) ) );
     data[nr] = new Double( lines_written );
     nr++;
 
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesUpdated" ), ValueMetaInterface.TYPE_NUMBER ) );
+    r.addValueMeta( new ValueMetaNumber(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesUpdated" ) ) );
     data[nr] = new Double( lines_updated );
     nr++;
 
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesSkipped" ), ValueMetaInterface.TYPE_NUMBER ) );
+    r.addValueMeta( new ValueMetaNumber(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesSkipped" ) ) );
     data[nr] = new Double( lines_skipped );
     nr++;
 
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.Errors" ), ValueMetaInterface.TYPE_NUMBER ) );
+    r.addValueMeta( new ValueMetaNumber(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.Errors" ) ) );
     data[nr] = new Double( errors );
     nr++;
 
-    r.addValueMeta( new ValueMeta( "start_date", ValueMetaInterface.TYPE_DATE ) );
+    r.addValueMeta( new ValueMetaDate( "start_date" ) );
     data[nr] = start_date;
     nr++;
 
-    r.addValueMeta( new ValueMeta( "end_date", ValueMetaInterface.TYPE_DATE ) );
+    r.addValueMeta( new ValueMetaDate( "end_date" ) );
     data[nr] = end_date;
     nr++;
 
@@ -3104,27 +3107,27 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public static final RowMetaInterface getLogFields( String comm ) {
     RowMetaInterface r = new RowMeta();
     ValueMetaInterface sname =
-      new ValueMeta(
-        BaseMessages.getString( PKG, "BaseStep.ColumnName.Stepname" ), ValueMetaInterface.TYPE_STRING );
+      new ValueMetaString(
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.Stepname" ) );
     sname.setLength( 256 );
     r.addValueMeta( sname );
 
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.Copy" ), ValueMetaInterface.TYPE_NUMBER ) );
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesReaded" ), ValueMetaInterface.TYPE_NUMBER ) );
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesWritten" ), ValueMetaInterface.TYPE_NUMBER ) );
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesUpdated" ), ValueMetaInterface.TYPE_NUMBER ) );
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesSkipped" ), ValueMetaInterface.TYPE_NUMBER ) );
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.Errors" ), ValueMetaInterface.TYPE_NUMBER ) );
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.StartDate" ), ValueMetaInterface.TYPE_DATE ) );
-    r.addValueMeta( new ValueMeta(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.EndDate" ), ValueMetaInterface.TYPE_DATE ) );
+    r.addValueMeta( new ValueMetaNumber(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.Copy" ) ) );
+    r.addValueMeta( new ValueMetaNumber(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesReaded" ) ) );
+    r.addValueMeta( new ValueMetaNumber(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesWritten" ) ) );
+    r.addValueMeta( new ValueMetaNumber(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesUpdated" ) ) );
+    r.addValueMeta( new ValueMetaNumber(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesSkipped" ) ) );
+    r.addValueMeta( new ValueMetaNumber(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.Errors" ) ) );
+    r.addValueMeta( new ValueMetaDate(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.StartDate" ) ) );
+    r.addValueMeta( new ValueMetaDate(
+      BaseMessages.getString( PKG, "BaseStep.ColumnName.EndDate" ) ) );
 
     for ( int i = 0; i < r.size(); i++ ) {
       r.getValueMeta( i ).setOrigin( comm );
@@ -3601,7 +3604,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     if ( !Const.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
       if ( !Const.isEmpty( value ) ) {
-        return ValueMeta.convertStringToBoolean( value );
+        return ValueMetaBoolean.convertStringToBoolean( value );
       }
     }
     return defaultValue;

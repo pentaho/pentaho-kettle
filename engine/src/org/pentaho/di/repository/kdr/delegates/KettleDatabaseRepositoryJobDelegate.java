@@ -38,8 +38,10 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
@@ -881,63 +883,39 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
   private synchronized void insertJob( JobMeta jobMeta ) throws KettleException {
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), jobMeta
-        .getObjectId() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER ), jobMeta
-      .getRepositoryDirectory().getObjectId() );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING ), jobMeta
-        .getName() );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_DESCRIPTION, ValueMetaInterface.TYPE_STRING ), jobMeta
-        .getDescription() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOB_EXTENDED_DESCRIPTION, ValueMetaInterface.TYPE_STRING ), jobMeta
-      .getExtendedDescription() );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_JOB_VERSION, ValueMetaInterface.TYPE_STRING ), jobMeta
-        .getJobversion() );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_JOB_STATUS, ValueMetaInterface.TYPE_INTEGER ), new Long(
-        jobMeta.getJobstatus() < 0 ? -1L : jobMeta.getJobstatus() ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOB_ID_JOB ), jobMeta.getObjectId() );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY ),
+      jobMeta.getRepositoryDirectory().getObjectId() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_JOB_NAME ), jobMeta.getName() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_JOB_DESCRIPTION ), jobMeta.getDescription() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_JOB_EXTENDED_DESCRIPTION ),
+      jobMeta.getExtendedDescription() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_JOB_JOB_VERSION ), jobMeta.getJobversion() );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOB_JOB_STATUS ),
+      new Long( jobMeta.getJobstatus() < 0 ? -1L : jobMeta.getJobstatus() ) );
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOB_ID_DATABASE_LOG, ValueMetaInterface.TYPE_INTEGER ), jobMeta
-      .getJobLogTable().getDatabaseMeta() != null
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOB_ID_DATABASE_LOG ),
+      jobMeta.getJobLogTable().getDatabaseMeta() != null
       ? jobMeta.getJobLogTable().getDatabaseMeta().getObjectId() : -1L );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOB_TABLE_NAME_LOG, ValueMetaInterface.TYPE_STRING ), jobMeta
-      .getJobLogTable().getTableName() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN ), jobMeta
-      .getJobLogTable().isBatchIdUsed() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN ), jobMeta
-      .getJobLogTable().isLogFieldUsed() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_JOB_TABLE_NAME_LOG ),
+      jobMeta.getJobLogTable().getTableName() );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_JOB_USE_BATCH_ID ),
+      jobMeta.getJobLogTable().isBatchIdUsed() );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_JOB_USE_LOGFIELD ),
+      jobMeta.getJobLogTable().isLogFieldUsed() );
     repository.connectionDelegate.insertJobAttribute(
       jobMeta.getObjectId(), 0, KettleDatabaseRepository.JOB_ATTRIBUTE_LOG_SIZE_LIMIT, 0, jobMeta
         .getJobLogTable().getLogSizeLimit() );
 
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_CREATED_USER, ValueMetaInterface.TYPE_STRING ), jobMeta
-        .getCreatedUser() );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_CREATED_DATE, ValueMetaInterface.TYPE_DATE ), jobMeta
-        .getCreatedDate() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER, ValueMetaInterface.TYPE_STRING ), jobMeta
-      .getModifiedUser() );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE ), jobMeta
-        .getModifiedDate() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN ), jobMeta
-      .isBatchIdPassed() );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING ), jobMeta
-        .getSharedObjectsFile() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_JOB_CREATED_USER ), jobMeta.getCreatedUser() );
+    table.addValue( new ValueMetaDate( KettleDatabaseRepository.FIELD_JOB_CREATED_DATE ), jobMeta .getCreatedDate() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER ),
+      jobMeta.getModifiedUser() );
+    table.addValue( new ValueMetaDate( KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE ), jobMeta.getModifiedDate() );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID ),
+      jobMeta.isBatchIdPassed() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_JOB_SHARED_FILE ),
+      jobMeta.getSharedObjectsFile() );
 
     repository.connectionDelegate.getDatabase().prepareInsert(
       table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOB );
@@ -970,28 +948,19 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB_HOP, ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM, ValueMetaInterface.TYPE_INTEGER ),
+    table.addValue( new ValueMetaInteger(
+      KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB_HOP ), id );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB ), id_job );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_FROM ),
       id_jobentry_copy_from );
-    table
-      .addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO, ValueMetaInterface.TYPE_INTEGER ),
-        id_jobentry_copy_to );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_HOP_ENABLED, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
-        .valueOf( enabled ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOB_HOP_EVALUATION, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
-      .valueOf( evaluation ) );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_JOB_HOP_UNCONDITIONAL, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
-      .valueOf( unconditional ) );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOBENTRY_COPY_TO ),
+      id_jobentry_copy_to );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_JOB_HOP_ENABLED ),
+      Boolean.valueOf( enabled ) );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_JOB_HOP_EVALUATION ),
+      Boolean.valueOf( evaluation ) );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_JOB_HOP_UNCONDITIONAL ),
+      Boolean.valueOf( unconditional ) );
 
     repository.connectionDelegate.getDatabase().prepareInsert(
       table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOB_HOP );
@@ -1023,14 +992,9 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
         + quote( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY ) + " = ?";
 
     RowMetaAndData par = new RowMetaAndData();
-    par.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER ),
-      id_directory_to );
-    par.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING ), jobname );
-    par.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER ),
-      id_directory_from );
+    par.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY ), id_directory_to );
+    par.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_JOB_NAME ), jobname );
+    par.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY ), id_directory_from );
 
     repository.connectionDelegate.getDatabase().execStatement( sql, par.getRowMeta(), par.getData() );
   }
@@ -1047,21 +1011,19 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
         additionalParameter = true;
         sql += quote( KettleDatabaseRepository.FIELD_JOB_NAME ) + " = ? ";
         table.addValue(
-          new ValueMeta( KettleDatabaseRepository.FIELD_JOB_NAME, ValueMetaInterface.TYPE_STRING ), newname );
+          new ValueMetaString( KettleDatabaseRepository.FIELD_JOB_NAME ), newname );
       }
       if ( newParentDir != null ) {
         if ( additionalParameter ) {
           sql += ", ";
         }
         sql += quote( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY ) + " = ? ";
-        table.addValue( new ValueMeta(
-          KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER ), newParentDir
-          .getObjectId() );
+        table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY ),
+          newParentDir.getObjectId() );
       }
 
       sql += "WHERE " + quote( KettleDatabaseRepository.FIELD_JOB_ID_JOB ) + " = ?";
-      table.addValue(
-        new ValueMeta( KettleDatabaseRepository.FIELD_JOB_ID_JOB, ValueMetaInterface.TYPE_INTEGER ), id_job );
+      table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_JOB_ID_JOB ), id_job );
 
       log.logBasic( "sql = [" + sql + "]" );
       log.logBasic( "row = [" + table + "]" );

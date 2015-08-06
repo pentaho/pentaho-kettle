@@ -36,8 +36,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.version.BuildVersion;
@@ -109,29 +110,29 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getAttributes( String arg0, String arg1, String arg2, String arg3 ) throws SQLException {
+  public ResultSet getAttributes( String catalog, String schemaPattern, String arg2, String arg3 ) throws SQLException {
     RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMeta( "TYPE_CAT", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "TYPE_SCHEM", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "TYPE_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "ATTR_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "DATA_TYPE", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "ATTR_TYPE_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "ATTR_SIZE", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "DECIMAL_DIGITS", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "NUM_PREC_RADIX", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "NULLABLE", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "REMARKS", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "ATTR_DEF", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "SQL_DATA_TYPE", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "SQL_DATETIME_SUB", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "CHAR_OCTET_LENGTH", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "ORDINAL_POSITION", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "IS_NULLABLE", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "SCOPE_CATALOG", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "SCOPE_SCHEMA", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "SCOPE_TABLE", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "SOURCE_DATA_TYPE", ValueMetaInterface.TYPE_INTEGER ) );
+    rowMeta.addValueMeta( new ValueMetaString( "TYPE_CAT" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "TYPE_SCHEM" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "TYPE_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "ATTR_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "DATA_TYPE" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "ATTR_TYPE_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "ATTR_SIZE" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "DECIMAL_DIGITS" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "NUM_PREC_RADIX" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "NULLABLE" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "REMARKS" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "ATTR_DEF" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "SQL_DATA_TYPE" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "SQL_DATETIME_SUB" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "CHAR_OCTET_LENGTH" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "ORDINAL_POSITION" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "IS_NULLABLE" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "SCOPE_CATALOG" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "SCOPE_SCHEMA" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "SCOPE_TABLE" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "SOURCE_DATA_TYPE" ) );
 
     return new RowsResultSet( rowMeta, new ArrayList<Object[]>() );
   }
@@ -139,14 +140,14 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   @Override
   public ResultSet getBestRowIdentifier( String arg0, String arg1, String arg2, int arg3, boolean arg4 ) throws SQLException {
     RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMeta( "SCOPE", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "COLUMN_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "DATA_TYPE", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "TYPE_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "COLUMN_SIZE", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "BUFFER_LENGTH", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "DECIMAL_DIGITS", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "PSEUDO_COLUMN", ValueMetaInterface.TYPE_INTEGER ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "SCOPE" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "COLUMN_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "DATA_TYPE" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "TYPE_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "COLUMN_SIZE" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "BUFFER_LENGTH" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "DECIMAL_DIGITS" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "PSEUDO_COLUMN" ) );
 
     return new RowsResultSet( rowMeta, new ArrayList<Object[]>() );
   }
@@ -164,7 +165,7 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   @Override
   public ResultSet getCatalogs() throws SQLException {
     RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMeta( "TABLE_CAT", ValueMetaInterface.TYPE_STRING ) );
+    rowMeta.addValueMeta( new ValueMetaString( "TABLE_CAT" ) );
 
     return new RowsResultSet( rowMeta, new ArrayList<Object[]>() );
   }
@@ -172,10 +173,10 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   @Override
   public ResultSet getClientInfoProperties() throws SQLException {
     RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMeta( "NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "MAX_LEN", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "DEFAULT_VALUE", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "DESCRIPTION", ValueMetaInterface.TYPE_STRING ) );
+    rowMeta.addValueMeta( new ValueMetaString( "NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "MAX_LEN" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "DEFAULT_VALUE" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "DESCRIPTION" ) );
 
     return new RowsResultSet( rowMeta, new ArrayList<Object[]>() );
   }
@@ -183,14 +184,14 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   @Override
   public ResultSet getColumnPrivileges( String arg0, String arg1, String arg2, String arg3 ) throws SQLException {
     RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMeta( "TABLE_CAT", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "TABLE_SCHEM", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "TABLE_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "COLUMN_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "GRANTOR", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "GRANTEE", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "PRIVILEGE", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "IS_GRANTABLE", ValueMetaInterface.TYPE_STRING ) );
+    rowMeta.addValueMeta( new ValueMetaString( "TABLE_CAT" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "TABLE_SCHEM" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "TABLE_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "COLUMN_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "GRANTOR" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "GRANTEE" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "PRIVILEGE" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "IS_GRANTABLE" ) );
 
     return new RowsResultSet( rowMeta, new ArrayList<Object[]>() );
   }
@@ -199,9 +200,6 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   public ResultSet getColumns( String catalog, String schemaPattern, String tableNamePattern,
     String columnNamePattern ) throws SQLException {
 
-    System.out.println( "getColumns("
-      + catalog + ", " + schemaPattern + ", " + tableNamePattern + ", " + columnNamePattern + ")" );
-
     try {
 
       // Get the service information from the remote server...
@@ -209,32 +207,32 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
       List<ThinServiceInformation> services = getServiceInformation();
 
       RowMetaInterface rowMeta = new RowMeta();
-      rowMeta.addValueMeta( new ValueMeta( "TABLE_CAT", ValueMetaInterface.TYPE_STRING ) ); // null
-      rowMeta.addValueMeta( new ValueMeta( "TABLE_SCHEM", ValueMetaInterface.TYPE_STRING ) ); // null
-      rowMeta.addValueMeta( new ValueMeta( "TABLE_NAME", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "COLUMN_NAME", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "DATA_TYPE", ValueMetaInterface.TYPE_INTEGER ) );
-      rowMeta.addValueMeta( new ValueMeta( "TYPE_NAME", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "COLUMN_SIZE", ValueMetaInterface.TYPE_INTEGER ) ); // length
-      rowMeta.addValueMeta( new ValueMeta( "BUFFER_LENGTH", ValueMetaInterface.TYPE_INTEGER ) ); // not used
-      rowMeta.addValueMeta( new ValueMeta( "DECIMAL_DIGITS", ValueMetaInterface.TYPE_INTEGER ) ); // precision
-      rowMeta.addValueMeta( new ValueMeta( "NUM_PREC_RADIX", ValueMetaInterface.TYPE_INTEGER ) ); // Radix, typically
+      rowMeta.addValueMeta( new ValueMetaString( "TABLE_CAT" ) ); // null
+      rowMeta.addValueMeta( new ValueMetaString( "TABLE_SCHEM" ) ); // null
+      rowMeta.addValueMeta( new ValueMetaString( "TABLE_NAME" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "COLUMN_NAME" ) );
+      rowMeta.addValueMeta( new ValueMetaInteger( "DATA_TYPE" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "TYPE_NAME" ) );
+      rowMeta.addValueMeta( new ValueMetaInteger( "COLUMN_SIZE" ) ); // length
+      rowMeta.addValueMeta( new ValueMetaInteger( "BUFFER_LENGTH" ) ); // not used
+      rowMeta.addValueMeta( new ValueMetaInteger( "DECIMAL_DIGITS" ) ); // precision
+      rowMeta.addValueMeta( new ValueMetaInteger( "NUM_PREC_RADIX" ) ); // Radix, typically
                                                                                                   // either 10 or 2
-      rowMeta.addValueMeta( new ValueMeta( "NULLABLE", ValueMetaInterface.TYPE_INTEGER ) ); // columnsNullableUnknown
-      rowMeta.addValueMeta( new ValueMeta( "REMARKS", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "COLUMN_DEF", ValueMetaInterface.TYPE_STRING ) ); // default value, null
-      rowMeta.addValueMeta( new ValueMeta( "SQL_DATA_TYPE", ValueMetaInterface.TYPE_INTEGER ) ); // unused
-      rowMeta.addValueMeta( new ValueMeta( "SQL_DATATIME_SUB", ValueMetaInterface.TYPE_INTEGER ) ); // unused
-      rowMeta.addValueMeta( new ValueMeta( "CHAR_OCTET_LENGTH", ValueMetaInterface.TYPE_INTEGER ) ); // max string
+      rowMeta.addValueMeta( new ValueMetaInteger( "NULLABLE" ) ); // columnsNullableUnknown
+      rowMeta.addValueMeta( new ValueMetaString( "REMARKS" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "COLUMN_DEF" ) ); // default value, null
+      rowMeta.addValueMeta( new ValueMetaInteger( "SQL_DATA_TYPE" ) ); // unused
+      rowMeta.addValueMeta( new ValueMetaInteger( "SQL_DATATIME_SUB" ) ); // unused
+      rowMeta.addValueMeta( new ValueMetaInteger( "CHAR_OCTET_LENGTH" ) ); // max string
                                                                                                      // length in bytes
-      rowMeta.addValueMeta( new ValueMeta( "ORDINAL_POSITION", ValueMetaInterface.TYPE_INTEGER ) ); // column position,
+      rowMeta.addValueMeta( new ValueMetaInteger( "ORDINAL_POSITION" ) ); // column position,
                                                                                                     // 1 based
-      rowMeta.addValueMeta( new ValueMeta( "IS_NULLABLE", ValueMetaInterface.TYPE_STRING ) ); // empty string: nobody
+      rowMeta.addValueMeta( new ValueMetaString( "IS_NULLABLE" ) ); // empty string: nobody
                                                                                               // knows
-      rowMeta.addValueMeta( new ValueMeta( "SCOPE_CATALOG", ValueMetaInterface.TYPE_STRING ) ); // null
-      rowMeta.addValueMeta( new ValueMeta( "SCOPE_SCHEMA", ValueMetaInterface.TYPE_STRING ) ); // null
-      rowMeta.addValueMeta( new ValueMeta( "SCOPE_TABLE", ValueMetaInterface.TYPE_STRING ) ); // null
-      rowMeta.addValueMeta( new ValueMeta( "SOURCE_DATA_TYPE", ValueMetaInterface.TYPE_STRING ) ); // Kettle source data
+      rowMeta.addValueMeta( new ValueMetaString( "SCOPE_CATALOG" ) ); // null
+      rowMeta.addValueMeta( new ValueMetaString( "SCOPE_SCHEMA" ) ); // null
+      rowMeta.addValueMeta( new ValueMetaString( "SCOPE_TABLE" ) ); // null
+      rowMeta.addValueMeta( new ValueMetaString( "SOURCE_DATA_TYPE" ) ); // Kettle source data
                                                                                                    // type description
 
       List<Object[]> rows = new ArrayList<Object[]>();
@@ -289,14 +287,14 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   @Override
   public ResultSet getCrossReference( String arg0, String arg1, String arg2, String arg3, String arg4, String arg5 ) throws SQLException {
     RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMeta( "TABLE_CAT", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "TABLE_SCHEM", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "TABLE_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "COLUMN_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "GRANTOR", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "GRANTEE", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "PRIVILEGE", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "IS_GRANTABLE", ValueMetaInterface.TYPE_STRING ) );
+    rowMeta.addValueMeta( new ValueMetaString( "TABLE_CAT" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "TABLE_SCHEM" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "TABLE_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "COLUMN_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "GRANTOR" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "GRANTEE" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "PRIVILEGE" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "IS_GRANTABLE" ) );
 
     return new RowsResultSet( rowMeta, new ArrayList<Object[]>() );
   }
@@ -374,20 +372,20 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   @Override
   public ResultSet getImportedKeys( String arg0, String arg1, String arg2 ) throws SQLException {
     RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMeta( "PKTABLE_CAT", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "PKTABLE_SCHEM", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "PKTABLE_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "PKCOLUMN_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "FKTABLE_CAT", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "FKTABLE_SCHEM", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "FKTABLE_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "FKCOLUMN_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "KEY_SEQ", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "UPDATE_RULE", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "DELETE_RULE", ValueMetaInterface.TYPE_INTEGER ) );
-    rowMeta.addValueMeta( new ValueMeta( "FK_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "PK_NAME", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "DEFERRABILITY", ValueMetaInterface.TYPE_INTEGER ) );
+    rowMeta.addValueMeta( new ValueMetaString( "PKTABLE_CAT" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "PKTABLE_SCHEM" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "PKTABLE_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "PKCOLUMN_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "FKTABLE_CAT" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "FKTABLE_SCHEM" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "FKTABLE_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "FKCOLUMN_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "KEY_SEQ" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "UPDATE_RULE" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "DELETE_RULE" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "FK_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "PK_NAME" ) );
+    rowMeta.addValueMeta( new ValueMetaInteger( "DEFERRABILITY" ) );
 
     return new RowsResultSet( rowMeta, new ArrayList<Object[]>() );
   }
@@ -628,8 +626,8 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   @Override
   public ResultSet getSchemas( String catalog, String schemaPattern ) throws SQLException {
     RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMeta( "TABLE_SCHEM", ValueMetaInterface.TYPE_STRING ) );
-    rowMeta.addValueMeta( new ValueMeta( "TABLE_CATALOG", ValueMetaInterface.TYPE_STRING ) );
+    rowMeta.addValueMeta( new ValueMetaString( "TABLE_SCHEM" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "TABLE_CATALOG" ) );
 
     List<Object[]> rows = new ArrayList<Object[]>();
 
@@ -669,16 +667,16 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
       List<ThinServiceInformation> services = getServiceInformation();
 
       RowMetaInterface rowMeta = new RowMeta();
-      rowMeta.addValueMeta( new ValueMeta( "TABLE_CAT", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "TABLE_SCHEM", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "TABLE_NAME", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "TABLE_TYPE", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "REMARKS", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "TYPE_CAT", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "TYPE_SCHEM", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "TYPE_NAME", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "SELF_REFERENCING_COL_NAME", ValueMetaInterface.TYPE_STRING ) );
-      rowMeta.addValueMeta( new ValueMeta( "REF_GENERATION", ValueMetaInterface.TYPE_STRING ) );
+      rowMeta.addValueMeta( new ValueMetaString( "TABLE_CAT" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "TABLE_SCHEM" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "TABLE_NAME" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "TABLE_TYPE" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "REMARKS" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "TYPE_CAT" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "TYPE_SCHEM" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "TYPE_NAME" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "SELF_REFERENCING_COL_NAME" ) );
+      rowMeta.addValueMeta( new ValueMetaString( "REF_GENERATION" ) );
 
       List<Object[]> rows = new ArrayList<Object[]>();
       for ( ThinServiceInformation service : services ) {

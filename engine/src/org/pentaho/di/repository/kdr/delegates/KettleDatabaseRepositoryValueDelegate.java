@@ -27,6 +27,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
@@ -57,7 +58,7 @@ public class KettleDatabaseRepositoryValueDelegate extends KettleDatabaseReposit
         if ( isNull ) {
           valueMetaAndData.setValueData( null );
         } else {
-          ValueMetaInterface stringValueMeta = new ValueMeta( name, ValueMetaInterface.TYPE_STRING );
+          ValueMetaInterface stringValueMeta = new ValueMetaString( name );
           ValueMetaInterface valueMeta = valueMetaAndData.getValueMeta();
           stringValueMeta.setConversionMetadata( valueMeta );
 

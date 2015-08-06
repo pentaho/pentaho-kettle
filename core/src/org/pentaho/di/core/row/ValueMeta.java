@@ -30,6 +30,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Node;
@@ -39,7 +40,13 @@ import org.w3c.dom.Node;
  *
  *
  */
+@Deprecated
 public class ValueMeta extends ValueMetaBase {
+  @Override
+  public Object convertData( ValueMetaInterface meta2, Object data2 ) throws KettleValueException {
+    return super.convertData( meta2, data2 );
+  }
+
   private static Class<?> PKG = Const.class;
 
   public static final String DEFAULT_DATE_FORMAT_MASK = "yyyy/MM/dd HH:mm:ss.SSS";

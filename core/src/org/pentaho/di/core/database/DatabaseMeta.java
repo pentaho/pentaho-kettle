@@ -50,9 +50,9 @@ import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -1944,44 +1944,44 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     final String par = "Parameter";
     final String val = "Value";
 
-    ValueMetaInterface testValue = new ValueMeta( "FIELD", ValueMetaInterface.TYPE_STRING );
+    ValueMetaInterface testValue = new ValueMetaString( "FIELD" );
     testValue.setLength( 30 );
 
     if ( databaseInterface != null ) {
       // Type of database
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Database type" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getPluginId() );
+      r.addValue( new ValueMetaString( par ), "Database type" );
+      r.addValue( new ValueMetaString( val ), getPluginId() );
       list.add( r );
       // Type of access
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Access type" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getAccessTypeDesc() );
+      r.addValue( new ValueMetaString( par ), "Access type" );
+      r.addValue( new ValueMetaString( val ), getAccessTypeDesc() );
       list.add( r );
       // Name of database
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Database name" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getDatabaseName() );
+      r.addValue( new ValueMetaString( par ), "Database name" );
+      r.addValue( new ValueMetaString( val ), getDatabaseName() );
       list.add( r );
       // server host name
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Server hostname" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getHostname() );
+      r.addValue( new ValueMetaString( par ), "Server hostname" );
+      r.addValue( new ValueMetaString( val ), getHostname() );
       list.add( r );
       // Port number
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Service port" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getDatabasePortNumberString() );
+      r.addValue( new ValueMetaString( par ), "Service port" );
+      r.addValue( new ValueMetaString( val ), getDatabasePortNumberString() );
       list.add( r );
       // Username
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Username" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getUsername() );
+      r.addValue( new ValueMetaString( par ), "Username" );
+      r.addValue( new ValueMetaString( val ), getUsername() );
       list.add( r );
       // Informix server
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Informix server name" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getServername() );
+      r.addValue( new ValueMetaString( par ), "Informix server name" );
+      r.addValue( new ValueMetaString( val ), getServername() );
       list.add( r );
       // Other properties...
       Enumeration<Object> keys = getAttributes().keys();
@@ -1989,15 +1989,15 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         String key = (String) keys.nextElement();
         String value = getAttributes().getProperty( key );
         r = new RowMetaAndData();
-        r.addValue( par, ValueMetaInterface.TYPE_STRING, "Extra attribute [" + key + "]" );
-        r.addValue( val, ValueMetaInterface.TYPE_STRING, value );
+        r.addValue( new ValueMetaString( par ), "Extra attribute [" + key + "]" );
+        r.addValue( new ValueMetaString( val ), value );
         list.add( r );
       }
 
       // driver class
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Driver class" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getDriverClass() );
+      r.addValue( new ValueMetaString( par ), "Driver class" );
+      r.addValue( new ValueMetaString( val ), getDriverClass() );
       list.add( r );
       // URL
       String pwd = getPassword();
@@ -2009,76 +2009,76 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         url = "";
       } // SAP etc.
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "URL" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, url );
+      r.addValue( new ValueMetaString( par ), "URL" );
+      r.addValue( new ValueMetaString( val ), url );
       list.add( r );
       setPassword( pwd );
       // SQL: Next sequence value
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "SQL: next sequence value" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getSeqNextvalSQL( "SEQUENCE" ) );
+      r.addValue( new ValueMetaString( par ), "SQL: next sequence value" );
+      r.addValue( new ValueMetaString( val ), getSeqNextvalSQL( "SEQUENCE" ) );
       list.add( r );
       // is set fetch size supported
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "supported: set fetch size" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, isFetchSizeSupported() ? "Y" : "N" );
+      r.addValue( new ValueMetaString( par ), "supported: set fetch size" );
+      r.addValue( new ValueMetaString( val ), isFetchSizeSupported() ? "Y" : "N" );
       list.add( r );
       // needs place holder for auto increment
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "auto increment field needs placeholder" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, needsPlaceHolder() ? "Y" : "N" );
+      r.addValue( new ValueMetaString( par ), "auto increment field needs placeholder" );
+      r.addValue( new ValueMetaString( val ), needsPlaceHolder() ? "Y" : "N" );
       list.add( r );
       // Sum function
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "SUM aggregate function" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getFunctionSum() );
+      r.addValue( new ValueMetaString( par ), "SUM aggregate function" );
+      r.addValue( new ValueMetaString( val ), getFunctionSum() );
       list.add( r );
       // Avg function
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "AVG aggregate function" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getFunctionAverage() );
+      r.addValue( new ValueMetaString( par ), "AVG aggregate function" );
+      r.addValue( new ValueMetaString( val ), getFunctionAverage() );
       list.add( r );
       // Minimum function
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "MIN aggregate function" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getFunctionMinimum() );
+      r.addValue( new ValueMetaString( par ), "MIN aggregate function" );
+      r.addValue( new ValueMetaString( val ), getFunctionMinimum() );
       list.add( r );
       // Maximum function
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "MAX aggregate function" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getFunctionMaximum() );
+      r.addValue( new ValueMetaString( par ), "MAX aggregate function" );
+      r.addValue( new ValueMetaString( val ), getFunctionMaximum() );
       list.add( r );
       // Count function
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "COUNT aggregate function" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getFunctionCount() );
+      r.addValue( new ValueMetaString( par ), "COUNT aggregate function" );
+      r.addValue( new ValueMetaString( val ), getFunctionCount() );
       list.add( r );
       // Schema-table combination
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Schema / Table combination" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getQuotedSchemaTableCombination( "SCHEMA", "TABLE" ) );
+      r.addValue( new ValueMetaString( par ), "Schema / Table combination" );
+      r.addValue( new ValueMetaString( val ), getQuotedSchemaTableCombination( "SCHEMA", "TABLE" ) );
       list.add( r );
       // Limit clause
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "LIMIT clause for 100 rows" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getLimitClause( 100 ) );
+      r.addValue( new ValueMetaString( par ), "LIMIT clause for 100 rows" );
+      r.addValue( new ValueMetaString( val ), getLimitClause( 100 ) );
       list.add( r );
       // add column statement
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Add column statement" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getAddColumnStatement(
+      r.addValue( new ValueMetaString( par ), "Add column statement" );
+      r.addValue( new ValueMetaString( val ), getAddColumnStatement(
         "TABLE", testValue, null, false, null, false ) );
       list.add( r );
       // drop column statement
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Drop column statement" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getDropColumnStatement(
+      r.addValue( new ValueMetaString( par ), "Drop column statement" );
+      r.addValue( new ValueMetaString( val ), getDropColumnStatement(
         "TABLE", testValue, null, false, null, false ) );
       list.add( r );
       // Modify column statement
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Modify column statement" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getModifyColumnStatement(
+      r.addValue( new ValueMetaString( par ), "Modify column statement" );
+      r.addValue( new ValueMetaString( val ), getModifyColumnStatement(
         "TABLE", testValue, null, false, null, false ) );
       list.add( r );
 
@@ -2090,24 +2090,24 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         }
       }
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "List of reserved words" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, reserved );
+      r.addValue( new ValueMetaString( par ), "List of reserved words" );
+      r.addValue( new ValueMetaString( val ), reserved );
       list.add( r );
 
       // Quote reserved words?
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Quote reserved words?" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, quoteReservedWords() ? "Y" : "N" );
+      r.addValue( new ValueMetaString( par ), "Quote reserved words?" );
+      r.addValue( new ValueMetaString( val ), quoteReservedWords() ? "Y" : "N" );
       list.add( r );
       // Start Quote
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "Start quote for reserved words" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getStartQuote() );
+      r.addValue( new ValueMetaString( par ), "Start quote for reserved words" );
+      r.addValue( new ValueMetaString( val ), getStartQuote() );
       list.add( r );
       // End Quote
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "End quote for reserved words" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getEndQuote() );
+      r.addValue( new ValueMetaString( par ), "End quote for reserved words" );
+      r.addValue( new ValueMetaString( val ), getEndQuote() );
       list.add( r );
 
       // List of table types
@@ -2119,8 +2119,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         }
       }
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "List of JDBC table types" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, types );
+      r.addValue( new ValueMetaString( par ), "List of JDBC table types" );
+      r.addValue( new ValueMetaString( val ), types );
       list.add( r );
 
       // List of view types
@@ -2132,8 +2132,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         }
       }
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "List of JDBC view types" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, types );
+      r.addValue( new ValueMetaString( par ), "List of JDBC view types" );
+      r.addValue( new ValueMetaString( val ), types );
       list.add( r );
 
       // List of synonym types
@@ -2145,56 +2145,56 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         }
       }
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "List of JDBC synonym types" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, types );
+      r.addValue( new ValueMetaString( par ), "List of JDBC synonym types" );
+      r.addValue( new ValueMetaString( val ), types );
       list.add( r );
 
       // Use schema-name to get list of tables?
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "use schema name to get table list?" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, useSchemaNameForTableList() ? "Y" : "N" );
+      r.addValue( new ValueMetaString( par ), "use schema name to get table list?" );
+      r.addValue( new ValueMetaString( val ), useSchemaNameForTableList() ? "Y" : "N" );
       list.add( r );
       // supports view?
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "supports views?" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, supportsViews() ? "Y" : "N" );
+      r.addValue( new ValueMetaString( par ), "supports views?" );
+      r.addValue( new ValueMetaString( val ), supportsViews() ? "Y" : "N" );
       list.add( r );
       // supports synonyms?
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "supports synonyms?" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, supportsSynonyms() ? "Y" : "N" );
+      r.addValue( new ValueMetaString( par ), "supports synonyms?" );
+      r.addValue( new ValueMetaString( val ), supportsSynonyms() ? "Y" : "N" );
       list.add( r );
       // SQL: get list of procedures?
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "SQL: list of procedures" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, getSQLListOfProcedures() );
+      r.addValue( new ValueMetaString( par ), "SQL: list of procedures" );
+      r.addValue( new ValueMetaString( val ), getSQLListOfProcedures() );
       list.add( r );
       // SQL: get truncate table statement?
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "SQL: truncate table" );
+      r.addValue( new ValueMetaString( par ), "SQL: truncate table" );
       String truncateStatement = getTruncateTableStatement( null, "TABLE" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, truncateStatement != null
+      r.addValue( new ValueMetaString( val ), truncateStatement != null
         ? truncateStatement : "Not supported by this database type" );
       list.add( r );
       // supports float rounding on update?
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "supports floating point rounding on update/insert" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, supportsFloatRoundingOnUpdate() ? "Y" : "N" );
+      r.addValue( new ValueMetaString( par ), "supports floating point rounding on update/insert" );
+      r.addValue( new ValueMetaString( val ), supportsFloatRoundingOnUpdate() ? "Y" : "N" );
       list.add( r );
       // supports time stamp to date conversion
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "supports timestamp-date conversion" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, supportsTimeStampToDateConversion() ? "Y" : "N" );
+      r.addValue( new ValueMetaString( par ), "supports timestamp-date conversion" );
+      r.addValue( new ValueMetaString( val ), supportsTimeStampToDateConversion() ? "Y" : "N" );
       list.add( r );
       // supports batch updates
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "supports batch updates" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, supportsBatchUpdates() ? "Y" : "N" );
+      r.addValue( new ValueMetaString( par ), "supports batch updates" );
+      r.addValue( new ValueMetaString( val ), supportsBatchUpdates() ? "Y" : "N" );
       list.add( r );
       // supports boolean values
       r = new RowMetaAndData();
-      r.addValue( par, ValueMetaInterface.TYPE_STRING, "supports boolean data type" );
-      r.addValue( val, ValueMetaInterface.TYPE_STRING, supportsBooleanDataType() ? "Y" : "N" );
+      r.addValue( new ValueMetaString( par ), "supports boolean data type" );
+      r.addValue( new ValueMetaString( val ), supportsBooleanDataType() ? "Y" : "N" );
       list.add( r );
     }
 

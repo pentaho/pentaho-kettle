@@ -31,8 +31,9 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleDependencyException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleObjectExistsException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
@@ -160,29 +161,18 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
 
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), id );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING ),
-      clusterSchema.getName() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING ), clusterSchema
-      .getBasePort() );
-    table
-      .addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, ValueMetaInterface.TYPE_STRING ),
-        clusterSchema.getSocketsBufferSize() );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING ),
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER ), id );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_CLUSTER_NAME ), clusterSchema.getName() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_CLUSTER_BASE_PORT ),
+      clusterSchema.getBasePort() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE ),
+      clusterSchema.getSocketsBufferSize() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL ),
       clusterSchema.getSocketsFlushInterval() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
-      .valueOf( clusterSchema.isSocketsCompressed() ) );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_DYNAMIC, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
-        .valueOf( clusterSchema.isDynamic() ) );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_COMPRESSED ),
+      Boolean.valueOf( clusterSchema.isSocketsCompressed() ) );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_CLUSTER_DYNAMIC ),
+      Boolean.valueOf( clusterSchema.isDynamic() ) );
 
     repository.connectionDelegate.getDatabase().prepareInsert(
       table.getRowMeta(), KettleDatabaseRepository.TABLE_R_CLUSTER );
@@ -196,30 +186,20 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
   public synchronized void updateCluster( ClusterSchema clusterSchema ) throws KettleException {
     RowMetaAndData table = new RowMetaAndData();
 
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER, ValueMetaInterface.TYPE_INTEGER ), clusterSchema
-      .getObjectId() );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_NAME, ValueMetaInterface.TYPE_STRING ),
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER ),
+      clusterSchema.getObjectId() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_CLUSTER_NAME ),
       clusterSchema.getName() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CLUSTER_BASE_PORT, ValueMetaInterface.TYPE_STRING ), clusterSchema
-      .getBasePort() );
-    table
-      .addValue(
-        new ValueMeta(
-          KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE, ValueMetaInterface.TYPE_STRING ),
-        clusterSchema.getSocketsBufferSize() );
-    table.addValue(
-      new ValueMeta(
-        KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL, ValueMetaInterface.TYPE_STRING ),
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_CLUSTER_BASE_PORT ),
+      clusterSchema.getBasePort() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_BUFFER_SIZE ),
+      clusterSchema.getSocketsBufferSize() );
+    table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_FLUSH_INTERVAL ),
       clusterSchema.getSocketsFlushInterval() );
-    table.addValue( new ValueMeta(
-      KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_COMPRESSED, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
-      .valueOf( clusterSchema.isSocketsCompressed() ) );
-    table.addValue(
-      new ValueMeta( KettleDatabaseRepository.FIELD_CLUSTER_DYNAMIC, ValueMetaInterface.TYPE_BOOLEAN ), Boolean
-        .valueOf( clusterSchema.isDynamic() ) );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_CLUSTER_SOCKETS_COMPRESSED ),
+      Boolean.valueOf( clusterSchema.isSocketsCompressed() ) );
+    table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_CLUSTER_DYNAMIC ),
+      Boolean.valueOf( clusterSchema.isDynamic() ) );
 
     repository.connectionDelegate.updateTableRow(
       KettleDatabaseRepository.TABLE_R_CLUSTER, KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER, table,

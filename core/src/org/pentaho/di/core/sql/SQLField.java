@@ -28,9 +28,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 
 public class SQLField {
   private String tableAlias;
@@ -182,7 +182,7 @@ public class SQLField {
 
               switch ( selectField.getAggregation() ) {
                 case COUNT:
-                  valueMeta = new ValueMeta( field, ValueMetaInterface.TYPE_INTEGER, 15 );
+                  valueMeta = new ValueMetaInteger( field );
                   break;
                 case MIN:
                 case MAX:

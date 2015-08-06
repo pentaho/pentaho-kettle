@@ -29,6 +29,7 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -173,8 +174,9 @@ public class ChannelLogTable extends BaseLogTable implements Cloneable, LogTable
    *          the id to use or -1 if no id is needed
    * @param status
    *          the log status to use
+   * @throws KettleValueException 
    */
-  public RowMetaAndData getLogRecord( LogStatus status, Object subject, Object parent ) {
+  public RowMetaAndData getLogRecord( LogStatus status, Object subject, Object parent ) throws KettleValueException {
     if ( subject == null || subject instanceof LoggingHierarchy ) {
 
       LoggingHierarchy loggingHierarchy = (LoggingHierarchy) subject;

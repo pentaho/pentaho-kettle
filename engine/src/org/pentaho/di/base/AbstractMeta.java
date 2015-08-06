@@ -50,7 +50,7 @@ import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -1248,7 +1248,7 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
     if ( !Const.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
       if ( !Const.isEmpty( value ) ) {
-        return ValueMeta.convertStringToBoolean( value );
+        return ValueMetaBoolean.convertStringToBoolean( value );
       }
     }
     return defaultValue;

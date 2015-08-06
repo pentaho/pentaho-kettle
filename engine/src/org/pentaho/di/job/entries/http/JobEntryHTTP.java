@@ -54,8 +54,7 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -411,7 +410,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
       resultRows = new ArrayList<RowMetaAndData>();
       RowMetaAndData row = new RowMetaAndData();
       row.addValue(
-        new ValueMeta( urlFieldnameToUse, ValueMetaInterface.TYPE_STRING ), environmentSubstitute( url ) );
+        new ValueMetaString( urlFieldnameToUse ), environmentSubstitute( url ) );
       resultRows.add( row );
     }
 

@@ -42,7 +42,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.rule.ImportRuleInterface;
@@ -333,9 +333,9 @@ public class Import {
     }
 
     final boolean replace =
-      Const.isEmpty( optionReplace ) ? false : ValueMeta.convertStringToBoolean( optionReplace.toString() );
+      Const.isEmpty( optionReplace ) ? false : ValueMetaBoolean.convertStringToBoolean( optionReplace.toString() );
     final boolean continueOnError =
-      Const.isEmpty( optionContinueOnError ) ? false : ValueMeta.convertStringToBoolean( optionContinueOnError
+      Const.isEmpty( optionContinueOnError ) ? false : ValueMetaBoolean.convertStringToBoolean( optionContinueOnError
         .toString() );
 
     // Start the import!
