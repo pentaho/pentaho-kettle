@@ -272,7 +272,7 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
     stepname = wStepname.getText(); // return value
     // copy info to Meta class (input)
     input.setFilename( wFilename.getText() );
-    input.setRowLimit( Const.toInt( wLimit.getText(), 0 ) );
+    input.setRowLimit( wLimit.getText() );
     input.setAddResultFile( wAddResult.getSelection() );
 
     dispose();

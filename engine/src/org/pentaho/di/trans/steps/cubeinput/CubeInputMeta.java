@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,7 +66,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = CubeInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
-  private int rowLimit;
+  private String rowLimit;
   private boolean addfilenameresult;
 
   public CubeInputMeta() {
@@ -96,14 +96,23 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
    * @param rowLimit
    *          The rowLimit to set.
    */
+  @Deprecated
   public void setRowLimit( int rowLimit ) {
+    this.rowLimit = String.valueOf( rowLimit );
+  }
+
+  /**
+   * @param rowLimit
+   *          The rowLimit to set.
+   */
+  public void setRowLimit( String rowLimit ) {
     this.rowLimit = rowLimit;
   }
 
   /**
    * @return Returns the rowLimit.
    */
-  public int getRowLimit() {
+  public String getRowLimit() {
     return rowLimit;
   }
 
@@ -130,7 +139,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
       filename = XMLHandler.getTagValue( stepnode, "file", "name" );
-      rowLimit = Const.toInt( XMLHandler.getTagValue( stepnode, "limit" ), 0 );
+      rowLimit = XMLHandler.getTagValue( stepnode, "limit" );
       addfilenameresult = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "addfilenameresult" ) );
 
     } catch ( Exception e ) {
@@ -141,7 +150,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void setDefault() {
     filename = "file";
-    rowLimit = 0;
+    rowLimit = "0";
     addfilenameresult = false;
   }
 
@@ -195,7 +204,12 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       filename = rep.getStepAttributeString( id_step, "file_name" );
-      rowLimit = (int) rep.getStepAttributeInteger( id_step, "limit" );
+      try {
+        rowLimit = rep.getStepAttributeString( id_step, "limit" );
+      } catch ( KettleException readOldAttributeType ) {
+        // PDI-12897
+        rowLimit = String.valueOf( rep.getStepAttributeInteger( id_step, "limit" ) );
+      }
       addfilenameresult = rep.getStepAttributeBoolean( id_step, "addfilenameresult" );
 
     } catch ( Exception e ) {
