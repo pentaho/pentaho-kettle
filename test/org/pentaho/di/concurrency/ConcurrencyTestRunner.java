@@ -26,6 +26,8 @@ import com.google.common.base.Throwables;
 import org.junit.Assert;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,24 +70,12 @@ class ConcurrencyTestRunner<M, B> {
                                             AtomicBoolean condition ) throws Exception {
     ConcurrencyTestRunner<?, ?> runner = new ConcurrencyTestRunner( monitoredTasks, backgroundTasks, condition );
     runner.runConcurrentTest();
-
-    List<Throwable> errors = runner.getTasksErrors();
-    if ( !errors.isEmpty() ) {
-      StringBuilder message = new StringBuilder( 1024 );
-      message.append( "There is expected no exceptions during the test, but " )
-        .append( errors.size() ).append( " raised:" );
-
-      for ( Throwable throwable : errors ) {
-        String stacktrace = Throwables.getStackTraceAsString( throwable );
-        message.append( '\n' ).append( stacktrace );
-      }
-      Assert.fail( message.toString() );
-    }
+    runner.checkNoExceptionRaised();
   }
 
 
-  private final List<? extends Callable<M>> monitoredTasks;
-  private final List<? extends Callable<B>> backgroundTasks;
+  private final List<? extends Callable<? extends M>> monitoredTasks;
+  private final List<? extends Callable<? extends B>> backgroundTasks;
   private final AtomicBoolean condition;
 
   private final long timeout;
@@ -95,14 +85,14 @@ class ConcurrencyTestRunner<M, B> {
 
   private Exception exception;
 
-  ConcurrencyTestRunner( List<? extends Callable<M>> monitoredTasks,
-                         List<? extends Callable<B>> backgroundTasks,
+  ConcurrencyTestRunner( List<? extends Callable<? extends M>> monitoredTasks,
+                         List<? extends Callable<? extends B>> backgroundTasks,
                          AtomicBoolean condition ) {
     this( monitoredTasks, backgroundTasks, condition, TimeUnit.MINUTES.toMillis( 5 ) );
   }
 
-  ConcurrencyTestRunner( List<? extends Callable<M>> monitoredTasks,
-                         List<? extends Callable<B>> backgroundTasks,
+  ConcurrencyTestRunner( List<? extends Callable<? extends M>> monitoredTasks,
+                         List<? extends Callable<? extends B>> backgroundTasks,
                          AtomicBoolean condition,
                          long timeout ) {
     this.monitoredTasks = monitoredTasks;
@@ -120,13 +110,13 @@ class ConcurrencyTestRunner<M, B> {
     final int tasksAmount = monitoredTasks.size() + backgroundTasks.size();
     final ExecutorService executors = Executors.newFixedThreadPool( tasksAmount );
     try {
-      List<Future<B>> background = new ArrayList<Future<B>>( backgroundTasks.size() );
-      for ( Callable<B> task : backgroundTasks ) {
+      List<Future<? extends B>> background = new ArrayList<Future<? extends B>>( backgroundTasks.size() );
+      for ( Callable<? extends B> task : backgroundTasks ) {
         background.add( executors.submit( task ) );
       }
 
-      List<Future<M>> monitored = new ArrayList<Future<M>>( monitoredTasks.size() );
-      for ( Callable<M> task : monitoredTasks ) {
+      List<Future<? extends M>> monitored = new ArrayList<Future<? extends M>>( monitoredTasks.size() );
+      for ( Callable<? extends M> task : monitoredTasks ) {
         monitored.add( executors.submit( task ) );
       }
 
@@ -141,12 +131,12 @@ class ConcurrencyTestRunner<M, B> {
       condition.set( false );
 
       for ( int i = 0; i < monitored.size(); i++ ) {
-        Future<M> future = monitored.get( i );
+        Future<? extends M> future = monitored.get( i );
         monitoredResults.put( monitoredTasks.get( i ), ExecutionResult.from( future ) );
       }
 
       for ( int i = 0; i < background.size(); i++ ) {
-        Future<B> future = background.get( i );
+        Future<? extends B> future = background.get( i );
         while ( !future.isDone() ) {
           // wait: condition flag is cleared, thus background tasks must complete by convention
         }
@@ -187,14 +177,50 @@ class ConcurrencyTestRunner<M, B> {
     return errors;
   }
 
-  private List<Throwable> pickupErrors( Iterable<? extends ExecutionResult<?>> iterable ) {
-    List<Throwable> errors = new ArrayList<Throwable>();
-    for ( ExecutionResult<?> result : iterable ) {
+  private List<Throwable> pickupErrors( Collection<? extends ExecutionResult<?>> collection ) {
+    List<Throwable> errors = new ArrayList<Throwable>( collection.size() );
+    for ( ExecutionResult<?> result : collection ) {
       if ( result.isError() ) {
         errors.add( result.getThrowable() );
       }
     }
     return errors;
+  }
+
+
+  void checkNoExceptionRaised() {
+    List<Throwable> errors = getTasksErrors();
+    if ( !errors.isEmpty() ) {
+      StringBuilder message = new StringBuilder( 1024 );
+      message.append( "There are expected no exceptions during the test, but " )
+        .append( errors.size() ).append( " raised:" );
+
+      for ( Throwable throwable : errors ) {
+        String stacktrace = Throwables.getStackTraceAsString( throwable );
+        message.append( '\n' ).append( stacktrace );
+      }
+      Assert.fail( message.toString() );
+    }
+  }
+
+
+  List<M> getMonitoredTasksResults() {
+    return pickupResults( monitoredResults.values() );
+  }
+
+  private <T> List<T> pickupResults( Collection<? extends ExecutionResult<T>> collection ) {
+    List<T> errors = new ArrayList<T>( collection.size() );
+    for ( ExecutionResult<T> result : collection ) {
+      if ( !result.isError() ) {
+        errors.add( result.getResult() );
+      }
+    }
+    return errors;
+  }
+
+
+  Map<Callable<? extends M>, ExecutionResult<M>> getMonitoredResults() {
+    return Collections.unmodifiableMap( monitoredResults );
   }
 }
 
