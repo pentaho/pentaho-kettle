@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -86,71 +86,86 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     Object[] r = getRow();
 
     // first row initialization
-    if ( first && r != null ) {
+    if ( first ) {
 
       first = false;
       data.outputRowMeta = getInputRowMeta().clone();
       data.inputRowMeta = getInputRowMeta().clone();
 
-      // if we are supposed to init the file dalayed, here we go
-      if ( r != null && meta.isDoNotOpenNewFileInit() ) {
+      // if we are supposed to init the file up front, here we go
+      if ( !meta.isDoNotOpenNewFileInit() ) {
         data.firstFileOpened = true;
-        prepareNextOutputFile();
-      }
 
-      // remember where the output fields are in the input row
-      data.fieldnrs = new int[ meta.getOutputFields().length ];
-      for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
-        data.fieldnrs[ i ] = data.inputRowMeta.indexOfValue( meta.getOutputFields()[ i ].getName() );
-        if ( data.fieldnrs[ i ] < 0 ) {
-          logError( "Field [" + meta.getOutputFields()[ i ].getName() + "] couldn't be found in the input stream!" );
-          setErrors( 1 );
+        try {
+          prepareNextOutputFile();
+        } catch ( KettleException e ) {
+          e.printStackTrace();
+          logError( "Couldn't prepare output file " + environmentSubstitute( meta.getFileName() ) );
+          setErrors( 1L );
           stopAll();
-          return false;
         }
       }
 
-      // remember where the comment fields are in the input row
-      data.commentfieldnrs = new int[ meta.getOutputFields().length ];
-      for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
-        data.commentfieldnrs[ i ] = data.inputRowMeta.indexOfValue( meta.getOutputFields()[ i ].getCommentField() );
-        if ( data.commentfieldnrs[ i ] < 0 && !Const.isEmpty( meta.getOutputFields()[ i ].getCommentField() ) ) {
-          logError( "Comment Field ["
-            + meta.getOutputFields()[ i ].getCommentField() + "] couldn't be found in the input stream!" );
-          setErrors( 1 );
-          stopAll();
-          return false;
+      if ( r != null ) {
+        // if we are supposed to init the file delayed, here we go
+        if ( meta.isDoNotOpenNewFileInit() ) {
+          data.firstFileOpened = true;
+          prepareNextOutputFile();
+        }
+
+        // remember where the output fields are in the input row
+        data.fieldnrs = new int[meta.getOutputFields().length];
+        for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
+          data.fieldnrs[i] = data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getName() );
+          if ( data.fieldnrs[i] < 0 ) {
+            logError( "Field [" + meta.getOutputFields()[i].getName() + "] couldn't be found in the input stream!" );
+            setErrors( 1 );
+            stopAll();
+            return false;
+          }
+        }
+
+        // remember where the comment fields are in the input row
+        data.commentfieldnrs = new int[meta.getOutputFields().length];
+        for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
+          data.commentfieldnrs[i] = data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getCommentField() );
+          if ( data.commentfieldnrs[i] < 0 && !Const.isEmpty( meta.getOutputFields()[i].getCommentField() ) ) {
+            logError( "Comment Field ["
+              + meta.getOutputFields()[i].getCommentField() + "] couldn't be found in the input stream!" );
+            setErrors( 1 );
+            stopAll();
+            return false;
+          }
+        }
+
+        // remember where the comment author fields are in the input row
+        data.commentauthorfieldnrs = new int[meta.getOutputFields().length];
+        for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
+          data.commentauthorfieldnrs[i] =
+            data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getCommentAuthorField() );
+          if ( data.commentauthorfieldnrs[i] < 0
+            && !Const.isEmpty( meta.getOutputFields()[i].getCommentAuthorField() ) ) {
+            logError( "Comment Author Field ["
+              + meta.getOutputFields()[i].getCommentAuthorField() + "] couldn't be found in the input stream!" );
+            setErrors( 1 );
+            stopAll();
+            return false;
+          }
+        }
+
+        // remember where the link fields are in the input row
+        data.linkfieldnrs = new int[meta.getOutputFields().length];
+        for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
+          data.linkfieldnrs[i] = data.inputRowMeta.indexOfValue( meta.getOutputFields()[i].getHyperlinkField() );
+          if ( data.linkfieldnrs[i] < 0 && !Const.isEmpty( meta.getOutputFields()[i].getHyperlinkField() ) ) {
+            logError( "Link Field ["
+              + meta.getOutputFields()[i].getHyperlinkField() + "] couldn't be found in the input stream!" );
+            setErrors( 1 );
+            stopAll();
+            return false;
+          }
         }
       }
-
-      // remember where the comment author fields are in the input row
-      data.commentauthorfieldnrs = new int[ meta.getOutputFields().length ];
-      for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
-        data.commentauthorfieldnrs[ i ] =
-          data.inputRowMeta.indexOfValue( meta.getOutputFields()[ i ].getCommentAuthorField() );
-        if ( data.commentauthorfieldnrs[ i ] < 0
-          && !Const.isEmpty( meta.getOutputFields()[ i ].getCommentAuthorField() ) ) {
-          logError( "Comment Author Field ["
-            + meta.getOutputFields()[ i ].getCommentAuthorField() + "] couldn't be found in the input stream!" );
-          setErrors( 1 );
-          stopAll();
-          return false;
-        }
-      }
-
-      // remember where the link fields are in the input row
-      data.linkfieldnrs = new int[ meta.getOutputFields().length ];
-      for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
-        data.linkfieldnrs[ i ] = data.inputRowMeta.indexOfValue( meta.getOutputFields()[ i ].getHyperlinkField() );
-        if ( data.linkfieldnrs[ i ] < 0 && !Const.isEmpty( meta.getOutputFields()[ i ].getHyperlinkField() ) ) {
-          logError( "Link Field ["
-            + meta.getOutputFields()[ i ].getHyperlinkField() + "] couldn't be found in the input stream!" );
-          setErrors( 1 );
-          stopAll();
-          return false;
-        }
-      }
-
     }
 
     if ( r != null ) {
@@ -185,12 +200,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         closeOutputFile();
       }
       setOutputDone();
-
       clearWorkbookMem();
-
       return false;
     }
-
   }
 
   // clears all memory that POI may hold
@@ -369,8 +381,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
   }
 
-  private void writeField( Object v, ValueMetaInterface vMeta, ExcelWriterStepField excelField, Row xlsRow,
-                           int posX, Object[] row, int fieldNr, boolean isTitle ) throws KettleException {
+  //VisibleForTesting
+  void writeField( Object v, ValueMetaInterface vMeta, ExcelWriterStepField excelField, Row xlsRow,
+    int posX, Object[] row, int fieldNr, boolean isTitle ) throws KettleException {
 
     try {
 
@@ -895,7 +908,6 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     data = (ExcelWriterStepData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-
       data.splitnr = 0;
       data.datalines = 0;
       data.realSheetname = environmentSubstitute( meta.getSheetname() );
@@ -908,21 +920,6 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       data.shiftExistingCells = ExcelWriterStepMeta.ROW_WRITE_PUSH_DOWN.equals( meta.getRowWritingMethod() );
       data.createNewSheet = ExcelWriterStepMeta.IF_SHEET_EXISTS_CREATE_NEW.equals( meta.getIfSheetExists() );
       data.createNewFile = ExcelWriterStepMeta.IF_FILE_EXISTS_CREATE_NEW.equals( meta.getIfFileExists() );
-
-      // if we are supposed to init the file up front, here we go
-      if ( !meta.isDoNotOpenNewFileInit() ) {
-        data.firstFileOpened = true;
-
-        try {
-          prepareNextOutputFile();
-        } catch ( KettleException e ) {
-          e.printStackTrace();
-          logError( "Couldn't prepare output file " + environmentSubstitute( meta.getFileName() ) );
-          setErrors( 1L );
-          stopAll();
-
-        }
-      }
       return true;
     }
 
