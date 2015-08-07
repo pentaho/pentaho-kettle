@@ -353,26 +353,27 @@ public class TextFileCSVImportProgressDialog {
 
       // If we didn't find any matching result, it's a String...
       //
-      StringEvaluationResult result = evaluator.getAdvicedResult();
       if ( evaluationResults.isEmpty() ) {
         field.setType( ValueMetaInterface.TYPE_STRING );
         field.setLength( evaluator.getMaxLength() );
-      }
-      if ( result != null ) {
-        // Take the first option we find, list the others below...
-        //
-        ValueMetaInterface conversionMeta = result.getConversionMeta();
-        field.setType( conversionMeta.getType() );
-        field.setTrimType( conversionMeta.getTrimType() );
-        field.setFormat( conversionMeta.getConversionMask() );
-        field.setDecimalSymbol( conversionMeta.getDecimalSymbol() );
-        field.setGroupSymbol( conversionMeta.getGroupingSymbol() );
-        field.setLength( conversionMeta.getLength() );
-        field.setPrecision( conversionMeta.getPrecision() );
+      } else {
+        StringEvaluationResult result = evaluator.getAdvicedResult();
+        if ( result != null ) {
+          // Take the first option we find, list the others below...
+          //
+          ValueMetaInterface conversionMeta = result.getConversionMeta();
+          field.setType( conversionMeta.getType() );
+          field.setTrimType( conversionMeta.getTrimType() );
+          field.setFormat( conversionMeta.getConversionMask() );
+          field.setDecimalSymbol( conversionMeta.getDecimalSymbol() );
+          field.setGroupSymbol( conversionMeta.getGroupingSymbol() );
+          field.setLength( conversionMeta.getLength() );
+          field.setPrecision( conversionMeta.getPrecision() );
 
-        nrnull[i] = result.getNrNull();
-        minstr[i] = result.getMin() == null ? "" : result.getMin().toString();
-        maxstr[i] = result.getMax() == null ? "" : result.getMax().toString();
+          nrnull[i] = result.getNrNull();
+          minstr[i] = result.getMin() == null ? "" : result.getMin().toString();
+          maxstr[i] = result.getMax() == null ? "" : result.getMax().toString();
+        }
       }
 
       message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.FieldNumber", ""
