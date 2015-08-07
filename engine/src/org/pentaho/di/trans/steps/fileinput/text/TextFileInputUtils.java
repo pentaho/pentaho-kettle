@@ -520,7 +520,7 @@ public class TextFileInputUtils {
       throw new KettleException( BaseMessages.getString( PKG, "TextFileInput.Log.Error.ErrorConvertingLineText" ), e );
     }
 
-    if ( passThruFields != null ) {
+    if ( r != null && passThruFields != null ) {
       // Simply add all fields from source files step
       for ( int i = 0; i < nrPassThruFields; i++ ) {
         r[i] = passThruFields[i];
