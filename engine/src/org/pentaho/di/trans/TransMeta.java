@@ -854,7 +854,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     }
     stepMeta.setParentTransMeta( this );
     StepMetaInterface iface = stepMeta.getStepMetaInterface();
-    if ( iface instanceof StepMetaChangeListenerInterface ) {
+    if ( index != -1 && iface instanceof StepMetaChangeListenerInterface ) {
       addStepChangeListener( index, (StepMetaChangeListenerInterface) iface );
     }
     changed_steps = true;
