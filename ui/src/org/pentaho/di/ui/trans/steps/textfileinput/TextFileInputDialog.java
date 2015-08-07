@@ -2627,6 +2627,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fileInputStream = KettleVFS.getInputStream( fileObject );
         Table table = wFields.table;
 
+        // TODO move to step's reader
+
         CompressionProvider provider =
             CompressionProviderFactory.getInstance().createCompressionProviderInstance( meta.content.fileCompression );
         inputStream = provider.createInputStream( fileInputStream );
