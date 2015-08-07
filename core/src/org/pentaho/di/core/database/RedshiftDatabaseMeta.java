@@ -62,6 +62,30 @@ public class RedshiftDatabaseMeta extends PostgreSQLDatabaseMeta {
     return "http://docs.aws.amazon.com/redshift/latest/mgmt/configure-jdbc-connection.html";
   }
 
+  /**
+   * The superclass method checks whether or not the command setFetchSize() is supported by the driver. In the case of
+   * Redshift, setFetchSize() is supported, but in the case of LIMIT, the Redshift driver will enforce that the value
+   * for fetch size is less than or equal to the value specified in the LIMIT clause.
+   *
+   * To avoid these problems, this method (and supportsSetMaxRows()) returns false
+   *
+   * @return false
+   */
+  @Override
+  public boolean isFetchSizeSupported() {
+    return false;
+  }
+
+  /**
+   * Redshift does not recognize the JDBC "setMaxRows" parameter
+   *
+   * @return false
+   */
+  @Override
+  public boolean supportsSetMaxRows() {
+    return false;
+  }
+
   @Override
   public String[] getUsedLibraries() {
     return new String[] { "RedshiftJDBC4_1.0.10.1010.jar" };
