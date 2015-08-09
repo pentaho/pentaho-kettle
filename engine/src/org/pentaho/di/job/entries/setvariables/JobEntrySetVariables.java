@@ -31,6 +31,9 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullV
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -224,7 +227,11 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
       try {
         if ( !Const.isEmpty( realFilename ) ) {
           Properties properties = new Properties();
-          properties.load( KettleVFS.getInputStream( realFilename ) );
+          InputStream is = KettleVFS.getInputStream( realFilename );
+          // for UTF8 properties files
+          InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+          BufferedReader reader = new BufferedReader(isr);
+          properties.load( reader );
           for ( Object key : properties.keySet() ) {
             variables.add( (String) key );
             variableValues.add( (String) properties.get( key ) );
