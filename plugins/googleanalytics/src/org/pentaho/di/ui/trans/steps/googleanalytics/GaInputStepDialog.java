@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.trans.steps.googleanalytics;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.analytics.Analytics;
 import com.google.api.services.analytics.model.GaData;
 import com.google.api.services.analytics.model.Profile;
@@ -971,8 +972,16 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
             wFields.optWidth( true );
             input.setChanged();
           } catch ( IOException ioe ) {
+            Exception exceptionToDisplay = ioe;
+            // Try to display something more user friendly than plain JSON
+            if ( ioe instanceof GoogleJsonResponseException ) {
+              GoogleJsonResponseException gjre = (GoogleJsonResponseException) ioe;
+              if ( gjre.getDetails() != null && gjre.getDetails().getMessage() != null ) {
+                exceptionToDisplay = new IOException( gjre.getDetails().getMessage(), gjre );
+              }
+            }
             new ErrorDialog( shell, BaseMessages.getString( PKG, "GoogleAnalyticsDialog.RequestError.DialogTitle" ),
-                BaseMessages.getString( PKG, "GoogleAnalyticsDialog.RequestError.DialogMessage" ), ioe );
+                BaseMessages.getString( PKG, "GoogleAnalyticsDialog.RequestError.DialogMessage" ), exceptionToDisplay );
           }
         }
       }
