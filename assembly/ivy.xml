@@ -31,6 +31,15 @@
     <dependency org="${ivy.artifact.group}" name="market" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="market" type="zip"/>
     </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-dummy-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+      <artifact name="kettle-dummy-plugin" type="zip"/>
+    </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-s3csvinput-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+      <artifact name="kettle-s3csvinput-plugin" type="zip"/>
+    </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-shapefilereader-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+      <artifact name="kettle-shapefilereader-plugin" type="zip"/>
+    </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-drools5-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
       <artifact name="kettle-drools5-plugin" type="zip"/>
     </dependency>
