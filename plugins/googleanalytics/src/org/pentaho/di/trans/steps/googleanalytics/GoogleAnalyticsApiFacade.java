@@ -46,12 +46,12 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.Assert;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 
 
@@ -61,17 +61,14 @@ public class GoogleAnalyticsApiFacade {
 
   public static GoogleAnalyticsApiFacade createFor(
     String application, String oauthServiceAccount, String oauthKeyFile )
-      throws IOException, GeneralSecurityException, URISyntaxException {
-
-    URI keyFileURI = new URI( oauthKeyFile );
-    File keyFile = keyFileURI.isAbsolute() ? new File( keyFileURI ) : new File( oauthKeyFile );
+      throws GeneralSecurityException, IOException, KettleFileException {
 
     return new GoogleAnalyticsApiFacade(
       GoogleNetHttpTransport.newTrustedTransport(),
       JacksonFactory.getDefaultInstance(),
       application,
       oauthServiceAccount,
-      keyFile
+      new File( KettleVFS.getFileObject( oauthKeyFile ).getName().getPath() )
     );
   }
 
