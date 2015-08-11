@@ -98,7 +98,7 @@ public class TransMetaTest {
         return null;
       }
     } ).when( smi ).getFields( any( RowMetaInterface.class ), anyString(), any( RowMetaInterface[].class ), eq( nextStep ), any(
-      VariableSpace.class ), any( Repository.class ), any( IMetaStore.class) );
+      VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
 
     StepMeta thisStep = mockStepMeta( "thisStep" );
     when( thisStep.getStepMetaInterface() ).thenReturn( smi );
@@ -121,7 +121,7 @@ public class TransMetaTest {
     dbMetaShared.setHostname( "host" );
     DatabaseMeta dbMetaStore = new DatabaseMeta();
     dbMetaStore.setName( name );
-    dbMetaStore.setHostname( "anotherhost");
+    dbMetaStore.setHostname( "anotherhost" );
     IMetaStore mstore = new MemoryMetaStore();
     DatabaseMetaStoreUtil.createDatabaseElement( mstore, dbMetaStore );
 
@@ -143,7 +143,6 @@ public class TransMetaTest {
     // to make sure that method comes through positive scenario
     assert transMeta.steps.size() == 1;
     assert transMeta.changed_steps;
-
   }
 
   private static StepMeta mockStepMeta( String name ) {
