@@ -1770,7 +1770,8 @@ public class Const {
    * @return The path to the users home directory, or the System property {@code KETTLE_HOME} if set.
    */
   public static final String getUserHomeDirectory() {
-    return NVL( System.getProperty( "KETTLE_HOME" ), System.getProperty( "user.home" ) );
+    return NVL( System.getenv( "KETTLE_HOME" ), NVL( System.getProperty( "KETTLE_HOME" ),
+        System.getProperty( "user.home" ) ) );
   }
 
   /**
