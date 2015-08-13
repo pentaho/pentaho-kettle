@@ -23,30 +23,26 @@
 package org.pentaho.di.trans.steps.transexecutor;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.TransStepUtil;
 
@@ -63,7 +59,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
   private TransExecutorData data;
 
   public TransExecutor( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                        Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -91,7 +87,8 @@ public class TransExecutor extends BaseStep implements StepInterface {
       }
 
       if ( transExecutorData.getExecutorStepOutputRowMeta() != null ) {
-        putRowTo( transExecutorData.getExecutorStepOutputRowMeta(), row, transExecutorData.getExecutorStepOutputRowSet() );
+        putRowTo( transExecutorData.getExecutorStepOutputRowMeta(), row,
+          transExecutorData.getExecutorStepOutputRowSet() );
       }
 
       boolean newGroup = false;
@@ -103,7 +100,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
           }
         }
       } else if ( transExecutorData.groupFieldIndex >= 0 ) {
-        Object groupFieldData = row[transExecutorData.groupFieldIndex];
+        Object groupFieldData = row[ transExecutorData.groupFieldIndex ];
         if ( transExecutorData.prevGroupFieldData != null ) {
           if ( transExecutorData.groupFieldMeta.compare( transExecutorData.prevGroupFieldData, groupFieldData ) != 0 ) {
             newGroup = true;
@@ -140,7 +137,8 @@ public class TransExecutor extends BaseStep implements StepInterface {
     if ( meta.getExecutionResultTargetStepMeta() != null ) {
       meta.prepareExecutionResultsFields( transExecutorData.getExecutionResultsOutputRowMeta(),
         meta.getExecutionResultTargetStepMeta() );
-      transExecutorData.setExecutionResultRowSet( findOutputRowSet( meta.getExecutionResultTargetStepMeta().getName() ) );
+      transExecutorData
+        .setExecutionResultRowSet( findOutputRowSet( meta.getExecutionResultTargetStepMeta().getName() ) );
     }
     // internal transformation's execution result's file
     transExecutorData.setResultFilesOutputRowMeta( new RowMeta() );
@@ -176,7 +174,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
 
   private void executeTransformation() throws KettleException {
-    final TransExecutorData transExecutorData = getData();
+    TransExecutorData transExecutorData = getData();
     // If we got 0 rows on input we don't really want to execute the transformation
     if ( transExecutorData.groupBuffer.isEmpty() ) {
       return;
@@ -207,17 +205,6 @@ public class TransExecutor extends BaseStep implements StepInterface {
     try {
       executorTrans.prepareExecution( getTrans().getArguments() );
 
-      if ( meta.getOutputRowsSourceStepMeta() != null ) {
-        List<StepMetaDataCombi> internalTransformationSteps = executorTrans.getSteps();
-        StepInterface stepInterface = internalTransformationSteps.get( internalTransformationSteps.size() - 1 ).step;
-        stepInterface.addRowListener( new RowAdapter() {
-          @Override
-          public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
-            putRowTo( rowMeta, row, transExecutorData.getResultRowsRowSet() );
-          }
-        } );
-      }
-
       // run transformation
       executorTrans.startThreads();
 
@@ -238,13 +225,15 @@ public class TransExecutor extends BaseStep implements StepInterface {
       result.setNrErrors( 1 );
     }
 
+    collectTransResults( result );
     collectExecutionResults( result );
     collectExecutionResultFiles( result );
 
     transExecutorData.groupBuffer.clear();
   }
 
-  private Trans createInternalTrans() throws KettleException {
+  // package-local visibility for testing purposes
+  Trans createInternalTrans() throws KettleException {
     Trans executorTrans = new Trans( getData().getExecutorTransMeta(), this );
 
     executorTrans.setParentTrans( getTrans() );
@@ -274,9 +263,9 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
     String[] parameterNames = internalTrans.listParameters();
     for ( int i = 0; i < parameters.getVariable().length; i++ ) {
-      String variable = parameters.getVariable()[i];
-      String fieldName = parameters.getField()[i];
-      String inputValue = parameters.getInput()[i];
+      String variable = parameters.getVariable()[ i ];
+      String fieldName = parameters.getField()[ i ];
+      String inputValue = parameters.getInput()[ i ];
 
       String value;
       // Take the value from an input row or from a static value?
@@ -301,6 +290,15 @@ public class TransExecutor extends BaseStep implements StepInterface {
     }
 
     internalTrans.activateParameters();
+  }
+
+  private void collectTransResults( Result result ) throws KettleException {
+    if ( meta.getOutputRowsSourceStepMeta() != null ) {
+      RowSet rowSet = getData().getResultRowsRowSet();
+      for ( RowMetaAndData metaAndData : result.getRows() ) {
+        putRowTo( metaAndData.getRowMeta(), metaAndData.getData(), rowSet );
+      }
+    }
   }
 
   private void collectExecutionResults( Result result ) throws KettleException {
@@ -382,8 +380,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
         // Pass the repository down to the metadata object...
         meta.setRepository( getTransMeta().getRepository() );
 
-        transExecutorData.setExecutorTransMeta(
-          TransExecutorMeta.loadTransMeta( meta, meta.getRepository(), meta.getMetaStore(), this ) );
+        transExecutorData.setExecutorTransMeta( loadExecutorTransMeta() );
 
         // Do we have a transformation at all?
         if ( transExecutorData.getExecutorTransMeta() != null ) {
@@ -421,13 +418,19 @@ public class TransExecutor extends BaseStep implements StepInterface {
     return false;
   }
 
+  // package-local visibility for testing purposes
+  TransMeta loadExecutorTransMeta() throws KettleException {
+    return TransExecutorMeta.loadTransMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
+  }
+
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     TransExecutorData transExecutorData = getData();
     transExecutorData.groupBuffer = null;
     super.dispose( smi, sdi );
   }
 
-  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) throws KettleException {
+  public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
+    throws KettleException {
     if ( getData().getExecutorTrans() != null ) {
       getData().getExecutorTrans().stopAll();
     }
