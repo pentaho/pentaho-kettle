@@ -37,7 +37,6 @@
 
 package org.pentaho.di.trans.steps.googleanalytics;
 
-
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.services.analytics.Analytics;
 import com.google.api.services.analytics.AnalyticsScopes;
@@ -54,7 +53,6 @@ import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-
 public class GoogleAnalyticsApiFacade {
   private Analytics analytics;
   private final HttpTransport httpTransport;
@@ -68,7 +66,7 @@ public class GoogleAnalyticsApiFacade {
       JacksonFactory.getDefaultInstance(),
       application,
       oauthServiceAccount,
-      new File( KettleVFS.getFileObject( oauthKeyFile ).getName().getPath() )
+      new File( KettleVFS.getFileObject( oauthKeyFile ).getURL().getPath() )
     );
   }
 
@@ -104,5 +102,4 @@ public class GoogleAnalyticsApiFacade {
   public Analytics getAnalytics() {
     return analytics;
   }
-
 }
