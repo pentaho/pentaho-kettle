@@ -1839,6 +1839,23 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
     return hops.toArray( new JobHopMeta[hops.size()] );
   }
 
+  public boolean isPathExist( JobEntryInterface from, JobEntryInterface to ) {
+    for ( JobHopMeta hi : jobhops ) {
+      if ( hi.getFromEntry() != null && hi.getToEntry() != null ) {
+        if ( hi.getFromEntry().getName().equalsIgnoreCase( from.getName() ) ) {
+          if ( hi.getToEntry().getName().equalsIgnoreCase( to.getName() ) ) {
+            return true;
+          }
+          if ( isPathExist( hi.getToEntry().getEntry(), to ) ) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
   /**
    * Select all.
    */
