@@ -21,19 +21,27 @@
  ******************************************************************************/
 package org.pentaho.di.core.row.value;
 
+import static org.apache.commons.lang.SystemUtils.LINE_SEPARATOR;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.apache.commons.lang.SystemUtils.*;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.pentaho.di.core.row.ValueMetaInterface.*;
+import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_BIGNUMBER;
+import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_BINARY;
+import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_BOOLEAN;
+import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_DATE;
+import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_INET;
+import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_INTEGER;
+import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_NUMBER;
+import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_STRING;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -43,8 +51,12 @@ import java.sql.ResultSetMetaData;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.BeforeClass;
@@ -491,4 +503,41 @@ public class ValueMetaBaseTest {
     assertEquals( 0, dateMeta.compare( date1, date1 ) );
   }
 
+  @Test
+  public void testDateParsing8601() throws Exception {
+    ValueMetaBase dateMeta = new ValueMetaBase( "date", TYPE_DATE );
+    dateMeta.setDateFormatLenient( false );
+
+    // try to convert date by 'start-of-date' make - old behavior
+    try {
+      dateMeta.setConversionMask( "yyyy-MM-dd" );
+      dateMeta.convertStringToDate( "1918-03-25T07:40:03.012+03:00" );
+      fail( "Shouldn't be converted" );
+    } catch ( KettleValueException ex ) {
+    }
+
+    // convert ISO-8601 date - supported since Java 7
+    dateMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss.SSSXXX" );
+    assertEquals( utc( 1918, 3, 25, 5, 10, 3, 12 ), dateMeta.convertStringToDate( "1918-03-25T07:40:03.012+02:30" ) );
+    assertEquals( utc( 1918, 3, 25, 7, 40, 3, 12 ), dateMeta.convertStringToDate( "1918-03-25T07:40:03.012Z" ) );
+
+    // convert date
+    dateMeta.setConversionMask( "yyyy-MM-dd" );
+    assertEquals( local( 1918, 3, 25, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "1918-03-25" ) );
+    // convert date with spaces at the end
+    assertEquals( local( 1918, 3, 25, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "1918-03-25  \n" ) );
+  }
+
+  Date local( int year, int month, int dat, int hrs, int min, int sec, int ms ) {
+    GregorianCalendar cal = new GregorianCalendar( year, month - 1, dat, hrs, min, sec );
+    cal.set( Calendar.MILLISECOND, ms );
+    return cal.getTime();
+  }
+
+  Date utc( int year, int month, int dat, int hrs, int min, int sec, int ms ) {
+    GregorianCalendar cal = new GregorianCalendar( year, month - 1, dat, hrs, min, sec );
+    cal.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+    cal.set( Calendar.MILLISECOND, ms );
+    return cal.getTime();
+  }
 }
