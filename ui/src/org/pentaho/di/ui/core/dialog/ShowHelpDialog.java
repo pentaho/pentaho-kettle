@@ -74,11 +74,15 @@ public class ShowHelpDialog extends Dialog {
     this.url = url;
   }
 
+  protected Shell createShell( Shell parent ) {
+    return new Shell( parent, SWT.RESIZE | SWT.MAX | SWT.MIN );
+  }
+
   public void open() {
     Shell parent = getParent();
     Display display = parent.getDisplay();
 
-    shell = new Shell( parent, SWT.RESIZE | SWT.MAX | SWT.MIN );
+    shell = createShell( parent );
     shell.setImage( GUIResource.getInstance().getImageSpoon() );
     props.setLook( shell );
 
