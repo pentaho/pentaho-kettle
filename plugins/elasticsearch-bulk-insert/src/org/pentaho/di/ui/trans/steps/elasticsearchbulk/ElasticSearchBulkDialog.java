@@ -880,6 +880,12 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
   private void test( TestType testType ) {
 
+    // Save off the thread's context class loader to restore after the test
+    ClassLoader originalClassloader = Thread.currentThread().getContextClassLoader();
+
+    // Now ensure that the thread's context class loader is the plugin's classloader
+    Thread.currentThread().setContextClassLoader( this.getClass().getClassLoader() );
+
     Client client = null;
     Node node = null;
     try {
@@ -954,6 +960,9 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
         node.close();
       }
     }
+
+    // Restore the original classloader
+    Thread.currentThread().setContextClassLoader( originalClassloader );
 
   }
 
