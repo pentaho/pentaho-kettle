@@ -3,6 +3,7 @@ package org.pentaho.di.trans.steps.newfileinput;
 import java.io.BufferedInputStream;
 import java.io.InputStreamReader;
 
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.compress.CompressionInputStream;
 import org.pentaho.di.core.compress.CompressionProvider;
@@ -53,7 +54,7 @@ public class NewFileInputReader implements IBaseInputReader {
       log.logDetailed( "This is a compressed file being handled by the " + provider.getName() + " provider" );
     }
 
-    in = provider.createInputStream( KettleVFS.getInputStream( file ) );
+    in = provider.createInputStream( new BOMInputStream( KettleVFS.getInputStream( file ) ) );
 
     in.nextEntry();
 

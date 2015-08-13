@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
@@ -1389,7 +1390,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
       CompressionProvider provider =
           CompressionProviderFactory.getInstance().getCompressionProviderByName( meta.getFileCompression() );
 
-      data.in = provider.createInputStream( KettleVFS.getInputStream( data.file ) );
+      data.in = provider.createInputStream( new BOMInputStream( KettleVFS.getInputStream( data.file ) ) );
       data.dataErrorLineHandler.handleFile( data.file );
       data.in.nextEntry();
 
