@@ -2610,7 +2610,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       int clearFields = meta.content.header ? SWT.YES : SWT.NO;
       int nrInputFields = meta.inputFiles.inputFields.length;
 
-      if ( meta.content.header && nrInputFields > 0 ) {
+      if ( nrInputFields > 0 ) {
         MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION );
         mb.setMessage( BaseMessages.getString( PKG, "TextFileInputDialog.ClearFieldList.DialogMessage" ) );
         mb.setText( BaseMessages.getString( PKG, "TextFileInputDialog.ClearFieldList.DialogTitle" ) );
@@ -2640,12 +2640,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         EncodingType encodingType = EncodingType.guessEncodingType( reader.getEncoding() );
 
-        if ( clearFields == SWT.YES || !meta.content.header || nrInputFields > 0 ) {
           // Scan the header-line, determine fields...
-          String line;
-
-          if ( meta.content.header || meta.inputFiles.inputFields.length == 0 ) {
-            line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
+          String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
             if ( line != null ) {
               // Estimate the number of input fields...
               // Chop up the line using the delimiter
@@ -2655,7 +2651,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
               for ( int i = 0; i < fields.length; i++ ) {
                 String field = fields[i];
-                if ( field == null || field.length() == 0 || ( nrInputFields == 0 && !meta.content.header ) ) {
+                if ( field == null || field.length() == 0 || !meta.content.header ) {
                   field = "Field" + ( i + 1 );
                 } else {
                   // Trim the field
@@ -2675,8 +2671,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
               // Copy it...
               getInfo( meta );
-            }
-          }
 
           // Sample a few lines to determine the correct type of the fields...
           String shellText = BaseMessages.getString( PKG, "TextFileInputDialog.LinesToSample.DialogTitle" );
