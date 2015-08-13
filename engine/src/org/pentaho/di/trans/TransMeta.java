@@ -128,8 +128,9 @@ import org.w3c.dom.Node;
  * @author Matt Casters
  * @since 20-jun-2003
  */
-public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>,
-  Cloneable, ResourceExportInterface, RepositoryElementInterface, LoggingObjectInterface {
+public class TransMeta extends AbstractMeta
+    implements XMLInterface, Comparator<TransMeta>, Comparable<TransMeta>, Cloneable, ResourceExportInterface,
+    RepositoryElementInterface, LoggingObjectInterface {
 
   /**
    * The package name, used for internationalization of messages.
@@ -242,16 +243,14 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *
    * @deprecated Moved to Trans
    */
-  @Deprecated
-  protected String[] arguments;
+  @Deprecated protected String[] arguments;
 
   /**
    * A table of named counters.
    *
    * @deprecated Moved to Trans
    */
-  @Deprecated
-  protected Hashtable<String, Counter> counters;
+  @Deprecated protected Hashtable<String, Counter> counters;
 
   /**
    * Indicators for changes in steps, databases, hops, and notes.
@@ -283,16 +282,14 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *
    * @deprecated
    */
-  @Deprecated
-  protected List<RowMetaAndData> resultRows;
+  @Deprecated protected List<RowMetaAndData> resultRows;
 
   /**
    * The result files.
    *
    * @deprecated
    */
-  @Deprecated
-  protected List<ResultFile> resultFiles;
+  @Deprecated protected List<ResultFile> resultFiles;
 
   /**
    * Whether the transformation is using unique connections.
@@ -377,14 +374,13 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     /**
      * A serial single-threaded transformation.
      */
-    SerialSingleThreaded( "SerialSingleThreaded", BaseMessages.getString(
-      PKG, "TransMeta.TransformationType.SerialSingleThreaded" ) ),
+    SerialSingleThreaded( "SerialSingleThreaded",
+        BaseMessages.getString( PKG, "TransMeta.TransformationType.SerialSingleThreaded" ) ),
 
     /**
      * A single-threaded transformation.
      */
-    SingleThreaded( "SingleThreaded", BaseMessages
-      .getString( PKG, "TransMeta.TransformationType.SingleThreaded" ) );
+    SingleThreaded( "SingleThreaded", BaseMessages.getString( PKG, "TransMeta.TransformationType.SingleThreaded" ) );
 
     /**
      * The code corresponding to the transformation type.
@@ -448,9 +444,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
      * @return the transformation types descriptions
      */
     public static String[] getTransformationTypesDescriptions() {
-      String[] desc = new String[ values().length ];
+      String[] desc = new String[values().length];
       for ( int i = 0; i < values().length; i++ ) {
-        desc[ i ] = values()[ i ].getDescription();
+        desc[i] = values()[i].getDescription();
       }
       return desc;
     }
@@ -466,12 +462,12 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   /**
    * A list of localized strings corresponding to string descriptions of the undo/redo actions.
    */
-  public static final String[] desc_type_undo =
-    {
-      "", BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoChange" ),
-      BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoNew" ),
-      BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoDelete" ),
-      BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoPosition" ) };
+  public static final String[]
+      desc_type_undo =
+      { "", BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoChange" ),
+          BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoNew" ),
+          BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoDelete" ),
+          BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoPosition" ) };
 
   /**
    * A constant specifying the tag value for the XML node of the transformation information.
@@ -552,8 +548,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @param arguments The arguments as Strings
    * @deprecated passing in arguments (a runtime argument) into the metadata is deprecated, pass it to Trans
    */
-  @Deprecated
-  public TransMeta( String filename, String name, String[] arguments ) {
+  @Deprecated public TransMeta( String filename, String name, String[] arguments ) {
     clear();
     setFilename( filename );
     this.name = name;
@@ -683,8 +678,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return a clone of the transformation meta-data object
    * @see java.lang.Object#clone()
    */
-  @Override
-  public Object clone() {
+  @Override public Object clone() {
     return realClone( true );
   }
 
@@ -755,8 +749,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * partition schemas, slave servers, and cluster schemas. Logging information and timeouts are reset to defaults, and
    * recent connection info is cleared.
    */
-  @Override
-  public void clear() {
+  @Override public void clear() {
     setObjectId( null );
     steps = new ArrayList<StepMeta>();
     hops = new ArrayList<TransHopMeta>();
@@ -854,7 +847,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     }
     stepMeta.setParentTransMeta( this );
     StepMetaInterface iface = stepMeta.getStepMetaInterface();
-    if ( iface instanceof StepMetaChangeListenerInterface ) {
+    if ( index != -1 && iface instanceof StepMetaChangeListenerInterface ) {
       addStepChangeListener( index, (StepMetaChangeListenerInterface) iface );
     }
     changed_steps = true;
@@ -1199,8 +1192,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     for ( int i = 0; i < nrTransHops(); i++ ) {
       TransHopMeta hi = getTransHop( i );
       if ( hi.isEnabled() || disabledToo ) {
-        if ( hi.getFromStep() != null
-          && hi.getToStep() != null && hi.getFromStep().equals( from ) && hi.getToStep().equals( to ) ) {
+        if ( hi.getFromStep() != null && hi.getToStep() != null && hi.getFromStep().equals( from ) && hi.getToStep()
+            .equals( to ) ) {
           return hi;
         }
       }
@@ -1241,7 +1234,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       return false;
     }
     for ( int i = 0; i < infoSteps.length; i++ ) {
-      if ( prev_step.getName().equalsIgnoreCase( infoSteps[ i ] ) ) {
+      if ( prev_step.getName().equalsIgnoreCase( infoSteps[i] ) ) {
         return true;
       }
     }
@@ -1256,8 +1249,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return The number of preceding steps.
    * @deprecated
    */
-  @Deprecated
-  public int findNrPrevSteps( String stepname ) {
+  @Deprecated public int findNrPrevSteps( String stepname ) {
     return findNrPrevSteps( findStep( stepname ), false );
   }
 
@@ -1269,8 +1261,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return The number of preceding steps.
    * @deprecated
    */
-  @Deprecated
-  public int findNrPrevSteps( String stepname, boolean info ) {
+  @Deprecated public int findNrPrevSteps( String stepname, boolean info ) {
     return findNrPrevSteps( findStep( stepname ), info );
   }
 
@@ -1292,8 +1283,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return The preceding step found.
    * @deprecated
    */
-  @Deprecated
-  public StepMeta findPrevStep( String stepname, int nr ) {
+  @Deprecated public StepMeta findPrevStep( String stepname, int nr ) {
     return findPrevStep( findStep( stepname ), nr );
   }
 
@@ -1306,8 +1296,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return The step information
    * @deprecated
    */
-  @Deprecated
-  public StepMeta findPrevStep( String stepname, int nr, boolean info ) {
+  @Deprecated public StepMeta findPrevStep( String stepname, int nr, boolean info ) {
     return findPrevStep( findStep( stepname ), nr, info );
   }
 
@@ -1330,8 +1319,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return The number of preceding steps
    * @deprecated please use method findPreviousSteps
    */
-  @Deprecated
-  public int findNrPrevSteps( StepMeta stepMeta, boolean info ) {
+  @Deprecated public int findNrPrevSteps( StepMeta stepMeta, boolean info ) {
     int count = 0;
     int i;
 
@@ -1357,8 +1345,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return The preceding step information
    * @deprecated please use method findPreviousSteps
    */
-  @Deprecated
-  public StepMeta findPrevStep( StepMeta stepMeta, int nr, boolean info ) {
+  @Deprecated public StepMeta findPrevStep( StepMeta stepMeta, int nr, boolean info ) {
     int count = 0;
     int i;
 
@@ -1422,9 +1409,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       return null;
     }
 
-    StepMeta[] infoStep = new StepMeta[ infoStepName.length ];
+    StepMeta[] infoStep = new StepMeta[infoStepName.length];
     for ( int i = 0; i < infoStep.length; i++ ) {
-      infoStep[ i ] = findStep( infoStepName[ i ] );
+      infoStep[i] = findStep( infoStepName[i] );
     }
 
     return infoStep;
@@ -1503,8 +1490,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return The number of succeeding steps.
    * @deprecated just get the next steps as an array
    */
-  @Deprecated
-  public int findNrNextSteps( StepMeta stepMeta ) {
+  @Deprecated public int findNrNextSteps( StepMeta stepMeta ) {
     int count = 0;
     int i;
     for ( i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
@@ -1525,8 +1511,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return The step found.
    * @deprecated just get the next steps as an array
    */
-  @Deprecated
-  public StepMeta findNextStep( StepMeta stepMeta, int nr ) {
+  @Deprecated public StepMeta findNextStep( StepMeta stepMeta, int nr ) {
     int count = 0;
     int i;
 
@@ -1559,7 +1544,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       }
     }
 
-    return prevSteps.toArray( new StepMeta[ prevSteps.size() ] );
+    return prevSteps.toArray( new StepMeta[prevSteps.size()] );
   }
 
   /**
@@ -1580,9 +1565,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    */
   public String[] getPrevStepNames( StepMeta stepMeta ) {
     StepMeta[] prevStepMetas = getPrevSteps( stepMeta );
-    String[] retval = new String[ prevStepMetas.length ];
+    String[] retval = new String[prevStepMetas.length];
     for ( int x = 0; x < prevStepMetas.length; x++ ) {
-      retval[ x ] = prevStepMetas[ x ].getName();
+      retval[x] = prevStepMetas[x].getName();
     }
 
     return retval;
@@ -1595,8 +1580,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return an array of succeeding steps.
    * @deprecated use findNextSteps instead
    */
-  @Deprecated
-  public StepMeta[] getNextSteps( StepMeta stepMeta ) {
+  @Deprecated public StepMeta[] getNextSteps( StepMeta stepMeta ) {
     List<StepMeta> nextSteps = new ArrayList<StepMeta>();
     for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
 
@@ -1606,7 +1590,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       }
     }
 
-    return nextSteps.toArray( new StepMeta[ nextSteps.size() ] );
+    return nextSteps.toArray( new StepMeta[nextSteps.size()] );
   }
 
   /**
@@ -1636,9 +1620,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    */
   public String[] getNextStepNames( StepMeta stepMeta ) {
     StepMeta[] nextStepMeta = getNextSteps( stepMeta );
-    String[] retval = new String[ nextStepMeta.length ];
+    String[] retval = new String[nextStepMeta.length];
     for ( int x = 0; x < nextStepMeta.length; x++ ) {
-      retval[ x ] = nextStepMeta[ x ].getName();
+      retval[x] = nextStepMeta[x].getName();
     }
 
     return retval;
@@ -1729,7 +1713,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     RowMetaInterface fields = new RowMeta();
 
     for ( int i = 0; i < stepMeta.length; i++ ) {
-      RowMetaInterface flds = getStepFields( stepMeta[ i ] );
+      RowMetaInterface flds = getStepFields( stepMeta[i] );
       if ( flds != null ) {
         fields.mergeRowMeta( flds );
       }
@@ -1746,7 +1730,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleStepException the kettle step exception
    */
   public RowMetaInterface getStepFields( StepMeta stepMeta, ProgressMonitorListener monitor )
-    throws KettleStepException {
+      throws KettleStepException {
     clearStepFieldsCachce();
     setRepositoryOnMappingSteps();
     return getStepFields( stepMeta, null, monitor );
@@ -1762,7 +1746,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleStepException the kettle step exception
    */
   public RowMetaInterface getStepFields( StepMeta stepMeta, StepMeta targetStep, ProgressMonitorListener monitor )
-    throws KettleStepException {
+      throws KettleStepException {
     RowMetaInterface row = new RowMeta();
 
     if ( stepMeta == null ) {
@@ -1797,20 +1781,16 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     // Resume the regular program...
 
     if ( log.isDebug() ) {
-      log
-        .logDebug( BaseMessages
-          .getString(
-            PKG,
-            "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String
-              .valueOf( findNrPrevSteps( stepMeta ) ) ) );
+      log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(),
+          String.valueOf( findNrPrevSteps( stepMeta ) ) ) );
     }
     int nrPrevious = findNrPrevSteps( stepMeta );
     for ( int i = 0; i < nrPrevious; i++ ) {
       StepMeta prevStepMeta = findPrevStep( stepMeta, i );
 
       if ( monitor != null ) {
-        monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.CheckingStepTask.Title", prevStepMeta
-          .getName() ) );
+        monitor.subTask(
+            BaseMessages.getString( PKG, "TransMeta.Monitor.CheckingStepTask.Title", prevStepMeta.getName() ) );
       }
 
       RowMetaInterface add = getStepFields( prevStepMeta, stepMeta, monitor );
@@ -1892,7 +1872,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleStepException the kettle step exception
    */
   public RowMetaInterface getPrevStepFields( StepMeta stepMeta, ProgressMonitorListener monitor )
-    throws KettleStepException {
+      throws KettleStepException {
     clearStepFieldsCachce();
 
     RowMetaInterface row = new RowMeta();
@@ -1902,19 +1882,15 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     }
 
     if ( log.isDebug() ) {
-      log
-        .logDebug( BaseMessages
-          .getString(
-            PKG,
-            "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String
-              .valueOf( findNrPrevSteps( stepMeta ) ) ) );
+      log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(),
+          String.valueOf( findNrPrevSteps( stepMeta ) ) ) );
     }
     for ( int i = 0; i < findNrPrevSteps( stepMeta ); i++ ) {
       StepMeta prevStepMeta = findPrevStep( stepMeta, i );
 
       if ( monitor != null ) {
-        monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.CheckingStepTask.Title", prevStepMeta
-          .getName() ) );
+        monitor.subTask(
+            BaseMessages.getString( PKG, "TransMeta.Monitor.CheckingStepTask.Title", prevStepMeta.getName() ) );
       }
 
       RowMetaInterface add = getStepFields( prevStepMeta, stepMeta, monitor );
@@ -1962,7 +1938,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleStepException the kettle step exception
    */
   public RowMetaInterface getThisStepFields( StepMeta stepMeta, StepMeta nextStep, RowMetaInterface row )
-    throws KettleStepException {
+      throws KettleStepException {
     return getThisStepFields( stepMeta, nextStep, row, null );
   }
 
@@ -1977,11 +1953,11 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleStepException the kettle step exception
    */
   public RowMetaInterface getThisStepFields( StepMeta stepMeta, StepMeta nextStep, RowMetaInterface row,
-                                             ProgressMonitorListener monitor ) throws KettleStepException {
+      ProgressMonitorListener monitor ) throws KettleStepException {
     // Then this one.
     if ( log.isDebug() ) {
-      log.logDebug( BaseMessages.getString(
-        PKG, "TransMeta.Log.GettingFieldsFromStep", stepMeta.getName(), stepMeta.getStepID() ) );
+      log.logDebug( BaseMessages
+          .getString( PKG, "TransMeta.Log.GettingFieldsFromStep", stepMeta.getName(), stepMeta.getStepID() ) );
     }
     String name = stepMeta.getName();
 
@@ -1995,9 +1971,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     if ( Const.isEmpty( lu ) ) {
       inform = new RowMetaInterface[] { stepint.getTableFields(), };
     } else {
-      inform = new RowMetaInterface[ lu.length ];
+      inform = new RowMetaInterface[lu.length];
       for ( int i = 0; i < lu.length; i++ ) {
-        inform[ i ] = getStepFields( lu[ i ] );
+        inform[i] = getStepFields( lu[i] );
       }
     }
 
@@ -2018,8 +1994,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
   @SuppressWarnings( "deprecation" )
   private void compatibleGetStepFields( StepMetaInterface stepint, RowMetaInterface row, String name,
-                                        RowMetaInterface[] inform, StepMeta nextStep, VariableSpace space )
-    throws KettleStepException {
+      RowMetaInterface[] inform, StepMeta nextStep, VariableSpace space ) throws KettleStepException {
 
     stepint.getFields( row, name, inform, nextStep, space );
 
@@ -2307,8 +2282,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return the XML representation of this transformation
    * @throws KettleException if any errors occur during generation of the XML
    */
-  public String getXML( boolean includeSteps, boolean includeDatabase, boolean includeSlaves,
-                        boolean includeClusters, boolean includePartitions ) throws KettleException {
+  public String getXML( boolean includeSteps, boolean includeDatabase, boolean includeSlaves, boolean includeClusters,
+      boolean includePartitions ) throws KettleException {
     Props props = null;
     if ( Props.isInitialized() ) {
       props = Props.getInstance();
@@ -2329,19 +2304,18 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     if ( trans_status >= 0 ) {
       retval.append( "    " ).append( XMLHandler.addTagValue( "trans_status", trans_status ) );
     }
-    retval.append( "    " ).append(
-      XMLHandler.addTagValue( "directory", directory != null
-        ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "directory",
+            directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR ) );
 
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
     String[] parameters = listParameters();
     for ( int idx = 0; idx < parameters.length; idx++ ) {
       retval.append( "        " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
-      retval.append( "            " ).append( XMLHandler.addTagValue( "name", parameters[ idx ] ) );
-      retval.append( "            " ).append(
-        XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[ idx ] ) ) );
-      retval.append( "            " ).append(
-        XMLHandler.addTagValue( "description", getParameterDescription( parameters[ idx ] ) ) );
+      retval.append( "            " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
+      retval.append( "            " )
+          .append( XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
+      retval.append( "            " )
+          .append( XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
       retval.append( "        " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
     }
     retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
@@ -2358,9 +2332,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
     retval.append( "    </log>" ).append( Const.CR );
     retval.append( "    <maxdate>" ).append( Const.CR );
-    retval
-      .append( "      " ).append(
-      XMLHandler.addTagValue( "connection", maxDateConnection == null ? "" : maxDateConnection.getName() ) );
+    retval.append( "      " )
+        .append( XMLHandler.addTagValue( "connection", maxDateConnection == null ? "" : maxDateConnection.getName() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "table", maxDateTable ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "field", maxDateField ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "offset", maxDateOffset ) );
@@ -2376,18 +2349,17 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "feedback_shown", feedbackShown ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "feedback_size", feedbackSize ) );
-    retval.append( "    " ).append(
-      XMLHandler.addTagValue( "using_thread_priorities", usingThreadPriorityManagment ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "using_thread_priorities", usingThreadPriorityManagment ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "shared_objects_file", sharedObjectsFile ) );
 
     // Performance monitoring
     //
-    retval.append( "    " ).append(
-      XMLHandler.addTagValue( "capture_step_performance", capturingStepPerformanceSnapShots ) );
-    retval.append( "    " ).append(
-      XMLHandler.addTagValue( "step_performance_capturing_delay", stepPerformanceCapturingDelay ) );
-    retval.append( "    " ).append(
-      XMLHandler.addTagValue( "step_performance_capturing_size_limit", stepPerformanceCapturingSizeLimit ) );
+    retval.append( "    " )
+        .append( XMLHandler.addTagValue( "capture_step_performance", capturingStepPerformanceSnapShots ) );
+    retval.append( "    " )
+        .append( XMLHandler.addTagValue( "step_performance_capturing_delay", stepPerformanceCapturingDelay ) );
+    retval.append( "    " )
+        .append( XMLHandler.addTagValue( "step_performance_capturing_size_limit", stepPerformanceCapturingSizeLimit ) );
 
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_DEPENDENCIES ) ).append( Const.CR );
     for ( int i = 0; i < nrDependencies(); i++ ) {
@@ -2431,8 +2403,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     retval.append( "  " ).append( XMLHandler.addTagValue( "created_user", createdUser ) );
     retval.append( "  " ).append( XMLHandler.addTagValue( "created_date", XMLHandler.date2string( createdDate ) ) );
     retval.append( "  " ).append( XMLHandler.addTagValue( "modified_user", modifiedUser ) );
-    retval
-      .append( "  " ).append( XMLHandler.addTagValue( "modified_date", XMLHandler.date2string( modifiedDate ) ) );
+    retval.append( "  " ).append( XMLHandler.addTagValue( "modified_date", XMLHandler.date2string( modifiedDate ) ) );
 
     try {
       retval.append( "    " ).append( XMLHandler.addTagValue( "key_for_session_key", keyForSessionKey ) );
@@ -2535,8 +2506,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that
    *                                       case)
    */
-  public TransMeta( String fname, VariableSpace parentVariableSpace ) throws KettleXMLException,
-    KettleMissingPluginsException {
+  public TransMeta( String fname, VariableSpace parentVariableSpace )
+      throws KettleXMLException, KettleMissingPluginsException {
     this( fname, null, true, parentVariableSpace );
   }
 
@@ -2551,8 +2522,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that
    *                                       case)
    */
-  public TransMeta( String fname, boolean setInternalVariables ) throws KettleXMLException,
-    KettleMissingPluginsException {
+  public TransMeta( String fname, boolean setInternalVariables )
+      throws KettleXMLException, KettleMissingPluginsException {
     this( fname, null, setInternalVariables );
   }
 
@@ -2581,8 +2552,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that
    *                                       case)
    */
-  public TransMeta( String fname, Repository rep, boolean setInternalVariables ) throws KettleXMLException,
-    KettleMissingPluginsException {
+  public TransMeta( String fname, Repository rep, boolean setInternalVariables )
+      throws KettleXMLException, KettleMissingPluginsException {
     this( fname, rep, setInternalVariables, null );
   }
 
@@ -2600,7 +2571,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *                                       case)
    */
   public TransMeta( String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace )
-    throws KettleXMLException, KettleMissingPluginsException {
+      throws KettleXMLException, KettleMissingPluginsException {
     this( fname, rep, setInternalVariables, parentVariableSpace, null );
   }
 
@@ -2619,7 +2590,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *                                       case)
    */
   public TransMeta( String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace,
-                    OverwritePrompter prompter ) throws KettleXMLException, KettleMissingPluginsException {
+      OverwritePrompter prompter ) throws KettleXMLException, KettleMissingPluginsException {
     this( fname, null, rep, setInternalVariables, parentVariableSpace, prompter );
   }
 
@@ -2639,8 +2610,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *                                       case)
    */
   public TransMeta( String fname, IMetaStore metaStore, Repository rep, boolean setInternalVariables,
-                    VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException,
-    KettleMissingPluginsException {
+      VariableSpace parentVariableSpace, OverwritePrompter prompter )
+      throws KettleXMLException, KettleMissingPluginsException {
     this.metaStore = metaStore;
     this.repository = rep;
 
@@ -2649,8 +2620,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     try {
       doc = XMLHandler.loadXMLFile( KettleVFS.getFileObject( fname, parentVariableSpace ) );
     } catch ( KettleFileException e ) {
-      throw new KettleXMLException( BaseMessages.getString(
-        PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname ), e );
+      throw new KettleXMLException(
+          BaseMessages.getString( PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname ), e );
     }
 
     if ( doc != null ) {
@@ -2658,16 +2629,16 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       Node transnode = XMLHandler.getSubNode( doc, XML_TAG );
 
       if ( transnode == null ) {
-        throw new KettleXMLException( BaseMessages.getString(
-          PKG, "TransMeta.Exception.NotValidTransformationXML", fname ) );
+        throw new KettleXMLException(
+            BaseMessages.getString( PKG, "TransMeta.Exception.NotValidTransformationXML", fname ) );
       }
 
       // Load from this node...
       loadXML( transnode, fname, metaStore, rep, setInternalVariables, parentVariableSpace, prompter );
 
     } else {
-      throw new KettleXMLException( BaseMessages.getString(
-        PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname ) );
+      throw new KettleXMLException(
+          BaseMessages.getString( PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname ) );
     }
   }
 
@@ -2685,8 +2656,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *                                       case)
    */
   public TransMeta( InputStream xmlStream, Repository rep, boolean setInternalVariables,
-                    VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException,
-    KettleMissingPluginsException {
+      VariableSpace parentVariableSpace, OverwritePrompter prompter )
+      throws KettleXMLException, KettleMissingPluginsException {
     Document doc = XMLHandler.loadXMLFile( xmlStream, null, false, false );
     Node transnode = XMLHandler.getSubNode( doc, XML_TAG );
     loadXML( transnode, rep, setInternalVariables, parentVariableSpace, prompter );
@@ -2718,8 +2689,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that
    *                                       case)
    */
-  public void loadXML( Node transnode, Repository rep, boolean setInternalVariables ) throws KettleXMLException,
-    KettleMissingPluginsException {
+  public void loadXML( Node transnode, Repository rep, boolean setInternalVariables )
+      throws KettleXMLException, KettleMissingPluginsException {
     loadXML( transnode, rep, setInternalVariables, null );
   }
 
@@ -2736,8 +2707,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that
    *                                       case)
    */
-  public void loadXML( Node transnode, Repository rep, boolean setInternalVariables,
-                       VariableSpace parentVariableSpace ) throws KettleXMLException, KettleMissingPluginsException {
+  public void loadXML( Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace )
+      throws KettleXMLException, KettleMissingPluginsException {
     loadXML( transnode, rep, setInternalVariables, parentVariableSpace, null );
   }
 
@@ -2755,9 +2726,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that
    *                                       case)
    */
-  public void loadXML( Node transnode, Repository rep, boolean setInternalVariables,
-                       VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException,
-    KettleMissingPluginsException {
+  public void loadXML( Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace,
+      OverwritePrompter prompter ) throws KettleXMLException, KettleMissingPluginsException {
     loadXML( transnode, null, rep, setInternalVariables, parentVariableSpace, prompter );
   }
 
@@ -2777,8 +2747,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *                                       case)
    */
   public void loadXML( Node transnode, String fname, Repository rep, boolean setInternalVariables,
-                       VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException,
-    KettleMissingPluginsException {
+      VariableSpace parentVariableSpace, OverwritePrompter prompter )
+      throws KettleXMLException, KettleMissingPluginsException {
     loadXML( transnode, fname, null, rep, setInternalVariables, parentVariableSpace, prompter );
   }
 
@@ -2797,13 +2767,14 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @throws KettleMissingPluginsException in case missing plugins were found (details are in the exception in that
    *                                       case)
    */
-  public void loadXML( Node transnode, String fname, IMetaStore metaStore, Repository rep,
-                       boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter )
-    throws KettleXMLException, KettleMissingPluginsException {
+  public void loadXML( Node transnode, String fname, IMetaStore metaStore, Repository rep, boolean setInternalVariables,
+      VariableSpace parentVariableSpace, OverwritePrompter prompter )
+      throws KettleXMLException, KettleMissingPluginsException {
 
-    KettleMissingPluginsException missingPluginsException =
-      new KettleMissingPluginsException( BaseMessages.getString(
-        PKG, "TransMeta.MissingPluginsFoundWhileLoadingTransformation.Exception" ) );
+    KettleMissingPluginsException
+        missingPluginsException =
+        new KettleMissingPluginsException(
+            BaseMessages.getString( PKG, "TransMeta.MissingPluginsFoundWhileLoadingTransformation.Exception" ) );
 
     this.metaStore = metaStore; // Remember this as the primary meta store.
 
@@ -2833,8 +2804,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           sharedObjectsFile = XMLHandler.getTagValue( transnode, "info", "shared_objects_file" );
           sharedObjects = rep != null ? rep.readTransSharedObjects( this ) : readSharedObjects();
         } catch ( Exception e ) {
-          log
-            .logError( BaseMessages.getString( PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString() ) );
+          log.logError( BaseMessages.getString( PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString() ) );
           log.logError( Const.getStackTracker( e ) );
         }
 
@@ -2862,9 +2832,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           } else {
             if ( !exist.isShared() ) // otherwise, we just keep the shared connection.
             {
-              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
-                "TransMeta.Message.OverwriteConnectionYN", dbcon.getName() ), BaseMessages.getString( PKG,
-                "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
+              if ( shouldOverwrite( prompter, props,
+                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnectionYN", dbcon.getName() ),
+                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
                 int idx = indexOfDatabase( exist );
                 removeDatabase( idx );
                 addDatabase( idx, dbcon );
@@ -3014,26 +2984,26 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           if ( transLogNode == null ) {
             // Load the XML
             //
-            transLogTable.findField( TransLogTable.ID.LINES_READ ).setSubject(
-              findStep( XMLHandler.getTagValue( infonode, "log", "read" ) ) );
-            transLogTable.findField( TransLogTable.ID.LINES_WRITTEN ).setSubject(
-              findStep( XMLHandler.getTagValue( infonode, "log", "write" ) ) );
-            transLogTable.findField( TransLogTable.ID.LINES_INPUT ).setSubject(
-              findStep( XMLHandler.getTagValue( infonode, "log", "input" ) ) );
-            transLogTable.findField( TransLogTable.ID.LINES_OUTPUT ).setSubject(
-              findStep( XMLHandler.getTagValue( infonode, "log", "output" ) ) );
-            transLogTable.findField( TransLogTable.ID.LINES_UPDATED ).setSubject(
-              findStep( XMLHandler.getTagValue( infonode, "log", "update" ) ) );
-            transLogTable.findField( TransLogTable.ID.LINES_REJECTED ).setSubject(
-              findStep( XMLHandler.getTagValue( infonode, "log", "rejected" ) ) );
+            transLogTable.findField( TransLogTable.ID.LINES_READ )
+                .setSubject( findStep( XMLHandler.getTagValue( infonode, "log", "read" ) ) );
+            transLogTable.findField( TransLogTable.ID.LINES_WRITTEN )
+                .setSubject( findStep( XMLHandler.getTagValue( infonode, "log", "write" ) ) );
+            transLogTable.findField( TransLogTable.ID.LINES_INPUT )
+                .setSubject( findStep( XMLHandler.getTagValue( infonode, "log", "input" ) ) );
+            transLogTable.findField( TransLogTable.ID.LINES_OUTPUT )
+                .setSubject( findStep( XMLHandler.getTagValue( infonode, "log", "output" ) ) );
+            transLogTable.findField( TransLogTable.ID.LINES_UPDATED )
+                .setSubject( findStep( XMLHandler.getTagValue( infonode, "log", "update" ) ) );
+            transLogTable.findField( TransLogTable.ID.LINES_REJECTED )
+                .setSubject( findStep( XMLHandler.getTagValue( infonode, "log", "rejected" ) ) );
 
             transLogTable.setConnectionName( XMLHandler.getTagValue( infonode, "log", "connection" ) );
             transLogTable.setSchemaName( XMLHandler.getTagValue( infonode, "log", "schema" ) );
             transLogTable.setTableName( XMLHandler.getTagValue( infonode, "log", "table" ) );
-            transLogTable.findField( TransLogTable.ID.ID_BATCH ).setEnabled(
-              "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "log", "use_batchid" ) ) );
-            transLogTable.findField( TransLogTable.ID.LOG_FIELD ).setEnabled(
-              "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "log", "USE_LOGFIELD" ) ) );
+            transLogTable.findField( TransLogTable.ID.ID_BATCH )
+                .setEnabled( "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "log", "use_batchid" ) ) );
+            transLogTable.findField( TransLogTable.ID.LOG_FIELD )
+                .setEnabled( "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "log", "USE_LOGFIELD" ) ) );
             transLogTable.setLogSizeLimit( XMLHandler.getTagValue( infonode, "log", "size_limit_lines" ) );
             transLogTable.setLogInterval( XMLHandler.getTagValue( infonode, "log", "interval" ) );
             transLogTable.findField( TransLogTable.ID.CHANNEL_ID ).setEnabled( false );
@@ -3117,10 +3087,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           if ( check != null ) {
             if ( !check.isShared() ) {
               // we don't overwrite shared objects.
-              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
-                "TransMeta.Message.OverwritePartitionSchemaYN", partitionSchema.getName() ),
-                BaseMessages.getString( PKG,
-                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
+              if ( shouldOverwrite( prompter, props, BaseMessages
+                      .getString( PKG, "TransMeta.Message.OverwritePartitionSchemaYN", partitionSchema.getName() ),
+                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
                 addOrReplacePartitionSchema( partitionSchema );
               }
             }
@@ -3159,9 +3128,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           if ( check != null ) {
             if ( !check.isShared() ) {
               // we don't overwrite shared objects.
-              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
-                "TransMeta.Message.OverwriteSlaveServerYN", slaveServer.getName() ), BaseMessages.getString( PKG,
-                "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
+              if ( shouldOverwrite( prompter, props,
+                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteSlaveServerYN", slaveServer.getName() ),
+                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
                 addOrReplaceSlaveServer( slaveServer );
               }
             }
@@ -3186,9 +3155,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           if ( check != null ) {
             if ( !check.isShared() ) {
               // we don't overwrite shared objects.
-              if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
-                "TransMeta.Message.OverwriteClusterSchemaYN", clusterSchema.getName() ), BaseMessages.getString( PKG,
-                "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
+              if ( shouldOverwrite( prompter, props,
+                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteClusterSchemaYN", clusterSchema.getName() ),
+                  BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
                 addOrReplaceClusterSchema( clusterSchema );
               }
             }
@@ -3206,24 +3175,22 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         String srowset = XMLHandler.getTagValue( infonode, "size_rowset" );
         sizeRowset = Const.toInt( srowset, Const.ROWS_IN_ROWSET );
         sleepTimeEmpty =
-          Const.toInt( XMLHandler.getTagValue( infonode, "sleep_time_empty" ), Const.TIMEOUT_GET_MILLIS );
-        sleepTimeFull =
-          Const.toInt( XMLHandler.getTagValue( infonode, "sleep_time_full" ), Const.TIMEOUT_PUT_MILLIS );
+            Const.toInt( XMLHandler.getTagValue( infonode, "sleep_time_empty" ), Const.TIMEOUT_GET_MILLIS );
+        sleepTimeFull = Const.toInt( XMLHandler.getTagValue( infonode, "sleep_time_full" ), Const.TIMEOUT_PUT_MILLIS );
         usingUniqueConnections = "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "unique_connections" ) );
 
         feedbackShown = !"N".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "feedback_shown" ) );
         feedbackSize = Const.toInt( XMLHandler.getTagValue( infonode, "feedback_size" ), Const.ROWS_UPDATE );
         usingThreadPriorityManagment =
-          !"N".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "using_thread_priorities" ) );
+            !"N".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "using_thread_priorities" ) );
 
         // Performance monitoring for steps...
         //
         capturingStepPerformanceSnapShots =
-          "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "capture_step_performance" ) );
+            "Y".equalsIgnoreCase( XMLHandler.getTagValue( infonode, "capture_step_performance" ) );
         stepPerformanceCapturingDelay =
-          Const.toLong( XMLHandler.getTagValue( infonode, "step_performance_capturing_delay" ), 1000 );
-        stepPerformanceCapturingSizeLimit =
-          XMLHandler.getTagValue( infonode, "step_performance_capturing_size_limit" );
+            Const.toLong( XMLHandler.getTagValue( infonode, "step_performance_capturing_delay" ), 1000 );
+        stepPerformanceCapturingSizeLimit = XMLHandler.getTagValue( infonode, "step_performance_capturing_size_limit" );
 
         // Created user/date
         createdUser = XMLHandler.getTagValue( infonode, "created_user" );
@@ -3263,8 +3230,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         isKeyPrivate = "Y".equals( XMLHandler.getTagValue( infonode, "is_key_private" ) );
 
       } catch ( KettleXMLException xe ) {
-        throw new KettleXMLException( BaseMessages.getString(
-          PKG, "TransMeta.Exception.ErrorReadingTransformation" ), xe );
+        throw new KettleXMLException( BaseMessages.getString( PKG, "TransMeta.Exception.ErrorReadingTransformation" ),
+            xe );
       } catch ( KettleException e ) {
         throw new KettleXMLException( e );
       } finally {
@@ -3281,8 +3248,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       if ( !missingPluginsException.getMissingPluginDetailsList().isEmpty() ) {
         throw missingPluginsException;
       } else {
-        throw new KettleXMLException( BaseMessages.getString(
-          PKG, "TransMeta.Exception.ErrorReadingTransformation" ), e );
+        throw new KettleXMLException( BaseMessages.getString( PKG, "TransMeta.Exception.ErrorReadingTransformation" ),
+            e );
       }
     } finally {
       if ( !missingPluginsException.getMissingPluginDetailsList().isEmpty() ) {
@@ -3411,8 +3378,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   /**
    * Clears the different changed flags of the transformation.
    */
-  @Override
-  public void clearChanged() {
+  @Override public void clearChanged() {
     changed_steps = false;
     changed_hops = false;
 
@@ -3513,8 +3479,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *
    * @return true if the transformation has changed, false otherwise
    */
-  @Override
-  public boolean hasChanged() {
+  @Override public boolean hasChanged() {
     if ( super.hasChanged() ) {
       return true;
     }
@@ -3557,9 +3522,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return true if a loop has been found, false if no loop is found.
    */
   private boolean hasLoop( StepMeta stepMeta, StepMeta lookup, boolean info ) {
-    String cacheKey =
-      stepMeta.getName()
-        + " - " + ( lookup != null ? lookup.getName() : "" ) + " - " + ( info ? "true" : "false" );
+    String
+        cacheKey =
+        stepMeta.getName() + " - " + ( lookup != null ? lookup.getName() : "" ) + " - " + ( info ? "true" : "false" );
     Boolean loop = loopCache.get( cacheKey );
     if ( loop != null ) {
       return loop.booleanValue();
@@ -3637,7 +3602,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       points.add( new Point( p.x, p.y ) ); // explicit copy of location
     }
 
-    return points.toArray( new Point[ points.size() ] );
+    return points.toArray( new Point[points.size()] );
   }
 
   /**
@@ -3653,7 +3618,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       points.add( new Point( p.x, p.y ) ); // explicit copy of location
     }
 
-    return points.toArray( new Point[ points.size() ] );
+    return points.toArray( new Point[points.size()] );
   }
 
   /**
@@ -3679,10 +3644,10 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    */
   public String[] getSelectedStepNames() {
     List<StepMeta> selection = getSelectedSteps();
-    String[] retval = new String[ selection.size() ];
+    String[] retval = new String[selection.size()];
     for ( int i = 0; i < retval.length; i++ ) {
       StepMeta stepMeta = selection.get( i );
-      retval[ i ] = stepMeta.getName();
+      retval[i] = stepMeta.getName();
     }
     return retval;
   }
@@ -3694,10 +3659,10 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return an array of the locations of an array of steps
    */
   public int[] getStepIndexes( List<StepMeta> steps ) {
-    int[] retval = new int[ steps.size() ];
+    int[] retval = new int[steps.size()];
 
     for ( int i = 0; i < steps.size(); i++ ) {
-      retval[ i ] = indexOfStep( steps.get( i ) );
+      retval[i] = indexOfStep( steps.get( i ) );
     }
 
     return retval;
@@ -3782,10 +3747,10 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return An array of step names.
    */
   public String[] getStepNames() {
-    String[] retval = new String[ nrSteps() ];
+    String[] retval = new String[nrSteps()];
 
     for ( int i = 0; i < nrSteps(); i++ ) {
-      retval[ i ] = getStep( i ).getName();
+      retval[i] = getStep( i ).getName();
     }
 
     return retval;
@@ -3797,10 +3762,10 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return An array of all the steps in the transformation.
    */
   public StepMeta[] getStepsArray() {
-    StepMeta[] retval = new StepMeta[ nrSteps() ];
+    StepMeta[] retval = new StepMeta[nrSteps()];
 
     for ( int i = 0; i < nrSteps(); i++ ) {
-      retval[ i ] = getStep( i );
+      retval[i] = getStep( i );
     }
 
     return retval;
@@ -3944,8 +3909,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     } );
 
     long endTime = System.currentTimeMillis();
-    log.logBasic( BaseMessages.getString(
-      PKG, "TransMeta.Log.TimeExecutionStepSort", ( endTime - startTime ), prevCount ) );
+    log.logBasic(
+        BaseMessages.getString( PKG, "TransMeta.Log.TimeExecutionStepSort", ( endTime - startTime ), prevCount ) );
 
     return stepMap;
   }
@@ -3963,8 +3928,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return the map
    */
   private Map<StepMeta, Boolean> updateFillStepMap( Map<StepMeta, List<StepMeta>> previousCache,
-                                                    Map<StepMeta, Map<StepMeta, Boolean>> beforeCache,
-                                                    StepMeta originStepMeta, StepMeta previousStepMeta ) {
+      Map<StepMeta, Map<StepMeta, Boolean>> beforeCache, StepMeta originStepMeta, StepMeta previousStepMeta ) {
 
     // See if we have a hash map to store step occurrence (located before the step)
     //
@@ -4037,14 +4001,13 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    */
   public void analyseImpact( List<DatabaseImpact> impact, ProgressMonitorListener monitor ) throws KettleStepException {
     if ( monitor != null ) {
-      monitor
-        .beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.DeterminingImpactTask.Title" ), nrSteps() );
+      monitor.beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.DeterminingImpactTask.Title" ), nrSteps() );
     }
     boolean stop = false;
     for ( int i = 0; i < nrSteps() && !stop; i++ ) {
       if ( monitor != null ) {
-        monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.LookingAtStepTask.Title" )
-          + ( i + 1 ) + "/" + nrSteps() );
+        monitor.subTask(
+            BaseMessages.getString( PKG, "TransMeta.Monitor.LookingAtStepTask.Title" ) + ( i + 1 ) + "/" + nrSteps() );
       }
       StepMeta stepMeta = getStep( i );
 
@@ -4073,9 +4036,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   }
 
   @SuppressWarnings( "deprecation" )
-  private void compatibleAnalyseImpactStep( List<DatabaseImpact> impact, StepMetaInterface stepint,
-                                            TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
-                                            RowMetaInterface inform ) throws KettleStepException {
+  private void compatibleAnalyseImpactStep( List<DatabaseImpact> impact, StepMetaInterface stepint, TransMeta transMeta,
+      StepMeta stepMeta, RowMetaInterface prev, RowMetaInterface inform ) throws KettleStepException {
     stepint.analyseImpact( impact, transMeta, stepMeta, prev, null, null, inform );
   }
 
@@ -4117,25 +4079,25 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    */
   public List<SQLStatement> getSQLStatements( ProgressMonitorListener monitor ) throws KettleStepException {
     if ( monitor != null ) {
-      monitor.beginTask( BaseMessages
-        .getString( PKG, "TransMeta.Monitor.GettingTheSQLForTransformationTask.Title" ), nrSteps() + 1 );
+      monitor.beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.GettingTheSQLForTransformationTask.Title" ),
+          nrSteps() + 1 );
     }
     List<SQLStatement> stats = new ArrayList<SQLStatement>();
 
     for ( int i = 0; i < nrSteps(); i++ ) {
       StepMeta stepMeta = getStep( i );
       if ( monitor != null ) {
-        monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.GettingTheSQLForStepTask.Title", ""
-          + stepMeta ) );
+        monitor.subTask(
+            BaseMessages.getString( PKG, "TransMeta.Monitor.GettingTheSQLForStepTask.Title", "" + stepMeta ) );
       }
       RowMetaInterface prev = getPrevStepFields( stepMeta );
-      SQLStatement sqlCompat =
-        compatibleStepMetaGetSQLStatements( stepMeta.getStepMetaInterface(), stepMeta, prev );
+      SQLStatement sqlCompat = compatibleStepMetaGetSQLStatements( stepMeta.getStepMetaInterface(), stepMeta, prev );
       if ( sqlCompat.getSQL() != null || sqlCompat.hasError() ) {
         stats.add( sqlCompat );
       }
-      SQLStatement sql =
-        stepMeta.getStepMetaInterface().getSQLStatements( this, stepMeta, prev, repository, metaStore );
+      SQLStatement
+          sql =
+          stepMeta.getStepMetaInterface().getSQLStatements( this, stepMeta, prev, repository, metaStore );
       if ( sql.getSQL() != null || sql.hasError() ) {
         stats.add( sql );
       }
@@ -4147,14 +4109,13 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     // Also check the sql for the logtable...
     //
     if ( monitor != null ) {
-      monitor
-        .subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.GettingTheSQLForTransformationTask.Title2" ) );
+      monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.GettingTheSQLForTransformationTask.Title2" ) );
     }
-    if ( transLogTable.getDatabaseMeta() != null
-      && ( !Const.isEmpty( transLogTable.getTableName() ) || !Const.isEmpty( performanceLogTable.getTableName() ) ) ) {
+    if ( transLogTable.getDatabaseMeta() != null && ( !Const.isEmpty( transLogTable.getTableName() ) || !Const
+        .isEmpty( performanceLogTable.getTableName() ) ) ) {
       try {
-        for ( LogTableInterface logTable : new LogTableInterface[] {
-          transLogTable, performanceLogTable, channelLogTable, stepLogTable, } ) {
+        for ( LogTableInterface logTable : new LogTableInterface[] { transLogTable, performanceLogTable,
+            channelLogTable, stepLogTable, } ) {
           if ( logTable.getDatabaseMeta() != null && !Const.isEmpty( logTable.getTableName() ) ) {
 
             Database db = null;
@@ -4164,18 +4125,18 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
               db.connect();
 
               RowMetaInterface fields = logTable.getLogRecord( LogStatus.START, null, null ).getRowMeta();
-              String schemaTable =
-                logTable.getDatabaseMeta().getQuotedSchemaTableCombination(
-                  logTable.getSchemaName(), logTable.getTableName() );
+              String
+                  schemaTable =
+                  logTable.getDatabaseMeta()
+                      .getQuotedSchemaTableCombination( logTable.getSchemaName(), logTable.getTableName() );
               String sql = db.getDDL( schemaTable, fields );
               if ( !Const.isEmpty( sql ) ) {
-                SQLStatement stat =
-                  new SQLStatement( "<this transformation>", transLogTable.getDatabaseMeta(), sql );
+                SQLStatement stat = new SQLStatement( "<this transformation>", transLogTable.getDatabaseMeta(), sql );
                 stats.add( stat );
               }
             } catch ( Exception e ) {
-              throw new KettleDatabaseException( "Unable to connect to logging database ["
-                + logTable.getDatabaseMeta() + "]", e );
+              throw new KettleDatabaseException(
+                  "Unable to connect to logging database [" + logTable.getDatabaseMeta() + "]", e );
             } finally {
               if ( db != null ) {
                 db.disconnect();
@@ -4185,9 +4146,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         }
       } catch ( KettleDatabaseException dbe ) {
         SQLStatement stat = new SQLStatement( "<this transformation>", transLogTable.getDatabaseMeta(), null );
-        stat.setError( BaseMessages.getString(
-          PKG, "TransMeta.SQLStatement.ErrorDesc.ErrorObtainingTransformationLogTableInfo" )
-          + dbe.getMessage() );
+        stat.setError(
+            BaseMessages.getString( PKG, "TransMeta.SQLStatement.ErrorDesc.ErrorObtainingTransformationLogTableInfo" )
+                + dbe.getMessage() );
         stats.add( stat );
       }
     }
@@ -4203,7 +4164,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
   @SuppressWarnings( "deprecation" )
   private SQLStatement compatibleStepMetaGetSQLStatements( StepMetaInterface stepMetaInterface, StepMeta stepMeta,
-                                                           RowMetaInterface prev ) throws KettleStepException {
+      RowMetaInterface prev ) throws KettleStepException {
     return stepMetaInterface.getSQLStatements( this, stepMeta, prev );
   }
 
@@ -4233,9 +4194,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @param only_selected true to check only the selected steps, false for all steps
    * @param monitor       a progress monitor listener to be updated as the SQL statements are generated
    */
-  @Deprecated
-  public void checkSteps( List<CheckResultInterface> remarks, boolean only_selected,
-                          ProgressMonitorListener monitor ) {
+  @Deprecated public void checkSteps( List<CheckResultInterface> remarks, boolean only_selected,
+      ProgressMonitorListener monitor ) {
     checkSteps( remarks, only_selected, monitor, this, null, null );
   }
 
@@ -4246,9 +4206,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @param only_selected true to check only the selected steps, false for all steps
    * @param monitor       a progress monitor listener to be updated as the SQL statements are generated
    */
-  public void checkSteps( List<CheckResultInterface> remarks, boolean only_selected,
-                          ProgressMonitorListener monitor, VariableSpace space, Repository repository,
-                          IMetaStore metaStore ) {
+  public void checkSteps( List<CheckResultInterface> remarks, boolean only_selected, ProgressMonitorListener monitor,
+      VariableSpace space, Repository repository, IMetaStore metaStore ) {
     try {
       remarks.clear(); // Start with a clean slate...
 
@@ -4261,24 +4220,22 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         steps = getStepsArray();
       } else {
         stepnames = getSelectedStepNames();
-        steps = selectedSteps.toArray( new StepMeta[ selectedSteps.size() ] );
+        steps = selectedSteps.toArray( new StepMeta[selectedSteps.size()] );
       }
 
       boolean stop_checking = false;
 
       if ( monitor != null ) {
-        monitor.beginTask(
-          BaseMessages.getString( PKG, "TransMeta.Monitor.VerifyingThisTransformationTask.Title" ),
-          steps.length + 2 );
+        monitor.beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.VerifyingThisTransformationTask.Title" ),
+            steps.length + 2 );
       }
 
       for ( int i = 0; i < steps.length && !stop_checking; i++ ) {
         if ( monitor != null ) {
-          monitor
-            .subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.VerifyingStepTask.Title", stepnames[ i ] ) );
+          monitor.subTask( BaseMessages.getString( PKG, "TransMeta.Monitor.VerifyingStepTask.Title", stepnames[i] ) );
         }
 
-        StepMeta stepMeta = steps[ i ];
+        StepMeta stepMeta = steps[i];
 
         int nrinfo = findNrInfoSteps( stepMeta );
         StepMeta[] infostep = null;
@@ -4292,10 +4249,11 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
             info = getStepFields( infostep );
           } catch ( KettleStepException kse ) {
             info = null;
-            CheckResult cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingStepInfoFields.Description",
-                "" + stepMeta, Const.CR + kse.getMessage() ), stepMeta );
+            CheckResult
+                cr =
+                new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+                    "TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingStepInfoFields.Description",
+                    "" + stepMeta, Const.CR + kse.getMessage() ), stepMeta );
             remarks.add( cr );
           }
         }
@@ -4305,10 +4263,11 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         try {
           prev = getPrevStepFields( stepMeta );
         } catch ( KettleStepException kse ) {
-          CheckResult cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingInputFields.Description", ""
-                + stepMeta, Const.CR + kse.getMessage() ), stepMeta );
+          CheckResult
+              cr =
+              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages
+                  .getString( PKG, "TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingInputFields.Description",
+                      "" + stepMeta, Const.CR + kse.getMessage() ), stepMeta );
           remarks.add( cr );
           // This is a severe error: stop checking...
           // Otherwise we wind up checking time & time again because nothing gets put in the database
@@ -4331,20 +4290,21 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
               ValueMetaInterface v = prev.getValueMeta( x );
               String name = v.getName();
               if ( name == null ) {
-                values.put( v, BaseMessages.getString(
-                  PKG, "TransMeta.Value.CheckingFieldName.FieldNameIsEmpty.Description" ) );
+                values.put( v,
+                    BaseMessages.getString( PKG, "TransMeta.Value.CheckingFieldName.FieldNameIsEmpty.Description" ) );
               } else if ( name.indexOf( ' ' ) >= 0 ) {
-                values.put( v, BaseMessages.getString(
-                  PKG, "TransMeta.Value.CheckingFieldName.FieldNameContainsSpaces.Description" ) );
+                values.put( v, BaseMessages
+                    .getString( PKG, "TransMeta.Value.CheckingFieldName.FieldNameContainsSpaces.Description" ) );
               } else {
-                char[] list =
-                  new char[] {
-                    '.', ',', '-', '/', '+', '*', '\'', '\t', '"', '|', '@', '(', ')', '{', '}', '!', '^' };
+                char[]
+                    list =
+                    new char[] { '.', ',', '-', '/', '+', '*', '\'', '\t', '"', '|', '@', '(', ')', '{', '}', '!',
+                        '^' };
                 for ( int c = 0; c < list.length; c++ ) {
-                  if ( name.indexOf( list[ c ] ) >= 0 ) {
-                    values.put( v, BaseMessages.getString(
-                      PKG, "TransMeta.Value.CheckingFieldName.FieldNameContainsUnfriendlyCodes.Description",
-                      String.valueOf( list[ c ] ) ) );
+                  if ( name.indexOf( list[c] ) >= 0 ) {
+                    values.put( v, BaseMessages.getString( PKG,
+                        "TransMeta.Value.CheckingFieldName.FieldNameContainsUnfriendlyCodes.Description",
+                        String.valueOf( list[c] ) ) );
                   }
                 }
               }
@@ -4355,32 +4315,36 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
               String[] fieldNames = prev.getFieldNames();
               String[] sortedNames = Const.sortStrings( fieldNames );
 
-              String prevName = sortedNames[ 0 ];
+              String prevName = sortedNames[0];
               for ( int x = 1; x < sortedNames.length; x++ ) {
                 // Checking for doubles
-                if ( prevName.equalsIgnoreCase( sortedNames[ x ] ) ) {
+                if ( prevName.equalsIgnoreCase( sortedNames[x] ) ) {
                   // Give a warning!!
-                  CheckResult cr =
-                    new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                      PKG, "TransMeta.CheckResult.TypeResultWarning.HaveTheSameNameField.Description",
-                      prevName ), stepMeta );
+                  CheckResult
+                      cr =
+                      new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages
+                          .getString( PKG, "TransMeta.CheckResult.TypeResultWarning.HaveTheSameNameField.Description",
+                              prevName ), stepMeta );
                   remarks.add( cr );
                 } else {
-                  prevName = sortedNames[ x ];
+                  prevName = sortedNames[x];
                 }
               }
             }
           } else {
-            CheckResult cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                PKG, "TransMeta.CheckResult.TypeResultError.CannotFindPreviousFields.Description" )
-                + stepMeta.getName(), stepMeta );
+            CheckResult
+                cr =
+                new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages
+                    .getString( PKG, "TransMeta.CheckResult.TypeResultError.CannotFindPreviousFields.Description" )
+                    + stepMeta.getName(), stepMeta );
             remarks.add( cr );
           }
         } else {
-          CheckResult cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
-              PKG, "TransMeta.CheckResult.TypeResultWarning.StepIsNotUsed.Description" ), stepMeta );
+          CheckResult
+              cr =
+              new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING,
+                  BaseMessages.getString( PKG, "TransMeta.CheckResult.TypeResultWarning.StepIsNotUsed.Description" ),
+                  stepMeta );
           remarks.add( cr );
         }
 
@@ -4410,44 +4374,49 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           logdb.shareVariablesWith( this );
           try {
             logdb.connect();
-            CheckResult cr =
-              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                PKG, "TransMeta.CheckResult.TypeResultOK.ConnectingWorks.Description" ), null );
+            CheckResult
+                cr =
+                new CheckResult( CheckResultInterface.TYPE_RESULT_OK,
+                    BaseMessages.getString( PKG, "TransMeta.CheckResult.TypeResultOK.ConnectingWorks.Description" ),
+                    null );
             remarks.add( cr );
 
             if ( transLogTable.getTableName() != null ) {
               if ( logdb.checkTableExists( transLogTable.getTableName() ) ) {
                 cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                    PKG, "TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description", transLogTable
-                      .getTableName() ), null );
+                    new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages
+                        .getString( PKG, "TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description",
+                            transLogTable.getTableName() ), null );
                 remarks.add( cr );
 
                 RowMetaInterface fields = transLogTable.getLogRecord( LogStatus.START, null, null ).getRowMeta();
                 String sql = logdb.getDDL( transLogTable.getTableName(), fields );
                 if ( sql == null || sql.length() == 0 ) {
                   cr =
-                    new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-                      PKG, "TransMeta.CheckResult.TypeResultOK.CorrectLayout.Description" ), null );
+                      new CheckResult( CheckResultInterface.TYPE_RESULT_OK,
+                          BaseMessages.getString( PKG, "TransMeta.CheckResult.TypeResultOK.CorrectLayout.Description" ),
+                          null );
                   remarks.add( cr );
                 } else {
                   cr =
-                    new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                      PKG, "TransMeta.CheckResult.TypeResultError.LoggingTableNeedsAdjustments.Description" )
-                      + Const.CR + sql, null );
+                      new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+                          "TransMeta.CheckResult.TypeResultError.LoggingTableNeedsAdjustments.Description" ) + Const.CR
+                          + sql, null );
                   remarks.add( cr );
                 }
 
               } else {
                 cr =
-                  new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                    PKG, "TransMeta.CheckResult.TypeResultError.LoggingTableDoesNotExist.Description" ), null );
+                    new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages
+                        .getString( PKG, "TransMeta.CheckResult.TypeResultError.LoggingTableDoesNotExist.Description" ),
+                        null );
                 remarks.add( cr );
               }
             } else {
               cr =
-                new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-                  PKG, "TransMeta.CheckResult.TypeResultError.LogTableNotSpecified.Description" ), null );
+                  new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages
+                      .getString( PKG, "TransMeta.CheckResult.TypeResultError.LogTableNotSpecified.Description" ),
+                      null );
               remarks.add( cr );
             }
           } catch ( KettleDatabaseException dbe ) {
@@ -4463,23 +4432,24 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       }
 
       if ( monitor != null ) {
-        monitor.subTask( BaseMessages.getString(
-          PKG, "TransMeta.Monitor.CheckingForDatabaseUnfriendlyCharactersInFieldNamesTask.Title" ) );
+        monitor.subTask( BaseMessages
+            .getString( PKG, "TransMeta.Monitor.CheckingForDatabaseUnfriendlyCharactersInFieldNamesTask.Title" ) );
       }
       if ( values.size() > 0 ) {
         for ( ValueMetaInterface v : values.keySet() ) {
           String message = values.get( v );
-          CheckResult cr =
-            new CheckResult(
-              CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
-              PKG, "TransMeta.CheckResult.TypeResultWarning.Description", v.getName(), message, v
-                .getOrigin() ), findStep( v.getOrigin() ) );
+          CheckResult
+              cr =
+              new CheckResult( CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages
+                  .getString( PKG, "TransMeta.CheckResult.TypeResultWarning.Description", v.getName(), message,
+                      v.getOrigin() ), findStep( v.getOrigin() ) );
           remarks.add( cr );
         }
       } else {
-        CheckResult cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-            PKG, "TransMeta.CheckResult.TypeResultOK.Description" ), null );
+        CheckResult
+            cr =
+            new CheckResult( CheckResultInterface.TYPE_RESULT_OK,
+                BaseMessages.getString( PKG, "TransMeta.CheckResult.TypeResultOK.Description" ), null );
         remarks.add( cr );
       }
       if ( monitor != null ) {
@@ -4497,8 +4467,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return a list containing the result rows.
    * @deprecated Moved to Trans to make this class stateless
    */
-  @Deprecated
-  public List<RowMetaAndData> getResultRows() {
+  @Deprecated public List<RowMetaAndData> getResultRows() {
     return resultRows;
   }
 
@@ -4508,8 +4477,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @param resultRows The list of result rows to set.
    * @deprecated Moved to Trans to make this class stateless
    */
-  @Deprecated
-  public void setResultRows( List<RowMetaAndData> resultRows ) {
+  @Deprecated public void setResultRows( List<RowMetaAndData> resultRows ) {
     this.resultRows = resultRows;
   }
 
@@ -4532,8 +4500,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return an array of String arguments for the transformation
    * @deprecated moved to Trans
    */
-  @Deprecated
-  public String[] getArguments() {
+  @Deprecated public String[] getArguments() {
     return arguments;
   }
 
@@ -4543,8 +4510,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @param arguments The arguments to set.
    * @deprecated moved to Trans
    */
-  @Deprecated
-  public void setArguments( String[] arguments ) {
+  @Deprecated public void setArguments( String[] arguments ) {
     this.arguments = arguments;
   }
 
@@ -4554,8 +4520,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return a named table of counters.
    * @deprecated moved to Trans
    */
-  @Deprecated
-  public Hashtable<String, Counter> getCounters() {
+  @Deprecated public Hashtable<String, Counter> getCounters() {
     return counters;
   }
 
@@ -4565,8 +4530,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @param counters The counters to set.
    * @deprecated moved to Trans
    */
-  @Deprecated
-  public void setCounters( Hashtable<String, Counter> counters ) {
+  @Deprecated public void setCounters( Hashtable<String, Counter> counters ) {
     this.counters = counters;
   }
 
@@ -4782,8 +4746,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    *
    * @return the textual representation of the transformation.
    */
-  @Override
-  public String toString() {
+  @Override public String toString() {
     if ( !Const.isEmpty( filename ) ) {
       if ( Const.isEmpty( name ) ) {
         return filename;
@@ -4848,12 +4811,12 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       String value = "";
       int argNr = Const.toInt( argument, -1 );
       if ( arguments != null && argNr > 0 && argNr <= arguments.length ) {
-        value = Const.NVL( arguments[ argNr - 1 ], "" );
+        value = Const.NVL( arguments[argNr - 1], "" );
       }
       if ( value.length() == 0 ) { // try the saved option...
 
-        if ( argNr > 0 && argNr < saved.length && saved[ argNr ] != null ) {
-          value = saved[ argNr - 1 ];
+        if ( argNr > 0 && argNr < saved.length && saved[argNr] != null ) {
+          value = saved[argNr - 1];
         }
       }
       transArgs.put( argument, value );
@@ -4910,7 +4873,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       StepMeta stepMeta = getStep( i );
       DatabaseMeta[] dbs = stepMeta.getStepMetaInterface().getUsedDatabaseConnections();
       for ( int d = 0; d < dbs.length; d++ ) {
-        if ( dbs[ d ].equals( databaseMeta ) ) {
+        if ( dbs[d].equals( databaseMeta ) ) {
           return true;
         }
       }
@@ -4939,19 +4902,19 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @param includePasswords true if passwords should be searched, false otherwise
    * @return a list of search results for strings used in the transformation.
    */
-  public List<StringSearchResult> getStringList( boolean searchSteps, boolean searchDatabases,
-                                                 boolean searchNotes, boolean includePasswords ) {
+  public List<StringSearchResult> getStringList( boolean searchSteps, boolean searchDatabases, boolean searchNotes,
+      boolean includePasswords ) {
     List<StringSearchResult> stringList = new ArrayList<StringSearchResult>();
 
     if ( searchSteps ) {
       // Loop over all steps in the transformation and see what the used vars are...
       for ( int i = 0; i < nrSteps(); i++ ) {
         StepMeta stepMeta = getStep( i );
-        stringList.add( new StringSearchResult( stepMeta.getName(), stepMeta, this, BaseMessages.getString(
-          PKG, "TransMeta.SearchMetadata.StepName" ) ) );
+        stringList.add( new StringSearchResult( stepMeta.getName(), stepMeta, this,
+            BaseMessages.getString( PKG, "TransMeta.SearchMetadata.StepName" ) ) );
         if ( stepMeta.getDescription() != null ) {
-          stringList.add( new StringSearchResult( stepMeta.getDescription(), stepMeta, this, BaseMessages
-            .getString( PKG, "TransMeta.SearchMetadata.StepDescription" ) ) );
+          stringList.add( new StringSearchResult( stepMeta.getDescription(), stepMeta, this,
+              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.StepDescription" ) ) );
         }
         StepMetaInterface metaInterface = stepMeta.getStepMetaInterface();
         StringSearcher.findMetaData( metaInterface, 1, stringList, stepMeta, this );
@@ -4962,36 +4925,36 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     if ( searchDatabases ) {
       for ( int i = 0; i < nrDatabases(); i++ ) {
         DatabaseMeta meta = getDatabase( i );
-        stringList.add( new StringSearchResult( meta.getName(), meta, this, BaseMessages.getString(
-          PKG, "TransMeta.SearchMetadata.DatabaseConnectionName" ) ) );
+        stringList.add( new StringSearchResult( meta.getName(), meta, this,
+            BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseConnectionName" ) ) );
         if ( meta.getHostname() != null ) {
-          stringList.add( new StringSearchResult( meta.getHostname(), meta, this, BaseMessages.getString(
-            PKG, "TransMeta.SearchMetadata.DatabaseHostName" ) ) );
+          stringList.add( new StringSearchResult( meta.getHostname(), meta, this,
+              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseHostName" ) ) );
         }
         if ( meta.getDatabaseName() != null ) {
-          stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this, BaseMessages.getString(
-            PKG, "TransMeta.SearchMetadata.DatabaseName" ) ) );
+          stringList.add( new StringSearchResult( meta.getDatabaseName(), meta, this,
+              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseName" ) ) );
         }
         if ( meta.getUsername() != null ) {
-          stringList.add( new StringSearchResult( meta.getUsername(), meta, this, BaseMessages.getString(
-            PKG, "TransMeta.SearchMetadata.DatabaseUsername" ) ) );
+          stringList.add( new StringSearchResult( meta.getUsername(), meta, this,
+              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseUsername" ) ) );
         }
         if ( meta.getPluginId() != null ) {
-          stringList.add( new StringSearchResult( meta.getPluginId(), meta, this, BaseMessages.getString(
-            PKG, "TransMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
+          stringList.add( new StringSearchResult( meta.getPluginId(), meta, this,
+              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseTypeDescription" ) ) );
         }
         if ( meta.getDatabasePortNumberString() != null ) {
-          stringList.add( new StringSearchResult( meta.getDatabasePortNumberString(), meta, this, BaseMessages
-            .getString( PKG, "TransMeta.SearchMetadata.DatabasePort" ) ) );
+          stringList.add( new StringSearchResult( meta.getDatabasePortNumberString(), meta, this,
+              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePort" ) ) );
         }
         if ( meta.getServername() != null ) {
-          stringList.add( new StringSearchResult( meta.getServername(), meta, this, BaseMessages.getString(
-            PKG, "TransMeta.SearchMetadata.DatabaseServer" ) ) );
+          stringList.add( new StringSearchResult( meta.getServername(), meta, this,
+              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabaseServer" ) ) );
         }
         if ( includePasswords ) {
           if ( meta.getPassword() != null ) {
-            stringList.add( new StringSearchResult( meta.getPassword(), meta, this, BaseMessages.getString(
-              PKG, "TransMeta.SearchMetadata.DatabasePassword" ) ) );
+            stringList.add( new StringSearchResult( meta.getPassword(), meta, this,
+                BaseMessages.getString( PKG, "TransMeta.SearchMetadata.DatabasePassword" ) ) );
           }
         }
       }
@@ -5002,8 +4965,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       for ( int i = 0; i < nrNotes(); i++ ) {
         NotePadMeta meta = getNote( i );
         if ( meta.getNote() != null ) {
-          stringList.add( new StringSearchResult( meta.getNote(), meta, this, BaseMessages.getString(
-            PKG, "TransMeta.SearchMetadata.NotepadText" ) ) );
+          stringList.add( new StringSearchResult( meta.getNote(), meta, this,
+              BaseMessages.getString( PKG, "TransMeta.SearchMetadata.NotepadText" ) ) );
         }
       }
     }
@@ -5050,8 +5013,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return the previous Result.
    * @deprecated this was moved to Trans to keep the metadata stateless
    */
-  @Deprecated
-  public Result getPreviousResult() {
+  @Deprecated public Result getPreviousResult() {
     return previousResult;
   }
 
@@ -5061,8 +5023,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @param previousResult The previous Result to set.
    * @deprecated this was moved to Trans to keep the metadata stateless
    */
-  @Deprecated
-  public void setPreviousResult( Result previousResult ) {
+  @Deprecated public void setPreviousResult( Result previousResult ) {
     this.previousResult = previousResult;
   }
 
@@ -5072,8 +5033,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return a list of ResultFiles.
    * @deprecated this was moved to Trans to keep the metadata stateless
    */
-  @Deprecated
-  public List<ResultFile> getResultFiles() {
+  @Deprecated public List<ResultFile> getResultFiles() {
     return resultFiles;
   }
 
@@ -5083,8 +5043,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @param resultFiles The list of ResultFiles to set.
    * @deprecated this was moved to Trans to keep the metadata stateless
    */
-  @Deprecated
-  public void setResultFiles( List<ResultFile> resultFiles ) {
+  @Deprecated public void setResultFiles( List<ResultFile> resultFiles ) {
     this.resultFiles = resultFiles;
   }
 
@@ -5112,9 +5071,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return a String array containing the available partition schema names.
    */
   public String[] getPartitionSchemasNames() {
-    String[] names = new String[ partitionSchemas.size() ];
+    String[] names = new String[partitionSchemas.size()];
     for ( int i = 0; i < names.length; i++ ) {
-      names[ i ] = partitionSchemas.get( i ).getName();
+      names[i] = partitionSchemas.get( i ).getName();
     }
     return names;
   }
@@ -5197,9 +5156,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return a String array containing the cluster schemas' names
    */
   public String[] getClusterSchemaNames() {
-    String[] names = new String[ clusterSchemas.size() ];
+    String[] names = new String[clusterSchemas.size()];
     for ( int i = 0; i < names.length; i++ ) {
-      names[ i ] = clusterSchemas.get( i ).getName();
+      names[i] = clusterSchemas.get( i ).getName();
     }
     return names;
   }
@@ -5367,8 +5326,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
     // The name of the directory in the repository
     //
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, directory != null ? directory
-      .getPath() : "" );
+    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY,
+        directory != null ? directory.getPath() : "" );
 
     // Here we don't remove the job specific parameters, as they may come in handy.
     //
@@ -5440,8 +5399,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     if ( !Const.isEmpty( stepname ) ) {
       StepMeta stepMeta = findStep( stepname ); // TODO verify that it's a mapping input!!
       if ( stepMeta == null ) {
-        throw new KettleStepException( BaseMessages.getString(
-          PKG, "TransMeta.Exception.StepNameNotFound", stepname ) );
+        throw new KettleStepException(
+            BaseMessages.getString( PKG, "TransMeta.Exception.StepNameNotFound", stepname ) );
       }
       return stepMeta;
     } else {
@@ -5452,14 +5411,14 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           if ( stepMeta == null ) {
             stepMeta = mappingStep;
           } else if ( stepMeta != null ) {
-            throw new KettleStepException( BaseMessages.getString(
-              PKG, "TransMeta.Exception.OnlyOneMappingInputStepAllowed", "2" ) );
+            throw new KettleStepException(
+                BaseMessages.getString( PKG, "TransMeta.Exception.OnlyOneMappingInputStepAllowed", "2" ) );
           }
         }
       }
       if ( stepMeta == null ) {
-        throw new KettleStepException( BaseMessages.getString(
-          PKG, "TransMeta.Exception.OneMappingInputStepRequired" ) );
+        throw new KettleStepException(
+            BaseMessages.getString( PKG, "TransMeta.Exception.OneMappingInputStepRequired" ) );
       }
       return stepMeta;
     }
@@ -5476,8 +5435,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     if ( !Const.isEmpty( stepname ) ) {
       StepMeta stepMeta = findStep( stepname ); // TODO verify that it's a mapping output step.
       if ( stepMeta == null ) {
-        throw new KettleStepException( BaseMessages.getString(
-          PKG, "TransMeta.Exception.StepNameNotFound", stepname ) );
+        throw new KettleStepException(
+            BaseMessages.getString( PKG, "TransMeta.Exception.StepNameNotFound", stepname ) );
       }
       return stepMeta;
     } else {
@@ -5488,14 +5447,14 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
           if ( stepMeta == null ) {
             stepMeta = mappingStep;
           } else if ( stepMeta != null ) {
-            throw new KettleStepException( BaseMessages.getString(
-              PKG, "TransMeta.Exception.OnlyOneMappingOutputStepAllowed", "2" ) );
+            throw new KettleStepException(
+                BaseMessages.getString( PKG, "TransMeta.Exception.OnlyOneMappingOutputStepAllowed", "2" ) );
           }
         }
       }
       if ( stepMeta == null ) {
-        throw new KettleStepException( BaseMessages.getString(
-          PKG, "TransMeta.Exception.OneMappingOutputStepRequired" ) );
+        throw new KettleStepException(
+            BaseMessages.getString( PKG, "TransMeta.Exception.OneMappingOutputStepRequired" ) );
       }
       return stepMeta;
     }
@@ -5529,8 +5488,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @return the filename of the exported resource
    */
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-                                 ResourceNamingInterface resourceNamingInterface, Repository repository,
-                                 IMetaStore metaStore ) throws KettleException {
+      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+      throws KettleException {
 
     try {
       // Handle naming for both repository and XML bases resources...
@@ -5545,9 +5504,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         originalPath = directory.getPath();
         baseName = getName();
         fullname =
-          directory.getPath()
-            + ( directory.getPath().endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR )
-            ? "" : RepositoryDirectory.DIRECTORY_SEPARATOR ) + getName() + "." + extension; //
+            directory.getPath() + ( directory.getPath().endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR ) ? ""
+                : RepositoryDirectory.DIRECTORY_SEPARATOR ) + getName() + "." + extension; //
       } else {
         // Assume file
         //
@@ -5557,9 +5515,10 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         fullname = fileObject.getURL().toString();
       }
 
-      String exportFileName =
-        resourceNamingInterface.nameResource(
-          baseName, originalPath, extension, ResourceNamingInterface.FileNamingType.TRANSFORMATION );
+      String
+          exportFileName =
+          resourceNamingInterface
+              .nameResource( baseName, originalPath, extension, ResourceNamingInterface.FileNamingType.TRANSFORMATION );
       ResourceDefinition definition = definitions.get( exportFileName );
       if ( definition == null ) {
         // If we do this once, it will be plenty :-)
@@ -5616,11 +5575,11 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       }
       return exportFileName;
     } catch ( FileSystemException e ) {
-      throw new KettleException( BaseMessages.getString(
-        PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename() ), e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename() ), e );
     } catch ( KettleFileException e ) {
-      throw new KettleException( BaseMessages.getString(
-        PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename() ), e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename() ), e );
     }
   }
 
@@ -5639,7 +5598,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * @param slaveStepCopyPartitionDistribution the slaveStepCopyPartitionDistribution to set
    */
   public void setSlaveStepCopyPartitionDistribution(
-    SlaveStepCopyPartitionDistribution slaveStepCopyPartitionDistribution ) {
+      SlaveStepCopyPartitionDistribution slaveStepCopyPartitionDistribution ) {
     this.slaveStepCopyPartitionDistribution = slaveStepCopyPartitionDistribution;
   }
 
@@ -5943,23 +5902,19 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     this.metricsLogTable = metricsLogTable;
   }
 
-  @Override
-  public boolean isGatheringMetrics() {
+  @Override public boolean isGatheringMetrics() {
     return log.isGatheringMetrics();
   }
 
-  @Override
-  public void setGatheringMetrics( boolean gatheringMetrics ) {
+  @Override public void setGatheringMetrics( boolean gatheringMetrics ) {
     log.setGatheringMetrics( gatheringMetrics );
   }
 
-  @Override
-  public boolean isForcingSeparateLogging() {
+  @Override public boolean isForcingSeparateLogging() {
     return log.isForcingSeparateLogging();
   }
 
-  @Override
-  public void setForcingSeparateLogging( boolean forcingSeparateLogging ) {
+  @Override public void setForcingSeparateLogging( boolean forcingSeparateLogging ) {
     log.setForcingSeparateLogging( forcingSeparateLogging );
   }
 
