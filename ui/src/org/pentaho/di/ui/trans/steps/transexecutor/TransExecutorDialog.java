@@ -559,7 +559,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
       RepositoryElementMetaInterface repositoryObject = sod.getRepositoryObject();
       if ( repositoryObject != null ) {
         specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
-        getByReferenceData( repositoryObject );
+        updateByReferenceField( repositoryObject );
         referenceObjectId = repositoryObject.getObjectId();
         setRadioButtons();
       }
@@ -714,13 +714,12 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     setActive();
   }
 
-  private void getByReferenceData( RepositoryElementMetaInterface transInf ) {
-    String path = transInf.getRepositoryDirectory().getPath();
-    if ( !path.endsWith( "/" ) ) {
-      path += "/";
+  private void updateByReferenceField( RepositoryElementMetaInterface element ) {
+    String path = getPathOf( element );
+    if ( path == null ) {
+      path = "";
     }
-    path += transInf.getName();
-    wByReference.setText( path );
+    wbByReference.setText( path );
   }
 
   /**
@@ -1721,9 +1720,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
           "TransExecutorDialog.Exception.NotConnectedToRepository.Message" ) );
       }
       RepositoryObject transInf = repository.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
-      if ( transInf != null ) {
-        getByReferenceData( transInf );
-      }
+      updateByReferenceField( transInf );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG,
         "TransExecutorDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString( PKG,

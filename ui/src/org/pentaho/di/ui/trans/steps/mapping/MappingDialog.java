@@ -665,7 +665,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       RepositoryElementMetaInterface repositoryObject = sod.getRepositoryObject();
       if ( repositoryObject != null ) {
         setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE );
-        getByReferenceData( repositoryObject );
+        updateByReferenceField( repositoryObject );
         setReferenceObjectId( repositoryObject.getObjectId() );
         setRadioButtons();
       }
@@ -925,9 +925,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
           PKG, "MappingDialog.Exception.NotConnectedToRepository.Message" ) );
       }
       RepositoryObject transInf = repository.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
-      if ( transInf != null ) {
-        getByReferenceData( transInf );
-      }
+      updateByReferenceField( transInf );
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString(
         PKG, "MappingDialog.Exception.UnableToReferenceObjectId.Title" ), BaseMessages.getString(
@@ -935,13 +933,12 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     }
   }
 
-  private void getByReferenceData( RepositoryElementMetaInterface transInf ) {
-    String path = transInf.getRepositoryDirectory().getPath();
-    if ( !path.endsWith( "/" ) ) {
-      path += "/";
+  private void updateByReferenceField( RepositoryElementMetaInterface element ) {
+    String path = getPathOf( element );
+    if ( path == null ) {
+      path = "";
     }
-    path += transInf.getName();
-    wByReference.setText( path );
+    wbByReference.setText( path );
   }
 
   /**

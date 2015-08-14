@@ -1925,31 +1925,29 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   public RepositoryObject getObjectInformation( ObjectId objectId, RepositoryObjectType objectType ) throws KettleException {
     try {
 
+      String name, description, modifiedUser;
+      Date modifiedDate;
+      RepositoryDirectoryInterface directory;
+      long dirId;
       switch ( objectType ) {
         case TRANSFORMATION: {
           RowMetaAndData row = transDelegate.getTransformation( objectId );
-          String name = row.getString( KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME, null );
-          String description = row.getString( KettleDatabaseRepository.FIELD_TRANSFORMATION_DESCRIPTION, null );
-          String modifiedUser = row.getString( KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_USER, "-" );
-          Date modifiedDate = row.getDate( KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_DATE, null );
-          long dirId = row.getInteger( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY, 0 );
-          RepositoryDirectoryInterface directory =
-            loadRepositoryDirectoryTree().findDirectory( new LongObjectId( dirId ) );
-          return new RepositoryObject(
-            objectId, name, directory, modifiedUser, modifiedDate, objectType, description, false );
+          name = row.getString( KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME, null );
+          description = row.getString( KettleDatabaseRepository.FIELD_TRANSFORMATION_DESCRIPTION, null );
+          modifiedUser = row.getString( KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_USER, "-" );
+          modifiedDate = row.getDate( KettleDatabaseRepository.FIELD_TRANSFORMATION_MODIFIED_DATE, null );
+          dirId = row.getInteger( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY, 0 );
+          break;
         }
 
         case JOB: {
           RowMetaAndData row = jobDelegate.getJob( objectId );
-          String name = row.getString( KettleDatabaseRepository.FIELD_JOB_NAME, null );
-          String description = row.getString( KettleDatabaseRepository.FIELD_JOB_DESCRIPTION, null );
-          String modifiedUser = row.getString( KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER, "-" );
-          Date modifiedDate = row.getDate( KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, null );
-          long dirId = row.getInteger( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, 0 );
-          RepositoryDirectoryInterface directory =
-            loadRepositoryDirectoryTree().findDirectory( new LongObjectId( dirId ) );
-          return new RepositoryObject(
-            objectId, name, directory, modifiedUser, modifiedDate, objectType, description, false );
+          name = row.getString( KettleDatabaseRepository.FIELD_JOB_NAME, null );
+          description = row.getString( KettleDatabaseRepository.FIELD_JOB_DESCRIPTION, null );
+          modifiedUser = row.getString( KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER, "-" );
+          modifiedDate = row.getDate( KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, null );
+          dirId = row.getInteger( KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, 0 );
+          break;
         }
         default:
           throw new KettleException( "Object type "
@@ -1957,6 +1955,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
             + " was specified.  Only information from transformations and jobs can be retrieved at this time." );
           // Nothing matches, return null
       }
+
+      boolean isDeleted = ( name == null );
+      directory = loadRepositoryDirectoryTree().findDirectory( new LongObjectId( dirId ) );
+      return new RepositoryObject(
+        objectId, name, directory, modifiedUser, modifiedDate, objectType, description, isDeleted );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to get object information for object with id=" + objectId, e );
     }
