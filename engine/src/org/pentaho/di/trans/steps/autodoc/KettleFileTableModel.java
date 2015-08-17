@@ -23,13 +23,18 @@
 package org.pentaho.di.trans.steps.autodoc;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.jfree.ui.Drawable;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
@@ -45,12 +50,15 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransMeta;
 
+import com.google.common.base.Joiner;
+
+
 public class KettleFileTableModel implements TableModel {
 
   public enum Field {
     location( ReportSubjectLocation.class ), filename( String.class ), name( String.class ), description(
       String.class ), extended_description( String.class ), logging( String.class ), creation( String.class ),
-      modification( String.class ), last_exec_result( String.class ), image( Drawable.class );
+      modification( String.class ), last_exec_result( String.class ), image( Drawable.class ), variables( String.class );
 
     private Class<?> clazz;
 
@@ -65,11 +73,12 @@ public class KettleFileTableModel implements TableModel {
 
   private List<ReportSubjectLocation> locations;
   private LoggingObjectInterface parentObject;
-  private LogChannelInterface log;
+  private static LogChannelInterface log;
 
   public KettleFileTableModel() {
   }
 
+  @SuppressWarnings( "static-access" )
   public KettleFileTableModel( LoggingObjectInterface parentObject, List<ReportSubjectLocation> locations ) {
     this.parentObject = parentObject;
     this.locations = locations;
@@ -119,6 +128,8 @@ public class KettleFileTableModel implements TableModel {
           return getCreation( location );
         case modification:
           return getModification( location );
+        case variables:
+          return getVariables( location );
         case last_exec_result:
           return getLastExecutionResult( log, parentObject, location );
         case image:
@@ -212,8 +223,35 @@ public class KettleFileTableModel implements TableModel {
     return Const.NVL( XMLHandler.date2string( date ), "-" ) + " by " + Const.NVL( user, "-" );
   }
 
+  public static String getVariables( ReportSubjectLocation filename ) throws KettleException {
+    log.logError( "call me!" );
+    ArrayList<String> variables = new ArrayList<String>();
+    if ( filename.isTransformation() ) {
+      TransMeta transMeta = TransformationInformation.getInstance().getTransMeta( filename );
+      Pattern pattern = Pattern.compile( "\\$\\{([^\\}]*)\\}", Pattern.DOTALL );
+      Matcher matcher = pattern.matcher( StringEscapeUtils.unescapeXml( transMeta.getXML() ) );
+      while ( matcher.find() ) {
+        if ( !variables.contains( matcher.group( 1 ) ) ) {
+          variables.add( matcher.group( 1 ) );
+        }
+      }
+    } else {
+      JobMeta jobMeta = JobInformation.getInstance().getJobMeta( filename );
+      Pattern pattern = Pattern.compile( "\\$\\{([^\\}]*)\\}", Pattern.DOTALL );
+      Matcher matcher = pattern.matcher( StringEscapeUtils.unescapeXml( jobMeta.getXML() ) );
+      while ( matcher.find() ) {
+        if ( !variables.contains( matcher.group( 1 ) ) ) {
+          variables.add( matcher.group( 1 ) );
+        }
+      }
+    }
+    Object[] sorted_variables =  (Object[]) variables.toArray();
+    Arrays.sort( sorted_variables );
+    return Joiner.on( ", " ).join( sorted_variables );
+  }
+
   public static String getLastExecutionResult( LogChannelInterface log, LoggingObjectInterface parentObject,
-    ReportSubjectLocation filename ) throws KettleException {
+      ReportSubjectLocation filename ) throws KettleException {
 
     LogTableInterface logTable = null;
     if ( filename.isTransformation() ) {

@@ -75,6 +75,7 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
   private Button wInclImage;
   private Button wInclLogging;
   private Button wInclLastExecResult;
+  private Button wInclVariables;
 
   public AutoDocDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, (BaseStepMeta) in, tr, sname );
@@ -363,6 +364,25 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
     wInclLastExecResult.setLayoutData( fdInclLastExecResult );
     lastControl = wInclLastExecResult;
 
+    // Include variables check-box
+    //
+    Label wlInclVariables = new Label( shell, SWT.RIGHT );
+    wlInclVariables.setText( BaseMessages.getString( PKG, "AutoDocDialog.InclVariables.Label" ) );
+    props.setLook( wlInclVariables );
+    FormData fdlInclVariables = new FormData();
+    fdlInclVariables.left = new FormAttachment( 0, 0 );
+    fdlInclVariables.right = new FormAttachment( middle, -margin );
+    fdlInclVariables.top = new FormAttachment( lastControl, margin );
+    wlInclVariables.setLayoutData( fdlInclVariables );
+    wInclVariables = new Button( shell, SWT.CHECK | SWT.LEFT );
+    props.setLook( wInclVariables );
+    FormData fdInclVariables = new FormData();
+    fdInclVariables.left = new FormAttachment( middle, 0 );
+    fdInclVariables.right = new FormAttachment( 100, 0 );
+    fdInclVariables.top = new FormAttachment( lastControl, margin );
+    wInclVariables.setLayoutData( fdInclVariables );
+    lastControl = wInclVariables;
+
     // Some buttons first, so that the dialog scales nicely...
     //
     wOK = new Button( shell, SWT.PUSH );
@@ -448,6 +468,7 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
     wInclImage.setSelection( inputMeta.isIncludingImage() );
     wInclLogging.setSelection( inputMeta.isIncludingLoggingConfiguration() );
     wInclLastExecResult.setSelection( inputMeta.isIncludingLastExecutionResult() );
+    wInclVariables.setSelection( inputMeta.isIncludingVariables() );
 
     wStepname.setText( stepname );
 
@@ -480,6 +501,7 @@ public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface
     inputMeta.setIncludingImage( wInclImage.getSelection() );
     inputMeta.setIncludingLoggingConfiguration( wInclLogging.getSelection() );
     inputMeta.setIncludingLastExecutionResult( wInclLastExecResult.getSelection() );
+    inputMeta.setIncludingVariables( wInclVariables.getSelection() );
 
     inputMeta.setChanged();
   }
