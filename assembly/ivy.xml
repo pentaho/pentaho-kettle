@@ -31,6 +31,9 @@
     <dependency org="${ivy.artifact.group}" name="market" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="market" type="zip"/>
     </dependency>
+    <dependency org="${ivy.artifact.group}" name="kettle-version-checker" rev="${project.revision}" changing="true" conf="plugins->default">
+      <artifact name="kettle-version-checker" type="zip"/>
+    </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-dummy-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
       <artifact name="kettle-dummy-plugin" type="zip"/>
     </dependency>
