@@ -997,9 +997,9 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
           sharedObjects = rep.readJobMetaSharedObjects( this );
         }
       } catch ( Exception e ) {
-        throw new KettleXMLException(
-          BaseMessages.getString( PKG, "JobMeta.ErrorReadingSharedObjects.Message" ), e );
-        // //
+        LogChannel.GENERAL
+          .logError( BaseMessages.getString( PKG, "JobMeta.ErrorReadingSharedObjects.Message", e.toString() ) );
+        LogChannel.GENERAL.logError( Const.getStackTracker( e ) );
       }
 
       // Load the database connections, slave servers, cluster schemas & partition schemas into this object.
