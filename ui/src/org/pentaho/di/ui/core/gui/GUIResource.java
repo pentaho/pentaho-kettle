@@ -213,6 +213,8 @@ public class GUIResource {
 
   private SwtUniversalImage imageDummy;
 
+  private SwtUniversalImage imageMissing;
+  
   private Image imageSpoon;
 
   private Image imageJob;
@@ -548,6 +550,7 @@ public class GUIResource {
       imageCredits.dispose();
       imageStart.dispose();
       imageDummy.dispose();
+      imageMissing.dispose();
       imageSpoon.dispose();
       imageJob.dispose();
       imagePentaho.dispose();
@@ -858,7 +861,12 @@ public class GUIResource {
     imageDummy =
         SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
             .getProperty( "DUM_image" ) );
-
+    
+    //ui/images/missing_entry.svg
+    imageMissing =
+        SwtSvgImageUtil.getUniversalImage( display, getClass().getClassLoader(), BasePropertyHandler
+            .getProperty( "MIS_image" ) );
+    
     // "ui/images/spoon.ico"
     imageSpoon = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_image" ), 0 );
 
@@ -1518,6 +1526,17 @@ public class GUIResource {
   public SwtUniversalImage getSwtImageDummy() {
     return imageDummy;
   }
+  
+  /**
+   * @return Returns the imageMissing.
+   */
+  public Image getImageMissing() {
+    return imageMissing.getAsBitmapForSize( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
+  }
+  
+  public SwtUniversalImage getSwtImageMissing() {
+    return imageMissing;
+  }  
 
   /**
    * @return Returns the imageHop.

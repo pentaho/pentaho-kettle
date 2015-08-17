@@ -38,6 +38,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.missing.MissingEntry;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -106,7 +107,8 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
    *          A list with all defined databases
    */
   public JobEntryCopy loadJobEntryCopy( ObjectId jobId, ObjectId jobEntryCopyId,
-    List<JobEntryInterface> jobentries, List<DatabaseMeta> databases, List<SlaveServer> slaveServers ) throws KettleException {
+    List<JobEntryInterface> jobentries, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, String jobname ) 
+        throws KettleException {
     JobEntryCopy jobEntryCopy = new JobEntryCopy();
 
     try {
@@ -137,13 +139,16 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
           RowMetaAndData rt = getJobEntryType( new LongObjectId( jobEntryTypeId ) );
           if ( rt != null ) {
             String jet_code = rt.getString( KettleDatabaseRepository.FIELD_JOBENTRY_TYPE_CODE, null );
-
+            JobEntryInterface jobEntry = null;
             PluginRegistry registry = PluginRegistry.getInstance();
             PluginInterface jobPlugin = registry.findPluginWithId( JobEntryPluginType.class, jet_code );
-            if ( jobPlugin != null ) {
-              JobEntryInterface jobEntry = (JobEntryInterface) registry.loadClass( jobPlugin );
+            if ( jobPlugin == null ) {
+              jobEntry = new MissingEntry( jobname, jet_code );
+            } else {
+              jobEntry = (JobEntryInterface) registry.loadClass( jobPlugin );
+            }
+            if( jobEntry != null ) {
               jobEntryCopy.setEntry( jobEntry );
-
               // Load the attributes for that jobentry
               //
               // THIS IS THE PLUGIN/JOB-ENTRY BEING LOADED!

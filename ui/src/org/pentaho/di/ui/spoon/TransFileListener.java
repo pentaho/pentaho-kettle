@@ -43,6 +43,7 @@ import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.trans.steps.missing.MissingTransDialog;
 import org.w3c.dom.Node;
 
 public class TransFileListener implements FileListener {
@@ -78,6 +79,16 @@ public class TransFileListener implements FileListener {
           }
 
         } );
+      
+      if ( transMeta.hasMissingPlugins() ) {
+        StepMeta stepMeta = transMeta.getStep( 0 );
+        MissingTransDialog missingDialog =
+            new MissingTransDialog( spoon.getShell(), transMeta.getMissingTrans(), stepMeta.getStepMetaInterface(),
+                transMeta, stepMeta.getName() );
+        if ( missingDialog.open() == null ) {
+          return true;
+        }
+      }
       transMeta.setRepositoryDirectory( spoon.getDefaultSaveLocation( transMeta ) );
       transMeta.setRepository( spoon.getRepository() );
       transMeta.setMetaStore( spoon.getMetaStore() );

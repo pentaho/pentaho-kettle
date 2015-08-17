@@ -60,7 +60,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
-import org.pentaho.di.core.exception.KettlePluginLoaderException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -80,7 +79,6 @@ import org.pentaho.di.core.logging.PerformanceLogTable;
 import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
-import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.reflection.StringSearcher;
 import org.pentaho.di.core.row.RowMeta;
@@ -114,6 +112,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
+import org.pentaho.di.trans.steps.missing.MissingTrans;
 import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
@@ -298,6 +297,7 @@ public class TransMeta extends AbstractMeta
 
   protected byte[] keyForSessionKey;
   boolean isKeyPrivate;
+  private ArrayList<MissingTrans> missingTrans;
 
   /**
    * The TransformationType enum describes the various types of transformations in terms of execution, including Normal,
@@ -916,6 +916,11 @@ public class TransMeta extends AbstractMeta
     }
 
     steps.remove( i );
+    
+    if ( removeStep.getStepMetaInterface() instanceof MissingTrans ) {
+      removeMissingTrans( ( MissingTrans ) removeStep.getStepMetaInterface() );
+    }
+    
     changed_steps = true;
   }
 
@@ -2995,31 +3000,28 @@ public class TransMeta extends AbstractMeta
             log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.LookingAtStep" ) + i );
           }
 
-          try {
-            StepMeta stepMeta = new StepMeta( stepnode, databases, metaStore );
-            stepMeta.setParentTransMeta( this ); // for tracing, retain hierarchy
+          StepMeta stepMeta = new StepMeta( stepnode, databases, metaStore );
+          stepMeta.setParentTransMeta( this ); // for tracing, retain hierarchy
 
-            // Check if the step exists and if it's a shared step.
-            // If so, then we will keep the shared version, not this one.
-            // The stored XML is only for backup purposes.
-            //
-            StepMeta check = findStep( stepMeta.getName() );
-            if ( check != null ) {
-              if ( !check.isShared() ) {
-                // Don't overwrite shared objects
+          if( stepMeta.isMissing() ) {
+            addMissingTrans( (MissingTrans) stepMeta.getStepMetaInterface() );
+          } 
+          // Check if the step exists and if it's a shared step.
+          // If so, then we will keep the shared version, not this one.
+          // The stored XML is only for backup purposes.
+          //
+          StepMeta check = findStep( stepMeta.getName() );
+          if ( check != null ) {
+            if ( !check.isShared() ) {
+              // Don't overwrite shared objects
 
-                addOrReplaceStep( stepMeta );
-              } else {
-                check.setDraw( stepMeta.isDrawn() ); // Just keep the drawn flag and location
-                check.setLocation( stepMeta.getLocation() );
-              }
+              addOrReplaceStep( stepMeta );
             } else {
-              addStep( stepMeta ); // simply add it.
+              check.setDraw( stepMeta.isDrawn() ); // Just keep the drawn flag and location
+              check.setLocation( stepMeta.getLocation() );
             }
-          } catch ( KettlePluginLoaderException e ) {
-            // We only register missing step plugins, nothing else.
-            //
-            missingPluginsException.addMissingPluginDetails( StepPluginType.class, e.getPluginId() );
+          } else {
+            addStep( stepMeta ); // simply add it.
           }
         }
 
@@ -6263,5 +6265,26 @@ public class TransMeta extends AbstractMeta
 
   public boolean containsStepMeta( StepMeta stepMeta ) {
     return steps.contains( stepMeta );
+  }
+
+  public List<MissingTrans> getMissingTrans() {
+    return missingTrans;
+  }
+  
+  public void addMissingTrans( MissingTrans trans ) {
+    if ( missingTrans == null ) {
+      missingTrans = new ArrayList<MissingTrans>();
+    }
+    missingTrans.add( trans );
+  }
+  
+  public void removeMissingTrans( MissingTrans trans ) {
+    if ( missingTrans != null && trans != null && missingTrans.contains( trans ) ) {
+      missingTrans.remove( trans );
+    }
+  }
+  
+  public boolean hasMissingPlugins() {
+    return missingTrans != null && !missingTrans.isEmpty();
   }
 }

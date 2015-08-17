@@ -81,20 +81,27 @@ public class SpoonTabsDelegate extends SpoonDelegate {
             RepositoryOperation.MODIFY_TRANSFORMATION, RepositoryOperation.MODIFY_JOB );
 
     boolean close = true;
+    boolean canSave = true;
     for ( TabMapEntry entry : collection ) {
       if ( item.equals( entry.getTabItem() ) ) {
         TabItemInterface itemInterface = entry.getObject();
+        
+        if ( itemInterface.getManagedObject() instanceof EngineMetaInterface ) {
+          canSave = !( (EngineMetaInterface) itemInterface.getManagedObject() ).hasMissingPlugins();
+        }
 
-        // Can we close this tab? Only allow users with create content perms to save
-        if ( !itemInterface.canBeClosed() && createPerms ) {
-          int reply = itemInterface.showChangedWarning();
-          if ( reply == SWT.YES ) {
-            close = itemInterface.applyChanges();
-          } else {
-            if ( reply == SWT.CANCEL ) {
-              close = false;
+        if ( canSave ) {
+          // Can we close this tab? Only allow users with create content perms to save
+          if ( !itemInterface.canBeClosed() && createPerms ) {
+            int reply = itemInterface.showChangedWarning();
+            if ( reply == SWT.YES ) {
+              close = itemInterface.applyChanges();
             } else {
-              close = true;
+              if ( reply == SWT.CANCEL ) {
+                close = false;
+              } else {
+                close = true;
+              }
             }
           }
         }

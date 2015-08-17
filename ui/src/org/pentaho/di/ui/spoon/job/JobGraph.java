@@ -1208,7 +1208,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       switch ( areaOwner.getAreaType() ) {
         case JOB_ENTRY_ICON:
           JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
-          if ( !mouseOverEntries.contains( jobEntryCopy ) ) {
+          if ( !jobEntryCopy.isMissing() && !mouseOverEntries.contains( jobEntryCopy ) ) {
             addEntryMouseOverDelayTimer( jobEntryCopy );
             redraw();
             tip = false;

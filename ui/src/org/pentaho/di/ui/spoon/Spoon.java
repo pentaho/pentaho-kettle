@@ -193,7 +193,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.ImportRules;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
-import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
@@ -4937,6 +4936,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     try {
       EngineMetaInterface meta = getActiveMeta();
       if ( meta != null ) {
+        if ( meta.hasMissingPlugins() ) {
+          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+          mb.setMessage( BaseMessages.getString( PKG, "Spoon.ErrorDialog.MissingPlugin.Error" ) );
+          mb.setText( BaseMessages.getString( PKG, "Spoon.ErrorDialog.MissingPlugin.Title" ) );
+          mb.open();
+          return false;
+        }
+        
         return saveToFile( meta );
       }
     } catch ( Exception e ) {
@@ -6229,6 +6236,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     // Put the steps below it.
     for ( int i = 0; i < meta.nrSteps(); i++ ) {
       StepMeta stepMeta = meta.getStep( i );
+      if ( stepMeta.isMissing() ) {
+        continue;
+      }
       PluginInterface stepPlugin =
         PluginRegistry.getInstance().findPluginWithId( StepPluginType.class, stepMeta.getStepID() );
 
@@ -7866,10 +7876,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     //
     handleStartOptions( options );
 
-    // Load the last loaded files
-    //
-    loadLastUsedFiles();
-
     // Enable menus based on whether user was able to login or not
     //
     enableMenus();
@@ -9169,6 +9175,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     setBlockOnOpen( false );
     try {
       open();
+      // Load the last loaded files
+      loadLastUsedFiles();
       waitForDispose();
       // runEventLoop2(getShell());
     } catch ( Throwable e ) {
