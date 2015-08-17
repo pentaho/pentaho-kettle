@@ -938,7 +938,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     if ( path == null ) {
       path = "";
     }
-    wbByReference.setText( path );
+    wByReference.setText( path );
   }
 
   /**

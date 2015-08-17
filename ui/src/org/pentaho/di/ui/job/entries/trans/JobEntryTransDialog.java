@@ -1503,7 +1503,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     if ( path == null ) {
       path = "";
     }
-    wbByReference.setText( path );
+    wByReference.setText( path );
   }
 
   private void cancel() {

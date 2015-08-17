@@ -724,7 +724,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     if ( path == null ) {
       path = "";
     }
-    wbByReference.setText( path );
+    wByReference.setText( path );
   }
 
   /**

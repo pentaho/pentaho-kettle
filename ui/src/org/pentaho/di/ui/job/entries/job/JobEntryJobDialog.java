@@ -1243,7 +1243,7 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     if ( path == null ) {
       path = "";
     }
-    wbByReference.setText( path );
+    wByReference.setText( path );
   }
 
   protected void selectJobByReference() {
