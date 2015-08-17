@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+  <info organisation="${ivy.artifact.group}" module="${ivy.artifact.id}" revision="${dependency.kettle.revision}" status="integration" publication="20130425215250"/>
+
+  <configurations>
+    <conf name="default"/>
+    <conf name="dev"/>
+    <conf name="test" visibility="private"/>
+    <conf name="source"/>
+    <conf name="zip"/>
+  </configurations>
+
+  <publications>
+    <artifact name="${ivy.artifact.id}" type="jar" conf="default"/>
+    <artifact name="${ivy.artifact.id}" type="zip" conf="zip" />
+  </publications>
+ 
+  <dependencies defaultconf="dev->default">
+    <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>  
+    <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho" name="pentaho-versionchecker" rev="${dependency.kettle.revision}" conf="default->default" changing="true"/>
+
+    <dependency org="junit" name="junit" rev="4.7" conf="test->default"/>
+  </dependencies>
+</ivy-module>
