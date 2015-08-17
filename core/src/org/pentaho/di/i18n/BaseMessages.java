@@ -82,6 +82,10 @@ public class BaseMessages implements LAFChangeListener<MessageHandler> {
     return getInstanceHandler().getString( packageName, key, resourceClass, parameters );
   }
 
+  public static String getString( Class<?> packageClass, String key ) {
+	    return getInstanceHandler().getString( packageClass.getPackage().getName(), key, packageClass );
+	  }
+
   public static String getString( Class<?> packageClass, String key, String... parameters ) {
     return getInstanceHandler().getString( packageClass.getPackage().getName(), key, packageClass, parameters );
   }
