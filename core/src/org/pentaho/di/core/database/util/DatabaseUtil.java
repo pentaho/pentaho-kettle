@@ -133,4 +133,19 @@ public class DatabaseUtil implements DataSourceProviderInterface {
       throw new DataSourceNamingException( ex );
     }
   }
+
+  @Override
+  public DataSource getNamedDataSource( String datasourceName, DatasourceType type )
+    throws DataSourceNamingException {
+    if ( type != null ) {
+      switch( type ) {
+        case JNDI:
+          return getNamedDataSource( datasourceName );
+        case POOLED:
+          throw new UnsupportedOperationException(
+            getClass().getName() + " does not support providing pooled data sources" );
+      }
+    }
+    throw new IllegalArgumentException( "Unsupported data source type: " + type );
+  }
 }
