@@ -829,7 +829,7 @@ public class SimpleMappingDialog extends BaseStepDialog implements StepDialogInt
     if ( path == null ) {
       path = "";
     }
-    wbByReference.setText( path );
+    wByReference.setText( path );
   }
 
   /**
