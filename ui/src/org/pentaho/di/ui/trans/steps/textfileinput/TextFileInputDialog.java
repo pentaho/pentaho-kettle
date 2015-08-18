@@ -725,7 +725,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   private void showFiles() {
     TextFileInputMeta tfii = new TextFileInputMeta();
-    getInfo( tfii );
+    getInfo( tfii, true );
     String[] files = tfii.getFilePaths( transMeta );
     if ( files != null && files.length > 0 ) {
       EnterSelectionDialog esd = new EnterSelectionDialog( shell, files, "Files read", "Files read:" );
@@ -2461,11 +2461,20 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       return;
     }
 
-    getInfo( input );
+    getInfo( input, false );
     dispose();
   }
 
-  private void getInfo( TextFileInputMeta meta ) {
+  /**
+   * Fill meta object from UI options.
+   * 
+   * @param meta
+   *          meta object
+   * @param preview
+   *          flag for preview or real options should be used. Currently, only one option is differ for preview - EOL
+   *          chars. It uses as "mixed" for be able to preview any file.
+   */
+  private void getInfo( TextFileInputMeta meta, boolean preview ) {
     stepname = wStepname.getText(); // return value
 
     // copy info to TextFileInputMeta class (input)
@@ -2475,8 +2484,13 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     meta.inputFiles.acceptingStepName= wAccStep.getText() ;
     meta.setAcceptingStep( transMeta.findStep( wAccStep.getText() ) );
 
-    meta.content.fileType =  wFiletype.getText() ;
-    meta.content.fileFormat =  wFormat.getText() ;
+    meta.content.fileType = wFiletype.getText() ;
+    if ( preview ) {
+      // mixed type for preview, for be able to eat any EOL chars
+      meta.content.fileFormat = "mixed";
+    } else {
+      meta.content.fileFormat = wFormat.getText();
+    }
     meta.content.separator = wSeparator.getText() ;
     meta.content.enclosure = wEnclosure.getText() ;
     meta.content.escapeCharacter = wEscape.getText() ;
@@ -2594,7 +2608,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   // Get the data layout
   private void getCSV() {
     TextFileInputMeta meta = new TextFileInputMeta();
-    getInfo( meta );
+    getInfo( meta, true );
     TextFileInputMeta previousMeta = (TextFileInputMeta) meta.clone();
     FileInputList textFileList = meta.getTextFileList( transMeta );
     InputStream fileInputStream;
@@ -2672,7 +2686,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
               wFields.optWidth( true );
 
               // Copy it...
-              getInfo( meta );
+              getInfo( meta, true );
 
           // Sample a few lines to determine the correct type of the fields...
           String shellText = BaseMessages.getString( PKG, "TextFileInputDialog.LinesToSample.DialogTitle" );
@@ -2680,7 +2694,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
           EnterNumberDialog end = new EnterNumberDialog( shell, 100, shellText, lineText );
           int samples = end.open();
           if ( samples >= 0 ) {
-            getInfo( meta );
+            getInfo( meta, true );
 
             TextFileCSVImportProgressDialog pd =
                 new TextFileCSVImportProgressDialog( shell, meta, transMeta, reader, samples, clearFields == SWT.YES );
@@ -2774,7 +2788,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   private void preview() {
     // Create the XML input step
     TextFileInputMeta oneMeta = new TextFileInputMeta();
-    getInfo( oneMeta );
+    getInfo( oneMeta, true );
 
     if ( oneMeta.inputFiles.acceptingFilenames ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
@@ -2822,7 +2836,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   // Get the first x lines
   private void first( boolean skipHeaders ) {
     TextFileInputMeta info = new TextFileInputMeta();
-    getInfo( info );
+    getInfo( info, true );
 
     try {
       if ( info.getTextFileList( transMeta ).nrOfFiles() > 0 ) {
@@ -2867,7 +2881,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   // Get the first x lines
   private List<String> getFirst( int nrlines, boolean skipHeaders ) throws KettleException {
     TextFileInputMeta meta = new TextFileInputMeta();
-    getInfo( meta );
+    getInfo( meta, true );
     FileInputList textFileList = meta.getTextFileList( transMeta );
 
     InputStream fi;
@@ -2944,7 +2958,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   private void getFixed() {
     TextFileInputMeta info = new TextFileInputMeta();
-    getInfo( info );
+    getInfo( info, true );
 
     Shell sh = new Shell( shell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
 
