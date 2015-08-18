@@ -155,6 +155,15 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   /** The list of dependencies associated with the transformation. */
   protected List<TransDependency> dependencies;
 
+  /** The list of name of databases available only for this transformation 
+   *  We keep only names for use it when we load/save transformation at jcr repository because 
+   *  we split transformation with datasource during save the transformation in JCR repository
+   *  http://jira.pentaho.com/browse/PPP-3405
+   *  
+   *  Should be null if we use old transformation
+   * */
+  protected List<String> privateTransformationDatabases;
+
   /** The list of cluster schemas associated with the transformation. */
   protected List<ClusterSchema> clusterSchemas;
 
@@ -2928,6 +2937,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
         // Handle connections
         int n = XMLHandler.countNodes( transnode, DatabaseMeta.XML_TAG );
+        List<String> privateTransformationDatabases = new ArrayList<String>();
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.WeHaveConnections", String.valueOf( n ) ) );
         }
@@ -2939,6 +2949,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
           DatabaseMeta dbcon = new DatabaseMeta( nodecon );
           dbcon.shareVariablesWith( this );
+          if ( !dbcon.isShared() ) {
+            privateTransformationDatabases.add( dbcon.getName() );
+          }
 
           DatabaseMeta exist = findDatabase( dbcon.getName() );
           if ( exist == null ) {
@@ -2956,6 +2969,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
             }
           }
         }
+        setPrivateTransformationDatabases( privateTransformationDatabases );
 
         // Read the notes...
         Node notepadsnode = XMLHandler.getSubNode( transnode, XML_TAG_NOTEPADS );
@@ -6060,6 +6074,23 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   }
 
   /**
+   * @return <b>nonSharableDatabases</b> The list of databases available only for this transformation 
+   * or <b>null</b> for old version of transformation   
+   */
+  public List<String> getPrivateTransformationDatabases() {
+    return privateTransformationDatabases;
+  }
+
+  /**
+   * @param privateTransformationDatabases - The list of databases available only for this transformation
+   * 
+   * set null for old version of transformation
+   */
+  public void setPrivateTransformationDatabases( List<String> privateTransformationDatabases ) {
+    this.privateTransformationDatabases = privateTransformationDatabases;
+  }
+
+  /**
    * Utility method to write the XML of this transformation to a file, mostly for testing purposes.
    *
    * @param filename
@@ -6204,7 +6235,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
       listener.onStepChange( this, oldMeta, newMeta );
     }
   }
-  
+
   public boolean containsStepMeta( StepMeta stepMeta ) {
     return steps.contains( stepMeta );
   }
