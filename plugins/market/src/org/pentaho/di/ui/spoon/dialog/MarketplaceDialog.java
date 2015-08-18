@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.events.ExpandListener;
@@ -35,6 +36,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -460,7 +463,7 @@ public class MarketplaceDialog extends Dialog {
     if ( !Const.isEmpty( marketEntry.getDescription() ) ) {
       addLeftLabel( composite, BaseMessages.getString( MARKET_PKG, "MarketplacesDialog.Description.label" ),
           lastControl );
-      lastControl = addRightLabel( composite, marketEntry.getDescription(), lastControl );
+      lastControl = addRightBrowser( composite, marketEntry.getDescription(), lastControl );
     }
     // The package URL
     addLeftLabel( composite, BaseMessages.getString( MARKET_PKG, "MarketplacesDialog.PackageURL.label" ), lastControl );
@@ -645,13 +648,7 @@ public class MarketplaceDialog extends Dialog {
     label.setLayoutData( fdLabel );
   }
 
-  private Control addRightLabel( Composite composite, String string, Control lastControl ) {
-    Label label = new Label( composite, SWT.WRAP | SWT.LEFT );
-    props.setLook( label );
-    if ( string == null ) {
-      string = "null";
-    }
-    label.setText( string );
+  private FormData createLayoutDataForRightComponent( Control lastControl ) {
     FormData fdLabel = new FormData();
     if ( lastControl != null ) {
       fdLabel.top = new FormAttachment( lastControl, 2 * margin );
@@ -660,6 +657,18 @@ public class MarketplaceDialog extends Dialog {
     }
     fdLabel.left = new FormAttachment( middle / 2, margin );
     fdLabel.right = new FormAttachment( 100, 0 );
+    return fdLabel;
+  }
+
+  private Control addRightLabel( Composite composite, String string, Control lastControl ) {
+    Label label = new Label( composite, SWT.WRAP | SWT.LEFT );
+    props.setLook( label );
+    if ( string == null ) {
+      string = "null";
+    }
+    label.setText( string );
+
+    FormData fdLabel = createLayoutDataForRightComponent( lastControl );
     label.setLayoutData( fdLabel );
 
     return label;
@@ -669,14 +678,8 @@ public class MarketplaceDialog extends Dialog {
     Link link = new Link( composite, SWT.LEFT | SWT.WRAP );
     props.setLook( link );
     link.setText( "<a>" + string + "</a>" );
-    FormData fdLabel = new FormData();
-    if ( lastControl != null ) {
-      fdLabel.top = new FormAttachment( lastControl, 2 * margin );
-    } else {
-      fdLabel.top = new FormAttachment( 0, 0 );
-    }
-    fdLabel.left = new FormAttachment( middle / 2, margin );
-    fdLabel.right = new FormAttachment( 100, 0 );
+
+    FormData fdLabel = createLayoutDataForRightComponent( lastControl );
     link.setLayoutData( fdLabel );
 
     link.addSelectionListener( new SelectionAdapter() {
@@ -687,6 +690,65 @@ public class MarketplaceDialog extends Dialog {
     } );
 
     return link;
+  }
+
+  private static String addDefaultFontStyleTo( String html, Font font ) {
+    if ( font == null || font.getFontData().length == 0 ) {
+      return html;
+    }
+
+    FontData fontData = font.getFontData()[ 0 ];
+
+    return new StringBuilder( html.length() + 200 )
+      .append( "<html>" )
+      .append( "<head>" )
+      .append( "<style>" )
+      .append( createCssFor( fontData ) )
+      .append( "</style>" )
+      .append( "</head>" )
+      .append( "<body>" )
+      .append( html )
+      .append( "</body>" )
+      .append( "</html>" )
+      .toString();
+  }
+
+  private static String createCssFor( FontData fd ) {
+    StringBuilder sb = new StringBuilder( 100 );
+    sb.append( "body {" );
+
+    sb.append( "font-size:" ).append( fd.getHeight() ).append( "pt; " );
+    sb.append( "font-family:" ).append( fd.getName() ).append( "; " );
+
+    if ( isBold( fd ) ) {
+      sb.append( "font-weight:bold; " );
+    }
+    if ( isItalic( fd ) ) {
+      sb.append( "font-style:italic; " );
+    }
+
+    sb.append( '}' );
+    return sb.toString();
+  }
+
+  private static boolean isBold( FontData fd ) {
+    return ( fd.getStyle() & SWT.BOLD ) != 0;
+  }
+
+  private static boolean isItalic( FontData fd ) {
+    return ( fd.getStyle() & SWT.ITALIC ) != 0;
+  }
+
+  private Control addRightBrowser( Composite composite, String string, Control lastControl ) {
+    Browser browser = new Browser( composite, SWT.WRAP | SWT.LEFT | SWT.BORDER );
+
+    string = addDefaultFontStyleTo( string, browser.getFont() );
+    browser.setText( string );
+
+    FormData fdLabel = createLayoutDataForRightComponent( lastControl );
+    browser.setLayoutData( fdLabel );
+
+    return browser;
   }
 
   public void dispose() {
