@@ -167,6 +167,15 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    */
   protected List<TransDependency> dependencies;
 
+  /** The list of name of databases available only for this transformation 
+   *  We keep only names for use it when we load/save transformation at jcr repository because 
+   *  we split transformation with datasource during save the transformation in JCR repository
+   *  http://jira.pentaho.com/browse/PPP-3405
+   *  
+   *  Should be null if we use old transformation
+   * */
+  protected List<String> privateTransformationDatabases;
+
   /**
    * The list of cluster schemas associated with the transformation.
    */
@@ -467,11 +476,13 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
    * A list of localized strings corresponding to string descriptions of the undo/redo actions.
    */
   public static final String[] desc_type_undo =
-    {
-      "", BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoChange" ),
-      BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoNew" ),
-      BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoDelete" ),
-      BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoPosition" ) };
+  {
+    "",
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoChange" ),
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoNew" ),
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoDelete" ),
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoPosition" )
+  };
 
   /**
    * A constant specifying the tag value for the XML node of the transformation information.
@@ -2844,6 +2855,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
         // Handle connections
         int n = XMLHandler.countNodes( transnode, DatabaseMeta.XML_TAG );
+        List<String> privateTransformationDatabases = new ArrayList<String>();
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.WeHaveConnections", String.valueOf( n ) ) );
         }
@@ -2855,6 +2867,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
 
           DatabaseMeta dbcon = new DatabaseMeta( nodecon );
           dbcon.shareVariablesWith( this );
+          if ( !dbcon.isShared() ) {
+            privateTransformationDatabases.add( dbcon.getName() );
+          }
 
           DatabaseMeta exist = findDatabase( dbcon.getName() );
           if ( exist == null ) {
@@ -2863,8 +2878,8 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
             if ( !exist.isShared() ) // otherwise, we just keep the shared connection.
             {
               if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
-                "TransMeta.Message.OverwriteConnectionYN", dbcon.getName() ), BaseMessages.getString( PKG,
-                "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
+                  "TransMeta.Message.OverwriteConnectionYN", dbcon.getName() ), BaseMessages.getString( PKG,
+                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
                 int idx = indexOfDatabase( exist );
                 removeDatabase( idx );
                 addDatabase( idx, dbcon );
@@ -2872,6 +2887,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
             }
           }
         }
+        setPrivateTransformationDatabases( privateTransformationDatabases );
 
         // Read the notes...
         Node notepadsnode = XMLHandler.getSubNode( transnode, XML_TAG_NOTEPADS );
@@ -3161,7 +3177,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
               // we don't overwrite shared objects.
               if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
                 "TransMeta.Message.OverwriteSlaveServerYN", slaveServer.getName() ), BaseMessages.getString( PKG,
-                "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
+                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
                 addOrReplaceSlaveServer( slaveServer );
               }
             }
@@ -3188,7 +3204,7 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
               // we don't overwrite shared objects.
               if ( shouldOverwrite( prompter, props, BaseMessages.getString( PKG,
                 "TransMeta.Message.OverwriteClusterSchemaYN", clusterSchema.getName() ), BaseMessages.getString( PKG,
-                "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
+                  "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
                 addOrReplaceClusterSchema( clusterSchema );
               }
             }
@@ -4470,9 +4486,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
         for ( ValueMetaInterface v : values.keySet() ) {
           String message = values.get( v );
           CheckResult cr =
-            new CheckResult(
+              new CheckResult(
               CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(
-              PKG, "TransMeta.CheckResult.TypeResultWarning.Description", v.getName(), message, v
+                PKG, "TransMeta.CheckResult.TypeResultWarning.Description", v.getName(), message, v
                 .getOrigin() ), findStep( v.getOrigin() ) );
           remarks.add( cr );
         }
@@ -5879,6 +5895,23 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
   }
 
   /**
+   * @return <b>nonSharableDatabases</b> The list of databases available only for this transformation 
+   * or <b>null</b> for old version of transformation   
+   */
+  public List<String> getPrivateTransformationDatabases() {
+    return privateTransformationDatabases;
+  }
+
+  /**
+   * @param privateTransformationDatabases - The list of databases available only for this transformation
+   * 
+   * set null for old version of transformation
+   */
+  public void setPrivateTransformationDatabases( List<String> privateTransformationDatabases ) {
+    this.privateTransformationDatabases = privateTransformationDatabases;
+  }
+
+  /**
    * Utility method to write the XML of this transformation to a file, mostly for testing purposes.
    *
    * @param filename The filename to save to
@@ -6015,5 +6048,9 @@ public class TransMeta extends AbstractMeta implements XMLInterface, Comparator<
     for ( StepMetaChangeListenerInterface listener : stepChangeListeners ) {
       listener.onStepChange( this, oldMeta, newMeta );
     }
+  }
+
+  public boolean containsStepMeta( StepMeta stepMeta ) {
+    return steps.contains( stepMeta );
   }
 }

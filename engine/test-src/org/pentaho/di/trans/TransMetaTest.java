@@ -85,16 +85,15 @@ public class TransMetaTest {
     StepMetaInterface smi = mock( StepMetaInterface.class );
     StepIOMeta ioMeta = mock( StepIOMeta.class );
     when( smi.getStepIOMeta() ).thenReturn( ioMeta );
-    doAnswer( new Answer() {
+    doAnswer( new Answer<Object>() {
       @Override public Object answer( InvocationOnMock invocation ) throws Throwable {
         RowMetaInterface rmi = (RowMetaInterface) invocation.getArguments()[ 0 ];
         rmi.clear();
         rmi.addValueMeta( new ValueMetaString( overriddenValue ) );
         return null;
       }
-    } ).when( smi ).getFields( any( RowMetaInterface.class ), anyString(), any( RowMetaInterface[].class ),
-      eq( nextStep ), any(
-        VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
+    } ).when( smi ).getFields( any( RowMetaInterface.class ), anyString(), any( RowMetaInterface[].class ), eq( nextStep ),
+        any( VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
 
     StepMeta thisStep = mockStepMeta( "thisStep" );
     when( thisStep.getStepMetaInterface() ).thenReturn( smi );
