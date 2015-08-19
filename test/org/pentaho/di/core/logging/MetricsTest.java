@@ -25,8 +25,8 @@ package org.pentaho.di.core.logging;
 import java.util.Deque;
 import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.metrics.MetricsDuration;
 import org.pentaho.di.core.metrics.MetricsSnapshotInterface;
@@ -35,7 +35,11 @@ import org.pentaho.di.core.metrics.MetricsUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
-public class MetricsTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+public class MetricsTest {
 
   public static final String STRING_TEST_TASK_CODE = "TEST_TASK";
   public static final String STRING_TEST_TASK_DESCRIPTION = "Test task";
@@ -44,11 +48,12 @@ public class MetricsTest extends TestCase {
   public static Metrics METRIC_STOP = new Metrics(
     MetricsSnapshotType.STOP, STRING_TEST_TASK_CODE, STRING_TEST_TASK_DESCRIPTION );
 
-  @Override
-  protected void setUp() throws Exception {
+  @BeforeClass
+  public static void setUp() throws Exception {
     KettleEnvironment.init();
   }
 
+  @Test
   public void testBasics() throws Exception {
     LogChannel log = new LogChannel( "BASICS" );
     log.setGatheringMetrics( true );
@@ -68,6 +73,7 @@ public class MetricsTest extends TestCase {
     assertTrue( duration.getDuration() >= 50 && duration.getDuration() <= 100 );
   }
 
+  @Test
   public void testTransformation() throws Exception {
 
     TransMeta transMeta = new TransMeta( "testfiles/metrics/simple-test.ktr" );
@@ -96,6 +102,7 @@ public class MetricsTest extends TestCase {
 
   }
 
+  @Test
   public void testDatabaseGetRow() throws Exception {
 
     MetricsRegistry metricsRegistry = MetricsRegistry.getInstance();
@@ -135,7 +142,5 @@ public class MetricsTest extends TestCase {
     Long maxTime = MetricsUtil.getResult( Metrics.METRIC_DATABASE_GET_ROW_MAX_TIME );
     assertNotNull( maxTime );
     assertTrue( maxTime >= minTime );
-
   }
-
 }

@@ -33,7 +33,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
+import com.google.common.util.concurrent.SettableFuture;
 import org.junit.Test;
 import org.pentaho.di.core.annotations.KettleLifecyclePlugin;
 import org.pentaho.di.core.exception.KettleException;
@@ -96,7 +98,7 @@ public class KettleEnvironmentTest {
     InstantiationException {
     Field f = KettleEnvironment.class.getDeclaredField( "initialized" );
     f.setAccessible( true );
-    f.set( null, null );
+    f.set( null, new AtomicReference<SettableFuture<Boolean>>( null ) );
     Constructor<KettleVFS> constructor;
     constructor = KettleVFS.class.getDeclaredConstructor();
     constructor.setAccessible( true );

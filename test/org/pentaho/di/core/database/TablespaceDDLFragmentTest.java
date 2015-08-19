@@ -24,6 +24,7 @@ package org.pentaho.di.core.database;
 
 import junit.framework.TestCase;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.trans.TransMeta;
@@ -62,12 +63,16 @@ public class TablespaceDDLFragmentTest extends TestCase {
       + "<index_tablespace>${TablespaceDDLFragmentTest_INDEX_TABLESPACE_1}</index_tablespace>"
       + "</connection>";
 
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
+    KettleEnvironment.init( false );
+  }
+
   @Test
   public void testOracleDatabase() {
     try {
 
       // keep in mind that this execution will read a kettle.properties file
-      KettleEnvironment.init();
       TransMeta transMeta = new TransMeta();
 
       // set up variables to be used for tablespace specification
@@ -117,7 +122,6 @@ public class TablespaceDDLFragmentTest extends TestCase {
   @Test
   public void testMySQLDatabase() {
     try {
-      KettleEnvironment.init();
       TransMeta transMeta = new TransMeta();
       DatabaseMeta databaseMeta = new DatabaseMeta( MySQLDatabaseXML );
       transMeta.setVariable( "TablespaceDDLFragmentTest_DATA_TABLESPACE", "TABLES" );
@@ -137,7 +141,6 @@ public class TablespaceDDLFragmentTest extends TestCase {
   @Test
   public void testH2Database() {
     try {
-      KettleEnvironment.init();
       TransMeta transMeta = new TransMeta();
       DatabaseMeta databaseMeta = new DatabaseMeta( h2DatabaseXML );
       transMeta.setVariable( "TablespaceDDLFragmentTest_DATA_TABLESPACE", "TABLES" );
