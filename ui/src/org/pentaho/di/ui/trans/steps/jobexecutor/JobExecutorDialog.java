@@ -559,7 +559,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
       RepositoryElementMetaInterface repositoryObject = sod.getRepositoryObject();
       if ( repositoryObject != null ) {
         specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
-        getByReferenceData( repositoryObject );
+        updateByReferenceField( repositoryObject );
         referenceObjectId = repositoryObject.getObjectId();
         setRadioButtons();
       }
@@ -719,12 +719,11 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     setActive();
   }
 
-  private void getByReferenceData( RepositoryElementMetaInterface transInf ) {
-    String path = transInf.getRepositoryDirectory().getPath();
-    if ( !path.endsWith( "/" ) ) {
-      path += "/";
+  private void updateByReferenceField( RepositoryElementMetaInterface element ) {
+    String path = getPathOf( element );
+    if ( path == null ) {
+      path = "";
     }
-    path += transInf.getName();
     wByReference.setText( path );
   }
 
@@ -831,10 +830,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
         throw new KettleException( BaseMessages.getString(
           PKG, "JobExecutorDialog.Exception.NotConnectedToRepository.Message" ) );
       }
-      RepositoryObject transInf = repository.getObjectInformation( jobObjectId, RepositoryObjectType.JOB );
-      if ( transInf != null ) {
-        getByReferenceData( transInf );
-      }
+      RepositoryObject jobInf = repository.getObjectInformation( jobObjectId, RepositoryObjectType.JOB );
+      updateByReferenceField( jobInf );
     } catch ( KettleException e ) {
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "JobExecutorDialog.Exception.UnableToReferenceObjectId.Title" ),
