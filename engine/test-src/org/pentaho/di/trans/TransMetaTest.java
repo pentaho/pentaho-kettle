@@ -143,7 +143,6 @@ public class TransMetaTest {
     // to make sure that method comes through positive scenario
     assert transMeta.steps.size() == 1;
     assert transMeta.changed_steps;
-
   }
 
   private static StepMeta mockStepMeta( String name ) {
