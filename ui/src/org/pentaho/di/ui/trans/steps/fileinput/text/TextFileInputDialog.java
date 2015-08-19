@@ -2594,6 +2594,17 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   private void getCSV() {
     TextFileInputMeta meta = new TextFileInputMeta();
     getInfo( meta, true );
+
+    // CSV without separator defined
+    if ( meta.content.fileType.equalsIgnoreCase( "CSV" ) && ( meta.content.separator == null || meta.content.separator
+        .isEmpty() ) ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setMessage( BaseMessages.getString( PKG, "TextFileInput.Exception.NoSeparator" ) );
+      mb.setText( BaseMessages.getString( PKG, "TextFileInputDialog.DialogTitle" ) );
+      mb.open();
+      return;
+    }
+
     TextFileInputMeta previousMeta = (TextFileInputMeta) meta.clone();
     FileInputList textFileList = meta.getTextFileList( transMeta );
     InputStream fileInputStream;
