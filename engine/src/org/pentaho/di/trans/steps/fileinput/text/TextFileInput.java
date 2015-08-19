@@ -27,6 +27,7 @@ import java.util.Date;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.playlist.FilePlayListReplay;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -79,6 +80,12 @@ public class TextFileInput extends BaseInputStep<TextFileInputMeta, TextFileInpu
     data.separator = environmentSubstitute( meta.content.separator );
     data.enclosure = environmentSubstitute( meta.content.enclosure );
     data.escapeCharacter = environmentSubstitute( meta.content.escapeCharacter );
+    // CSV without separator defined
+    if ( meta.content.fileType.equalsIgnoreCase( "CSV" ) && ( meta.content.separator == null || meta.content.separator
+        .isEmpty() ) ) {
+      logError( BaseMessages.getString( PKG, "TextFileInput.Exception.NoSeparator" ) );
+      return false;
+    }
 
     return true;
   }
