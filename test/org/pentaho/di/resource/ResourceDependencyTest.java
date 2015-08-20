@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,14 +24,21 @@ package org.pentaho.di.resource;
 
 import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.TransMeta;
 
-public class ResourceDependencyTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+public class ResourceDependencyTest {
 
   /**
    * @param args
@@ -53,17 +60,32 @@ public class ResourceDependencyTest extends TestCase {
     }
   }
 
-  public void testJobDependencyList() throws Exception {
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
     KettleEnvironment.init();
+  }
 
+  @Before
+  public void setUp() {
+  }
+
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
+  }
+
+  @After
+  public void tearDown() {
+  }
+
+
+  @Test
+  public void testJobDependencyList() throws Exception {
     // Load the first job metadata
     JobMeta jobMeta = new JobMeta( "test/org/pentaho/di/resource/processchangelog.kjb", null, null );
     List<ResourceReference> resourceReferences = jobMeta.getResourceDependencies();
-    // printResourceReferences(resourceReferences);
     assertEquals( 5, resourceReferences.size() );
     for ( int i = 0; i < 5; i++ ) {
       ResourceReference genRef = resourceReferences.get( i );
-      // System.out.println(genRef.toXml());
       ResourceHolderInterface refHolder = genRef.getReferenceHolder();
       boolean checkDatabaseStuff = false;
       if ( i == 0 ) {
@@ -98,12 +120,10 @@ public class ResourceDependencyTest extends TestCase {
 
   }
 
+  @Test
   public void testTransformationDependencyList() throws Exception {
-    KettleEnvironment.init();
-
     TransMeta transMeta = new TransMeta( "test/org/pentaho/di/resource/trans/General - Change log processing.ktr" );
     List<ResourceReference> resourceReferences = transMeta.getResourceDependencies();
-    // printResourceReferences(resourceReferences);
     assertEquals( 2, resourceReferences.size() );
     ResourceReference genRef = null;
     for ( ResourceReference look : resourceReferences ) {
@@ -112,7 +132,6 @@ public class ResourceDependencyTest extends TestCase {
       }
     }
     assertNotNull( genRef );
-    // System.out.println(genRef.toXml());
 
     ResourceHolderInterface refHolder = genRef.getReferenceHolder();
     assertEquals( "TextFileInput", refHolder.getTypeId() );
@@ -122,30 +141,26 @@ public class ResourceDependencyTest extends TestCase {
     ResourceEntry theEntry = entries.get( 0 );
     assertEquals( ResourceType.FILE, theEntry.getResourcetype() );
     assertTrue( theEntry.getResource().endsWith( "changelog.txt" ) );
-
   }
 
   /**
    * Private method for displaying what's coming back from the dependency call.
    *
-   * @param resourceReferences
+   * @param resourceReferences A list of resource reference to print out
    */
   protected void printResourceReferences( List<ResourceReference> resourceReferences ) {
-    for ( int i = 0; i < resourceReferences.size(); i++ ) {
-      ResourceReference genRef = resourceReferences.get( i );
+    for ( ResourceReference genRef : resourceReferences ) {
       ResourceHolderInterface refHolder = genRef.getReferenceHolder();
       System.out.println( "Reference Holder Information" );
       System.out.println( "  Name: " + refHolder.getName() );
       System.out.println( "  Type Id: " + refHolder.getTypeId() );
       System.out.println( "  Resource Entries" );
       List<ResourceEntry> entries = genRef.getEntries();
-      for ( int j = 0; j < entries.size(); j++ ) {
-        ResourceEntry resEntry = entries.get( j );
+      for ( ResourceEntry resEntry : entries ) {
         System.out.println( "    Resource Entry" );
         System.out.println( "      Resource Type: " + resEntry.getResourcetype() );
         System.out.println( "      Resource: " + resEntry.getResource() );
       }
     }
   }
-
 }

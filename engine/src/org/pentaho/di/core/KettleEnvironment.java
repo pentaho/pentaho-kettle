@@ -58,7 +58,9 @@ public class KettleEnvironment {
 
   private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!
 
-  /** Indicates whether the Kettle environment has been initialized. */
+  /**
+   * Indicates whether the Kettle environment has been initialized.
+   */
   private static AtomicReference<SettableFuture<Boolean>> initialized = new AtomicReference<SettableFuture<Boolean>>( null );
   private static KettleLifecycleSupport kettleLifecycleSupport;
 
@@ -66,10 +68,8 @@ public class KettleEnvironment {
    * Initializes the Kettle environment. This method will attempt to configure Simple JNDI, by simply calling
    * init(true).
    *
+   * @throws KettleException Any errors that occur during initialization will throw a KettleException.
    * @see KettleEnvironment#init(boolean)
-   *
-   * @throws KettleException
-   *           Any errors that occur during initialization will throw a KettleException.
    */
   public static void init() throws KettleException {
     init( true );
@@ -77,67 +77,72 @@ public class KettleEnvironment {
 
   /**
    * Initializes the Kettle environment. This method performs the following operations:
-   *
+   * <p/>
    * - Creates a Kettle "home" directory if it does not already exist - Reads in the kettle.properties file -
    * Initializes the logging back-end - Sets the console log level to debug - If specified by parameter, configures
    * Simple JNDI - Registers the native types and the plugins for the various plugin types - Reads the list of variables
    * - Initializes the Lifecycle listeners
    *
-   * @param simpleJndi
-   *          true to configure Simple JNDI, false otherwise
-   * @throws KettleException
-   *           Any errors that occur during initialization will throw a KettleException.
+   * @param simpleJndi true to configure Simple JNDI, false otherwise
+   * @throws KettleException Any errors that occur during initialization will throw a KettleException.
    */
   public static void init( boolean simpleJndi ) throws KettleException {
     SettableFuture<Boolean> ready;
     if ( initialized.compareAndSet( null, ready = SettableFuture.create() ) ) {
 
-      // This creates .kettle and kettle.properties...
-      //
-      if ( !KettleClientEnvironment.isInitialized() ) {
-        KettleClientEnvironment.init();
+      try {
+        // This creates .kettle and kettle.properties...
+        //
+        if ( !KettleClientEnvironment.isInitialized() ) {
+          KettleClientEnvironment.init();
+        }
+
+        // Configure Simple JNDI when we run in stand-alone mode (spoon, pan, kitchen, carte, ... NOT on the platform
+        //
+        if ( simpleJndi ) {
+          JndiUtil.initJNDI();
+        }
+
+        // Register the native types and the plugins for the various plugin types...
+        //
+        PluginRegistry.addPluginType( RowDistributionPluginType.getInstance() );
+        PluginRegistry.addPluginType( StepPluginType.getInstance() );
+        PluginRegistry.addPluginType( PartitionerPluginType.getInstance() );
+        PluginRegistry.addPluginType( JobEntryPluginType.getInstance() );
+        PluginRegistry.addPluginType( LogTablePluginType.getInstance() );
+        PluginRegistry.addPluginType( RepositoryPluginType.getInstance() );
+        PluginRegistry.addPluginType( LifecyclePluginType.getInstance() );
+        PluginRegistry.addPluginType( KettleLifecyclePluginType.getInstance() );
+        PluginRegistry.addPluginType( ImportRulePluginType.getInstance() );
+        PluginRegistry.addPluginType( CartePluginType.getInstance() );
+        PluginRegistry.addPluginType( CompressionPluginType.getInstance() );
+        PluginRegistry.addPluginType( AuthenticationProviderPluginType.getInstance() );
+        PluginRegistry.addPluginType( AuthenticationConsumerPluginType.getInstance() );
+        PluginRegistry.init();
+
+        // Also read the list of variables.
+        //
+        KettleVariablesList.init();
+
+        // Initialize the Lifecycle Listeners
+        //
+        initLifecycleListeners();
+        ready.set( true );
+      } catch ( Throwable t ) {
+        ready.setException( t );
+        // If it's a KettleException, throw it, otherwise wrap it in a KettleException
+        throw ( ( t instanceof KettleException ) ? (KettleException) t : new KettleException( t ) );
       }
 
-      // Configure Simple JNDI when we run in stand-alone mode (spoon, pan, kitchen, carte, ... NOT on the platform
-      //
-      if ( simpleJndi ) {
-        JndiUtil.initJNDI();
-      }
-
-      // Register the native types and the plugins for the various plugin types...
-      //
-      PluginRegistry.addPluginType( RowDistributionPluginType.getInstance() );
-      PluginRegistry.addPluginType( StepPluginType.getInstance() );
-      PluginRegistry.addPluginType( PartitionerPluginType.getInstance() );
-      PluginRegistry.addPluginType( JobEntryPluginType.getInstance() );
-      PluginRegistry.addPluginType( LogTablePluginType.getInstance() );
-      PluginRegistry.addPluginType( RepositoryPluginType.getInstance() );
-      PluginRegistry.addPluginType( LifecyclePluginType.getInstance() );
-      PluginRegistry.addPluginType( KettleLifecyclePluginType.getInstance() );
-      PluginRegistry.addPluginType( ImportRulePluginType.getInstance() );
-      PluginRegistry.addPluginType( CartePluginType.getInstance() );
-      PluginRegistry.addPluginType( CompressionPluginType.getInstance() );
-      PluginRegistry.addPluginType( AuthenticationProviderPluginType.getInstance() );
-      PluginRegistry.addPluginType( AuthenticationConsumerPluginType.getInstance() );
-      PluginRegistry.init();
-
-      // Also read the list of variables.
-      //
-      KettleVariablesList.init();
-
-      // Initialize the Lifecycle Listeners
-      //
-      initLifecycleListeners();
-      ready.set( true );
     } else {
       // A different thread is initializing
       ready = initialized.get();
       // Block until environment is initialized
       try {
         ready.get();
-      } catch ( Throwable e ) {
-        Throwables.propagateIfPossible( e );
-        throw new KettleException( e );
+      } catch ( Throwable t ) {
+        // If it's a KettleException, throw it, otherwise wrap it in a KettleException
+        throw ( ( t instanceof KettleException ) ? (KettleException) t : new KettleException( t ) );
       }
     }
   }
@@ -145,8 +150,7 @@ public class KettleEnvironment {
   /**
    * Alert all Lifecycle plugins that the Kettle environment is being initialized.
    *
-   * @throws KettleException
-   *           when a lifecycle listener throws an exception
+   * @throws KettleException when a lifecycle listener throws an exception
    */
   private static void initLifecycleListeners() throws KettleException {
     kettleLifecycleSupport = new KettleLifecycleSupport();
@@ -161,7 +165,7 @@ public class KettleEnvironment {
     } );
 
   }
-  
+
   // Shutdown the Kettle environment programmatically
   public static void shutdown() {
     shutdown( kettleLifecycleSupport );
@@ -172,7 +176,7 @@ public class KettleEnvironment {
       kettleLifecycleSupport.onEnvironmentShutdown();
     } catch ( Throwable t ) {
       System.err.println( BaseMessages.getString( PKG,
-          "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners" ) );
+        "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners" ) );
       t.printStackTrace();
     }
   }
@@ -194,8 +198,7 @@ public class KettleEnvironment {
   /**
    * Loads the plugin registry.
    *
-   * @throws KettlePluginException
-   *           if any errors are encountered while loading the plugin registry.
+   * @throws KettlePluginException if any errors are encountered while loading the plugin registry.
    */
   public void loadPluginRegistry() throws KettlePluginException {
 

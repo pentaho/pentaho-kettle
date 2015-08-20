@@ -24,6 +24,7 @@ package org.pentaho.di.core.database;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 
@@ -62,10 +63,14 @@ public class SelectCountTests {
     + "<access></access>" + "<database>test</database>" + "<port>3306</port>" + "<username>sa</username>"
     + "<password></password>" + "</connection>";
 
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
+    KettleEnvironment.init( false );
+  }
+
   @Test
   public void testH2Database() {
     try {
-      KettleEnvironment.init();
       String expectedSQL = NonHiveSelect + TableName;
       DatabaseMeta databaseMeta = new DatabaseMeta( h2DatabaseXML );
       String sql = databaseMeta.getDatabaseInterface().getSelectCountStatement( TableName );
@@ -78,7 +83,6 @@ public class SelectCountTests {
   @Test
   public void testOracleDatabase() {
     try {
-      KettleEnvironment.init();
       String expectedSQL = NonHiveSelect + TableName;
       DatabaseMeta databaseMeta = new DatabaseMeta( OracleDatabaseXML );
       String sql = databaseMeta.getDatabaseInterface().getSelectCountStatement( TableName );
@@ -91,7 +95,6 @@ public class SelectCountTests {
   @Test
   public void testMySQLDatabase() {
     try {
-      KettleEnvironment.init();
       String expectedSQL = NonHiveSelect + TableName;
       DatabaseMeta databaseMeta = new DatabaseMeta( MySQLDatabaseXML );
       String sql = databaseMeta.getDatabaseInterface().getSelectCountStatement( TableName );
