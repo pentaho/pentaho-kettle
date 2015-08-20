@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -386,13 +386,27 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
 
     try {
-      // First see if we use connection pooling...
+      // Use extended datasource provider if available
+      //
+      // If not then
+      //
+      // first see if we use connection pooling...
       //
       // isUsingConnectionPool defaults to false for backward compatibility
       //
       // JNDI does pooling on it's own.
 
-      if ( databaseMeta.isUsingConnectionPool() && databaseMeta.getAccessType() != DatabaseMeta.TYPE_ACCESS_JNDI ) {
+      ExtendedDSProviderInterface dsp = getExtendedDSProvider();
+      if ( dsp != null ) {
+        try {
+          this.connection = connectUsingExtendedDSProvider( dsp, databaseMeta );
+          if ( getConnection().getAutoCommit() != isAutoCommit() ) {
+            setAutoCommit( isAutoCommit() );
+          }
+        } catch ( Exception e ) {
+          throw new KettleDatabaseException( "Error occurred while trying to connect to the database", e );
+        }
+      } else if ( databaseMeta.isUsingConnectionPool() && databaseMeta.getAccessType() != DatabaseMeta.TYPE_ACCESS_JNDI ) {
         try {
           this.connection = ConnectionPoolUtil.getConnection( log, databaseMeta, partitionId );
           if ( getConnection().getAutoCommit() != isAutoCommit() ) {
@@ -4728,4 +4742,31 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       log.logDetailed( "Connected to database." );
     }
   }
+
+  private ExtendedDSProviderInterface getExtendedDSProvider() {
+    return DataSourceProviderFactory.getExtendedDataSourceProviderInterface();
+  }
+
+  private Connection connectUsingExtendedDSProvider( ExtendedDSProviderInterface dsp, DatabaseMeta databaseMeta2 )
+    throws KettleDatabaseException {
+    Connection connection = null;
+    String dataSourceName = databaseMeta2.getName();
+    if ( dataSourceName == null ) {
+      throw new KettleDatabaseException( "Invalid named connection " + dataSourceName );
+    }
+    DataSource dataSource = dsp.getNSNamesDataSource( dataSourceName, ExtendedDSProviderInterface.NS_DATASOURCE_NAME );
+    if ( dataSource == null ) {
+      throw new KettleDatabaseException( "Invalid named connection " + dataSourceName );
+    }
+    try {
+      connection = dataSource.getConnection();
+    } catch ( SQLException e ) {
+      throw new KettleDatabaseException( "Invalid named connection " + dataSourceName + " : " + e.getMessage() );
+    }
+    if ( connection == null ) {
+      throw new KettleDatabaseException( "Invalid named connection " + dataSourceName );
+    }
+    return connection;
+  }
+
 }
