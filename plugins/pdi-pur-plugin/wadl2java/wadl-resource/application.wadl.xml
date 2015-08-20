@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<application xmlns="http://wadl.dev.java.net/2009/02">
+	<doc xmlns:jersey="http://jersey.java.net/" jersey:generatedBy="Jersey: 1.16 11/28/2012 03:18 PM" />
+	<grammars>
+		<include href="application.wadl/xsd0.xsd">
+			<doc title="Generated" xml:lang="en" />
+		</include>
+	</grammars>
+	<resources base="http://localhost:8080/pentaho/plugin/">
+		<resource path="/pur-repository-plugin/api/revision">
+			<resource path="{pathId : .+}/revisions">
+				<param xmlns:xs="http://www.w3.org/2001/XMLSchema" name="pathId"
+					style="template" type="xs:string" />
+				<method id="doGetVersions" name="GET">
+					<response>
+						<representation mediaType="application/xml" />
+						<representation mediaType="application/json" />
+					</response>
+				</method>
+			</resource>
+			<resource path="{pathId}/versioningConfiguration">
+				<param xmlns:xs="http://www.w3.org/2001/XMLSchema" name="pathId"
+					style="template" type="xs:string" />
+				<method id="doVersioningConfiguration" name="GET">
+					<response>
+						<ns2:representation xmlns:ns2="http://wadl.dev.java.net/2009/02"
+							xmlns="" element="fileVersioningConfiguration" mediaType="application/xml" />
+						<ns2:representation xmlns:ns2="http://wadl.dev.java.net/2009/02"
+							xmlns="" element="fileVersioningConfiguration" mediaType="application/json" />
+					</response>
+				</method>
+			</resource>
+		</resource>
+		<resource path="/pur-repository-plugin/api/purge">
+			<resource path="{pathId : .+}/purge">
+				<param xmlns:xs="http://www.w3.org/2001/XMLSchema" name="pathId"
+					style="template" type="xs:string" />
+				<method id="doDeleteRevisions" name="POST">
+					<request>
+						<representation mediaType="multipart/form-data" />
+					</request>
+					<response>
+						<representation mediaType="*/*" />
+					</response>
+				</method>
+			</resource>
+		</resource>
+	</resources>
+</application>

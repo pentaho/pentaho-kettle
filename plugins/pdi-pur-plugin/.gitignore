@@ -1,0 +1,10 @@
+bin/
+dist/
+lib/
+test-lib/
+compile-lib/
+override.properties
+.classpath
+.project
+*.iml
+derby.log
