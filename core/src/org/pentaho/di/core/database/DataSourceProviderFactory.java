@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.pentaho.di.core.database.util.DatabaseUtil;
 public class DataSourceProviderFactory {
 
   private static DataSourceProviderInterface dataSourceProviderInterface;
+  private static ExtendedDSProviderInterface extendedDataSourceProviderInterface;
 
   static {
     //
@@ -52,6 +53,14 @@ public class DataSourceProviderFactory {
 
   public static DataSourceProviderInterface getDataSourceProviderInterface() {
     return dataSourceProviderInterface;
+  }
+
+  public static void setExtendedDataSourceProviderInterface( ExtendedDSProviderInterface value ) {
+    extendedDataSourceProviderInterface = value;
+  }
+
+  public static ExtendedDSProviderInterface getExtendedDataSourceProviderInterface() {
+    return extendedDataSourceProviderInterface;
   }
 
 }
