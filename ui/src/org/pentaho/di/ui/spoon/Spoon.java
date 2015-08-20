@@ -426,6 +426,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   // THE HANDLERS
   public SpoonDelegates delegates = new SpoonDelegates( this );
+  
+  private SharedObjectSyncUtil sharedObjectSyncUtil = new SharedObjectSyncUtil( delegates );
 
   public RowMetaAndData variables = new RowMetaAndData( new RowMeta() );
 
@@ -690,7 +692,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
     }
   }
-
+  
   public Spoon() {
     this( null );
   }
@@ -2666,6 +2668,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
     delegates.db.editConnection( databaseMeta );
+    sharedObjectSyncUtil.synchronizeConnections( databaseMeta );
   }
 
   public void dupeConnection() {
@@ -2782,6 +2785,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     final TransMeta transMeta = (TransMeta) selectionObjectParent;
     final StepMeta stepMeta = (StepMeta) selectionObject;
     delegates.steps.editStep( transMeta, stepMeta );
+    sharedObjectSyncUtil.synchronizeSteps( stepMeta );
   }
 
   public void dupeStep() {
@@ -3078,10 +3082,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         // newStep( getActiveTransformation() );
       }
       if ( selection instanceof DatabaseMeta ) {
-        delegates.db.editConnection( (DatabaseMeta) selection );
+        DatabaseMeta database = (DatabaseMeta) selection;
+        delegates.db.editConnection( database );
+        sharedObjectSyncUtil.synchronizeConnections( database );
       }
       if ( selection instanceof StepMeta ) {
-        delegates.steps.editStep( (TransMeta) parent, (StepMeta) selection );
+        StepMeta step = (StepMeta) selection;
+        delegates.steps.editStep( (TransMeta) parent, step );
+        sharedObjectSyncUtil.synchronizeSteps( step );
       }
       if ( selection instanceof JobEntryCopy ) {
         editJobEntry( (JobMeta) parent, (JobEntryCopy) selection );
@@ -3116,6 +3124,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     if ( dialog.open() ) {
       refreshTree();
       refreshGraph();
+      sharedObjectSyncUtil.synchronizeSlaveServers( slaveServer );
     }
   }
 
@@ -8290,6 +8299,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       new PartitionSchemaDialog( shell, partitionSchema, transMeta.getDatabases(), transMeta );
     if ( dialog.open() ) {
       refreshTree();
+      sharedObjectSyncUtil.synchronizePartitionSchemas( partitionSchema );
     }
   }
 
@@ -8322,6 +8332,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     ClusterSchemaDialog dialog = new ClusterSchemaDialog( shell, clusterSchema, transMeta.getSlaveServers() );
     if ( dialog.open() ) {
       refreshTree();
+      sharedObjectSyncUtil.synchronizeClusterSchemas( clusterSchema );
     }
   }
 
@@ -8674,7 +8685,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public String editStep( TransMeta transMeta, StepMeta stepMeta ) {
-    return delegates.steps.editStep( transMeta, stepMeta );
+    String stepname = delegates.steps.editStep( transMeta, stepMeta );
+    sharedObjectSyncUtil.synchronizeSteps( stepMeta );
+    return stepname;
   }
 
   public void dupeStep( TransMeta transMeta, StepMeta stepMeta ) {
