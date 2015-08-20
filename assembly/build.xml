@@ -208,7 +208,7 @@
 
   <target name="resolve-plugins" depends="install-ivy">
     <ivy:resolve file="${ivyfile}" conf="plugins" />
-    <ivy:retrieve conf="plugins" pattern="${plugins.dir}/[module]-[revision](-[classifier]).[ext]" />
+    <ivy:retrieve conf="plugins" pattern="${plugins.dir}/[module]-[revision](-[classifier]).[ext]" sync="true" />
   </target>
 
   <target name="unzip-swtlibs">
