@@ -311,7 +311,7 @@ public class Mail extends BaseStep implements StepInterface {
           throw new KettleException( BaseMessages.getString( PKG, "Mail.Exception.AttachedContentFieldEmpty" ) );
         }
         data.indexOfAttachedContent = data.previousRowMeta.indexOfValue( attachedContentField );
-        if ( data.indexOfComment < 0 ) {
+        if ( data.indexOfAttachedContent < 0 ) {
           throw new KettleException( BaseMessages.getString(
             PKG, "Mail.Exception.CouldnotFindAttachedContentField", attachedContentField ) );
         }
@@ -323,7 +323,7 @@ public class Mail extends BaseStep implements StepInterface {
             PKG, "Mail.Exception.AttachedContentFileNameFieldEmpty" ) );
         }
         data.IndexOfAttachedFilename = data.previousRowMeta.indexOfValue( attachedContentFileNameField );
-        if ( data.indexOfComment < 0 ) {
+        if ( data.IndexOfAttachedFilename < 0 ) {
           throw new KettleException( BaseMessages.getString(
             PKG, "Mail.Exception.CouldnotFindAttachedContentFileNameField", attachedContentFileNameField ) );
         }
