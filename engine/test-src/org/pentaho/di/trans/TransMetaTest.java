@@ -39,6 +39,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 import org.pentaho.metastore.api.IMetaStore;
 
 public class TransMetaTest {
@@ -92,8 +93,9 @@ public class TransMetaTest {
         rmi.addValueMeta( new ValueMetaString( overriddenValue ) );
         return null;
       }
-    } ).when( smi ).getFields( any( RowMetaInterface.class ), anyString(), any( RowMetaInterface[].class ), eq( nextStep ),
-        any( VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
+    } ).when( smi )
+        .getFields( any( RowMetaInterface.class ), anyString(), any( RowMetaInterface[].class ), eq( nextStep ),
+            any( VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
 
     StepMeta thisStep = mockStepMeta( "thisStep" );
     when( thisStep.getStepMetaInterface() ).thenReturn( smi );
@@ -105,6 +107,18 @@ public class TransMetaTest {
 
     assertEquals( 1, thisStepsFields.size() );
     assertEquals( overriddenValue, thisStepsFields.getValueMeta( 0 ).getName() );
+  }
+
+  @Test
+  public void testAddOrReplaceStep() throws Exception {
+    StepMeta stepMeta = mockStepMeta( "ETL Metadata Injection" );
+    MetaInjectMeta stepMetaInterfaceMock = mock( MetaInjectMeta.class );
+    when( stepMeta.getStepMetaInterface() ).thenReturn( stepMetaInterfaceMock );
+    transMeta.addOrReplaceStep( stepMeta );
+    verify( stepMeta ).setParentTransMeta( any( TransMeta.class ) );
+    // to make sure that method comes through positive scenario
+    assert transMeta.steps.size() == 1;
+    assert transMeta.changed_steps;
   }
 
   private static StepMeta mockStepMeta( String name ) {
