@@ -41,6 +41,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
@@ -130,6 +131,18 @@ public class TransMetaTest {
     trans.importFromMetaStore();
     DatabaseMeta dbMeta = trans.findDatabase( name );
     assertEquals( dbMetaShared.getHostname(), dbMeta.getHostname() );
+  }
+
+  @Test
+  public void testAddOrReplaceStep() throws Exception {
+    StepMeta stepMeta = mockStepMeta( "ETL Metadata Injection" );
+    MetaInjectMeta stepMetaInterfaceMock = mock( MetaInjectMeta.class );
+    when( stepMeta.getStepMetaInterface() ).thenReturn( stepMetaInterfaceMock );
+    transMeta.addOrReplaceStep( stepMeta );
+    verify( stepMeta ).setParentTransMeta( any( TransMeta.class ) );
+    // to make sure that method comes through positive scenario
+    assert transMeta.steps.size() == 1;
+    assert transMeta.changed_steps;
   }
 
   private static StepMeta mockStepMeta( String name ) {
