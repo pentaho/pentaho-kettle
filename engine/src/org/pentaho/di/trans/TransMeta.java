@@ -771,7 +771,7 @@ public class TransMeta extends AbstractMeta
   public void addOrReplaceStep( StepMeta stepMeta ) {
     int index = steps.indexOf( stepMeta );
     if ( index < 0 ) {
-      steps.add( stepMeta );
+      index = steps.add( stepMeta ) ? 0 : index;
     } else {
       StepMeta previous = getStep( index );
       previous.replaceMeta( stepMeta );
@@ -6209,6 +6209,8 @@ public class TransMeta extends AbstractMeta
       }
       if ( indexListenerRemove >= 0 ) {
         stepChangeListeners.add( indexListenerRemove, list );
+      } else if ( stepChangeListeners.size() == 0 && p == 0 ) {
+        stepChangeListeners.add( list );
       }
     }
   }

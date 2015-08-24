@@ -145,6 +145,17 @@ public class TransMetaTest {
     assert transMeta.changed_steps;
   }
 
+  @Test
+  public void testStepChangeListener() throws Exception {
+    MetaInjectMeta mim = new MetaInjectMeta();
+    StepMeta sm = new StepMeta( "testStep", mim );
+    try {
+      transMeta.addOrReplaceStep( sm );
+    } catch ( Exception ex ) {
+      fail();
+    }
+  }
+
   private static StepMeta mockStepMeta( String name ) {
     StepMeta meta = mock( StepMeta.class );
     when( meta.getName() ).thenReturn( name );
