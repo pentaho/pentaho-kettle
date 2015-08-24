@@ -26,6 +26,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DataSourceNamingException;
 import org.pentaho.di.core.database.DataSourceProviderInterface;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.ExtendedDSProviderInterface;
 import org.pentaho.di.i18n.BaseMessages;
 
 import javax.naming.Context;
@@ -42,7 +43,7 @@ import java.util.Map;
  * @author mbatchel
  */
 
-public class DatabaseUtil implements DataSourceProviderInterface {
+public class DatabaseUtil implements DataSourceProviderInterface, ExtendedDSProviderInterface {
   private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!
   private static Map<String, DataSource> FoundDS = Collections.synchronizedMap( new HashMap<String, DataSource>() );
 
@@ -132,5 +133,21 @@ public class DatabaseUtil implements DataSourceProviderInterface {
     } catch ( NamingException ex ) {
       throw new DataSourceNamingException( ex );
     }
+  }
+
+
+  @Override
+  public DataSource getNamedDataSource( String datasourceName, DatasourceType type )
+    throws DataSourceNamingException {
+    if ( type != null ) {
+      switch( type ) {
+        case JNDI:
+          return getNamedDataSource( datasourceName );
+        case POOLED:
+          throw new UnsupportedOperationException(
+            getClass().getName() + " does not support providing pooled data sources" );
+      }
+    }
+    throw new IllegalArgumentException( "Unsupported data source type: " + type );
   }
 }

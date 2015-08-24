@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -386,6 +386,51 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
 
     try {
+
+      DataSourceProviderInterface dsp = DataSourceProviderFactory.getDataSourceProviderInterface();
+      if ( dsp instanceof ExtendedDSProviderInterface ) {
+        ExtendedDSProviderInterface provider = (ExtendedDSProviderInterface) dsp;
+
+        if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
+          String jndiName = environmentSubstitute( databaseMeta.getDatabaseName() );
+          try {
+            this.connection =
+              provider.getNamedDataSource( jndiName, ExtendedDSProviderInterface.DatasourceType.JNDI ).getConnection();
+          } catch ( DataSourceNamingException e ) {
+            log.logError( "Unable to find datasource by JNDI name: " + jndiName, e );
+            throw e;
+          }
+        } else {
+          if ( databaseMeta.isUsingConnectionPool() ) {
+            String name = databaseMeta.getName();
+            try {
+              try {
+                this.connection =
+                  provider.getNamedDataSource( name, ExtendedDSProviderInterface.DatasourceType.POOLED )
+                    .getConnection();
+              } catch ( UnsupportedOperationException e ) {
+                // DatabaseUtil doesn't support pooled DS,
+                // use legacy routine
+                this.connection = ConnectionPoolUtil.getConnection( log, databaseMeta, partitionId );
+              }
+              if ( getConnection().getAutoCommit() != isAutoCommit() ) {
+                setAutoCommit( isAutoCommit() );
+              }
+            } catch ( DataSourceNamingException e ) {
+              log.logError( "Unable to find pooled datasource by its name: " + name, e );
+              throw e;
+            }
+          } else {
+            // using non-jndi and non-pooled connection -- just a simple JDBC
+            connectUsingClass( databaseMeta.getDriverClass(), partitionId );
+          }
+        }
+
+        return;
+      }
+      // for backward-compatibility left the rest intact
+
+
       // First see if we use connection pooling...
       //
       // isUsingConnectionPool defaults to false for backward compatibility
