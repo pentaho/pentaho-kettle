@@ -24,6 +24,8 @@ package org.pentaho.di.core.database;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.pentaho.di.core.database.DataSourceProviderInterface.DatasourceType.JNDI;
+import static org.pentaho.di.core.database.DataSourceProviderInterface.DatasourceType.POOLED;
 
 import java.sql.BatchUpdateException;
 import java.sql.Connection;
@@ -47,6 +49,8 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+
+import javax.sql.DataSource;
 
 public class DatabaseUnitTest {
 
@@ -450,5 +454,59 @@ public class DatabaseUnitTest {
     Connection connection = mock( Connection.class );
     when( connection.getMetaData() ).thenReturn( dbMetaData );
     return connection;
+  }
+
+
+  @Test
+  public void usesCustomDsProviderIfSet_Pooling() throws Exception {
+    DatabaseMeta meta = new DatabaseMeta();
+    meta.setUsingConnectionPool( true );
+    testUsesCustomDsProviderIfSet( meta );
+  }
+
+  @Test
+  public void usesCustomDsProviderIfSet_Jndi() throws Exception {
+    DatabaseMeta meta = new DatabaseMeta();
+    meta.setAccessType( DatabaseMeta.TYPE_ACCESS_JNDI );
+    testUsesCustomDsProviderIfSet( meta );
+  }
+
+  private DataSourceProviderInterface testUsesCustomDsProviderIfSet( DatabaseMeta meta ) throws Exception {
+    Connection connection = mock( Connection.class );
+    DataSource ds = mock( DataSource.class );
+    when( ds.getConnection() ).thenReturn( connection );
+    when( ds.getConnection( anyString(), anyString() ) ).thenReturn( connection );
+
+    DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
+    when( provider.getNamedDataSource( anyString(), any( DataSourceProviderInterface.DatasourceType.class ) ) )
+      .thenReturn( ds );
+
+    Database db = new Database( log, meta );
+
+    final DataSourceProviderInterface existing =
+      DataSourceProviderFactory.getDataSourceProviderInterface();
+    try {
+      DataSourceProviderFactory.setDataSourceProviderInterface( provider );
+      db.normalConnect( null );
+    } finally {
+      DataSourceProviderFactory.setDataSourceProviderInterface( existing );
+    }
+
+    assertEquals( connection, db.getConnection() );
+    return provider;
+  }
+
+
+  @Test
+  public void jndiAccessTypePrevailsPooled() throws Exception {
+    // this test is a guard of Database.normalConnect() contract:
+    // it firstly tries to use JNDI name
+    DatabaseMeta meta = new DatabaseMeta();
+    meta.setAccessType( DatabaseMeta.TYPE_ACCESS_JNDI );
+    meta.setUsingConnectionPool( true );
+
+    DataSourceProviderInterface provider = testUsesCustomDsProviderIfSet( meta );
+    verify( provider ).getNamedDataSource( anyString(), eq( JNDI ) );
+    verify( provider, never() ).getNamedDataSource( anyString(), eq( POOLED ) );
   }
 }
