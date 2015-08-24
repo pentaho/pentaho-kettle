@@ -38,19 +38,6 @@ public interface DataSourceProviderInterface {
    * @param datasourceName
    * @return javax.sql.DataSource
    */
-  DataSource getNamedDataSource( String datasourceName ) throws DataSourceNamingException;
+  public DataSource getNamedDataSource( String datasourceName ) throws DataSourceNamingException;
 
-  /**
-   * Returns the named data source of respecting its <code>type</code>
-   *
-   * @param datasourceName name of the desired data source
-   * @param type           data source's type
-   * @return named data source
-   * @throws DataSourceNamingException
-   */
-  DataSource getNamedDataSource( String datasourceName, DatasourceType type ) throws DataSourceNamingException;
-
-  enum DatasourceType {
-    JNDI, POOLED
-  }
 }
