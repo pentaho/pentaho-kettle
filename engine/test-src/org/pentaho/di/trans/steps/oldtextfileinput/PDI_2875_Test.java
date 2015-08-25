@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.textfileinput;
+package org.pentaho.di.trans.steps.oldtextfileinput;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  * @author Pavel Sakun
  */
 public class PDI_2875_Test {
-  private static StepMockHelper<TextFileInputMeta, TextFileInputData> smh;
+  private static StepMockHelper<OldTextFileInputMeta, OldTextFileInputData> smh;
   private final String VAR_NAME = "VAR";
   private final String EXPRESSION = "${" + VAR_NAME + "}";
 
@@ -48,23 +48,23 @@ public class PDI_2875_Test {
   public static void setUp() throws KettleException {
     KettleEnvironment.init();
     smh =
-      new StepMockHelper<TextFileInputMeta, TextFileInputData>( "CsvInputTest", TextFileInputMeta.class, TextFileInputData.class );
+      new StepMockHelper<OldTextFileInputMeta, OldTextFileInputData>( "CsvInputTest", OldTextFileInputMeta.class, OldTextFileInputData.class );
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
       .thenReturn( smh.logChannelInterface );
     when( smh.trans.isRunning() ).thenReturn( true );
   }
 
-  private TextFileInputMeta getMeta() {
-    TextFileInputMeta meta = new TextFileInputMeta();
+  private OldTextFileInputMeta getMeta() {
+    OldTextFileInputMeta meta = new OldTextFileInputMeta();
     meta.allocateFiles( 2 );
     meta.setFileName( new String[]{ "file1.txt",  "file2.txt" } );
-    meta.inputFiles.includeSubFolders= new String[] {"n", "n"} ;
-    meta.setFilter( new TextFileFilter[0] );
-    meta.content.fileFormat =  "unix" ;
-    meta.content.fileType = "CSV" ;
-    meta.errorHandling.lineNumberFilesDestinationDirectory= EXPRESSION ;
-    meta.errorHandling.errorFilesDestinationDirectory =  EXPRESSION ;
-    meta.errorHandling.warningFilesDestinationDirectory= EXPRESSION ;
+    meta.setIncludeSubFolders( new String[] {"n", "n"} );
+    meta.setFilter( new OldTextFileFilter[0] );
+    meta.setFileFormat( "unix" );
+    meta.setFileType( "CSV" );
+    meta.setLineNumberFilesDestinationDirectory( EXPRESSION );
+    meta.setErrorFilesDestinationDirectory( EXPRESSION );
+    meta.setWarningFilesDestinationDirectory( EXPRESSION );
 
     return meta;
   }
@@ -72,8 +72,8 @@ public class PDI_2875_Test {
   @Test
   public void testVariableSubstitution() {
     doReturn( new Date() ).when( smh.trans ).getCurrentDate();
-    TextFileInput step = spy( new TextFileInput( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
-    TextFileInputData data = new TextFileInputData();
+    OldTextFileInput step = spy( new OldTextFileInput( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
+    OldTextFileInputData data = new OldTextFileInputData();
     step.setVariable( VAR_NAME, "value" );
     step.init( getMeta(), data );
     verify( step, times( 2 ) ).environmentSubstitute( EXPRESSION );

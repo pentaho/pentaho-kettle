@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.steps.textfileinput;
+package org.pentaho.di.ui.trans.steps.oldtextfileinput;
 
 import java.util.List;
 import java.util.Vector;
@@ -38,21 +38,20 @@ import org.pentaho.di.core.gui.TextFileInputFieldInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.widget.TableDraw;
 import org.pentaho.di.ui.core.widget.OldTableDraw;
 
-public class TextFileImportWizardPage1 extends WizardPage // implements Listener
+public class OldTextFileImportWizardPage1 extends WizardPage // implements Listener
 {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private TableDraw wTable;
+  private OldTableDraw wTable;
   private FormData fdTable;
 
   private PropsUI props;
   private List<String> rows;
   private Vector<TextFileInputFieldInterface> fields;
 
-  public TextFileImportWizardPage1( String arg, PropsUI props, List<String> rows,
+  public OldTextFileImportWizardPage1( String arg, PropsUI props, List<String> rows,
     Vector<TextFileInputFieldInterface> fields ) {
     super( arg );
     this.props = props;
@@ -81,7 +80,7 @@ public class TextFileImportWizardPage1 extends WizardPage // implements Listener
       }
     };
 
-    wTable = new TableDraw( composite, props, this, fields );
+    wTable = new OldTableDraw( composite, props, this, fields );
     wTable.setRows( rows );
     props.setLook( wTable );
     wTable.setFields( fields );
