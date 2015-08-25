@@ -1,0 +1,166 @@
+<project name="PUR Repository Plugin" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
+<!--===========================================================================
+ Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+============================================================================-->
+  <!-- The continuous target is used by CI ... this is the list of -->
+  <!-- tasks that the CI machine will run.                         -->
+  <!-- DO NOT change the CI machine's ant task .. change this list -->
+  <target name="continuous" depends="clean-all,resolve,publish" />
+
+  <import file="build-res/subfloor-pkg.xml" />
+
+  <property name="compilelib.dir"
+            value="${basedir}/compile-lib"
+            description="Directory for compilation dependencies that shouldn't make it into the distribution" />
+
+  <property name="assemble.stage.dir"
+            value="${bin.dir}/stage"
+            description="Staging directory for package contents" />
+  <!-- Setup the compile classpath -->
+  <path id="classpath">
+    <fileset dir="${devlib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${compilelib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+  </path>
+
+  <path id="test.classpath">
+    <pathelement path="${testclasses.dir}" />
+    <fileset dir="${lib.dir}">
+      <include name="**/pentaho-platform-repository*.jar" />
+    </fileset>
+    <fileset dir="${testlib.dir}">
+      <include name="**/pentaho-platform-repository*.jar" />
+    </fileset>
+    <fileset dir="${testlib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${devlib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${compilelib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <pathelement path="${classes.dir}" />
+  </path>
+
+  <target name="clean-jars" depends="subfloor.clean-jars">
+    <delete dir="${compilelib.dir}" />
+  </target>
+
+  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init">
+    <dot-classpath>
+      <!-- Include all lib dirs -->
+      <classpath>
+        <fileset dir="${lib.dir}">
+          <include name="*.jar" />
+        </fileset>
+        <fileset dir="${devlib.dir}">
+          <include name="*.jar" />
+        </fileset>
+        <fileset dir="${compilelib.dir}">
+          <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${testlib.dir}">
+          <include name="*.jar" />
+        </fileset>
+      </classpath>
+    </dot-classpath>
+  </target>
+
+  <target name="resolve" depends="subfloor.resolve, resolve-compiletime" />
+
+  <target name="resolve-compiletime" > <!--depends="move-jar-to-lib"?!-->
+    <ivy:resolve file="${ivyfile}" conf="compile" />
+    <ivy:retrieve conf="compile" pattern="${compilelib.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
+  </target>
+
+  <target name="assemble.copy-libs" depends="install-antcontrib">
+    <copy todir="${approot.stage.dir}">
+      <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
+    </copy>
+  </target>
+
+  <!-- Override clean-all to clean the wadl2java lib folder -->
+  <target name="clean-all" depends="subfloor.clean-all">
+      <delete dir="${wadl2java.project}" />
+  </target>
+
+  <target name="assemble" depends="jar,subfloor-pkg.assemble"/>
+  
+  <!-- Wadl2Java logic -->
+  <target name="wadl2java-resolve" depends="install-antcontrib, install-ivy" description="Loads in the Wadl2Java dependencies so build-wadl2java.xml will work">
+    <mkdir dir="${wadl2java.project}"/>
+	  <ivy:resolve file="ivy.xml" conf="wadl2java" />
+		<ivy:retrieve conf="wadl2java" pattern="${basedir}/wadl2java/lib/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
+  </target>
+  
+	<property name="wadl2java.temp-file-full-path" value="${wadl2java.codedir}/${wadl2java.generated-class-name}.java" />
+	
+	<target name="wadl2java" description="Generated the classes reflecting the Rest Services from the Wadl file" depends="wadl2java-resolve" >
+	  <taskdef name="wjc" 
+           classname="org.jvnet.ws.wadl2java.WJCTask">
+      <classpath>
+          <fileset dir="${wadl2java.project}" includes="*.jar"
+                   excludes="wadl-cmdline*.jar"/>
+      </classpath>
+  	</taskdef>
+
+    <echo message="Compiling the Wadl description..." />
+    <mkdir dir="${wadl2java.codedir}"/>
+    <wjc description="${wadl2java.source-wadl-file}" 
+         package="${wadl2java.target-package}" 
+         autoSchemaPackage="false" 
+         target="${basedir}/src">
+        
+        <produces dir="${basedir}/src" includes="**/*.java" />
+        <depends dir="." includes="build.xml"/>
+    		<depends dir="${wadl2java.project}" includes="wadl2java.jar"/>
+        <customClassName uri="http://localhost:9080/pentaho-di/plugin/" classname="PurRepositoryPluginServices" />            
+    </wjc>
+		
+		<!-- Modify the resulting class adding our tagging interface -->
+		<replaceregexp file="${wadl2java.temp-file-full-path}"
+			match="package com.pentaho.di.services;\r\n"
+			replace="package com.pentaho.di.services;${line.separator}${line.separator}import org.pentaho.di.repository.IRepositoryService;"
+		/>
+
+		<replaceregexp file="${wadl2java.temp-file-full-path}"
+			match="public static class (.*) \{"
+			replace="public static class \1 implements IRepositoryService {"
+			byline="true"
+		/>
+		
+		<replaceregexp file="${wadl2java.temp-file-full-path}"
+			match="${wadl2java.generated-class-name}"
+			replace="${wadl2java.desired-class-name}"
+			byline="true"
+		/>
+		
+		<!-- Finally rename the file and overwrite the original -->
+		<move file="${wadl2java.temp-file-full-path}" tofile="${wadl2java.codedir}/${wadl2java.desired-class-name}.java" />
+
+	</target>
+	
+</project>
