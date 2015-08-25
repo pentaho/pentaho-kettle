@@ -98,6 +98,24 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   private static Map<String, DatabaseInterface> allDatabaseInterfaces;
 
+  static {
+    PluginRegistry.getInstance().addPluginListener( DatabasePluginType.class,
+      new org.pentaho.di.core.plugins.PluginTypeListener() {
+        @Override public void pluginAdded( Object serviceObject ) {
+          clearDatabaseInterfacesMap();
+        }
+
+        @Override public void pluginRemoved( Object serviceObject ) {
+          clearDatabaseInterfacesMap();
+
+        }
+
+        @Override public void pluginChanged( Object serviceObject ) {
+          clearDatabaseInterfacesMap();
+        }
+      } );
+  }
+
   private VariableSpace variables = new Variables();
 
   private ObjectRevision objectRevision;
@@ -1093,7 +1111,8 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       port = environmentSubstitute( getDatabasePortNumberString() );
       databaseName = environmentSubstitute( getDatabaseName() );
     }
-    baseUrl = databaseInterface.getURL( hostname, port, databaseName );
+    baseUrl = databaseInterface.getURL( environmentSubstitute( hostname ), environmentSubstitute( port ),
+      environmentSubstitute( databaseName ) );
     StringBuffer url = new StringBuffer( environmentSubstitute( baseUrl ) );
 
     if ( databaseInterface.supportsOptionsInURL() ) {
@@ -1513,7 +1532,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
       }
     }
 
-    return remarks.toArray( new String[remarks.size()] );
+    return remarks.toArray( new String[ remarks.size() ] );
   }
 
   /**
