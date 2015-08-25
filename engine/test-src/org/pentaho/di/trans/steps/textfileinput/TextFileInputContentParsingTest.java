@@ -11,7 +11,6 @@ import java.util.List;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
-import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.compress.CompressionPluginType;
@@ -54,9 +53,7 @@ public class TextFileInputContentParsingTest {
 
     fs = VFS.getManager();
 
-    meta = new TextFileInputMeta();
-
-    meta.setDefault();
+    this.meta = meta;
 
     data = new TextFileInputData();
 
@@ -171,6 +168,8 @@ public class TextFileInputContentParsingTest {
 
   @Test
   public void defaultOptions() throws Exception {
+    init();
+
     setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
 
     try (TextFileInputReader reader = new TextFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log )) {
@@ -180,5 +179,24 @@ public class TextFileInputContentParsingTest {
 
     // compare rows
     check( new Object[][] { { "first", "1", "1.1" }, { "second", "2", "2.2" }, { "third", "3", "3.3" } } );
+  }
+
+  @Test
+  public void testFilterVariables() throws Exception {
+    init();
+
+    Variables vars = new Variables();
+    vars.setVariable( "VAR_TEST", "second" );
+    data.filterProcessor =
+        new NewFileFilterProcessor( new NewFileFilter[] { new NewFileFilter( 0, "${VAR_TEST}", false, false ) }, vars );
+    setFields( new NewFileInputField(), new NewFileInputField(), new NewFileInputField() );
+
+    try (NewFileInputReader reader = new NewFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log )) {
+      while ( reader.readRow() )
+        ;
+    }
+
+    // compare rows
+    check( new Object[][] { { "first", "1", "1.1" }, { "third", "3", "3.3" } } );
   }
 }
