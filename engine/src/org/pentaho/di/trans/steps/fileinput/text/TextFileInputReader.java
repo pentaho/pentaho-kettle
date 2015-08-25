@@ -79,10 +79,16 @@ public class TextFileInputReader implements IBaseFileInputReader {
 
     in.nextEntry();
 
-    if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
-      isr = new InputStreamReader( new BufferedInputStream( in, BUFFER_SIZE_INPUT_STREAM ), meta.getEncoding() );
+    BufferedInputStream inStream = new BufferedInputStream( in, BUFFER_SIZE_INPUT_STREAM );
+    BOMDetector bom = new BOMDetector( inStream );
+
+    if ( bom.bomExist() ) {
+      // if BOM exist, use it instead defined charset
+      isr = new InputStreamReader( inStream, bom.getCharset() );
+    } else if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
+      isr = new InputStreamReader( inStream, meta.getEncoding() );
     } else {
-      isr = new InputStreamReader( new BufferedInputStream( in, BUFFER_SIZE_INPUT_STREAM ) );
+      isr = new InputStreamReader( inStream );
     }
 
     String encoding = isr.getEncoding();

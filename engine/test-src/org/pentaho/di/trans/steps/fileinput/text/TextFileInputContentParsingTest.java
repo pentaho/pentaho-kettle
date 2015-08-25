@@ -221,4 +221,44 @@ public class TextFileInputContentParsingTest {
     // compare rows
     check( new Object[][] { { "first", "1", "1.1" }, { "third", "3", "3.3" } } );
   }
+
+  @Test
+  public void testBOM_UTF8() throws Exception {
+    TextFileInputMeta m = new TextFileInputMeta();
+    m.setDefault();
+    m.content.encoding = "UTF-32LE";
+    m.content.header = false;
+    init( m );
+
+    setFields( new TextFileInputField(), new TextFileInputField() );
+
+    try (TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "test-BOM-UTF-8.txt" ), log )) {
+      while ( reader.readRow() )
+        ;
+    }
+
+    // compare rows
+    check( new Object[][] { { "data", "1" } } );
+  }
+
+  @Test
+  public void testBOM_UTF16BE() throws Exception {
+    TextFileInputMeta m = new TextFileInputMeta();
+    m.setDefault();
+    m.content.encoding = "UTF-32LE";
+    m.content.header = false;
+    init( m );
+
+    setFields( new TextFileInputField(), new TextFileInputField() );
+
+    try (TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "test-BOM-UTF-16BE.txt" ), log )) {
+      while ( reader.readRow() )
+        ;
+    }
+
+    // compare rows
+    check( new Object[][] { { "data", "1" } } );
+  }
 }
