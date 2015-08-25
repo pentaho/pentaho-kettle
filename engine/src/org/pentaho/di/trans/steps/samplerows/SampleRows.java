@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,9 +46,10 @@ public class SampleRows extends BaseStep implements StepInterface {
 
   private SampleRowsMeta meta;
   private SampleRowsData data;
+  private int numRowsSampled = 0;
 
   public SampleRows( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                     Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -64,8 +65,6 @@ public class SampleRows extends BaseStep implements StepInterface {
     }
     if ( first ) {
       first = false;
-
-      data.considerRow = true;
 
       String realRange = environmentSubstitute( meta.getLinesRange() );
       data.addlineField = ( !Const.isEmpty( environmentSubstitute( meta.getLineNumberField() ) ) );
@@ -87,65 +86,57 @@ public class SampleRows extends BaseStep implements StepInterface {
             logDebug( BaseMessages.getString( PKG, "SampleRows.Log.RangeValue", part ) );
           }
           int vpart = Integer.valueOf( part );
-          if ( vpart > data.maxLine ) {
-            data.maxLine = vpart;
-          }
           data.range.add( vpart );
 
         } else if ( rangePart[i].matches( "\\d+\\.\\.\\d+" ) ) {
           String[] rangeMultiPart = rangePart[i].split( "\\.\\." );
-          for ( int j = Integer.valueOf( rangeMultiPart[0] ).intValue(); j < Integer
-            .valueOf( rangeMultiPart[1] ).intValue() + 1; j++ ) {
+          for ( int j = Integer.valueOf( rangeMultiPart[0] ); j < Integer.valueOf( rangeMultiPart[1] ) + 1; j++ ) {
             if ( log.isDebug() ) {
               logDebug( BaseMessages.getString( PKG, "SampleRows.Log.RangeValue", "" + j ) );
             }
-            int vpart = Integer.valueOf( j );
-            if ( vpart > data.maxLine ) {
-              data.maxLine = vpart;
-            }
+            int vpart = j;
             data.range.add( vpart );
           }
         }
       }
+      // Return now if no rows are to be sampled
+      if ( data.range.size() == 0 ) {
+        return false;
+      }
     } // end if first
 
-    if ( data.considerRow ) {
+    if ( data.addlineField ) {
+      data.outputRow = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
+      for ( int i = 0; i < data.NrPrevFields; i++ ) {
+        data.outputRow[i] = r[i];
+      }
+    } else {
+      data.outputRow = r;
+    }
 
+    if ( data.range.contains( (int) getLinesRead() ) ) {
       if ( data.addlineField ) {
-        data.outputRow = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
-        for ( int i = 0; i < data.NrPrevFields; i++ ) {
-          data.outputRow[i] = r[i];
-        }
-      } else {
-        data.outputRow = r;
+        data.outputRow[data.NrPrevFields] = getLinesRead();
       }
 
-      if ( data.range.contains( (int) getLinesRead() ) ) {
-        if ( data.addlineField ) {
-          data.outputRow[data.NrPrevFields] = getLinesRead();
-        }
+      // copy row to possible alternate rowset(s).
+      //
+      putRow( data.outputRowMeta, data.outputRow );
+      numRowsSampled++;
 
-        // copy row to possible alternate rowset(s).
-        //
-        putRow( data.outputRowMeta, data.outputRow );
-
-        if ( log.isRowLevel() ) {
-          logRowlevel( BaseMessages.getString( PKG, "SampleRows.Log.LineNumber", getLinesRead()
-            + " : " + getInputRowMeta().getString( r ) ) );
-        }
-      }
-
-      if ( data.maxLine > 0 && getLinesRead() >= data.maxLine ) {
-        data.considerRow = false;
+      if ( log.isRowLevel() ) {
+        logRowlevel( BaseMessages.getString( PKG, "SampleRows.Log.LineNumber", getLinesRead()
+          + " : " + getInputRowMeta().getString( r ) ) );
       }
     }
 
-    return true;
+    return numRowsSampled < data.range.size();
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (SampleRowsMeta) smi;
     data = (SampleRowsData) sdi;
+    numRowsSampled = 0;
 
     if ( super.init( smi, sdi ) ) {
       // Add init code here.
