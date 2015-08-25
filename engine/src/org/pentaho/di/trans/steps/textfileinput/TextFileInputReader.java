@@ -44,7 +44,7 @@ import org.pentaho.di.trans.steps.baseinput.IBaseInputStepControl;
  * @author Alexander Buloichik
  */
 public class TextFileInputReader implements IBaseInputReader {
-  private static final int BUFFER_SIZE_INPUT_STREAM = 500;
+  private static final int BUFFER_SIZE_INPUT_STREAM = 8192;
 
   private final IBaseInputStepControl step;
   private final TextFileInputMeta meta;
@@ -79,10 +79,16 @@ public class TextFileInputReader implements IBaseInputReader {
 
     in.nextEntry();
 
-    if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
-      isr = new InputStreamReader( new BufferedInputStream( in, BUFFER_SIZE_INPUT_STREAM ), meta.getEncoding() );
+    BufferedInputStream inStream = new BufferedInputStream( in, BUFFER_SIZE_INPUT_STREAM );
+    BOMDetector bom = new BOMDetector( inStream );
+
+    if ( bom.bomExist() ) {
+      // if BOM exist, use it instead defined charset
+      isr = new InputStreamReader( inStream, bom.getCharset() );
+    } else if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
+      isr = new InputStreamReader( inStream, meta.getEncoding() );
     } else {
-      isr = new InputStreamReader( new BufferedInputStream( in, BUFFER_SIZE_INPUT_STREAM ) );
+      isr = new InputStreamReader( inStream );
     }
 
     String encoding = isr.getEncoding();
