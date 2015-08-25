@@ -32,7 +32,7 @@
 				<string>./libswt/osx64/swt.jar</string>
 			</array>
 			<key>JVMVersion</key>
-			<string>1.6*</string>
+			<string>1.7+</string> 
 			<key>MainClass</key>
 			<string>org.pentaho.commons.launcher.Launcher</string>
 			<key>StartOnMainThread</key>
