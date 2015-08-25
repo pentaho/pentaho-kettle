@@ -1,1 +1,2 @@
 default.csv text eol=crlf
+test-BOM-* binary
