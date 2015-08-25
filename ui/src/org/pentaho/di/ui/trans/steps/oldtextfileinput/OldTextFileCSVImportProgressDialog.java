@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.steps.textfileinput;
+package org.pentaho.di.ui.trans.steps.oldtextfileinput;
 
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
@@ -47,14 +47,12 @@ import org.pentaho.di.core.util.StringEvaluationResult;
 import org.pentaho.di.core.util.StringEvaluator;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.steps.baseinput.BaseInputStepMeta;
-import org.pentaho.di.trans.steps.textfileinput.EncodingType;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
+import org.pentaho.di.trans.steps.oldtextfileinput.OldEncodingType;
+import org.pentaho.di.trans.steps.oldtextfileinput.OldTextFileInput;
+import org.pentaho.di.trans.steps.oldtextfileinput.OldTextFileLine;
+import org.pentaho.di.trans.steps.textfileinput.InputFileMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputReader;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputUtils;
-import org.pentaho.di.trans.steps.textfileinput.TextFileLine;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
@@ -64,12 +62,12 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  * @author Matt
  * @since 07-apr-2005
  */
-public class TextFileCSVImportProgressDialog {
+public class OldTextFileCSVImportProgressDialog {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
-  
+
   private Shell shell;
 
-  private TextFileInputMeta meta;
+  private InputFileMetaInterface meta;
 
   private int samples;
 
@@ -87,13 +85,13 @@ public class TextFileCSVImportProgressDialog {
 
   private LogChannelInterface log;
 
-  private EncodingType encodingType;
+  private OldEncodingType encodingType;
 
   /**
    * Creates a new dialog that will handle the wait while we're finding out what tables, views etc we can reach in the
    * database.
    */
-  public TextFileCSVImportProgressDialog( Shell shell, TextFileInputMeta meta, TransMeta transMeta,
+  public OldTextFileCSVImportProgressDialog( Shell shell, InputFileMetaInterface meta, TransMeta transMeta,
     InputStreamReader reader, int samples, boolean replaceMeta ) {
     this.shell = shell;
     this.meta = meta;
@@ -108,7 +106,7 @@ public class TextFileCSVImportProgressDialog {
 
     this.log = new LogChannel( transMeta );
 
-    this.encodingType = EncodingType.guessEncodingType( reader.getEncoding() );
+    this.encodingType = OldEncodingType.guessEncodingType( reader.getEncoding() );
 
   }
 
@@ -155,7 +153,7 @@ public class TextFileCSVImportProgressDialog {
 
     DecimalFormatSymbols dfs = new DecimalFormatSymbols();
 
-    int nrfields = meta.inputFiles.inputFields.length;
+    int nrfields = meta.getInputFields().length;
 
     RowMetaInterface outputRowMeta = new RowMeta();
     meta.getFields( outputRowMeta, null, null, null, transMeta, null, null );
@@ -195,7 +193,7 @@ public class TextFileCSVImportProgressDialog {
     int[][] numberLength = new int[nrfields][Const.getNumberFormats().length]; // remember the length?
 
     for ( int i = 0; i < nrfields; i++ ) {
-      TextFileInputField field = meta.inputFiles.inputFields[i];
+      TextFileInputField field = meta.getInputFields()[i];
 
       if ( log.isDebug() ) {
         debug = "init field #" + i;
@@ -203,8 +201,8 @@ public class TextFileCSVImportProgressDialog {
 
       if ( replaceMeta ) { // Clear previous info...
 
-        field.setName( meta.inputFiles.inputFields[i].getName() );
-        field.setType( meta.inputFiles.inputFields[i].getType() );
+        field.setName( meta.getInputFields()[i].getName() );
+        field.setType( meta.getInputFields()[i].getType() );
         field.setFormat( "" );
         field.setLength( -1 );
         field.setPrecision( -1 );
@@ -241,9 +239,9 @@ public class TextFileCSVImportProgressDialog {
       numberFormatCount[i] = Const.getNumberFormats().length;
     }
 
-    TextFileInputMeta strinfo = (TextFileInputMeta) meta.clone();
+    InputFileMetaInterface strinfo = (InputFileMetaInterface) meta.clone();
     for ( int i = 0; i < nrfields; i++ ) {
-      strinfo.inputFiles.inputFields[i].setType( ValueMetaInterface.TYPE_STRING );
+      strinfo.getInputFields()[i].setType( ValueMetaInterface.TYPE_STRING );
     }
 
     // Sample <samples> rows...
@@ -256,14 +254,14 @@ public class TextFileCSVImportProgressDialog {
     // However, if it doesn't have a header, take a new line
     //
 
-    line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
+    line = OldTextFileInput.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
     fileLineNumber++;
     int skipped = 1;
 
-    if ( meta.content.header ) {
+    if ( meta.hasHeader() ) {
 
-      while ( line != null && skipped < meta.content.nrHeaderLines ) {
-        line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
+      while ( line != null && skipped < meta.getNrHeaderLines() ) {
+        line = OldTextFileInput.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
         skipped++;
         fileLineNumber++;
       }
@@ -296,14 +294,15 @@ public class TextFileCSVImportProgressDialog {
         valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
       }
 
-      String delimiter = transMeta.environmentSubstitute( meta.content.separator );
-      String enclosure = transMeta.environmentSubstitute( meta.content.enclosure );
-      String escapeCharacter = transMeta.environmentSubstitute( meta.content.escapeCharacter );
+      String delimiter = transMeta.environmentSubstitute( meta.getSeparator() );
+      String enclosure = transMeta.environmentSubstitute( meta.getEnclosure() );
+      String escapeCharacter = transMeta.environmentSubstitute( meta.getEscapeCharacter() );
       Object[] r =
-          TextFileInputUtils.convertLineToRow( log, new TextFileLine( line, fileLineNumber, null ), strinfo, null, 0,
-              outputRowMeta, convertRowMeta, meta.getFilePaths( transMeta )[0], rownumber, delimiter, enclosure,
-              escapeCharacter, null, new BaseInputStepMeta.AdditionalOutputFields(), null, null, false, null, null,
-              null, null, 0 );
+        OldTextFileInput.convertLineToRow(
+          log, new OldTextFileLine( line, fileLineNumber, null ), strinfo, null, 0, outputRowMeta,
+          convertRowMeta, meta.getFilePaths( transMeta )[0], rownumber, delimiter, enclosure, escapeCharacter,
+          null, false, false, false, false, false, false, false, false, null, null, false, null, null, null,
+          null, 0 );
 
       if ( r == null ) {
         errorFound = true;
@@ -334,7 +333,7 @@ public class TextFileCSVImportProgressDialog {
 
       // Grab another line...
       //
-      line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
+      line = OldTextFileInput.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
     }
 
     monitor.worked( 1 );
@@ -348,7 +347,7 @@ public class TextFileCSVImportProgressDialog {
     message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.HorizontalLine" ) );
 
     for ( int i = 0; i < nrfields; i++ ) {
-      TextFileInputField field = meta.inputFiles.inputFields[i];
+      TextFileInputField field = meta.getInputFields()[i];
       StringEvaluator evaluator = evaluators.get( i );
       List<StringEvaluationResult> evaluationResults = evaluator.getStringEvaluationResults();
 

@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.steps.textfileinput;
+package org.pentaho.di.ui.trans.steps.oldtextfileinput;
 
 import java.util.Vector;
 
@@ -44,16 +44,13 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
-import org.pentaho.di.core.gui.TextFileInputFieldInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
 
-public class TextFileImportWizardPage2 extends WizardPage {
+public class OldTextFileImportWizardPage2 extends WizardPage {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private List wFields;
@@ -126,7 +123,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
 
   private Shell shell;
 
-  public TextFileImportWizardPage2( String arg, PropsUI props, java.util.List<String> rows,
+  public OldTextFileImportWizardPage2( String arg, PropsUI props, java.util.List<String> rows,
     Vector<TextFileInputFieldInterface> fields ) {
     super( arg );
     this.props = props;

@@ -75,6 +75,7 @@ import org.pentaho.di.trans.steps.textfileinput.EncodingType;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputUtils;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -86,6 +87,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.steps.oldtextfileinput.OldTextFileCSVImportProgressDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
 
 public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogInterface {
@@ -782,7 +784,7 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
       // Read a line of data to determine the number of rows...
       //
       String line =
-        TextFileInput.getLine(
+        TextFileInputUtils.getLine(
           log, reader, encodingType, TextFileInputMeta.FILE_FORMAT_MIXED, new StringBuilder( 1000 ) );
 
       // Split the string, header or data into parts...
@@ -835,8 +837,8 @@ public class ParGzipCsvInputDialog extends BaseStepDialog implements StepDialogI
       if ( samples >= 0 ) {
         getInfo( meta );
 
-        TextFileCSVImportProgressDialog pd =
-          new TextFileCSVImportProgressDialog( shell, meta, transMeta, reader, samples, true );
+        OldTextFileCSVImportProgressDialog pd =
+          new OldTextFileCSVImportProgressDialog( shell, meta, transMeta, reader, samples, true );
         String message = pd.open();
         if ( message != null ) {
           wFields.removeAll();
