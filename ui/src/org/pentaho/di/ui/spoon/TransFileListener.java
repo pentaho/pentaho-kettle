@@ -28,6 +28,7 @@ import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
@@ -36,6 +37,9 @@ import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta;
+import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -80,9 +84,18 @@ public class TransFileListener implements FileListener {
       spoon.setTransMetaVariables( transMeta );
       spoon.getProperties().addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, null, false, null );
       spoon.addMenuLast();
-      if ( !importfile ) {
+      
+      // If we are importing into a repository we need to fix 
+      // up the references to other jobs and transformations
+      // if any exist.
+      if ( importfile ) {
+        if ( spoon.getRepository() != null ) {
+          transMeta = fixLinks( transMeta );
+        }
+      } else {
         transMeta.clearChanged();
       }
+
       transMeta.setFilename( fname );
       spoon.addTransGraph( transMeta );
       spoon.sharedObjectsFileMap.put( transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects() );
@@ -103,6 +116,43 @@ public class TransFileListener implements FileListener {
           + fname, e );
     }
     return false;
+  }
+
+  private TransMeta fixLinks( TransMeta transMeta ) {
+    transMeta = processLinkedJobs( transMeta );
+    transMeta = processLinkedTrans( transMeta );
+    
+    return transMeta;
+  }
+
+  private TransMeta processLinkedJobs( TransMeta transMeta ) {
+    for ( StepMeta stepMeta : transMeta.getSteps() ) {
+      if ( stepMeta.getStepID().equalsIgnoreCase( "JobExecutor" ) ) {
+        JobExecutorMeta jem = ( JobExecutorMeta ) stepMeta.getStepMetaInterface();
+        jem.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+        String filename = jem.getFileName();
+        String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
+        String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
+        jem.setJobName( jobname );
+        jem.setDirectoryPath( directory );
+      }
+    }
+    return transMeta;
+  }
+
+  private TransMeta processLinkedTrans( TransMeta transMeta ) {
+    for ( StepMeta stepMeta : transMeta.getSteps() ) {
+      if ( stepMeta.getStepID().equalsIgnoreCase( "TransExecutor" ) ) {
+        TransExecutorMeta tem = ( TransExecutorMeta ) stepMeta.getStepMetaInterface();
+        tem.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+        String filename = tem.getFileName();
+        String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
+        String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
+        tem.setTransName( jobname );
+        tem.setDirectoryPath( directory );
+      }
+    }
+    return transMeta;
   }
 
   public boolean save( EngineMetaInterface meta, String fname, boolean export ) {

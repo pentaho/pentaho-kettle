@@ -459,20 +459,25 @@ public class Const {
   /** comma-separated list of extension point plugins for which snmp traps should be sent */
   public static final String VARIABLE_MONITORING_SNMP_TRAPS_ENABLED = "monitoring.snmp.traps.enabled";
 
+  /** The current transformation directory */
+  public static final String INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY = INTERNAL_VARIABLE_PREFIX
+    + ".Entry.Current.Directory";
+
   /**
    * All the internal transformation variables
    */
   public static final String[] INTERNAL_TRANS_VARIABLES = new String[] {
+    Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
     Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY,
     Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME,
     Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY,
-
   };
 
   /**
    * All the internal job variables
    */
   public static final String[] INTERNAL_JOB_VARIABLES = new String[] {
+    Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
     Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME,
     Const.INTERNAL_VARIABLE_JOB_NAME, Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
     Const.INTERNAL_VARIABLE_JOB_RUN_ID, Const.INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR, };

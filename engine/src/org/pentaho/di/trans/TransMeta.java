@@ -5541,23 +5541,37 @@ public class TransMeta extends AbstractMeta
 
     // The name of the directory in the repository
     //
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY,
+    variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY,
         directory != null ? directory.getPath() : "" );
 
+    boolean hasRepoDir = getRepositoryDirectory() != null && getRepository() != null;
+    
+    if ( hasRepoDir ) {
+      variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, 
+          variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
+    } else {
+      variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, 
+          variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
+    }
+    
     // Here we don't remove the job specific parameters, as they may come in handy.
     //
-    if ( var.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) == null ) {
-      var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "Parent Job File Directory" );
+    if ( variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) == null ) {
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "Parent Job File Directory" );
     }
-    if ( var.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME ) == null ) {
-      var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "Parent Job Filename" );
+    if ( variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME ) == null ) {
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "Parent Job Filename" );
     }
-    if ( var.getVariable( Const.INTERNAL_VARIABLE_JOB_NAME ) == null ) {
-      var.setVariable( Const.INTERNAL_VARIABLE_JOB_NAME, "Parent Job Name" );
+    if ( variables.getVariable( Const.INTERNAL_VARIABLE_JOB_NAME ) == null ) {
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_NAME, "Parent Job Name" );
     }
-    if ( var.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) == null ) {
-      var.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, "Parent Job Repository Directory" );
+    if ( variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) == null ) {
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, "Parent Job Repository Directory" );
     }
+    
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, 
+        variables.getVariable( repository != null ? Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY : 
+          Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
   }
 
   /**
@@ -5569,7 +5583,7 @@ public class TransMeta extends AbstractMeta
   protected void setInternalNameKettleVariable( VariableSpace var ) {
     // The name of the transformation
     //
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL( name, "" ) );
+    variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, Const.NVL( name, "" ) );
   }
 
   /**
@@ -5587,20 +5601,20 @@ public class TransMeta extends AbstractMeta
         FileName fileName = fileObject.getName();
 
         // The filename of the transformation
-        var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, fileName.getBaseName() );
+        variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, fileName.getBaseName() );
 
         // The directory of the transformation
         FileName fileDir = fileName.getParent();
-        var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, fileDir.getURI() );
+        variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, fileDir.getURI() );
       } catch ( KettleFileException e ) {
         log.logError( "Unexpected error setting internal filename variables!", e );
 
-        var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "" );
-        var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "" );
+        variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "" );
+        variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "" );
       }
     } else {
-      var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "" );
-      var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "" );
+      variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "" );
+      variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, "" );
     }
 
   }

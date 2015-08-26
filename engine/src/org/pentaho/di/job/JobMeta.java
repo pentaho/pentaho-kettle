@@ -2421,18 +2421,23 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
     setInternalNameKettleVariable( var );
 
     // The name of the directory in the repository
-    var.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null
+    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null 
       ? directory.getPath() : "" );
 
-    // Undefine the transformation specific variables:
-    // transformations can't run jobs, so if you use these they are 99.99%
-    // wrong.
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null );
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, null );
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null );
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, null );
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, null );
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, null );
+    boolean hasRepoDir = getRepositoryDirectory() != null && getRepository() != null;
+
+    // setup fallbacks
+    if ( hasRepoDir ) {
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, 
+          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
+    } else {
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, 
+          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
+    }
+    
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, 
+        variables.getVariable( repository != null ? 
+            Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY : Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
   }
 
   /**
@@ -2444,7 +2449,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
   @Override
   protected void setInternalNameKettleVariable( VariableSpace var ) {
     // The name of the job
-    var.setVariable( Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL( name, "" ) );
+    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL( name, "" ) );
   }
 
   /**
@@ -2457,24 +2462,23 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
   protected void setInternalFilenameKettleVariables( VariableSpace var ) {
     if ( filename != null ) {
       // we have a filename that's defined.
-
       try {
         FileObject fileObject = KettleVFS.getFileObject( filename, var );
         FileName fileName = fileObject.getName();
 
         // The filename of the job
-        var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, fileName.getBaseName() );
+        variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, fileName.getBaseName() );
 
         // The directory of the job
         FileName fileDir = fileName.getParent();
-        var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, fileDir.getURI() );
+        variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, fileDir.getURI() );
       } catch ( Exception e ) {
-        var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "" );
-        var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "" );
+        variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "" );
+        variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "" );
       }
     } else {
-      var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "" );
-      var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "" );
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "" );
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "" );
     }
   }
 
