@@ -1,2 +1,3 @@
-default.csv text eol=crlf
-test-BOM-* binary
+*.csv text eol=crlf
+*.gz binary
+test-BOM-*.txt binary
