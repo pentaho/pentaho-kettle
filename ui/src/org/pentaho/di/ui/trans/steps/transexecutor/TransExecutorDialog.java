@@ -1539,7 +1539,6 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     } catch ( KettleException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingSpecifiedTrans.Title" ),
         BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingSpecifiedTrans.Message" ), e );
-      return;
     }
 
     transExecutorMeta.setSpecificationMethod( specificationMethod );

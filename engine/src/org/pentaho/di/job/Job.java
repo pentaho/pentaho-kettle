@@ -1538,34 +1538,48 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         FileName fileName = fileObject.getName();
 
         // The filename of the transformation
-        var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, fileName.getBaseName() );
+        variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, fileName.getBaseName() );
 
         // The directory of the transformation
         FileName fileDir = fileName.getParent();
-        var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, fileDir.getURI() );
+        variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, fileDir.getURI() );
       } catch ( Exception e ) {
-        var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "" );
-        var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "" );
+        variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "" );
+        variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "" );
       }
     } else {
-      var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "" );
-      var.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "" );
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "" );
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "" );
     }
 
+    boolean hasRepoDir = jobMeta.getRepositoryDirectory() != null && jobMeta.getRepository() != null;
+    
     // The name of the job
-    var.setVariable( Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL( jobMeta.getName(), "" ) );
+    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL( jobMeta.getName(), "" ) );
 
     // The name of the directory in the repository
-    var.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, jobMeta.getRepositoryDirectory() != null
-      ? jobMeta.getRepositoryDirectory().getPath() : "" );
+    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, 
+        hasRepoDir ? jobMeta.getRepositoryDirectory().getPath() : "" );
 
-    // Undefine the transformation specific variables
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null );
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, null );
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, null );
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, null );
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME, null );
-    var.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, null );
+    // setup fallbacks
+    if ( hasRepoDir ) {
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, 
+          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
+    } else {
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, 
+          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
+    }
+    
+    if ( hasRepoDir ) {
+      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, 
+          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
+      if ( "/".equals(variables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) ) ) {
+        variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "" );
+      }
+    } else {
+      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, 
+          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
+    }
   }
 
   /*

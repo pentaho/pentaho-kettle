@@ -52,6 +52,7 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
+import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -1193,31 +1194,70 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public JobMeta getJobMeta( Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     JobMeta jobMeta = null;
     try {
+      CurrentDirectoryResolver r = new CurrentDirectoryResolver();
+      VariableSpace tmpSpace = r.resolveCurrentDirectory( 
+          specificationMethod, space, rep, parentJob, getFilename() );
       switch ( specificationMethod ) {
         case FILENAME:
-          jobMeta =
-            new JobMeta( space, ( space != null ? space.environmentSubstitute( getFilename() ) : getFilename() ),
-              rep, metaStore, null );
+          String realFilename = tmpSpace.environmentSubstitute( getFilename() );
+          if ( rep != null ) {
+            // need to try to load from the repository
+            while ( realFilename.contains( "//" ) ) {
+              realFilename = realFilename.replace( "//", "/" );
+            }
+            try {
+              String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
+              String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1 );
+              RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
+              jobMeta = rep.loadJob( tmpFilename, dir, null, null );
+            } catch ( KettleException ke ) {
+              // try without extension
+              if ( realFilename.endsWith( Const.STRING_JOB_DEFAULT_EXT ) ) {
+                try {
+                  String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1, 
+                      realFilename.indexOf( "." + Const.STRING_JOB_DEFAULT_EXT ) );
+                  String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
+                  RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
+                  jobMeta = rep.loadJob( tmpFilename, dir, null, null );
+                } catch ( KettleException ke2 ) {
+                  // fall back to try loading from file system (mappingJobMeta is going to be null)
+                }
+              }
+            }
+          }
+          if ( jobMeta == null ) {
+            jobMeta = new JobMeta( tmpSpace, realFilename, rep, metaStore, null );
+          }
           break;
         case REPOSITORY_BY_NAME:
+          String realDirectory = tmpSpace.environmentSubstitute( getDirectory() );
+          String realJobName = tmpSpace.environmentSubstitute( getJobName() );
+
           if ( rep != null ) {
-            String realDirectory =
-              ( space != null ? space.environmentSubstitute( getDirectory() ) : getDirectory() );
             RepositoryDirectoryInterface repositoryDirectory =
               rep.loadRepositoryDirectoryTree().findDirectory( realDirectory );
             if ( repositoryDirectory == null ) {
               throw new KettleException( "Unable to find repository directory ["
                 + Const.NVL( realDirectory, "" ) + "]" );
             }
-            jobMeta =
-              rep.loadJob(
-                ( space != null ? space.environmentSubstitute( getJobName() ) : getJobName() ),
-                repositoryDirectory, null, null ); // reads
-            break;
+            jobMeta = rep.loadJob( realJobName, repositoryDirectory, null, null ); // reads
           } else {
-            throw new KettleException(
-              "Could not execute job specified in a repository since we're not connected to one" );
+            // rep is null, let's try loading by filename
+            try {
+              jobMeta = new JobMeta( tmpSpace, realDirectory + "/" + realJobName, rep, metaStore, null );
+            } catch ( KettleException ke ) {
+              try {
+                // add .kjb extension and try again
+                jobMeta = new JobMeta( tmpSpace, 
+                    realDirectory + "/" + realJobName + "." + Const.STRING_JOB_DEFAULT_EXT, rep, metaStore, null );
+              } catch ( KettleException ke2 ) {
+                ke2.printStackTrace();
+                throw new KettleException(
+                    "Could not execute job specified in a repository since we're not connected to one" );
+              }
+            }
           }
+          break;
         case REPOSITORY_BY_REFERENCE:
           if ( rep != null ) {
             // Load the last version...
