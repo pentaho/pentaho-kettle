@@ -5,14 +5,18 @@
   <configurations>
     <conf name="default" />
     <conf name="compile" />
-    <conf name="obf" />
+    <conf name="dev"/>
+    <conf name="zip"/>
+    <conf name="source"/>
     <conf name="wadl2java" />
     <conf name="test" visibility="private" />
   </configurations>
 
   <publications>
-    <artifact name="${ivy.artifact.id}" type="jar" conf="default" />
-    <artifact name="${ivy.artifact.id}" type="zip" conf="obf" />
+    <artifact name="${ivy.artifact.id}" type="jar" conf="dev"/>
+    <artifact name="${ivy.artifact.id}" type="zip" conf="zip" />
+    <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="jar" conf="source"/>
+    <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="zip" conf="source"/>
   </publications>
 
   <dependencies defaultconf="default->default">
