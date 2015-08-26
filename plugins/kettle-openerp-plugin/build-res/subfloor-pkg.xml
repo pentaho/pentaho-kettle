@@ -125,9 +125,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </zipfileset>
     </zip>
   </target>
-  
 
-  
+
+
   <!-- ============================================linuxPackage===================================================== -->
 
   <property name="linuxPackage.name" value="pentaho-${package.id}" />
@@ -135,13 +135,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="linuxPackage.longName" value="${impl.title}" />
   <property name="linuxPackage.description" value="${impl.title}" />
   <property name="linuxPackage.release" value="1" />
-  <property name="linuxPackage.initd.startCommandDelegatee" value="start.pentaho.sh" 
+  <property name="linuxPackage.initd.startCommandDelegatee" value="start.pentaho.sh"
     description="init.d script will delegate to this script located in /opt/pentaho/${linuxPackage.name}" />
 
-  <property name="linuxPackage.initd.stopCommandDelegatee" value="stop.pentaho.sh" 
+  <property name="linuxPackage.initd.stopCommandDelegatee" value="stop.pentaho.sh"
     description="init.d script will delegate to this script located in /opt/pentaho/${linuxPackage.name}" />
 
-  <property name="linuxPackage.initd.processName" value="catalina" 
+  <property name="linuxPackage.initd.processName" value="catalina"
     description="string that must be present to prove pid is not stale; see init.d script" />
   <property name="linuxPackage.res.dir" value="linux-res" description="Directory with Linux package resources." />
   <filterset begintoken="[[[" endtoken="]]]" id="linuxPackage.filterset">
@@ -224,7 +224,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </filterset>
   <!-- jdeb is cross-platform Debian package tool -->
   <target name="install-jdeb" depends="install-ivy">
-    <taskdef-with-ivy task-name="jdeb" classname="org.vafer.jdeb.ant.DebAntTask" organisation="org.vafer" module="jdeb" 
+    <taskdef-with-ivy task-name="jdeb" classname="org.vafer.jdeb.ant.DebAntTask" organisation="org.vafer" module="jdeb"
       revision="0.8" />
   </target>
 
@@ -278,7 +278,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </filterset>
   <!-- redline is cross-platform RPM package tool -->
   <target name="install-redline" depends="install-ivy">
-    <taskdef-with-ivy task-name="redline" classname="org.freecompany.redline.ant.RedlineTask" organisation="org.redline-rpm" module="redline" 
+    <taskdef-with-ivy task-name="redline" classname="org.freecompany.redline.ant.RedlineTask" organisation="org.redline-rpm" module="redline"
       revision="1.1.9" />
   </target>
   <target name="package-rpm" depends="install-redline">
@@ -302,7 +302,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   <target name="create-rpm">
     <!-- these tarfilesets can be overridden -->
-    <!-- you can't just include everything in ${rpm.stage.dir}/data without a prefix; rpm will complain that the path 
+    <!-- you can't just include everything in ${rpm.stage.dir}/data without a prefix; rpm will complain that the path
          already exists; the prefixes here are paths that are expected to already exist and thus should not be created
          by this package -->
     <tarfileset erroronmissingdir="false" prefix="/etc/init.d" dir="${rpm.stage.dir}/data/etc/init.d" id="rpm.tarfileset1" />
@@ -310,8 +310,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <tarfileset erroronmissingdir="false" prefix="/var/run" dir="${rpm.stage.dir}/data/var/run" id="rpm.tarfileset3" />
     <tarfileset erroronmissingdir="false" dir="${rpm.stage.dir}/data" includes="doesnotexist" id="rpm.tarfileset4" />
     <tarfileset erroronmissingdir="false" dir="${rpm.stage.dir}/data" includes="doesnotexist" id="rpm.tarfileset5" />
-    <redline architecture="${rpm.arch}" group="${rpm.group}" name="${rpm.name}" version="${rpm.version}" 
-      postInstallScript="${rpm.stage.dir}/control/postinst" preUninstallScript="${rpm.stage.dir}/control/prerm" 
+    <redline architecture="${rpm.arch}" group="${rpm.group}" name="${rpm.name}" version="${rpm.version}"
+      postInstallScript="${rpm.stage.dir}/control/postinst" preUninstallScript="${rpm.stage.dir}/control/prerm"
       destination="${dist.dir}" summary="${rpm.summary}" release="${rpm.release}">
       <tarfileset refid="rpm.tarfileset1" />
       <tarfileset refid="rpm.tarfileset2" />
@@ -331,7 +331,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           description="Creates a POM file based on the ivy dependencies" />
 
   <!--=======================================================================
-      create-package-pom 
+      create-package-pom
       Creates a POM file for the package
       ====================================================================-->
   <target name="create-package-pom"
@@ -357,11 +357,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       publish-local-nojar (override)
       Publishes jar and zip package locally
       ====================================================================-->
-  <target name="publish-local-nojar" depends="install-ivy,subfloor.publish-local-nojar">
+  <target name="publish-local-nojar" depends="install-ivy,subfloor.publish-local-nojar, create-package-pom">
     <ivy:resolve file="${package.artifact.ivyfile}" />
     <ivy:publish resolver="local" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
       <artifacts pattern="${dist.dir}/[artifact]-[revision].[ext]" />
     </ivy:publish>
+
+    <antcall target="maven-install-artifact">
+      <param name="publish.pomFile" value="${package.artifact.pomfile}" />
+      <param name="publish.file" value="${dist.dir}/${package.basename}.zip" />
+    </antcall>
+
   </target>
 
 </project>

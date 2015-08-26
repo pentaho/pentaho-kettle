@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivysettings>
   <properties environment="env" />
+  <property name="maven.local.repo" value="${user.home}/.m2/repository" overide="false" />
   <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local" override="true" />
   <property name="ivy.local.default.artifact.pattern" value="[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]"
     override="false" />
@@ -22,6 +23,7 @@
         </url>
         <ibiblio name="pentaho-mvn" m2compatible="true" root="${pentaho.resolve.repo}" />
       </dual>
+      <ibiblio name="local-mvn" m2compatible="true" root=”file://${maven.local.repo}” changingPattern=".*-SNAPSHOT.*" />
       <ibiblio name="public-maven" root="${public.resolve.repo}" m2compatible="true" />
     </chain>
   </resolvers>
