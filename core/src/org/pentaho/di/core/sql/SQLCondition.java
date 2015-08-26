@@ -250,7 +250,13 @@ public class SQLCondition {
           "Unfortunately support for conditions is still very rudimentary, only 1 simple condition is supported ["
               + clause + "]" );
     }
-    String left = strings.get( 0 );
+    String left = "";
+    try {
+      left = strings.get( 0 );
+    } catch ( Exception e ) {
+      throw new KettleSQLException( "Invalid SQL statement [" + clause + "]" );
+    }
+
 
     // See if this is not a having clause expression :
     // example:
