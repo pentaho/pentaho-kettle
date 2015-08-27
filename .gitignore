@@ -6,7 +6,7 @@ libswt/
 test-lib/
 dev-lib/
 cobertura/
-/checkstyle/
+checkstyle/
 eclipse-bin/
 override.properties
 testdata.log
