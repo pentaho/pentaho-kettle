@@ -1265,6 +1265,14 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         spoon.addUndoNew( jobMeta, new JobHopMeta[] { hop_candidate }, new int[] { jobMeta
           .indexOfJobHop( hop_candidate ) } );
         spoon.refreshTree();
+
+        if ( jobMeta.hasLoop( hop_candidate.getFromEntry() ) || jobMeta.hasLoop( hop_candidate.getToEntry() ) ) {
+          MessageBox mb = new MessageBox( spoon.getShell(), SWT.OK | SWT.ICON_WARNING );
+          mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.HopCausesLoop.Message" ) );
+          mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.HopCausesLoop.Title" ) );
+          mb.open();
+        }
+
         clearSettings();
         redraw();
       }
