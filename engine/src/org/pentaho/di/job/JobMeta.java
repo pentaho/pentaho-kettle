@@ -26,6 +26,7 @@ package org.pentaho.di.job;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -152,6 +153,9 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
   /** Constant = "ERROR" **/
   public static final String STRING_SPECIAL_ERROR = "ERROR";
 
+  /** The loop cache. */
+  protected Map<String, Boolean> loopCache;
+
   /**
    * List of booleans indicating whether or not to remember the size and position of the different windows...
    */
@@ -199,6 +203,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
     arguments = null;
 
     super.clear();
+    loopCache = new HashMap<String, Boolean>();
     addDefaults();
     jobStatus = -1;
     jobVersion = null;
@@ -1677,7 +1682,8 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
    * @return true, if successful
    */
   public boolean hasLoop( JobEntryCopy entry ) {
-    return hasLoop( entry, null );
+    clearLoopCache();
+    return hasLoop( entry, null, true ) || hasLoop( entry, null, false );
   }
 
   /**
@@ -1689,8 +1695,44 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
    *          the lookup
    * @return true, if successful
    */
-  public boolean hasLoop( JobEntryCopy entry, JobEntryCopy lookup ) {
-    return false;
+  public boolean hasLoop( JobEntryCopy entry, JobEntryCopy lookup, boolean info ) {
+    String cacheKey =
+        entry.getName() + " - " + ( lookup != null ? lookup.getName() : "" ) + " - " + ( info ? "true" : "false" );
+
+    Boolean loop = loopCache.get( cacheKey );
+    if ( loop != null ) {
+      return loop.booleanValue();
+    }
+
+    boolean hasLoop = false;
+
+    int nr = findNrPrevJobEntries( entry, info );
+    for ( int i = 0; i < nr && !hasLoop; i++ ) {
+      JobEntryCopy prevJobMeta = findPrevJobEntry( entry, i, info );
+      if ( prevJobMeta != null ) {
+        if ( prevJobMeta.equals( entry ) ) {
+          hasLoop = true;
+          break; // no need to check more but caching this one below
+        } else if ( prevJobMeta.equals( lookup ) ) {
+          hasLoop = true;
+          break; // no need to check more but caching this one below
+        } else if ( hasLoop( prevJobMeta, lookup == null ? entry : lookup, info ) ) {
+          hasLoop = true;
+          break; // no need to check more but caching this one below
+        }
+      }
+    }
+    // Store in the cache...
+    //
+    loopCache.put( cacheKey, Boolean.valueOf( hasLoop ) );
+    return hasLoop;
+  }
+
+  /**
+   * Clears the loop cache.
+   */
+  private void clearLoopCache() {
+    loopCache.clear();
   }
 
   /**
