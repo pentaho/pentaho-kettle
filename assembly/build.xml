@@ -29,13 +29,13 @@
 	
   <property name="pdf.docs.dir" value="${approot.stage.dir}/docs/English" />
 
-  <target name="dist" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,resolve-pentaho-system,package" description="Builds and packages the application"/>
+  <target name="dist" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,resolve-dataservice-jdbc,resolve-pentaho-system,package" description="Builds and packages the application"/>
   	
-  <target name="assemble-full" depends="init,resolve-all,assemble-plugins,assemble" description="Builds the application" />
+  <target name="assemble-full" depends="init,resolve-all,assemble-plugins,assemble,assemble-dataservice-jdbc" description="Builds the application" />
 	
   <target name="assemble-no-plugins" depends="init,resolve-all,assemble" description="Builds the application" />
 
-  <target name="resolve-all" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,resolve-pentaho-system"/>
+  <target name="resolve-all" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,resolve-dataservice-jdbc,resolve-pentaho-system"/>
 
   <property name="system.dir" value="${stage.dir}/${package.root.dir}/system" />
 
@@ -129,7 +129,14 @@
     
     <delete dir="${plugins.dir}"/>
   </target>
-	
+
+  <target name="assemble-dataservice-jdbc" depends="install-antcontrib,resolve-dataservice-jdbc" >
+
+    <copy todir="${stage.dir}/${package.root.dir}/Data Service JDBC Driver">
+      <fileset dir="${dataservice-jdbc.dir}" />
+    </copy>
+    <delete dir="${dataservice-jdbc.dir}"/>
+  </target>
 	
 	<!--=======================================================================
 	      publish-local
@@ -211,6 +218,12 @@
     <ivy:retrieve conf="plugins" pattern="${plugins.dir}/[module]-[revision](-[classifier]).[ext]" sync="true" />
   </target>
 
+  <target name="resolve-dataservice-jdbc" depends="install-ivy">
+    <ivy:resolve file="${ivyfile}" conf="dataservice-jdbc" />
+    <ivy:retrieve conf="dataservice-jdbc" pattern="${dataservice-jdbc.dir}/[module]-[revision](-[classifier]).[ext]" sync="true" />
+  </target>
+
+  
   <target name="unzip-swtlibs">
 	<!-- Unzip the libswt package into the libswt folder of the distribution -->
     <unzip dest="${approot.stage.dir}" overwrite="true">
