@@ -9,6 +9,7 @@
     <conf name="oss-licenses" />
     <conf name="plugins"/>
     <conf name="launcher" />
+    <conf name="dataservice-jdbc" />
     <conf name="pentaho-system" />
   </configurations>
   
@@ -26,6 +27,11 @@
     </dependency>
     
     <dependency org="pentaho" name="pdi-osgi-bridge-core" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
+
+    <!-- Data Service JDBC Driver -->
+    <dependency org="pentaho" name="pdi-dataservice-client-plugin-assembly" rev="${project.revision}" changing="true" conf="dataservice-jdbc->default" transitive="false">
+      <artifact name="pdi-dataservice-client-plugin-assembly" type="zip"/>
+    </dependency>
 
     <!-- Kettle plugin dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-version-checker" rev="${project.revision}" changing="true" conf="plugins->default">
