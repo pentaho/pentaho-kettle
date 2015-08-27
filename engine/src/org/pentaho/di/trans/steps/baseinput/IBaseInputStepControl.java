@@ -42,7 +42,10 @@ public interface IBaseInputStepControl {
   long incrementLinesUpdated();
 
   boolean failAfterBadFile( String errorMsg );
-  void stopAll() ;
+
+  void stopAll();
+
   long getErrors();
+
   void setErrors( long e );
 }

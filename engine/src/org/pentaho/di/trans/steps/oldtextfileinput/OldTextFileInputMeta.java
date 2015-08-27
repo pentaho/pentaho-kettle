@@ -923,7 +923,7 @@ public class OldTextFileInputMeta extends BaseStepMeta implements StepMetaInterf
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
     }
-  } 
+  }
 
   public Object clone() {
     OldTextFileInputMeta retval = (OldTextFileInputMeta) super.clone();
@@ -2048,7 +2048,7 @@ public class OldTextFileInputMeta extends BaseStepMeta implements StepMetaInterf
     allocateFiles( fileName.length );
     setFileName( fileName );
   }
-  
+
   protected String loadSource( Node filenode, Node filenamenode, int i ) {
     return XMLHandler.getNodeValue( filenamenode );
   }
@@ -2060,7 +2060,7 @@ public class OldTextFileInputMeta extends BaseStepMeta implements StepMetaInterf
   protected String loadSourceRep( Repository rep, ObjectId id_step, int i ) throws KettleException {
     return rep.getStepAttributeString( id_step, i, "file_name" );
   }
-  
+
   protected void saveSourceRep( Repository rep, ObjectId id_transformation, ObjectId id_step, int i, String fileName )
     throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, i, "file_name", fileName ); //this should be in subclass

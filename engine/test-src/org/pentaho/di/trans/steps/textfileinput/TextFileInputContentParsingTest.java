@@ -172,10 +172,10 @@ public class TextFileInputContentParsingTest {
 
     setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
 
-    try (TextFileInputReader reader =
-        new TextFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log )) {
-      while ( reader.readRow() )
-        ;
+    try ( TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log ) ) {
+      while ( reader.readRow() ) {
+      }
     }
 
     // compare rows
@@ -191,10 +191,10 @@ public class TextFileInputContentParsingTest {
 
     setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
 
-    try (TextFileInputReader reader =
-        new TextFileInputReader( stepControl, meta, data, getFile( "separator.csv" ), log )) {
-      while ( reader.readRow() )
-        ;
+    try ( TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "separator.csv" ), log ) ) {
+      while ( reader.readRow() ) {
+      }
     }
 
     // compare rows
@@ -210,10 +210,10 @@ public class TextFileInputContentParsingTest {
 
     setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
 
-    try (TextFileInputReader reader =
-        new TextFileInputReader( stepControl, meta, data, getFile( "escape.csv" ), log )) {
-      while ( reader.readRow() )
-        ;
+    try ( TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "escape.csv" ), log ) ) {
+      while ( reader.readRow() ) {
+      }
     }
 
     // compare rows
@@ -229,10 +229,10 @@ public class TextFileInputContentParsingTest {
 
     setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
 
-    try (TextFileInputReader reader =
-        new TextFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log )) {
-      while ( reader.readRow() )
-        ;
+    try ( TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log ) ) {
+      while ( reader.readRow() ) {
+      }
     }
 
     // compare rows
@@ -249,10 +249,10 @@ public class TextFileInputContentParsingTest {
 
     setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
 
-    try (TextFileInputReader reader =
-        new TextFileInputReader( stepControl, meta, data, getFile( "default.csv.gz" ), log )) {
-      while ( reader.readRow() )
-        ;
+    try ( TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "default.csv.gz" ), log ) ) {
+      while ( reader.readRow() ) {
+      }
     }
 
     // compare rows
@@ -269,9 +269,10 @@ public class TextFileInputContentParsingTest {
     setFields( new TextFileInputField( "f1", 0, 7 ), new TextFileInputField( "f2", 8, 7 ), new TextFileInputField( "f3",
         16, 7 ) );
 
-    try (TextFileInputReader reader = new TextFileInputReader( stepControl, meta, data, getFile( "fixed.csv" ), log )) {
-      while ( reader.readRow() )
-        ;
+    try ( TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "fixed.csv" ), log ) ) {
+      while ( reader.readRow() ) {
+      }
     }
 
     // compare rows
@@ -290,10 +291,10 @@ public class TextFileInputContentParsingTest {
             vars );
     setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
 
-    try (TextFileInputReader reader =
-        new TextFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log )) {
-      while ( reader.readRow() )
-        ;
+    try ( TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log ) ) {
+      while ( reader.readRow() ) {
+      }
     }
 
     // compare rows
@@ -310,10 +311,10 @@ public class TextFileInputContentParsingTest {
 
     setFields( new TextFileInputField(), new TextFileInputField() );
 
-    try (TextFileInputReader reader =
-        new TextFileInputReader( stepControl, meta, data, getFile( "test-BOM-UTF-8.txt" ), log )) {
-      while ( reader.readRow() )
-        ;
+    try ( TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "test-BOM-UTF-8.txt" ), log ) ) {
+      while ( reader.readRow() ) {
+      }
     }
 
     // compare rows
@@ -330,10 +331,10 @@ public class TextFileInputContentParsingTest {
 
     setFields( new TextFileInputField(), new TextFileInputField() );
 
-    try (TextFileInputReader reader =
-        new TextFileInputReader( stepControl, meta, data, getFile( "test-BOM-UTF-16BE.txt" ), log )) {
-      while ( reader.readRow() )
-        ;
+    try ( TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "test-BOM-UTF-16BE.txt" ), log ) ) {
+      while ( reader.readRow() ) {
+      }
     }
 
     // compare rows

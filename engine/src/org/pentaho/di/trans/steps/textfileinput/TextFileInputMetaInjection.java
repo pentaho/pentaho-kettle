@@ -397,130 +397,130 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
           break;
 
         case FILE_TYPE:
-          meta.content.fileType = lookValue ;
+          meta.content.fileType = lookValue;
           break;
         case SEPARATOR:
-          meta.content.separator= lookValue ;
+          meta.content.separator = lookValue;
           break;
         case ENCLOSURE:
-          meta.content.enclosure= lookValue ;
+          meta.content.enclosure = lookValue;
           break;
         case ESCAPE_CHAR:
-          meta.content.escapeCharacter =lookValue ;
+          meta.content.escapeCharacter = lookValue;
           break;
         case BREAK_IN_ENCLOSURE:
-          meta.content.breakInEnclosureAllowed= "Y".equalsIgnoreCase( lookValue ) ;
+          meta.content.breakInEnclosureAllowed = "Y".equalsIgnoreCase( lookValue );
           break;
         case HEADER_PRESENT:
-          meta.content.header="Y".equalsIgnoreCase( lookValue ) ;
+          meta.content.header = "Y".equalsIgnoreCase( lookValue );
           break;
         case NR_HEADER_LINES:
-          meta.content.nrHeaderLines =  Const.toInt( lookValue, -1 ) ;
+          meta.content.nrHeaderLines = Const.toInt( lookValue, -1 );
           break;
         case HAS_FOOTER:
-          meta.content.footer =  "Y".equalsIgnoreCase( lookValue ) ;
+          meta.content.footer = "Y".equalsIgnoreCase( lookValue );
           break;
         case NR_FOOTER_LINES:
-          meta.content.nrFooterLines =  Const.toInt( lookValue, -1 ) ;
+          meta.content.nrFooterLines = Const.toInt( lookValue, -1 );
           break;
         case HAS_WRAPPED_LINES:
-          meta.content.lineWrapped =  "Y".equalsIgnoreCase( lookValue ) ;
+          meta.content.lineWrapped = "Y".equalsIgnoreCase( lookValue );
           break;
         case NR_WRAPS:
-          meta.content.nrWraps =  Const.toInt( lookValue, -1 ) ;
+          meta.content.nrWraps = Const.toInt( lookValue, -1 );
           break;
         case HAS_PAGED_LAYOUT:
-          meta.content.layoutPaged =  "Y".equalsIgnoreCase( lookValue ) ;
+          meta.content.layoutPaged = "Y".equalsIgnoreCase( lookValue );
           break;
         case NR_DOC_HEADER_LINES:
-          meta.content.nrLinesDocHeader =  Const.toInt( lookValue, -1 ) ;
+          meta.content.nrLinesDocHeader = Const.toInt( lookValue, -1 );
           break;
         case NR_LINES_PER_PAGE:
-          meta.content.nrLinesPerPage =  Const.toInt( lookValue, -1 ) ;
+          meta.content.nrLinesPerPage = Const.toInt( lookValue, -1 );
           break;
         case COMPRESSION_TYPE:
-          meta.content.fileCompression =  lookValue ;
+          meta.content.fileCompression = lookValue;
           break;
         case NO_EMPTY_LINES:
-          meta.content.noEmptyLines =  "Y".equalsIgnoreCase( lookValue ) ;
+          meta.content.noEmptyLines = "Y".equalsIgnoreCase( lookValue );
           break;
         case INCLUDE_FILENAME:
-          meta.content.includeFilename =  "Y".equalsIgnoreCase( lookValue ) ;
+          meta.content.includeFilename = "Y".equalsIgnoreCase( lookValue );
           break;
         case FILENAME_FIELD:
-          meta.content.filenameField =  lookValue ;
+          meta.content.filenameField = lookValue;
           break;
         case INCLUDE_ROW_NUMBER:
-          meta.content.includeRowNumber =  "Y".equalsIgnoreCase( lookValue ) ;
+          meta.content.includeRowNumber = "Y".equalsIgnoreCase( lookValue );
           break;
         case ROW_NUMBER_BY_FILE:
-          meta.content.rowNumberByFile =  "Y".equalsIgnoreCase( lookValue ) ;
+          meta.content.rowNumberByFile = "Y".equalsIgnoreCase( lookValue );
           break;
         case ROW_NUMBER_FIELD:
-          meta.content.rowNumberField =  lookValue ;
+          meta.content.rowNumberField = lookValue;
           break;
         case FILE_FORMAT:
-          meta.content.fileFormat = lookValue ;
+          meta.content.fileFormat = lookValue;
           break;
         case ENCODING:
-          meta.content.encoding =  lookValue ;
+          meta.content.encoding = lookValue;
           break;
         case ROW_LIMIT:
-          meta.content.rowLimit =  Const.toInt( lookValue, -1 ) ;
+          meta.content.rowLimit = Const.toInt( lookValue, -1 );
           break;
         case DATE_FORMAT_LENIENT:
-          meta.content.dateFormatLenient = "Y".equalsIgnoreCase( lookValue ) ;
+          meta.content.dateFormatLenient = "Y".equalsIgnoreCase( lookValue );
           break;
         case DATE_FORMAT_LOCALE:
-          meta.content.dateFormatLocale = new Locale( lookValue ) ;
+          meta.content.dateFormatLocale = new Locale( lookValue );
           break;
         case ACCEPT_FILE_NAMES:
-          meta.inputFiles.acceptingFilenames= "Y".equalsIgnoreCase( lookValue ) ;
+          meta.inputFiles.acceptingFilenames = "Y".equalsIgnoreCase( lookValue );
           break;
         case ACCEPT_FILE_STEP:
-          meta.inputFiles.acceptingStepName=lookValue ;
+          meta.inputFiles.acceptingStepName = lookValue;
           break;
         case ACCEPT_FILE_FIELD:
-          meta.inputFiles.acceptingField= lookValue ;
+          meta.inputFiles.acceptingField = lookValue;
           break;
         case PASS_THROUGH_FIELDS:
-          meta.inputFiles.passingThruFields= "Y".equalsIgnoreCase( lookValue ) ;
+          meta.inputFiles.passingThruFields = "Y".equalsIgnoreCase( lookValue );
           break;
         case ADD_FILES_TO_RESULT:
-          meta.inputFiles.isaddresult= "Y".equalsIgnoreCase( lookValue ) ;
+          meta.inputFiles.isaddresult = "Y".equalsIgnoreCase( lookValue );
           break;
         case FILE_SHORT_FILE_FIELDNAME:
-          meta.additionalOutputFields.shortFilenameField= lookValue ;
+          meta.additionalOutputFields.shortFilenameField = lookValue;
           break;
         case FILE_PATH_FIELDNAME:
-          meta.additionalOutputFields.pathField= lookValue ;
+          meta.additionalOutputFields.pathField = lookValue;
           break;
         case FILE_HIDDEN_FIELDNAME:
-          meta.additionalOutputFields.hiddenField= lookValue ;
+          meta.additionalOutputFields.hiddenField = lookValue;
           break;
         case FILE_LAST_MODIFICATION_FIELDNAME:
-          meta.additionalOutputFields.lastModificationField= lookValue ;
+          meta.additionalOutputFields.lastModificationField = lookValue;
           break;
         case FILE_URI_FIELDNAME:
-          meta.additionalOutputFields.uriField= lookValue ;
+          meta.additionalOutputFields.uriField = lookValue;
           break;
         case FILE_EXTENSION_FIELDNAME:
-          meta.additionalOutputFields.extensionField= lookValue ;
+          meta.additionalOutputFields.extensionField = lookValue;
           break;
         case FILE_SIZE_FIELDNAME:
-          meta.additionalOutputFields.sizeField= lookValue ;
+          meta.additionalOutputFields.sizeField = lookValue;
           break;
         case SKIP_BAD_FILES:
-          meta.errorHandling.skipBadFiles= "Y".equalsIgnoreCase( lookValue ) ;
+          meta.errorHandling.skipBadFiles = "Y".equalsIgnoreCase( lookValue );
           break;
         case FILE_ERROR_FIELD:
-          meta.errorHandling.fileErrorField= lookValue ;
+          meta.errorHandling.fileErrorField = lookValue;
           break;
         case FILE_ERROR_MESSAGE_FIELD:
-          meta.errorHandling.fileErrorMessageField= lookValue ;
+          meta.errorHandling.fileErrorMessageField = lookValue;
           break;
         case IGNORE_ERRORS:
-          meta.errorHandling.errorIgnored= "Y".equalsIgnoreCase( lookValue ) ;
+          meta.errorHandling.errorIgnored = "Y".equalsIgnoreCase( lookValue );
           break;
         case ERROR_COUNT_FIELD:
           meta.setErrorCountField( lookValue );
@@ -532,22 +532,22 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
           meta.setErrorTextField( lookValue );
           break;
         case WARNING_FILES_TARGET_DIR:
-          meta.errorHandling.warningFilesDestinationDirectory= lookValue ;
+          meta.errorHandling.warningFilesDestinationDirectory = lookValue;
           break;
         case WARNING_FILES_EXTENTION:
-          meta.errorHandling.warningFilesExtension= lookValue ;
+          meta.errorHandling.warningFilesExtension = lookValue;
           break;
         case ERROR_FILES_TARGET_DIR:
-          meta.errorHandling.errorFilesDestinationDirectory=lookValue ;
+          meta.errorHandling.errorFilesDestinationDirectory = lookValue;
           break;
         case ERROR_FILES_EXTENTION:
-          meta.errorHandling.errorFilesExtension= lookValue ;
+          meta.errorHandling.errorFilesExtension = lookValue;
           break;
         case LINE_NR_FILES_TARGET_DIR:
-          meta.errorHandling.lineNumberFilesDestinationDirectory= lookValue ;
+          meta.errorHandling.lineNumberFilesDestinationDirectory = lookValue;
           break;
         case LINE_NR_FILES_EXTENTION:
-          meta.errorHandling.lineNumberFilesExtension= lookValue ;
+          meta.errorHandling.lineNumberFilesExtension = lookValue;
           break;
         case ERROR_LINES_SKIPPED:
           meta.setErrorLineSkipped( "Y".equalsIgnoreCase( lookValue ) );
@@ -561,7 +561,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
     // Only change a list when you need to, don't clear/reset existing content if you don't send new content.
     //
     if ( fields.size() > 0 ) {
-      meta.inputFiles.inputFields= fields.toArray( new TextFileInputField[fields.size()] ) ;
+      meta.inputFiles.inputFields = fields.toArray( new TextFileInputField[fields.size()] );
     }
     if ( fileLines.size() > 0 ) {
       meta.allocateFiles( fileLines.size() );
@@ -583,7 +583,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
 
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
     List<StepInjectionMetaEntry> result = new ArrayList<StepInjectionMetaEntry>();
-    result.add( getEntry( Entry.FILE_TYPE, meta.content.fileType) );
+    result.add( getEntry( Entry.FILE_TYPE, meta.content.fileType ) );
     result.add( getEntry( Entry.SEPARATOR, meta.content.separator ) );
     result.add( getEntry( Entry.ENCLOSURE, meta.content.enclosure ) );
     result.add( getEntry( Entry.ESCAPE_CHAR, meta.content.escapeCharacter ) );

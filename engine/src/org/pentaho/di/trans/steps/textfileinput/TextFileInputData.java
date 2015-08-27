@@ -70,7 +70,6 @@ public class TextFileInputData extends BaseInputStepData {
   public String escapeCharacter;
 
   public EncodingType encodingType;
-  
 
   public TextFileInputData() {
     // linked list is better, as usually .remove(0) is applied to this list

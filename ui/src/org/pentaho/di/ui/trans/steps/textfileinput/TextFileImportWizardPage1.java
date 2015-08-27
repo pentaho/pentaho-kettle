@@ -39,7 +39,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.TableDraw;
-import org.pentaho.di.ui.core.widget.OldTableDraw;
 
 public class TextFileImportWizardPage1 extends WizardPage // implements Listener
 {
