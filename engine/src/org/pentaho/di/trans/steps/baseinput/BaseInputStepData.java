@@ -39,42 +39,42 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
  */
 public class BaseInputStepData extends BaseStepData {
 
-    public FileErrorHandler dataErrorLineHandler;
+  public FileErrorHandler dataErrorLineHandler;
 
-    /** Files for process. */
-    public FileInputList files;
+  /** Files for process. */
+  public FileInputList files;
 
-    /** Current file info. */
-    public String filename;
-    public int currentFileIndex;
-    public FileObject file;
+  /** Current file info. */
+  public String filename;
+  public int currentFileIndex;
+  public FileObject file;
 
-    /** Reader for current file. */
-    public IBaseInputReader reader;
+  /** Reader for current file. */
+  public IBaseInputReader reader;
 
-    public RowMetaInterface outputRowMeta;
+  public RowMetaInterface outputRowMeta;
 
-    public HashMap<FileObject, Object[]> passThruFields;
+  public HashMap<FileObject, Object[]> passThruFields;
 
-    public Object[] currentPassThruFieldsRow;
+  public Object[] currentPassThruFieldsRow;
 
-    public int nrPassThruFields;
+  public int nrPassThruFields;
 
-    public RowMetaInterface convertRowMeta;
+  public RowMetaInterface convertRowMeta;
 
-    public int nr_repeats;
-    // public boolean isLastFile;
+  public int nr_repeats;
+  // public boolean isLastFile;
 
-    public Map<String, Boolean> rejectedFiles = new HashMap<String, Boolean>();
+  public Map<String, Boolean> rejectedFiles = new HashMap<String, Boolean>();
 
-    /** File-dependent data for fill additional fields. */
-    public String shortFilename;
-    public String path;
-    public String extension;
-    public boolean hidden;
-    public Date lastModificationDateTime;
-    public String uriName;
-    public String rootUriName;
-    public long size;
+  /** File-dependent data for fill additional fields. */
+  public String shortFilename;
+  public String path;
+  public String extension;
+  public boolean hidden;
+  public Date lastModificationDateTime;
+  public String uriName;
+  public String rootUriName;
+  public long size;
 
 }

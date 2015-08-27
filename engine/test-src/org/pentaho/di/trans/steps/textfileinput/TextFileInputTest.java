@@ -130,16 +130,16 @@ public class TextFileInputTest {
     os.close();
 
     TextFileInputMeta meta = new TextFileInputMeta();
-    meta.content.lineWrapped = true ;
+    meta.content.lineWrapped = true;
     meta.content.nrWraps = 1;
     meta.inputFiles.inputFields =
         new TextFileInputField[] { new TextFileInputField( "col1", -1, -1 ), new TextFileInputField( "col2", -1, -1 ) };
-    meta.content.fileCompression = "None" ;
-    meta.content.fileType =  "CSV" ;
-    meta.content.header= false ;
-    meta.content.nrHeaderLines= -1 ;
-    meta.content.footer =false ;
-    meta.content.nrFooterLines =  -1 ;
+    meta.content.fileCompression = "None";
+    meta.content.fileType = "CSV";
+    meta.content.header = false;
+    meta.content.nrHeaderLines = -1;
+    meta.content.footer = false;
+    meta.content.nrFooterLines = -1;
 
     TextFileInputData data = new TextFileInputData();
     data.files = new FileInputList();

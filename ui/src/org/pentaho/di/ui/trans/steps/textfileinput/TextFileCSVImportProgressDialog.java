@@ -49,10 +49,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.baseinput.BaseInputStepMeta;
 import org.pentaho.di.trans.steps.textfileinput.EncodingType;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputReader;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputUtils;
 import org.pentaho.di.trans.steps.textfileinput.TextFileLine;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -66,7 +64,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  */
 public class TextFileCSVImportProgressDialog {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
-  
+
   private Shell shell;
 
   private TextFileInputMeta meta;

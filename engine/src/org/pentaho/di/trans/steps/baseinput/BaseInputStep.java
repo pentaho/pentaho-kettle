@@ -61,377 +61,374 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
  */
 public abstract class BaseInputStep<M extends BaseInputStepMeta, D extends BaseInputStepData> extends BaseStep
     implements IBaseInputStepControl {
-    private static Class<?> PKG = BaseInputStep.class; // for i18n purposes, needed by Translator2!! TODO: is
-                                                       // it right for
-                                                       // base class ???
+  private static Class<?> PKG = BaseInputStep.class; // for i18n purposes, needed by Translator2!! TODO: is
+                                                     // it right for
+                                                     // base class ???
 
-    protected M meta;
+  protected M meta;
 
-    protected D data;
+  protected D data;
 
-    /**
-     * Content-dependent initialization.
-     */
-    protected abstract boolean init();
+  /**
+   * Content-dependent initialization.
+   */
+  protected abstract boolean init();
 
-    /**
-     * Create reader for specific file.
-     */
-    protected abstract IBaseInputReader createReader(M meta, D data, FileObject file) throws Exception;
+  /**
+   * Create reader for specific file.
+   */
+  protected abstract IBaseInputReader createReader( M meta, D data, FileObject file ) throws Exception;
 
-    public BaseInputStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-            TransMeta transMeta, Trans trans) {
-        super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
+  public BaseInputStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+      Trans trans ) {
+    super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
+
+  /**
+   * Initialize step before execute.
+   */
+  @Override
+  public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
+    meta = (M) smi;
+    data = (D) sdi;
+
+    if ( !super.init( smi, sdi ) ) {
+      return false;
     }
 
-    /**
-     * Initialize step before execute.
-     */
-    @Override
-    public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
-        meta = (M) smi;
-        data = (D) sdi;
+    initErrorHandling();
 
-        if (!super.init(smi, sdi)) {
-            return false;
-        }
+    meta.additionalOutputFields.normalize();
+    data.files = meta.getTextFileList( this );
+    data.currentFileIndex = 0;
 
-        initErrorHandling();
+    // If there are missing files,
+    // fail if we don't ignore errors
+    //
+    Result previousResult = getTrans().getPreviousResult();
+    Map<String, ResultFile> resultFiles = ( previousResult != null ) ? previousResult.getResultFiles() : null;
 
-        meta.additionalOutputFields.normalize();
-        data.files = meta.getTextFileList(this);
-        data.currentFileIndex = 0;
-
-        // If there are missing files,
-        // fail if we don't ignore errors
-        //
-        Result previousResult = getTrans().getPreviousResult();
-        Map<String, ResultFile> resultFiles = (previousResult != null) ? previousResult.getResultFiles()
-                : null;
-
-        if ((previousResult == null || resultFiles == null || resultFiles.size() == 0)
-                && data.files.nrOfMissingFiles() > 0 && !meta.inputFiles.acceptingFilenames
-                && !meta.errorHandling.errorIgnored) {
-            logError(BaseMessages.getString(PKG, "TextFileInput.Log.Error.NoFilesSpecified"));
-            return false;
-        }
-
-        String clusterSize = getVariable(Const.INTERNAL_VARIABLE_CLUSTER_SIZE);
-        if (!Const.isEmpty(clusterSize) && Integer.valueOf(clusterSize) > 1) {
-            // TODO: add metadata to configure this.
-            String nr = getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER);
-            if (log.isDetailed()) {
-                logDetailed("Running on slave server #" + nr
-                        + " : assuming that each slave reads a dedicated part of the same file(s).");
-            }
-        }
-
-        return init();
+    if ( ( previousResult == null || resultFiles == null || resultFiles.size() == 0 ) && data.files
+        .nrOfMissingFiles() > 0 && !meta.inputFiles.acceptingFilenames && !meta.errorHandling.errorIgnored ) {
+      logError( BaseMessages.getString( PKG, "TextFileInput.Log.Error.NoFilesSpecified" ) );
+      return false;
     }
 
-    /**
-     * Open next VFS file for processing.
-     * 
-     * This method will support different parallelization methods later.
-     */
-    protected boolean openNextFile() {
-        try {
-            if (data.currentFileIndex >= data.files.nrOfFiles()) {
-                // all files already processed
-                return false;
-            }
-
-            // Is this the last file?
-            data.file = data.files.getFile(data.currentFileIndex);
-            data.filename = KettleVFS.getFilename(data.file);
-
-            fillFileAdditionalFields(data, data.file);
-            if (meta.inputFiles.passingThruFields) {
-                data.currentPassThruFieldsRow = data.passThruFields.get(data.file);
-            }
-
-            // Add this files to the result of this transformation.
-            //
-            if (meta.inputFiles.isaddresult) {
-                ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file,
-                        getTransMeta().getName(), toString());
-                resultFile.setComment("File was read by an Text File input step");
-                addResultFile(resultFile);
-            }
-            if (log.isBasic()) {
-                logBasic("Opening file: " + data.file.getName().getFriendlyURI());
-            }
-
-            data.dataErrorLineHandler.handleFile(data.file);
-
-            data.reader = createReader(meta, data, data.file);
-        } catch (Exception e) {
-            String errorMsg = "Couldn't open file #" + data.currentFileIndex + " : "
-                    + data.file.getName().getFriendlyURI() + " --> " + e.toString();
-            logError(errorMsg);
-            if (failAfterBadFile(errorMsg)) { // !meta.isSkipBadFiles()) stopAll();
-                stopAll();
-            }
-            setErrors(getErrors() + 1);
-            return false;
-        }
-
-        // Move file pointer ahead!
-        data.currentFileIndex++;
-
-        return true;
+    String clusterSize = getVariable( Const.INTERNAL_VARIABLE_CLUSTER_SIZE );
+    if ( !Const.isEmpty( clusterSize ) && Integer.valueOf( clusterSize ) > 1 ) {
+      // TODO: add metadata to configure this.
+      String nr = getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER );
+      if ( log.isDetailed() ) {
+        logDetailed( "Running on slave server #" + nr
+            + " : assuming that each slave reads a dedicated part of the same file(s)." );
+      }
     }
 
-    /**
-     * Process next row. This methods opens next file automatically.
-     */
-    @Override
-    public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
-        meta = (M) smi;
-        data = (D) sdi;
+    return init();
+  }
 
-        if (first) {
-            first = false;
-            prepareToRowProcessing();
+  /**
+   * Open next VFS file for processing.
+   * 
+   * This method will support different parallelization methods later.
+   */
+  protected boolean openNextFile() {
+    try {
+      if ( data.currentFileIndex >= data.files.nrOfFiles() ) {
+        // all files already processed
+        return false;
+      }
 
-            if (!openNextFile()) {
-                setOutputDone(); // signal end to receiver(s)
-                closeLastFile();
-                return false;
-            }
-        }
+      // Is this the last file?
+      data.file = data.files.getFile( data.currentFileIndex );
+      data.filename = KettleVFS.getFilename( data.file );
 
-        while (true) {
-            if (data.reader.readRow()) {
-                // row processed
-                return true;
-            }
-            // end of current file
-            closeLastFile();
+      fillFileAdditionalFields( data, data.file );
+      if ( meta.inputFiles.passingThruFields ) {
+        data.currentPassThruFieldsRow = data.passThruFields.get( data.file );
+      }
 
-            if (!openNextFile()) {
-                // there are no more files
-                break;
-            }
-        }
+      // Add this files to the result of this transformation.
+      //
+      if ( meta.inputFiles.isaddresult ) {
+        ResultFile resultFile =
+            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString() );
+        resultFile.setComment( "File was read by an Text File input step" );
+        addResultFile( resultFile );
+      }
+      if ( log.isBasic() ) {
+        logBasic( "Opening file: " + data.file.getName().getFriendlyURI() );
+      }
 
-        // after all files processed
+      data.dataErrorLineHandler.handleFile( data.file );
+
+      data.reader = createReader( meta, data, data.file );
+    } catch ( Exception e ) {
+      String errorMsg =
+          "Couldn't open file #" + data.currentFileIndex + " : " + data.file.getName().getFriendlyURI() + " --> " + e
+              .toString();
+      logError( errorMsg );
+      if ( failAfterBadFile( errorMsg ) ) { // !meta.isSkipBadFiles()) stopAll();
+        stopAll();
+      }
+      setErrors( getErrors() + 1 );
+      return false;
+    }
+
+    // Move file pointer ahead!
+    data.currentFileIndex++;
+
+    return true;
+  }
+
+  /**
+   * Process next row. This methods opens next file automatically.
+   */
+  @Override
+  public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+    meta = (M) smi;
+    data = (D) sdi;
+
+    if ( first ) {
+      first = false;
+      prepareToRowProcessing();
+
+      if ( !openNextFile() ) {
         setOutputDone(); // signal end to receiver(s)
         closeLastFile();
         return false;
+      }
     }
 
-    /**
-     * Prepare to process. Executed only first time row processing. It can't be possible to prepare to process
-     * in the init() phrase, because files can be in fields from previous step.
-     */
-    protected void prepareToRowProcessing() throws KettleException {
-        data.outputRowMeta = new RowMeta();
-        RowMetaInterface[] infoStep = null;
+    while ( true ) {
+      if ( data.reader.readRow() ) {
+        // row processed
+        return true;
+      }
+      // end of current file
+      closeLastFile();
 
-        if (meta.inputFiles.acceptingFilenames) {
-            // input files from previous step
-            infoStep = filesFromPreviousStep();
-        }
-
-        // get the metadata populated. Simple and easy.
-        meta.getFields(data.outputRowMeta, getStepname(), infoStep, null, this, repository, metaStore);
-        // Create convert meta-data objects that will contain Date & Number formatters
-        //
-        data.convertRowMeta = data.outputRowMeta.cloneToType(ValueMetaInterface.TYPE_STRING);
-
-        BaseStepUtils.handleMissingFiles(data.files, log, meta.errorHandling.errorIgnored,
-                data.dataErrorLineHandler);
-
-        // Count the number of repeat fields...
-        for (int i = 0; i < meta.inputFiles.inputFields.length; i++) {
-            if (meta.inputFiles.inputFields[i].isRepeated()) {
-                data.nr_repeats++;
-            }
-        }
+      if ( !openNextFile() ) {
+        // there are no more files
+        break;
+      }
     }
 
-    @Override
-    public boolean checkFeedback(long lines) {
-        return super.checkFeedback(lines);
+    // after all files processed
+    setOutputDone(); // signal end to receiver(s)
+    closeLastFile();
+    return false;
+  }
+
+  /**
+   * Prepare to process. Executed only first time row processing. It can't be possible to prepare to process in the
+   * init() phrase, because files can be in fields from previous step.
+   */
+  protected void prepareToRowProcessing() throws KettleException {
+    data.outputRowMeta = new RowMeta();
+    RowMetaInterface[] infoStep = null;
+
+    if ( meta.inputFiles.acceptingFilenames ) {
+      // input files from previous step
+      infoStep = filesFromPreviousStep();
     }
 
-    /**
-     * Initialize error handling.
-     * 
-     * TODO: should we set charset for error files from content meta ? What about case for automatic charset ?
-     */
-    private void initErrorHandling() {
-        List<FileErrorHandler> dataErrorLineHandlers = new ArrayList<FileErrorHandler>(2);
-        if (meta.errorHandling.lineNumberFilesDestinationDirectory != null) {
-            dataErrorLineHandlers.add(new FileErrorHandlerContentLineNumber(getTrans().getCurrentDate(),
-                    environmentSubstitute(meta.errorHandling.lineNumberFilesDestinationDirectory),
-                    meta.errorHandling.lineNumberFilesExtension, meta.getEncoding(), this));
+    // get the metadata populated. Simple and easy.
+    meta.getFields( data.outputRowMeta, getStepname(), infoStep, null, this, repository, metaStore );
+    // Create convert meta-data objects that will contain Date & Number formatters
+    //
+    data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
+
+    BaseStepUtils.handleMissingFiles( data.files, log, meta.errorHandling.errorIgnored, data.dataErrorLineHandler );
+
+    // Count the number of repeat fields...
+    for ( int i = 0; i < meta.inputFiles.inputFields.length; i++ ) {
+      if ( meta.inputFiles.inputFields[i].isRepeated() ) {
+        data.nr_repeats++;
+      }
+    }
+  }
+
+  @Override
+  public boolean checkFeedback( long lines ) {
+    return super.checkFeedback( lines );
+  }
+
+  /**
+   * Initialize error handling.
+   * 
+   * TODO: should we set charset for error files from content meta ? What about case for automatic charset ?
+   */
+  private void initErrorHandling() {
+    List<FileErrorHandler> dataErrorLineHandlers = new ArrayList<FileErrorHandler>( 2 );
+    if ( meta.errorHandling.lineNumberFilesDestinationDirectory != null ) {
+      dataErrorLineHandlers.add( new FileErrorHandlerContentLineNumber( getTrans().getCurrentDate(),
+          environmentSubstitute( meta.errorHandling.lineNumberFilesDestinationDirectory ),
+          meta.errorHandling.lineNumberFilesExtension, meta.getEncoding(), this ) );
+    }
+    if ( meta.errorHandling.errorFilesDestinationDirectory != null ) {
+      dataErrorLineHandlers.add( new FileErrorHandlerMissingFiles( getTrans().getCurrentDate(), environmentSubstitute(
+          meta.errorHandling.errorFilesDestinationDirectory ), meta.errorHandling.errorFilesExtension, meta
+              .getEncoding(), this ) );
+    }
+    data.dataErrorLineHandler = new CompositeFileErrorHandler( dataErrorLineHandlers );
+  }
+
+  /**
+   * Read files from previous step.
+   */
+  private RowMetaInterface[] filesFromPreviousStep() throws KettleException {
+    RowMetaInterface[] infoStep = null;
+
+    data.files.getFiles().clear();
+
+    int idx = -1;
+    RowSet rowSet = findInputRowSet( meta.inputFiles.acceptingStepName );
+
+    Object[] fileRow = getRowFrom( rowSet );
+    while ( fileRow != null ) {
+      RowMetaInterface prevInfoFields = rowSet.getRowMeta();
+      if ( idx < 0 ) {
+        if ( meta.inputFiles.passingThruFields ) {
+          data.passThruFields = new HashMap<FileObject, Object[]>();
+          infoStep = new RowMetaInterface[] { prevInfoFields };
+          data.nrPassThruFields = prevInfoFields.size();
         }
-        if (meta.errorHandling.errorFilesDestinationDirectory != null) {
-            dataErrorLineHandlers.add(new FileErrorHandlerMissingFiles(getTrans().getCurrentDate(),
-                    environmentSubstitute(meta.errorHandling.errorFilesDestinationDirectory),
-                    meta.errorHandling.errorFilesExtension, meta.getEncoding(), this));
+        idx = prevInfoFields.indexOfValue( meta.inputFiles.acceptingField );
+        if ( idx < 0 ) {
+          logError( BaseMessages.getString( PKG, "TextFileInput.Log.Error.UnableToFindFilenameField",
+              meta.inputFiles.acceptingField ) );
+          setErrors( getErrors() + 1 );
+          stopAll();
+          return null;
         }
-        data.dataErrorLineHandler = new CompositeFileErrorHandler(dataErrorLineHandlers);
+      }
+      String fileValue = prevInfoFields.getString( fileRow, idx );
+      try {
+        FileObject fileObject = KettleVFS.getFileObject( fileValue, getTransMeta() );
+        data.files.addFile( fileObject );
+        if ( meta.inputFiles.passingThruFields ) {
+          data.passThruFields.put( fileObject, fileRow );
+        }
+      } catch ( KettleFileException e ) {
+        logError( BaseMessages.getString( PKG, "TextFileInput.Log.Error.UnableToCreateFileObject", fileValue ), e );
+      }
+
+      // Grab another row
+      fileRow = getRowFrom( rowSet );
     }
 
-    /**
-     * Read files from previous step.
-     */
-    private RowMetaInterface[] filesFromPreviousStep() throws KettleException {
-        RowMetaInterface[] infoStep = null;
+    if ( data.files.nrOfFiles() == 0 ) {
+      if ( log.isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "TextFileInput.Log.Error.NoFilesSpecified" ) );
+      }
+      return null;
+    }
+    return infoStep;
+  }
 
-        data.files.getFiles().clear();
+  /**
+   * Close last opened file/
+   */
+  protected void closeLastFile() {
+    if ( data.reader != null ) {
+      try {
+        data.reader.close();
+      } catch ( Exception ex ) {
+        failAfterBadFile( "Error close reader" );
+      }
+      data.reader = null;
+    }
+    if ( data.file != null ) {
+      try {
+        data.file.close();
+      } catch ( Exception ex ) {
+        failAfterBadFile( "Error close file" );
+      }
+      data.file = null;
+    }
+  }
 
-        int idx = -1;
-        RowSet rowSet = findInputRowSet(meta.inputFiles.acceptingStepName);
+  /**
+   * Dispose step.
+   */
+  @Override
+  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
+    closeLastFile();
 
-        Object[] fileRow = getRowFrom(rowSet);
-        while (fileRow != null) {
-            RowMetaInterface prevInfoFields = rowSet.getRowMeta();
-            if (idx < 0) {
-                if (meta.inputFiles.passingThruFields) {
-                    data.passThruFields = new HashMap<FileObject, Object[]>();
-                    infoStep = new RowMetaInterface[] { prevInfoFields };
-                    data.nrPassThruFields = prevInfoFields.size();
-                }
-                idx = prevInfoFields.indexOfValue(meta.inputFiles.acceptingField);
-                if (idx < 0) {
-                    logError(BaseMessages.getString(PKG, "TextFileInput.Log.Error.UnableToFindFilenameField",
-                            meta.inputFiles.acceptingField));
-                    setErrors(getErrors() + 1);
-                    stopAll();
-                    return null;
-                }
-            }
-            String fileValue = prevInfoFields.getString(fileRow, idx);
-            try {
-                FileObject fileObject = KettleVFS.getFileObject(fileValue, getTransMeta());
-                data.files.addFile(fileObject);
-                if (meta.inputFiles.passingThruFields) {
-                    data.passThruFields.put(fileObject, fileRow);
-                }
-            } catch (KettleFileException e) {
-                logError(BaseMessages.getString(PKG, "TextFileInput.Log.Error.UnableToCreateFileObject",
-                        fileValue), e);
-            }
+    super.dispose( smi, sdi );
+  }
 
-            // Grab another row
-            fileRow = getRowFrom(rowSet);
-        }
+  /**
+   *
+   * @param errorMsg
+   *          Message to send to rejected row if enabled
+   * @return If should stop processing after having problems with a file
+   */
+  public boolean failAfterBadFile( String errorMsg ) {
 
-        if (data.files.nrOfFiles() == 0) {
-            if (log.isDetailed()) {
-                logDetailed(BaseMessages.getString(PKG, "TextFileInput.Log.Error.NoFilesSpecified"));
-            }
-            return null;
-        }
-        return infoStep;
+    if ( getStepMeta().isDoingErrorHandling() && data.filename != null && !data.rejectedFiles.containsKey(
+        data.filename ) ) {
+      data.rejectedFiles.put( data.filename, true );
+      rejectCurrentFile( errorMsg );
     }
 
-    /**
-     * Close last opened file/
-     */
-    protected void closeLastFile() {
-        if (data.reader != null) {
-            try {
-                data.reader.close();
-            } catch (Exception ex) {
-                failAfterBadFile("Error close reader");
-            }
-            data.reader = null;
-        }
-        if (data.file != null) {
-            try {
-                data.file.close();
-            } catch (Exception ex) {
-                failAfterBadFile("Error close file");
-            }
-            data.file = null;
-        }
-    }
+    return !meta.errorHandling.errorIgnored || !meta.errorHandling.skipBadFiles;
+  }
 
-    /**
-     * Dispose step.
-     */
-    @Override
-    public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
-        closeLastFile();
+  /**
+   * Send file name and/or error message to error output
+   *
+   * @param errorMsg
+   *          Message to send to rejected row if enabled
+   */
+  private void rejectCurrentFile( String errorMsg ) {
+    if ( StringUtils.isNotBlank( meta.errorHandling.fileErrorField ) || StringUtils.isNotBlank(
+        meta.errorHandling.fileErrorMessageField ) ) {
+      RowMetaInterface rowMeta = getInputRowMeta();
+      if ( rowMeta == null ) {
+        rowMeta = new RowMeta();
+      }
 
-        super.dispose(smi, sdi);
-    }
+      int errorFileIndex =
+          ( StringUtils.isBlank( meta.errorHandling.fileErrorField ) ) ? -1 : BaseStepUtils.addValueMeta( getStepname(),
+              rowMeta, this.environmentSubstitute( meta.errorHandling.fileErrorField ) );
 
-    /**
-     *
-     * @param errorMsg
-     *            Message to send to rejected row if enabled
-     * @return If should stop processing after having problems with a file
-     */
-    public boolean failAfterBadFile(String errorMsg) {
+      int errorMessageIndex =
+          StringUtils.isBlank( meta.errorHandling.fileErrorMessageField ) ? -1 : BaseStepUtils.addValueMeta(
+              getStepname(), rowMeta, this.environmentSubstitute( meta.errorHandling.fileErrorMessageField ) );
 
-        if (getStepMeta().isDoingErrorHandling() && data.filename != null
-                && !data.rejectedFiles.containsKey(data.filename)) {
-            data.rejectedFiles.put(data.filename, true);
-            rejectCurrentFile(errorMsg);
+      try {
+        Object[] rowData = getRow();
+        if ( rowData == null ) {
+          rowData = RowDataUtil.allocateRowData( rowMeta.size() );
         }
 
-        return !meta.errorHandling.errorIgnored || !meta.errorHandling.skipBadFiles;
-    }
-
-    /**
-     * Send file name and/or error message to error output
-     *
-     * @param errorMsg
-     *            Message to send to rejected row if enabled
-     */
-    private void rejectCurrentFile(String errorMsg) {
-        if (StringUtils.isNotBlank(meta.errorHandling.fileErrorField)
-                || StringUtils.isNotBlank(meta.errorHandling.fileErrorMessageField)) {
-            RowMetaInterface rowMeta = getInputRowMeta();
-            if (rowMeta == null) {
-                rowMeta = new RowMeta();
-            }
-
-            int errorFileIndex = (StringUtils.isBlank(meta.errorHandling.fileErrorField)) ? -1
-                    : BaseStepUtils.addValueMeta(getStepname(), rowMeta,
-                            this.environmentSubstitute(meta.errorHandling.fileErrorField));
-
-            int errorMessageIndex = StringUtils.isBlank(meta.errorHandling.fileErrorMessageField) ? -1
-                    : BaseStepUtils.addValueMeta(getStepname(), rowMeta,
-                            this.environmentSubstitute(meta.errorHandling.fileErrorMessageField));
-
-            try {
-                Object[] rowData = getRow();
-                if (rowData == null) {
-                    rowData = RowDataUtil.allocateRowData(rowMeta.size());
-                }
-
-                if (errorFileIndex >= 0) {
-                    rowData[errorFileIndex] = data.filename;
-                }
-                if (errorMessageIndex >= 0) {
-                    rowData[errorMessageIndex] = errorMsg;
-                }
-
-                putError(rowMeta, rowData, getErrors(), data.filename, null, "ERROR_CODE");
-            } catch (Exception e) {
-                logError("Error sending error row", e);
-            }
+        if ( errorFileIndex >= 0 ) {
+          rowData[errorFileIndex] = data.filename;
         }
-    }
+        if ( errorMessageIndex >= 0 ) {
+          rowData[errorMessageIndex] = errorMsg;
+        }
 
-    /**
-     * Prepare file-dependent data for fill additional fields.
-     */
-    protected void fillFileAdditionalFields(D data, FileObject file) throws FileSystemException {
-        data.shortFilename = file.getName().getBaseName();
-        data.path = KettleVFS.getFilename(file.getParent());
-        data.hidden = file.isHidden();
-        data.extension = file.getName().getExtension();
-        data.lastModificationDateTime = new Date(file.getContent().getLastModifiedTime());
-        data.uriName = file.getName().getURI();
-        data.rootUriName = file.getName().getRootURI();
-        data.size = file.getContent().getSize();
+        putError( rowMeta, rowData, getErrors(), data.filename, null, "ERROR_CODE" );
+      } catch ( Exception e ) {
+        logError( "Error sending error row", e );
+      }
     }
+  }
+
+  /**
+   * Prepare file-dependent data for fill additional fields.
+   */
+  protected void fillFileAdditionalFields( D data, FileObject file ) throws FileSystemException {
+    data.shortFilename = file.getName().getBaseName();
+    data.path = KettleVFS.getFilename( file.getParent() );
+    data.hidden = file.isHidden();
+    data.extension = file.getName().getExtension();
+    data.lastModificationDateTime = new Date( file.getContent().getLastModifiedTime() );
+    data.uriName = file.getName().getURI();
+    data.rootUriName = file.getName().getRootURI();
+    data.size = file.getContent().getSize();
+  }
 }

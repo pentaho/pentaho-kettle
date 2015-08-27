@@ -42,56 +42,55 @@ import org.pentaho.di.trans.steps.baseinput.IBaseInputReader;
  * @author Matt
  * @since 4-apr-2003
  */
-public class TextFileInput extends BaseInputStep<TextFileInputMeta, TextFileInputData>implements StepInterface {
-    private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
+public class TextFileInput extends BaseInputStep<TextFileInputMeta, TextFileInputData> implements StepInterface {
+  private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
-    public TextFileInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-            TransMeta transMeta, Trans trans) {
-        super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
+  public TextFileInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+      Trans trans ) {
+    super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
+
+  @Override
+  protected IBaseInputReader createReader( TextFileInputMeta meta, TextFileInputData data, FileObject file )
+    throws Exception {
+    return new TextFileInputReader( this, meta, data, file, log );
+  }
+
+  @Override
+  public boolean init() {
+    Date replayDate = getTrans().getReplayDate();
+    if ( replayDate == null ) {
+      data.filePlayList = FilePlayListAll.INSTANCE;
+    } else {
+      data.filePlayList =
+          new FilePlayListReplay( replayDate, meta.errorHandling.lineNumberFilesDestinationDirectory,
+              meta.errorHandling.lineNumberFilesExtension, meta.errorHandling.errorFilesDestinationDirectory,
+              meta.errorHandling.errorFilesExtension, meta.content.encoding );
     }
 
-    @Override
-    protected IBaseInputReader createReader(TextFileInputMeta meta, TextFileInputData data, FileObject file)
-            throws Exception {
-        return new TextFileInputReader(this, meta, data, file, log);
+    data.filterProcessor = new TextFileFilterProcessor( meta.getFilter(), this );
+
+    // calculate the file format type in advance so we can use a switch
+    data.fileFormatType = meta.getFileFormatTypeNr();
+
+    // calculate the file type in advance CSV or Fixed?
+    data.fileType = meta.getFileTypeNr();
+
+    // Handle the possibility of a variable substitution
+    data.separator = environmentSubstitute( meta.content.separator );
+    data.enclosure = environmentSubstitute( meta.content.enclosure );
+    data.escapeCharacter = environmentSubstitute( meta.content.escapeCharacter );
+    // CSV without separator defined
+    if ( meta.content.fileType.equalsIgnoreCase( "CSV" ) && ( meta.content.separator == null || meta.content.separator
+        .isEmpty() ) ) {
+      logError( BaseMessages.getString( PKG, "TextFileInput.Exception.NoSeparator" ) );
+      return false;
     }
 
-    @Override
-    public boolean init() {
-        Date replayDate = getTrans().getReplayDate();
-        if (replayDate == null) {
-            data.filePlayList = FilePlayListAll.INSTANCE;
-        } else {
-            data.filePlayList = new FilePlayListReplay(replayDate,
-                    meta.errorHandling.lineNumberFilesDestinationDirectory,
-                    meta.errorHandling.lineNumberFilesExtension,
-                    meta.errorHandling.errorFilesDestinationDirectory, meta.errorHandling.errorFilesExtension,
-                    meta.content.encoding);
-        }
+    return true;
+  }
 
-        data.filterProcessor = new TextFileFilterProcessor( meta.getFilter(), this );
-
-        // calculate the file format type in advance so we can use a switch
-        data.fileFormatType = meta.getFileFormatTypeNr();
-
-        // calculate the file type in advance CSV or Fixed?
-        data.fileType = meta.getFileTypeNr();
-
-        // Handle the possibility of a variable substitution
-        data.separator = environmentSubstitute(meta.content.separator);
-        data.enclosure = environmentSubstitute(meta.content.enclosure);
-        data.escapeCharacter = environmentSubstitute(meta.content.escapeCharacter);
-        // CSV without separator defined
-        if ( meta.content.fileType.equalsIgnoreCase( "CSV" ) && ( meta.content.separator == null
-            || meta.content.separator.isEmpty() ) ) {
-          logError( BaseMessages.getString( PKG, "TextFileInput.Exception.NoSeparator" ) );
-          return false;
-        }
-
-        return true;
-    }
-
-    public boolean isWaitingForData() {
-        return true;
-    }
+  public boolean isWaitingForData() {
+    return true;
+  }
 }
