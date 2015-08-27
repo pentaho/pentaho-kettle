@@ -30,7 +30,6 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.util.Arrays;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -93,8 +92,6 @@ public class Rest extends BaseStep implements StepInterface {
       }
     }
 
-
-
     WebResource webResource = null;
 
     Client client = null;
@@ -140,6 +137,10 @@ public class Rest extends BaseStep implements StepInterface {
           }
           webResource = webResource.queryParams( queryParams );
         }
+      }
+
+      if ( isDebug() ) {
+        logDebug( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", webResource.getURI() ) );
       }
 
       WebResource.Builder builder = webResource.getRequestBuilder();
@@ -319,7 +320,6 @@ public class Rest extends BaseStep implements StepInterface {
 
     Object[] r = getRow(); // Get row from input rowset & set row busy!
 
-    logBasic( Arrays.toString( r ) );
     if ( r == null ) {
       // no more input to be expected...
       setOutputDone();
@@ -410,25 +410,25 @@ public class Rest extends BaseStep implements StepInterface {
           }
           data.useParams = true;
         }
-      }
 
-      int nrmatrixmatrixparams = meta.getMatrixParameterField() == null ? 0 : meta.getMatrixParameterField().length;
-      if ( nrmatrixmatrixparams > 0 ) {
-        data.nrMatrixParams = nrmatrixmatrixparams;
-        data.matrixParamNames = new String[nrmatrixmatrixparams];
-        data.indexOfMatrixParamFields = new int[nrmatrixmatrixparams];
-        for ( int i = 0; i < nrmatrixmatrixparams; i++ ) {
-          data.matrixParamNames[i] = environmentSubstitute( meta.getMatrixParameterName()[i] );
-          String field = environmentSubstitute( meta.getMatrixParameterField()[i] );
-          if ( Const.isEmpty( field ) ) {
-            throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.MatrixParamFieldEmpty" ) );
+        int nrmatrixparams = meta.getMatrixParameterField() == null ? 0 : meta.getMatrixParameterField().length;
+        if ( nrmatrixparams > 0 ) {
+          data.nrMatrixParams = nrmatrixparams;
+          data.matrixParamNames = new String[nrmatrixparams];
+          data.indexOfMatrixParamFields = new int[nrmatrixparams];
+          for ( int i = 0; i < nrmatrixparams; i++ ) {
+            data.matrixParamNames[i] = environmentSubstitute( meta.getMatrixParameterName()[i] );
+            String field = environmentSubstitute( meta.getMatrixParameterField()[i] );
+            if ( Const.isEmpty( field ) ) {
+              throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.MatrixParamFieldEmpty" ) );
+            }
+            data.indexOfMatrixParamFields[i] = data.inputRowMeta.indexOfValue( field );
+            if ( data.indexOfMatrixParamFields[i] < 0 ) {
+              throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
+            }
           }
-          data.indexOfMatrixParamFields[i] = data.inputRowMeta.indexOfValue( field );
-          if ( data.indexOfMatrixParamFields[i] < 0 ) {
-            throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
-          }
+          data.useMatrixParams = true;
         }
-        data.useMatrixParams = true;
       }
 
       // Do we need to set body

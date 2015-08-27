@@ -75,7 +75,9 @@ public class RestInputTest {
 
   @AfterClass
   public static void tearDown() throws Exception {
-    tester.stop();
+    if ( tester != null ) {
+      tester.stop();
+    }
   }
 
   protected Trans createAndTestTrans( PluginRegistry registry, TransMeta transMeta, StepMeta inputStep,
@@ -122,6 +124,7 @@ public class RestInputTest {
 
     meta.setDefault();
     meta.setUrl( tester.createSocketConnector( true ) + "/context/simple/join" );
+    meta.setMethod( "POST" );
     meta.setMatrixParameterField( new String[] { "pageSize" } );
     meta.setMatrixParameterName( new String[] { "limit" } );
 

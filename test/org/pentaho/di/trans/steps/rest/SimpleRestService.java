@@ -1,6 +1,6 @@
 package org.pentaho.di.trans.steps.rest;
 
-import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Path( "/simple" )
 public class SimpleRestService {
-  @GET
+  @POST
   @Path( "/join" )
   @Produces( MediaType.TEXT_PLAIN )
   public String join( @MatrixParam( "limit" ) String limit, @QueryParam( "name" ) String name ) {
