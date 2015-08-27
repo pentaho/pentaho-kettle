@@ -105,6 +105,11 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
         input.setChanged();
       }
     };
+    SelectionAdapter lsSel = new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent arg0 ) {
+        input.setChanged();
+      }
+    };
     backupChanged = input.hasChanged();
 
     FormLayout formLayout = new FormLayout();
@@ -153,6 +158,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
     fdFieldName.right = new FormAttachment( 100, 0 );
     fdFieldName.top = new FormAttachment( wStepname, margin );
     wFieldName.setLayoutData( fdFieldName );
+    wFieldName.addModifyListener( lsMod );
 
     // TODO: grab field list in thread in the background...
     //
@@ -181,6 +187,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
     fdContains.top = new FormAttachment( wFieldName, margin * 2 );
     fdContains.right = new FormAttachment( 100, 0 );
     wContains.setLayoutData( fdContains );
+    wContains.addSelectionListener( lsSel );
 
     // Data type
     //
@@ -200,6 +207,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
     fdDataType.right = new FormAttachment( 100, 0 );
     fdDataType.top = new FormAttachment( wContains, margin );
     wDataType.setLayoutData( fdDataType );
+    wDataType.addModifyListener( lsMod );
 
     // Conversion mask
     //
@@ -218,6 +226,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
     fdConversionMask.right = new FormAttachment( 100, 0 );
     fdConversionMask.top = new FormAttachment( wDataType, margin );
     wConversionMask.setLayoutData( fdConversionMask );
+    wConversionMask.addModifyListener( lsMod );
 
     // Decimal Symbol
     //
@@ -236,6 +245,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
     fdDecimalSymbol.right = new FormAttachment( 100, 0 );
     fdDecimalSymbol.top = new FormAttachment( wConversionMask, margin );
     wDecimalSymbol.setLayoutData( fdDecimalSymbol );
+    wDecimalSymbol.addModifyListener( lsMod );
 
     // Grouping Symbol
     //
@@ -254,6 +264,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
     fdGroupingSymbol.right = new FormAttachment( 100, 0 );
     fdGroupingSymbol.top = new FormAttachment( wDecimalSymbol, margin );
     wGroupingSymbol.setLayoutData( fdGroupingSymbol );
+    wGroupingSymbol.addModifyListener( lsMod );
 
     String[] nextStepNames = transMeta.getNextStepNames( stepMeta );
 
@@ -307,6 +318,7 @@ public class SwitchCaseDialog extends BaseStepDialog implements StepDialogInterf
     fdDefaultTarget.bottom = new FormAttachment( wOK, -margin * 2 );
     wDefaultTarget.setLayoutData( fdDefaultTarget );
     wDefaultTarget.setItems( nextStepNames );
+    wDefaultTarget.addModifyListener( lsMod );
 
     FormData fdValues = new FormData();
     fdValues.left = new FormAttachment( middle, margin );
