@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivysettings>
   <properties environment="env" />
-  <property name="maven.local.repo" value="${user.home}/.m2/repository" overide="false" />
+  <property name="maven.local.repo" value="${user.home}/.m2/repository" override="false" />
   <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local" override="true" />
   <property name="ivy.local.default.artifact.pattern" value="[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]"
     override="false" />
