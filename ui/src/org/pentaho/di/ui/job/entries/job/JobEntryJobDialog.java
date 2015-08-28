@@ -219,8 +219,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
   private ObjectLocationSpecificationMethod specificationMethod;
 
-  private Button wForceSeparateLogging;
-
   public JobEntryJobDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
     jobEntry = (JobEntryJob) jobEntryInt;
@@ -696,24 +694,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
 
     wLogging.setLayout( groupLayout );
 
-    Label wlForceSeparateLogging = new Label( wLogging, SWT.RIGHT );
-    wlForceSeparateLogging.setText( BaseMessages.getString( PKG, "JobEntryJobDialog.ForceSeparateLogging.Label" ) );
-    props.setLook( wlForceSeparateLogging );
-    FormData fdlForceSeparateLogging = new FormData();
-    fdlForceSeparateLogging.left = new FormAttachment( 0, 0 );
-    fdlForceSeparateLogging.top = new FormAttachment( 0, margin );
-    fdlForceSeparateLogging.right = new FormAttachment( middle, -margin );
-    wlForceSeparateLogging.setLayoutData( fdlForceSeparateLogging );
-    wForceSeparateLogging = new Button( wLogging, SWT.CHECK );
-    props.setLook( wForceSeparateLogging );
-    wForceSeparateLogging.setToolTipText( BaseMessages.getString(
-      PKG, "JobEntryJobDialog.ForceSeparateLogging.Tooltip" ) );
-    FormData fdForceSeparateLogging = new FormData();
-    fdForceSeparateLogging.left = new FormAttachment( middle, 0 );
-    fdForceSeparateLogging.top = new FormAttachment( 0, margin );
-    fdForceSeparateLogging.right = new FormAttachment( 100, 0 );
-    wForceSeparateLogging.setLayoutData( fdForceSeparateLogging );
-
     // Set the logfile?
     //
     wlSetLogfile = new Label( wLogging, SWT.RIGHT );
@@ -721,14 +701,14 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     props.setLook( wlSetLogfile );
     fdlSetLogfile = new FormData();
     fdlSetLogfile.left = new FormAttachment( 0, 0 );
-    fdlSetLogfile.top = new FormAttachment( wForceSeparateLogging, margin );
+    fdlSetLogfile.top = new FormAttachment( 0, margin );
     fdlSetLogfile.right = new FormAttachment( middle, -margin );
     wlSetLogfile.setLayoutData( fdlSetLogfile );
     wSetLogfile = new Button( wLogging, SWT.CHECK );
     props.setLook( wSetLogfile );
     fdSetLogfile = new FormData();
     fdSetLogfile.left = new FormAttachment( middle, 0 );
-    fdSetLogfile.top = new FormAttachment( wForceSeparateLogging, margin );
+    fdSetLogfile.top = new FormAttachment( 0, margin );
     fdSetLogfile.right = new FormAttachment( 100, 0 );
     wSetLogfile.setLayoutData( fdSetLogfile );
     wSetLogfile.addSelectionListener( new SelectionAdapter() {
@@ -1458,8 +1438,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     }
     wPassExport.setSelection( jobEntry.isPassingExport() );
 
-    wForceSeparateLogging.setSelection( jobEntry.isForcingSeparateLogging() );
-
     if ( jobEntry.logFileLevel != null ) {
       wLoglevel.select( jobEntry.logFileLevel.getLevel() );
     } else {
@@ -1575,7 +1553,6 @@ public class JobEntryJobDialog extends JobEntryDialog implements JobEntryDialogI
     }
     jej.setPassingAllParameters( wPassParams.getSelection() );
 
-    jej.setForcingSeparateLogging( wForceSeparateLogging.getSelection() );
     jej.setLogfile = wSetLogfile.getSelection();
     jej.addDate = wAddDate.getSelection();
     jej.addTime = wAddTime.getSelection();
