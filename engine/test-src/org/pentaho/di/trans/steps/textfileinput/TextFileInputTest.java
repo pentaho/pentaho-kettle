@@ -41,6 +41,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
@@ -62,8 +63,9 @@ public class TextFileInputTest {
   public void testGetLineDOS() throws KettleFileException, UnsupportedEncodingException {
     String input = "col1\tcol2\tcol3\r\ndata1\tdata2\tdata3\r\n";
     String expected = "col1\tcol2\tcol3";
-    String output = TextFileInput.getLine( null, getInputStreamReader( input ),
-      TextFileInputMeta.FILE_FORMAT_DOS, new StringBuilder( 1000 ) );
+    String output =
+        TextFileInputUtils.getLine( null, getInputStreamReader( input ), TextFileInputMeta.FILE_FORMAT_DOS,
+            new StringBuilder( 1000 ) );
     assertEquals( expected, output );
   }
 
@@ -71,8 +73,9 @@ public class TextFileInputTest {
   public void testGetLineUnix() throws KettleFileException, UnsupportedEncodingException {
     String input = "col1\tcol2\tcol3\ndata1\tdata2\tdata3\n";
     String expected = "col1\tcol2\tcol3";
-    String output = TextFileInput.getLine( null, getInputStreamReader( input ),
-      TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder( 1000 ) );
+    String output =
+        TextFileInputUtils.getLine( null, getInputStreamReader( input ), TextFileInputMeta.FILE_FORMAT_UNIX,
+            new StringBuilder( 1000 ) );
     assertEquals( expected, output );
   }
 
@@ -80,8 +83,9 @@ public class TextFileInputTest {
   public void testGetLineOSX() throws KettleFileException, UnsupportedEncodingException {
     String input = "col1\tcol2\tcol3\rdata1\tdata2\tdata3\r";
     String expected = "col1\tcol2\tcol3";
-    String output = TextFileInput.getLine( null, getInputStreamReader( input ),
-      TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder( 1000 ) );
+    String output =
+        TextFileInputUtils.getLine( null, getInputStreamReader( input ), TextFileInputMeta.FILE_FORMAT_UNIX,
+            new StringBuilder( 1000 ) );
     assertEquals( expected, output );
   }
 
@@ -89,8 +93,9 @@ public class TextFileInputTest {
   public void testGetLineMixed() throws KettleFileException, UnsupportedEncodingException {
     String input = "col1\tcol2\tcol3\r\ndata1\tdata2\tdata3\r";
     String expected = "col1\tcol2\tcol3";
-    String output = TextFileInput.getLine( null, getInputStreamReader( input ),
-      TextFileInputMeta.FILE_FORMAT_MIXED, new StringBuilder( 1000 ) );
+    String output =
+        TextFileInputUtils.getLine( null, getInputStreamReader( input ), TextFileInputMeta.FILE_FORMAT_MIXED,
+            new StringBuilder( 1000 ) );
     assertEquals( expected, output );
   }
 
@@ -101,12 +106,12 @@ public class TextFileInputTest {
     String inputOSX = "col1\tcol2\tcol3\rdata1\tdata2\tdata3\r";
     String expected = "col1\tcol2\tcol3";
 
-    assertEquals( expected, TextFileInput.getLine( null, getInputStreamReader( inputDOS ),
-      TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder( 1000 ) ) );
-    assertEquals( expected, TextFileInput.getLine( null, getInputStreamReader( inputUnix ),
-      TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder( 1000 ) ) );
-    assertEquals( expected, TextFileInput.getLine( null, getInputStreamReader( inputOSX ),
-      TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder( 1000 ) ) );
+    assertEquals( expected, TextFileInputUtils.getLine( null, getInputStreamReader( inputDOS ),
+        TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder( 1000 ) ) );
+    assertEquals( expected, TextFileInputUtils.getLine( null, getInputStreamReader( inputUnix ),
+        TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder( 1000 ) ) );
+    assertEquals( expected, TextFileInputUtils.getLine( null, getInputStreamReader( inputOSX ),
+        TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder( 1000 ) ) );
   }
 
   @Test
@@ -114,10 +119,9 @@ public class TextFileInputTest {
     final String virtualFile = "ram://pdi-2607.txt";
     KettleVFS.getFileObject( virtualFile ).createFile();
 
-    final String content = new StringBuilder()
-      .append( "r1c1" ).append( '\n' ).append( ";r1c2\n" )
-      .append( "r2c1" ).append( '\n' ).append( ";r2c2" )
-      .toString();
+    final String content =
+        new StringBuilder().append( "r1c1" ).append( '\n' ).append( ";r1c2\n" ).append( "r2c1" ).append( '\n' ).append(
+            ";r2c2" ).toString();
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     bos.write( content.getBytes() );
 
@@ -125,24 +129,21 @@ public class TextFileInputTest {
     IOUtils.copy( new ByteArrayInputStream( bos.toByteArray() ), os );
     os.close();
 
-
     TextFileInputMeta meta = new TextFileInputMeta();
-    meta.setLineWrapped( true );
-    meta.setNrWraps( 1 );
-    meta.setInputFields( new TextFileInputField[] {
-      new TextFileInputField( "col1", -1, -1 ),
-      new TextFileInputField( "col2", -1, -1 )
-    } );
-    meta.setFileCompression( "None" );
-    meta.setFileType( "CSV" );
-    meta.setHeader( false );
-    meta.setNrHeaderLines( -1 );
-    meta.setFooter( false );
-    meta.setNrFooterLines( -1 );
+    meta.content.lineWrapped = true;
+    meta.content.nrWraps = 1;
+    meta.inputFiles.inputFields =
+        new TextFileInputField[] { new TextFileInputField( "col1", -1, -1 ), new TextFileInputField( "col2", -1, -1 ) };
+    meta.content.fileCompression = "None";
+    meta.content.fileType = "CSV";
+    meta.content.header = false;
+    meta.content.nrHeaderLines = -1;
+    meta.content.footer = false;
+    meta.content.nrFooterLines = -1;
 
     TextFileInputData data = new TextFileInputData();
-    data.setFiles( new FileInputList() );
-    data.getFiles().addFile( KettleVFS.getFileObject( virtualFile ) );
+    data.files = new FileInputList();
+    data.files.addFile( KettleVFS.getFileObject( virtualFile ) );
 
     data.outputRowMeta = new RowMeta();
     data.outputRowMeta.addValueMeta( new ValueMetaString( "col1" ) );
@@ -151,9 +152,8 @@ public class TextFileInputTest {
     data.dataErrorLineHandler = Mockito.mock( FileErrorHandler.class );
     data.fileFormatType = TextFileInputMeta.FILE_FORMAT_UNIX;
     data.separator = ";";
-    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ] );
+    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[0], new Variables() );
     data.filePlayList = new FilePlayListAll();
-
 
     RowSet output = new BlockingRowSet( 5 );
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
@@ -168,7 +168,6 @@ public class TextFileInputTest {
     Object[] row2 = output.getRowImmediate();
     assertRow( row2, "r2c1", "r2c2" );
 
-
     KettleVFS.getFileObject( virtualFile ).delete();
   }
 
@@ -177,11 +176,11 @@ public class TextFileInputTest {
     assertTrue( String.format( "%d < %d", row.length, values.length ), row.length >= values.length );
     int i = 0;
     while ( i < values.length ) {
-      assertEquals( values[ i ], row[ i ] );
+      assertEquals( values[i], row[i] );
       i++;
     }
     while ( i < row.length ) {
-      assertNull( row[ i ] );
+      assertNull( row[i] );
       i++;
     }
   }

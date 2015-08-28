@@ -694,19 +694,19 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
-      // PDI 5595 need to add ISO 8601 support for java 1.6
-      String df = ( getDateFormat() != null ) ? getDateFormat().toPattern() : null;
-      if ( df != null ) {
-        if ( getQuotesBeforeSymbol( df, "Z" ) % 2 == 0 ) {
-          if ( string.contains( "Z" ) ) {
-            string = string.replace( "Z", "UTC" );
-          } else if ( string.matches( ".*[\\+|\\-]\\d\\d:\\d\\d" ) ) {
-            int lPos = string.lastIndexOf( ":" );
-            string = string.substring( 0, lPos ) + string.substring( lPos + 1 );
-          }
+      ParsePosition pp = new ParsePosition( 0 );
+      Date result = getDateFormat().parse( string, pp );
+      if ( pp.getErrorIndex() >= 0 ) {
+        // error happen
+        throw new ParseException( string, pp.getErrorIndex() );
+      }
+      for ( int i = pp.getIndex(); i < string.length(); i++ ) {
+        // only space chars can be placed after date
+        if ( !Character.isWhitespace( string.charAt( i ) ) ) {
+          throw new ParseException( string, pp.getIndex() );
         }
       }
-      return getDateFormat().parse( string );
+      return result;
     } catch ( ParseException e ) {
       String dateFormat = ( getDateFormat() != null ) ? getDateFormat().toPattern() : "null";
       throw new KettleValueException( toString() + " : couldn't convert string [" + string
