@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -103,6 +103,7 @@ public class XBaseInput extends BaseStep implements StepInterface {
 
         if ( data.files.nrOfFiles() == 0 ) {
           logBasic( BaseMessages.getString( PKG, "XBaseInput.Log.Error.NoFilesSpecified" ) );
+          setOutputDone();
           return false;
         }
       }
