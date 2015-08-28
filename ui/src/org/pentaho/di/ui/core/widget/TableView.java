@@ -140,6 +140,8 @@ public class TableView extends Composite {
   private ModifyListener lsModCombo;
   private TraverseListener lsTraverse;
 
+  private MouseAdapter lsMouseText;
+
   private int sortfield;
   private int sortfieldLast;
   private boolean sortingDescending;
@@ -531,7 +533,7 @@ public class TableView extends Composite {
         if ( !row.isDisposed() ) {
           row.setText( colnr, value );
         }
-        
+
         if ( columns[ colnr - 1 ].getType() == ColumnInfo.COLUMN_TYPE_TEXT_BUTTON ) {
           try {
             Thread.sleep( 500 );
@@ -753,6 +755,16 @@ public class TableView extends Composite {
         // last_carret_position = combo.isDisposed()?-1:0;
       }
     };
+
+    // Table listens to the mouse:
+    MouseAdapter lsMouseText = new MouseAdapter() {
+      public void mouseDown( MouseEvent event ) {
+        if ( activeTableItem != null && !editor.getEditor().isDisposed() ) {
+          applyTextChange( activeTableItem, activeTableRow, activeTableColumn );
+        }
+      }
+    };
+    table.addMouseListener( lsMouseText );
 
     /*
      * It seems there is an other keyListener active to help control the cursor. There is support for keys like
@@ -2688,7 +2700,7 @@ public class TableView extends Composite {
   private void setUndoMenu() {
     TransAction prev = viewPreviousUndo();
     TransAction next = viewNextUndo();
-    
+
     if ( miEditUndo.isDisposed() || miEditRedo.isDisposed() ) {
       return;
     }
@@ -3091,7 +3103,7 @@ public class TableView extends Composite {
   public ColumnInfo[] getColumns() {
     return Arrays.copyOf( columns, columns.length );
   }
-  
+
   public TableItem getActiveTableItem() {
     return activeTableItem;
   }
@@ -3099,5 +3111,5 @@ public class TableView extends Composite {
   public int getActiveTableColumn() {
     return activeTableColumn;
   }
-  
+
 }
