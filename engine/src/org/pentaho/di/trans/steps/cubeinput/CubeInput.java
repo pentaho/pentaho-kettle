@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.zip.GZIPInputStream;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
@@ -47,6 +48,7 @@ public class CubeInput extends BaseStep implements StepInterface {
 
   private CubeInputMeta meta;
   private CubeInputData data;
+  private int realRowLimit;
 
   public CubeInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
     Trans trans ) {
@@ -54,15 +56,21 @@ public class CubeInput extends BaseStep implements StepInterface {
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
-    meta = (CubeInputMeta) smi;
-    data = (CubeInputData) sdi;
+
+    if ( first ) {
+      first = false;
+      meta = (CubeInputMeta) smi;
+      data = (CubeInputData) sdi;
+      realRowLimit = Const.toInt( environmentSubstitute( meta.getRowLimit() ), 0 );
+    }
+    
 
     try {
       Object[] r = data.meta.readData( data.dis );
       putRow( data.meta, r ); // fill the rowset(s). (sleeps if full)
       incrementLinesInput();
 
-      if ( meta.getRowLimit() > 0 && getLinesInput() >= meta.getRowLimit() ) // finished!
+      if ( realRowLimit > 0 && getLinesInput() >= realRowLimit ) // finished!
       {
         setOutputDone();
         return false;
