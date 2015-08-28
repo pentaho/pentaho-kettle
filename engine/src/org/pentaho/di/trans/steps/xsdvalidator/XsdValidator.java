@@ -22,10 +22,8 @@
 
 package org.pentaho.di.trans.steps.xsdvalidator;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URL;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -35,8 +33,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.provider.http.HttpFileObject;
-import org.apache.commons.vfs2.provider.local.LocalFile;
+import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -205,21 +202,20 @@ public class XsdValidator extends BaseStep implements StepInterface {
 
           // We deal with XML file
           // Get XML File
-          File xmlfileValidator = new File( XMLFieldvalue );
-          if ( !xmlfileValidator.exists() ) {
+          FileObject xmlfileValidator = KettleVFS.getFileObject( XMLFieldvalue );
+          if ( xmlfileValidator == null || !xmlfileValidator.exists() ) {
             logError( BaseMessages.getString( PKG, "XsdValidator.Log.Error.XMLfileMissing", XMLFieldvalue ) );
             throw new KettleStepException( BaseMessages.getString(
               PKG, "XsdValidator.Exception.XMLfileMissing", XMLFieldvalue ) );
           }
-          sourceXML = new StreamSource( xmlfileValidator );
+          sourceXML = new StreamSource( xmlfileValidator.getContent().getInputStream() );
         }
 
         // create the schema
         Schema SchematXSD = null;
-        if ( xsdfile instanceof LocalFile ) {
-          SchematXSD = factoryXSDValidator.newSchema( new File( KettleVFS.getFilename( xsdfile ) ) );
-        } else if ( xsdfile instanceof HttpFileObject ) {
-          SchematXSD = factoryXSDValidator.newSchema( new URL( KettleVFS.getFilename( xsdfile ) ) );
+        if ( xsdfile instanceof AbstractFileObject ) {
+          SchematXSD = factoryXSDValidator.newSchema(
+            new StreamSource( xsdfile.getContent().getInputStream() ) );
         } else {
           // we should not get here as anything entered in that does not look like
           // a url should be made a FileObject.

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="stockquotes">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="quote">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="symbol" type="xs:string"/>
+							<xs:element name="volume" type="xs:int"/>
+							<xs:element name="lastTrade">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="price" type="xs:double"/>
+										<xs:element name="date" type="xs:int"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="change">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="dollar" type="xs:double"/>
+										<xs:element name="percent" type="xs:double"/>
+										<xs:element name="positive" type="xs:string"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
