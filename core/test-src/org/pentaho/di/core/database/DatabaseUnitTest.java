@@ -24,6 +24,8 @@ package org.pentaho.di.core.database;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.pentaho.di.core.database.ExtendedDSProviderInterface.DatasourceType.JNDI;
+import static org.pentaho.di.core.database.ExtendedDSProviderInterface.DatasourceType.POOLED;
 
 import java.sql.BatchUpdateException;
 import java.sql.Connection;
@@ -34,10 +36,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.hamcrest.CoreMatchers;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.matchers.JUnitMatchers;
 import org.mockito.Mockito;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogLevel;
@@ -48,9 +50,16 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 
+import javax.sql.DataSource;
+
 public class DatabaseUnitTest {
 
   static LoggingObjectInterface log = new SimpleLoggingObject( "junit", LoggingObjectType.GENERAL, null );
+
+  @BeforeClass
+  public static void initKettle() throws Exception {
+    KettleClientEnvironment.init();
+  }
 
   /**
    * PDI-11363. when using getLookup calls there is no need to make attempt to retrieve row set metadata for every call.
@@ -427,4 +436,59 @@ public class DatabaseUnitTest {
     when( connection.getMetaData() ).thenReturn( dbMetaData );
     return connection;
   }
+
+
+  @Test
+  public void usesCustomDsProviderIfSet_Pooling() throws Exception {
+    DatabaseMeta meta = new DatabaseMeta();
+    meta.setUsingConnectionPool( true );
+    testUsesCustomDsProviderIfSet( meta );
+  }
+
+  @Test
+  public void usesCustomDsProviderIfSet_Jndi() throws Exception {
+    DatabaseMeta meta = new DatabaseMeta();
+    meta.setAccessType( DatabaseMeta.TYPE_ACCESS_JNDI );
+    testUsesCustomDsProviderIfSet( meta );
+  }
+
+  private ExtendedDSProviderInterface testUsesCustomDsProviderIfSet( DatabaseMeta meta ) throws Exception {
+    Connection connection = mock( Connection.class );
+    DataSource ds = mock( DataSource.class );
+    when( ds.getConnection() ).thenReturn( connection );
+    when( ds.getConnection( anyString(), anyString() ) ).thenReturn( connection );
+
+    ExtendedDSProviderInterface provider = mock( ExtendedDSProviderInterface.class );
+    when( provider.getNamedDataSource( anyString(), any( ExtendedDSProviderInterface.DatasourceType.class ) ) )
+      .thenReturn( ds );
+
+    Database db = new Database( log, meta );
+
+    final DataSourceProviderInterface existing =
+      DataSourceProviderFactory.getDataSourceProviderInterface();
+    try {
+      DataSourceProviderFactory.setDataSourceProviderInterface( provider );
+      db.normalConnect( null );
+    } finally {
+      DataSourceProviderFactory.setDataSourceProviderInterface( existing );
+    }
+
+    assertEquals( connection, db.getConnection() );
+    return provider;
+  }
+
+
+  @Test
+  public void jndiAccessTypePrevailsPooled() throws Exception {
+    // this test is a guard of Database.normalConnect() contract:
+    // it firstly tries to use JNDI name
+    DatabaseMeta meta = new DatabaseMeta();
+    meta.setAccessType( DatabaseMeta.TYPE_ACCESS_JNDI );
+    meta.setUsingConnectionPool( true );
+
+    ExtendedDSProviderInterface provider = testUsesCustomDsProviderIfSet( meta );
+    verify( provider ).getNamedDataSource( anyString(), eq( JNDI ) );
+    verify( provider, never() ).getNamedDataSource( anyString(), eq( POOLED ) );
+  }
+
 }
