@@ -936,6 +936,18 @@ public class TransMeta extends AbstractMeta
   }
 
   /**
+   * Removes a hop from the transformation. Also marks that the
+   * transformation's hops have changed.
+   *
+   * @param hop
+   *          The hop to remove from the list of hops
+   */
+  public void removeTransHop( TransHopMeta hop ) {
+    hops.remove( hop );
+    changed_hops = true;
+  }
+
+  /**
    * Removes a dependency from the transformation on a certain location (i.e. the specified index).
    *
    * @param i
