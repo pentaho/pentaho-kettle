@@ -18,6 +18,7 @@
 package org.pentaho.di.repository.pur;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -73,6 +74,7 @@ import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryTestBase;
+import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.pur.metastore.MetaStoreTestBase;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -739,11 +741,7 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     partitionSchemas = (List<PartitionSchema>) sharedObjectsByType
       .get( RepositoryObjectType.PARTITION_SCHEMA );
     assertEquals( 3, partitionSchemas.size() );
-
-
-
   }
-
 
   @Test
   public void testLoadSharedObjects_clusters() throws Exception {
@@ -1277,4 +1275,64 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     assertNotNull( information );
     assertTrue( information.isDeleted() );
   }
+
+  @Test
+  public void getObjectInformation_InvalidRepositoryId_ExceptionIsHandled() throws Exception {
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    when( unifiedRepository.getFileById( any( Serializable.class ) ) )
+      .thenThrow( new RuntimeException( "unknown id" ) );
+    ( (PurRepository) repository ).setTest( unifiedRepository );
+
+    RepositoryObject information =
+      repository.getObjectInformation( new StringObjectId( "invalid id" ), RepositoryObjectType.JOB );
+    assertNull( "Should return null if file was not found", information );
+  }
+  @Test
+  public void getObjectInformation_InvalidRepositoryId_NullIsHandled() throws Exception {
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    when( unifiedRepository.getFileById( any( Serializable.class ) ) ).thenReturn( null );
+    ( (PurRepository) repository ).setTest( unifiedRepository );
+
+    RepositoryObject information =
+      repository.getObjectInformation( new StringObjectId( "invalid id" ), RepositoryObjectType.JOB );
+    assertNull( "Should return null if file was not found", information );
+  }
+
+
+  @Test
+  public void testRenameJob() {
+    String[] jobNamesArraysBeforeRename = { "Job 1", "Job 2" };
+    String[] jobNamesArraysAfterRename = { "Job 1", "Job 3" };
+
+    RepositoryElementInterface job1 = new JobMeta();
+    job1.setName( jobNamesArraysBeforeRename[0] );
+
+    RepositoryElementInterface job2 = new JobMeta();
+    job2.setName( jobNamesArraysBeforeRename[1] );
+
+    try {
+      RepositoryDirectoryInterface directory = repository.findDirectory( "public" );
+      job1.setRepositoryDirectory( directory );
+      job2.setRepositoryDirectory( directory );
+
+      repository.save( job1, VERSION_COMMENT_V1, null );
+      repository.save( job2, VERSION_COMMENT_V1, null );
+
+      assertArrayEquals( repository.getJobNames( directory.getObjectId(), false ), jobNamesArraysBeforeRename );
+
+      repository.renameJob( job2.getObjectId(), job1.getRepositoryDirectory(), jobNamesArraysAfterRename[1] );
+      assertArrayEquals( repository.getJobNames( directory.getObjectId(), false ), jobNamesArraysAfterRename );
+    } catch ( KettleException e )  {
+      e.printStackTrace();
+      fail( "Unexpected error" );
+    }
+    try {
+      repository.renameJob( job2.getObjectId(), job1.getRepositoryDirectory(), jobNamesArraysBeforeRename[0] );
+      fail( "A naming conflict should occur" );
+    } catch ( KettleException e ) {
+      //expected 
+    }
+
+  }
+
 }

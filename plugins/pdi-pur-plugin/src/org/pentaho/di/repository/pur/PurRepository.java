@@ -252,6 +252,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
           "PurRepositoryMetastore.NamespaceCreateException.Message", PentahoDefaults.NAMESPACE ), e );
       }
       this.user = new EEUserInfo( "testuser", "testUserPwd", "testUser", "test user", true );
+      this.jobDelegate = new JobDelegate( this, pur );
       return;
     }
     try {
@@ -1618,20 +1619,31 @@ public class PurRepository extends AbstractRepository implements Repository, jav
     return renameJob( idJob, null, newDirectory, newName );
   }
 
+  /** 
+   * The method rename job from source name to destination name. Throws exception if we have file with same path and name
+   * 
+   * @throws KettleException if we have file with same path and name
+   * 
+   */
   @Override
-  public ObjectId renameJob( final ObjectId idJob, String versionComment,
-                             final RepositoryDirectoryInterface newDirectory, final String newName )
+  public ObjectId renameJob( final ObjectId idJobForRename, String versionComment,
+                             final RepositoryDirectoryInterface newDirectory, final String newJobName )
     throws KettleException {
-    if ( newName != null ) {
+    String absPath = calcDestAbsPath( idJobForRename, newDirectory, newJobName, RepositoryObjectType.JOB );
+        // set new title      
+    RepositoryFile fileFromDestination = pur.getFile( absPath );
+    RepositoryFile fileBeforeRename = pur.getFileById( idJobForRename.getId() );
+    if ( fileFromDestination == null && newJobName != null ) {
       // set new title
-      RepositoryFile file = pur.getFileById( idJob.getId() );
-      file = new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, newName ).build();
-      NodeRepositoryFileData data = pur.getDataAtVersionForRead( file.getId(), null, NodeRepositoryFileData.class );
-      file = pur.updateFile( file, data, versionComment );
+      fileBeforeRename = new RepositoryFile.Builder( fileBeforeRename ).title( RepositoryFile.DEFAULT_LOCALE, newJobName ).build();
+      NodeRepositoryFileData data = pur.getDataAtVersionForRead( fileBeforeRename.getId(), null, NodeRepositoryFileData.class );
+      fileBeforeRename = pur.updateFile( fileBeforeRename, data, versionComment );
+      pur.moveFile( idJobForRename.getId(), absPath, null );
+      rootRef.clearRef();
+      return idJobForRename;
+    } else {
+      throw new KettleException( BaseMessages.getString( PKG, "PurRepository.ERROR_0006_UNABLE_TO_RENAME_JOB", fileBeforeRename.getName(), newJobName ) );
     }
-    pur.moveFile( idJob.getId(), calcDestAbsPath( idJob, newDirectory, newName, RepositoryObjectType.JOB ), null );
-    rootRef.clearRef();
-    return idJob;
   }
 
   @Override
@@ -2560,10 +2572,19 @@ public class PurRepository extends AbstractRepository implements Repository, jav
   public RepositoryObject getObjectInformation( ObjectId objectId, RepositoryObjectType objectType )
     throws KettleException {
     try {
-      RepositoryFile repositoryFile = pur.getFileById( objectId.getId() );
+      RepositoryFile repositoryFile;
+      try {
+        repositoryFile = pur.getFileById( objectId.getId() );
+      } catch ( Exception e ) {
+        // javax.jcr.Session throws exception, if a node with specified ID does not exist
+        // see http://jira.pentaho.com/browse/BISERVER-12758
+        log.logError( "Error when trying to obtain a file by id: " + objectId.getId(), e );
+        return null;
+      }
       if ( repositoryFile == null ) {
         return null;
       }
+
       RepositoryFileAcl repositoryFileAcl = pur.getAcl( repositoryFile.getId() );
       String parentPath = getParentPath( repositoryFile.getPath() );
       String name = repositoryFile.getTitle();
