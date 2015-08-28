@@ -1234,6 +1234,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           String realJobName = tmpSpace.environmentSubstitute( getJobName() );
 
           if ( rep != null ) {
+            while ( realDirectory.contains( "//" ) ) {
+              realDirectory = realDirectory.replace( "//", "/" );
+            }
             RepositoryDirectoryInterface repositoryDirectory =
               rep.loadRepositoryDirectoryTree().findDirectory( realDirectory );
             if ( repositoryDirectory == null ) {
