@@ -23,6 +23,16 @@
 
 package org.pentaho.di.ui.trans.steps.textfileinput;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+
 import org.apache.commons.vfs2.FileObject;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -77,11 +87,14 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.textfileinput.EncodingType;
 import org.pentaho.di.trans.steps.textfileinput.TextFileFilter;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputReader;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputUtils;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
+import org.pentaho.di.trans.steps.textfileinput.EncodingType;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -93,16 +106,6 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
 
 public class TextFileInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
@@ -574,7 +577,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
         wFilenameList.add( wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
-          TextFileInputMeta.RequiredFilesCode[ 0 ], TextFileInputMeta.RequiredFilesCode[ 0 ] );
+            TextFileInputMeta.RequiredFilesCode[ 0 ], TextFileInputMeta.RequiredFilesCode[ 0 ] );
         wFilename.setText( "" );
         wFilemask.setText( "" );
         wExcludeFilemask.setText( "" );
@@ -722,7 +725,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   private void showFiles() {
     TextFileInputMeta tfii = new TextFileInputMeta();
-    getInfo( tfii );
+    getInfo( tfii, true );
     String[] files = tfii.getFilePaths( transMeta );
     if ( files != null && files.length > 0 ) {
       EnterSelectionDialog esd = new EnterSelectionDialog( shell, files, "Files read", "Files read:" );
@@ -2040,7 +2043,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdGet.bottom = new FormAttachment( 100, 0 );
     wGet.setLayoutData( fdGet );
 
-    final int FieldsRows = input.getInputFields().length;
+    final int FieldsRows = input.inputFiles.inputFields.length;
 
     ColumnInfo[] colinf =
         new ColumnInfo[] {
@@ -2183,10 +2186,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
    *          The TextFileInputMeta object to obtain the data from.
    */
   public void getData( TextFileInputMeta meta ) {
-    wAccFilenames.setSelection( meta.isAcceptingFilenames() );
-    wPassThruFields.setSelection( meta.isPassingThruFields() );
-    if ( meta.getAcceptingField() != null ) {
-      wAccField.setText( meta.getAcceptingField() );
+    wAccFilenames.setSelection( meta.inputFiles.acceptingFilenames );
+    wPassThruFields.setSelection( meta.inputFiles.passingThruFields );
+    if ( meta.inputFiles.acceptingField != null ) {
+      wAccField.setText( meta.inputFiles.acceptingField );
     }
     if ( meta.getAcceptingStep() != null ) {
       wAccStep.setText( meta.getAcceptingStep().getName() );
@@ -2197,55 +2200,55 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
       for ( int i = 0; i < meta.getFileName().length; i++ ) {
         wFilenameList
-          .add( meta.getFileName()[ i ], meta.getFileMask()[ i ], meta.getExludeFileMask()[ i ],
-            meta.getRequiredFilesDesc( meta.getFileRequired()[ i ] ),
-            meta.getRequiredFilesDesc( meta.getIncludeSubFolders()[ i ] ) );
+          .add( meta.getFileName()[ i ], meta.inputFiles.fileMask[ i ], meta.inputFiles.excludeFileMask[ i ],
+            meta.getRequiredFilesDesc( meta.inputFiles.fileRequired[ i ] ),
+            meta.getRequiredFilesDesc( meta.inputFiles.includeSubFolders[ i ] ) );
       }
       wFilenameList.removeEmptyRows();
       wFilenameList.setRowNums();
       wFilenameList.optWidth( true );
     }
-    if ( meta.getFileType() != null ) {
-      wFiletype.setText( meta.getFileType() );
+    if ( meta.content.fileType != null ) {
+      wFiletype.setText( meta.content.fileType );
     }
-    if ( meta.getSeparator() != null ) {
-      wSeparator.setText( meta.getSeparator() );
+    if ( meta.content.separator != null ) {
+      wSeparator.setText( meta.content.separator );
     }
-    if ( meta.getEnclosure() != null ) {
-      wEnclosure.setText( meta.getEnclosure() );
+    if ( meta.content.enclosure != null ) {
+      wEnclosure.setText( meta.content.enclosure );
     }
-    if ( meta.getEscapeCharacter() != null ) {
-      wEscape.setText( meta.getEscapeCharacter() );
+    if ( meta.content.escapeCharacter != null ) {
+      wEscape.setText( meta.content.escapeCharacter );
     }
-    wHeader.setSelection( meta.hasHeader() );
-    wNrHeader.setText( "" + meta.getNrHeaderLines() );
-    wFooter.setSelection( meta.hasFooter() );
-    wNrFooter.setText( "" + meta.getNrFooterLines() );
-    wWraps.setSelection( meta.isLineWrapped() );
-    wNrWraps.setText( "" + meta.getNrWraps() );
-    wLayoutPaged.setSelection( meta.isLayoutPaged() );
-    wNrLinesPerPage.setText( "" + meta.getNrLinesPerPage() );
-    wNrLinesDocHeader.setText( "" + meta.getNrLinesDocHeader() );
-    if ( meta.getFileCompression() != null ) {
-      wCompression.setText( meta.getFileCompression() );
+    wHeader.setSelection( meta.content.header );
+    wNrHeader.setText( "" + meta.content.nrHeaderLines);
+    wFooter.setSelection( meta.content.footer );
+    wNrFooter.setText( "" + meta.content.nrFooterLines );
+    wWraps.setSelection( meta.content.lineWrapped );
+    wNrWraps.setText( "" + meta.content.nrWraps );
+    wLayoutPaged.setSelection( meta.content.layoutPaged);
+    wNrLinesPerPage.setText( "" + meta.content.nrLinesPerPage );
+    wNrLinesDocHeader.setText( "" + meta.content.nrLinesDocHeader );
+    if ( meta.content.fileCompression != null ) {
+      wCompression.setText( meta.content.fileCompression );
     }
-    wNoempty.setSelection( meta.noEmptyLines() );
-    wInclFilename.setSelection( meta.includeFilename() );
-    wInclRownum.setSelection( meta.includeRowNumber() );
-    wRownumByFile.setSelection( meta.isRowNumberByFile() );
-    wDateLenient.setSelection( meta.isDateFormatLenient() );
-    wAddResult.setSelection( meta.isAddResultFile() );
+    wNoempty.setSelection( meta.content.noEmptyLines );
+    wInclFilename.setSelection( meta.content.includeFilename );
+    wInclRownum.setSelection( meta.content.includeRowNumber );
+    wRownumByFile.setSelection( meta.content.rowNumberByFile );
+    wDateLenient.setSelection( meta.content.dateFormatLenient );
+    wAddResult.setSelection( meta.inputFiles.isaddresult );
 
-    if ( meta.getFilenameField() != null ) {
-      wInclFilenameField.setText( meta.getFilenameField() );
+    if ( meta.content.filenameField != null ) {
+      wInclFilenameField.setText( meta.content.filenameField );
     }
-    if ( meta.getRowNumberField() != null ) {
-      wInclRownumField.setText( meta.getRowNumberField() );
+    if ( meta.content.rowNumberField != null ) {
+      wInclRownumField.setText( meta.content.rowNumberField );
     }
-    if ( meta.getFileFormat() != null ) {
-      wFormat.setText( meta.getFileFormat() );
+    if ( meta.content.fileFormat != null ) {
+      wFormat.setText( meta.content.fileFormat);
     }
-    wLimit.setText( "" + meta.getRowLimit() );
+    wLimit.setText( "" + meta.content.rowLimit);
 
     logDebug( "getting fields info..." );
     getFieldsData( meta, false );
@@ -2255,15 +2258,15 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     }
 
     // Error handling fields...
-    wErrorIgnored.setSelection( meta.isErrorIgnored() );
-    wSkipBadFiles.setSelection( meta.isSkipBadFiles() );
+    wErrorIgnored.setSelection( meta.errorHandling.errorIgnored );
+    wSkipBadFiles.setSelection( meta.errorHandling.skipBadFiles );
     wSkipErrorLines.setSelection( meta.isErrorLineSkipped() );
 
-    if ( meta.getFileErrorField() != null ) {
-      wBadFileField.setText( meta.getFileErrorField() );
+    if ( meta.errorHandling.fileErrorField != null ) {
+      wBadFileField.setText( meta.errorHandling.fileErrorField );
     }
-    if ( meta.getFileErrorMessageField() != null ) {
-      wBadFileMessageField.setText( meta.getFileErrorMessageField() );
+    if ( meta.errorHandling.fileErrorMessageField != null ) {
+      wBadFileMessageField.setText( meta.errorHandling.fileErrorMessageField );
     }
 
     if ( meta.getErrorCountField() != null ) {
@@ -2276,25 +2279,25 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       wErrorText.setText( meta.getErrorTextField() );
     }
 
-    if ( meta.getWarningFilesDestinationDirectory() != null ) {
-      wWarnDestDir.setText( meta.getWarningFilesDestinationDirectory() );
+    if ( meta.errorHandling.warningFilesDestinationDirectory != null ) {
+      wWarnDestDir.setText( meta.errorHandling.warningFilesDestinationDirectory );
     }
-    if ( meta.getWarningFilesExtension() != null ) {
-      wWarnExt.setText( meta.getWarningFilesExtension() );
-    }
-
-    if ( meta.getErrorFilesDestinationDirectory() != null ) {
-      wErrorDestDir.setText( meta.getErrorFilesDestinationDirectory() );
-    }
-    if ( meta.getErrorLineFilesExtension() != null ) {
-      wErrorExt.setText( meta.getErrorLineFilesExtension() );
+    if ( meta.errorHandling.warningFilesExtension != null ) {
+      wWarnExt.setText( meta.errorHandling.warningFilesExtension );
     }
 
-    if ( meta.getLineNumberFilesDestinationDirectory() != null ) {
-      wLineNrDestDir.setText( meta.getLineNumberFilesDestinationDirectory() );
+    if ( meta.errorHandling.errorFilesDestinationDirectory != null ) {
+      wErrorDestDir.setText( meta.errorHandling.errorFilesDestinationDirectory );
     }
-    if ( meta.getLineNumberFilesExtension() != null ) {
-      wLineNrExt.setText( meta.getLineNumberFilesExtension() );
+    if ( meta.errorHandling.errorFilesExtension != null ) {
+      wErrorExt.setText( meta.errorHandling.errorFilesExtension );
+    }
+
+    if ( meta.errorHandling.lineNumberFilesDestinationDirectory != null ) {
+      wLineNrDestDir.setText( meta.errorHandling.lineNumberFilesDestinationDirectory );
+    }
+    if ( meta.errorHandling.lineNumberFilesExtension != null ) {
+      wLineNrExt.setText( meta.errorHandling.lineNumberFilesExtension );
     }
 
     for ( int i = 0; i < meta.getFilter().length; i++ ) {
@@ -2314,7 +2317,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     }
 
     // Date locale
-    wDateLocale.setText( meta.getDateFormatLocale().toString() );
+    wDateLocale.setText( meta.content.dateFormatLocale.toString() );
 
     wFields.removeEmptyRows();
     wFields.setRowNums();
@@ -2324,29 +2327,29 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     wFilter.setRowNums();
     wFilter.optWidth( true );
 
-    if ( meta.getShortFileNameField() != null ) {
-      wShortFileFieldName.setText( meta.getShortFileNameField() );
+    if ( meta.additionalOutputFields.shortFilenameField != null ) {
+      wShortFileFieldName.setText( meta.additionalOutputFields.shortFilenameField );
     }
-    if ( meta.getPathField() != null ) {
-      wPathFieldName.setText( meta.getPathField() );
+    if ( meta.additionalOutputFields.pathField != null ) {
+      wPathFieldName.setText( meta.additionalOutputFields.pathField );
     }
-    if ( meta.isHiddenField() != null ) {
-      wIsHiddenName.setText( meta.isHiddenField() );
+    if ( meta.additionalOutputFields.hiddenField != null ) {
+      wIsHiddenName.setText( meta.additionalOutputFields.hiddenField );
     }
-    if ( meta.getLastModificationDateField() != null ) {
-      wLastModificationTimeName.setText( meta.getLastModificationDateField() );
+    if ( meta.additionalOutputFields.lastModificationField != null ) {
+      wLastModificationTimeName.setText( meta.additionalOutputFields.lastModificationField );
     }
-    if ( meta.getUriField() != null ) {
-      wUriName.setText( meta.getUriField() );
+    if ( meta.additionalOutputFields.uriField != null ) {
+      wUriName.setText( meta.additionalOutputFields.uriField );
     }
-    if ( meta.getRootUriField() != null ) {
-      wRootUriName.setText( meta.getRootUriField() );
+    if ( meta.additionalOutputFields.rootUriField != null ) {
+      wRootUriName.setText( meta.additionalOutputFields.rootUriField );
     }
-    if ( meta.getExtensionField() != null ) {
-      wExtensionFieldName.setText( meta.getExtensionField() );
+    if ( meta.additionalOutputFields.extensionField != null ) {
+      wExtensionFieldName.setText( meta.additionalOutputFields.extensionField );
     }
-    if ( meta.getSizeField() != null ) {
-      wSizeFieldName.setText( meta.getSizeField() );
+    if ( meta.additionalOutputFields.sizeField != null ) {
+      wSizeFieldName.setText( meta.additionalOutputFields.sizeField );
     }
 
     setFlags();
@@ -2356,8 +2359,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void getFieldsData( TextFileInputMeta in, boolean insertAtTop ) {
-    for ( int i = 0; i < in.getInputFields().length; i++ ) {
-      TextFileInputField field = in.getInputFields()[i];
+    for ( int i = 0; i < in.inputFiles.inputFields.length; i++ ) {
+      TextFileInputField field = in.inputFiles.inputFields[i];
 
       TableItem item;
 
@@ -2458,46 +2461,60 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       return;
     }
 
-    getInfo( input );
+    getInfo( input, false );
     dispose();
   }
 
-  private void getInfo( TextFileInputMeta meta ) {
+  /**
+   * Fill meta object from UI options.
+   * 
+   * @param meta
+   *          meta object
+   * @param preview
+   *          flag for preview or real options should be used. Currently, only one option is differ for preview - EOL
+   *          chars. It uses as "mixed" for be able to preview any file.
+   */
+  private void getInfo( TextFileInputMeta meta, boolean preview ) {
     stepname = wStepname.getText(); // return value
 
     // copy info to TextFileInputMeta class (input)
-    meta.setAcceptingFilenames( wAccFilenames.getSelection() );
-    meta.setPassingThruFields( wPassThruFields.getSelection() );
-    meta.setAcceptingField( wAccField.getText() );
-    meta.setAcceptingStepName( wAccStep.getText() );
+    meta.inputFiles.acceptingFilenames= wAccFilenames.getSelection() ;
+    meta.inputFiles.passingThruFields= wPassThruFields.getSelection() ;
+    meta.inputFiles.acceptingField= wAccField.getText() ;
+    meta.inputFiles.acceptingStepName= wAccStep.getText() ;
     meta.setAcceptingStep( transMeta.findStep( wAccStep.getText() ) );
 
-    meta.setFileType( wFiletype.getText() );
-    meta.setFileFormat( wFormat.getText() );
-    meta.setSeparator( wSeparator.getText() );
-    meta.setEnclosure( wEnclosure.getText() );
-    meta.setEscapeCharacter( wEscape.getText() );
-    meta.setRowLimit( Const.toLong( wLimit.getText(), 0L ) );
-    meta.setFilenameField( wInclFilenameField.getText() );
-    meta.setRowNumberField( wInclRownumField.getText() );
-    meta.setAddResultFile( wAddResult.getSelection() );
+    meta.content.fileType = wFiletype.getText() ;
+    if ( preview ) {
+      // mixed type for preview, for be able to eat any EOL chars
+      meta.content.fileFormat = "mixed";
+    } else {
+      meta.content.fileFormat = wFormat.getText();
+    }
+    meta.content.separator = wSeparator.getText() ;
+    meta.content.enclosure = wEnclosure.getText() ;
+    meta.content.escapeCharacter = wEscape.getText() ;
+    meta.content.rowLimit =  Const.toLong( wLimit.getText(), 0L ) ;
+    meta.content.filenameField =  wInclFilenameField.getText() ;
+    meta.content.rowNumberField =  wInclRownumField.getText() ;
+    meta.inputFiles.isaddresult= wAddResult.getSelection() ;
 
-    meta.setIncludeFilename( wInclFilename.getSelection() );
-    meta.setIncludeRowNumber( wInclRownum.getSelection() );
-    meta.setRowNumberByFile( wRownumByFile.getSelection() );
-    meta.setHeader( wHeader.getSelection() );
-    meta.setNrHeaderLines( Const.toInt( wNrHeader.getText(), 1 ) );
-    meta.setFooter( wFooter.getSelection() );
-    meta.setNrFooterLines( Const.toInt( wNrFooter.getText(), 1 ) );
-    meta.setLineWrapped( wWraps.getSelection() );
-    meta.setNrWraps( Const.toInt( wNrWraps.getText(), 1 ) );
-    meta.setLayoutPaged( wLayoutPaged.getSelection() );
-    meta.setNrLinesPerPage( Const.toInt( wNrLinesPerPage.getText(), 80 ) );
-    meta.setNrLinesDocHeader( Const.toInt( wNrLinesDocHeader.getText(), 0 ) );
-    meta.setFileCompression( wCompression.getText() );
-    meta.setDateFormatLenient( wDateLenient.getSelection() );
-    meta.setNoEmptyLines( wNoempty.getSelection() );
-    meta.setEncoding( wEncoding.getText() );
+    meta.content.includeFilename =  wInclFilename.getSelection() ;
+    meta.content.includeRowNumber =  wInclRownum.getSelection() ;
+    meta.content.rowNumberByFile =  wRownumByFile.getSelection() ;
+    meta.content.header =  wHeader.getSelection() ;
+    meta.content.nrHeaderLines =  Const.toInt( wNrHeader.getText(), 1 ) ;
+    meta.content.footer = wFooter.getSelection() ;
+    meta.content.nrFooterLines = Const.toInt( wNrFooter.getText(), 1 ) ;
+    meta.content.lineWrapped =  wWraps.getSelection() ;
+    meta.content.nrWraps = Const.toInt( wNrWraps.getText(), 1 ) ;
+    meta.content.layoutPaged =  wLayoutPaged.getSelection() ;
+    meta.content.nrLinesPerPage= Const.toInt( wNrLinesPerPage.getText(), 80 ) ;
+    meta.content.nrLinesDocHeader =  Const.toInt( wNrLinesDocHeader.getText(), 0 ) ;
+    meta.content.fileCompression =  wCompression.getText() ;
+    meta.content.dateFormatLenient =  wDateLenient.getSelection() ;
+    meta.content.noEmptyLines =  wNoempty.getSelection() ;
+    meta.content.encoding =  wEncoding.getText() ;
 
     int nrfiles = wFilenameList.getItemCount();
     int nrfields = wFields.nrNonEmpty();
@@ -2505,10 +2522,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     meta.allocate( nrfiles, nrfields, nrfilters );
 
     meta.setFileName( wFilenameList.getItems( 0 ) );
-    meta.setFileMask( wFilenameList.getItems( 1 ) );
-    meta.setExcludeFileMask( wFilenameList.getItems( 2 ) );
-    meta.setFileRequired( wFilenameList.getItems( 3 ) );
-    meta.setIncludeSubFolders( wFilenameList.getItems( 4 ) );
+    meta.inputFiles.fileMask= wFilenameList.getItems( 1 ) ;
+    meta.inputFiles.excludeFileMask= wFilenameList.getItems( 2 ) ;
+    meta.inputFiles_fileRequired( wFilenameList.getItems( 3 ) );
+    meta.inputFiles_includeSubFolders( wFilenameList.getItems( 4 ) );
 
     for ( int i = 0; i < nrfields; i++ ) {
       TextFileInputField field = new TextFileInputField();
@@ -2529,7 +2546,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 13 ) ) );
 
       // CHECKSTYLE:Indentation:OFF
-      meta.getInputFields()[i] = field;
+      meta.inputFiles.inputFields[i] = field;
     }
 
     for ( int i = 0; i < nrfilters; i++ ) {
@@ -2546,38 +2563,38 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
           .setFilterPositive( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 4 ) ) );
     }
     // Error handling fields...
-    meta.setErrorIgnored( wErrorIgnored.getSelection() );
-    meta.setSkipBadFiles( wSkipBadFiles.getSelection() );
-    meta.setFileErrorField( wBadFileField.getText() );
-    meta.setFileErrorMessageField( wBadFileMessageField.getText() );
+    meta.errorHandling.errorIgnored= wErrorIgnored.getSelection() ;
+    meta.errorHandling.skipBadFiles= wSkipBadFiles.getSelection() ;
+    meta.errorHandling.fileErrorField= wBadFileField.getText() ;
+    meta.errorHandling.fileErrorMessageField= wBadFileMessageField.getText() ;
     meta.setErrorLineSkipped( wSkipErrorLines.getSelection() );
     meta.setErrorCountField( wErrorCount.getText() );
     meta.setErrorFieldsField( wErrorFields.getText() );
     meta.setErrorTextField( wErrorText.getText() );
 
-    meta.setWarningFilesDestinationDirectory( wWarnDestDir.getText() );
-    meta.setWarningFilesExtension( wWarnExt.getText() );
-    meta.setErrorFilesDestinationDirectory( wErrorDestDir.getText() );
-    meta.setErrorLineFilesExtension( wErrorExt.getText() );
-    meta.setLineNumberFilesDestinationDirectory( wLineNrDestDir.getText() );
-    meta.setLineNumberFilesExtension( wLineNrExt.getText() );
+    meta.errorHandling.warningFilesDestinationDirectory= wWarnDestDir.getText() ;
+    meta.errorHandling.warningFilesExtension= wWarnExt.getText() ;
+    meta.errorHandling.errorFilesDestinationDirectory= wErrorDestDir.getText() ;
+    meta.errorHandling.errorFilesExtension=wErrorExt.getText() ;
+    meta.errorHandling.lineNumberFilesDestinationDirectory= wLineNrDestDir.getText() ;
+    meta.errorHandling.lineNumberFilesExtension= wLineNrExt.getText() ;
 
     // Date format Locale
     Locale locale = EnvUtil.createLocale( wDateLocale.getText() );
     if ( !locale.equals( Locale.getDefault() ) ) {
-      meta.setDateFormatLocale( locale );
+      meta.content.dateFormatLocale =  locale ;
     } else {
-      meta.setDateFormatLocale( Locale.getDefault() );
+      meta.content.dateFormatLocale =  Locale.getDefault() ;
     }
 
-    meta.setShortFileNameField( wShortFileFieldName.getText() );
-    meta.setPathField( wPathFieldName.getText() );
-    meta.setIsHiddenField( wIsHiddenName.getText() );
-    meta.setLastModificationDateField( wLastModificationTimeName.getText() );
-    meta.setUriField( wUriName.getText() );
-    meta.setRootUriField( wRootUriName.getText() );
-    meta.setExtensionField( wExtensionFieldName.getText() );
-    meta.setSizeField( wSizeFieldName.getText() );
+    meta.additionalOutputFields.shortFilenameField=wShortFileFieldName.getText() ;
+    meta.additionalOutputFields.pathField=wPathFieldName.getText() ;
+    meta.additionalOutputFields.hiddenField=wIsHiddenName.getText() ;
+    meta.additionalOutputFields.lastModificationField=wLastModificationTimeName.getText() ;
+    meta.additionalOutputFields.uriField=wUriName.getText() ;
+    meta.additionalOutputFields.rootUriField=wRootUriName.getText() ;
+    meta.additionalOutputFields.extensionField=wExtensionFieldName.getText() ;
+    meta.additionalOutputFields.sizeField=wSizeFieldName.getText() ;
   }
 
   private void get() {
@@ -2591,7 +2608,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   // Get the data layout
   private void getCSV() {
     TextFileInputMeta meta = new TextFileInputMeta();
-    getInfo( meta );
+    getInfo( meta, true );
+
+    // CSV without separator defined
+    if ( meta.content.fileType.equalsIgnoreCase( "CSV" ) && ( meta.content.separator == null || meta.content.separator
+        .isEmpty() ) ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setMessage( BaseMessages.getString( PKG, "TextFileInput.Exception.NoSeparator" ) );
+      mb.setText( BaseMessages.getString( PKG, "TextFileInputDialog.DialogTitle" ) );
+      mb.open();
+      return;
+    }
+
     TextFileInputMeta previousMeta = (TextFileInputMeta) meta.clone();
     FileInputList textFileList = meta.getTextFileList( transMeta );
     InputStream fileInputStream;
@@ -2599,15 +2627,15 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     StringBuilder lineStringBuilder = new StringBuilder( 256 );
     int fileFormatType = meta.getFileFormatTypeNr();
 
-    String delimiter = transMeta.environmentSubstitute( meta.getSeparator() );
-    String enclosure = transMeta.environmentSubstitute( meta.getEnclosure() );
-    String escapeCharacter = transMeta.environmentSubstitute( meta.getEscapeCharacter() );
+    String delimiter = transMeta.environmentSubstitute( meta.content.separator );
+    String enclosure = transMeta.environmentSubstitute( meta.content.enclosure );
+    String escapeCharacter = transMeta.environmentSubstitute( meta.content.escapeCharacter );
 
     if ( textFileList.nrOfFiles() > 0 ) {
-      int clearFields = meta.hasHeader() ? SWT.YES : SWT.NO;
-      int nrInputFields = meta.getInputFields().length;
+      int clearFields = meta.content.header ? SWT.YES : SWT.NO;
+      int nrInputFields = meta.inputFiles.inputFields.length;
 
-      if ( meta.hasHeader() && nrInputFields > 0 ) {
+      if ( nrInputFields > 0 ) {
         MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION );
         mb.setMessage( BaseMessages.getString( PKG, "TextFileInputDialog.ClearFieldList.DialogMessage" ) );
         mb.setText( BaseMessages.getString( PKG, "TextFileInputDialog.ClearFieldList.DialogTitle" ) );
@@ -2624,8 +2652,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fileInputStream = KettleVFS.getInputStream( fileObject );
         Table table = wFields.table;
 
+        // TODO move to step's reader
+
         CompressionProvider provider =
-            CompressionProviderFactory.getInstance().createCompressionProviderInstance( meta.getFileCompression() );
+            CompressionProviderFactory.getInstance().createCompressionProviderInstance( meta.content.fileCompression );
         inputStream = provider.createInputStream( fileInputStream );
 
         InputStreamReader reader;
@@ -2637,22 +2667,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         EncodingType encodingType = EncodingType.guessEncodingType( reader.getEncoding() );
 
-        if ( clearFields == SWT.YES || !meta.hasHeader() || nrInputFields > 0 ) {
           // Scan the header-line, determine fields...
-          String line;
-
-          if ( meta.hasHeader() || meta.getInputFields().length == 0 ) {
-            line = TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
+          String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
             if ( line != null ) {
               // Estimate the number of input fields...
               // Chop up the line using the delimiter
               String[] fields =
-                  TextFileInput
+                  TextFileInputUtils
                       .guessStringsFromLine( transMeta, log, line, meta, delimiter, enclosure, escapeCharacter );
 
               for ( int i = 0; i < fields.length; i++ ) {
                 String field = fields[i];
-                if ( field == null || field.length() == 0 || ( nrInputFields == 0 && !meta.hasHeader() ) ) {
+                if ( field == null || field.length() == 0 || !meta.content.header ) {
                   field = "Field" + ( i + 1 );
                 } else {
                   // Trim the field
@@ -2671,9 +2697,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
               wFields.optWidth( true );
 
               // Copy it...
-              getInfo( meta );
-            }
-          }
+              getInfo( meta, true );
 
           // Sample a few lines to determine the correct type of the fields...
           String shellText = BaseMessages.getString( PKG, "TextFileInputDialog.LinesToSample.DialogTitle" );
@@ -2681,7 +2705,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
           EnterNumberDialog end = new EnterNumberDialog( shell, 100, shellText, lineText );
           int samples = end.open();
           if ( samples >= 0 ) {
-            getInfo( meta );
+            getInfo( meta, true );
 
             TextFileCSVImportProgressDialog pd =
                 new TextFileCSVImportProgressDialog( shell, meta, transMeta, reader, samples, clearFields == SWT.YES );
@@ -2696,7 +2720,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
               //
               if ( clearFields == SWT.NO ) {
                 getFieldsData( previousMeta, true );
-                wFields.table.setSelection( previousMeta.getInputFields().length, wFields.table.getItemCount() - 1 );
+                wFields.table.setSelection( previousMeta.inputFiles.inputFields.length, wFields.table.getItemCount() - 1 );
               }
 
               wFields.removeEmptyRows();
@@ -2775,9 +2799,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   private void preview() {
     // Create the XML input step
     TextFileInputMeta oneMeta = new TextFileInputMeta();
-    getInfo( oneMeta );
+    getInfo( oneMeta, true );
 
-    if ( oneMeta.isAcceptingFilenames() ) {
+    if ( oneMeta.inputFiles.acceptingFilenames ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
       mb.setMessage( BaseMessages.getString( PKG, "TextFileInputDialog.Dialog.SpecifyASampleFile.Message" ) );
       mb.setText( BaseMessages.getString( PKG, "TextFileInputDialog.Dialog.SpecifyASampleFile.Title" ) );
@@ -2823,7 +2847,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   // Get the first x lines
   private void first( boolean skipHeaders ) {
     TextFileInputMeta info = new TextFileInputMeta();
-    getInfo( info );
+    getInfo( info, true );
 
     try {
       if ( info.getTextFileList( transMeta ).nrOfFiles() > 0 ) {
@@ -2868,7 +2892,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   // Get the first x lines
   private List<String> getFirst( int nrlines, boolean skipHeaders ) throws KettleException {
     TextFileInputMeta meta = new TextFileInputMeta();
-    getInfo( meta );
+    getInfo( meta, true );
     FileInputList textFileList = meta.getTextFileList( transMeta );
 
     InputStream fi;
@@ -2884,7 +2908,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fi = KettleVFS.getInputStream( file );
 
         CompressionProvider provider =
-            CompressionProviderFactory.getInstance().createCompressionProviderInstance( meta.getFileCompression() );
+            CompressionProviderFactory.getInstance().createCompressionProviderInstance( meta.content.fileCompression );
         f = provider.createInputStream( fi );
 
         InputStreamReader reader;
@@ -2896,35 +2920,35 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         EncodingType encodingType = EncodingType.guessEncodingType( reader.getEncoding() );
 
         int linenr = 0;
-        int maxnr = nrlines + ( meta.hasHeader() ? meta.getNrHeaderLines() : 0 );
+        int maxnr = nrlines + ( meta.content.header ? meta.content.nrHeaderLines : 0 );
 
         if ( skipHeaders ) {
           // Skip the header lines first if more then one, it helps us position
-          if ( meta.isLayoutPaged() && meta.getNrLinesDocHeader() > 0 ) {
+          if ( meta.content.layoutPaged && meta.content.nrLinesDocHeader > 0 ) {
             int skipped = 0;
-            String line = TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
-            while ( line != null && skipped < meta.getNrLinesDocHeader() - 1 ) {
+            String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
+            while ( line != null && skipped < meta.content.nrLinesDocHeader - 1 ) {
               skipped++;
-              line = TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
+              line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
             }
           }
 
           // Skip the header lines first if more then one, it helps us position
-          if ( meta.hasHeader() && meta.getNrHeaderLines() > 0 ) {
+          if ( meta.content.header && meta.content.nrHeaderLines > 0 ) {
             int skipped = 0;
-            String line = TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
-            while ( line != null && skipped < meta.getNrHeaderLines() - 1 ) {
+            String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
+            while ( line != null && skipped < meta.content.nrHeaderLines - 1 ) {
               skipped++;
-              line = TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
+              line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
             }
           }
         }
 
-        String line = TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
+        String line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
         while ( line != null && ( linenr < maxnr || nrlines == 0 ) ) {
           retval.add( line );
           linenr++;
-          line = TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
+          line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineStringBuilder );
         }
       } catch ( Exception e ) {
         throw new KettleException( BaseMessages.getString( PKG, "TextFileInputDialog.Exception.ErrorGettingFirstLines",
@@ -2945,7 +2969,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   private void getFixed() {
     TextFileInputMeta info = new TextFileInputMeta();
-    getInfo( info );
+    getInfo( info, true );
 
     Shell sh = new Shell( shell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
 
@@ -3026,8 +3050,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     int prevEnd = 0;
     int dummynr = 1;
 
-    for ( int i = 0; i < info.getInputFields().length; i++ ) {
-      TextFileInputField f = info.getInputFields()[i];
+    for ( int i = 0; i < info.inputFiles.inputFields.length; i++ ) {
+      TextFileInputField f = info.inputFiles.inputFields[i];
 
       // See if positions are skipped, if this is the case, add dummy fields...
       if ( f.getPosition() != prevEnd ) { // gap
@@ -3055,12 +3079,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       prevEnd = field.getPosition() + field.getLength();
     }
 
-    if ( info.getInputFields().length == 0 ) {
+    if ( info.inputFiles.inputFields.length == 0 ) {
       TextFileInputField field = new TextFileInputField( "Field1", 0, maxsize );
       fields.add( field );
     } else {
       // Take the last field and see if it reached until the maximum...
-      TextFileInputField f = info.getInputFields()[info.getInputFields().length - 1];
+      TextFileInputField f = info.inputFiles.inputFields[info.inputFiles.inputFields.length - 1];
 
       int pos = f.getPosition();
       int len = f.getLength();

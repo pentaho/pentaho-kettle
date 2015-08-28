@@ -58,13 +58,13 @@ public class PDI_2875_Test {
     TextFileInputMeta meta = new TextFileInputMeta();
     meta.allocateFiles( 2 );
     meta.setFileName( new String[]{ "file1.txt",  "file2.txt" } );
-    meta.setIncludeSubFolders( new String[] {"n", "n"} );
+    meta.inputFiles.includeSubFolders= new String[] {"n", "n"} ;
     meta.setFilter( new TextFileFilter[0] );
-    meta.setFileFormat( "unix" );
-    meta.setFileType( "CSV" );
-    meta.setLineNumberFilesDestinationDirectory( EXPRESSION );
-    meta.setErrorFilesDestinationDirectory( EXPRESSION );
-    meta.setWarningFilesDestinationDirectory( EXPRESSION );
+    meta.content.fileFormat =  "unix" ;
+    meta.content.fileType = "CSV" ;
+    meta.errorHandling.lineNumberFilesDestinationDirectory= EXPRESSION ;
+    meta.errorHandling.errorFilesDestinationDirectory =  EXPRESSION ;
+    meta.errorHandling.warningFilesDestinationDirectory= EXPRESSION ;
 
     return meta;
   }
