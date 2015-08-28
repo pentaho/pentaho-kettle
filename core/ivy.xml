@@ -24,7 +24,7 @@
     <dependency org="commons-logging"     name="commons-logging"     rev="1.1.1"            transitive="false"/>
     <dependency org="commons-lang"        name="commons-lang"        rev="2.6"              transitive="false"/>
     <dependency org="commons-httpclient"  name="commons-httpclient"  rev="3.1"              transitive="false"/>
-    <dependency org="org.apache.commons"  name="commons-vfs2"        rev="2.0"              transitive="false"/>
+    <dependency org="org.apache.commons"  name="commons-vfs2"        rev="2.1-20150824"              transitive="false"/>
     <dependency org="commons-io"          name="commons-io"          rev="1.4"              transitive="false"/>
     <dependency org="commons-dbcp"        name="commons-dbcp"        rev="1.2.1"            transitive="false"/>
     <dependency org="commons-pool"        name="commons-pool"        rev="1.5.7"            transitive="false"/>

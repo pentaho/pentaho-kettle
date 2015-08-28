@@ -24,6 +24,7 @@ package org.pentaho.di.core.fileinput;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -79,6 +80,10 @@ public class NonAccessibleFileObject implements FileObject {
     return 0;
   }
 
+  @Override public int deleteAll() throws FileSystemException {
+    return 0;
+  }
+
   @Override
   public boolean exists() throws FileSystemException {
     return false;
@@ -129,6 +134,10 @@ public class NonAccessibleFileObject implements FileObject {
     throw new NotImplementedException();
   }
 
+  @Override public String getPublicURIString() {
+    throw new NotImplementedException();
+  }
+
   @Override
   public FileType getType() throws FileSystemException {
     throw new NotImplementedException();
@@ -151,6 +160,18 @@ public class NonAccessibleFileObject implements FileObject {
   @Override
   public boolean isContentOpen() {
     return false;
+  }
+
+  @Override public boolean isExecutable() throws FileSystemException {
+    throw new NotImplementedException();
+  }
+
+  @Override public boolean isFile() throws FileSystemException {
+    throw new NotImplementedException();
+  }
+
+  @Override public boolean isFolder() throws FileSystemException {
+    throw new NotImplementedException();
   }
 
   @Override
@@ -188,4 +209,23 @@ public class NonAccessibleFileObject implements FileObject {
     throw new NotImplementedException();
   }
 
+  @Override public boolean setExecutable( boolean b, boolean b1 ) throws FileSystemException {
+    throw new NotImplementedException();
+  }
+
+  @Override public boolean setReadable( boolean b, boolean b1 ) throws FileSystemException {
+    throw new NotImplementedException();
+  }
+
+  @Override public boolean setWritable( boolean b, boolean b1 ) throws FileSystemException {
+    throw new NotImplementedException();
+  }
+
+  @Override public int compareTo( FileObject o ) {
+    throw new NotImplementedException();
+  }
+
+  @Override public Iterator<FileObject> iterator() {
+    throw new NotImplementedException();
+  }
 }
