@@ -2227,10 +2227,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     TransHopMeta hi = getCurrentHop();
 
     hi.flip();
-
     if ( transMeta.hasLoop( hi.getFromStep() ) ) {
       spoon.refreshGraph();
-      MessageBox mb = new MessageBox( shell, SWT.YES | SWT.ICON_WARNING );
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.LoopsAreNotAllowed.Message" ) );
       mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.LoopsAreNotAllowed.Title" ) );
       mb.open();
@@ -2252,7 +2251,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     hi.setEnabled( !hi.isEnabled() );
     if ( transMeta.hasLoop( hi.getToStep() ) ) {
       hi.setEnabled( !hi.isEnabled() );
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.LoopAfterHopEnabled.Message" ) );
       mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.LoopAfterHopEnabled.Title" ) );
       mb.open();

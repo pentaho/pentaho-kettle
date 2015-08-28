@@ -3613,7 +3613,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     boolean ok = true;
 
     if ( transMeta.hasLoop( newHop.getFromStep() ) || transMeta.hasLoop( newHop.getToStep() ) ) {
-      MessageBox mb = new MessageBox( shell, SWT.YES | SWT.ICON_WARNING );
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.HopCausesLoop.Message" ) );
       mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.HopCausesLoop.Title" ) );
       mb.open();

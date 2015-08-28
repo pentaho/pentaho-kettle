@@ -297,7 +297,7 @@ public class TransHopDialog extends Dialog {
     if ( transMeta.hasLoop( input.getFromStep() ) ) {
       input.setFromStep( fromBackup );
       input.setToStep( toBackup );
-      MessageBox mb = new MessageBox( shell, SWT.YES | SWT.ICON_WARNING );
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "TransHopDialog.LoopsNotAllowed.DialogMessage" ) );
       mb.setText( BaseMessages.getString( PKG, "TransHopDialog.LoopsNotAllowed.DialogTitle" ) );
       mb.open();

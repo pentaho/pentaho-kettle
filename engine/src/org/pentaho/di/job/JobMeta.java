@@ -1391,6 +1391,18 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
   }
 
   /**
+   * Removes a hop from the transformation. Also marks that the
+   * transformation's hops have changed.
+   *
+   * @param hop
+   *          The hop to remove from the list of hops
+   */
+  public void removeJobHop( JobHopMeta hop ) {
+    jobhops.remove( hop );
+    setChanged();
+  }
+
+  /**
    * Index of job hop.
    *
    * @param he

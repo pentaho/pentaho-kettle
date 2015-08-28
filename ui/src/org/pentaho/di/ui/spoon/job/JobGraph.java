@@ -1261,18 +1261,23 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       }
 
       if ( checkIfHopAlreadyExists( jobMeta, hop_candidate ) ) {
+        boolean cancel = false;
         jobMeta.addJobHop( hop_candidate );
-        spoon.addUndoNew( jobMeta, new JobHopMeta[] { hop_candidate }, new int[] { jobMeta
-          .indexOfJobHop( hop_candidate ) } );
-        spoon.refreshTree();
-
         if ( jobMeta.hasLoop( hop_candidate.getFromEntry() ) || jobMeta.hasLoop( hop_candidate.getToEntry() ) ) {
-          MessageBox mb = new MessageBox( spoon.getShell(), SWT.OK | SWT.ICON_WARNING );
+          MessageBox mb = new MessageBox( spoon.getShell(), SWT.OK | SWT.CANCEL | SWT.ICON_WARNING );
           mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.HopCausesLoop.Message" ) );
           mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.HopCausesLoop.Title" ) );
-          mb.open();
+          int choice = mb.open();
+          if ( choice == SWT.CANCEL ) {
+            jobMeta.removeJobHop( hop_candidate );
+            cancel = true;
+          }
         }
-
+        if ( !cancel ) {
+          spoon.addUndoNew( jobMeta, new JobHopMeta[] { hop_candidate }, new int[] { jobMeta
+            .indexOfJobHop( hop_candidate ) } );
+        }
+        spoon.refreshTree();
         clearSettings();
         redraw();
       }
@@ -2046,32 +2051,45 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
   public void flipHop() {
     selectionRegion = null;
-    JobEntryCopy dummy = currentHop.getFromEntry();
+    JobEntryCopy origFrom = currentHop.getFromEntry();
+    JobEntryCopy origTo = currentHop.getToEntry();
     currentHop.setFromEntry( currentHop.getToEntry() );
-    currentHop.setToEntry( dummy );
+    currentHop.setToEntry( origFrom );
 
-    if ( jobMeta.hasLoop( currentHop.getFromEntry() ) ) {
-      spoon.refreshGraph();
-      MessageBox mb = new MessageBox( shell, SWT.YES | SWT.ICON_WARNING );
+    boolean cancel = false;
+    if ( jobMeta.hasLoop( currentHop.getFromEntry() ) || jobMeta.hasLoop( currentHop.getToEntry() ) ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.CANCEL | SWT.ICON_WARNING );
       mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.HopFlipCausesLoop.Message" ) );
-      mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.HopFlipCausesLoop.Title" ) );
-      mb.open();
-
-      dummy = currentHop.getFromEntry();
-      currentHop.setFromEntry( currentHop.getToEntry() );
-      currentHop.setToEntry( dummy );
-      spoon.refreshGraph();
-    } else {
-      currentHop.setChanged();
-      spoon.refreshGraph();
-      spoon.refreshTree();
-      spoon.setShellText();
+      mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.HopCausesLoop.Title" ) );
+      int choice = mb.open();
+      if ( choice == SWT.CANCEL ) {
+        cancel = true;
+        currentHop.setFromEntry( origFrom );
+        currentHop.setToEntry( origTo );
+      }
     }
+    if ( !cancel ) {
+      currentHop.setChanged();
+    }
+    spoon.refreshGraph();
+    spoon.refreshTree();
+    spoon.setShellText();
   }
 
   public void disableHop() {
     selectionRegion = null;
+    boolean orig = currentHop.isEnabled();
     currentHop.setEnabled( !currentHop.isEnabled() );
+
+    if ( !orig && ( jobMeta.hasLoop( currentHop.getFromEntry() ) || jobMeta.hasLoop( currentHop.getToEntry() ) ) ) {
+      MessageBox mb = new MessageBox( shell, SWT.CANCEL | SWT.OK | SWT.ICON_WARNING );
+      mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.LoopAfterHopEnabled.Message" ) );
+      mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.LoopAfterHopEnabled.Title" ) );
+      int choice = mb.open();
+      if ( choice == SWT.CANCEL ) {
+        currentHop.setEnabled( orig );
+      }
+    }
     spoon.refreshGraph();
     spoon.refreshTree();
   }
@@ -2124,6 +2142,8 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   public void enableHopsBetweenSelectedEntries( boolean enabled ) {
     List<JobEntryCopy> list = jobMeta.getSelectedEntries();
 
+    boolean hasLoop = false;
+
     for ( int i = 0; i < jobMeta.nrJobHops(); i++ ) {
       JobHopMeta hop = jobMeta.getJobHop( i );
       if ( list.contains( hop.getFromEntry() ) && list.contains( hop.getToEntry() ) ) {
@@ -2133,7 +2153,17 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         JobHopMeta after = (JobHopMeta) hop.clone();
         spoon.addUndoChange( jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta
           .indexOfJobHop( hop ) } );
+        if ( jobMeta.hasLoop( hop.getFromEntry() ) || jobMeta.hasLoop( hop.getToEntry() ) ) {
+          hasLoop = true;
+        }
       }
+    }
+
+    if ( hasLoop && enabled ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
+      mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.LoopAfterHopEnabled.Message" ) );
+      mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.LoopAfterHopEnabled.Title" ) );
+      mb.open();
     }
 
     spoon.refreshGraph();
