@@ -685,6 +685,9 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
         if ( rep != null ) {
           if ( !Const.isEmpty( realTransname ) && !Const.isEmpty( realDirectory ) ) {
+            while ( realDirectory.contains( "//" ) ) {
+              realDirectory = realDirectory.replace( "//", "/" );
+            }
             RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
             if ( repdir != null ) {
               try {

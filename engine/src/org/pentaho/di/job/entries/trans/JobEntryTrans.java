@@ -1202,6 +1202,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             //
             // It reads last the last revision from the repository.
             //
+            while ( realDirectory.contains( "//" ) ) {
+              realDirectory = realDirectory.replace( "//", "/" );
+            }
+            
             RepositoryDirectoryInterface repositoryDirectory = rep.findDirectory( realDirectory );
             transMeta = rep.loadTransformation( transname, repositoryDirectory, null, true, null );
           } else {
