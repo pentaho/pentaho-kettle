@@ -22,7 +22,7 @@
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" transitive="true" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" transitive="false" changing="true"/>
       
-    <dependency org="org.apache.commons" name="commons-vfs2" rev="2.0" transitive="false"/>
+    <dependency org="org.apache.commons" name="commons-vfs2" rev="2.1-20150824" transitive="false"/>
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency org="org.eclipse.swt" name="swt-linux-x86_64" rev="4.3.2" transitive="false"/>
     <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false"/>

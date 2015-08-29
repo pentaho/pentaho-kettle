@@ -21,7 +21,7 @@
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" changing="true"/>  
-    <dependency org="org.apache.commons" name="commons-vfs2" rev="2.0" transitive="false"/>
+    <dependency org="org.apache.commons" name="commons-vfs2" rev="2.1-20150824" transitive="false"/>
     <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.pentaho-metadata.revision}" changing="true"/>

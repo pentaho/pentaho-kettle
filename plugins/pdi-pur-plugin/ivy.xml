@@ -22,7 +22,7 @@
   <dependencies defaultconf="default->default">
 
     <!-- pentaho -->
-    <dependency org="org.apache.commons" name="commons-vfs2" rev="2.0" transitive="false" conf="compile->default"/>
+    <dependency org="org.apache.commons" name="commons-vfs2" rev="2.1-20150824" transitive="false" conf="compile->default"/>
     <dependency org="pentaho" name="pentaho-platform-core" rev="${dependency.bi-platform.revision}"
       changing="true" conf="compile->default"/>
     <dependency org="pentaho" name="pentaho-platform-api" rev="${dependency.bi-platform.revision}"
