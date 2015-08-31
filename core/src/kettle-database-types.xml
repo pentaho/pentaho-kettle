@@ -123,7 +123,12 @@
   <database-type id="MSSQLNATIVE">
     <description>MS SQL Server (Native)</description>
     <classname>org.pentaho.di.core.database.MSSQLServerNativeDatabaseMeta</classname>
-  </database-type>                                                             
+  </database-type>
+
+  <database-type id="MSSQL2012NATIVE">
+    <description>MS SQL Server 2012 (Native)</description>
+    <classname>org.pentaho.di.core.database.MSSQLServer2012NativeDatabaseMeta</classname>
+  </database-type>
 
   <database-type id="MSSQL">
     <description>MS SQL Server</description>
