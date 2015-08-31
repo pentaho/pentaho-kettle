@@ -760,7 +760,16 @@ public class TableView extends Composite {
     MouseAdapter lsMouseText = new MouseAdapter() {
       public void mouseDown( MouseEvent event ) {
         if ( activeTableItem != null && !editor.getEditor().isDisposed() ) {
-          applyTextChange( activeTableItem, activeTableRow, activeTableColumn );
+          if ( activeTableColumn > 0 ) {
+            switch( columns[ activeTableColumn - 1 ].getType() ) {
+              case ColumnInfo.COLUMN_TYPE_TEXT:
+                applyTextChange( activeTableItem, activeTableRow, activeTableColumn );
+                break;
+              case ColumnInfo.COLUMN_TYPE_CCOMBO:
+                applyComboChange( activeTableItem, activeTableRow, activeTableColumn );
+                break;
+            }
+          }
         }
       }
     };
