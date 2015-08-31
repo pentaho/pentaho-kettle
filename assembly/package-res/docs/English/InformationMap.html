@@ -8,6 +8,13 @@
 
 $('document').ready(function(){
 
+   var docBase = "https://help.pentaho.com/Documentation/6.0/";
+
+   window.loadDocURL = function(docId) {
+       window.location = docBase + docId;
+       return false;
+   }
+
    // Toggle display panel w/ animation
    $('.title_bar').click(function(){
        $(this).find('span').toggleClass('open');
@@ -266,7 +273,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     <div id="wrapper">
       <!--Header-->
       <div id="header">
-        <div id="title">PDF Documentation</div>
+        <div id="title">Documentation</div>
         <div id="logo"><a href="http://www.pentaho.com" target="_blank"><img src="logo.png"
               alt="Pentaho Logo" border="0" /></a></div>
       </div>
@@ -275,9 +282,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
         <div id="banner">
           <table width="700" border="0" cellspacing="0" cellpadding="0">
             <tr>
-              <td rowspan="2" class="bannerimage"><img src="pdf_icon.png" width="80" height="80"
+              <td rowspan="2" class="bannerimage"><img src="doc_icon.png" width="56" height="74"
                  /></td>
-              <td><a href="getting_started_with_pdi.pdf" target="_blank">Getting Started with PDI</a><br />
+              <td><a href="#" onclick="return loadDocURL('0J0/0C0');" target="_blank">Getting Started with PDI</a><br />
                 <span class="style2">Tutorial showcasing the high-value features of Pentaho Data
                   Integration.</span></td>
             </tr>
@@ -304,19 +311,19 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
             <ul>
               <li>
                 <a href="" class="article"></a>
-                <a href="components.pdf" target="_blank">Get Acquainted with Pentaho Components</a><br />
+                <a href="#" onclick="return loadDocURL('0D0/050');" target="_blank">Get Acquainted with Pentaho Components</a><br />
                 <div id="Components" class="disc">Introduction to the components that comprise
                   Pentaho. </div>
               </li>
               <li>
                 <a href="" class="article"></a>
-                <a href="workflows.pdf" target="_blank">Choose Your Workflows</a><br />
+                <a href="#" onclick="return loadDocURL('0D0/1A0');" target="_blank">Choose Your Workflows</a><br />
                 <div id="PentahoUserConsoleGuideU" class="disc">Overview of the different ways to
                   work with Pentaho.</div>
               </li>
               <li>
                 <a href="" class="article"></a>
-                <a href="supported_components.pdf" target="_blank">Review Supported
+                <a href="#" onclick="return loadDocURL('0D0/160');" target="_blank">Review Supported
                   Technnologies</a><br />
                 <div id="SupportMatrix" class="disc">Listing of technologies that Pentaho supports
                   for use with our products. </div>
@@ -329,28 +336,28 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
             <ul>
               <li>
                 <a href="" class="article"></a>
-                <a href="install_overview_pdi.pdf" target="_blank">Select Data Integration (DI)
+                <a href="#" onclick="return loadDocURL('0F0/0N0');" target="_blank">Select Data Integration (DI)
                   Installation Options </a><br />
                 <div id="DIInstallationOptions" class="disc">Discussion of the options for
                   installing Pentaho Data Integration and why you would use each. </div>
               </li>
               <li>
                 <a href="" class="article"></a>
-                <a href="install_graphical_pdi.pdf" target="_blank">Install All DI Components </a><br />
+                <a href="#" onclick="return loadDocURL('0F0/0H0');" target="_blank">Install All DI Components </a><br />
                 <div id="PDIInstallation" class="disc">Complete instructions for using the guided
                   wizard to install Pentaho Data Integration on Windows, Linux, and OS X. Use the
                   installation wizard if you are evaluating Pentaho. </div>
               </li>
               <li>
                 <a href="" class="article"></a>
-                <a href="install_pdi.pdf" target="_blank">Install with Your Own DI Repository </a><br />
+                <a href="#" onclick="return loadDocURL('0F0/0O0');" target="_blank">Install with Your Own DI Repository </a><br />
                 <div id="DIArchiveInstallation" class="disc">Instructions for using archive packages
                   in .zip format to install Data Integration components. Individual packages are
                   available for each component. </div>
               </li>
               <li>
                 <a href="" class="article"></a>
-                <a href="install_client_pdi.pdf" target="_blank">Install Only DI Tools </a><br />
+                <a href="#" onclick="return loadDocURL('0H0/070/020');" target="_blank">Install Only DI Tools </a><br />
                 <div id="DITools" class="disc">Instructions for installing each of the Data
                   Integration tools. </div>
               </li>
@@ -362,7 +369,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
             <ul>
               <li>
                 <a href="" class="article"></a>
-                <a href="config_pdi_server.pdf" target="_blank">Set Up DI Server and Tools</a><br />
+                <a href="#" onclick="return loadDocURL('0H0/070');" target="_blank">Set Up DI Server and Tools</a><br />
                 <div id="ConfigDI" class="disc">Complete instructions for configuring Pentaho Data
                   Integration on Windows, Linux, and OS X. </div>
               </li>
@@ -374,7 +381,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
             <ul>
               <li>
                 <a href="" class="article"></a>
-                <a href="getting_started_with_pdi.pdf" target="_blank">Getting Started with PDI</a><br />
+                <a href="#" onclick="return loadDocURL('0J0/0C0');" target="_blank">Getting Started with PDI</a><br />
                 <div id="GettingStartedwithPDI" class="disc">Tutorial showcasing the high-value
                   features of Pentaho Data Integration. </div>
               </li>
@@ -386,13 +393,13 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
             <ul>
               <li>
                 <a href="" class="article"></a>
-                <a href="pdi_user_guide.pdf" target="_blank">Create DI Solutions</a><br />
+                <a href="#" onclick="return loadDocURL('0L0/0Y0');" target="_blank">Create DI Solutions</a><br />
                 <div id="PDIUser" class="disc">Task-based documentation covering Pentaho Data
                   Integration features. </div>
               </li>
               <li>
                 <a href="" class="article"></a>
-                <a href="bigdata_guide.pdf" target="_blank">Work with Big Data</a><br />
+                <a href="#" onclick="return loadDocURL('0L0/040');" target="_blank">Work with Big Data</a><br />
                 <div id="Bigdata" class="disc">How to configure Pentaho Data Integration for various
                   Hadoop distributions, along with procedural documentation about how to use the Big
                   Data steps and entries. </div>
@@ -404,17 +411,17 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           <div id="admin" class="panel">
             <ul>
               <li><a href="" class="article"></a>
-                <a href="pdi_admin_guide.pdf" target="_blank">Administer DI Server</a><br />
+                <a href="#" onclick="return loadDocURL('0P0/0U0');" target="_blank">Administer DI Server</a><br />
                 <div id="PDIAdministratorsGuide" class="disc">Explains system administration tasks
                   for the Data Integration Server. </div>
               </li>
               <li><a href="" class="article"></a>
-                  <a href="troubleshooting_guide_pdi.pdf" target="_blank">Troubleshoot DI Server</a><br />
+                  <a href="#" onclick="return loadDocURL('0P0/180');" target="_blank">Troubleshoot DI Server</a><br />
                   <div id="PDITroubleShootingGuide" class="disc">A collection of troubleshooting topics
                       for the DI Server. </div>
               </li>
               <li><a href="" class="article"></a>
-                  <a href="pdi_security.pdf" target="_blank">Define DI Server Advanced Security</a><br />
+                  <a href="#" onclick="return loadDocURL('0P0/0W0');" target="_blank">Define DI Server Advanced Security</a><br />
                   <div id="PDISecurityGuide" class="disc">Instructions and guidance for implementing advanced security.
                       Covers Active Directory, LDAP, JDBC, Kerberos, and AES. </div>
               </li>
@@ -425,7 +432,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
           <div id="dev" class="panel">
             <ul>
               <li><a href="" class="article"></a>
-                <a href="pdi_embed_extend_guide.pdf" target="_blank">Embed and Extend DI</a><br />
+                <a href="#" onclick="return loadDocURL('0R0/0V0');" target="_blank">Embed and Extend DI</a><br />
                 <div id="ExtendingAndEmbeddingPDI" class="disc"> Instructions, Java classes and
                   methods, as well as Eclipse-based sample plugin projects that show you how to
                   programmatically extend Data Integration functionality or embed the Data
@@ -433,10 +440,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
               </li>
             </ul>
           </div>
-          <!-- Footer -->
-          <div id="footer">Adobe Acrobat Reader is required to view PDF files.<br /> This is a free
-            program available from the <a href="http://get.adobe.com/reader/" target="_blank">Adobe
-              web site</a>. </div>
         </div>
       </div>
     </div>
