@@ -1248,4 +1248,968 @@ public class TextFileInputMeta extends BaseInputStepMeta implements StepMetaInte
   public String getEncoding() {
     return content.encoding;
   }
+
+  /**
+   * @return Returns the shortFileFieldName.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getShortFileNameField() {
+    return additionalOutputFields.shortFilenameField;
+  }
+
+  /**
+   * @param field
+   *          The shortFileFieldName to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setShortFileNameField( String field ) {
+    additionalOutputFields.shortFilenameField = field;
+  }
+
+  /**
+   * @return Returns the pathFieldName.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getPathField() {
+    return additionalOutputFields.pathField;
+  }
+
+  /**
+   * @param field
+   *          The pathFieldName to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setPathField( String field ) {
+    additionalOutputFields.pathField = field;
+  }
+
+  /**
+   * @return Returns the hiddenFieldName.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String isHiddenField() {
+    return additionalOutputFields.hiddenField;
+  }
+
+  /**
+   * @param field
+   *          The hiddenFieldName to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setIsHiddenField( String field ) {
+    additionalOutputFields.hiddenField = field;
+  }
+
+  /**
+   * @return Returns the lastModificationTimeFieldName.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getLastModificationDateField() {
+    return additionalOutputFields.lastModificationField;
+  }
+
+  /**
+   * @param field
+   *          The lastModificationTimeFieldName to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setLastModificationDateField( String field ) {
+    additionalOutputFields.lastModificationField = field;
+  }
+
+  /**
+   * @return Returns the uriNameFieldName.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getUriField() {
+    return additionalOutputFields.uriField;
+  }
+
+  /**
+   * @param field
+   *          The uriNameFieldName to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setUriField( String field ) {
+    additionalOutputFields.uriField = field;
+  }
+
+  /**
+   * @return Returns the uriNameFieldName.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getRootUriField() {
+    return additionalOutputFields.rootUriField;
+  }
+
+  /**
+   * @param field
+   *          The rootUriNameFieldName to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setRootUriField( String field ) {
+    additionalOutputFields.rootUriField = field;
+  }
+
+  /**
+   * @return Returns the extensionFieldName.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getExtensionField() {
+    return additionalOutputFields.extensionField;
+  }
+
+  /**
+   * @param field
+   *          The extensionFieldName to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setExtensionField( String field ) {
+    additionalOutputFields.extensionField = field;
+  }
+
+  /**
+   * @return Returns the sizeFieldName.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getSizeField() {
+    return additionalOutputFields.sizeField;
+  }
+
+  /**
+   * @param field
+   *          The sizeFieldName to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setSizeField( String field ) {
+    additionalOutputFields.sizeField = field;
+  }
+
+  /**
+   *
+   * @return If should continue processing after failing to open a file
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean isSkipBadFiles() {
+    return errorHandling.skipBadFiles;
+  }
+
+  /**
+   *
+   * @param value
+   *          If should continue processing after failing to open a file
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setSkipBadFiles( boolean value ) {
+    errorHandling.skipBadFiles = value;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getFileErrorField() {
+    return errorHandling.fileErrorField;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setFileErrorField( String field ) {
+    errorHandling.fileErrorField = field;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getFileErrorMessageField() {
+    return errorHandling.fileErrorMessageField;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setFileErrorMessageField( String field ) {
+    errorHandling.fileErrorMessageField = field;
+  }
+
+  /**
+   * @param encoding
+   *          The encoding to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setEncoding( String encoding ) {
+    content.encoding = encoding;
+  }
+
+  /**
+   * @return Returns the input fields.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public TextFileInputField[] getInputFields() {
+    return inputFiles.inputFields;
+  }
+
+  /**
+   * @param inputFields
+   *          The input fields to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setInputFields( TextFileInputField[] inputFields ) {
+    inputFiles.inputFields = inputFields;
+  }
+
+  /**
+   * @return Returns the enclosure.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getEnclosure() {
+    return content.enclosure;
+  }
+
+  /**
+   * @param enclosure
+   *          The enclosure to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setEnclosure( String enclosure ) {
+    content.enclosure = enclosure;
+  }
+
+  /**
+   * @return Returns the breakInEnclosureAllowed.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean isBreakInEnclosureAllowed() {
+    return content.breakInEnclosureAllowed;
+  }
+
+  /**
+   * @param breakInEnclosureAllowed
+   *          The breakInEnclosureAllowed to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setBreakInEnclosureAllowed( boolean breakInEnclosureAllowed ) {
+    content.breakInEnclosureAllowed = breakInEnclosureAllowed;
+  }
+
+  /**
+   * @return Returns the excludeFileMask.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String[] getExludeFileMask() {
+    return inputFiles.excludeFileMask;
+  }
+
+  /**
+   * @param excludeFileMask
+   *          The excludeFileMask to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setExcludeFileMask( String[] excludeFileMask ) {
+    inputFiles.excludeFileMask = excludeFileMask;
+  }
+
+  /**
+   * @return Returns the fileFormat.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getFileFormat() {
+    return content.fileFormat;
+  }
+
+  /**
+   * @param fileFormat
+   *          The fileFormat to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setFileFormat( String fileFormat ) {
+    content.fileFormat = fileFormat;
+  }
+
+  /**
+   * @return Returns the fileMask.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String[] getFileMask() {
+    return inputFiles.fileMask;
+  }
+
+  /**
+   * @return Returns the fileRequired.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String[] getFileRequired() {
+    return inputFiles.fileRequired;
+  }
+
+  /**
+   * @param fileMask
+   *          The fileMask to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setFileMask( String[] fileMask ) {
+    inputFiles.fileMask = fileMask;
+  }
+
+  /**
+   * @param fileRequired
+   *          The fileRequired to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setFileRequired( String[] fileRequiredin ) {
+    for ( int i = 0; i < fileRequiredin.length; i++ ) {
+      inputFiles.fileRequired[i] = getRequiredFilesCode( fileRequiredin[i] );
+    }
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String[] getIncludeSubFolders() {
+    return inputFiles.includeSubFolders;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setIncludeSubFolders( String[] includeSubFoldersin ) {
+    for ( int i = 0; i < includeSubFoldersin.length; i++ ) {
+      inputFiles.includeSubFolders[i] = getRequiredFilesCode( includeSubFoldersin[i] );
+    }
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getRequiredFilesCode( String tt ) {
+    if ( tt == null ) {
+      return RequiredFilesCode[0];
+    }
+    if ( tt.equals( RequiredFilesDesc[1] ) ) {
+      return RequiredFilesCode[1];
+    } else {
+      return RequiredFilesCode[0];
+    }
+  }
+
+  /**
+   * @return Returns the filenameField.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getFilenameField() {
+    return content.filenameField;
+  }
+
+  /**
+   * @param filenameField
+   *          The filenameField to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setFilenameField( String filenameField ) {
+    content.filenameField = filenameField;
+  }
+
+  /**
+   * @return Returns the fileType.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getFileType() {
+    return content.fileType;
+  }
+
+  /**
+   * @return Returns the footer.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean hasFooter() {
+    return content.footer;
+  }
+
+  /**
+   * @param footer
+   *          The footer to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setFooter( boolean footer ) {
+    content.footer = footer;
+  }
+
+  /**
+   * @return Returns the header.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean hasHeader() {
+    return content.header;
+  }
+
+  /**
+   * @param header
+   *          The header to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setHeader( boolean header ) {
+    content.header = header;
+  }
+
+  /**
+   * @return Returns the includeFilename.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean includeFilename() {
+    return content.includeFilename;
+  }
+
+  /**
+   * @param includeFilename
+   *          The includeFilename to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setIncludeFilename( boolean includeFilename ) {
+    content.includeFilename = includeFilename;
+  }
+
+  /**
+   * @return Returns the includeRowNumber.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean includeRowNumber() {
+    return content.includeRowNumber;
+  }
+
+  /**
+   * @param includeRowNumber
+   *          The includeRowNumber to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setIncludeRowNumber( boolean includeRowNumber ) {
+    content.includeRowNumber = includeRowNumber;
+  }
+
+  /**
+   * true if row number reset for each file
+   *
+   * @return rowNumberByFile
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean isRowNumberByFile() {
+    return content.rowNumberByFile;
+  }
+
+  /**
+   * @param rowNumberByFile
+   *          True if row number field is reset for each file
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setRowNumberByFile( boolean rowNumberByFile ) {
+    content.rowNumberByFile = rowNumberByFile;
+  }
+
+  /**
+   * @return Returns the noEmptyLines.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean noEmptyLines() {
+    return content.noEmptyLines;
+  }
+
+  /**
+   * @param noEmptyLines
+   *          The noEmptyLines to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setNoEmptyLines( boolean noEmptyLines ) {
+    content.noEmptyLines = noEmptyLines;
+  }
+
+  /**
+   * @return Returns the rowLimit.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public long getRowLimit() {
+    return content.rowLimit;
+  }
+
+  /**
+   * @param rowLimit
+   *          The rowLimit to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setRowLimit( long rowLimit ) {
+    content.rowLimit = rowLimit;
+  }
+
+  /**
+   * @return Returns the rowNumberField.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getRowNumberField() {
+    return content.rowNumberField;
+  }
+
+  /**
+   * @param rowNumberField
+   *          The rowNumberField to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setRowNumberField( String rowNumberField ) {
+    content.rowNumberField = rowNumberField;
+  }
+
+  /**
+   * @return Returns the separator.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getSeparator() {
+    return content.separator;
+  }
+
+  /**
+   * @param separator
+   *          The separator to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setSeparator( String separator ) {
+    content.separator = separator;
+  }
+
+  /**
+   * @return Returns the type of compression used
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getFileCompression() {
+    return content.fileCompression;
+  }
+
+  /**
+   * @param fileCompression
+   *          Sets the compression type
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setFileCompression( String fileCompression ) {
+    content.fileCompression = fileCompression;
+  }
+
+  /**
+   * @return Returns the escapeCharacter.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getEscapeCharacter() {
+    return content.escapeCharacter;
+  }
+
+  /**
+   * @param escapeCharacter
+   *          The escapeCharacter to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setEscapeCharacter( String escapeCharacter ) {
+    content.escapeCharacter = escapeCharacter;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean isErrorIgnored() {
+    return errorHandling.errorIgnored;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setErrorIgnored( boolean errorIgnored ) {
+    errorHandling.errorIgnored = errorIgnored;
+  }
+
+  /**
+   * @return Returns the lineWrapped.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean isLineWrapped() {
+    return content.lineWrapped;
+  }
+
+  /**
+   * @param lineWrapped
+   *          The lineWrapped to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setLineWrapped( boolean lineWrapped ) {
+    content.lineWrapped = lineWrapped;
+  }
+
+  /**
+   * @return Returns the nrFooterLines.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public int getNrFooterLines() {
+    return content.nrFooterLines;
+  }
+
+  /**
+   * @param nrFooterLines
+   *          The nrFooterLines to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setNrFooterLines( int nrFooterLines ) {
+    content.nrFooterLines = nrFooterLines;
+  }
+
+  /**
+   * @return Returns the nrHeaderLines.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public int getNrHeaderLines() {
+    return content.nrHeaderLines;
+  }
+
+  /**
+   * @param nrHeaderLines
+   *          The nrHeaderLines to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setNrHeaderLines( int nrHeaderLines ) {
+    content.nrHeaderLines = nrHeaderLines;
+  }
+
+  /**
+   * @return Returns the nrWraps.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public int getNrWraps() {
+    return content.nrWraps;
+  }
+
+  /**
+   * @param nrWraps
+   *          The nrWraps to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setNrWraps( int nrWraps ) {
+    content.nrWraps = nrWraps;
+  }
+
+  /**
+   * @return Returns the layoutPaged.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean isLayoutPaged() {
+    return content.layoutPaged;
+  }
+
+  /**
+   * @param layoutPaged
+   *          The layoutPaged to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setLayoutPaged( boolean layoutPaged ) {
+    content.layoutPaged = layoutPaged;
+  }
+
+  /**
+   * @return Returns the nrLinesPerPage.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public int getNrLinesPerPage() {
+    return content.nrLinesPerPage;
+  }
+
+  /**
+   * @param nrLinesPerPage
+   *          The nrLinesPerPage to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setNrLinesPerPage( int nrLinesPerPage ) {
+    content.nrLinesPerPage = nrLinesPerPage;
+  }
+
+  /**
+   * @return Returns the nrLinesDocHeader.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public int getNrLinesDocHeader() {
+    return content.nrLinesDocHeader;
+  }
+
+  /**
+   * @param nrLinesDocHeader
+   *          The nrLinesDocHeader to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setNrLinesDocHeader( int nrLinesDocHeader ) {
+    content.nrLinesDocHeader = nrLinesDocHeader;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getWarningFilesDestinationDirectory() {
+    return errorHandling.warningFilesDestinationDirectory;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setWarningFilesDestinationDirectory( String warningFilesDestinationDirectory ) {
+    errorHandling.warningFilesDestinationDirectory = warningFilesDestinationDirectory;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getWarningFilesExtension() {
+    return errorHandling.warningFilesExtension;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setWarningFilesExtension( String warningFilesExtension ) {
+    errorHandling.warningFilesExtension = warningFilesExtension;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getLineNumberFilesDestinationDirectory() {
+    return errorHandling.lineNumberFilesDestinationDirectory;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setLineNumberFilesDestinationDirectory( String lineNumberFilesDestinationDirectory ) {
+    errorHandling.lineNumberFilesDestinationDirectory = lineNumberFilesDestinationDirectory;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getLineNumberFilesExtension() {
+    return errorHandling.lineNumberFilesExtension;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setLineNumberFilesExtension( String lineNumberFilesExtension ) {
+    errorHandling.lineNumberFilesExtension = lineNumberFilesExtension;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getErrorFilesDestinationDirectory() {
+    return errorHandling.errorFilesDestinationDirectory;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setErrorFilesDestinationDirectory( String errorFilesDestinationDirectory ) {
+    errorHandling.errorFilesDestinationDirectory = errorFilesDestinationDirectory;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getErrorLineFilesExtension() {
+    return errorHandling.errorFilesExtension;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setErrorLineFilesExtension( String errorLineFilesExtension ) {
+    errorHandling.errorFilesExtension = errorLineFilesExtension;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean isDateFormatLenient() {
+    return content.dateFormatLenient;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setDateFormatLenient( boolean dateFormatLenient ) {
+    content.dateFormatLenient = dateFormatLenient;
+  }
+
+  /**
+   * @param isaddresult
+   *          The isaddresult to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setAddResultFile( boolean isaddresult ) {
+    inputFiles.isaddresult = isaddresult;
+  }
+
+  /**
+   * @return Returns isaddresult.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean isAddResultFile() {
+    return inputFiles.isaddresult;
+  }
+
+  /**
+   * @return Returns the dateFormatLocale.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public Locale getDateFormatLocale() {
+    return content.dateFormatLocale;
+  }
+
+  /**
+   * @param dateFormatLocale
+   *          The dateFormatLocale to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setDateFormatLocale( Locale dateFormatLocale ) {
+    content.dateFormatLocale = dateFormatLocale;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean isAcceptingFilenames() {
+    return inputFiles.acceptingFilenames;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setAcceptingFilenames( boolean getFileFromJob ) {
+    inputFiles.acceptingFilenames = getFileFromJob;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public boolean isPassingThruFields() {
+    return inputFiles.passingThruFields;
+  }
+
+  /**
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setPassingThruFields( boolean passingThruFields ) {
+    inputFiles.passingThruFields = passingThruFields;
+  }
+
+  /**
+   * @return Returns the fileNameField.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getAcceptingField() {
+    return inputFiles.acceptingField;
+  }
+
+  /**
+   * @param fileNameField
+   *          The fileNameField to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setAcceptingField( String fileNameField ) {
+    inputFiles.acceptingField = fileNameField;
+  }
+
+  /**
+   * @return Returns the acceptingStep.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public String getAcceptingStepName() {
+    return inputFiles.acceptingStepName;
+  }
+
+  /**
+   * @param acceptingStep
+   *          The acceptingStep to set.
+   * 
+   * @deprecated Remove from kettle 6.1 after dependent projects changes
+   */
+  public void setAcceptingStepName( String acceptingStep ) {
+    inputFiles.acceptingStepName = acceptingStep;
+  }
 }
