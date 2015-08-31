@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,8 +54,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.sql.DataSource;
-
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
@@ -64,6 +62,7 @@ import org.pentaho.di.core.DBCacheEntry;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.database.DataSourceProviderInterface.DatasourceType;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
 import org.pentaho.di.core.database.util.DatabaseLogExceptionFactory;
 import org.pentaho.di.core.database.util.DatabaseUtil;
@@ -370,7 +369,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
   }
 
-  private synchronized void shareConnectionWith( String partitionId, Database anotherDb ) throws KettleDatabaseException {
+  private synchronized void shareConnectionWith( String partitionId, Database anotherDb )
+    throws KettleDatabaseException {
     // inside synchronized block we can increment 'opened' directly
     this.opened++;
 
@@ -388,7 +388,13 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
-   * Open the database connection.
+   * Open the database connection. The algorithm is:
+   * <ol>
+   * <li>If <code>databaseMeta.getAccessType()</code> returns
+   * <code>DatabaseMeta.TYPE_ACCESS_JNDI</code>, then the connection's datasource is looked up in JNDI </li>
+   * <li>If <code>databaseMeta.isUsingConnectionPool()</code>, then the connection's datasource is looked up in the pool</li>
+   * <li>otherwise, the connection is established via {@linkplain java.sql.DriverManager}</li>
+   * </ol>
    *
    * @param partitionId the partition ID in the cluster to connect to.
    * @throws KettleDatabaseException if something went wrong.
@@ -399,37 +405,45 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
 
     try {
-      // First see if we use connection pooling...
-      //
-      // isUsingConnectionPool defaults to false for backward compatibility
-      //
-      // JNDI does pooling on it's own.
+      DataSourceProviderInterface dsp = DataSourceProviderFactory.getDataSourceProviderInterface();
+      if ( dsp == null ) {
+        // since DataSourceProviderFactory is initialised with new DatabaseUtil(),
+        // this assignment is correct
+        dsp = new DatabaseUtil();
+      }
 
-      if ( databaseMeta.isUsingConnectionPool() && databaseMeta.getAccessType() != DatabaseMeta.TYPE_ACCESS_JNDI ) {
+      if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
+        String jndiName = environmentSubstitute( databaseMeta.getDatabaseName() );
         try {
-          this.connection = ConnectionPoolUtil.getConnection( log, databaseMeta, partitionId );
-          if ( getConnection().getAutoCommit() != isAutoCommit() ) {
-            setAutoCommit( isAutoCommit() );
-          }
-        } catch ( Exception e ) {
-          throw new KettleDatabaseException( "Error occurred while trying to connect to the database", e );
-        }
-      } else if ( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
-        final String jndiName = environmentSubstitute( databaseMeta.getDatabaseName() );
-        try {
-          connectUsingJNDIDataSource( jndiName );
-        } catch ( KettleDatabaseException kde ) {
-          // This was a new path that was added. If in case we did not find this datasource in JNDI,
-          // we were throwing exception and exiting out of this method. We will attempt to load this datasource
-          // using the classs if JNDI lookup fail. This is how it was working in 5.3
-          if ( log.isDetailed() ) {
-            log.logDetailed( "Unable to find datasource using JNDI. Cause: " + kde.getLocalizedMessage() );
-          }
-          connectUsingClass();
+          this.connection = dsp.getNamedDataSource( jndiName, DatasourceType.JNDI ).getConnection();
+        } catch ( DataSourceNamingException e ) {
+          log.logError( "Unable to find datasource by JNDI name: " + jndiName, e );
+          throw e;
         }
       } else {
-        connectUsingClass();
+        if ( databaseMeta.isUsingConnectionPool() ) {
+          String name = databaseMeta.getName();
+          try {
+            try {
+              this.connection = dsp.getNamedDataSource( name, DatasourceType.POOLED ).getConnection();
+            } catch ( UnsupportedOperationException e ) {
+              // DatabaseUtil doesn't support pooled DS,
+              // use legacy routine
+              this.connection = ConnectionPoolUtil.getConnection( log, databaseMeta, partitionId );
+            }
+            if ( getConnection().getAutoCommit() != isAutoCommit() ) {
+              setAutoCommit( isAutoCommit() );
+            }
+          } catch ( DataSourceNamingException e ) {
+            log.logError( "Unable to find pooled datasource by its name: " + name, e );
+            throw e;
+          }
+        } else {
+          // using non-jndi and non-pooled connection -- just a simple JDBC
+          connectUsingClass( databaseMeta.getDriverClass(), partitionId );
+        }
       }
+
       // See if we need to execute extra SQL statement...
       String sql = environmentSubstitute( databaseMeta.getConnectSQL() );
 
@@ -444,57 +458,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     } catch ( Exception e ) {
       throw new KettleDatabaseException( "Error occurred while trying to connect to the database", e );
     }
-  }
-
-  /**
-   * Initialize by getting the connection from a javax.sql.DataSource. This method uses the DataSourceProviderFactory to
-   * get the provider of DataSource objects.
-   *
-   * @param dataSourceName
-   * @throws KettleDatabaseException
-   */
-  private void connectUsingNamedDataSource( String dataSourceName ) throws KettleDatabaseException {
-    connection = null;
-    DataSource dataSource =
-      DataSourceProviderFactory.getDataSourceProviderInterface().getNamedDataSource( dataSourceName );
-    if ( dataSource != null ) {
-      try {
-        connection = dataSource.getConnection();
-      } catch ( SQLException e ) {
-        throw new KettleDatabaseException( "Invalid named connection " + dataSourceName + " : " + e.getMessage() );
-      }
-      if ( connection == null ) {
-        throw new KettleDatabaseException( "Invalid named connection " + dataSourceName );
-      }
-    } else {
-      throw new KettleDatabaseException( "Invalid named connection " + dataSourceName );
-    }
-  }
-
-  /**
-   * Initialize by getting the connection from a javax.sql.DataSource.
-   * <p/>
-   * This method now _does_not_use the DataSourceProviderFactory to get the provider of DataSource objects.
-   *
-   * @param jndiName
-   * @throws KettleDatabaseException
-   */
-  private void connectUsingJNDIDataSource( String jndiName ) throws KettleDatabaseException {
-    Connection connection = null;
-    DataSource dataSource = ( new DatabaseUtil() ).getNamedDataSource( jndiName );
-    if ( dataSource != null ) {
-      try {
-        connection = dataSource.getConnection();
-      } catch ( SQLException e ) {
-        throw new KettleDatabaseException( "Invalid JNDI connection " + jndiName + " : " + e.getMessage() );
-      }
-      if ( connection == null ) {
-        throw new KettleDatabaseException( "Invalid JNDI connection " + jndiName );
-      }
-    } else {
-      throw new KettleDatabaseException( "Invalid JNDI connection " + jndiName );
-    }
-    this.connection = connection;
   }
 
   /**
@@ -4698,29 +4661,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   public void setForcingSeparateLogging( boolean forcingSeparateLogging ) {
     if ( log != null ) {
       log.setForcingSeparateLogging( forcingSeparateLogging );
-    }
-  }
-
-  private void connectUsingClass() throws KettleDatabaseException {
-    // TODO connectUsingNamedDataSource can be called here but the current implementation of
-    // org.pentaho.platform.plugin.action.kettle.PlatformKettleDataSourceProvider can cause collision of name and
-    // JNDI name. See also [PDI-13633], [SP-1776].
-    // We will first try to find the connection in the named datasources. If we can't find it there,
-    // we will connect using the class.
-    try {
-      if ( log.isDetailed() ) {
-        log.logDetailed( "Attempting to find connection in Named Datasources" );
-      }
-      connectUsingNamedDataSource( environmentSubstitute( databaseMeta.getDatabaseName() ) );
-    } catch ( KettleDatabaseException kde ) {
-      if ( log.isDetailed() ) {
-        log.logDetailed( "Unable to find datasource in Named Datasources."
-          + " Finally will try to attempt connecting using class " );
-      }
-      connectUsingClass( databaseMeta.getDriverClass(), partitionId );
-    }
-    if ( log.isDetailed() ) {
-      log.logDetailed( "Connected to database." );
     }
   }
 }
