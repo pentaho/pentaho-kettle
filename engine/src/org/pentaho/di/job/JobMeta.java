@@ -79,6 +79,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.entries.missing.MissingEntry;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -164,6 +165,8 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
   protected boolean batchIdPassed;
 
   protected static final String XML_TAG_PARAMETERS = "parameters";
+  
+  private List<MissingEntry> missingEntries;
 
   /**
    * Instantiates a new job meta.
@@ -1119,6 +1122,10 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
         // System.out.println("Reading entry:\n"+entrynode);
 
         JobEntryCopy je = new JobEntryCopy( entrynode, databases, slaveServers, rep, metaStore );
+
+        if ( je.isSpecial() && je.isMissing() ) {
+          addMissingEntry( (MissingEntry) je.getEntry() );
+        }
         JobEntryCopy prev = findJobEntry( je.getName(), 0, true );
         if ( prev != null ) {
           // See if the #0 (root entry) already exists!
@@ -1375,7 +1382,12 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
    *          the i
    */
   public void removeJobEntry( int i ) {
-    jobcopies.remove( i );
+    JobEntryCopy deleted = jobcopies.remove( i );
+    if ( deleted != null ) {
+      if ( deleted.getEntry() instanceof MissingEntry ) {
+        removeMissingEntry( ( MissingEntry ) deleted.getEntry() );
+      }
+    }
     setChanged();
   }
 
@@ -2918,4 +2930,24 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
     return jobcopies.contains( jobCopy );
   }
   
+  public List<MissingEntry> getMissingEntries() {
+    return missingEntries;
+  }
+  
+  public void addMissingEntry( MissingEntry missingEntry ) {
+    if ( missingEntries == null ) {
+      missingEntries = new ArrayList<MissingEntry>();
+    }
+    missingEntries.add( missingEntry );
+  }
+  
+  public void removeMissingEntry( MissingEntry missingEntry ) {
+    if ( missingEntries != null && missingEntry != null && missingEntries.contains( missingEntry ) ) {
+      missingEntries.remove( missingEntry );
+    }
+  }
+  
+  public boolean hasMissingPlugins() {
+    return missingEntries != null && !missingEntries.isEmpty();
+  }
 }

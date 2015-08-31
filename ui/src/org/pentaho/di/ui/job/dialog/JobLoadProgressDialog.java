@@ -36,6 +36,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.job.entries.missing.MissingEntryDialog;
 
 /**
  *
@@ -86,6 +87,12 @@ public class JobLoadProgressDialog {
             jobInfo = rep.loadJob( objectId, versionLabel );
           } else {
             jobInfo = rep.loadJob( jobname, repdir, new ProgressMonitorAdapter( monitor ), versionLabel );
+          }
+          if( jobInfo.hasMissingPlugins() ) {
+            MissingEntryDialog missingDialog = new MissingEntryDialog( shell, jobInfo.getMissingEntries() );
+            if( missingDialog.open() == null ) {
+              jobInfo = null;
+            }
           }
         } catch ( KettleException e ) {
           throw new InvocationTargetException( e, "Error loading job" );

@@ -43,6 +43,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.missing.MissingEntry;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.LongObjectId;
@@ -58,7 +59,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
   private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String JOB_ATTRIBUTE_PREFIX = "_ATTR_" + '\t';
-
+  
   public KettleDatabaseRepositoryJobDelegate( KettleDatabaseRepository repository ) {
     super( repository );
   }
@@ -442,7 +443,6 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
           // Keep a unique list of job entries to facilitate in the loading.
           //
           List<JobEntryInterface> jobentries = new ArrayList<JobEntryInterface>();
-
           if ( log.isDetailed() ) {
             log.logDetailed( "Loading " + jecids.length + " job entries" );
           }
@@ -455,7 +455,11 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
             JobEntryCopy jec =
               repository.jobEntryDelegate.loadJobEntryCopy(
                 jobMeta.getObjectId(), jecids[i], jobentries, jobMeta.getDatabases(), jobMeta
-                  .getSlaveServers() );
+                  .getSlaveServers(), jobname );
+            
+            if ( jec.isMissing() ) {
+              jobMeta.addMissingEntry( (MissingEntry) jec.getEntry() );
+            }
 
             // Also set the copy number...
             // We count the number of job entry copies that use the job

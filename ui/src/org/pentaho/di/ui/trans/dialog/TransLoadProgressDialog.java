@@ -38,8 +38,10 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.trans.steps.missing.MissingTransDialog;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while loading a transformation...
@@ -105,7 +107,15 @@ public class TransLoadProgressDialog {
           }
           // Call extension point(s) now that the file has been opened
           ExtensionPointHandler.callExtensionPoint(spoon.getLog(), KettleExtensionPoint.TransAfterOpen.id, transInfo );
-          
+          if ( transInfo.hasMissingPlugins() ) {
+            StepMeta stepMeta = transInfo.getStep( 0 );
+            MissingTransDialog missingTransDialog =
+                new MissingTransDialog( shell, transInfo.getMissingTrans(), stepMeta.getStepMetaInterface(), transInfo,
+                    stepMeta.getName() );
+            if ( missingTransDialog.open() == null ) {
+              transInfo = null;
+            }
+          }
         } catch ( KettleException e ) {
           throw new InvocationTargetException( e, BaseMessages.getString(
             PKG, "TransLoadProgressDialog.Exception.ErrorLoadingTransformation" ) );

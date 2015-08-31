@@ -32,7 +32,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.attributes.AttributesUtil;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettlePluginLoaderException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
@@ -42,6 +41,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.missing.MissingEntry;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.metastore.api.IMetaStore;
@@ -122,23 +122,25 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
     this( entrynode, databases, slaveServers, rep, null );
   }
 
-  public JobEntryCopy( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
-    Repository rep, IMetaStore metaStore ) throws KettleXMLException {
+  public JobEntryCopy( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep,
+      IMetaStore metaStore ) throws KettleXMLException {
     try {
       String stype = XMLHandler.getTagValue( entrynode, "type" );
       PluginRegistry registry = PluginRegistry.getInstance();
       PluginInterface jobPlugin = registry.findPluginWithId( JobEntryPluginType.class, stype );
       if ( jobPlugin == null ) {
-        throw new KettlePluginLoaderException( stype, "No valid step/plugin specified (jobPlugin=null) for "
-          + stype );
+        String name = XMLHandler.getTagValue( entrynode, "name" );
+        entry = new MissingEntry( name, stype );
+      } else {
+        entry = registry.loadClass( jobPlugin, JobEntryInterface.class );
       }
-
       // Get an empty JobEntry of the appropriate class...
-      entry = registry.loadClass( jobPlugin, JobEntryInterface.class );
       if ( entry != null ) {
         // System.out.println("New JobEntryInterface built of type:
         // "+entry.getTypeDesc());
-        entry.setPluginId( jobPlugin.getIds()[0] );
+        if ( jobPlugin != null ) {
+          entry.setPluginId( jobPlugin.getIds()[0] );
+        }
         entry.setMetaStore( metaStore ); // inject metastore
         entry.loadXML( entrynode, databases, slaveServers, rep, metaStore );
         compatibleLoadXml( entrynode, databases, slaveServers, rep );
@@ -158,6 +160,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
       throw new KettleXMLException( message, e );
     }
   }
+
 
   /**
    * Backward compatible loading of XML, using deprecated method.
@@ -349,6 +352,10 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
   public boolean isDummy() {
     return entry.isDummy();
+  }
+  
+  public boolean isMissing() {
+    return entry instanceof MissingEntry;
   }
 
   public boolean isTransformation() {

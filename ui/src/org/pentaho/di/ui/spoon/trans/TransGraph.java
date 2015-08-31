@@ -1408,7 +1408,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       switch ( areaOwner.getAreaType() ) {
         case STEP_ICON:
           StepMeta stepMeta = (StepMeta) areaOwner.getOwner();
-          if ( !mouseOverSteps.contains( stepMeta ) ) {
+          if ( !stepMeta.isMissing() &&  !mouseOverSteps.contains( stepMeta ) ) {
             addStepMouseOverDelayTimer( stepMeta );
             redraw();
             tip = false;

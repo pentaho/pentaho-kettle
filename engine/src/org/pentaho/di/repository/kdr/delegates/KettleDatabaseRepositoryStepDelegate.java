@@ -31,7 +31,6 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettlePluginLoaderException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -51,6 +50,7 @@ import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
+import org.pentaho.di.trans.steps.missing.MissingTrans;
 
 public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseRepositoryBaseDelegate {
   private static Class<?> PKG = StepMeta.class; // for i18n purposes, needed by Translator2!!
@@ -162,13 +162,11 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 
         // Generate the appropriate class...
         PluginInterface sp = registry.findPluginWithId( StepPluginType.class, stepMeta.getStepID() );
-        if ( sp != null ) {
-          stepMeta.setStepMetaInterface( (StepMetaInterface) registry.loadClass( sp ) );
+        if ( sp == null ) {
+          stepMeta.setStepMetaInterface( (StepMetaInterface) new MissingTrans( stepMeta.getName(), stepMeta.getStepID() ) );
         } else {
-          throw new KettlePluginLoaderException( stepMeta.getStepID(), BaseMessages.getString(
-            PKG, "StepMeta.Exception.UnableToLoadClass", stepMeta.getStepID() + Const.CR ) );
+          stepMeta.setStepMetaInterface( (StepMetaInterface) registry.loadClass( sp ) );
         }
-
         if ( stepMeta.getStepMetaInterface() != null ) {
           // Read the step info from the repository!
           readRepCompatibleStepMeta(

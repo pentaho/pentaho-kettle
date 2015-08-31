@@ -36,6 +36,7 @@ import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.job.entries.missing.MissingEntryDialog;
 import org.w3c.dom.Node;
 
 public class JobFileListener implements FileListener {
@@ -50,6 +51,12 @@ public class JobFileListener implements FileListener {
 
       JobMeta jobMeta = new JobMeta();
       jobMeta.loadXML( jobNode, fname, spoon.getRepository(), spoon.getMetaStore(), false, spoon );
+      if( jobMeta.hasMissingPlugins() ) {
+        MissingEntryDialog missingDialog = new MissingEntryDialog( spoon.getShell(), jobMeta.getMissingEntries() );
+        if( missingDialog.open() == null ) {
+          return true;
+        }
+      }
       jobMeta.setRepositoryDirectory( spoon.getDefaultSaveLocation( jobMeta ) );
       jobMeta.setRepository( spoon.getRepository() );
       jobMeta.setMetaStore( spoon.getMetaStore() );
@@ -77,7 +84,6 @@ public class JobFileListener implements FileListener {
       spoon.refreshTree();
       SpoonPerspectiveManager.getInstance().activatePerspective( MainSpoonPerspective.class );
       return true;
-
     } catch ( KettleException e ) {
       new ErrorDialog(
         spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Title" ), BaseMessages

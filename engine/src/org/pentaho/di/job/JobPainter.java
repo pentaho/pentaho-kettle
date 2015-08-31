@@ -242,8 +242,9 @@ public class JobPainter extends BasePainter {
           .add( new AreaOwner( AreaType.JOB_ENTRY_ICON, x, y, iconsize, iconsize, offset, subject, jobEntryCopy ) );
     }
 
-    gc.setForeground( EColor.CRYSTAL );
+    gc.setForeground( jobEntryCopy.isMissing() ? EColor.RED : EColor.CRYSTAL );
     gc.drawRoundRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1, 7, 7 );
+    gc.setForeground( EColor.CRYSTAL );
     Point textsize = new Point( gc.textExtent( "" + name ).x, gc.textExtent( "" + name ).y );
 
     gc.setBackground( EColor.BACKGROUND );
