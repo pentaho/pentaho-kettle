@@ -2129,6 +2129,10 @@ public class GUIResource {
     return imageWarning.getAsBitmapForSize( display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
   }
 
+  public SwtUniversalImage getSwtImageWarning() {
+    return imageWarning;
+  }
+
   public Image getImageVersionBrowser() {
     return imageVersionBrowser;
   }
