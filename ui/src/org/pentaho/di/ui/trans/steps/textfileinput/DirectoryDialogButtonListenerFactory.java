@@ -29,6 +29,9 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * @deprecated replaced by implementation in the ...steps.fileinput.text package
+ */
 public class DirectoryDialogButtonListenerFactory {
   public static final SelectionAdapter getSelectionAdapter( final Shell shell, final Text destination ) {
     // Listen to the Browse... button

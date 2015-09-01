@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * User: Dzmitry Stsiapanau Date: 3/11/14 Time: 11:44 AM
+ * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
 public class EncodingTypeTest {
   @Test
