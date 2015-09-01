@@ -70,6 +70,8 @@ public class TextFileInput extends BaseInputStep<TextFileInputMeta, TextFileInpu
 
     data.filterProcessor = new TextFileFilterProcessor( meta.getFilter(), this );
 
+    data.filterProcessor = new TextFileFilterProcessor( meta.getFilter(), this );
+
     // calculate the file format type in advance so we can use a switch
     data.fileFormatType = meta.getFileFormatTypeNr();
 
