@@ -159,7 +159,7 @@ public class RestTest {
         Arrays.asList( "applicationType", "method", "url", "urlInField", "dynamicMethod", "methodFieldName",
             "urlField", "bodyField", "httpLogin", "httpPassword", "proxyHost", "proxyPort", "preemptive",
             "trustStoreFile", "trustStorePassword", "headerField", "headerName", "parameterField", "parameterName",
-            "fieldName", "resultCodeFieldName", "responseTimeFieldName" );
+            "matrixParameterField", "matrixParameterName", "fieldName", "resultCodeFieldName", "responseTimeFieldName" );
 
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
         new HashMap<String, FieldLoadSaveValidator<?>>();
@@ -171,6 +171,8 @@ public class RestTest {
     fieldLoadSaveValidatorAttributeMap.put( "headerName", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "parameterField", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "parameterName", stringArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "matrixParameterField", stringArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "matrixParameterName", stringArrayLoadSaveValidator );
 
     LoadSaveTester loadSaveTester =
         new LoadSaveTester( RestMeta.class, attributes, new HashMap<String, String>(), new HashMap<String, String>(),
