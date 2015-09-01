@@ -47,6 +47,9 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+import ui.src.org.pentaho.di.ui.trans.steps.missing.String;
+import ui.src.org.pentaho.di.ui.trans.steps.missing.URL;
+
 public class MissingEntryDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = MissingEntryDialog.class;
 
@@ -145,6 +148,10 @@ public class MissingEntryDialog extends JobEntryDialog implements JobEntryDialog
       public void widgetSelected( SelectionEvent e ) {
         try {
           shell.dispose();
+          String marketURLStr = System.getProperty( "market-url" );
+          String marketTabLabel = System.getProperty( "market-tab-label" );
+          URL marketURL = new URL( marketURLStr );
+          Spoon.getInstance().addSpoonBrowser( marketTabLabel, marketURL.toString() );
         } catch ( Exception ex ) {
           ex.printStackTrace();
         }

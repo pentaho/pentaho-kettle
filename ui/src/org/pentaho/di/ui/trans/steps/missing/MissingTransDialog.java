@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.ui.trans.steps.missing;
 
+import java.net.URL;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -43,6 +44,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.missing.MissingTrans;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MissingTransDialog extends BaseStepDialog implements StepDialogInterface {
@@ -144,6 +146,10 @@ public class MissingTransDialog extends BaseStepDialog implements StepDialogInte
       public void widgetSelected( SelectionEvent e ) {
         try {
           shell.dispose();
+          String marketURLStr = System.getProperty( "market-url" );
+          String marketTabLabel = System.getProperty( "market-tab-label" );
+          URL marketURL = new URL( marketURLStr );
+          Spoon.getInstance().addSpoonBrowser( marketTabLabel, marketURL.toString() );
         } catch ( Exception ex ) {
           ex.printStackTrace();
         }
