@@ -194,7 +194,8 @@ public class TextFileInputContentParsingTest {
 
     setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
 
-    try (TextFileInputReader reader = new TextFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log )) {
+    try (TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log )) {
       while ( reader.readRow() )
         ;
     }
@@ -202,6 +203,103 @@ public class TextFileInputContentParsingTest {
     // compare rows
     check( new Object[][] { { "first", "1", "1.1" }, { "second", "2", "2.2" }, { "third", "3", "3.3" } } );
   }
+
+  @Test
+  public void separator() throws Exception {
+    TextFileInputMeta m = new TextFileInputMeta();
+    m.setDefault();
+    m.content.separator = ",";
+    init( m );
+
+    setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
+
+    try (TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "separator.csv" ), log )) {
+      while ( reader.readRow() )
+        ;
+    }
+
+    // compare rows
+    check( new Object[][] { { "first", "1", "1.1" }, { "second", "2", "2.2" }, { "third;third", "3", "3.3" } } );
+  }
+
+  @Test
+  public void escape() throws Exception {
+    TextFileInputMeta m = new TextFileInputMeta();
+    m.setDefault();
+    m.content.escapeCharacter = "\\";
+    init( m );
+
+    setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
+
+    try (TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "escape.csv" ), log )) {
+      while ( reader.readRow() )
+        ;
+    }
+
+    // compare rows
+    check( new Object[][] { { "first", "1", "1.1" }, { "second", "2", "2.2" }, { "third;third", "3", "3.3" } } );
+  }
+
+  @Test
+  public void header() throws Exception {
+    TextFileInputMeta m = new TextFileInputMeta();
+    m.setDefault();
+    m.content.header = false;
+    init( m );
+
+    setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
+
+    try (TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log )) {
+      while ( reader.readRow() )
+        ;
+    }
+
+    // compare rows
+    check( new Object[][] { { "Field 1", "Field 2", "Field 3" }, { "first", "1", "1.1" }, { "second", "2", "2.2" }, {
+      "third", "3", "3.3" } } );
+  }
+
+  @Test
+  public void compression() throws Exception {
+    TextFileInputMeta m = new TextFileInputMeta();
+    m.setDefault();
+    m.content.fileCompression = "GZip";
+    init( m );
+
+    setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
+
+    try (TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "default.csv.gz" ), log )) {
+      while ( reader.readRow() )
+        ;
+    }
+
+    // compare rows
+    check( new Object[][] { { "first", "1", "1.1" }, { "second", "2", "2.2" }, { "third", "3", "3.3" } } );
+  }
+
+  @Test
+    public void fixed() throws Exception {
+      TextFileInputMeta m = new TextFileInputMeta();
+      m.setDefault();
+      m.content.fileType = "Fixed";
+      init( m );
+  
+      setFields( new TextFileInputField( "f1", 0, 7 ), new TextFileInputField( "f2", 8, 7 ), new TextFileInputField( "f3",
+          16, 7 ) );
+  
+      try (TextFileInputReader reader = new TextFileInputReader( stepControl, meta, data, getFile( "fixed.csv" ), log )) {
+        while ( reader.readRow() )
+          ;
+      }
+  
+      // compare rows
+      check( new Object[][] { { "first  ", "1      ", "1.1" }, { "second ", "2      ", "2.2" }, { "third  ", "3      ",
+        "3.3" } } );
+    }
 
   @Test
   public void testFilterVariables() throws Exception {
