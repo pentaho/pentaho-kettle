@@ -4943,8 +4943,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           mb.open();
           return false;
         }
-        
-        return saveToFile( meta );
+        if ( meta != null ) {
+          return saveToFile( meta );
+        }
       }
     } catch ( Exception e ) {
       KettleRepositoryLostException krle = KettleRepositoryLostException.lookupStackStrace( e );
@@ -5243,6 +5244,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public boolean saveFileAs() throws KettleException {
     try {
       EngineMetaInterface meta = getActiveMeta();
+      if ( meta != null && AbstractMeta.class.isAssignableFrom( meta.getClass() ) ) {
+        if ( ( (AbstractMeta) meta ).hasMissingPlugins() ) {
+          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+          mb.setMessage( BaseMessages.getString( PKG, "Spoon.ErrorDialog.MissingPlugin.Error" ) );
+          mb.setText( BaseMessages.getString( PKG, "Spoon.ErrorDialog.MissingPlugin.Title" ) );
+          mb.open();
+          return false;
+        }
+      }
       if ( meta != null ) {
         if ( meta.canSave() ) {
           return saveFileAs( meta );

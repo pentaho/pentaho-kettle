@@ -137,8 +137,16 @@ public class MissingEntryDialog extends JobEntryDialog implements JobEntryDialog
     errorData.top = new FormAttachment( 0, 10 );
     error.setLayoutData( errorData );
 
-    shell.setSize( 600, 300 );
-    shell.setMinimumSize( 600, 300 );
+    if ( this.mode == MISSING_JOB_ENTRIES ) {
+      int height = 233;
+      int increase = 10 * missingEntries.size();
+      height = height + increase;
+      shell.setSize( 600, height );
+      shell.setMinimumSize( 600, height );
+    } else {
+      shell.setSize( 660, 150 );
+      shell.setMinimumSize( 660, 150 );
+    }
 
     Button searchButton = new Button( shell, SWT.PUSH );
     searchButton.setText( BaseMessages.getString( PKG, "MissingEntryDialog.SearchMarketplace" ) );
