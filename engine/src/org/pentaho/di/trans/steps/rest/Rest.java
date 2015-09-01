@@ -36,6 +36,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.pentaho.di.core.Const;
@@ -112,17 +113,34 @@ public class Rest extends BaseStep implements StepInterface {
       // used for calculating the responseTime
       long startTime = System.currentTimeMillis();
 
+      if ( data.useMatrixParams ) {
+        // Add matrix parameters
+        UriBuilder builder = webResource.getUriBuilder();
+        for ( int i = 0; i < data.nrMatrixParams; i++ ) {
+          String value = data.inputRowMeta.getString( rowData, data.indexOfMatrixParamFields[i] );
+          if ( isDebug() ) {
+            logDebug( BaseMessages.getString( PKG, "Rest.Log.matrixParameterValue", data.matrixParamNames[i], value ) );
+          }
+          builder = builder.matrixParam( data.matrixParamNames[i], value );
+        }
+        webResource = client.resource( builder.build() );
+      }
+
       if ( data.useParams ) {
-        // Add parameters
+        // Add query parameters
         for ( int i = 0; i < data.nrParams; i++ ) {
           MultivaluedMapImpl queryParams = new MultivaluedMapImpl();
           String value = data.inputRowMeta.getString( rowData, data.indexOfParamFields[i] );
           queryParams.add( data.paramNames[i], value );
           if ( isDebug() ) {
-            logDebug( BaseMessages.getString( PKG, "Rest.Log.parameterValue", data.paramNames[i], value ) );
+            logDebug( BaseMessages.getString( PKG, "Rest.Log.queryParameterValue", data.paramNames[i], value ) );
           }
           webResource = webResource.queryParams( queryParams );
         }
+      }
+
+      if ( isDebug() ) {
+        logDebug( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", webResource.getURI() ) );
       }
 
       WebResource.Builder builder = webResource.getRequestBuilder();
@@ -391,6 +409,25 @@ public class Rest extends BaseStep implements StepInterface {
             }
           }
           data.useParams = true;
+        }
+
+        int nrmatrixparams = meta.getMatrixParameterField() == null ? 0 : meta.getMatrixParameterField().length;
+        if ( nrmatrixparams > 0 ) {
+          data.nrMatrixParams = nrmatrixparams;
+          data.matrixParamNames = new String[nrmatrixparams];
+          data.indexOfMatrixParamFields = new int[nrmatrixparams];
+          for ( int i = 0; i < nrmatrixparams; i++ ) {
+            data.matrixParamNames[i] = environmentSubstitute( meta.getMatrixParameterName()[i] );
+            String field = environmentSubstitute( meta.getMatrixParameterField()[i] );
+            if ( Const.isEmpty( field ) ) {
+              throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.MatrixParamFieldEmpty" ) );
+            }
+            data.indexOfMatrixParamFields[i] = data.inputRowMeta.indexOfValue( field );
+            if ( data.indexOfMatrixParamFields[i] < 0 ) {
+              throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
+            }
+          }
+          data.useMatrixParams = true;
         }
       }
 

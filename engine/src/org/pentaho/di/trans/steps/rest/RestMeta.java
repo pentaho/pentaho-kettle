@@ -92,9 +92,13 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   private String[] headerField;
   private String[] headerName;
 
-  /** Parameters name */
+  /** Query parameters name */
   private String[] parameterField;
   private String[] parameterName;
+
+  /** Matrix parameters name */
+  private String[] matrixParameterField;
+  private String[] matrixParameterName;
 
   /** function result: new value name */
   private String fieldName;
@@ -197,6 +201,36 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setParameterName( String[] value ) {
     this.parameterName = value;
+  }
+
+  /**
+   * @return Returns the matrixParameterField.
+   */
+  public String[] getMatrixParameterField() {
+    return matrixParameterField;
+  }
+
+  /**
+   * @param value
+   *          The matrixParameterField to set.
+   */
+  public void setMatrixParameterField( String[] value ) {
+    this.matrixParameterField = value;
+  }
+
+  /**
+   * @return Returns the matrixParameterName.
+   */
+  public String[] getMatrixParameterName() {
+    return matrixParameterName;
+  }
+
+  /**
+   * @param value
+   *          The matrixParameterName to set.
+   */
+  public void setMatrixParameterName( String[] value ) {
+    this.matrixParameterName = value;
   }
 
   /**
@@ -322,11 +356,18 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     readData( stepnode, databases );
   }
 
+  @Deprecated
   public void allocate( int nrheaders, int nrparamers ) {
+    allocate( nrheaders, nrparamers, 0 );
+  }
+
+  public void allocate( int nrheaders, int nrparamers, int nrmatrixparameters ) {
     headerField = new String[nrheaders];
     headerName = new String[nrheaders];
     parameterField = new String[nrparamers];
     parameterName = new String[nrparamers];
+    matrixParameterField = new String[nrmatrixparameters];
+    matrixParameterName = new String[nrmatrixparameters];
   }
 
   public Object clone() {
@@ -334,8 +375,9 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
     int nrheaders = headerName.length;
     int nrparameters = parameterField.length;
+    int nrmatrixparameters = matrixParameterField.length;
 
-    retval.allocate( nrheaders, nrparameters );
+    retval.allocate( nrheaders, nrparameters, nrmatrixparameters );
     for ( int i = 0; i < nrheaders; i++ ) {
       retval.headerField[i] = headerField[i];
       retval.headerName[i] = headerName[i];
@@ -344,6 +386,10 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       retval.parameterField[i] = parameterField[i];
       retval.parameterName[i] = parameterName[i];
     }
+    for ( int i = 0; i < nrmatrixparameters; i++ ) {
+      retval.matrixParameterField[i] = matrixParameterField[i];
+      retval.matrixParameterName[i] = matrixParameterName[i];
+    }
     return retval;
   }
 
@@ -351,7 +397,8 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     int i;
     int nrheaders = 0;
     int nrparameters = 0;
-    allocate( nrheaders, nrparameters );
+    int nrmatrixparameters = 0;
+    allocate( nrheaders, nrparameters, nrmatrixparameters );
     for ( i = 0; i < nrheaders; i++ ) {
       this.headerField[i] = "header" + i;
       this.headerName[i] = "header";
@@ -359,6 +406,10 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     for ( i = 0; i < nrparameters; i++ ) {
       this.parameterField[i] = "param" + i;
       this.parameterName[i] = "param";
+    }
+    for ( i = 0; i < nrmatrixparameters; i++ ) {
+      this.matrixParameterField[i] = "matrixparam" + i;
+      this.matrixParameterName[i] = "matrixparam";
     }
 
     this.fieldName = "result";
@@ -398,52 +449,59 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   public String getXML() {
     StringBuffer retval = new StringBuffer();
-    retval.append( "    " + XMLHandler.addTagValue( "applicationType", applicationType ) );
-    retval.append( "    " + XMLHandler.addTagValue( "method", method ) );
-    retval.append( "    " + XMLHandler.addTagValue( "url", url ) );
-    retval.append( "    " + XMLHandler.addTagValue( "urlInField", urlInField ) );
-    retval.append( "    " + XMLHandler.addTagValue( "dynamicMethod", dynamicMethod ) );
-    retval.append( "    " + XMLHandler.addTagValue( "methodFieldName", methodFieldName ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "applicationType", applicationType ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "method", method ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "url", url ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "urlInField", urlInField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "dynamicMethod", dynamicMethod ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "methodFieldName", methodFieldName ) );
 
-    retval.append( "    " + XMLHandler.addTagValue( "urlField", urlField ) );
-    retval.append( "    " + XMLHandler.addTagValue( "bodyField", bodyField ) );
-    retval.append( "    " + XMLHandler.addTagValue( "httpLogin", httpLogin ) );
-    retval.append( "    "
-      + XMLHandler.addTagValue( "httpPassword", Encr.encryptPasswordIfNotUsingVariables( httpPassword ) ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "urlField", urlField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "bodyField", bodyField ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "httpLogin", httpLogin ) );
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "httpPassword", Encr.encryptPasswordIfNotUsingVariables( httpPassword ) ) );
 
-    retval.append( "    " + XMLHandler.addTagValue( "proxyHost", proxyHost ) );
-    retval.append( "    " + XMLHandler.addTagValue( "proxyPort", proxyPort ) );
-    retval.append( "    " + XMLHandler.addTagValue( "preemptive", preemptive ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "proxyHost", proxyHost ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "proxyPort", proxyPort ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "preemptive", preemptive ) );
 
-    retval.append( "    " + XMLHandler.addTagValue( "trustStoreFile", trustStoreFile ) );
-    retval
-        .append( "    "
-            + XMLHandler.addTagValue( "trustStorePassword", Encr
-                .encryptPasswordIfNotUsingVariables( trustStorePassword ) ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "trustStoreFile", trustStoreFile ) );
+    retval.append( "    " ).append(
+        XMLHandler.addTagValue( "trustStorePassword", Encr.encryptPasswordIfNotUsingVariables( trustStorePassword ) ) );
 
-    retval.append( "    <headers>" + Const.CR );
-    for ( int i = 0; i < headerName.length; i++ ) {
-      retval.append( "      <header>" + Const.CR );
-      retval.append( "        " + XMLHandler.addTagValue( "field", headerField[i] ) );
-      retval.append( "        " + XMLHandler.addTagValue( "name", headerName[i] ) );
-      retval.append( "        </header>" + Const.CR );
+    retval.append( "    <headers>" ).append( Const.CR );
+    for ( int i = 0, len = ( headerName != null ? headerName.length : 0 ); i < len; i++ ) {
+      retval.append( "      <header>" ).append( Const.CR );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "field", headerField[i] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "name", headerName[i] ) );
+      retval.append( "        </header>" ).append( Const.CR );
     }
-    retval.append( "      </headers>" + Const.CR );
+    retval.append( "      </headers>" ).append( Const.CR );
 
-    retval.append( "    <parameters>" + Const.CR );
-    for ( int i = 0; i < parameterName.length; i++ ) {
-      retval.append( "      <parameter>" + Const.CR );
-      retval.append( "        " + XMLHandler.addTagValue( "field", parameterField[i] ) );
-      retval.append( "        " + XMLHandler.addTagValue( "name", parameterName[i] ) );
-      retval.append( "        </parameter>" + Const.CR );
+    retval.append( "    <parameters>" ).append( Const.CR );
+    for ( int i = 0, len = ( parameterName != null ? parameterName.length : 0 ); i < len; i++ ) {
+      retval.append( "      <parameter>" ).append( Const.CR );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "field", parameterField[i] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "name", parameterName[i] ) );
+      retval.append( "        </parameter>" ).append( Const.CR );
     }
-    retval.append( "      </parameters>" + Const.CR );
+    retval.append( "      </parameters>" ).append( Const.CR );
 
-    retval.append( "    <result>" + Const.CR );
-    retval.append( "      " + XMLHandler.addTagValue( "name", fieldName ) );
-    retval.append( "      " + XMLHandler.addTagValue( "code", resultCodeFieldName ) );
-    retval.append( "      " + XMLHandler.addTagValue( "response_time", responseTimeFieldName ) );
-    retval.append( "      </result>" + Const.CR );
+    retval.append( "    <matrixParameters>" ).append( Const.CR );
+    for ( int i = 0, len = ( matrixParameterName != null ? matrixParameterName.length : 0 ); i < len; i++ ) {
+      retval.append( "      <matrixParameter>" ).append( Const.CR );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "field", matrixParameterField[i] ) );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "name", matrixParameterName[i] ) );
+      retval.append( "        </matrixParameter>" ).append( Const.CR );
+    }
+    retval.append( "      </matrixParameters>" ).append( Const.CR );
+
+    retval.append( "    <result>" ).append( Const.CR );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "name", fieldName ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "code", resultCodeFieldName ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "response_time", responseTimeFieldName ) );
+    retval.append( "      </result>" ).append( Const.CR );
 
     return retval.toString();
   }
@@ -474,8 +532,10 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       int nrheaders = XMLHandler.countNodes( headernode, "header" );
       Node paramnode = XMLHandler.getSubNode( stepnode, "parameters" );
       int nrparameters = XMLHandler.countNodes( paramnode, "parameter" );
+      Node matrixparamnode = XMLHandler.getSubNode( stepnode, "matrixParameters" );
+      int nrmatrixparameters = XMLHandler.countNodes( matrixparamnode, "matrixParameter" );
 
-      allocate( nrheaders, nrparameters );
+      allocate( nrheaders, nrparameters, nrmatrixparameters );
       for ( int i = 0; i < nrheaders; i++ ) {
         Node anode = XMLHandler.getSubNodeByNr( headernode, "header", i );
         headerField[i] = XMLHandler.getTagValue( anode, "field" );
@@ -485,6 +545,11 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
         Node anode = XMLHandler.getSubNodeByNr( paramnode, "parameter", i );
         parameterField[i] = XMLHandler.getTagValue( anode, "field" );
         parameterName[i] = XMLHandler.getTagValue( anode, "name" );
+      }
+      for ( int i = 0; i < nrmatrixparameters; i++ ) {
+        Node anode = XMLHandler.getSubNodeByNr( matrixparamnode, "matrixParameter", i );
+        matrixParameterField[i] = XMLHandler.getTagValue( anode, "field" );
+        matrixParameterName[i] = XMLHandler.getTagValue( anode, "name" );
       }
 
       fieldName = XMLHandler.getTagValue( stepnode, "result", "name" ); // Optional, can be null
@@ -520,7 +585,8 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       preemptive = rep.getStepAttributeBoolean( id_step, "preemptive" );
       int nrheaders = rep.countNrStepAttributes( id_step, "header_field" );
       int nrparams = rep.countNrStepAttributes( id_step, "parameter_field" );
-      allocate( nrheaders, nrparams );
+      int nrmatrixparams = rep.countNrStepAttributes( id_step, "matrix_parameter_field" );
+      allocate( nrheaders, nrparams, nrmatrixparams );
 
       for ( int i = 0; i < nrheaders; i++ ) {
         headerField[i] = rep.getStepAttributeString( id_step, i, "header_field" );
@@ -529,6 +595,10 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < nrparams; i++ ) {
         parameterField[i] = rep.getStepAttributeString( id_step, i, "parameter_field" );
         parameterName[i] = rep.getStepAttributeString( id_step, i, "parameter_name" );
+      }
+      for ( int i = 0; i < nrmatrixparams; i++ ) {
+        matrixParameterField[i] = rep.getStepAttributeString( id_step, i, "matrix_parameter_field" );
+        matrixParameterName[i] = rep.getStepAttributeString( id_step, i, "matrix_parameter_name" );
       }
 
       fieldName = rep.getStepAttributeString( id_step, "result_name" );
@@ -570,6 +640,10 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       for ( int i = 0; i < parameterField.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "parameter_field", parameterField[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "parameter_name", parameterName[i] );
+      }
+      for ( int i = 0; i < matrixParameterField.length; i++ ) {
+        rep.saveStepAttribute( id_transformation, id_step, i, "matrix_parameter_field", matrixParameterField[i] );
+        rep.saveStepAttribute( id_transformation, id_step, i, "matrix_parameter_name", matrixParameterName[i] );
       }
       rep.saveStepAttribute( id_transformation, id_step, "result_name", fieldName );
       rep.saveStepAttribute( id_transformation, id_step, "result_code", resultCodeFieldName );
@@ -716,7 +790,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * Setter
    *
-   * @param httpLogin
+   * @param applicationType
    */
   public void setApplicationType( String applicationType ) {
     this.applicationType = applicationType;
