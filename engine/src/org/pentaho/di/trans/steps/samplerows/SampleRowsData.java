@@ -22,9 +22,8 @@
 
 package org.pentaho.di.trans.steps.samplerows;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.google.common.collect.ImmutableRangeSet;
+import com.google.common.collect.RangeSet;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -35,7 +34,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class SampleRowsData extends BaseStepData implements StepDataInterface {
 
-  public Set<Integer> range;
+  public RangeSet<Integer> rangeSet;
   public boolean addlineField;
   public RowMetaInterface previousRowMeta;
   public RowMetaInterface outputRowMeta;
@@ -44,7 +43,7 @@ public class SampleRowsData extends BaseStepData implements StepDataInterface {
 
   public SampleRowsData() {
     super();
-    range = new HashSet<Integer>();
+    rangeSet = ImmutableRangeSet.of();
     addlineField = false;
     outputRow = null;
   }
