@@ -65,19 +65,19 @@ public abstract class BaseInputStepMeta extends BaseStepMeta {
   public static class InputFiles implements Cloneable {
 
     /** Array of filenames */
-    public String[] fileName;
+    public String[] fileName = {};
 
     /** Wildcard or filemask (regular expression) */
-    public String[] fileMask;
+    public String[] fileMask = {};
 
     /** Wildcard or filemask to exclude (regular expression) */
-    public String[] excludeFileMask;
+    public String[] excludeFileMask = {};
 
     /** Array of boolean values as string, indicating if a file is required. */
-    public String[] fileRequired;
+    public String[] fileRequired = {};
 
     /** Array of boolean values as string, indicating if we need to fetch sub folders. */
-    public String[] includeSubFolders;
+    public String[] includeSubFolders = {};
 
     /** Are we accepting filenames in input rows? */
     public boolean acceptingFilenames;
@@ -92,7 +92,7 @@ public abstract class BaseInputStepMeta extends BaseStepMeta {
     public String acceptingField;
 
     /** The fields to import... */
-    public TextFileInputField[] inputFields;
+    public TextFileInputField[] inputFields = {};
 
     /** The add filenames to result filenames flag */
     public boolean isaddresult;

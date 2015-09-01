@@ -161,7 +161,7 @@ public class TextFileInputMeta extends BaseInputStepMeta implements StepMetaInte
   }
 
   /** The filters to use... */
-  private TextFileFilter[] filter;
+  private TextFileFilter[] filter = {};
 
   /** The name of the field that will contain the number of errors in the row */
   private String errorCountField;
@@ -751,8 +751,8 @@ public class TextFileInputMeta extends BaseInputStepMeta implements StepMetaInte
         errorHandling.lineNumberFilesExtension ) );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "date_format_lenient", content.dateFormatLenient ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "date_format_locale", content.dateFormatLocale
-        .toString() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "date_format_locale", content.dateFormatLocale != null
+        ? content.dateFormatLocale.toString() : null ) );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "shortFileFieldName",
         additionalOutputFields.shortFilenameField ) );
@@ -1023,7 +1023,8 @@ public class TextFileInputMeta extends BaseInputStepMeta implements StepMetaInte
           errorHandling.lineNumberFilesExtension );
 
       rep.saveStepAttribute( id_transformation, id_step, "date_format_lenient", content.dateFormatLenient );
-      rep.saveStepAttribute( id_transformation, id_step, "date_format_locale", content.dateFormatLocale.toString() );
+      rep.saveStepAttribute( id_transformation, id_step, "date_format_locale", content.dateFormatLocale != null
+          ? content.dateFormatLocale.toString() : null );
 
       rep.saveStepAttribute( id_transformation, id_step, "shortFileFieldName",
           additionalOutputFields.shortFilenameField );
