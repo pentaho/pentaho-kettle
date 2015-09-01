@@ -105,6 +105,8 @@ public class KettleFileRepository extends AbstractRepository {
   private List<Class<? extends IRepositoryService>> serviceList;
 
   public XmlMetaStore metaStore;
+  
+  RepositoryDirectoryInterface tree = null;
 
   public void connect( String username, String password ) throws KettleException {
     try {
@@ -892,6 +894,7 @@ public class KettleFileRepository extends AbstractRepository {
   public RepositoryDirectoryInterface loadRepositoryDirectoryTree() throws KettleException {
     RepositoryDirectory root = new RepositoryDirectory();
     root.setObjectId( new StringObjectId( "/" ) );
+    tree = null;
     return loadRepositoryDirectoryTree( root );
   }
 
@@ -930,13 +933,12 @@ public class KettleFileRepository extends AbstractRepository {
 
   public List<RepositoryElementMetaInterface> getTransformationObjects( ObjectId idDirectory,
     boolean includeDeleted ) throws KettleException {
-
     try {
       List<RepositoryElementMetaInterface> list = new ArrayList<RepositoryElementMetaInterface>();
-
-      RepositoryDirectoryInterface tree = loadRepositoryDirectoryTree();
+      if (tree == null) {
+       tree = loadRepositoryDirectoryTree();
+      }
       RepositoryDirectoryInterface directory = tree.findDirectory( idDirectory );
-
       String folderName = calcDirectoryName( directory );
       FileObject folder = KettleVFS.getFileObject( folderName );
 
@@ -969,8 +971,10 @@ public class KettleFileRepository extends AbstractRepository {
 
     try {
       List<RepositoryElementMetaInterface> list = new ArrayList<RepositoryElementMetaInterface>();
-
-      RepositoryDirectoryInterface tree = loadRepositoryDirectoryTree();
+      
+      if (tree == null) {
+        tree = loadRepositoryDirectoryTree();
+      }
       RepositoryDirectoryInterface directory = tree.findDirectory( id_directory );
 
       String folderName = calcDirectoryName( directory );
@@ -1092,6 +1096,7 @@ public class KettleFileRepository extends AbstractRepository {
    */
   public void clearSharedObjectCache() {
     // no op
+    refreshRepo();
   }
 
   public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
@@ -1442,5 +1447,9 @@ public class KettleFileRepository extends AbstractRepository {
 
   public void setMetaStore( XmlMetaStore metaStore ) {
     this.metaStore = metaStore;
+  }
+
+  public void refreshRepo() {
+    tree = null;
   }
 }

@@ -106,11 +106,11 @@ public class RunThread implements Runnable {
         if ( li > 0 || lo > 0 || lr > 0 || lw > 0 || lu > 0 || lj > 0 || e > 0 ) {
           log.logBasic( BaseMessages.getString( PKG, "BaseStep.Log.SummaryInfo", String.valueOf( li ),
             String.valueOf( lo ), String.valueOf( lr ), String.valueOf( lw ),
-            String.valueOf( lu ), String.valueOf( e + lj ) ) );
+            String.valueOf( lu ), String.valueOf( e + lj ) ) + " [" + step.getStepname() + "]");
         } else {
           log.logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.SummaryInfo", String.valueOf( li ),
             String.valueOf( lo ), String.valueOf( lr ), String.valueOf( lw ),
-            String.valueOf( lu ), String.valueOf( e + lj ) ) );
+            String.valueOf( lu ), String.valueOf( e + lj ) ) + " [" + step.getStepname() + "]");
         }
       } catch ( Throwable t ) {
         //
