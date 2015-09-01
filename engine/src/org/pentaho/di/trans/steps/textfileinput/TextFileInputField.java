@@ -39,6 +39,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  *
  * @author Matt
  * @since 19-04-2004
+ *
  */
 public class TextFileInputField implements Cloneable, TextFileInputFieldInterface {
   private String name;

@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMeta;
@@ -120,13 +119,10 @@ public class StringEvaluator {
         } else {
           string = value;
         }
-        if ( StringUtils.isEmpty( value ) ) {
-          cmm.incrementNrNull();
-        } else if ( !( "Y".equalsIgnoreCase( string ) || "N".equalsIgnoreCase( string ) || "TRUE".equalsIgnoreCase(
-            string ) || "FALSE".equalsIgnoreCase( string ) ) ) {
+        if ( !( "Y".equalsIgnoreCase( string )
+          || "N".equalsIgnoreCase( string ) || "TRUE".equalsIgnoreCase( string ) || "FALSE"
+          .equalsIgnoreCase( string ) ) ) {
           evaluationResults.remove( cmm );
-        } else {
-          cmm.incrementSuccesses();
         }
       } else {
         try {
@@ -203,10 +199,6 @@ public class StringEvaluator {
             cmm.setMax( object );
           }
 
-          if ( !cmm.getConversionMeta().isNull( object ) ) {
-            cmm.incrementSuccesses();
-          }
-
         } catch ( KettleValueException e ) {
           // This one doesn't work, remove it from the list!
           //
@@ -231,7 +223,7 @@ public class StringEvaluator {
 
   private boolean containsInteger() {
     for ( StringEvaluationResult result : evaluationResults ) {
-      if ( result.getConversionMeta().isInteger() && result.getNrSuccesses() > 0 ) {
+      if ( result.getConversionMeta().isInteger() ) {
         return true;
       }
     }
@@ -240,7 +232,7 @@ public class StringEvaluator {
 
   private boolean containsNumber() {
     for ( StringEvaluationResult result : evaluationResults ) {
-      if ( result.getConversionMeta().isNumber() && result.getNrSuccesses() > 0 ) {
+      if ( result.getConversionMeta().isNumber() ) {
         return true;
       }
     }
@@ -249,7 +241,7 @@ public class StringEvaluator {
 
   private boolean containsDate() {
     for ( StringEvaluationResult result : evaluationResults ) {
-      if ( result.getConversionMeta().isDate() && result.getNrSuccesses() > 0 ) {
+      if ( result.getConversionMeta().isDate() ) {
         return true;
       }
     }
@@ -490,18 +482,10 @@ public class StringEvaluator {
   }
 
   /**
-   * PDI-7736: Only list of successful evaluations returned.
-   * 
    * @return The list of string evaluation results
    */
   public List<StringEvaluationResult> getStringEvaluationResults() {
-    List<StringEvaluationResult> result = new ArrayList<>();
-    for ( StringEvaluationResult ev : evaluationResults ) {
-      if ( ev.getNrSuccesses() > 0 ) {
-        result.add( ev );
-      }
-    }
-    return result;
+    return evaluationResults;
   }
 
   /**
