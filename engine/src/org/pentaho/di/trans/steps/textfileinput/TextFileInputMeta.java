@@ -67,6 +67,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+/**
+ * @deprecated replaced by implementation in the ...steps.fileinput.text package
+ */
 public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface, InputFileMetaInterface {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
