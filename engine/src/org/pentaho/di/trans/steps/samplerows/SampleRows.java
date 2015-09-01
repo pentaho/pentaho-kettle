@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.samplerows;
 
+import com.google.common.collect.ImmutableRangeSet;
+import com.google.common.collect.Range;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -78,29 +80,31 @@ public class SampleRows extends BaseStep implements StepInterface {
       }
 
       String[] rangePart = realRange.split( "," );
+      ImmutableRangeSet.Builder<Integer> setBuilder = ImmutableRangeSet.builder();
 
-      for ( int i = 0; i < rangePart.length; i++ ) {
-        if ( rangePart[i].matches( "\\d+" ) ) {
-          String part = rangePart[i];
+      for ( String part : rangePart ) {
+        if ( part.matches( "\\d+" ) ) {
           if ( log.isDebug() ) {
             logDebug( BaseMessages.getString( PKG, "SampleRows.Log.RangeValue", part ) );
           }
           int vpart = Integer.valueOf( part );
-          data.range.add( vpart );
+          setBuilder.add( Range.singleton( vpart ) );
 
-        } else if ( rangePart[i].matches( "\\d+\\.\\.\\d+" ) ) {
-          String[] rangeMultiPart = rangePart[i].split( "\\.\\." );
-          for ( int j = Integer.valueOf( rangeMultiPart[0] ); j < Integer.valueOf( rangeMultiPart[1] ) + 1; j++ ) {
-            if ( log.isDebug() ) {
-              logDebug( BaseMessages.getString( PKG, "SampleRows.Log.RangeValue", "" + j ) );
-            }
-            int vpart = j;
-            data.range.add( vpart );
+        } else if ( part.matches( "\\d+\\.\\.\\d+" ) ) {
+          String[] rangeMultiPart = part.split( "\\.\\." );
+          Integer start = Integer.valueOf( rangeMultiPart[0] );
+          Integer end = Integer.valueOf( rangeMultiPart[1] );
+          Range<Integer> range = Range.closed( start, end );
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString( PKG, "SampleRows.Log.RangeValue", range ) );
           }
+          setBuilder.add( range );
         }
       }
+      data.rangeSet = setBuilder.build();
       // Return now if no rows are to be sampled
-      if ( data.range.size() == 0 ) {
+      if ( data.rangeSet.isEmpty() ) {
+        setOutputDone();
         return false;
       }
     } // end if first
@@ -114,7 +118,7 @@ public class SampleRows extends BaseStep implements StepInterface {
       data.outputRow = r;
     }
 
-    if ( data.range.contains( (int) getLinesRead() ) ) {
+    if ( data.rangeSet.contains( (int) getLinesRead() ) ) {
       if ( data.addlineField ) {
         data.outputRow[data.NrPrevFields] = getLinesRead();
       }
@@ -130,7 +134,12 @@ public class SampleRows extends BaseStep implements StepInterface {
       }
     }
 
-    return numRowsSampled < data.range.size();
+    // Check if maximum value has been exceeded
+    boolean done = numRowsSampled >= data.rangeSet.span().upperEndpoint();
+    if ( done ) {
+      setOutputDone();
+    }
+    return !done;
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
