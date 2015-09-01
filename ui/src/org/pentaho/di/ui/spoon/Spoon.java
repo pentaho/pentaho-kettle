@@ -4935,8 +4935,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public boolean saveFile() {
     try {
       EngineMetaInterface meta = getActiveMeta();
-      if ( meta != null ) {
-        if ( meta.hasMissingPlugins() ) {
+      if ( meta != null && AbstractMeta.class.isAssignableFrom( meta.getClass() ) ) {
+        if ( ( (AbstractMeta) meta ).hasMissingPlugins() ) {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
           mb.setMessage( BaseMessages.getString( PKG, "Spoon.ErrorDialog.MissingPlugin.Error" ) );
           mb.setText( BaseMessages.getString( PKG, "Spoon.ErrorDialog.MissingPlugin.Title" ) );
