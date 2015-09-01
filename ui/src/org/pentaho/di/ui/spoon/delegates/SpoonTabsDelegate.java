@@ -32,6 +32,7 @@ import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.widgets.Composite;
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
@@ -85,11 +86,10 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     for ( TabMapEntry entry : collection ) {
       if ( item.equals( entry.getTabItem() ) ) {
         TabItemInterface itemInterface = entry.getObject();
-        
-        if ( itemInterface.getManagedObject() instanceof EngineMetaInterface ) {
-          canSave = !( (EngineMetaInterface) itemInterface.getManagedObject() ).hasMissingPlugins();
+        if ( itemInterface.getManagedObject() != null
+            && AbstractMeta.class.isAssignableFrom( itemInterface.getManagedObject().getClass() ) ) {
+          canSave = !( (AbstractMeta) itemInterface.getManagedObject() ).hasMissingPlugins();
         }
-
         if ( canSave ) {
           // Can we close this tab? Only allow users with create content perms to save
           if ( !itemInterface.canBeClosed() && createPerms ) {

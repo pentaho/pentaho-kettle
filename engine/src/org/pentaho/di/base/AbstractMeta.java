@@ -1760,4 +1760,8 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
     }
     return overwrite;
   }
+  
+  public boolean hasMissingPlugins() {
+    return false;
+  }
 }

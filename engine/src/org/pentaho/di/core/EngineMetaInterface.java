@@ -192,11 +192,4 @@ public interface EngineMetaInterface extends RepositoryElementInterface {
    * Sets the internal kettle variables.
    */
   public void setInternalKettleVariables();
-  
-  /**
-   * Returns whether or not it contains steps or entries that use missing plugins.
-   *
-   * @return
-   */
-  public boolean hasMissingPlugins();
 }
