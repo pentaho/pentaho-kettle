@@ -78,9 +78,9 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.steps.csvinput.CsvInput;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.textfileinput.EncodingType;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputUtils;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -95,7 +95,7 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
+import org.pentaho.di.ui.trans.steps.oldtextfileinput.OldTextFileCSVImportProgressDialog;
 
 public class CsvInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = CsvInput.class; // for i18n purposes, needed by Translator2!! 
@@ -884,8 +884,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       // Read a line of data to determine the number of rows...
       //
       String line =
-        TextFileInput.getLine(
-          log, reader, encodingType, TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder( 1000 ) );
+          TextFileInputUtils.getLine( log, reader, encodingType, TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder(
+              1000 ) );
 
       // Split the string, header or data into parts...
       //
@@ -938,8 +938,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
       if ( samples >= 0 ) {
         getInfo( meta );
 
-        TextFileCSVImportProgressDialog pd =
-          new TextFileCSVImportProgressDialog( shell, meta, transMeta, reader, samples, true );
+        OldTextFileCSVImportProgressDialog pd =
+          new OldTextFileCSVImportProgressDialog( shell, meta, transMeta, reader, samples, true );
         String message = pd.open();
         if ( message != null ) {
           wFields.removeAll();
