@@ -22,8 +22,8 @@
 
 package org.pentaho.di.ui.job.entries.missing;
 
+import java.net.URL;
 import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -45,10 +45,8 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-
-import ui.src.org.pentaho.di.ui.trans.steps.missing.String;
-import ui.src.org.pentaho.di.ui.trans.steps.missing.URL;
 
 public class MissingEntryDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = MissingEntryDialog.class;
