@@ -69,7 +69,6 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputUtils;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -81,7 +80,6 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.ui.trans.steps.oldtextfileinput.OldTextFileCSVImportProgressDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
 
 public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -814,7 +812,7 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
             
             // Read a line of data to determine the number of rows...
             //
-            String line = TextFileInputUtils.getLine(log, reader, TextFileInputMeta.FILE_FORMAT_MIXED, new StringBuilder(1000));
+            String line = TextFileInput.getLine(log, reader, TextFileInputMeta.FILE_FORMAT_MIXED, new StringBuilder(1000));
             
             // Split the string, header or data into parts...
             //
@@ -857,7 +855,7 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
             
             getInfo(meta);
 
-            OldTextFileCSVImportProgressDialog pd = new OldTextFileCSVImportProgressDialog(shell, meta, transMeta, reader, samples, true);
+	        TextFileCSVImportProgressDialog pd = new TextFileCSVImportProgressDialog(shell, meta, transMeta, reader, samples, true);
             String message = pd.open();
             if (message!=null)
             {
