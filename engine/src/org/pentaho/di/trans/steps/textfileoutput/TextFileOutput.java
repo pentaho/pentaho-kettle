@@ -756,7 +756,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
           data.oneFileOpened = true;
         } catch ( Exception e ) {
-          logError( "Couldn't open file " + meta.getFileName(), e );
+          logError( "Couldn't open file " + getParentVariableSpace().environmentSubstitute( meta.getFileName() ) 
+                + "." + getParentVariableSpace().environmentSubstitute( meta.getExtension() ), e );
           setErrors( 1L );
           stopAll();
         }
