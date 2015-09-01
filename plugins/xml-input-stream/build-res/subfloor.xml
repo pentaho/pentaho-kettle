@@ -1304,7 +1304,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           <exec executable="cmd" failonerror="true">
             <arg value="/c"/>
             <arg value="mvn.bat"/>
-            <arg value="install:instll-file"/>
+            <arg value="install:install-file"/>
             <arg value="-DpomFile=${publish.pomFile}"/>
             <arg value="-Dfile=${publish.file}"/>
           </exec>
