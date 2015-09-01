@@ -49,6 +49,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.compress.CompressionOutputStream;
 import org.pentaho.di.core.compress.CompressionPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -216,6 +217,29 @@ public class TextFileOutputTest {
     stepMockHelper.cleanUp();
   }
 
+  @Test
+  public void testCloseFileDataOutIsNullCase() {
+    textFileOutput =
+        new TextFileOutput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+          stepMockHelper.trans );
+    textFileOutput.data = mock(TextFileOutputData.class);
+    
+    Assert.assertNull(textFileOutput.data.out);
+    textFileOutput.closeFile();
+  }
+  
+  @Test
+  public void testCloseFileDataOutIsNotNullCase() throws IOException {
+    textFileOutput =
+        new TextFileOutput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+          stepMockHelper.trans );
+    textFileOutput.data = mock(TextFileOutputData.class);
+    textFileOutput.data.out = mock(CompressionOutputStream.class);
+    
+    textFileOutput.closeFile();
+    verify(textFileOutput.data.out, times(1)).close();
+  }
+  
   private FileObject createTemplateFile() throws IOException {
     String path = TestUtils.createRamFile(
       getClass().getSimpleName() + "/" + TEXT_FILE_OUTPUT_PREFIX + new Random().nextLong()

@@ -668,7 +668,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     }
   }
 
-  private boolean closeFile() {
+  protected boolean closeFile() {
     boolean retval = false;
 
     try {
@@ -715,8 +715,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         if ( log.isDebug() ) {
           logDebug( "Closing normal file ..." );
         }
-        data.out.close();
-
+        if ( data.out != null ) {
+          data.out.close();
+        }
         if ( data.fos != null ) {
           data.fos.close();
           data.fos = null;
