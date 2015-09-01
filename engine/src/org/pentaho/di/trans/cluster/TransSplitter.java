@@ -48,6 +48,7 @@ import org.pentaho.di.core.encryption.CertificateGenEncryptUtil;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.SlaveStepCopyPartitionDistribution;
@@ -70,6 +71,7 @@ import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
  *
  */
 public class TransSplitter {
+  private static Class<?> PKG = TransMeta.class;
   private static final int FANOUT = 30;
   private static final int SPLIT = 120;
 
@@ -566,13 +568,12 @@ public class TransSplitter {
                   // FIXME check this code, it no longer is relevant after the change to use determineNrOfStepCopies().
                   // It probably wasn't working before either.
                   //
-                  // if (masterStep.getCopies()!=1 && masterStep.getCopies()!=nrOfSourceCopies) {
-                  // throw new
-                  // KettleException("The number of step copies on the master has to be 1 or equal to the number of
-                  // slaves
-                  // ("+nrSlavesNodes+") to work. Note that you can insert a dummy step to make the transformation work
-                  // as desired.");
-                  // }
+                  if ( masterStep.getCopies() != 1 && masterStep.getCopies() != nrOfSourceCopies ) {
+                    // this case might be handled correctly later
+                    String message = BaseMessages.getString( PKG, "TransSplitter.Clustering.CopyNumberStep", nrSlavesNodes,
+                        previousStep.getName(), masterStep.getName() );
+                    throw new KettleException( message );
+                  }
 
                   // Add the required remote input and output steps to make the partitioning a reality.
                   //
@@ -1381,6 +1382,12 @@ public class TransSplitter {
         }
         transMeta.clearChanged();
       }
+      // do not erase partitioning schema for master transformation
+      // if some of steps is expected to run on master partitioned, that is the case
+      // when partition schema should exists as 'local' partition schema instead of slave's remote one
+      // see PDI-12766
+      masterTransMeta.setPartitionSchemas( originalTransformation.getPartitionSchemas() );
+
       masterTransMeta.setSlaveStepCopyPartitionDistribution( slaveStepCopyPartitionDistribution );
       if ( encrypt ) {
         masterTransMeta.setKey( pubK.getEncoded() );
