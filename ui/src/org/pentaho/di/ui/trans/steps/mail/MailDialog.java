@@ -23,10 +23,6 @@
 
 package org.pentaho.di.ui.trans.steps.mail;
 
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Random;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -70,6 +66,10 @@ import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Send mail step. based on Mail job entry
@@ -1032,7 +1032,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wOnlyComment.setLayoutData( fdOnlyComment );
     wOnlyComment.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-
+          input.setChanged();
       }
     } );
 
@@ -1055,7 +1055,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface {
     wUseHTML.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         SetEnabledEncoding();
-
+        input.setChanged();
       }
     } );
 
