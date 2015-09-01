@@ -119,7 +119,12 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
   private Class<?> cookClass( UserDefinedJavaClassDef def ) throws CompileException, ParseException,
     ScanException, IOException, RuntimeException, KettleStepException {
 
+    if( Thread.currentThread().getContextClassLoader() == null ) {
+      Thread.currentThread().setContextClassLoader( this.getClass().getClassLoader() );
+    }
+
     ClassBodyEvaluator cbe = new ClassBodyEvaluator();
+    cbe.setParentClassLoader( Thread.currentThread().getContextClassLoader() );
     cbe.setClassName( def.getClassName() );
 
     StringReader sr;
@@ -133,6 +138,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     cbe.setDefaultImports( new String[] {
       "org.pentaho.di.trans.steps.userdefinedjavaclass.*", "org.pentaho.di.trans.step.*",
       "org.pentaho.di.core.row.*", "org.pentaho.di.core.*", "org.pentaho.di.core.exception.*" } );
+
     cbe.cook( new Scanner( null, sr ) );
 
     return cbe.getClazz();
