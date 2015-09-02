@@ -1399,9 +1399,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   public static final Map<String, DatabaseInterface> getDatabaseInterfacesMap() {
     Future<Map<String, DatabaseInterface>> allDatabaseInterfaces = DatabaseMeta.allDatabaseInterfaces;
-    if ( allDatabaseInterfaces == null ) {
-      allDatabaseInterfaces = createDatabaseInterfacesMap();
-      DatabaseMeta.allDatabaseInterfaces = allDatabaseInterfaces;
+    while ( allDatabaseInterfaces == null ) {
+      DatabaseMeta.allDatabaseInterfaces = createDatabaseInterfacesMap();
+      allDatabaseInterfaces = DatabaseMeta.allDatabaseInterfaces;
     }
     try {
       return allDatabaseInterfaces.get();
