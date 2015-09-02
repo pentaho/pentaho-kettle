@@ -18,8 +18,10 @@
 package org.pentaho.di.repository.pur;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -112,6 +114,8 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
   public static final String PROP_NR_NOTES = "NR_NOTES";
 
   private static final String NODE_JOB = "job";
+
+  static final String NODE_JOB_PRIVATE_DATABASES = "jobPrivateDatabases";
 
   public static final String NODE_NOTES = "notes";
 
@@ -220,6 +224,17 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
     throws KettleException {
 
     JobMeta jobMeta = (JobMeta) element;
+
+    Set<String> privateDatabases = null;
+    // read the private databases
+    DataNode privateDbsNode = rootNode.getNode( NODE_JOB_PRIVATE_DATABASES );
+    if ( privateDbsNode != null ) {
+      privateDatabases = new HashSet<String>();
+      for ( DataNode privateDatabase : privateDbsNode.getNodes() ) {
+        privateDatabases.add( privateDatabase.getName() );
+      }
+    }
+    jobMeta.setPrivateDatabases( privateDatabases );
 
     jobMeta.setSharedObjectsFile( getString( rootNode, PROP_SHARED_FILE ) );
 
@@ -425,7 +440,16 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
 
   public DataNode elementToDataNode( final RepositoryElementInterface element ) throws KettleException {
     JobMeta jobMeta = (JobMeta) element;
+
     DataNode rootNode = new DataNode( NODE_JOB );
+
+    if ( jobMeta.getPrivateDatabases() != null ) {
+      // save all private database names http://jira.pentaho.com/browse/PPP-3413
+      DataNode privateDatabaseNode = rootNode.addNode( NODE_JOB_PRIVATE_DATABASES );
+      for ( String privateDatabase : jobMeta.getPrivateDatabases() ) {
+        privateDatabaseNode.addNode( privateDatabase );
+      }
+    }
 
     // Save the notes
     //

@@ -21,7 +21,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -79,12 +81,22 @@ public class StreamToJobNodeConverter implements Converter {
 
     try {
       if ( fileId != null ) {
-        Repository repository = PDIImportUtil.connectToRepository( null );
+        Repository repository = connectToRepository();
         RepositoryFile file = unifiedRepository.getFileById( fileId );
         if ( file != null ) {
           try {
             JobMeta jobMeta = repository.loadJob( new StringObjectId( fileId.toString() ), null );
             if ( jobMeta != null ) {
+              Set<String> privateDatabases = jobMeta.getPrivateDatabases();
+              if ( privateDatabases != null ) {
+                // keep only private transformation databases
+                for ( Iterator<DatabaseMeta> it = jobMeta.getDatabases().iterator(); it.hasNext(); ) {
+                  String databaseName = it.next().getName();
+                  if ( !privateDatabases.contains( databaseName ) ) {
+                    it.remove();
+                  }
+                }
+              }
               return new ByteArrayInputStream( jobMeta.getXML().getBytes() );
             }
           } catch ( KettleException e ) {
@@ -105,6 +117,11 @@ public class StreamToJobNodeConverter implements Converter {
     return is;
   }
 
+  // package-local visibility for testing purposes
+  Repository connectToRepository() throws KettleException {
+    return PDIImportUtil.connectToRepository( null );
+  }
+
   /**
    * 
    * @param inputStream
@@ -116,7 +133,7 @@ public class StreamToJobNodeConverter implements Converter {
     try {
       long size = inputStream.available();
       JobMeta jobMeta = new JobMeta();
-      Repository repository = PDIImportUtil.connectToRepository( null );
+      Repository repository = connectToRepository();
       Document doc = PDIImportUtil.loadXMLFrom( inputStream );
       if ( doc != null ) {
         jobMeta.loadXML( doc.getDocumentElement(), repository, null );
