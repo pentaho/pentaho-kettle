@@ -105,6 +105,9 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
   private String customSegment;
   private String segmentName;
   private String segmentId;
+  
+  private String samplingLevel;
+  public static final String[] TYPE_SAMPLING_LEVEL_CODE = new String[] { "DEFAULT", "FASTER", "HIGHER_PRECISION" };
 
   private String[] feedField;
   private String[] feedFieldType;
@@ -258,6 +261,14 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
   public void setGaProfileName( String gaProfileName ) {
     this.gaProfileName = gaProfileName;
   }
+  
+  public String getSamplingLevel() {
+    return samplingLevel;
+  }
+
+  public void setSamplingLevel( String samplingLevel ) {
+    this.samplingLevel = samplingLevel;
+  }
 
   public String[] getFeedFieldType() {
     return feedFieldType;
@@ -289,6 +300,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     sort = "-ga:visits";
     gaAppName = DEFAULT_GA_APPLICATION_NAME;
     rowLimit = 0;
+	samplingLevel = TYPE_SAMPLING_LEVEL_CODE[0];
 
     // default is to have no key lookup settings
     allocate( 0 );
@@ -369,6 +381,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "customSegment", customSegment ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "segmentId", segmentId ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "segmentName", segmentName ) );
+	retval.append( "    " ).append( XMLHandler.addTagValue( "samplingLevel", samplingLevel ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "rowLimit", rowLimit ) );
 
     for ( int i = 0; i < feedField.length; i++ ) {
@@ -418,6 +431,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
       customSegment = XMLHandler.getTagValue( stepnode, "customSegment" );
       segmentId = XMLHandler.getTagValue( stepnode, "segmentId" );
       segmentName = XMLHandler.getTagValue( stepnode, "segmentName" );
+	  samplingLevel = XMLHandler.getTagValue( stepnode, "samplingLevel" );
       rowLimit = Const.toInt( XMLHandler.getTagValue( stepnode, "rowLimit" ), 0 );
 
       allocate( 0 );
@@ -477,6 +491,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
       customSegment = rep.getStepAttributeString( id_step, "customSegment" );
       segmentId = rep.getStepAttributeString( id_step, "segmentId" );
       segmentName = rep.getStepAttributeString( id_step, "segmentName" );
+	  samplingLevel = rep.getStepAttributeString( id_step, "samplingLevel" );
       rowLimit = (int) rep.getStepAttributeInteger( id_step, "rowLimit" );
 
       int nrFields = rep.countNrStepAttributes( id_step, "feedField" );
@@ -519,6 +534,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "customSegment", customSegment );
       rep.saveStepAttribute( id_transformation, id_step, "segmentId", segmentId );
       rep.saveStepAttribute( id_transformation, id_step, "segmentName", segmentName );
+	  rep.saveStepAttribute( id_transformation, id_step, "samplingLevel", samplingLevel );
       rep.saveStepAttribute( id_transformation, id_step, "rowLimit", rowLimit );
 
       for ( int i = 0; i < feedField.length; i++ ) {
