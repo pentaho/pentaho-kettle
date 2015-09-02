@@ -1169,7 +1169,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <then>
           <exec executable="cmd" failonerror="true">
             <arg value="/c"/>
-            <arg value="mvn.bat"/>
+            <arg value="mvn.cmd"/>
             <arg value="deploy:deploy-file"/>
             <arg value="-DrepositoryId=${ivy.repository.id}"/>
             <arg value="-Durl=${ivy.repository.publish}"/>
@@ -1219,7 +1219,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <then>
           <exec executable="cmd" failonerror="true">
             <arg value="/c"/>
-            <arg value="mvn.bat"/>
+            <arg value="mvn.cmd"/>
             <arg value="install:install-file"/>
             <arg value="-DgroupId=${publish.groupId}"/>
             <arg value="-DartifactId=${publish.artifactId}"/>
@@ -1262,7 +1262,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <then>
           <exec executable="cmd" failonerror="true">
             <arg value="/c"/>
-            <arg value="mvn.bat"/>
+            <arg value="mvn.cmd"/>
             <arg value="deploy:deploy-file"/>
             <arg value="-DrepositoryId=${ivy.repository.id}"/>
             <arg value="-Durl=${ivy.repository.publish}"/>
@@ -1303,8 +1303,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <then>
           <exec executable="cmd" failonerror="true">
             <arg value="/c"/>
-            <arg value="mvn.bat"/>
-            <arg value="install:instll-file"/>
+            <arg value="mvn.cmd"/>
+            <arg value="install:install-file"/>
             <arg value="-DpomFile=${publish.pomFile}"/>
             <arg value="-Dfile=${publish.file}"/>
           </exec>
@@ -1340,7 +1340,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <then>
           <exec executable="cmd" failonerror="true">
             <arg value="/c"/>
-            <arg value="mvn.bat"/>
+            <arg value="mvn.cmd"/>
             <arg value="deploy:deploy-file"/>
             <arg value="-DrepositoryId=${ivy.repository.id}"/>
             <arg value="-Durl=${ivy.repository.publish}"/>
@@ -1391,7 +1391,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <then>
           <exec executable="cmd" failonerror="true">
             <arg value="/c"/>
-            <arg value="mvn.bat"/>
+            <arg value="mvn.cmd"/>
             <arg value="install:install-file"/>
             <arg value="-DgroupId=${publish.groupId}"/>
             <arg value="-DartifactId=${publish.artifactId}"/>
