@@ -30,9 +30,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
@@ -476,12 +478,12 @@ public class TransMeta extends AbstractMeta
   /**
    * A list of localized strings corresponding to string descriptions of the undo/redo actions.
    */
-  public static final String[]
-      desc_type_undo =
-      { "", BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoChange" ),
-          BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoNew" ),
-          BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoDelete" ),
-          BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoPosition" ) };
+  public static final String[] desc_type_undo = {
+    "",
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoChange" ),
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoNew" ),
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoDelete" ),
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoPosition" ) };
 
   /**
    * A constant specifying the tag value for the XML node of the transformation information.
@@ -2846,7 +2848,7 @@ public class TransMeta extends AbstractMeta
 
         // Handle connections
         int n = XMLHandler.countNodes( transnode, DatabaseMeta.XML_TAG );
-        List<String> privateTransformationDatabases = new ArrayList<String>();
+        Set<String> privateTransformationDatabases = new HashSet<String>( n );
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.WeHaveConnections", String.valueOf( n ) ) );
         }
@@ -2878,7 +2880,7 @@ public class TransMeta extends AbstractMeta
             }
           }
         }
-        setPrivateTransformationDatabases( privateTransformationDatabases );
+        setPrivateDatabases( privateTransformationDatabases );
 
         // Read the notes...
         Node notepadsnode = XMLHandler.getSubNode( transnode, XML_TAG_NOTEPADS );
@@ -4159,7 +4161,7 @@ public class TransMeta extends AbstractMeta
         .isEmpty( performanceLogTable.getTableName() ) ) ) {
       try {
         for ( LogTableInterface logTable : new LogTableInterface[] { transLogTable, performanceLogTable,
-            channelLogTable, stepLogTable, } ) {
+          channelLogTable, stepLogTable, } ) {
           if ( logTable.getDatabaseMeta() != null && !Const.isEmpty( logTable.getTableName() ) ) {
 
             Database db = null;
@@ -4344,11 +4346,10 @@ public class TransMeta extends AbstractMeta
                     .getString( PKG, "TransMeta.Value.CheckingFieldName.FieldNameContainsSpaces.Description" ) );
               } else {
                 char[]
-                    list =
-                    new char[] { '.', ',', '-', '/', '+', '*', '\'', '\t', '"', '|', '@', '(', ')', '{', '}', '!',
-                        '^' };
+                  list =
+                  new char[] { '.', ',', '-', '/', '+', '*', '\'', '\t', '"', '|', '@', '(', ')', '{', '}', '!', '^' };
                 for ( int c = 0; c < list.length; c++ ) {
-                  if ( name.indexOf( list[c] ) >= 0 ) {
+                  if ( name.indexOf( list[ c ] ) >= 0 ) {
                     values.put( v, BaseMessages.getString( PKG,
                         "TransMeta.Value.CheckingFieldName.FieldNameContainsUnfriendlyCodes.Description",
                         String.valueOf( list[c] ) ) );
