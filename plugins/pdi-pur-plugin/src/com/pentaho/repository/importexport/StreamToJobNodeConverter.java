@@ -100,7 +100,7 @@ public class StreamToJobNodeConverter implements Converter {
               return new ByteArrayInputStream( jobMeta.getXML().getBytes() );
             }
           } catch ( KettleException e ) {
-            logger.error(e);
+            logger.error( e );
             // file is there and may be legacy, attempt simple export
             SimpleRepositoryFileData fileData =
                 unifiedRepository.getDataForRead( fileId, SimpleRepositoryFileData.class );
@@ -112,7 +112,7 @@ public class StreamToJobNodeConverter implements Converter {
         }
       }
     } catch ( Exception e ) {
-      logger.error(e);
+      logger.error( e );
     }
     return is;
   }

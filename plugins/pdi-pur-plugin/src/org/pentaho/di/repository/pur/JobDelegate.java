@@ -602,8 +602,9 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
         if ( databaseMeta.getName() != null ) {
           databaseMeta.shareVariablesWith( jobMeta );
           jobMeta.addOrReplaceDatabase( databaseMeta );
-          if ( !overWriteShared )
+          if ( !overWriteShared ) {
             databaseMeta.setChanged( false );
+          }
         }
       }
     }
@@ -624,8 +625,9 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
         if ( !Const.isEmpty( slaveServer.getName() ) ) {
           slaveServer.shareVariablesWith( jobMeta );
           jobMeta.addOrReplaceSlaveServer( slaveServer );
-          if ( !overWriteShared )
+          if ( !overWriteShared ) {
             slaveServer.setChanged( false );
+          }
         }
       }
     }
