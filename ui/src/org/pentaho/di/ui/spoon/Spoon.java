@@ -4520,86 +4520,94 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void openFile( String filename, boolean importfile ) {
+    // Open the XML and see what's in there.
+    // We expect a single <transformation> or <job> root at this time...
+
+    boolean loaded = false;
+    FileListener listener = null;
+    Node root = null;
+    // match by extension first
+    int idx = filename.lastIndexOf( '.' );
+    if ( idx != -1 ) {
+      for ( FileListener li : fileListeners ) {
+        if ( li.accepts( filename ) ) {
+          listener = li;
+          break;
+        }
+      }
+    }
+
+    // Attempt to find a root XML node name. Fails gracefully for non-XML file
+    // types.
     try {
-      // Open the XML and see what's in there.
-      // We expect a single <transformation> or <job> root at this time...
+      Document document = XMLHandler.loadXMLFile( filename );
+      root = document.getDocumentElement();
+    } catch ( KettleXMLException e ) {
+      if ( log.isDetailed() ) {
+        log.logDetailed( BaseMessages.getString( PKG, "Spoon.File.Xml.Parse.Error" ) );
+      }
+    }
 
-      boolean loaded = false;
-      FileListener listener = null;
-      Node root = null;
-      // match by extension first
-      int idx = filename.lastIndexOf( '.' );
-      if ( idx != -1 ) {
-        for ( FileListener li : fileListeners ) {
-          if ( li.accepts( filename ) ) {
-            listener = li;
-            break;
-          }
+    // otherwise try by looking at the root node if we were able to parse file
+    // as XML
+    if ( listener == null && root != null ) {
+      for ( FileListener li : fileListeners ) {
+        if ( li.acceptsXml( root.getNodeName() ) ) {
+          listener = li;
+          break;
         }
       }
+    }
 
-      // Attempt to find a root XML node name. Fails gracefully for non-XML file
-      // types.
-      try {
-        Document document = XMLHandler.loadXMLFile( filename );
-        root = document.getDocumentElement();
-      } catch ( KettleXMLException e ) {
-        if ( log.isDetailed() ) {
-          log.logDetailed( BaseMessages.getString( PKG, "Spoon.File.Xml.Parse.Error" ) );
-        }
-      }
-
-      // otherwise try by looking at the root node if we were able to parse file
-      // as XML
-      if ( listener == null && root != null ) {
-        for ( FileListener li : fileListeners ) {
-          if ( li.acceptsXml( root.getNodeName() ) ) {
-            listener = li;
-            break;
-          }
-        }
-      }
-
-      // You got to have a file name!
-      //
-      if ( !Const.isEmpty( filename ) ) {
-
-        if ( listener != null ) {
+    // You got to have a file name!
+    //
+    if ( !Const.isEmpty( filename ) ) {
+      if ( listener != null ) {
+        try {
           loaded = listener.open( root, filename, importfile );
-        }
-        if ( !loaded ) {
-          // Give error back
-          hideSplash();
-          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-          mb.setMessage( BaseMessages.getString( PKG, "Spoon.UnknownFileType.Message", filename ) );
-          mb.setText( BaseMessages.getString( PKG, "Spoon.UnknownFileType.Title" ) );
-          mb.open();
-        } else {
-          applyVariables(); // set variables in the newly loaded
-          // transformation(s) and job(s).
+        } catch ( KettleMissingPluginsException e ) {
+          log.logError( e.getMessage(), e );
         }
       }
-    } catch ( KettleMissingPluginsException e ) {
-      // There are missing plugins, let's try to handle them in the marketplace...
-      //
-      if ( marketPluginIsAvailable() ) {
-        handleMissingPluginsExceptionWithMarketplace( e );
+      if ( !loaded ) {
+        // Give error back
+        hideSplash();
+        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+        mb.setMessage( BaseMessages.getString( PKG, "Spoon.UnknownFileType.Message", filename ) );
+        mb.setText( BaseMessages.getString( PKG, "Spoon.UnknownFileType.Title" ) );
+        mb.open();
+      } else {
+        applyVariables(); // set variables in the newly loaded
+        // transformation(s) and job(s).
       }
     }
   }
 
   /**
-   * Check to see if the market plugin is available.
-   *
-   * @return true if the market plugin is installed and ready, false if it is not.
+   * The method which can open the marketplace.
    */
-  private boolean marketPluginIsAvailable() {
-    PluginInterface marketPlugin = findMarketPlugin();
-    return marketPlugin != null;
+  private Method marketplaceMethod = null;
+
+  /**
+   * Set the method which can open the marketplace.
+   */
+  public void setMarketMethod( Method m ) {
+    marketplaceMethod = m;
   }
 
-  private PluginInterface findMarketPlugin() {
-    return PluginRegistry.getInstance().findPluginWithId( SpoonPluginType.class, "market" );
+  /**
+   * If available, this method will open the marketplace.
+   */
+  public void openMarketplace() {
+    try {
+      if ( marketplaceMethod != null ) {
+        marketplaceMethod.invoke( marketplaceMethod.getDeclaringClass().newInstance() );
+      }
+    } catch ( Exception ex ) {
+      new ErrorDialog(
+        shell, BaseMessages.getString( PKG, "Spoon.ErrorShowingMarketplaceDialog.Title" ), BaseMessages
+          .getString( PKG, "Spoon.ErrorShowingMarketplaceDialog.Message" ), ex );
+    }
   }
 
   /**
@@ -4609,27 +4617,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    *          The missing plugins exception
    */
   public void handleMissingPluginsExceptionWithMarketplace( KettleMissingPluginsException missingPluginsException ) {
-    try {
-      hideSplash();
-      MessageBox box = new MessageBox( shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO );
-      box.setText( BaseMessages.getString( PKG, "Spoon.MissingPluginsFoundDialog.Title" ) );
-      box.setMessage( BaseMessages.getString(
-        PKG, "Spoon.MissingPluginsFoundDialog.Message", Const.CR, missingPluginsException.getPluginsMessage() ) );
-      int answer = box.open();
-      if ( ( answer & SWT.YES ) != 0 ) {
-        String controllerClassName = "org.pentaho.di.ui.spoon.dialog.MarketplaceController";
-        PluginInterface marketPlugin = findMarketPlugin();
-        ClassLoader classLoader = PluginRegistry.getInstance().getClassLoader( marketPlugin );
-        Class<?> controllerClass = classLoader.loadClass( controllerClassName );
-        Method method = controllerClass.getMethod( "showMarketPlaceDialog" );
-        method.invoke( null );
-      }
-    } catch ( Exception ex ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "Spoon.ErrorShowingMarketplaceDialog.Title" ), BaseMessages
-          .getString( PKG, "Spoon.ErrorShowingMarketplaceDialog.Message" ), ex );
+    hideSplash();
+    MessageBox box = new MessageBox( shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO );
+    box.setText( BaseMessages.getString( PKG, "Spoon.MissingPluginsFoundDialog.Title" ) );
+    box.setMessage( BaseMessages.getString(
+      PKG, "Spoon.MissingPluginsFoundDialog.Message", Const.CR, missingPluginsException.getPluginsMessage() ) );
+    int answer = box.open();
+    if ( ( answer & SWT.YES ) != 0 ) {
+      openMarketplace();
     }
-
   }
 
   public PropsUI getProperties() {
