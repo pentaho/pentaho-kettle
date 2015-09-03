@@ -726,6 +726,10 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   public String getAttachmentFolder() {
     return attachmentfolder;
   }
+  
+  public String getRealAttachmentFolder() {
+    return environmentSubstitute( getAttachmentFolder() );
+  }
 
   public void setAttachmentFolder( String foldername ) {
     this.attachmentfolder = foldername;
@@ -1313,13 +1317,13 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
     String folderName = "";
     switch ( folderType ) {
       case JobEntryGetPOP.FOLDER_OUTPUT:
-        folderName = getOutputDirectory();
+        folderName = getRealOutputDirectory();
         break;
       case JobEntryGetPOP.FOLDER_ATTACHMENTS:
         if ( isSaveAttachment() && isDifferentFolderForAttachment() ) {
-          folderName = getAttachmentFolder();
+          folderName = getRealAttachmentFolder();
         } else {
-          folderName = getOutputDirectory();
+          folderName = getRealOutputDirectory();
         }
         break;
     }
