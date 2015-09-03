@@ -23,11 +23,13 @@
 
 package org.pentaho.di.ui.spoon;
 
+import java.awt.Desktop;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -1730,8 +1732,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         // see if we can find the welcome file on the file system
         File file = new File( FILE_DOCUMENT_MAP );
         if ( file.exists() ) {
-          // ./docs/English/tips/index.htm
-          addSpoonBrowser( STRING_DOCUMENT_TAB_NAME, file.toURI().toURL().toString(), listener );
+          if ( Desktop.isDesktopSupported() ) {
+            // ./docs/English/tips/index.htm
+            try {
+              Desktop.getDesktop().open( file );
+            } catch ( IOException e ) {
+              log.logError( Const.getStackTracker( e ) );
+            }
+          } else {
+            addSpoonBrowser( STRING_DOCUMENT_TAB_NAME, file.toURI().toURL().toString(), listener );
+          }
         }
       }
     } catch ( MalformedURLException e1 ) {
