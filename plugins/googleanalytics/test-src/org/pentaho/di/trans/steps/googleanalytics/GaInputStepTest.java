@@ -75,6 +75,19 @@ public class GaInputStepTest {
     assertNull( step.getNextDataEntry() );
   }
 
+  /**
+   * PDI-13967 Check sampling level getter.
+   */
+  @Test
+  public void testSamplingLevel() {
+    GaInputStepMeta meta = mock( GaInputStepMeta.class );
+
+    assertEquals( "Sampling Level is not set.", null, meta.getSamplingLevel() );
+
+    when( meta.getSamplingLevel() ).thenReturn( "HIGHER_PRECISION" );
+    assertEquals( "Sampling Level is set up to HIGHER_PRECISION.", "HIGHER_PRECISION", meta.getSamplingLevel() );
+  }
+
   private Analytics.Data.Ga.Get prepareMockQuery( int recordsCount ) throws Exception {
     final MockQueryAssistant assistant = new MockQueryAssistant( recordsCount );
     assistant.setLimit( 10 );

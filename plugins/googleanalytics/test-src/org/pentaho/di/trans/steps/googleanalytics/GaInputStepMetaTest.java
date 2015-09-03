@@ -85,6 +85,7 @@ public class GaInputStepMetaTest {
     meta.setCustomSegment( "customSegment" );
     meta.setSegmentId( "segmentId" );
     meta.setSegmentName( "segmentName" );
+    meta.setSamplingLevel( "samplingLevel" );
 
     meta.allocate( 2 );
     for ( int i = 0; i < 2; i++ ) {
