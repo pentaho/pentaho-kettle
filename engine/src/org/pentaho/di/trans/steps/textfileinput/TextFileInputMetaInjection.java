@@ -40,6 +40,7 @@ import static org.pentaho.di.trans.step.StepInjectionUtil.getEntry;
  * This takes care of the external metadata injection into the TextFileInputMeta class
  *
  * @author Matt
+ * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
 public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
 
