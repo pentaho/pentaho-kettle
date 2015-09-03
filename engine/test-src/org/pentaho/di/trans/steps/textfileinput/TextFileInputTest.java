@@ -47,6 +47,9 @@ import org.pentaho.di.trans.steps.StepMockUtil;
 
 import static org.junit.Assert.*;
 
+/**
+ * @deprecated replaced by implementation in the ...steps.fileinput.text package
+ */
 public class TextFileInputTest {
 
   @BeforeClass

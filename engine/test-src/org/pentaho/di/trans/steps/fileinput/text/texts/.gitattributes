@@ -1,0 +1,3 @@
+*.csv text eol=crlf
+*.gz binary
+test-BOM-*.txt binary

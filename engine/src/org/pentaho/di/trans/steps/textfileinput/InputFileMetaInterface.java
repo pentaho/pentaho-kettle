@@ -25,6 +25,9 @@ package org.pentaho.di.trans.steps.textfileinput;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+/**
+ * @deprecated replaced by implementation in the ...steps.fileinput.text package
+ */
 public interface InputFileMetaInterface extends StepMetaInterface {
 
   public TextFileInputField[] getInputFields();

@@ -41,6 +41,9 @@ import static org.junit.Assert.*;
 import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_NONE;
 import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.*;
 
+/**
+ * @deprecated replaced by implementation in the ...steps.fileinput.text package
+ */
 public class TextFileInputMetaInjectionTest {
 
   @Test

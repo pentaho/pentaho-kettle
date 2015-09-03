@@ -22,6 +22,9 @@
 
 package org.pentaho.di.trans.steps.textfileinput;
 
+/**
+ * @deprecated replaced by implementation in the ...steps.fileinput.text package
+ */
 public class TextFileFilter implements Cloneable {
   /** The position of the occurrence of the filter string to check at */
   private int filterPosition;

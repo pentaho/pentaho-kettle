@@ -191,7 +191,7 @@ public class ValueMetaTest extends TestCase {
     TimeZone.setDefault( TimeZone.getTimeZone( "America/New_York" ) );
 
     ValueMetaInterface datValueMeta = new ValueMetaString();
-    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss'.000'Z" );
+    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss'.000'XXX" );
     try {
       Date res = datValueMeta.getDate( "2008-03-09T02:34:54.000Z" );
       // make sure it's what we expect...
@@ -205,7 +205,7 @@ public class ValueMetaTest extends TestCase {
     }
 
     datValueMeta = new ValueMetaString();
-    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss'.000'Z" );
+    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss'.000'XXX" );
     try {
       Date res = datValueMeta.getDate( "2008-03-09T02:34:54.000+01:00" );
       // make sure it's what we expect...
@@ -219,7 +219,7 @@ public class ValueMetaTest extends TestCase {
     }
 
     datValueMeta = new ValueMetaString();
-    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH-mm-ss'.000'Z" );
+    datValueMeta.setConversionMask( "yyyy-MM-dd'T'HH-mm-ss'.000'XXX" );
     try {
       Date res = datValueMeta.getDate( "2008-03-09T02-34-54.000-01:00" );
       // make sure it's what we expect...
