@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,9 +40,11 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -58,9 +60,8 @@ import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Based on a piece of XML, this factory will give back a list of objects. In other words, it does XML de-serialisation
- * 
+ *
  * @author Matt
- * 
  */
 public class SharedObjects {
   private static Class<?> PKG = SharedObjects.class; // for i18n purposes, needed by Translator2!!
@@ -100,6 +101,8 @@ public class SharedObjects {
       this.filename = createFilename( sharedObjectsFile );
       this.objectsMap = new Hashtable<SharedEntry, SharedObjectInterface>();
 
+      LogChannel log = new LogChannel( this );
+
       // Extra information
       FileObject file = getFileObjectFromKettleVFS( filename );
 
@@ -121,9 +124,26 @@ public class SharedObjects {
             SharedObjectInterface isShared = null;
 
             if ( nodeName.equals( DatabaseMeta.XML_TAG ) ) {
-              DatabaseMeta sharedDatabaseMeta = new DatabaseMeta( node );
-              isShared = sharedDatabaseMeta;
-              privateDatabases.add( sharedDatabaseMeta );
+              try {
+                DatabaseMeta sharedDatabaseMeta = new DatabaseMeta( node );
+                isShared = sharedDatabaseMeta;
+                privateDatabases.add( sharedDatabaseMeta );
+              } catch ( KettleXMLException kxe ) {
+                // If this is caused because we can't find the database plugin, just log and keep going.
+                // The KettleDatabaseException is doubly-wrapped in KettleXMLExceptions, so try to unravel
+                Throwable firstCause = kxe.getCause();
+                if ( firstCause != null ) {
+                  Throwable secondCause = firstCause.getCause();
+
+                  if ( secondCause == null || !( secondCause instanceof KettleDatabaseException ) ) {
+                    throw kxe;
+                  } else {
+                    log.logBasic( kxe.getLocalizedMessage() );
+                  }
+                } else {
+                  throw kxe;
+                }
+              }
             } else if ( nodeName.equals( SlaveServer.XML_TAG ) ) {
               SlaveServer sharedSlaveServer = new SlaveServer( node );
               isShared = sharedSlaveServer;
@@ -163,7 +183,7 @@ public class SharedObjects {
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString( PKG, "SharedOjects.Readingfile.UnexpectedError",
-          sharedObjectsFile ), e );
+        sharedObjectsFile ), e );
     }
   }
 
@@ -199,7 +219,7 @@ public class SharedObjects {
   /**
    * Store the sharedObject in the object map. It is possible to have 2 different types of shared object with the same
    * name. They will be stored separately.
-   * 
+   *
    * @param sharedObject
    */
   public void storeObject( SharedObjectInterface sharedObject ) {
@@ -209,7 +229,7 @@ public class SharedObjects {
 
   /**
    * Remove the sharedObject from the object map.
-   * 
+   *
    * @param sharedObject
    */
   public void removeObject( SharedObjectInterface sharedObject ) {
@@ -225,11 +245,9 @@ public class SharedObjects {
 
   /**
    * Return the shared object with the given class and name
-   * 
-   * @param clazz
-   *          The class of the shared object
-   * @param objectName
-   *          the name of the object
+   *
+   * @param clazz      The class of the shared object
+   * @param objectName the name of the object
    * @return The shared object or null if none was found.
    */
   public SharedObjectInterface getSharedObject( Class<SharedObjectInterface> clazz, String objectName ) {
@@ -238,11 +256,9 @@ public class SharedObjects {
 
   /**
    * Return the shared object with the given class name and object name
-   * 
-   * @param clasName
-   *          The class name of the shared object
-   * @param objectName
-   *          the name of the object
+   *
+   * @param className  The class name of the shared object
+   * @param objectName the name of the object
    * @return The shared object or null if none was found.
    */
   public SharedObjectInterface getSharedObject( String className, String objectName ) {
@@ -252,9 +268,8 @@ public class SharedObjects {
 
   /**
    * Get the shared database with the specified name
-   * 
-   * @param name
-   *          The name of the shared database
+   *
+   * @param name The name of the shared database
    * @return The database or null if nothing was found.
    */
   public DatabaseMeta getSharedDatabase( String name ) {
@@ -269,8 +284,7 @@ public class SharedObjects {
   }
 
   /**
-   * @param filename
-   *          the filename to set
+   * @param filename the filename to set
    */
   public void setFilename( String filename ) {
     this.filename = filename;
@@ -278,11 +292,9 @@ public class SharedObjects {
 
   /**
    * Write sharedObjects to file. In case of an exception are caught save backup file instead of new one.
-   * 
-   * @param fileObject
-   *          is file for writing
-   * @param backupFileName
-   *          is backup file name
+   *
+   * @param fileObject     is file for writing
+   * @param backupFileName is backup file name
    * @throws IOException
    * @throws KettleException
    */
@@ -312,7 +324,7 @@ public class SharedObjects {
         isRestored = true;
       }
       throw new KettleException(
-          BaseMessages.getString( PKG, "SharedOjects.WriteToFile.ErrorWritingFile", isRestored ), e );
+        BaseMessages.getString( PKG, "SharedOjects.WriteToFile.ErrorWritingFile", isRestored ), e );
     } finally {
       if ( out != null ) {
         out.flush();
@@ -337,7 +349,7 @@ public class SharedObjects {
 
   /**
    * Call {@link #copyFile(String, String)} method to restore file from backup
-   * 
+   *
    * @param backupFileName
    * @throws IOException
    */
@@ -348,8 +360,8 @@ public class SharedObjects {
 
   /**
    * Call {@link #copyFile(String, String)} method to create file backup
-   * 
-   * @param backupFileName
+   *
+   * @param fileObject
    * @throws IOException
    */
   private String createOrGetFileBackup( FileObject fileObject ) throws IOException, KettleException {
@@ -381,7 +393,7 @@ public class SharedObjects {
 
   /**
    * Copy src file to dest file
-   * 
+   *
    * @param src
    * @param dist
    * @throws IOException
@@ -401,5 +413,10 @@ public class SharedObjects {
     }
 
     return isFileCopied;
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + ( !Const.isEmpty( getFilename() ) ? " (" + getFilename() + ")" : "" );
   }
 }
