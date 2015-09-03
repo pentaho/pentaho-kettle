@@ -297,7 +297,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
     sort = "-ga:visits";
     gaAppName = DEFAULT_GA_APPLICATION_NAME;
     rowLimit = 0;
-	samplingLevel = TYPE_SAMPLING_LEVEL_CODE[0];
+    samplingLevel = TYPE_SAMPLING_LEVEL_CODE[0];
 
     // default is to have no key lookup settings
     allocate( 0 );

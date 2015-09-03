@@ -763,7 +763,6 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     fdGetSegments.right = new FormAttachment( 100, 0 );
     wGetSegments.setLayoutData( fdGetSegments );
 
-
     // samplingLevel selection
 
     wlQuSamplingLevel = new Label( gQuery, SWT.RIGHT );
