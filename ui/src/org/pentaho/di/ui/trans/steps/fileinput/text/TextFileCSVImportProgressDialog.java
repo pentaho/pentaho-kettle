@@ -48,8 +48,8 @@ import org.pentaho.di.core.util.StringEvaluator;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputStepMeta;
+import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
-import org.pentaho.di.trans.steps.fileinput.text.TextFileInputField;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileLine;
@@ -190,7 +190,7 @@ public class TextFileCSVImportProgressDialog {
     int[][] numberLength = new int[nrfields][Const.getNumberFormats().length]; // remember the length?
 
     for ( int i = 0; i < nrfields; i++ ) {
-      TextFileInputField field = meta.inputFiles.inputFields[i];
+      BaseFileInputField field = meta.inputFiles.inputFields[i];
 
       if ( log.isDebug() ) {
         debug = "init field #" + i;
@@ -343,7 +343,7 @@ public class TextFileCSVImportProgressDialog {
     message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.HorizontalLine" ) );
 
     for ( int i = 0; i < nrfields; i++ ) {
-      TextFileInputField field = meta.inputFiles.inputFields[i];
+      BaseFileInputField field = meta.inputFiles.inputFields[i];
       StringEvaluator evaluator = evaluators.get( i );
       List<StringEvaluationResult> evaluationResults = evaluator.getStringEvaluationResults();
 

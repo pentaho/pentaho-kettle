@@ -66,7 +66,7 @@ import org.pentaho.di.core.compress.CompressionProvider;
 import org.pentaho.di.core.compress.CompressionProviderFactory;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
-import org.pentaho.di.core.gui.TextFileInputFieldInterface;
+import org.pentaho.di.core.gui.BaseFileInputFieldInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -364,7 +364,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   private TextFileInputMeta input;
 
   // Wizard info...
-  private Vector<TextFileInputFieldInterface> fields;
+  private Vector<BaseFileInputFieldInterface> fields;
 
   private String[] dateLocale;
 
@@ -2965,7 +2965,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         public boolean performFinish() {
           wFields.clearAll( false );
 
-          for ( TextFileInputFieldInterface field1 : fields ) {
+          for ( BaseFileInputFieldInterface field1 : fields ) {
             TextFileInputField field = (TextFileInputField) field1;
             if ( !field.isIgnored() && field.getLength() > 0 ) {
               TableItem item = new TableItem( wFields.table, SWT.NONE );
@@ -3015,8 +3015,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     }
   }
 
-  private Vector<TextFileInputFieldInterface> getFields( TextFileInputMeta info, List<String> rows ) {
-    Vector<TextFileInputFieldInterface> fields = new Vector<TextFileInputFieldInterface>();
+  private Vector<BaseFileInputFieldInterface> getFields( TextFileInputMeta info, List<String> rows ) {
+    Vector<BaseFileInputFieldInterface> fields = new Vector<BaseFileInputFieldInterface>();
 
     int maxsize = 0;
     for ( String row : rows ) {

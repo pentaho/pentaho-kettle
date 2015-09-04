@@ -43,7 +43,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.gui.TextFileInputFieldInterface;
+import org.pentaho.di.core.gui.BaseFileInputFieldInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
@@ -122,12 +122,12 @@ public class TextFileImportWizardPage2 extends WizardPage {
 
   private PropsUI props;
   private java.util.List<String> rows;
-  private Vector<TextFileInputFieldInterface> fields;
+  private Vector<BaseFileInputFieldInterface> fields;
 
   private Shell shell;
 
   public TextFileImportWizardPage2( String arg, PropsUI props, java.util.List<String> rows,
-    Vector<TextFileInputFieldInterface> fields ) {
+    Vector<BaseFileInputFieldInterface> fields ) {
     super( arg );
     this.props = props;
     this.rows = rows;
