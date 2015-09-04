@@ -38,6 +38,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.errorhandling.AbstractFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
+import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputStepMeta;
 
 /**
@@ -232,7 +233,7 @@ public class TextFileInputUtils {
       } else {
         // Fixed file format: Simply get the strings at the required positions...
         for ( int i = 0; i < inf.inputFiles.inputFields.length; i++ ) {
-          TextFileInputField field = inf.inputFiles.inputFields[i];
+          BaseFileInputField field = inf.inputFiles.inputFields[i];
 
           int length = line.length();
 
@@ -370,7 +371,7 @@ public class TextFileInputUtils {
       String[] strings = convertLineToStrings( log, textFileLine.line, info, delimiter, enclosure, escapeCharacter );
       int shiftFields = ( passThruFields == null ? 0 : nrPassThruFields );
       for ( fieldnr = 0; fieldnr < nrfields; fieldnr++ ) {
-        TextFileInputField f = info.inputFiles.inputFields[fieldnr];
+        BaseFileInputField f = info.inputFiles.inputFields[fieldnr];
         int valuenr = shiftFields + fieldnr;
         ValueMetaInterface valueMeta = outputRowMeta.getValueMeta( valuenr );
         ValueMetaInterface convertMeta = convertRowMeta.getValueMeta( valuenr );
@@ -732,7 +733,7 @@ public class TextFileInputUtils {
       } else {
         // Fixed file format: Simply get the strings at the required positions...
         for ( int i = 0; i < inf.inputFiles.inputFields.length; i++ ) {
-          TextFileInputField field = inf.inputFiles.inputFields[i];
+          BaseFileInputField field = inf.inputFiles.inputFields[i];
 
           int length = line.length();
 

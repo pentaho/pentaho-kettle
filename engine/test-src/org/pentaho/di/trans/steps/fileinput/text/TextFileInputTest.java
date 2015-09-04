@@ -45,6 +45,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
+import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 
 import static org.junit.Assert.*;
 
@@ -133,7 +134,7 @@ public class TextFileInputTest {
     meta.content.lineWrapped = true ;
     meta.content.nrWraps = 1;
     meta.inputFiles.inputFields =
-        new TextFileInputField[] { new TextFileInputField( "col1", -1, -1 ), new TextFileInputField( "col2", -1, -1 ) };
+        new BaseFileInputField[] { new BaseFileInputField( "col1", -1, -1 ), new BaseFileInputField( "col2", -1, -1 ) };
     meta.content.fileCompression = "None" ;
     meta.content.fileType =  "CSV" ;
     meta.content.header= false ;

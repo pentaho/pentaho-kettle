@@ -99,7 +99,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
     initErrorHandling();
 
     meta.additionalOutputFields.normalize();
-    data.files = meta.getTextFileList( this );
+    data.files = meta.getFileInputList( this );
     data.currentFileIndex = 0;
 
     // If there are missing files,
