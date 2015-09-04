@@ -110,6 +110,7 @@ public class MissingTransDialog extends BaseStepDialog implements StepDialogInte
 
     FormLayout formLayout = new FormLayout();
     formLayout.marginWidth = Const.FORM_MARGIN;
+    formLayout.marginLeft = Const.FORM_MARGIN;
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setText( BaseMessages.getString( PKG, "MissingTransDialog.MissingPlugins" ) );
@@ -119,36 +120,67 @@ public class MissingTransDialog extends BaseStepDialog implements StepDialogInte
     props.setLook( image );
     Image icon = display.getSystemImage( SWT.ICON_QUESTION );
     image.setImage( icon );
-
-    Label error = new Label( shell, SWT.NONE );
-    props.setLook( error );
-    error.setText( getErrorMessage( missingTrans, mode ) );
-
     FormData imageData = new FormData();
     imageData.left = new FormAttachment( 0, 5 );
-    imageData.right = new FormAttachment( 10, 0 );
+    imageData.right = new FormAttachment( 11, 0 );
     imageData.top = new FormAttachment( 0, 10 );
     image.setLayoutData( imageData );
 
+    Label error = new Label( shell, SWT.WRAP );
+    props.setLook( error );
+    error.setText( getErrorMessage( missingTrans, mode ) );
     FormData errorData = new FormData();
     errorData.left = new FormAttachment( image, 5 );
-    errorData.right = new FormAttachment( 90, -5 );
+    errorData.right = new FormAttachment( 100, -5 );
     errorData.top = new FormAttachment( 0, 10 );
     error.setLayoutData( errorData );
 
+    Label separator = new Label( shell, SWT.WRAP );
+    props.setLook( separator );
+    FormData separatorData = new FormData();
+    separatorData.top = new FormAttachment( error, 10 );
+    separator.setLayoutData( separatorData );
+
+    Button closeButton = new Button( shell, SWT.PUSH );
+    props.setLook( closeButton );
+    FormData fdClose = new FormData();
+    fdClose.right = new FormAttachment( 98 );
+    fdClose.top = new FormAttachment( separator );
+    closeButton.setLayoutData( fdClose );
+    closeButton.setText( BaseMessages.getString( PKG, "MissingTransDialog.Close" ) );
+    closeButton.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        shell.dispose();
+        stepResult = null;
+      }
+    } );
+
+    FormData fdSearch = new FormData();
     if ( this.mode == MISSING_TRANS_STEPS ) {
-      int height = 233;
-      int increase = 10 * missingTrans.size();
-      height = height + increase;
-      shell.setSize( 600, height );
-      shell.setMinimumSize( 600, height );
+      Button openButton = new Button( shell, SWT.PUSH );
+      props.setLook( openButton );
+      FormData fdOpen = new FormData();
+      fdOpen.right = new FormAttachment( closeButton, -5 );
+      fdOpen.bottom = new FormAttachment( closeButton, 0, SWT.BOTTOM );
+      openButton.setLayoutData( fdOpen );
+      openButton.setText( BaseMessages.getString( PKG, "MissingTransDialog.OpenFile" ) );
+      openButton.addSelectionListener( new SelectionAdapter() {
+        public void widgetSelected( SelectionEvent e ) {
+          shell.dispose();
+          stepResult = stepname;
+        }
+      } );
+      fdSearch.right = new FormAttachment( openButton, -5 );
+      fdSearch.bottom = new FormAttachment( openButton, 0, SWT.BOTTOM );
     } else {
-      shell.setSize( 570, 150 );
-      shell.setMinimumSize( 570, 150 );
+      fdSearch.right = new FormAttachment( closeButton, -5 );
+      fdSearch.bottom = new FormAttachment( closeButton, 0, SWT.BOTTOM );
     }
 
     Button searchButton = new Button( shell, SWT.PUSH );
+    props.setLook( searchButton );
     searchButton.setText( BaseMessages.getString( PKG, "MissingTransDialog.SearchMarketplace" ) );
+    searchButton.setLayoutData( fdSearch );
     searchButton.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         try {
@@ -160,32 +192,7 @@ public class MissingTransDialog extends BaseStepDialog implements StepDialogInte
       }
     } );
 
-    Button closeButton = new Button( shell, SWT.PUSH );
-    closeButton.setText( BaseMessages.getString( PKG, "MissingTransDialog.Close" ) );
-    closeButton.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        shell.dispose();
-        stepResult = null;
-      }
-    } );
-
-    Button[] buttons = null;
-    if ( this.mode == MISSING_TRANS_STEPS ) {
-      Button openButton = new Button( shell, SWT.PUSH );
-      openButton.setText( BaseMessages.getString( PKG, "MissingTransDialog.OpenFile" ) );
-      openButton.addSelectionListener( new SelectionAdapter() {
-        public void widgetSelected( SelectionEvent e ) {
-          shell.dispose();
-          stepResult = stepname;
-        }
-      } );
-      buttons = new Button[] { searchButton, openButton, closeButton };
-    } else {
-      buttons = new Button[] { searchButton, closeButton };
-    }
-
-    BaseStepDialog.positionBottomButtons( shell, buttons, margin, null );
-
+    shell.pack();
     shell.open();
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
