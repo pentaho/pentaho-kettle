@@ -87,9 +87,9 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileFilter;
-import org.pentaho.di.trans.steps.fileinput.text.TextFileInputField;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
@@ -725,7 +725,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   private void showFiles() {
     TextFileInputMeta tfii = new TextFileInputMeta();
     getInfo( tfii, true );
-    String[] files = tfii.getFilePaths( transMeta );
+    String[] files =
+        FileInputList.createFilePathList( transMeta, tfii.inputFiles.fileName, tfii.inputFiles.fileMask,
+            tfii.inputFiles.excludeFileMask, tfii.inputFiles.fileRequired, tfii.includeSubFolderBoolean() );
+
     if ( files != null && files.length > 0 ) {
       EnterSelectionDialog esd = new EnterSelectionDialog( shell, files, "Files read", "Files read:" );
       esd.setViewOnly();
@@ -2345,7 +2348,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
   private void getFieldsData( TextFileInputMeta in, boolean insertAtTop ) {
     for ( int i = 0; i < in.inputFiles.inputFields.length; i++ ) {
-      TextFileInputField field = in.inputFiles.inputFields[i];
+      BaseFileInputField field = in.inputFiles.inputFields[i];
 
       TableItem item;
 
@@ -2513,7 +2516,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     meta.inputFiles_includeSubFolders( wFilenameList.getItems( 4 ) );
 
     for ( int i = 0; i < nrfields; i++ ) {
-      TextFileInputField field = new TextFileInputField();
+      BaseFileInputField field = new BaseFileInputField();
 
       TableItem item = wFields.getNonEmpty( i );
       field.setName( item.getText( 1 ) );
@@ -2606,7 +2609,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     }
 
     TextFileInputMeta previousMeta = (TextFileInputMeta) meta.clone();
-    FileInputList textFileList = meta.getTextFileList( transMeta );
+    FileInputList textFileList = meta.getFileInputList( transMeta );
     InputStream fileInputStream;
     CompressionInputStream inputStream = null;
     StringBuilder lineStringBuilder = new StringBuilder( 256 );
@@ -2833,7 +2836,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     getInfo( info, true );
 
     try {
-      if ( info.getTextFileList( transMeta ).nrOfFiles() > 0 ) {
+      if ( info.getFileInputList( transMeta ).nrOfFiles() > 0 ) {
         String shellText = BaseMessages.getString( PKG, "TextFileInputDialog.LinesToView.DialogTitle" );
         String lineText = BaseMessages.getString( PKG, "TextFileInputDialog.LinesToView.DialogMessage" );
         EnterNumberDialog end = new EnterNumberDialog( shell, 100, shellText, lineText );
@@ -2876,7 +2879,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   private List<String> getFirst( int nrlines, boolean skipHeaders ) throws KettleException {
     TextFileInputMeta meta = new TextFileInputMeta();
     getInfo( meta, true );
-    FileInputList textFileList = meta.getTextFileList( transMeta );
+    FileInputList textFileList = meta.getFileInputList( transMeta );
 
     InputStream fi;
     CompressionInputStream f = null;
@@ -2970,7 +2973,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
           wFields.clearAll( false );
 
           for ( TextFileInputFieldInterface field1 : fields ) {
-            TextFileInputField field = (TextFileInputField) field1;
+            BaseFileInputField field = (BaseFileInputField) field1;
             if ( !field.isIgnored() && field.getLength() > 0 ) {
               TableItem item = new TableItem( wFields.table, SWT.NONE );
               item.setText( 1, field.getName() );
@@ -3034,18 +3037,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     int dummynr = 1;
 
     for ( int i = 0; i < info.inputFiles.inputFields.length; i++ ) {
-      TextFileInputField f = info.inputFiles.inputFields[i];
+      BaseFileInputField f = info.inputFiles.inputFields[i];
 
       // See if positions are skipped, if this is the case, add dummy fields...
       if ( f.getPosition() != prevEnd ) { // gap
 
-        TextFileInputField field = new TextFileInputField( "Dummy" + dummynr, prevEnd, f.getPosition() - prevEnd );
+        BaseFileInputField field = new BaseFileInputField( "Dummy" + dummynr, prevEnd, f.getPosition() - prevEnd );
         field.setIgnored( true ); // don't include in result by default.
         fields.add( field );
         dummynr++;
       }
 
-      TextFileInputField field = new TextFileInputField( f.getName(), f.getPosition(), f.getLength() );
+      BaseFileInputField field = new BaseFileInputField( f.getName(), f.getPosition(), f.getLength() );
       field.setType( f.getType() );
       field.setIgnored( false );
       field.setFormat( f.getFormat() );
@@ -3063,17 +3066,17 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     }
 
     if ( info.inputFiles.inputFields.length == 0 ) {
-      TextFileInputField field = new TextFileInputField( "Field1", 0, maxsize );
+      BaseFileInputField field = new BaseFileInputField( "Field1", 0, maxsize );
       fields.add( field );
     } else {
       // Take the last field and see if it reached until the maximum...
-      TextFileInputField f = info.inputFiles.inputFields[info.inputFiles.inputFields.length - 1];
+      BaseFileInputField f = info.inputFiles.inputFields[info.inputFiles.inputFields.length - 1];
 
       int pos = f.getPosition();
       int len = f.getLength();
       if ( pos + len < maxsize ) {
         // If not, add an extra trailing field!
-        TextFileInputField field = new TextFileInputField( "Dummy" + dummynr, pos + len, maxsize - pos - len );
+        BaseFileInputField field = new BaseFileInputField( "Dummy" + dummynr, pos + len, maxsize - pos - len );
         field.setIgnored( true ); // don't include in result by default.
         fields.add( field );
       }

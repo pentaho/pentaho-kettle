@@ -26,6 +26,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.job.entry.loadSave.TransStepLoadSaveTester;
+import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 
@@ -89,7 +90,7 @@ public class TextFileInputMetaLoadSaveTest {
 
     Map<String, FieldLoadSaveValidator<?>> typeValidators = new HashMap<String, FieldLoadSaveValidator<?>>(  );
     typeValidators.put( TextFileFilter[].class.getCanonicalName(), new ArrayLoadSaveValidator<TextFileFilter>( new TextFileFilterValidator() ) );
-    typeValidators.put( TextFileInputField[].class.getCanonicalName(), new ArrayLoadSaveValidator<TextFileInputField>( new TextFileInputFieldValidator() ) );
+    typeValidators.put( BaseFileInputField[].class.getCanonicalName(), new ArrayLoadSaveValidator<BaseFileInputField>( new TextFileInputFieldValidator() ) );
 
     assertTrue( !commonAttributes.isEmpty() || !( xmlAttributes.isEmpty() || repoAttributes.isEmpty() ) );
 
@@ -109,18 +110,18 @@ public class TextFileInputMetaLoadSaveTest {
   }
 
 
-  private static class TextFileInputFieldValidator implements FieldLoadSaveValidator<TextFileInputField> {
-    @Override public TextFileInputField getTestObject() {
-      return new TextFileInputField( UUID.randomUUID().toString(), new Random().nextInt(), new Random().nextInt() );
+  private static class TextFileInputFieldValidator implements FieldLoadSaveValidator<BaseFileInputField> {
+    @Override public BaseFileInputField getTestObject() {
+      return new BaseFileInputField( UUID.randomUUID().toString(), new Random().nextInt(), new Random().nextInt() );
     }
 
     @Override
-    public boolean validateTestObject( TextFileInputField testObject, Object actual ) {
-      if ( !( actual instanceof TextFileInputField ) ) {
+    public boolean validateTestObject( BaseFileInputField testObject, Object actual ) {
+      if ( !( actual instanceof BaseFileInputField ) ) {
         return false;
       }
 
-      TextFileInputField another = (TextFileInputField) actual;
+      BaseFileInputField another = (BaseFileInputField) actual;
       return new EqualsBuilder()
         .append( testObject.getName(), another.getName() )
         .append( testObject.getLength(), another.getLength() )

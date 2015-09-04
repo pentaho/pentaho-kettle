@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.gui.BaseFileInputFieldInterface;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -106,7 +107,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     return position - field.getPosition();
   }
 
-  public int compareTo( TextFileInputFieldInterface field ) {
+  public int compareTo( BaseFileInputFieldInterface field ) {
     return position - field.getPosition();
   }
 
