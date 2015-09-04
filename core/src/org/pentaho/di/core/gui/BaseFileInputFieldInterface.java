@@ -22,8 +22,14 @@
 
 package org.pentaho.di.core.gui;
 
-/**
- * @deprecated replaced by BaseFileInputFieldInterface for all file input steps
- */
-public interface TextFileInputFieldInterface extends BaseFileInputFieldInterface<TextFileInputFieldInterface> {
+public interface BaseFileInputFieldInterface<P> extends Comparable<BaseFileInputFieldInterface> {
+  public int getPosition();
+
+  public int getLength();
+
+  public String getName();
+
+  public void setLength( int i );
+
+  public P createNewInstance( String newFieldname, int x, int newlength );
 }

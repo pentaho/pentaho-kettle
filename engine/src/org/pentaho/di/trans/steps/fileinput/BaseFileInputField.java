@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.fileinput.text;
+package org.pentaho.di.trans.steps.fileinput;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.gui.BaseFileInputFieldInterface;
 import org.pentaho.di.core.gui.TextFileInputFieldInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -40,7 +41,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @author Matt
  * @since 19-04-2004
  */
-public class TextFileInputField implements Cloneable, TextFileInputFieldInterface {
+public class BaseFileInputField implements Cloneable, TextFileInputFieldInterface {
   private String name;
   private int position;
   private int length;
@@ -75,7 +76,7 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
       new String[] { "", "#", Const.DEFAULT_NUMBER_FORMAT, "0.00", "0000000000000", "###,###,###.#######",
         "###############.###############", "#####.###############%", };
 
-  public TextFileInputField( String fieldname, int position, int length ) {
+  public BaseFileInputField( String fieldname, int position, int length ) {
     this.name = fieldname;
     this.position = position;
     this.length = length;
@@ -94,22 +95,22 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
     // this.containsComma=false;
   }
 
-  public TextFileInputField() {
+  public BaseFileInputField() {
     this( null, -1, -1 );
   }
 
   public int compare( Object obj ) {
-    TextFileInputField field = (TextFileInputField) obj;
+    BaseFileInputField field = (BaseFileInputField) obj;
 
     return position - field.getPosition();
   }
 
-  public int compareTo( TextFileInputFieldInterface field ) {
+  public int compareTo( BaseFileInputFieldInterface field ) {
     return position - field.getPosition();
   }
 
   public boolean equal( Object obj ) {
-    TextFileInputField field = (TextFileInputField) obj;
+    BaseFileInputField field = (BaseFileInputField) obj;
 
     return ( position == field.getPosition() );
   }
@@ -587,6 +588,6 @@ public class TextFileInputField implements Cloneable, TextFileInputFieldInterfac
   }
 
   public TextFileInputFieldInterface createNewInstance( String newFieldname, int x, int newlength ) {
-    return new TextFileInputField( newFieldname, x, newlength );
+    return new BaseFileInputField( newFieldname, x, newlength );
   }
 }
