@@ -52,6 +52,7 @@ import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
+import org.pentaho.di.trans.steps.missing.MissingTrans;
 import org.pentaho.di.ui.repository.pur.services.IConnectionAclService;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFilePermission;
@@ -310,7 +311,8 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
         stepMetaInterface = (StepMetaInterface) registry.loadClass( stepPlugin );
         stepType = stepPlugin.getIds()[0]; // revert to the default in case we loaded an alternate version
       } else {
-        throw new KettleException( BaseMessages.getString( PKG, "StepMeta.Exception.UnableToLoadClass", stepType ) ); //$NON-NLS-1$
+        stepMeta.setStepMetaInterface( (StepMetaInterface) new MissingTrans( stepMeta.getName(), stepType ) );
+        transMeta.addMissingTrans( (MissingTrans) stepMeta.getStepMetaInterface() );
       }
 
       stepMeta.setStepID( stepType );
@@ -318,9 +320,11 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
       // Read the metadata from the repository too...
       //
       RepositoryProxy proxy = new RepositoryProxy( stepNode.getNode( NODE_STEP_CUSTOM ) );
-      readRepCompatibleStepMeta( stepMetaInterface, proxy, null, transMeta.getDatabases() );
-      stepMetaInterface.readRep( proxy, transMeta.getMetaStore(), null, transMeta.getDatabases() );
-      stepMeta.setStepMetaInterface( stepMetaInterface );
+      if ( !stepMeta.isMissing() ) {
+        readRepCompatibleStepMeta( stepMetaInterface, proxy, null, transMeta.getDatabases() );
+        stepMetaInterface.readRep( proxy, transMeta.getMetaStore(), null, transMeta.getDatabases() );
+        stepMeta.setStepMetaInterface( stepMetaInterface );
+      }
 
       // Get the partitioning as well...
       StepPartitioningMeta stepPartitioningMeta = new StepPartitioningMeta();
