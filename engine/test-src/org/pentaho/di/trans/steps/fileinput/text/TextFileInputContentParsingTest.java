@@ -48,6 +48,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.fileinput.IBaseFileInputStepControl;
+import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 
 public class TextFileInputContentParsingTest {
   LogChannelInterface log = new LogChannel( "junit" );
@@ -182,7 +183,7 @@ public class TextFileInputContentParsingTest {
     return file;
   }
 
-  void setFields( TextFileInputField... fields ) throws Exception {
+  void setFields( BaseFileInputField... fields ) throws Exception {
     meta.inputFiles.inputFields = fields;
     meta.getFields( data.outputRowMeta, meta.getName(), null, null, new Variables(), null, null );
     data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
@@ -192,7 +193,7 @@ public class TextFileInputContentParsingTest {
   public void defaultOptions() throws Exception {
     init();
 
-    setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
+    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
 
     try (TextFileInputReader reader =
         new TextFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log )) {
@@ -211,7 +212,7 @@ public class TextFileInputContentParsingTest {
     m.content.separator = ",";
     init( m );
 
-    setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
+    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
 
     try (TextFileInputReader reader =
         new TextFileInputReader( stepControl, meta, data, getFile( "separator.csv" ), log )) {
@@ -230,7 +231,7 @@ public class TextFileInputContentParsingTest {
     m.content.escapeCharacter = "\\";
     init( m );
 
-    setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
+    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
 
     try (TextFileInputReader reader =
         new TextFileInputReader( stepControl, meta, data, getFile( "escape.csv" ), log )) {
@@ -249,7 +250,7 @@ public class TextFileInputContentParsingTest {
     m.content.header = false;
     init( m );
 
-    setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
+    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
 
     try (TextFileInputReader reader =
         new TextFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log )) {
@@ -269,7 +270,7 @@ public class TextFileInputContentParsingTest {
     m.content.fileCompression = "GZip";
     init( m );
 
-    setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
+    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
 
     try (TextFileInputReader reader =
         new TextFileInputReader( stepControl, meta, data, getFile( "default.csv.gz" ), log )) {
@@ -288,7 +289,7 @@ public class TextFileInputContentParsingTest {
       m.content.fileType = "Fixed";
       init( m );
   
-      setFields( new TextFileInputField( "f1", 0, 7 ), new TextFileInputField( "f2", 8, 7 ), new TextFileInputField( "f3",
+      setFields( new BaseFileInputField( "f1", 0, 7 ), new BaseFileInputField( "f2", 8, 7 ), new BaseFileInputField( "f3",
           16, 7 ) );
   
       try (TextFileInputReader reader = new TextFileInputReader( stepControl, meta, data, getFile( "fixed.csv" ), log )) {
@@ -309,7 +310,7 @@ public class TextFileInputContentParsingTest {
     vars.setVariable( "VAR_TEST", "second" );
     data.filterProcessor =
         new TextFileFilterProcessor( new TextFileFilter[] { new TextFileFilter( 0, "${VAR_TEST}", false, false ) }, vars );
-    setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
+    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
 
     try (TextFileInputReader reader = new TextFileInputReader( stepControl, meta, data, getFile( "default.csv" ), log )) {
       while ( reader.readRow() )
@@ -328,7 +329,7 @@ public class TextFileInputContentParsingTest {
     m.content.header = false;
     init( m );
 
-    setFields( new TextFileInputField(), new TextFileInputField() );
+    setFields( new BaseFileInputField(), new BaseFileInputField() );
 
     try (TextFileInputReader reader =
         new TextFileInputReader( stepControl, meta, data, getFile( "test-BOM-UTF-8.txt" ), log )) {
@@ -348,7 +349,7 @@ public class TextFileInputContentParsingTest {
     m.content.header = false;
     init( m );
 
-    setFields( new TextFileInputField(), new TextFileInputField() );
+    setFields( new BaseFileInputField(), new BaseFileInputField() );
 
     try (TextFileInputReader reader =
         new TextFileInputReader( stepControl, meta, data, getFile( "test-BOM-UTF-16BE.txt" ), log )) {

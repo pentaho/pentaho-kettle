@@ -35,7 +35,6 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.fileinput.text.TextFileInputField;
 
 /**
  * Base meta for file-based input steps.
@@ -92,7 +91,7 @@ public abstract class BaseFileInputStepMeta extends BaseStepMeta {
     public String acceptingField;
 
     /** The fields to import... */
-    public TextFileInputField[] inputFields = {};
+    public BaseFileInputField[] inputFields = {};
 
     /** The add filenames to result filenames flag */
     public boolean isaddresult;
@@ -245,7 +244,7 @@ public abstract class BaseFileInputStepMeta extends BaseStepMeta {
     }
   }
 
-  public FileInputList getTextFileList( VariableSpace space ) {
+  public FileInputList getFileInputList( VariableSpace space ) {
     return FileInputList.createFileList( space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
         inputFiles.fileRequired, includeSubFolderBoolean() );
   }

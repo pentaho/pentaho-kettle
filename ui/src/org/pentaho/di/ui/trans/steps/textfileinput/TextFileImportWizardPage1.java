@@ -34,7 +34,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.gui.TextFileInputFieldInterface;
+import org.pentaho.di.core.gui.BaseFileInputFieldInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
@@ -52,10 +52,10 @@ public class TextFileImportWizardPage1 extends WizardPage // implements Listener
 
   private PropsUI props;
   private List<String> rows;
-  private Vector<TextFileInputFieldInterface> fields;
+  private Vector<BaseFileInputFieldInterface> fields;
 
   public TextFileImportWizardPage1( String arg, PropsUI props, List<String> rows,
-    Vector<TextFileInputFieldInterface> fields ) {
+    Vector<BaseFileInputFieldInterface> fields ) {
     super( arg );
     this.props = props;
     this.rows = rows;
@@ -99,11 +99,11 @@ public class TextFileImportWizardPage1 extends WizardPage // implements Listener
     setControl( composite );
   }
 
-  public void setFields( Vector<TextFileInputFieldInterface> fields ) {
+  public void setFields( Vector<BaseFileInputFieldInterface> fields ) {
     wTable.setFields( fields );
   }
 
-  public Vector<TextFileInputFieldInterface> getFields() {
+  public Vector<BaseFileInputFieldInterface> getFields() {
     return wTable.getFields();
   }
 

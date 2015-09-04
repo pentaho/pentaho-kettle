@@ -35,6 +35,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMetaInjectionEntryInterface;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
+import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 
 /**
  * This takes care of the external metadata injection into the TextFileInputMeta class
@@ -239,7 +240,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
   public void injectStepMetadataEntries( List<StepInjectionMetaEntry> all ) throws KettleException {
 
     List<FileLine> fileLines = new ArrayList<FileLine>();
-    List<TextFileInputField> fields = new ArrayList<TextFileInputField>();
+    List<BaseFileInputField> fields = new ArrayList<BaseFileInputField>();
     List<TextFileFilter> filters = new ArrayList<TextFileFilter>();
 
     // Parse the fields, inject into the meta class..
@@ -294,7 +295,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
             Entry fieldEntry = Entry.findEntry( lookField.getKey() );
             if ( fieldEntry == Entry.FIELD ) {
 
-              TextFileInputField field = new TextFileInputField();
+              BaseFileInputField field = new BaseFileInputField();
 
               List<StepInjectionMetaEntry> entries = lookField.getDetails();
               for ( StepInjectionMetaEntry entry : entries ) {
@@ -553,7 +554,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
     // Only change a list when you need to, don't clear/reset existing content if you don't send new content.
     //
     if ( fields.size() > 0 ) {
-      meta.inputFiles.inputFields = fields.toArray( new TextFileInputField[fields.size()] );
+      meta.inputFiles.inputFields = fields.toArray( new BaseFileInputField[fields.size()] );
     }
     if ( fileLines.size() > 0 ) {
       meta.allocateFiles( fileLines.size() );
@@ -646,7 +647,7 @@ public class TextFileInputMetaInjection implements StepMetaInjectionInterface {
 
     StepInjectionMetaEntry fieldsEntry = getEntry( Entry.FIELDS );
     if ( !Const.isEmpty( meta.inputFiles.inputFields ) ) {
-      for ( TextFileInputField inputField : meta.inputFiles.inputFields ) {
+      for ( BaseFileInputField inputField : meta.inputFiles.inputFields ) {
         StepInjectionMetaEntry fieldEntry = getEntry( Entry.FIELD );
         fieldsEntry.getDetails().add( fieldEntry );
 

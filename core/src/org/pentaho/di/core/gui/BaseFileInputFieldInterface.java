@@ -22,7 +22,7 @@
 
 package org.pentaho.di.core.gui;
 
-public interface TextFileInputFieldInterface extends Comparable<TextFileInputFieldInterface> {
+public interface BaseFileInputFieldInterface extends Comparable<BaseFileInputFieldInterface> {
   public int getPosition();
 
   public int getLength();
@@ -31,5 +31,5 @@ public interface TextFileInputFieldInterface extends Comparable<TextFileInputFie
 
   public void setLength( int i );
 
-  public TextFileInputFieldInterface createNewInstance( String newFieldname, int x, int newlength );
+  public BaseFileInputFieldInterface createNewInstance( String newFieldname, int x, int newlength );
 }

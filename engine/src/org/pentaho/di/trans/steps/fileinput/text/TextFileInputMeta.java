@@ -58,6 +58,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputStepMeta;
+import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -309,7 +310,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
 
       for ( int i = 0; i < nrfields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
-        TextFileInputField field = new TextFileInputField();
+        BaseFileInputField field = new BaseFileInputField();
 
         field.setName( XMLHandler.getTagValue( fnode, "name" ) );
         field.setType( ValueMeta.getType( XMLHandler.getTagValue( fnode, "type" ) ) );
@@ -390,7 +391,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     }
 
     for ( int i = 0; i < nrfields; i++ ) {
-      retval.inputFiles.inputFields[i] = (TextFileInputField) inputFiles.inputFields[i].clone();
+      retval.inputFiles.inputFields[i] = (BaseFileInputField) inputFiles.inputFields[i].clone();
     }
 
     for ( int i = 0; i < nrfilters; i++ ) {
@@ -406,7 +407,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
   public void allocate( int nrfiles, int nrfields, int nrfilters ) {
     allocateFiles( nrfiles );
 
-    inputFiles.inputFields = new TextFileInputField[nrfields];
+    inputFiles.inputFields = new BaseFileInputField[nrfields];
     filter = new TextFileFilter[nrfilters];
   }
 
@@ -478,7 +479,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     }
 
     for ( int i = 0; i < nrfields; i++ ) {
-      inputFiles.inputFields[i] = new TextFileInputField( "field" + ( i + 1 ), 1, -1 );
+      inputFiles.inputFields[i] = new BaseFileInputField( "field" + ( i + 1 ), 1, -1 );
     }
 
     content.dateFormatLocale = Locale.getDefault();
@@ -504,7 +505,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
     }
 
     for ( int i = 0; i < inputFiles.inputFields.length; i++ ) {
-      TextFileInputField field = inputFiles.inputFields[i];
+      BaseFileInputField field = inputFiles.inputFields[i];
 
       int type = field.getType();
       if ( type == ValueMetaInterface.TYPE_NONE ) {
@@ -705,7 +706,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
 
     retval.append( "    <fields>" ).append( Const.CR );
     for ( int i = 0; i < inputFiles.inputFields.length; i++ ) {
-      TextFileInputField field = inputFiles.inputFields[i];
+      BaseFileInputField field = inputFiles.inputFields[i];
 
       retval.append( "      <field>" ).append( Const.CR );
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", field.getName() ) );
@@ -869,7 +870,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
       }
 
       for ( int i = 0; i < nrfields; i++ ) {
-        TextFileInputField field = new TextFileInputField();
+        BaseFileInputField field = new BaseFileInputField();
 
         field.setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
         field.setType( ValueMeta.getType( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
@@ -984,7 +985,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
       }
 
       for ( int i = 0; i < inputFiles.inputFields.length; i++ ) {
-        TextFileInputField field = inputFiles.inputFields[i];
+        BaseFileInputField field = inputFiles.inputFields[i];
 
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field.getName() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_type", field.getTypeDesc() );
@@ -1066,7 +1067,7 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
       remarks.add( cr );
     }
 
-    FileInputList textFileList = getTextFileList( transMeta );
+    FileInputList textFileList = getFileInputList( transMeta );
     if ( textFileList.nrOfFiles() == 0 ) {
       if ( !inputFiles.acceptingFilenames ) {
         cr =
@@ -1247,5 +1248,9 @@ public class TextFileInputMeta extends BaseFileInputStepMeta implements StepMeta
   @Override
   public String getEncoding() {
     return content.encoding;
+  }
+
+  public boolean isAcceptingFilenames() {
+    return inputFiles.acceptingFilenames;
   }
 }
