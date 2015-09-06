@@ -34,6 +34,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.missing.MissingEntry;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -399,17 +400,27 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
 
       PluginRegistry registry = PluginRegistry.getInstance();
       PluginInterface jobPlugin = registry.findPluginWithId( JobEntryPluginType.class, typeId );
-      JobEntryInterface entry = (JobEntryInterface) registry.loadClass( jobPlugin );
-      entry.setName( name );
-      entry.setDescription( getString( copyNode, PROP_DESCRIPTION ) );
-      entry.setObjectId( new StringObjectId( copyNode.getId().toString() ) );
+      JobEntryInterface jobMetaInterface = null;
+      boolean isMissing = jobPlugin == null;
+      if ( !isMissing ) {
+        jobMetaInterface = (JobEntryInterface) registry.loadClass( jobPlugin );
+      } else {
+        MissingEntry missingEntry = new MissingEntry( jobMeta.getName(), typeId );
+        jobMeta.addMissingEntry( missingEntry );
+        jobMetaInterface = missingEntry;
+      }
+      jobMetaInterface.setName( name );
+      jobMetaInterface.setDescription( getString( copyNode, PROP_DESCRIPTION ) );
+      jobMetaInterface.setObjectId( new StringObjectId( copyNode.getId().toString() ) );
       RepositoryProxy proxy = new RepositoryProxy( copyNode.getNode( NODE_CUSTOM ) );
 
-      compatibleJobEntryLoadRep( entry, proxy, null, jobMeta.getDatabases(), jobMeta.getSlaveServers() );
-      entry.setMetaStore( jobMeta.getMetaStore() ); // make sure metastore is passed
-      entry.loadRep( proxy, jobMeta.getMetaStore(), null, jobMeta.getDatabases(), jobMeta.getSlaveServers() );
-      jobentries.add( entry );
-      return entry;
+      jobMetaInterface.setMetaStore( jobMeta.getMetaStore() ); // make sure metastore is passed
+      if ( !isMissing ) {
+        compatibleJobEntryLoadRep( jobMetaInterface, proxy, null, jobMeta.getDatabases(), jobMeta.getSlaveServers() );
+        jobMetaInterface.loadRep( proxy, jobMeta.getMetaStore(), null, jobMeta.getDatabases(), jobMeta.getSlaveServers() );
+      }
+      jobentries.add( jobMetaInterface );
+      return jobMetaInterface;
     } catch ( Exception e ) {
       throw new KettleException( "Unable to read job entry interface information from repository", e );
     }
