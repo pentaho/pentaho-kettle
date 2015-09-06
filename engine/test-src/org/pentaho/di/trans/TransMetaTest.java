@@ -21,9 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.trans;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -32,6 +29,7 @@ import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
@@ -44,6 +42,19 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class TransMetaTest {
 
@@ -154,6 +165,28 @@ public class TransMetaTest {
     } catch ( Exception ex ) {
       fail();
     }
+  }
+
+  @Test
+  public void testContentChangeListener() throws Exception {
+    ContentChangedListener listener = mock( ContentChangedListener.class );
+    transMeta.addContentChangedListener( listener );
+
+    transMeta.setChanged();
+    transMeta.setChanged( true );
+
+    verify( listener, times( 2 ) ).contentChanged( same( transMeta ) );
+
+    transMeta.clearChanged();
+    transMeta.setChanged( false );
+
+    verify( listener, times( 2 ) ).contentSafe( same( transMeta ) );
+
+    transMeta.removeContentChangedListener( listener );
+    transMeta.setChanged();
+    transMeta.setChanged( true );
+
+    verifyNoMoreInteractions( listener );
   }
 
   private static StepMeta mockStepMeta( String name ) {
