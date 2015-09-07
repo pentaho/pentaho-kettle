@@ -196,15 +196,27 @@ public class SpoonTabsDelegate extends SpoonDelegate {
   }
 
   public boolean addSpoonBrowser( String name, String urlString ) {
-    return addSpoonBrowser( name, urlString, true, null );
+    return addSpoonBrowser( name, urlString, true, null, true );
+  }
+
+  public boolean addSpoonBrowser( String name, String urlString, boolean toolbar ) {
+    return addSpoonBrowser( name, urlString, true, null, toolbar );
   }
 
   public boolean addSpoonBrowser( String name, String urlString, LocationListener listener ) {
-    boolean ok = addSpoonBrowser( name, urlString, true, listener );
+    boolean ok = addSpoonBrowser( name, urlString, true, listener, true );
     return ok;
   }
 
+  public boolean addSpoonBrowser( String name, String urlString, LocationListener listener, boolean toolbar ) {
+    return addSpoonBrowser( name, urlString, true, listener, toolbar );
+  }
+
   public boolean addSpoonBrowser( String name, String urlString, boolean isURL, LocationListener listener ) {
+    return addSpoonBrowser( name, urlString, isURL, listener, true );
+  }
+
+  public boolean addSpoonBrowser( String name, String urlString, boolean isURL, LocationListener listener, boolean toolbar ) {
     TabSet tabfolder = spoon.tabfolder;
 
     try {
@@ -217,7 +229,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
       TabMapEntry tabMapEntry = findTabMapEntry( name, ObjectType.BROWSER );
       if ( tabMapEntry == null ) {
         CTabFolder cTabFolder = tabfolder.getSwtTabset();
-        final SpoonBrowser browser = new SpoonBrowser( cTabFolder, spoon, urlString, isURL, true, listener );
+        final SpoonBrowser browser = new SpoonBrowser( cTabFolder, spoon, urlString, isURL, toolbar, listener );
 
         browser.getBrowser().addOpenWindowListener( new OpenWindowListener() {
 

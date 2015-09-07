@@ -8690,12 +8690,20 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     delegates.jobs.addJobGraph( jobMeta );
   }
 
+  public boolean addSpoonBrowser( String name, String urlString, LocationListener locationListener, boolean toolbar ) {
+    return delegates.tabs.addSpoonBrowser( name, urlString, locationListener, toolbar );
+  }
+
   public boolean addSpoonBrowser( String name, String urlString, LocationListener locationListener ) {
-    return delegates.tabs.addSpoonBrowser( name, urlString, locationListener );
+    return delegates.tabs.addSpoonBrowser( name, urlString, locationListener, true );
+  }
+
+  public boolean addSpoonBrowser( String name, String urlString, boolean toolbar ) {
+    return delegates.tabs.addSpoonBrowser( name, urlString, null, toolbar );
   }
 
   public boolean addSpoonBrowser( String name, String urlString ) {
-    return delegates.tabs.addSpoonBrowser( name, urlString, null );
+    return delegates.tabs.addSpoonBrowser( name, urlString, null, true );
   }
 
   public TransExecutionConfiguration getTransExecutionConfiguration() {
