@@ -22,18 +22,22 @@
 
 package org.pentaho.di.job;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entry.JobEntryCopy;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class JobMetaTest {
   private JobMeta jm;
@@ -78,5 +82,27 @@ public class JobMetaTest {
   @Test
   public void testPathNotExist() throws KettleXMLException, IOException, URISyntaxException {
     Assert.assertFalse( jm.isPathExist( je2, je4 ) );
+  }
+
+  @Test
+  public void testContentChangeListener() throws Exception {
+    ContentChangedListener listener = mock( ContentChangedListener.class );
+    jm.addContentChangedListener( listener );
+
+    jm.setChanged();
+    jm.setChanged( true );
+
+    verify( listener, times( 2 ) ).contentChanged( same( jm ) );
+
+    jm.clearChanged();
+    jm.setChanged( false );
+
+    verify( listener, times( 2 ) ).contentSafe( same( jm ) );
+
+    jm.removeContentChangedListener( listener );
+    jm.setChanged();
+    jm.setChanged( true );
+
+    verifyNoMoreInteractions( listener );
   }
 }

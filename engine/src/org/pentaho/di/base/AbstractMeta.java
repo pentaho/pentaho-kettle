@@ -30,6 +30,8 @@ import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.core.changed.ChangedFlag;
+import org.pentaho.di.core.changed.ChangedFlagInterface;
+import org.pentaho.di.core.changed.PDIObserver;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -77,7 +79,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractMeta extends ChangedFlag implements UndoInterface, HasDatabasesInterface, VariableSpace,
+public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace,
     EngineMetaInterface, NamedParams, HasSlaveServersInterface, AttributesInterface, HasRepositoryInterface,
     LoggingObjectInterface {
 
@@ -153,6 +155,8 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
 
   /** The last loaded version of the shared objects */
   protected SharedObjects sharedObjects;
+
+  final protected ChangedFlag changedFlag = new ChangedFlag();
 
   protected int max_undo;
 
@@ -513,7 +517,7 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
 
   /**
    * Removes the passed ContentChangedListener from the list of listeners.
-   * 
+   *
    * @param listener
    */
   public void removeContentChangedListener( ContentChangedListener listener ) {
@@ -1624,22 +1628,39 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
     for ( int i = 0; i < nrNotes(); i++ ) {
       getNote( i ).setChanged( false );
     }
-    super.clearChanged();
+    changedFlag.clearChanged();
+    fireContentChangedListeners( false );
+  }
+
+  @Override public void setChanged() {
+    changedFlag.setChanged();
+    fireContentChangedListeners( true );
   }
 
   /*
-   * (non-Javadoc)
-   *
-   * @see org.pentaho.di.core.changed.ChangedFlag#setChanged(boolean)
-   */
+     * (non-Javadoc)
+     *
+     * @see org.pentaho.di.core.changed.ChangedFlag#setChanged(boolean)
+     */
   @Override
-  public void setChanged( boolean ch ) {
+  public final void setChanged( boolean ch ) {
     if ( ch ) {
       setChanged();
     } else {
       clearChanged();
     }
-    fireContentChangedListeners( ch );
+  }
+
+  public void addObserver( PDIObserver o ) {
+    changedFlag.addObserver( o );
+  }
+
+  public void deleteObserver( PDIObserver o ) {
+    changedFlag.deleteObserver( o );
+  }
+
+  public void notifyObservers( Object arg ) {
+    changedFlag.notifyObservers( arg );
   }
 
   /**
@@ -1655,7 +1676,7 @@ public abstract class AbstractMeta extends ChangedFlag implements UndoInterface,
 
   @Override
   public boolean hasChanged() {
-    if ( super.hasChanged() ) {
+    if ( changedFlag.hasChanged() ) {
       return true;
     }
     if ( haveConnectionsChanged() ) {
