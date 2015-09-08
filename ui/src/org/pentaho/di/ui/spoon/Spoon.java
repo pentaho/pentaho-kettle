@@ -4932,6 +4932,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     if ( exit ) {
+      // on windows [...].swt.ole.win32.OleClientSite.OnInPlaceDeactivate can
+      // cause the focus to move to an already disposed tab, resulting in a NPE
+      // so we first move the focus to somewhere else
+      if(this.selectionLabel != null && !this.selectionLabel.isDisposed()) {
+        this.selectionLabel.forceFocus();
+      }
+
       close();
     }
 
