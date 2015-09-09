@@ -1114,14 +1114,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  public void closeSpoonBrowser() {
-    TabMapEntry browserTab = delegates.tabs.findTabMapEntry( STRING_WELCOME_TAB_NAME, ObjectType.BROWSER );
-
-    if ( browserTab != null ) {
-      delegates.tabs.removeTab( browserTab );
-    }
-  }
-
   /**
    * Search the transformation meta-data.
    *
