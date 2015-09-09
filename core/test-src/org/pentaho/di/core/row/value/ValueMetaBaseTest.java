@@ -509,12 +509,8 @@ public class ValueMetaBaseTest {
     dateMeta.setDateFormatLenient( false );
 
     // try to convert date by 'start-of-date' make - old behavior
-    try {
-      dateMeta.setConversionMask( "yyyy-MM-dd" );
-      dateMeta.convertStringToDate( "1918-03-25T07:40:03.012+03:00" );
-      fail( "Shouldn't be converted" );
-    } catch ( KettleValueException ex ) {
-    }
+    dateMeta.setConversionMask( "yyyy-MM-dd" );
+    assertEquals( local( 1918, 3, 25, 0, 0, 0, 0 ), dateMeta.convertStringToDate( "1918-03-25T07:40:03.012+03:00" ) );
 
     // convert ISO-8601 date - supported since Java 7
     dateMeta.setConversionMask( "yyyy-MM-dd'T'HH:mm:ss.SSSXXX" );

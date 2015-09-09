@@ -700,12 +700,9 @@ public class ValueMetaBase implements ValueMetaInterface {
         // error happen
         throw new ParseException( string, pp.getErrorIndex() );
       }
-      for ( int i = pp.getIndex(); i < string.length(); i++ ) {
-        // only space chars can be placed after date
-        if ( !Character.isWhitespace( string.charAt( i ) ) ) {
-          throw new ParseException( string, pp.getIndex() );
-        }
-      }
+      // some chars can be after pp.getIndex(). That means, not full value was parsed. For example, for value
+      // "25-03-1918 11:54" and format "dd-MM-yyyy", value will be "25-03-1918 00:00" without any exception.
+      // If there are only spaces after pp.getIndex() - that means full values was parsed
       return result;
     } catch ( ParseException e ) {
       String dateFormat = ( getDateFormat() != null ) ? getDateFormat().toPattern() : "null";
