@@ -121,7 +121,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
             spoon.refreshTree();
             // spoon.refreshCoreObjects();
           } else if ( entry.getObject() instanceof SpoonBrowser ) {
-            spoon.closeSpoonBrowser();
+            this.removeTab(entry);
             spoon.refreshTree();
           } else if ( entry.getObject() instanceof Composite ) {
             Composite comp = (Composite) entry.getObject();
