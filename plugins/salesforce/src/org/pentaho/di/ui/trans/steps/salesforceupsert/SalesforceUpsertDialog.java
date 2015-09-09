@@ -174,6 +174,8 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
   private static List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
   private boolean gotFields = false;
 
+  private boolean excludeNonUpdatableFields = true;
+
   public SalesforceUpsertDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
     input = (SalesforceUpsertMeta) in;
@@ -932,8 +934,8 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
       connection.setTimeOut( realTimeOut );
       // connect to Salesforce
       connection.connect();
-      // return fieldsname for the module
-      return connection.getFields( selectedModule );
+      return connection.getFields( connection.getObjectFields( selectedModule, excludeNonUpdatableFields ) );
+
     } catch ( Exception e ) {
       throw new KettleException( "Erreur getting fields from module [" + url + "]!", e );
     } finally {
@@ -944,6 +946,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
         }
       }
     }
+
   }
 
   /**
