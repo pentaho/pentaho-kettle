@@ -165,7 +165,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
   protected boolean batchIdPassed;
 
   protected static final String XML_TAG_PARAMETERS = "parameters";
-  
+
   private List<MissingEntry> missingEntries;
 
   /**
@@ -382,8 +382,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
    * doClear parameter is true, the clone will be cleared of ALL values before the copy. If false, only the copied
    * fields will be cleared.
    *
-   * @param doClear
-   *          Whether to clear all of the clone's data before copying from the source object
+   * @param doClear Whether to clear all of the clone's data before copying from the source object
    * @return a real clone of the calling object
    */
   public Object realClone( boolean doClear ) {
@@ -913,7 +912,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
    */
   @Deprecated
   public void loadXML( Node jobnode, String fname, Repository rep, boolean ignoreRepositorySharedObjects,
-    OverwritePrompter prompter ) throws KettleXMLException {
+                       OverwritePrompter prompter ) throws KettleXMLException {
     loadXML( jobnode, fname, rep, null, ignoreRepositorySharedObjects, prompter );
   }
 
@@ -1032,10 +1031,14 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
       // Read the database connections
       //
       int nr = XMLHandler.countNodes( jobnode, "connection" );
+      Set<String> privateDatabases = new HashSet<String>( nr );
       for ( int i = 0; i < nr; i++ ) {
         Node dbnode = XMLHandler.getSubNodeByNr( jobnode, "connection", i );
         DatabaseMeta dbcon = new DatabaseMeta( dbnode );
         dbcon.shareVariablesWith( this );
+        if ( !dbcon.isShared() ) {
+          privateDatabases.add( dbcon.getName() );
+        }
 
         DatabaseMeta exist = findDatabase( dbcon.getName() );
         if ( exist == null ) {
@@ -1053,6 +1056,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
           }
         }
       }
+      setPrivateDatabases( privateDatabases );
 
       // Read the slave servers...
       //
@@ -1385,7 +1389,7 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
     JobEntryCopy deleted = jobcopies.remove( i );
     if ( deleted != null ) {
       if ( deleted.getEntry() instanceof MissingEntry ) {
-        removeMissingEntry( ( MissingEntry ) deleted.getEntry() );
+        removeMissingEntry( (MissingEntry) deleted.getEntry() );
       }
     }
     setChanged();
@@ -2487,23 +2491,23 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
     setInternalNameKettleVariable( var );
 
     // The name of the directory in the repository
-    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null 
+    variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory != null
       ? directory.getPath() : "" );
 
     boolean hasRepoDir = getRepositoryDirectory() != null && getRepository() != null;
 
     // setup fallbacks
     if ( hasRepoDir ) {
-      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, 
-          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
     } else {
-      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, 
-          variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
+      variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
+        variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
     }
-    
-    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, 
-        variables.getVariable( repository != null ? 
-            Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY : Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
+
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
+      variables.getVariable( repository != null
+        ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY : Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
   }
 
   /**
@@ -2925,28 +2929,28 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
   public void setExtraLogTables( List<LogTableInterface> extraLogTables ) {
     this.extraLogTables = extraLogTables;
   }
-  
+
   public boolean containsJobCopy( JobEntryCopy jobCopy ) {
     return jobcopies.contains( jobCopy );
   }
-  
+
   public List<MissingEntry> getMissingEntries() {
     return missingEntries;
   }
-  
+
   public void addMissingEntry( MissingEntry missingEntry ) {
     if ( missingEntries == null ) {
       missingEntries = new ArrayList<MissingEntry>();
     }
     missingEntries.add( missingEntry );
   }
-  
+
   public void removeMissingEntry( MissingEntry missingEntry ) {
     if ( missingEntries != null && missingEntry != null && missingEntries.contains( missingEntry ) ) {
       missingEntries.remove( missingEntry );
     }
   }
-  
+
   public boolean hasMissingPlugins() {
     return missingEntries != null && !missingEntries.isEmpty();
   }

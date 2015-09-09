@@ -78,6 +78,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace,
     EngineMetaInterface, NamedParams, HasSlaveServersInterface, AttributesInterface, HasRepositoryInterface,
@@ -161,6 +162,16 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   protected int max_undo;
 
   protected int undo_position;
+
+  /**
+   * The set of names of databases available only for this meta. The list is needed to distinguish connections when we
+   * load/save the meta in JCR repository.
+   * <p/>
+   * Should be {@code null} if we use old meta
+   * @see <a href="http://jira.pentaho.com/browse/PPP-3405">PPP-3405</a>,
+   * <a href="http://jira.pentaho.com/browse/PPP-3413">PPP-3413</a>
+   **/
+  protected Set<String> privateDatabases;
 
   /*
    * (non-Javadoc)
@@ -1781,8 +1792,25 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     }
     return overwrite;
   }
-  
+
   public boolean hasMissingPlugins() {
     return false;
+  }
+
+  /**
+   * Returns the set of databases available only for this meta or <b>null</b> if it was not initialized.
+   * Note, that the internal collection is returned with no protection wrapper!
+   * @return <b>nonSharableDatabases</b>
+   */
+  public Set<String> getPrivateDatabases() {
+    return privateDatabases;
+  }
+
+  /**
+   * Sets private databases' names
+   * @param privateDatabases - The list of databases available only for this meta
+   */
+  public void setPrivateDatabases( Set<String> privateDatabases ) {
+    this.privateDatabases = privateDatabases;
   }
 }

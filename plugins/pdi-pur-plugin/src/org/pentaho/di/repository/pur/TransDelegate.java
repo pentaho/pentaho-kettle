@@ -17,9 +17,10 @@
 
 package org.pentaho.di.repository.pur;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.ClusterSchema;
@@ -247,17 +248,17 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
     throws KettleException {
     TransMeta transMeta = (TransMeta) element;
 
-    List<String> privateTransformationDatabases = null;
+    Set<String> privateTransformationDatabases = null;
     // read the private databases
     DataNode privateDatabases = rootNode.getNode( NODE_TRANS_PRIVATE_DATABASES );
     //if we have node than we use new format we could remove unexpected node
     if ( privateDatabases != null ) {
-      privateTransformationDatabases = new ArrayList<String>();
+      privateTransformationDatabases = new HashSet<String>();
       for ( DataNode privateDatabase : privateDatabases.getNodes() ) {
         privateTransformationDatabases.add( privateDatabase.getName() );
       }
     }
-    transMeta.setPrivateTransformationDatabases( privateTransformationDatabases );
+    transMeta.setPrivateDatabases( privateTransformationDatabases );
 
     // read the steps...
     //
@@ -457,7 +458,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
   /**
    * Compatible loading of metadata for v4 style plugins using deprecated methods.
-   * 
+   *
    * @param stepMetaInterface
    * @param repository
    * @param objectId
@@ -584,15 +585,16 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
     DataNode rootNode = new DataNode( NODE_TRANS );
 
-    DataNode stepsNode = rootNode.addNode( NODE_STEPS );
-
-    if ( transMeta.getPrivateTransformationDatabases() != null ) {
+    if ( transMeta.getPrivateDatabases() != null ) {
       //save all private transformations database name http://jira.pentaho.com/browse/PPP-3405
       DataNode privateDatabaseNode = rootNode.addNode( NODE_TRANS_PRIVATE_DATABASES );
-      for ( String privateDatabase : transMeta.getPrivateTransformationDatabases() ) {
+      for ( String privateDatabase : transMeta.getPrivateDatabases() ) {
         privateDatabaseNode.addNode( privateDatabase );
       }
     }
+
+    DataNode stepsNode = rootNode.addNode( NODE_STEPS );
+
     // Also save all the steps in the transformation!
     //
     int stepNr = 0;
@@ -646,7 +648,8 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
       // Save the clustering information as well...
       //
-      stepNode.setProperty( PROP_CLUSTER_SCHEMA, step.getClusterSchema() == null ? "" : step.getClusterSchema() //$NON-NLS-1$
+      stepNode.setProperty( PROP_CLUSTER_SCHEMA,
+        step.getClusterSchema() == null ? "" : step.getClusterSchema() //$NON-NLS-1$
           .getName() );
 
       // Save the error hop metadata
@@ -813,7 +816,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
   /**
    * Insert all the databases from the repository into the TransMeta object, overwriting optionally
-   * 
+   *
    * @param TransMeta
    *          The transformation to load into.
    * @param overWriteShared
@@ -837,7 +840,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
   /**
    * Add clusters in the repository to this transformation if they are not yet present.
-   * 
+   *
    * @param TransMeta
    *          The transformation to load into.
    * @param overWriteShared
@@ -859,7 +862,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
   /**
    * Add the partitions in the repository to this transformation if they are not yet present.
-   * 
+   *
    * @param TransMeta
    *          The transformation to load into.
    * @param overWriteShared
@@ -881,7 +884,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
   /**
    * Add the slave servers in the repository to this transformation if they are not yet present.
-   * 
+   *
    * @param TransMeta
    *          The transformation to load into.
    * @param overWriteShared
