@@ -23,8 +23,11 @@
 package org.pentaho.di.ui.partition.dialog;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -59,6 +62,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.DialogUtils;
 
 /**
  *
@@ -74,6 +78,8 @@ public class PartitionSchemaDialog extends Dialog {
   private static Class<?> PKG = PartitionSchemaDialog.class; // for i18n purposes, needed by Translator2!!
 
   private PartitionSchema partitionSchema;
+  
+  private Collection<PartitionSchema> existingSchemas;
 
   private Shell shell;
 
@@ -102,17 +108,23 @@ public class PartitionSchemaDialog extends Dialog {
   private List<DatabaseMeta> databases;
 
   private VariableSpace variableSpace;
-
-  public PartitionSchemaDialog( Shell par, PartitionSchema partitionSchema, List<DatabaseMeta> databases,
-    VariableSpace variableSpace ) {
+  
+  public PartitionSchemaDialog( Shell par, PartitionSchema partitionSchema,
+      Collection<PartitionSchema> existingSchemas, List<DatabaseMeta> databases, VariableSpace variableSpace ) {
     super( par, SWT.NONE );
     this.partitionSchema = (PartitionSchema) partitionSchema.clone();
     this.originalSchema = partitionSchema;
+    this.existingSchemas = existingSchemas;
     this.databases = databases;
     this.variableSpace = variableSpace;
 
     props = PropsUI.getInstance();
     ok = false;
+  }
+
+  public PartitionSchemaDialog( Shell par, PartitionSchema partitionSchema, List<DatabaseMeta> databases,
+      VariableSpace variableSpace ) {
+    this( par, partitionSchema, Collections.<PartitionSchema>emptyList(), databases, variableSpace );
   }
 
   public boolean open() {
@@ -319,6 +331,21 @@ public class PartitionSchemaDialog extends Dialog {
 
   public void ok() {
     getInfo();
+
+    if ( !partitionSchema.getName().equals( originalSchema.getName() ) ) {
+      if ( DialogUtils.objectExists( partitionSchema, existingSchemas ) ) {
+        String title = BaseMessages.getString( PKG, "PartitionSchemaDialog.PartitionSchemaNameExists.Title" );
+        String message =
+            BaseMessages.getString( PKG, "PartitionSchemaDialog.PartitionSchemaNameExists", partitionSchema.getName() );
+        String okButton = BaseMessages.getString( PKG, "System.Button.OK" );
+        MessageDialog dialog =
+            new MessageDialog( shell, title, null, message, MessageDialog.ERROR, new String[] { okButton }, 0 );
+
+        dialog.open();
+        return;
+      }
+    }
+    
     originalSchema.setName( partitionSchema.getName() );
     originalSchema.setPartitionIDs( partitionSchema.getPartitionIDs() );
     originalSchema.setDynamicallyDefined( wDynamic.getSelection() );

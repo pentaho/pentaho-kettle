@@ -22,6 +22,8 @@
 
 package org.pentaho.di.ui.spoon.delegates;
 
+import java.util.List;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -30,8 +32,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.spoon.Spoon;
-
-import java.util.List;
 
 public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
   public SpoonPartitionsDelegate( Spoon spoon ) {
@@ -42,7 +42,8 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
     PartitionSchema partitionSchema = new PartitionSchema();
 
     PartitionSchemaDialog dialog =
-      new PartitionSchemaDialog( spoon.getShell(), partitionSchema, transMeta.getDatabases(), transMeta );
+        new PartitionSchemaDialog( spoon.getShell(), partitionSchema, transMeta.getPartitionSchemas(), transMeta
+            .getDatabases(), transMeta );
     if ( dialog.open() ) {
       List<PartitionSchema> partitions = transMeta.getPartitionSchemas();
       if ( isDuplicate( partitions, partitionSchema ) ) {

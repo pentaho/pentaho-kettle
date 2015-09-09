@@ -22,6 +22,10 @@
 
 package org.pentaho.di.ui.cluster.dialog;
 
+import java.util.Collection;
+import java.util.Collections;
+
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -56,6 +60,7 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.www.RegisterTransServlet;
 
 /**
@@ -72,6 +77,8 @@ public class SlaveServerDialog extends Dialog {
   private static Class<?> PKG = SlaveServerDialog.class; // for i18n purposes, needed by Translator2!!
 
   private SlaveServer slaveServer;
+  
+  private Collection<SlaveServer> existingServers;
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -104,13 +111,18 @@ public class SlaveServerDialog extends Dialog {
   private SlaveServer originalServer;
   private boolean ok;
 
-  public SlaveServerDialog( Shell par, SlaveServer slaveServer ) {
+  public SlaveServerDialog( Shell par, SlaveServer slaveServer, Collection<SlaveServer> existingServers ) {
     super( par, SWT.NONE );
     this.slaveServer = (SlaveServer) slaveServer.clone();
     this.slaveServer.shareVariablesWith( slaveServer );
     this.originalServer = slaveServer;
+    this.existingServers = existingServers;
     props = PropsUI.getInstance();
     ok = false;
+  }
+
+  public SlaveServerDialog( Shell par, SlaveServer slaveServer ) {
+    this( par, slaveServer, Collections.<SlaveServer>emptyList() );
   }
 
   public boolean open() {
@@ -512,6 +524,20 @@ public class SlaveServerDialog extends Dialog {
 
   public void ok() {
     getInfo();
+    
+    if ( !slaveServer.getName().equals( originalServer.getName() ) ) {
+      if ( DialogUtils.objectExists( slaveServer, existingServers ) ) {
+        String title = BaseMessages.getString( PKG, "SlaveServerDialog.SlaveServerNameExists.Title" );
+        String message = BaseMessages.getString( PKG, "SlaveServerDialog.SlaveServerNameExists", slaveServer.getName() );
+        String okButton = BaseMessages.getString( PKG, "System.Button.OK" );
+        MessageDialog dialog =
+            new MessageDialog( shell, title, null, message, MessageDialog.ERROR, new String[] { okButton }, 0 );
+
+        dialog.open();
+        return;
+      }
+    }
+    
     originalServer.setName( slaveServer.getName() );
     originalServer.setHostname( slaveServer.getHostname() );
     originalServer.setPort( slaveServer.getPort() );
