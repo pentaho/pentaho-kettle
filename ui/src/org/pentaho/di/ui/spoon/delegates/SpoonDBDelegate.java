@@ -61,6 +61,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
+import org.pentaho.di.ui.util.DialogUtils;
 
 public class SpoonDBDelegate extends SpoonDelegate {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
@@ -82,12 +83,17 @@ public class SpoonDBDelegate extends SpoonDelegate {
       return; // program error, exit just to make sure.
     }
 
+    String originalName = databaseMeta.getName();
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
     getDatabaseDialog().setDatabases( hasDatabasesInterface.getDatabases() );
     String newname = getDatabaseDialog().open();
     if ( !Const.isEmpty( newname ) ) { // null: CANCEL
 
       databaseMeta = getDatabaseDialog().getDatabaseMeta();
+      if (!newname.equals( originalName ) && DialogUtils.objectExists( databaseMeta, hasDatabasesInterface.getDatabases() )) {
+        DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
+        return;
+      }
 
       saveConnection( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION );
 

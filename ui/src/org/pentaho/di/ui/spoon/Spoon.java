@@ -3129,12 +3129,21 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   protected void editSlaveServer( SlaveServer slaveServer ) {
     // slaveServer.getVariable("MASTER_HOST")
-    SlaveServerDialog dialog = new SlaveServerDialog( shell, slaveServer );
+    List<SlaveServer> existingServers = getActiveAbstractMeta().getSlaveServers();
+    SlaveServerDialog dialog = new SlaveServerDialog( shell, slaveServer, existingServers );
     if ( dialog.open() ) {
       refreshTree();
       refreshGraph();
       sharedObjectSyncUtil.synchronizeSlaveServers( slaveServer );
     }
+  }
+  
+  private AbstractMeta getActiveAbstractMeta() {
+    AbstractMeta abstractMeta = getActiveTransformation();
+    if ( abstractMeta == null ) {
+      abstractMeta = getActiveJob();
+    }
+    return abstractMeta;
   }
 
   private void addTabs() {
@@ -8318,7 +8327,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private void editPartitionSchema( TransMeta transMeta, PartitionSchema partitionSchema ) {
     PartitionSchemaDialog dialog =
-      new PartitionSchemaDialog( shell, partitionSchema, transMeta.getDatabases(), transMeta );
+        new PartitionSchemaDialog( shell, partitionSchema, transMeta.getPartitionSchemas(), transMeta.getDatabases(),
+            transMeta );
     if ( dialog.open() ) {
       refreshTree();
       sharedObjectSyncUtil.synchronizePartitionSchemas( partitionSchema );
@@ -8351,7 +8361,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private void editClusterSchema( TransMeta transMeta, ClusterSchema clusterSchema ) {
-    ClusterSchemaDialog dialog = new ClusterSchemaDialog( shell, clusterSchema, transMeta.getSlaveServers() );
+    ClusterSchemaDialog dialog =
+        new ClusterSchemaDialog( shell, clusterSchema, transMeta.getClusterSchemas(), transMeta.getSlaveServers() );
     if ( dialog.open() ) {
       refreshTree();
       sharedObjectSyncUtil.synchronizeClusterSchemas( clusterSchema );

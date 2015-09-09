@@ -22,8 +22,11 @@
 
 package org.pentaho.di.ui.util;
 
+import java.util.Collection;
+
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.shared.SharedObjectInterface;
 
 /**
  * @author Andrey Khayrutdinov
@@ -46,6 +49,16 @@ public class DialogUtils {
       }
     }
     return null;
+  }
+  
+  public static boolean objectExists( SharedObjectInterface object, Collection<? extends SharedObjectInterface> scope ) {
+    for ( SharedObjectInterface element : scope ) {
+      String elementName = element.getName();
+      if ( elementName != null && elementName.equalsIgnoreCase( object.getName() ) ) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }
