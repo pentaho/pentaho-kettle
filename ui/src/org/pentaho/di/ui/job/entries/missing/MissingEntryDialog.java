@@ -102,7 +102,7 @@ public class MissingEntryDialog extends JobEntryDialog implements JobEntryDialog
     int margin = Const.MARGIN;
 
     shell =
-        new Shell( shellParent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.CLOSE | SWT.MAX | SWT.MIN | SWT.ICON
+        new Shell( shellParent, SWT.DIALOG_TRIM | SWT.CLOSE | SWT.ICON
             | SWT.APPLICATION_MODAL );
 
     props.setLook( shell );
