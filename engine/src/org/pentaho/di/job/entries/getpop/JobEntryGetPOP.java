@@ -726,7 +726,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
   public String getAttachmentFolder() {
     return attachmentfolder;
   }
-  
+
   public String getRealAttachmentFolder() {
     return environmentSubstitute( getAttachmentFolder() );
   }

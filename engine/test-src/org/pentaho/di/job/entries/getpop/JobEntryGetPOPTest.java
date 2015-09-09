@@ -64,16 +64,16 @@ public class JobEntryGetPOPTest {
 
     Mockito.when( parentJob.getLogLevel() ).thenReturn( LogLevel.BASIC );
     entry.setParentJob( parentJob );
-    entry.setSaveMessage(true);
+    entry.setSaveMessage( true );
 
-    Mockito.when( message.getMessageNumber() ).thenReturn(1);
+    Mockito.when( message.getMessageNumber() ).thenReturn( 1 );
     Mockito.when( message.getContent() ).thenReturn( createMessageContent() );
     Mockito.when( mailConn.getMessage() ).thenReturn( message );
 
-    Mockito.doNothing().when( mailConn ).openFolder(Mockito.anyBoolean());
-    Mockito.doNothing().when( mailConn ).openFolder(Mockito.anyString(), Mockito.anyBoolean());
+    Mockito.doNothing().when( mailConn ).openFolder( Mockito.anyBoolean() );
+    Mockito.doNothing().when( mailConn ).openFolder( Mockito.anyString(), Mockito.anyBoolean() );
 
-    Mockito.when( mailConn.getMessagesCount() ).thenReturn(1);
+    Mockito.when( mailConn.getMessagesCount() ).thenReturn( 1 );
   }
 
   private Object createMessageContent() throws IOException, MessagingException {
@@ -85,9 +85,9 @@ public class JobEntryGetPOPTest {
     MimeBodyPart contentFile = new MimeBodyPart();
     File testFile = TestUtils.getInputFile( "GetPOP", "txt" );
     FileDataSource fds = new FileDataSource( testFile.getAbsolutePath() );
-    contentFile.setDataHandler(new DataHandler(fds));
-    contentFile.setFileName(testFile.getName());
-    content.addBodyPart(contentFile);
+    contentFile.setDataHandler( new DataHandler( fds ) );
+    contentFile.setFileName( testFile.getName() );
+    content.addBodyPart( contentFile );
 
     return (Object) content;
   }
@@ -137,10 +137,10 @@ public class JobEntryGetPOPTest {
    */
   @Test
   public void testFetchOneFolderModeIMAPWithIsDefFolder() throws KettleException, MessagingException {
-    entry.fetchOneFolder(mailConn, false, null, "junitRealOutputFolder", "junitTargetAttachmentFolder",
-            "junitRealMoveToIMAPFolder", "junitRealFilenamePattern", 0, Mockito.mock(SimpleDateFormat.class));
-    Mockito.verify( mailConn ).openFolder(true);
-    Mockito.verify( message ).setFlag(Flag.SEEN, true);
+    entry.fetchOneFolder( mailConn, false, null, "junitRealOutputFolder", "junitTargetAttachmentFolder",
+            "junitRealMoveToIMAPFolder", "junitRealFilenamePattern", 0, Mockito.mock( SimpleDateFormat.class ) );
+    Mockito.verify( mailConn ).openFolder( true );
+    Mockito.verify( message ).setFlag( Flag.SEEN, true );
   }
 
   /**
@@ -156,10 +156,10 @@ public class JobEntryGetPOPTest {
     File attachmentsDir = new File( TestUtils.createTempDir() );
     attachmentsDir.deleteOnExit();
 
-    entry.setCreateLocalFolder(true);
-    entry.setSaveAttachment(true);
-    entry.setOutputDirectory(attachmentsDir.getAbsolutePath());
-    entry.setDifferentFolderForAttachment(false);
+    entry.setCreateLocalFolder( true );
+    entry.setSaveAttachment( true );
+    entry.setOutputDirectory( attachmentsDir.getAbsolutePath() );
+    entry.setDifferentFolderForAttachment( false );
 
     String outputFolderName = "";
     String attachmentsFolderName = "";
@@ -172,7 +172,7 @@ public class JobEntryGetPOPTest {
 
     assertTrue( "Output Folder should be a local path", !Const.isEmpty( outputFolderName ) );
     assertTrue( "Attachment Folder should be a local path", !Const.isEmpty( attachmentsFolderName ) );
-    assertTrue("Output and Attachment Folder should match", outputFolderName.equals(attachmentsFolderName));
+    assertTrue( "Output and Attachment Folder should match", outputFolderName.equals( attachmentsFolderName ) );
   }
 
   /**
@@ -190,9 +190,9 @@ public class JobEntryGetPOPTest {
 
     entry.setCreateLocalFolder( true );
     entry.setSaveAttachment( true );
-    entry.setOutputDirectory(outputDir.getAbsolutePath());
-    entry.setDifferentFolderForAttachment(true);
-    entry.setAttachmentFolder(attachmentsDir.getAbsolutePath());
+    entry.setOutputDirectory( outputDir.getAbsolutePath() );
+    entry.setDifferentFolderForAttachment( true );
+    entry.setAttachmentFolder( attachmentsDir.getAbsolutePath() );
 
     String outputFolderName = "";
     String attachmentsFolderName = "";
@@ -203,8 +203,8 @@ public class JobEntryGetPOPTest {
       fail( "Could not create folder: " + e.getLocalizedMessage() );
     }
 
-    assertTrue("Output Folder should be a local path", !Const.isEmpty(outputFolderName));
-    assertTrue("Attachment Folder should be a local path", !Const.isEmpty(attachmentsFolderName));
+    assertTrue( "Output Folder should be a local path", !Const.isEmpty( outputFolderName ) );
+    assertTrue( "Attachment Folder should be a local path", !Const.isEmpty( attachmentsFolderName ) );
     assertFalse( "Output and Attachment Folder should not match", outputFolderName.equals( attachmentsFolderName ) );
   }
 
@@ -270,51 +270,51 @@ public class JobEntryGetPOPTest {
     String outputVariableValue = "myOutputFolder";
     String attachmentVariableName = "myAttachmentVar";
     String attachmentVariableValue = "myOutputFolder";
-    entry.setVariable(outputVariableName, outputVariableValue);
-    entry.setVariable(attachmentVariableName, attachmentVariableValue);
+    entry.setVariable( outputVariableName, outputVariableValue );
+    entry.setVariable( attachmentVariableName, attachmentVariableValue );
 
     // create temp directories for testing using variable value
     String tempDirBase = TestUtils.createTempDir();
-    File outputDir = new File(tempDirBase, outputVariableValue);
+    File outputDir = new File( tempDirBase, outputVariableValue );
     outputDir.mkdir();
-    File attachmentDir = new File(tempDirBase, attachmentVariableValue);
+    File attachmentDir = new File( tempDirBase, attachmentVariableValue );
     attachmentDir.mkdir();
 
     // set output and attachment folders to path with variable
     String outputDirWithVariable = tempDirBase + File.separator + "${" + outputVariableName + "}";
     String attachmentDirWithVariable = tempDirBase + File.separator + "${" + attachmentVariableName + "}";
-    entry.setOutputDirectory(outputDirWithVariable);
-    entry.setAttachmentFolder(attachmentDirWithVariable);
+    entry.setOutputDirectory( outputDirWithVariable );
+    entry.setAttachmentFolder( attachmentDirWithVariable );
 
     // directly test environment substitute functions
-    assertTrue("Error in Direct substitute test for output directory",
-            outputDir.toString().equals(entry.getRealOutputDirectory()));
-    assertTrue("Error in Direct substitute test for  attachment directory",
-            attachmentDir.toString().equals(entry.getRealAttachmentFolder()));
+    assertTrue( "Error in Direct substitute test for output directory",
+            outputDir.toString().equals( entry.getRealOutputDirectory() ) );
+    assertTrue( "Error in Direct substitute test for  attachment directory",
+            attachmentDir.toString().equals( entry.getRealAttachmentFolder() ) );
 
     // test environment substitute for output dir via createOutputDirectory method
     try {
-      String outputRes = entry.createOutputDirectory(JobEntryGetPOP.FOLDER_OUTPUT);
-      assertTrue("Variables not working in createOutputDirectory: output directory",
-              outputRes.equals(outputDir.toString()));
-    } catch (Exception e) {
-      fail("Unexpected exception when calling createOutputDirectory for output directory");
+      String outputRes = entry.createOutputDirectory( JobEntryGetPOP.FOLDER_OUTPUT );
+      assertTrue( "Variables not working in createOutputDirectory: output directory",
+              outputRes.equals(outputDir.toString() ) );
+    } catch ( Exception e ) {
+      fail( "Unexpected exception when calling createOutputDirectory for output directory" );
 
     }
 
     // test environment substitute for attachment dir via createOutputDirectory method
     try {
-      String attachOutputRes = entry.createOutputDirectory(JobEntryGetPOP.FOLDER_ATTACHMENTS);
-      assertTrue("Variables not working in createOutputDirectory: attachment with options false",
-              attachOutputRes.equals(outputDir.toString()));
+      String attachOutputRes = entry.createOutputDirectory( JobEntryGetPOP.FOLDER_ATTACHMENTS );
+      assertTrue( "Variables not working in createOutputDirectory: attachment with options false",
+              attachOutputRes.equals( outputDir.toString() ) );
       // set options that trigger alternate path for FOLDER_ATTACHMENTS option
-      entry.setSaveAttachment(true);
-      entry.setDifferentFolderForAttachment(true);
-      String attachRes = entry.createOutputDirectory(JobEntryGetPOP.FOLDER_ATTACHMENTS);
-      assertTrue("Variables not working in createOutputDirectory: attachment with options true",
-              attachRes.equals(outputDir.toString()));
-    } catch (Exception e) {
-      fail("Unexpected exception when calling createOutputDirectory for attachment directory");
+      entry.setSaveAttachment( true );
+      entry.setDifferentFolderForAttachment( true );
+      String attachRes = entry.createOutputDirectory( JobEntryGetPOP.FOLDER_ATTACHMENTS );
+      assertTrue( "Variables not working in createOutputDirectory: attachment with options true",
+              attachRes.equals( outputDir.toString() ) );
+    } catch ( Exception e ) {
+      fail( "Unexpected exception when calling createOutputDirectory for attachment directory" );
     }
   }
 }
