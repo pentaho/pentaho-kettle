@@ -214,5 +214,10 @@
     <description>Vertica 5+</description>
     <classname>org.pentaho.di.core.database.Vertica5DatabaseMeta</classname>
   </database-type>
+
+  <database-type id="PENTAHO-DATA-INTEGRATION">
+    <description>Pentaho Something</description>
+    <classname>org.pentaho.di.trans.dataservice.client.DataServiceClientPlugin</classname>
+  </database-type>  
  
  </database-types>
