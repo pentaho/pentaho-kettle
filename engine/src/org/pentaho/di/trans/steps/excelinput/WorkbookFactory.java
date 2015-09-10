@@ -40,7 +40,7 @@ public class WorkbookFactory {
       case POI:
         return new PoiWorkbook( filename, encoding ); // encoding is not used, perhaps detected automatically?
       case SAX_POI:
-        return new StaxPoiWorkbook( filename, encoding ); // encoding is not used, perhaps detected // automatically?
+        return new StaxPoiWorkbook( filename, encoding );
       case ODS:
         return new OdfWorkbook( filename, encoding ); // encoding is not used, perhaps detected automatically?
       default:
@@ -56,7 +56,7 @@ public class WorkbookFactory {
       case POI:
         return new PoiWorkbook( inputStream, encoding ); // encoding is not used, perhaps detected automatically?
       case SAX_POI:
-        return new StaxPoiWorkbook( inputStream, encoding ); // encoding is not used, perhaps detected automatically?
+        return new StaxPoiWorkbook( inputStream, encoding );
       case ODS:
         return new OdfWorkbook( inputStream, encoding ); // encoding is not used, perhaps detected automatically?
       default:

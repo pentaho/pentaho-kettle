@@ -30,21 +30,38 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
+import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTXf;
 import org.pentaho.di.core.spreadsheet.KCell;
+import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
 
+/**
+ * Streaming reader for XLSX sheets.<br>
+ * Rows should only be accessed sequentially: random access will severely impact performance.<br>
+ */
 public class StaxPoiSheet implements KSheet {
 
-  private String sheetName;
+  // set to UTC for coherence with PoiSheet;
+  private static final TimeZone DATE_TZ = TimeZone.getTimeZone( "UTC" );
+
+  private final String sheetName;
+  private final String sheetId;
+
+  private final XSSFReader xssfReader;
   private InputStream sheetStream;
   private XMLStreamReader sheetReader;
 
@@ -53,120 +70,102 @@ public class StaxPoiSheet implements KSheet {
   private List<String> headerRow;
   private int numRows;
   private int numCols;
+  // 1-based first non-empty row
+  private int firstRow;
+  private KCell[] currentRowCells;
 
-  // variable to hold the shared strings table
+  // full shared strings table
   private SharedStringsTable sst;
+  // custom styles
+  private StylesTable styles;
 
-  public StaxPoiSheet( XSSFReader reader, String sheetName, String sheetID ) {
+  public StaxPoiSheet( XSSFReader reader, String sheetName, String sheetID )
+      throws InvalidFormatException, IOException, XMLStreamException {
     this.sheetName = sheetName;
-    try {
-      sst = reader.getSharedStringsTable();
-      sheetStream = reader.getSheet( sheetID );
-      XMLInputFactory factory = XMLInputFactory.newInstance();
-      sheetReader = factory.createXMLStreamReader( sheetStream );
-      headerRow = new ArrayList<String>();
-      while ( sheetReader.hasNext() ) {
-        int event = sheetReader.next();
-        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "dimension" ) ) {
-          String dim = sheetReader.getAttributeValue( null, "ref" ).split( ":" )[1];
+    xssfReader = reader;
+    sheetId = sheetID;
+    sst = reader.getSharedStringsTable();
+    styles = reader.getStylesTable();
+    sheetStream = reader.getSheet( sheetID );
+    XMLInputFactory factory = XMLInputFactory.newInstance();
+    sheetReader = factory.createXMLStreamReader( sheetStream );
+    headerRow = new ArrayList<String>();
+    while ( sheetReader.hasNext() ) {
+      int event = sheetReader.next();
+      if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "dimension" ) ) {
+        String dim = sheetReader.getAttributeValue( null, "ref" );
+        // empty sheets have dimension with no range
+        if ( StringUtils.contains( dim, ':' ) ) {
+          dim = dim.split( ":" )[1];
           numRows = StaxUtil.extractRowNumber( dim );
           numCols = StaxUtil.extractColumnNumber( dim );
         }
-        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
-          currentRow = Integer.parseInt( sheetReader.getAttributeValue( null, "r" ) );
-          // calculate the number of columns in the header row
-          while ( sheetReader.hasNext() ) {
-            event = sheetReader.next();
-            if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
-              // if the row has ended, break the inner while loop
+      }
+      if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
+        currentRow = Integer.parseInt( sheetReader.getAttributeValue( null, "r" ) );
+        firstRow = currentRow;
+
+        // calculate the number of columns in the header row
+        while ( sheetReader.hasNext() ) {
+          event = sheetReader.next();
+          if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
+            // if the row has ended, break the inner while loop
+            break;
+          }
+          if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
+            String attributeValue = sheetReader.getAttributeValue( null, "t" );
+            if ( attributeValue != null && attributeValue.equals( "s" ) ) {
+              // only if the type of the cell is string, we continue
+              while ( sheetReader.hasNext() ) {
+                event = sheetReader.next();
+                if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "v" ) ) {
+                  int idx = Integer.parseInt( sheetReader.getElementText() );
+                  String content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
+                  headerRow.add( content );
+                  break;
+                }
+              }
+            } else {
               break;
             }
-            if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
-              String attributeValue = sheetReader.getAttributeValue( null, "t" );
-              if ( attributeValue != null && attributeValue.equals( "s" ) ) {
-                // only if the type of the cell is string, we continue
-                while ( sheetReader.hasNext() ) {
-                  event = sheetReader.next();
-                  if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "v" ) ) {
-                    int idx = Integer.parseInt( sheetReader.getElementText() );
-                    String content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
-                    headerRow.add( content );
-                    break;
-                  }
-                }
-              } else {
-                break;
-              }
-            }
           }
-          // we have parsed the header row
-          break;
         }
+        // we have parsed the header row
+        break;
       }
-      // numCols = headerRow.size();
-    } catch ( Exception e ) {
-      e.printStackTrace();
-      throw new RuntimeException( e.getMessage() );
     }
   }
 
   @Override
   public KCell[] getRow( int rownr ) {
+    // xlsx raw row numbers are 1-based index, KSheet is 0-based
+
+    if ( rownr < 0 || rownr >= numRows ) {
+      // KSheet requires out of bounds here
+      throw new ArrayIndexOutOfBoundsException( rownr );
+    }
+    if ( rownr + 1 < firstRow ) {
+      // before first non-empty row
+      return new KCell[0];
+    }
+    if ( rownr > 0 && currentRow == rownr + 1 ) {
+      return currentRowCells;
+    }
     try {
+      if ( currentRow >= rownr + 1 ) {
+        // allow random access per api despite performance hit
+        resetSheetReader();
+      }
       while ( sheetReader.hasNext() ) {
         int event = sheetReader.next();
         if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
           String rowIndicator = sheetReader.getAttributeValue( null, "r" );
           currentRow = Integer.parseInt( rowIndicator );
-          if ( currentRow < rownr ) {
+          if ( currentRow < rownr + 1 ) {
             continue;
           }
-
-          KCell[] cells = new StaxPoiCell[numCols];
-          boolean richedRowEnd = false;
-          for ( int i = 0; i < numCols; i++ ) {
-            // go to the "c" <cell> tag
-            while ( sheetReader.hasNext() ) {
-              if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
-                break;
-              }
-              //if we have empty cell than we could reach and of row before fill all cells, so break all cycle
-              if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
-                richedRowEnd = true;
-                break;
-              }
-              event = sheetReader.next();
-            }
-            if ( richedRowEnd ) {
-              break;
-            }
-            String cellLocation = sheetReader.getAttributeValue( null, "r" );
-            int columnIndex = StaxUtil.extractColumnNumber( cellLocation ) - 1;
-            String cellType = sheetReader.getAttributeValue( null, "t" );
-
-            // go to the "v" <value> tag
-            while ( sheetReader.hasNext() ) {
-              event = sheetReader.next();
-              if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "v" ) ) {
-                break;
-              }
-              if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
-                // we have encountered an empty/incomplete row, so we set the max rows to current row number
-                // TODO: accept empty row is option is check and go till the end of the xml (need to detect the end)
-                numRows = currentRow;
-                return new KCell[] {};
-              }
-            }
-            String content = null;
-            if ( cellType != null && cellType.equals( "s" ) ) {
-              int idx = Integer.parseInt( sheetReader.getElementText() );
-              content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
-            } else {
-              content = sheetReader.getElementText();
-            }
-            cells[columnIndex] = new StaxPoiCell( content, currentRow );
-          }
-          return cells;
+          currentRowCells = parseRow();
+          return currentRowCells;
         }
       }
     } catch ( Exception e ) {
@@ -174,6 +173,54 @@ public class StaxPoiSheet implements KSheet {
     }
     numRows = currentRow;
     return new KCell[] {};
+  }
+
+  private KCell[] parseRow() throws XMLStreamException {
+    KCell[] cells = new StaxPoiCell[numCols];
+    for ( int i = 0; i < numCols; i++ ) {
+      // go to the "c" cell tag
+      while ( sheetReader.hasNext() ) {
+        int event = sheetReader.next();
+        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
+          break;
+        }
+        if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "row" ) ) {
+          // premature end of row, returning what we have
+          return cells;
+        }
+      }
+      String cellLocation = sheetReader.getAttributeValue( null, "r" );
+      int columnIndex = StaxUtil.extractColumnNumber( cellLocation ) - 1;
+      // proc cell
+
+      String cellType = sheetReader.getAttributeValue( null, "t" );
+      String cellStyle = sheetReader.getAttributeValue( null, "s" );
+
+      boolean isFormula = false;
+      String content = null;
+      // get value tag
+      while ( sheetReader.hasNext() ) {
+        int event = sheetReader.next();
+        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "v" ) ) {
+          // read content as string
+          if ( cellType != null && cellType.equals( "s" ) ) {
+            int idx = Integer.parseInt( sheetReader.getElementText() );
+            content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
+          } else {
+            content = sheetReader.getElementText();
+          }
+        }
+        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "f" ) ) {
+          isFormula = true;
+        }
+        if ( event == XMLStreamConstants.END_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
+          break;
+        }
+      }
+      KCellType kcType = getCellType( cellType, cellStyle, isFormula );
+      cells[columnIndex] = new StaxPoiCell( parseValue( kcType, content ), kcType, currentRow );
+    }
+    return cells;
   }
 
   @Override
@@ -188,12 +235,88 @@ public class StaxPoiSheet implements KSheet {
 
   @Override
   public KCell getCell( int colnr, int rownr ) {
-    if ( rownr == 0 && colnr < numCols ) {
+    if ( rownr == 0 && colnr < headerRow.size() ) {
       // only possible to return header
       return new StaxPoiCell( headerRow.get( colnr ), rownr );
     }
+    // if random access this will be very expensive
+    KCell[] row = getRow( rownr );
+    if ( row != null && rownr < row.length ) {
+      return row[colnr];
+    }
     return null;
-    // throw new RuntimeException("getCell(col, row) is not supported yet");
+  }
+
+  private KCellType getCellType( String cellType, String cellStyle, boolean isFormula ) {
+    // numeric type can be implicit or 'n'
+    if ( cellType == null || cellType.equals( "n" ) ) {
+      // the only difference between date and numeric is the cell format
+      if ( isDateCell( cellStyle ) ) {
+        return isFormula ? KCellType.DATE_FORMULA : KCellType.DATE;
+      }
+      return isFormula ? KCellType.NUMBER_FORMULA : KCellType.NUMBER;
+    }
+    switch ( cellType ) {
+      case "s":
+        return KCellType.LABEL;
+      case "b":
+        return isFormula ? KCellType.BOOLEAN_FORMULA : KCellType.BOOLEAN;
+      case "e":
+        // error
+        return KCellType.EMPTY;
+      case "str":
+      default:
+        return KCellType.STRING_FORMULA;
+    }
+  }
+
+  private boolean isDateCell( String cellStyle ) {
+    if ( cellStyle != null ) {
+      int styleIdx = Integer.parseInt( cellStyle );
+      CTXf cellXf = styles.getCellXfAt( styleIdx );
+      if ( cellXf != null ) {
+        // need id for builtin types, format if custom
+        int formatId = (int) cellXf.getNumFmtId();
+        String format = styles.getNumberFormatAt( formatId );
+        return DateUtil.isADateFormat( formatId, format );
+      }
+    }
+    return false;
+  }
+
+  private Object parseValue( KCellType type, String vContent ) {
+    if ( vContent == null ) {
+      return null;
+    }
+    try {
+      switch ( type ) {
+        case NUMBER:
+        case NUMBER_FORMULA:
+          return Double.parseDouble( vContent );
+        case BOOLEAN:
+        case BOOLEAN_FORMULA:
+          return vContent.equals( "1" );
+        case DATE:
+        case DATE_FORMULA:
+          Double xlDate = Double.parseDouble( vContent );
+          return DateUtil.getJavaDate( xlDate, DATE_TZ );
+        case LABEL:
+        case STRING_FORMULA:
+        case EMPTY:
+        default:
+          return vContent;
+      }
+    } catch ( Exception e ) {
+      return vContent;
+    }
+  }
+
+  private void resetSheetReader() throws IOException, XMLStreamException, InvalidFormatException {
+    sheetReader.close();
+    sheetStream.close();
+    sheetStream = xssfReader.getSheet( sheetId );
+    XMLInputFactory factory = XMLInputFactory.newInstance();
+    sheetReader = factory.createXMLStreamReader( sheetStream );
   }
 
   public void close() throws IOException, XMLStreamException {
