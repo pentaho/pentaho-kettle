@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" ?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 	<dict>
@@ -24,22 +24,6 @@
 		<string>PTHO</string>
 		<key>CFBundleVersion</key>
 		<string>@KETTLE_VERSION_STRING@</string>
-		<key>Java</key>
-		<dict>
-			<key>ClassPath</key>
-			<array>
-				<string>./launcher/launcher.jar</string>
-				<string>./libswt/osx64/swt.jar</string>
-			</array>
-			<key>JVMVersion</key>
-			<string>1.7+</string> 
-			<key>MainClass</key>
-			<string>org.pentaho.commons.launcher.Launcher</string>
-			<key>StartOnMainThread</key>
-			<true/>
-			<key>VMOptions</key>
-			<string>-Xmx512m -Xms512m -XX:MaxPermSize=256m</string>
-		</dict>
 		<key>CFBundleDocumentTypes</key>
 		<array>
 			<dict>
