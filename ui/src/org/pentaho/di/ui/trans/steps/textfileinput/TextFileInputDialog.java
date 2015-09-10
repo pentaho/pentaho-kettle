@@ -2054,7 +2054,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     wMinWidth.setText( BaseMessages.getString( PKG, "TextFileInputDialog.MinWidth.Button" ) );
     wMinWidth.setToolTipText( BaseMessages.getString( PKG, "TextFileInputDialog.MinWidth.Tooltip" ) );
     wMinWidth.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected ( SelectionEvent e ) {
+      public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
     } );
@@ -3133,6 +3133,15 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     }
 
     wFields.optWidth( true );
+  }
+
+  /**
+   * Overloading setMinimalWidth() in order to test trim functionality
+   * @param wFields mocked TableView to avoid wFields.nrNonEmpty() from throwing NullPointerException
+   */
+  public void setMinimalWidth( TableView wFields ) {
+    this.wFields = wFields;
+    this.setMinimalWidth();
   }
 
   private void addAdditionalFieldsTab() {
