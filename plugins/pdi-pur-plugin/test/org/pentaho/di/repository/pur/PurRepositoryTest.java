@@ -17,7 +17,9 @@
 
 package org.pentaho.di.repository.pur;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.hasItem;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -28,7 +30,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -826,7 +827,7 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     private List<String> nodeNames = new ArrayList<String>();
     private SAXParseException fatalError;
     private List<String> nodesToCapture =
-      Arrays.asList( "repository", "transformations", "transformation", "jobs", "job" );
+      asList( "repository", "transformations", "transformation", "jobs", "job" );
       //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
     @Override
@@ -1300,39 +1301,87 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
 
 
   @Test
-  public void testRenameJob() {
-    String[] jobNamesArraysBeforeRename = { "Job 1", "Job 2" };
-    String[] jobNamesArraysAfterRename = { "Job 1", "Job 3" };
+  public void renameJob_Successfully() throws Exception {
+    final String initial = "renameJob_Successfully";
+    final String renamed = initial + "_renamed";
 
-    RepositoryElementInterface job1 = new JobMeta();
-    job1.setName( jobNamesArraysBeforeRename[0] );
+    RepositoryElementInterface job = new JobMeta();
+    job.setName( initial );
 
-    RepositoryElementInterface job2 = new JobMeta();
-    job2.setName( jobNamesArraysBeforeRename[1] );
+    RepositoryDirectoryInterface directory = getPublicDir();
+    job.setRepositoryDirectory( directory );
 
-    try {
-      RepositoryDirectoryInterface directory = repository.findDirectory( "public" );
-      job1.setRepositoryDirectory( directory );
-      job2.setRepositoryDirectory( directory );
+    repository.save( job, null, null );
+    assertJobExistsIn( directory, initial, "Job was not saved" );
 
-      repository.save( job1, VERSION_COMMENT_V1, null );
-      repository.save( job2, VERSION_COMMENT_V1, null );
+    repository.renameJob( job.getObjectId(), job.getRepositoryDirectory(), renamed );
+    assertJobExistsIn( directory, renamed, "Job was not renamed" );
+  }
 
-      assertArrayEquals( repository.getJobNames( directory.getObjectId(), false ), jobNamesArraysBeforeRename );
+  @Test( expected = KettleException.class )
+  public void renameJob_FailsIfANameConflictOccurs() throws Exception {
+    final String name = "renameJob_FailsIfANameConflictOccurs";
 
-      repository.renameJob( job2.getObjectId(), job1.getRepositoryDirectory(), jobNamesArraysAfterRename[1] );
-      assertArrayEquals( repository.getJobNames( directory.getObjectId(), false ), jobNamesArraysAfterRename );
-    } catch ( KettleException e )  {
-      e.printStackTrace();
-      fail( "Unexpected error" );
-    }
-    try {
-      repository.renameJob( job2.getObjectId(), job1.getRepositoryDirectory(), jobNamesArraysBeforeRename[0] );
-      fail( "A naming conflict should occur" );
-    } catch ( KettleException e ) {
-      //expected 
-    }
+    RepositoryElementInterface job = new JobMeta();
+    job.setName( name );
 
+    RepositoryDirectoryInterface directory = getPublicDir();
+    job.setRepositoryDirectory( directory );
+
+    repository.save( job, null, null );
+    assertJobExistsIn( directory, name, "Job was not saved" );
+
+    repository.renameJob( job.getObjectId(), job.getRepositoryDirectory(), name );
+  }
+
+  private RepositoryDirectoryInterface getPublicDir() throws Exception {
+    return repository.findDirectory( "public" );
+  }
+
+  private void assertJobExistsIn( RepositoryDirectoryInterface dir, String jobName, String assertMessage )
+    throws Exception {
+    List<String> existingJobs = asList( repository.getJobNames( dir.getObjectId(), false ) );
+    assertThat( assertMessage, existingJobs, hasItem( jobName ) );
+  }
+
+  @Test
+  public void renameTrans_Successfully() throws Exception {
+    final String initial = "renameTrans_Successfully";
+    final String renamed = initial + "_renamed";
+
+    RepositoryElementInterface trans = new TransMeta();
+    trans.setName( initial );
+
+    RepositoryDirectoryInterface directory = getPublicDir();
+    trans.setRepositoryDirectory( directory );
+
+    repository.save( trans, null, null );
+    assertTransExistsIn( directory, initial, "Trans was noy saved" );
+
+    repository.renameTransformation( trans.getObjectId(), trans.getRepositoryDirectory(), renamed );
+    assertTransExistsIn( directory, renamed, "Trans was not renamed" );
+  }
+
+  @Test( expected = KettleException.class )
+  public void renameTrans_FailsIfANameConflictOccurs() throws Exception {
+    final String name = "renameTrans_FailsIfANameConflictOccurs";
+
+    RepositoryElementInterface trans = new TransMeta();
+    trans.setName( name );
+
+    RepositoryDirectoryInterface directory = getPublicDir();
+    trans.setRepositoryDirectory( directory );
+
+    repository.save( trans, null, null );
+    assertTransExistsIn( directory, name, "Trans was not saved" );
+
+    repository.renameTransformation( trans.getObjectId(), trans.getRepositoryDirectory(), name );
+  }
+
+  private void assertTransExistsIn( RepositoryDirectoryInterface dir, String jobName, String assertMessage )
+    throws Exception {
+    List<String> existingTrans = asList( repository.getTransformationNames( dir.getObjectId(), false ) );
+    assertThat( assertMessage, existingTrans, hasItem( jobName ) );
   }
 
 }

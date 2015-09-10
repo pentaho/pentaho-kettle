@@ -253,6 +253,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
       }
       this.user = new EEUserInfo( "testuser", "testUserPwd", "testUser", "test user", true );
       this.jobDelegate = new JobDelegate( this, pur );
+      this.transDelegate = new TransDelegate( this, pur );
       return;
     }
     try {
@@ -342,9 +343,9 @@ public class PurRepository extends AbstractRepository implements Repository, jav
         if ( child == null ) {
           // create this one
           child = new RepositoryDirectory( follow, path[ level ] );
-            saveRepositoryDirectory( child );
-            // link this with the parent directory
-            follow.addSubdirectory( child );
+          saveRepositoryDirectory( child );
+          // link this with the parent directory
+          follow.addSubdirectory( child );
         }
 
         follow = child;
@@ -358,11 +359,11 @@ public class PurRepository extends AbstractRepository implements Repository, jav
   @Override
   public void saveRepositoryDirectory( final RepositoryDirectoryInterface dir ) throws KettleException {
     try {
-        // id of root dir is null--check for it
-        RepositoryFile newFolder =
-          pur.createFolder( dir.getParent().getObjectId() != null ? dir.getParent().getObjectId().getId() : null,
-            new RepositoryFile.Builder( dir.getName() ).folder( true ).build(), null );
-        dir.setObjectId( new StringObjectId( newFolder.getId().toString() ) );
+      // id of root dir is null--check for it
+      RepositoryFile newFolder =
+        pur.createFolder( dir.getParent().getObjectId() != null ? dir.getParent().getObjectId().getId() : null,
+          new RepositoryFile.Builder( dir.getName() ).folder( true ).build(), null );
+      dir.setObjectId( new StringObjectId( newFolder.getId().toString() ) );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save repository directory with path [" + getPath( null, dir, null ) + "]",
         e );
@@ -1613,61 +1614,62 @@ public class PurRepository extends AbstractRepository implements Repository, jav
   }
 
   @Override
-  public ObjectId
-  renameJob( final ObjectId idJob, final RepositoryDirectoryInterface newDirectory, final String newName )
+  public ObjectId renameJob( ObjectId idJob, RepositoryDirectoryInterface newDirectory,
+                             String newName )
     throws KettleException {
     return renameJob( idJob, null, newDirectory, newName );
   }
 
-  /** 
-   * The method rename job from source name to destination name. Throws exception if we have file with same path and name
-   * 
-   * @throws KettleException if we have file with same path and name
-   * 
-   */
   @Override
-  public ObjectId renameJob( final ObjectId idJobForRename, String versionComment,
-                             final RepositoryDirectoryInterface newDirectory, final String newJobName )
+  public ObjectId renameJob( ObjectId idJobForRename, String versionComment,
+                             RepositoryDirectoryInterface newDirectory, String newJobName )
     throws KettleException {
-    String absPath = calcDestAbsPath( idJobForRename, newDirectory, newJobName, RepositoryObjectType.JOB );
-        // set new title      
-    RepositoryFile fileFromDestination = pur.getFile( absPath );
-    RepositoryFile fileBeforeRename = pur.getFileById( idJobForRename.getId() );
-    if ( fileFromDestination == null && newJobName != null ) {
-      // set new title
-      fileBeforeRename = new RepositoryFile.Builder( fileBeforeRename ).title( RepositoryFile.DEFAULT_LOCALE, newJobName ).build();
-      NodeRepositoryFileData data = pur.getDataAtVersionForRead( fileBeforeRename.getId(), null, NodeRepositoryFileData.class );
-      fileBeforeRename = pur.updateFile( fileBeforeRename, data, versionComment );
-      pur.moveFile( idJobForRename.getId(), absPath, null );
-      rootRef.clearRef();
-      return idJobForRename;
-    } else {
-      throw new KettleException( BaseMessages.getString( PKG, "PurRepository.ERROR_0006_UNABLE_TO_RENAME_JOB", fileBeforeRename.getName(), newJobName ) );
-    }
+    return renameTransOrJob(
+      idJobForRename, versionComment, newDirectory, newJobName,
+      RepositoryObjectType.JOB, "PurRepository.ERROR_0006_UNABLE_TO_RENAME_JOB" );
   }
 
   @Override
-  public ObjectId renameTransformation( final ObjectId idTransformation,
-                                        final RepositoryDirectoryInterface newDirectory, final String newName )
+  public ObjectId renameTransformation( ObjectId idTransformation, RepositoryDirectoryInterface newDirectory,
+                                        String newName )
     throws KettleException {
     return renameTransformation( idTransformation, null, newDirectory, newName );
   }
 
   @Override
-  public ObjectId renameTransformation( final ObjectId idTransformation, String versionComment,
-                                        final RepositoryDirectoryInterface newDirectory, final String newName )
+  public ObjectId renameTransformation( ObjectId idTransForRename, String versionComment,
+                                        RepositoryDirectoryInterface newDirectory, String newTransName )
     throws KettleException {
-    if ( newName != null ) {
+    return renameTransOrJob(
+      idTransForRename, versionComment, newDirectory, newTransName,
+      RepositoryObjectType.TRANSFORMATION, "PurRepository.ERROR_0006_UNABLE_TO_RENAME_TRANS" );
+  }
+
+  /**
+   * The method renames trans/job from to <code>newName</code>.
+   *
+   * @throws KettleException if we have file with same path and name
+   */
+  private ObjectId renameTransOrJob( ObjectId idObject, String versionComment,
+                                     RepositoryDirectoryInterface newDirectory, String newName,
+                                     RepositoryObjectType objectType, String errorMsgKey )
+    throws KettleException {
+    String absPath = calcDestAbsPath( idObject, newDirectory, newName, objectType );
+    // get file from destination path, should be null for rename goal
+    RepositoryFile fileFromDestination = pur.getFile( absPath );
+    RepositoryFile beforeRename = pur.getFileById( idObject.getId() );
+    if ( fileFromDestination == null && newName != null ) {
       // set new title
-      RepositoryFile file = pur.getFileById( idTransformation.getId() );
-      file = new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, newName ).build();
-      NodeRepositoryFileData data = pur.getDataAtVersionForRead( file.getId(), null, NodeRepositoryFileData.class );
-      file = pur.updateFile( file, data, versionComment );
+      beforeRename = new RepositoryFile.Builder( beforeRename ).title( RepositoryFile.DEFAULT_LOCALE, newName ).build();
+      NodeRepositoryFileData data = pur.getDataAtVersionForRead( beforeRename.getId(), null,
+        NodeRepositoryFileData.class );
+      pur.updateFile( beforeRename, data, versionComment );
+      pur.moveFile( idObject.getId(), absPath, null );
+      rootRef.clearRef();
+      return idObject;
+    } else {
+      throw new KettleException( BaseMessages.getString( PKG, errorMsgKey, beforeRename.getName(), newName ) );
     }
-    pur.moveFile( idTransformation.getId(), calcDestAbsPath( idTransformation, newDirectory, newName,
-      RepositoryObjectType.TRANSFORMATION ), null );
-    rootRef.clearRef();
-    return idTransformation;
   }
 
   protected String getParentPath( final String path ) {
@@ -2026,8 +2028,8 @@ public class PurRepository extends AbstractRepository implements Repository, jav
       NodeRepositoryFileData data = null;
       ObjectRevision revision = null;
       // Additional obfuscation through obscurity
-        data = pur.getDataAtVersionForRead( file.getId(), versionId, NodeRepositoryFileData.class );
-        revision = getObjectRevision( new StringObjectId( file.getId().toString() ), versionId );
+      data = pur.getDataAtVersionForRead( file.getId(), versionId, NodeRepositoryFileData.class );
+      revision = getObjectRevision( new StringObjectId( file.getId().toString() ), versionId );
       TransMeta transMeta = buildTransMeta( file, parentDir, data, revision );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationMetaLoaded.id, transMeta );
       return transMeta;
