@@ -38,10 +38,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class DatabaseMetaTest {
   @Test
@@ -166,5 +168,24 @@ public class DatabaseMetaTest {
     databaseMeta2.verifyAndModifyDatabaseName( list, null );
 
     assertTrue( !databaseMeta.getDisplayName().equals( databaseMeta2.getDisplayName() ) );
+  }
+
+  @Test
+  public void testGetFeatureSummary() throws Exception {
+    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
+    OracleDatabaseMeta odbm = new OracleDatabaseMeta();
+    doCallRealMethod().when( databaseMeta ).setDatabaseInterface( any( DatabaseInterface.class ) );
+    doCallRealMethod().when( databaseMeta ).getFeatureSummary();
+    doCallRealMethod().when( databaseMeta ).getAttributes();
+    databaseMeta.setDatabaseInterface( odbm );
+    List<RowMetaAndData> result = databaseMeta.getFeatureSummary();
+    assertNotNull( result );
+    for ( RowMetaAndData rmd : result ) {
+      assertEquals( 2, rmd.getRowMeta().size() );
+      assertEquals( "Parameter", rmd.getRowMeta().getValueMeta( 0 ).getName() );
+      assertEquals( ValueMetaInterface.TYPE_STRING, rmd.getRowMeta().getValueMeta( 0 ).getType() );
+      assertEquals( "Value", rmd.getRowMeta().getValueMeta( 1 ).getName() );
+      assertEquals( ValueMetaInterface.TYPE_STRING, rmd.getRowMeta().getValueMeta( 1 ).getType() );
+    }
   }
 }
