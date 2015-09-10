@@ -129,6 +129,7 @@ public class JobExecutor extends BaseStep implements StepInterface {
       }
 
       boolean newGroup = false;
+      data.groupBuffer.add( new RowMetaAndData( getInputRowMeta(), row ) ); // should we clone for safety?
       if ( data.groupSize >= 0 ) {
         // Pass the input rows in blocks to the job result rows...
         //
@@ -158,7 +159,6 @@ public class JobExecutor extends BaseStep implements StepInterface {
         executeJob();
       }
 
-      data.groupBuffer.add( new RowMetaAndData( getInputRowMeta(), row ) ); // should we clone for safety?
 
       return true;
     } catch ( Exception e ) {
