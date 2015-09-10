@@ -1074,8 +1074,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
     for ( int i = 0; i < parameters.getVariable().length; i++ ) {
       TableItem tableItem = wMappingParameters.table.getItem( i );
-      tableItem.setText( 1, parameters.getVariable()[ i ] );
-      tableItem.setText( 2, parameters.getInputField()[ i ] );
+      tableItem.setText( 1, Const.NVL( parameters.getVariable()[ i ], "" ) );
+      tableItem.setText( 2, Const.NVL( parameters.getInputField()[ i ], "" ) );
     }
     wMappingParameters.setRowNums();
     wMappingParameters.optWidth( true );
