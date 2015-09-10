@@ -1,55 +1,10 @@
 #!/bin/sh
 
-##################################################################################
-#                                                                                #
-# javaApplicationStub for Pentaho OSX design tool apps                    		 #
-#                                                                                #
-#                                                                                #
-# A shellscript JavaApplicationStub for Java Apps on Mac OS X                    #
-# that works with universalJavaApplicationStub                                   #
-# ( github.com/tofi86/universalJavaApplicationStub/tree/v0.9.0 )				 #
-#                                                                                #
-# 1)																			 # 
-# call set-pentaho-env.sh to determine proper PENTAHO_JAVA_HOME;              	 #
-# sets JAVA_HOME as PENTAHO_JAVA_HOME ( if one was set )  		       			 #
-#                                                                                #
-# 2)																			 #
-# call universalJavaApplicationStub at the same dir this sh is located           #
-#                                                                                #
-##################################################################################
- 
-
-
-#
-# resolve bean shell dir
-##################################################################################
-
 PROG_DIR=$(cd "$(dirname "$0")"; pwd)
 
+# PROG_DIR is in .app/Contents/MacOS
 
+BASE_DIR="$PROG_DIR"/../../../ 
+cd "$BASE_DIR"
 
-#
-# call set-pentaho-env
-##################################################################################
-
-cd "$PROG_DIR"/../../
-cd ..
-
-. "set-pentaho-env.sh"
-
-#Route DEBUG from setPentahoEnv to /dev/null
-setPentahoEnv "$DIR" > /dev/null
-
-if [ -n "$_PENTAHO_JAVA_HOME" ] ; then
-	export JAVA_HOME=$_PENTAHO_JAVA_HOME
-fi
-
-echo "JAVA_HOME:" $JAVA_HOME
-
-
-#
-# call universalJavaApplicationStub in bean shell dir
-##################################################################################
-cd "$PROG_DIR"
-
-. "universalJavaApplicationStub"
+. "spoon.command" "$BASE_DIR" 
