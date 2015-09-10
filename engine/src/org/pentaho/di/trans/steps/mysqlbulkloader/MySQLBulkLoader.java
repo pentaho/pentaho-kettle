@@ -445,28 +445,29 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
       if ( Const.isEmpty( meta.getEnclosure() ) ) {
         data.quote = new byte[] {};
       } else {
-        data.quote = meta.getEnclosure().getBytes();
+        data.quote = environmentSubstitute( meta.getEnclosure() ).getBytes();
       }
       if ( Const.isEmpty( meta.getDelimiter() ) ) {
         data.separator = "\t".getBytes();
       } else {
-        data.separator = meta.getDelimiter().getBytes();
+        data.separator = environmentSubstitute( meta.getDelimiter() ).getBytes();
       }
       data.newline = Const.CR.getBytes();
 
+      String realEncoding = environmentSubstitute( meta.getEncoding() );
       data.bulkTimestampMeta = new ValueMeta( "timestampMeta", ValueMetaInterface.TYPE_DATE );
       data.bulkTimestampMeta.setConversionMask( "yyyy-MM-dd HH:mm:ss" );
-      data.bulkTimestampMeta.setStringEncoding( meta.getEncoding() );
+      data.bulkTimestampMeta.setStringEncoding( realEncoding );
 
       data.bulkDateMeta = new ValueMeta( "dateMeta", ValueMetaInterface.TYPE_DATE );
       data.bulkDateMeta.setConversionMask( "yyyy-MM-dd" );
-      data.bulkDateMeta.setStringEncoding( meta.getEncoding() );
+      data.bulkDateMeta.setStringEncoding( realEncoding );
 
       data.bulkNumberMeta = new ValueMeta( "numberMeta", ValueMetaInterface.TYPE_NUMBER );
       data.bulkNumberMeta.setConversionMask( "#.#" );
       data.bulkNumberMeta.setGroupingSymbol( "," );
       data.bulkNumberMeta.setDecimalSymbol( "." );
-      data.bulkNumberMeta.setStringEncoding( meta.getEncoding() );
+      data.bulkNumberMeta.setStringEncoding( realEncoding );
 
       data.bulkSize = Const.toLong( environmentSubstitute( meta.getBulkSize() ), -1L );
 
