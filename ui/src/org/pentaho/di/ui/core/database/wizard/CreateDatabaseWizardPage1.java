@@ -22,6 +22,8 @@
 
 package org.pentaho.di.ui.core.database.wizard;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,7 +79,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage {
   private Map<String, String> wDBIDtoNameMap = new HashMap<String, String>();
 
   public CreateDatabaseWizardPage1( String arg, PropsUI props, DatabaseMeta databaseMeta,
-    java.util.List<DatabaseMeta> databases ) {
+      java.util.List<DatabaseMeta> databases ) {
     super( arg );
     this.props = props;
     this.databaseMeta = databaseMeta;
@@ -136,6 +138,13 @@ public class CreateDatabaseWizardPage1 extends WizardPage {
     PluginRegistry registry = PluginRegistry.getInstance();
 
     java.util.List<PluginInterface> plugins = registry.getPlugins( DatabasePluginType.class );
+    Collections.sort( plugins, new Comparator<PluginInterface>() {
+      @Override
+      public int compare( PluginInterface o1, PluginInterface o2 ) {
+        return o1.getName().toUpperCase().compareTo( o2.getName().toUpperCase() );
+      }
+    } );
+
     for ( PluginInterface plugin : plugins ) {
       try {
         wDBType.add( plugin.getName() );
@@ -260,7 +269,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see org.eclipse.jface.wizard.WizardPage#getNextPage()
    */
   public IWizardPage getNextPage() {
