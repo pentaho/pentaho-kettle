@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,9 +24,25 @@ package org.pentaho.di.core.util;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExecutorUtil {
-  private static final ExecutorService executor = Executors.newCachedThreadPool();
+  public static final String SIMPLE_NAME = ExecutorUtil.class.getSimpleName();
+  private static final AtomicInteger threadNum = new AtomicInteger( 1 );
+  private static final ExecutorService executor = init();
+
+  private static ExecutorService init() {
+    ExecutorService executorService = Executors.newCachedThreadPool( new ThreadFactory() {
+      @Override public Thread newThread( Runnable r ) {
+        Thread thread = Executors.defaultThreadFactory().newThread( r );
+        thread.setDaemon( true );
+        thread.setName( SIMPLE_NAME + " thread " + threadNum.getAndIncrement() );
+        return thread;
+      }
+    } );
+    return executorService;
+  }
 
   public static ExecutorService getExecutor() {
     return executor;
