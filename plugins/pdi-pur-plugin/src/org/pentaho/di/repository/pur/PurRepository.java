@@ -360,6 +360,9 @@ public class PurRepository extends AbstractRepository implements Repository, jav
   public void saveRepositoryDirectory( final RepositoryDirectoryInterface dir ) throws KettleException {
     try {
       // id of root dir is null--check for it
+      if ( "/".equals( dir.getParent().getName() ) ) {
+        throw new KettleException( BaseMessages.getString( PKG, "PurRepository.FailedDirectoryCreation.Message" ) );
+      }
       RepositoryFile newFolder =
         pur.createFolder( dir.getParent().getObjectId() != null ? dir.getParent().getObjectId().getId() : null,
           new RepositoryFile.Builder( dir.getName() ).folder( true ).build(), null );
