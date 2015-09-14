@@ -2378,7 +2378,12 @@ public class PurRepository extends AbstractRepository implements Repository, jav
     // if there's a match on id, replace the element
     boolean found = false;
     for ( int i = 0; i < origSharedObjects.size(); i++ ) {
-      if ( ( (RepositoryElementInterface) origSharedObjects.get( i ) ).getObjectId().equals( idToFind ) ) {
+      RepositoryElementInterface repositoryElementInterface = (RepositoryElementInterface) origSharedObjects.get( i );
+      if ( repositoryElementInterface == null ) {
+        continue;
+      }
+      ObjectId objectId = repositoryElementInterface.getObjectId();
+      if ( objectId != null && objectId.equals( idToFind ) ) {
         if ( remove ) {
           newSharedObjects.remove( i );
         } else {
