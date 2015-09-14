@@ -934,7 +934,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
       connection.setTimeOut( realTimeOut );
       // connect to Salesforce
       connection.connect();
-      return connection.getFields( connection.getObjectFields( selectedModule, excludeNonUpdatableFields ) );
+      return connection.getFields( selectedModule, excludeNonUpdatableFields );
 
     } catch ( Exception e ) {
       throw new KettleException( "Erreur getting fields from module [" + url + "]!", e );
