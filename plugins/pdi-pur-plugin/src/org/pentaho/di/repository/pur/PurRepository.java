@@ -17,22 +17,6 @@
 
 package org.pentaho.di.repository.pur;
 
-import java.io.Serializable;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
@@ -92,9 +76,26 @@ import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
 import org.pentaho.platform.api.repository2.unified.VersionSummary;
+import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
 import org.pentaho.platform.repository2.ClientRepositoryPaths;
+
+import java.io.Serializable;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Implementation of {@link Repository} that delegates to the Pentaho unified repository (PUR), an instance of {@link
@@ -1155,8 +1156,10 @@ public class PurRepository extends AbstractRepository implements Repository, jav
       List<RepositoryFile> children = getAllFilesOfType( null, RepositoryObjectType.DATABASE, false );
       List<DatabaseMeta> dbMetas = new ArrayList<DatabaseMeta>();
       for ( RepositoryFile file : children ) {
-        dbMetas.add( (DatabaseMeta) databaseMetaTransformer.dataNodeToElement( pur.getDataForRead( file.getId(),
-          NodeRepositoryFileData.class ).getNode() ) );
+        DataNode node = pur.getDataForRead( file.getId(), NodeRepositoryFileData.class ).getNode();
+        DatabaseMeta databaseMeta = (DatabaseMeta) databaseMetaTransformer.dataNodeToElement( node );
+        databaseMeta.setName( file.getTitle() );
+        dbMetas.add( databaseMeta );
       }
       return dbMetas;
     } catch ( Exception e ) {
