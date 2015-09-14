@@ -197,7 +197,10 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     // First try without connecting to the database... (can be S L O W)
     String sNewSQL = sql;
     if ( isVariableReplacementActive() ) {
-      sNewSQL = db.environmentSubstitute( sql ); // TODO SB
+      sNewSQL = db.environmentSubstitute( sql );
+      if ( space != null ) {
+        sNewSQL = space.environmentSubstitute( sNewSQL );
+      }
     }
 
     RowMetaInterface add = null;
