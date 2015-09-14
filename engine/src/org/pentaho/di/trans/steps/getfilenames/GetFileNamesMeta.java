@@ -293,6 +293,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
    *          The fileRequired to set.
    */
   public void setFileRequired( String[] fileRequiredin ) {
+    this.fileRequired = new String[fileRequiredin.length];
     for ( int i = 0; i < fileRequiredin.length; i++ ) {
       this.fileRequired[i] = getRequiredFilesCode( fileRequiredin[i] );
     }
@@ -325,6 +326,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public void setIncludeSubFolders( String[] includeSubFoldersin ) {
+    this.includeSubFolders = new String[includeSubFoldersin.length];
     for ( int i = 0; i < includeSubFoldersin.length; i++ ) {
       this.includeSubFolders[i] = getRequiredFilesCode( includeSubFoldersin[i] );
     }
@@ -356,8 +358,13 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
     this.rowLimit = rowLimit;
   }
 
+  @Deprecated
   public void setFilterFileType( int filtertypevalue ) {
     this.fileTypeFilter = FileInputList.FileTypeFilter.getByOrdinal( filtertypevalue );
+  }
+
+  public void setFilterFileType( FileInputList.FileTypeFilter filter ) {
+    this.fileTypeFilter = filter;
   }
 
   public FileInputList.FileTypeFilter getFileTypeFilter() {
@@ -589,7 +596,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface 
       dynamicIncludeSubFolders = rep.getStepAttributeBoolean( id_step, "dynamic_include_subfolders" );
 
       includeRowNumber = rep.getStepAttributeBoolean( id_step, "rownum" );
-      isaddresult = rep.getStepAttributeBoolean( id_step, rep.getStepAttributeString( id_step, "isaddresult" ) );
+      isaddresult = rep.getStepAttributeBoolean( id_step, "isaddresult" );
       filefield = rep.getStepAttributeBoolean( id_step, "filefield" );
       rowNumberField = rep.getStepAttributeString( id_step, "rownum_field" );
       rowLimit = rep.getStepAttributeInteger( id_step, "limit" );
