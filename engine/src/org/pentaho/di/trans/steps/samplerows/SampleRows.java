@@ -101,11 +101,6 @@ public class SampleRows extends BaseStep implements StepInterface {
         }
       }
       data.rangeSet = setBuilder.build();
-      // Return now if no rows are to be sampled
-      if ( data.rangeSet.isEmpty() ) {
-        setOutputDone();
-        return false;
-      }
     } // end if first
 
     if ( data.addlineField ) {
@@ -134,11 +129,12 @@ public class SampleRows extends BaseStep implements StepInterface {
     }
 
     // Check if maximum value has been exceeded
-    boolean done = linesRead >= data.rangeSet.span().upperEndpoint();
-    if ( done ) {
+    if ( data.rangeSet.isEmpty() || linesRead >= data.rangeSet.span().upperEndpoint() ) {
       setOutputDone();
     }
-    return !done;
+
+    // Allowed to continue to read in data
+    return true;
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
