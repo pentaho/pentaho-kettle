@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.EnumSet;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -1382,6 +1383,28 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     throws Exception {
     List<String> existingTrans = asList( repository.getTransformationNames( dir.getObjectId(), false ) );
     assertThat( assertMessage, existingTrans, hasItem( jobName ) );
+  }
+
+  @Test
+  public void testJobRevisionDate() {
+    final Long createdTime = 1441961024857L;
+    RepositoryElementInterface job = new JobMeta();
+    job.setName( "Job" );
+    try {
+      RepositoryDirectoryInterface directory = repository.findDirectory( "public" );
+      job.setRepositoryDirectory( directory );
+
+      Calendar cal = Calendar.getInstance( Locale.US );
+      cal.setTime( new Date( createdTime ) );
+
+      repository.save( job, VERSION_COMMENT_V1, cal, null, true );
+
+      assertEquals( "Revision date is incorrect", job.getObjectRevision().getCreationDate().getTime(),
+          (long) createdTime );
+    } catch ( Exception e ) {
+      e.printStackTrace();
+      fail( "Unexpected error" );
+    }
   }
 
 }
