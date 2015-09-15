@@ -1652,19 +1652,33 @@ public class PurRepository extends AbstractRepository implements Repository, jav
   }
 
   /**
-   * The method renames trans/job from to <code>newName</code>.
+   * Renames and optionally moves a file having {@code idObject}. If {@code newDirectory} is <tt>null</tt>, then the
+   * file is just renamed. If {@code newName} is <tt>null</tt>, then the file should keep its name.
+   * <p/>
+   * Note, it is expected that the file exists
    *
-   * @throws KettleException if we have file with same path and name
+   * @param idObject       file's id
+   * @param versionComment comment on the revision
+   * @param newDirectory   new folder, where to move the file; <tt>null</tt> means the file should be left in its
+   *                       current
+   * @param newName        new file's name; <tt>null</tt> means the file should keep its current name
+   * @param objectType     file's type; {@linkplain RepositoryObjectType#TRANSFORMATION} or {@linkplain
+   *                       RepositoryObjectType#JOB} are expected
+   * @param errorMsgKey    key for the error message passed with the exception
+   * @throws KettleException if file with same path exists
    */
   private ObjectId renameTransOrJob( ObjectId idObject, String versionComment,
                                      RepositoryDirectoryInterface newDirectory, String newName,
                                      RepositoryObjectType objectType, String errorMsgKey )
     throws KettleException {
-    String absPath = calcDestAbsPath( idObject, newDirectory, newName, objectType );
+    RepositoryFile file = pur.getFileById( idObject.getId() );
+    newName = checkNewName( newName, objectType, file );
+
+    String absPath = calcDestAbsPath( file, newDirectory, newName );
     // get file from destination path, should be null for rename goal
     RepositoryFile fileFromDestination = pur.getFile( absPath );
     RepositoryFile beforeRename = pur.getFileById( idObject.getId() );
-    if ( fileFromDestination == null && newName != null ) {
+    if ( fileFromDestination == null ) {
       // set new title
       beforeRename = new RepositoryFile.Builder( beforeRename ).title( RepositoryFile.DEFAULT_LOCALE, newName ).build();
       NodeRepositoryFileData data = pur.getDataAtVersionForRead( beforeRename.getId(), null,
@@ -1675,6 +1689,18 @@ public class PurRepository extends AbstractRepository implements Repository, jav
       return idObject;
     } else {
       throw new KettleException( BaseMessages.getString( PKG, errorMsgKey, beforeRename.getName(), newName ) );
+    }
+  }
+
+  private String checkNewName( String newName, RepositoryObjectType objectType, RepositoryFile existingFile ) {
+    if ( newName == null ) {
+      return existingFile.getName();
+    } else {
+      String checked = checkAndSanitize( newName );
+      if ( !checked.endsWith( objectType.getExtension() ) ) {
+        checked += objectType.getExtension();
+      }
+      return checked;
     }
   }
 
@@ -1694,26 +1720,20 @@ public class PurRepository extends AbstractRepository implements Repository, jav
     }
   }
 
-  protected String calcDestAbsPath( final ObjectId id, final RepositoryDirectoryInterface newDirectory,
-                                    final String newName, final RepositoryObjectType objectType ) {
+  protected String calcDestAbsPath( RepositoryFile existingFile,
+                                    RepositoryDirectoryInterface newDirectory,
+                                    String newName ) {
     String newDirectoryPath = getPath( null, newDirectory, null );
-    RepositoryFile file = pur.getFileById( id.getId() );
-    StringBuilder buf = new StringBuilder( file.getPath().length() );
+    StringBuilder buf = new StringBuilder( existingFile.getPath().length() );
     if ( newDirectory != null ) {
       buf.append( newDirectoryPath );
     } else {
-      buf.append( getParentPath( file.getPath() ) );
+      buf.append( getParentPath( existingFile.getPath() ) );
     }
-    buf.append( RepositoryFile.SEPARATOR );
-    if ( newName != null ) {
-      buf.append( checkAndSanitize( newName ) );
-      if ( !newName.endsWith( objectType.getExtension() ) ) {
-        buf.append( objectType.getExtension() );
-      }
-    } else {
-      buf.append( file.getName() );
-    }
-    return buf.toString();
+    return buf
+      .append( RepositoryFile.SEPARATOR )
+      .append( newName )
+      .toString();
   }
 
   @Override
