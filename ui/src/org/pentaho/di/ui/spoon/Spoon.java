@@ -580,13 +580,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       public KettleException call() throws Exception {
         registerUIPluginObjectTypes();
 
+        KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.SPOON );
         try {
           KettleEnvironment.init();
         } catch ( KettleException e ) {
           return e;
         }
 
-        KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.SPOON );
         return null;
       }
     } );

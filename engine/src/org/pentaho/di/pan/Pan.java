@@ -66,8 +66,8 @@ public class Pan {
   private static FileLoggingEventListener fileLoggingEventListener;
 
   public static void main( String[] a ) throws Exception {
-    KettleEnvironment.init();
     KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.PAN );
+    KettleEnvironment.init();
 
     List<String> args = new ArrayList<String>();
     for ( int i = 0; i < a.length; i++ ) {

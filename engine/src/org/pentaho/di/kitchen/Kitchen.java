@@ -97,8 +97,8 @@ public class Kitchen {
               @Override
               public KettleException call() throws Exception {
                 try {
-                  KettleEnvironment.init();
                   KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.KITCHEN );
+                  KettleEnvironment.init();
                 } catch ( KettleException e ) {
                   return e;
                 }
