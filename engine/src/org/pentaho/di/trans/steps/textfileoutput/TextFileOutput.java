@@ -647,7 +647,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         }
 
         if ( log.isDetailed() ) {
-          logDetailed( "Opened new file with name [" + filename + "]" );
+          logDetailed( "Opened new file with name [" + KettleVFS.getFriendlyURI( filename ) + "]" );
         }
       }
     } catch ( Exception e ) {
@@ -756,8 +756,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
           data.oneFileOpened = true;
         } catch ( Exception e ) {
-          logError( "Couldn't open file " + getParentVariableSpace().environmentSubstitute( meta.getFileName() ) 
-                + "." + getParentVariableSpace().environmentSubstitute( meta.getExtension() ), e );
+          logError( "Couldn't open file " + KettleVFS.getFriendlyURI( getParentVariableSpace().environmentSubstitute(
+              meta.getFileName() ) ) + "." + getParentVariableSpace().environmentSubstitute( meta.getExtension() ), e );
           setErrors( 1L );
           stopAll();
         }
@@ -955,22 +955,23 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       parentfolder = getFileObject( filename ).getParent();
       if ( parentfolder.exists() ) {
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderExist", parentfolder.getName() ) );
+          logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderExist", KettleVFS.getFriendlyURI(
+              parentfolder.getName() ) ) );
         }
       } else {
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExist",
-            parentfolder.getName() ) );
+          logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExist", KettleVFS.getFriendlyURI(
+              parentfolder.getName() ) ) );
         }
         if ( meta.isCreateParentFolder() ) {
           parentfolder.createFolder();
           if ( isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderCreated",
-              parentfolder.getName() ) );
+            logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderCreated", KettleVFS
+                .getFriendlyURI( parentfolder.getName() ) ) );
           }
         } else {
           throw new KettleException( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderNotExistCreateIt",
-              parentfolder.getName(), filename ) );
+              KettleVFS.getFriendlyURI( parentfolder.getName() ), KettleVFS.getFriendlyURI( filename ) ) );
         }
       }
     } finally {
