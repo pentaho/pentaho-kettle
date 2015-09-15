@@ -639,6 +639,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
         TableItem item = wReturn.table.getItem( i );
         item.setText( 2, sourceFields.getValueMeta( mapping.getSourcePosition() ).getName() );
         item.setText( 1, targetFields.getValueMeta( mapping.getTargetPosition() ).getName() );
+        item.setText( 3, "Y" );
       }
       wReturn.setRowNums();
       wReturn.optWidth( true );
