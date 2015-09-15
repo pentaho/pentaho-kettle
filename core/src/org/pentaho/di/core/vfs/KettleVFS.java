@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Comparator;
+import java.util.regex.Pattern;
 
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileName;
@@ -52,6 +53,8 @@ import org.pentaho.di.i18n.BaseMessages;
 
 public class KettleVFS {
   private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!
+
+  private static final Pattern RE_URI_PASSWORD = Pattern.compile( ":[^:@/\\\\]+@" );
 
   private static final KettleVFS kettleVFS = new KettleVFS();
   private final DefaultFileSystemManager fsm;
@@ -155,8 +158,8 @@ public class KettleVFS {
 
       return fileObject;
     } catch ( IOException e ) {
-      throw new KettleFileException( "Unable to get VFS File object for filename '"
-        + vfsFilename + "' : " + e.getMessage() );
+      throw new KettleFileException( "Unable to get VFS File object for filename '" + getFriendlyURI( vfsFilename )
+          + "' : " + e.getMessage() );
     }
   }
 
@@ -394,4 +397,29 @@ public class KettleVFS {
     return new FileInputStream( fileObject.getName().getPathDecoded() );
   }
 
+  /**
+   * Returns a "friendly path", this is a path without a password.
+   */
+  public static String getFriendlyURI( String uri ) {
+    if ( uri == null ) {
+      return null;
+    }
+    try {
+      // try to parse URI
+      return getInstance().getFileSystemManager().resolveURI( uri ).getFriendlyURI();
+    } catch ( Throwable ex ) {
+      // just replace password if impossible
+      return RE_URI_PASSWORD.matcher( uri ).replaceAll( ":<password>@" );
+    }
+  }
+
+  /**
+   * Returns a "friendly path", this is a path without a password.
+   */
+  public static String getFriendlyURI( FileName uri ) {
+    if ( uri == null ) {
+      return null;
+    }
+    return uri.getFriendlyURI();
+  }
 }
