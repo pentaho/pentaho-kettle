@@ -1840,6 +1840,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
     pur.moveFile( file.getId(), buf.toString(), null );
   }
 
+  @Deprecated
   protected void saveJob0( final RepositoryElementInterface element, final String versionComment,
                            final boolean saveSharedObjects, final boolean checkLock, final boolean checkRename,
                            final boolean loadRevision,
@@ -1890,9 +1891,10 @@ public class PurRepository extends AbstractRepository implements Repository, jav
 
   protected void saveJob( final RepositoryElementInterface element, final String versionComment, Calendar versionDate )
     throws KettleException {
-    saveJob0( element, versionComment, true, true, true, true, true );
+    saveKettleEntity( element, versionComment, versionDate, true, true, true, true, true );
   }
 
+  @Deprecated
   protected void saveTrans0( final RepositoryElementInterface element, final String versionComment,
                              Calendar versionDate, final boolean saveSharedObjects, final boolean checkLock,
                              final boolean checkRename,
@@ -1963,7 +1965,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
   protected void
   saveTrans( final RepositoryElementInterface element, final String versionComment, Calendar versionDate )
     throws KettleException {
-    saveTrans0( element, versionComment, versionDate, true, true, true, true, true );
+    saveKettleEntity( element, versionComment, versionDate, true, true, true, true, true );
   }
 
   protected void saveDatabaseMeta( final RepositoryElementInterface element, final String versionComment,
@@ -2806,6 +2808,97 @@ public class PurRepository extends AbstractRepository implements Repository, jav
 
   public ServiceManager getServiceManager() {
     return purRepositoryConnector == null ? null : purRepositoryConnector.getServiceManager();
+  }
+
+  /**
+   * Saves either <b>transformation</b> or <b>job</b> in repository.
+   *
+   * @param element
+   * @param versionComment
+   * @param versionDate
+   * @param saveSharedObjects
+   * @param checkLock
+   * @param checkRename
+   * @param loadRevision
+   * @param checkDeleted
+   * @throws KettleException
+   */
+  protected void saveKettleEntity( final RepositoryElementInterface element, final String versionComment,
+      Calendar versionDate, final boolean saveSharedObjects, final boolean checkLock, final boolean checkRename,
+      final boolean loadRevision, final boolean checkDeleted )
+      throws KettleException {
+    ISharedObjectsTransformer objectTransformer = null;
+    switch ( element.getRepositoryElementType() ) {
+      case TRANSFORMATION:
+        objectTransformer = transDelegate;
+        break;
+      case JOB:
+        objectTransformer = jobDelegate;
+        break;
+      default:
+        throw new KettleException(
+            "Unknown RepositoryObjectType. Should be TRANSFORMATION or JOB " );
+    }
+    if ( saveSharedObjects ) {
+      objectTransformer.saveSharedObjects( element, versionComment );
+    }
+    boolean isUpdate = element.getObjectId() != null;
+    RepositoryFile file = null;
+    if ( isUpdate ) {
+      ObjectId id = element.getObjectId();
+      file = getPur().getFileById( id.getId() );
+      if ( checkLock && file.isLocked() && !unifiedRepositoryLockService.canUnlockFileById( id ) ) {
+        throw new KettleException( "File is currently locked by another user for editing" );
+      }
+      if ( checkDeleted && isInTrash( file ) ) {
+        // absolutely awful to have UI references in this class :(
+        throw new KettleException( "File is in the Trash. Use Save As." );
+      }
+      // update title and description
+      file =
+          new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, element.getName() )
+              .createdDate( versionDate != null ? versionDate.getTime() : new Date() )
+              .description( RepositoryFile.DEFAULT_LOCALE, Const.NVL( element.getDescription(), "" ) ).build();
+      file =
+          getPur().updateFile( file, new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ),
+              versionComment );
+      if ( checkRename && isRenamed( element, file ) ) {
+        renameKettleEntity( element, null, element.getName() );
+      }
+    } else {
+      file =
+          new RepositoryFile.Builder( checkAndSanitize( element.getName()
+              + element.getRepositoryElementType().getExtension() ) )
+              .versioned( true ).title( RepositoryFile.DEFAULT_LOCALE, element.getName() )
+              .createdDate( versionDate != null ? versionDate.getTime() : new Date() )
+              .description( RepositoryFile.DEFAULT_LOCALE, Const.NVL( element.getDescription(), "" ) ).build();
+      file =
+          pur.createFile( element.getRepositoryDirectory().getObjectId().getId(), file,
+              new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ), versionComment );
+    }
+    // side effects
+    ObjectId objectId = new StringObjectId( file.getId().toString() );
+    element.setObjectId( objectId );
+    if ( loadRevision ) {
+      element.setObjectRevision( getObjectRevision( objectId, null ) );
+    }
+    if ( element instanceof ChangedFlagInterface ) {
+      ( (ChangedFlagInterface) element ).clearChanged();
+    }
+  }
+
+  protected ObjectId renameKettleEntity( final RepositoryElementInterface transOrJob,
+      final RepositoryDirectoryInterface newDirectory, final String newName )
+      throws KettleException {
+    switch ( transOrJob.getRepositoryElementType()) {
+      case TRANSFORMATION:
+        return renameTransformation( transOrJob.getObjectId(), null, newDirectory, newName );
+      case JOB:
+        return renameJob( transOrJob.getObjectId(), null, newDirectory, newName );
+      default:
+        throw new KettleException(
+            "Unknown RepositoryObjectType. Should be TRANSFORMATION or JOB " );
+    }
   }
 
 }
