@@ -22,6 +22,7 @@
 
 package org.pentaho.di.base;
 
+import com.google.common.collect.ImmutableList;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.Const;
@@ -533,6 +534,14 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   public void removeContentChangedListener( ContentChangedListener listener ) {
     contentChangedListeners.remove( listener );
+  }
+
+  public List<ContentChangedListener> getContentChangedListeners() {
+    if ( contentChangedListeners == null ) {
+      return ImmutableList.of();
+    } else {
+      return ImmutableList.copyOf( contentChangedListeners );
+    }
   }
 
   /**
