@@ -50,6 +50,7 @@ import com.sforce.soap.partner.DescribeGlobalResult;
 import com.sforce.soap.partner.DescribeGlobalSObjectResult;
 import com.sforce.soap.partner.DescribeSObjectResult;
 import com.sforce.soap.partner.Field;
+import com.sforce.soap.partner.FieldType;
 import com.sforce.soap.partner.GetDeletedResult;
 import com.sforce.soap.partner.GetUpdatedResult;
 import com.sforce.soap.partner.GetUserInfoResult;
@@ -65,6 +66,8 @@ import com.sforce.soap.partner.fault.LoginFault;
 import com.sforce.soap.partner.sobject.SObject;
 
 public class SalesforceConnection {
+  private static final FieldType ID_FIELD_TYPE = FieldType.fromString( "id" );
+
   private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String url;
@@ -722,6 +725,32 @@ public class SalesforceConnection {
         describeSObjectResult = null;
       }
     }
+  }
+
+  /**Returns only updatable object fields and ID field if <b>excludeNonUpdatableFields</b> is true,
+   * otherwise all object field
+   * @param objectName the name of Saleforce object
+   * @param excludeNonUpdatableFields the flag that indicates if non-updatable fields should be excluded or not
+   * @return the list of object fields depending on filter or not non-updatable fields.
+   * @throws KettleException if any exception occurs
+   */
+  public Field[] getObjectFields( String objectName, boolean excludeNonUpdatableFields ) throws KettleException {
+    Field[] fieldList = getObjectFields( objectName );
+    if ( excludeNonUpdatableFields ) {
+      ArrayList<Field> finalFieldList = new ArrayList<Field>();
+      for ( Field f : fieldList ) {
+        // Leave out fields that can't be updated but
+        if ( isIdField( f ) || !f.isCalculated() && f.isUpdateable() ) {
+          finalFieldList.add( f );
+        }
+      }
+      fieldList = finalFieldList.toArray( new Field[finalFieldList.size()] );
+    }
+    return fieldList;
+  }
+
+  private boolean isIdField( Field field ) {
+    return field.getType() == ID_FIELD_TYPE ? true : false;
   }
 
   /**
