@@ -80,7 +80,11 @@ public class KettleVFS {
       @Override
       public void run() {
         if ( fsm != null ) {
-          fsm.close();
+          try {
+            fsm.close();
+          } catch ( Exception ignored ){
+            // Exceptions can be thrown due to a closed classloader
+          }
         }
       }
     } ) );
