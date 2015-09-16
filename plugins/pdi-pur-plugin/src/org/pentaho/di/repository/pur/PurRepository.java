@@ -1653,7 +1653,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
 
   /**
    * Renames and optionally moves a file having {@code idObject}. If {@code newDirectory} is <tt>null</tt>, then the
-   * file is just renamed. If {@code newName} is <tt>null</tt>, then the file should keep its name.
+   * file is just renamed. If {@code newTitle} is <tt>null</tt>, then the file should keep its name.
    * <p/>
    * Note, it is expected that the file exists
    *
@@ -1661,46 +1661,44 @@ public class PurRepository extends AbstractRepository implements Repository, jav
    * @param versionComment comment on the revision
    * @param newDirectory   new folder, where to move the file; <tt>null</tt> means the file should be left in its
    *                       current
-   * @param newName        new file's name; <tt>null</tt> means the file should keep its current name
+   * @param newTitle       new file's title (title is a name w/o extension); <tt>null</tt> means the file should keep
+   *                       its current
    * @param objectType     file's type; {@linkplain RepositoryObjectType#TRANSFORMATION} or {@linkplain
    *                       RepositoryObjectType#JOB} are expected
    * @param errorMsgKey    key for the error message passed with the exception
    * @throws KettleException if file with same path exists
    */
   private ObjectId renameTransOrJob( ObjectId idObject, String versionComment,
-                                     RepositoryDirectoryInterface newDirectory, String newName,
+                                     RepositoryDirectoryInterface newDirectory, String newTitle,
                                      RepositoryObjectType objectType, String errorMsgKey )
     throws KettleException {
-    RepositoryFile file = pur.getFileById( idObject.getId() );
-    newName = checkNewName( newName, objectType, file );
 
-    String absPath = calcDestAbsPath( file, newDirectory, newName );
+    RepositoryFile file = pur.getFileById( idObject.getId() );
+    RepositoryFile.Builder builder = new RepositoryFile.Builder( file );
+    // fullName = title + extension
+    String fullName;
+    if ( newTitle == null ) {
+      // keep existing file name
+      fullName = file.getName();
+    } else {
+      // set new title
+      builder.title( RepositoryFile.DEFAULT_LOCALE, newTitle );
+      fullName = checkAndSanitize( newTitle ) + objectType.getExtension();
+    }
+
+    String absPath = calcDestAbsPath( file, newDirectory, fullName );
     // get file from destination path, should be null for rename goal
     RepositoryFile fileFromDestination = pur.getFile( absPath );
-    RepositoryFile beforeRename = pur.getFileById( idObject.getId() );
     if ( fileFromDestination == null ) {
-      // set new title
-      beforeRename = new RepositoryFile.Builder( beforeRename ).title( RepositoryFile.DEFAULT_LOCALE, newName ).build();
-      NodeRepositoryFileData data = pur.getDataAtVersionForRead( beforeRename.getId(), null,
+      file = builder.build();
+      NodeRepositoryFileData data = pur.getDataAtVersionForRead( file.getId(), null,
         NodeRepositoryFileData.class );
-      pur.updateFile( beforeRename, data, versionComment );
+      pur.updateFile( file, data, versionComment );
       pur.moveFile( idObject.getId(), absPath, null );
       rootRef.clearRef();
       return idObject;
     } else {
-      throw new KettleException( BaseMessages.getString( PKG, errorMsgKey, beforeRename.getName(), newName ) );
-    }
-  }
-
-  private String checkNewName( String newName, RepositoryObjectType objectType, RepositoryFile existingFile ) {
-    if ( newName == null ) {
-      return existingFile.getName();
-    } else {
-      String checked = checkAndSanitize( newName );
-      if ( !checked.endsWith( objectType.getExtension() ) ) {
-        checked += objectType.getExtension();
-      }
-      return checked;
+      throw new KettleException( BaseMessages.getString( PKG, errorMsgKey, file.getName(), newTitle ) );
     }
   }
 
