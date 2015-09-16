@@ -20,30 +20,22 @@ package org.pentaho.di.repository.pur;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.hasItem;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.repository.pur.PurRepositoryTestingUtils.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Callable;
 
 import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Workspace;
-import javax.jcr.security.AccessControlException;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.vfs2.FileObject;
-import org.apache.jackrabbit.api.JackrabbitWorkspace;
-import org.apache.jackrabbit.api.security.authorization.PrivilegeManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -92,11 +84,6 @@ import org.pentaho.platform.api.repository2.unified.IBackingRepositoryLifecycleM
 import org.pentaho.platform.api.repository2.unified.IRepositoryVersionManager;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
-import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
-import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl.Builder;
-import org.pentaho.platform.api.repository2.unified.RepositoryFilePermission;
-import org.pentaho.platform.api.repository2.unified.RepositoryFileSid;
-import org.pentaho.platform.api.repository2.unified.RepositoryFileSid.Type;
 import org.pentaho.platform.api.repository2.unified.VersionSummary;
 import org.pentaho.platform.core.mt.Tenant;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -105,8 +92,6 @@ import org.pentaho.platform.repository2.ClientRepositoryPaths;
 import org.pentaho.platform.repository2.unified.IRepositoryFileDao;
 import org.pentaho.platform.repository2.unified.ServerRepositoryPaths;
 import org.pentaho.platform.repository2.unified.jcr.JcrRepositoryFileUtils;
-import org.pentaho.platform.repository2.unified.jcr.JcrTenantUtils;
-import org.pentaho.platform.repository2.unified.jcr.PentahoJcrConstants;
 import org.pentaho.platform.repository2.unified.jcr.RepositoryFileProxyFactory;
 import org.pentaho.platform.repository2.unified.jcr.SimpleJcrTestUtils;
 import org.pentaho.platform.repository2.unified.jcr.jackrabbit.security.TestPrincipalProvider;
@@ -129,7 +114,6 @@ import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.xml.sax.Attributes;
@@ -273,22 +257,8 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
   }
 
   private void setAclManagement() {
-    testJcrTemplate.execute( new JcrCallback() {
-      @Override
-      public Object doInJcr( Session session ) throws IOException, RepositoryException {
-        PentahoJcrConstants pentahoJcrConstants = new PentahoJcrConstants( session );
-        Workspace workspace = session.getWorkspace();
-        PrivilegeManager privilegeManager = ( (JackrabbitWorkspace) workspace ).getPrivilegeManager();
-        try {
-          privilegeManager.getPrivilege( pentahoJcrConstants.getPHO_ACLMANAGEMENT_PRIVILEGE() );
-        } catch ( AccessControlException ace ) {
-          privilegeManager.registerPrivilege( pentahoJcrConstants.getPHO_ACLMANAGEMENT_PRIVILEGE(), false,
-            new String[ 0 ] );
-        }
-        session.save();
-        return null;
-      }
-    } );
+    JcrCallback callback = PurRepositoryTestingUtils.setAclManagementCallback();
+    testJcrTemplate.execute( callback );
   }
 
   protected void setUpUser() {
@@ -303,26 +273,16 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     Authentication authentication = new UsernamePasswordAuthenticationToken( userDetails, password, authorities );
     // next line is copy of SecurityHelper.setPrincipal
     pentahoSession.setAttribute( "SECURITY_PRINCIPAL", authentication );
-    PentahoSessionHolder.setSession( pentahoSession );
     SecurityContextHolder.setStrategyName( SecurityContextHolder.MODE_GLOBAL );
-    SecurityContextHolder.getContext().setAuthentication( authentication );
+    setSession( pentahoSession, authentication );
     repositoryLifecyleManager.newTenant();
     repositoryLifecyleManager.newUser();
   }
 
   protected void loginAsRepositoryAdmin() {
-    StandaloneSession pentahoSession = new StandaloneSession( repositoryAdminUsername );
-    pentahoSession.setAuthenticated( repositoryAdminUsername );
-    final GrantedAuthority[] repositoryAdminAuthorities =
-      new GrantedAuthority[] { new GrantedAuthorityImpl( superAdminRoleName ) };
-    final String password = "ignored";
-    UserDetails repositoryAdminUserDetails = new User( repositoryAdminUsername, password, true, true, true, true,
-      repositoryAdminAuthorities );
-    Authentication repositoryAdminAuthentication = new UsernamePasswordAuthenticationToken( repositoryAdminUserDetails,
-      password, repositoryAdminAuthorities );
-    PentahoSessionHolder.setSession( pentahoSession );
-    // this line necessary for Spring Security's MethodSecurityInterceptor
-    SecurityContextHolder.getContext().setAuthentication( repositoryAdminAuthentication );
+    StandaloneSession repositoryAdminSession = createSession( repositoryAdminUsername );
+    Authentication repositoryAdminAuthentication = createAuthentication( repositoryAdminUsername, superAdminRoleName );
+    setSession( repositoryAdminSession, repositoryAdminAuthentication );
   }
 
   protected void logout() {
@@ -361,19 +321,9 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     pentahoSession.setAuthenticated( tenant.getId(), username );
     PentahoSessionHolder.setSession( pentahoSession );
     pentahoSession.setAttribute( IPentahoSession.TENANT_ID_KEY, tenant.getId() );
-    final String password = "password";
 
-    List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();
-
-    for ( String roleName : roles ) {
-      authList.add( new GrantedAuthorityImpl( roleName ) );
-    }
-    GrantedAuthority[] authorities = authList.toArray( new GrantedAuthority[ 0 ] );
-    UserDetails userDetails = new User( username, password, true, true, true, true, authorities );
-    Authentication auth = new UsernamePasswordAuthenticationToken( userDetails, password, authorities );
-    PentahoSessionHolder.setSession( pentahoSession );
-    // this line necessary for Spring Security's MethodSecurityInterceptor
-    SecurityContextHolder.getContext().setAuthentication( auth );
+    Authentication auth = createAuthentication( username, roles );
+    setSession( pentahoSession, auth );
 
     createUserHomeFolder( tenant, username );
   }
@@ -414,76 +364,16 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     StandaloneSession pentahoSession = new StandaloneSession( repositoryAdminUsername );
     pentahoSession.setAuthenticated( null, repositoryAdminUsername );
     PentahoSessionHolder.setSession( pentahoSession );
+
+    String principleId = userNameUtils.getPrincipleId( theTenant, theUsername );
+    String authenticatedRoleId = roleNameUtils.getPrincipleId( theTenant, tenantAuthenticatedRoleName );
+    TransactionCallbackWithoutResult callback =
+      createUserHomeDirCallback( theTenant, theUsername, principleId, authenticatedRoleId, repositoryFileDao );
     try {
-      txnTemplate.execute( new TransactionCallbackWithoutResult() {
-        public void doInTransactionWithoutResult( final TransactionStatus status ) {
-          Builder aclsForUserHomeFolder = null;
-          Builder aclsForTenantHomeFolder = null;
-          ITenant tenant = null;
-          String username = null;
-          if ( theTenant == null ) {
-            tenant = getTenant( username, true );
-            username = getPrincipalName( theUsername, true );
-          } else {
-            tenant = theTenant;
-            username = theUsername;
-          }
-          if ( tenant == null || tenant.getId() == null ) {
-            tenant = getCurrentTenant();
-          }
-          if ( tenant == null || tenant.getId() == null ) {
-            tenant = JcrTenantUtils.getDefaultTenant();
-          }
-          RepositoryFile userHomeFolder = null;
-          String userId = userNameUtils.getPrincipleId( theTenant, username );
-          final RepositoryFileSid userSid = new RepositoryFileSid( userId );
-          RepositoryFile tenantHomeFolder = null;
-          RepositoryFile tenantRootFolder = null;
-          // Get the Tenant Root folder. If the Tenant Root folder does not exist then exit.
-          tenantRootFolder = repositoryFileDao.getFileByAbsolutePath( ServerRepositoryPaths
-            .getTenantRootFolderPath( theTenant ) );
-          if ( tenantRootFolder != null ) {
-            // Try to see if Tenant Home folder exist
-            tenantHomeFolder = repositoryFileDao.getFileByAbsolutePath( ServerRepositoryPaths
-              .getTenantHomeFolderPath( theTenant ) );
-            if ( tenantHomeFolder == null ) {
-              String ownerId = userNameUtils.getPrincipleId( theTenant, username );
-              RepositoryFileSid ownerSid = new RepositoryFileSid( ownerId, Type.USER );
-
-              String tenantAuthenticatedRoleId = roleNameUtils.getPrincipleId( theTenant, tenantAuthenticatedRoleName );
-              RepositoryFileSid tenantAuthenticatedRoleSid =
-                new RepositoryFileSid( tenantAuthenticatedRoleId, Type.ROLE );
-
-              aclsForTenantHomeFolder = new RepositoryFileAcl.Builder( userSid )
-                .ace( tenantAuthenticatedRoleSid, EnumSet.of( RepositoryFilePermission.READ ) );
-
-              aclsForUserHomeFolder =
-                new RepositoryFileAcl.Builder( userSid ).ace( ownerSid, EnumSet.of( RepositoryFilePermission.ALL ) );
-              tenantHomeFolder = repositoryFileDao.createFolder( tenantRootFolder.getId(), new RepositoryFile.Builder(
-                ServerRepositoryPaths.getTenantHomeFolderName() ).folder( true ).build(),
-                aclsForTenantHomeFolder.build(), "tenant home folder" );
-            } else {
-              String ownerId = userNameUtils.getPrincipleId( theTenant, username );
-              RepositoryFileSid ownerSid = new RepositoryFileSid( ownerId, Type.USER );
-              aclsForUserHomeFolder =
-                new RepositoryFileAcl.Builder( userSid ).ace( ownerSid, EnumSet.of( RepositoryFilePermission.ALL ) );
-            }
-
-            // now check if user's home folder exist
-            userHomeFolder = repositoryFileDao
-              .getFileByAbsolutePath( ServerRepositoryPaths.getUserHomeFolderPath( theTenant, username ) );
-            if ( userHomeFolder == null ) {
-              userHomeFolder = repositoryFileDao.createFolder( tenantHomeFolder.getId(),
-                new RepositoryFile.Builder( username ).folder( true ).build(),
-                aclsForUserHomeFolder.build(), "user home folder" ); //$NON-NLS-1$
-            }
-          }
-        }
-      } );
+      txnTemplate.execute( callback );
     } finally {
       // Switch our identity back to the original user.
-      PentahoSessionHolder.setSession( origPentahoSession );
-      SecurityContextHolder.getContext().setAuthentication( origAuthentication );
+      setSession( origPentahoSession, origAuthentication );
     }
   }
 
@@ -1214,78 +1104,6 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     }
     RepositoryElementInterface loaded = loader.call();
     assertEquals( element2, loaded );
-  }
-
-
-  @Test
-  public void getObjectInformation_IsDeletedFlagSet_Trans() throws Exception {
-    testDeletedFlagForObject( new Callable<RepositoryElementInterface>() {
-      @Override public RepositoryElementInterface call() throws Exception {
-        TransMeta transMeta = new TransMeta();
-        transMeta.setName( "testTransMeta" );
-        return transMeta;
-      }
-    } );
-  }
-
-  @Test
-  public void getObjectInformation_IsDeletedFlagSet_Job() throws Exception {
-    testDeletedFlagForObject( new Callable<RepositoryElementInterface>() {
-      @Override public RepositoryElementInterface call() throws Exception {
-        JobMeta jobMeta = new JobMeta();
-        jobMeta.setName( "testJobMeta" );
-        return jobMeta;
-      }
-    } );
-  }
-
-  private void testDeletedFlagForObject( Callable<RepositoryElementInterface> elementProvider ) throws Exception {
-    TransDelegate transDelegate = new TransDelegate( repository, repo );
-    JobDelegate jobDelegate = new JobDelegate( repository, repo );
-    FieldUtils.writeField( repository, "transDelegate", transDelegate, true );
-    FieldUtils.writeField( repository, "jobDelegate", jobDelegate, true );
-
-    RepositoryElementInterface element = elementProvider.call();
-    RepositoryDirectoryInterface directory =
-      repository.findDirectory( element.getRepositoryDirectory().getPath() );
-    element.setRepositoryDirectory( directory );
-
-    repository.save( element, null, null );
-    assertNotNull( "Element was saved", element.getObjectId() );
-
-    RepositoryObject information;
-    information = repository.getObjectInformation( element.getObjectId(), element.getRepositoryElementType() );
-    assertNotNull( information );
-    assertFalse( information.isDeleted() );
-
-    repository.deleteTransformation( element.getObjectId() );
-    assertNotNull( "Element was moved to Trash", repo.getFileById( element.getObjectId().getId() ) );
-
-    information = repository.getObjectInformation( element.getObjectId(), element.getRepositoryElementType() );
-    assertNotNull( information );
-    assertTrue( information.isDeleted() );
-  }
-
-  @Test
-  public void getObjectInformation_InvalidRepositoryId_ExceptionIsHandled() throws Exception {
-    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
-    when( unifiedRepository.getFileById( any( Serializable.class ) ) )
-      .thenThrow( new RuntimeException( "unknown id" ) );
-    ( (PurRepository) repository ).setTest( unifiedRepository );
-
-    RepositoryObject information =
-      repository.getObjectInformation( new StringObjectId( "invalid id" ), RepositoryObjectType.JOB );
-    assertNull( "Should return null if file was not found", information );
-  }
-  @Test
-  public void getObjectInformation_InvalidRepositoryId_NullIsHandled() throws Exception {
-    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
-    when( unifiedRepository.getFileById( any( Serializable.class ) ) ).thenReturn( null );
-    ( (PurRepository) repository ).setTest( unifiedRepository );
-
-    RepositoryObject information =
-      repository.getObjectInformation( new StringObjectId( "invalid id" ), RepositoryObjectType.JOB );
-    assertNull( "Should return null if file was not found", information );
   }
 
 
