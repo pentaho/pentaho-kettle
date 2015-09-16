@@ -1304,7 +1304,7 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
   @Test
   public void renameJob_Successfully() throws Exception {
     final String initial = "renameJob_Successfully";
-    final String renamed = initial + "_renamed" + RepositoryObjectType.JOB.getExtension();
+    final String renamed = initial + "_renamed";
 
     JobMeta job = new JobMeta();
     RepositoryDirectoryInterface directory = getPublicDir();
@@ -1335,7 +1335,7 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     assertNotNull( destFolder );
 
     repository.renameJob( job.getObjectId(), destFolder, null );
-    assertJobExistsIn( destFolder, filename + RepositoryObjectType.JOB.getExtension(), "Job was not renamed" );
+    assertJobExistsIn( destFolder, filename, "Job was not renamed" );
   }
 
   @Test( expected = KettleException.class )
@@ -1356,7 +1356,7 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
   @Test
   public void moveAndRenameJob_Successfully() throws Exception {
     final String filename = "moveAndRenameJob_Successfully";
-    final String renamed = filename + "_renamed" + RepositoryObjectType.JOB.getExtension();
+    final String renamed = filename + "_renamed";
 
     JobMeta job = new JobMeta();
     saveJob( job, filename, getPublicDir() );
@@ -1416,7 +1416,7 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
   @Test
   public void renameTrans_Successfully() throws Exception {
     final String initial = "renameTrans_Successfully";
-    final String renamed = initial + "_renamed" + RepositoryObjectType.TRANSFORMATION.getExtension();
+    final String renamed = initial + "_renamed";
 
     TransMeta trans = new TransMeta();
     RepositoryDirectoryInterface directory = getPublicDir();
@@ -1447,8 +1447,7 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     assertNotNull( destFolder );
 
     repository.renameTransformation( trans.getObjectId(), destFolder, null );
-    assertTransExistsIn( destFolder, filename + RepositoryObjectType.TRANSFORMATION.getExtension(),
-      "Trans was not renamed" );
+    assertTransExistsIn( destFolder, filename, "Trans was not renamed" );
   }
 
   @Test( expected = KettleException.class )
@@ -1469,7 +1468,7 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
   @Test
   public void moveAndRenameTrans_Successfully() throws Exception {
     final String filename = "moveAndRenameTrans_Successfully";
-    final String renamed = filename + "_renamed" + RepositoryObjectType.TRANSFORMATION.getExtension();
+    final String renamed = filename + "_renamed";
 
     TransMeta trans = new TransMeta();
     saveTrans( trans, filename, getPublicDir() );
