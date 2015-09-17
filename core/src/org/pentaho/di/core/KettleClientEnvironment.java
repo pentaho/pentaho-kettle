@@ -25,15 +25,19 @@ package org.pentaho.di.core;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
 import org.pentaho.di.core.logging.ConsoleLoggingEventListener;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LoggingPluginInterface;
 import org.pentaho.di.core.logging.LoggingPluginType;
 import org.pentaho.di.core.plugins.DatabasePluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.util.EnvUtil;
@@ -85,6 +89,7 @@ public class KettleClientEnvironment {
     if ( !"Y".equalsIgnoreCase( System.getProperty( Const.KETTLE_DISABLE_CONSOLE_LOGGING, "N" ) ) ) {
       KettleLogStore.getAppender().addLoggingEventListener( new ConsoleLoggingEventListener() );
     }
+    
 
     // Load value meta data plugins
     //
@@ -95,6 +100,9 @@ public class KettleClientEnvironment {
     PluginRegistry.addPluginType( TwoWayPasswordEncoderPluginType.getInstance() );
     PluginRegistry.init( true );
 
+    List<PluginInterface> logginPlugins = PluginRegistry.getInstance().getPlugins( LoggingPluginType.class );
+    initLogginPlugins( logginPlugins );
+    
     String passwordEncoderPluginID = Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGIN ), "Kettle" );
 
     Encr.init( passwordEncoderPluginID );
@@ -124,6 +132,13 @@ public class KettleClientEnvironment {
     } catch ( Exception e ) {
       // ignore - should likely propagate the error
 
+    }
+  }
+
+  private static void initLogginPlugins( List<PluginInterface> logginPlugins ) throws KettlePluginException {
+    for ( PluginInterface plugin : logginPlugins ) {
+      LoggingPluginInterface loggingPlugin = (LoggingPluginInterface) PluginRegistry.getInstance().loadClass( plugin );
+      loggingPlugin.init();
     }
   }
 

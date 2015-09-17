@@ -23,7 +23,7 @@
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" changing="true"/>
 
-    <dependency org="log4j" name="log4j" rev="1.2.16" transitive="false"/>
+    <dependency org="log4j" name="log4j" rev="1.2.17" conf="default->default" transitive="false"/>
 
     <dependency org="junit" name="junit" rev="4.7" conf="test->default"/> 
     
