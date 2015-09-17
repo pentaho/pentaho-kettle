@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -1033,7 +1034,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     in.setFileRequired( wFilenameList.getItems( 3 ) );
     in.setIncludeSubFolders( wFilenameList.getItems( 4 ) );
 
-    in.setFilterFileType( wFilterFileType.getSelectionIndex() );
+    in.setFilterFileType( FileInputList.FileTypeFilter.getByOrdinal( wFilterFileType.getSelectionIndex() ) );
     in.setIncludeRowNumber( wInclRownum.getSelection() );
     in.setAddResultFile( wAddResult.getSelection() );
     in.setDynamicFilenameField( wFilenameField.getText() );
