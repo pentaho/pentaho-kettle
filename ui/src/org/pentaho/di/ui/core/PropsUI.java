@@ -193,7 +193,13 @@ public class PropsUI extends Props {
         if ( loaded != null ) {
           leditables.add( loaded );
         }
-      } catch ( Exception e ) {
+      }
+      catch( ClassCastException cce ) {
+        // Not all Lifecycle plugins implement GUIOption, keep calm and carry on
+        LogChannel.GENERAL.logBasic(
+          "Plugin "+plugin.getIds()[0] + " does not implement GUIOption, it will not be editable" );
+      }
+      catch ( Exception e ) {
         LogChannel.GENERAL.logError( "Unexpected error loading class for plugin " + plugin.getName(), e );
       }
     }
