@@ -108,6 +108,7 @@ import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl.Builder;
 import org.pentaho.platform.api.repository2.unified.RepositoryFilePermission;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileSid;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileSid.Type;
+import org.pentaho.platform.api.repository2.unified.VersionSummary;
 import org.pentaho.platform.core.mt.Tenant;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.StandaloneSession;
@@ -1314,6 +1315,20 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     assertJobExistsIn( directory, renamed, "Job was not renamed" );
   }
 
+  @Test
+  public void renameJob_CreatesNewRevision() throws Exception {
+    final String initial = "renameJob_CreatesNewRevision";
+    final String renamed = initial + "_renamed";
+
+    JobMeta job = new JobMeta();
+    saveJob( job, initial, getPublicDir() );
+
+    List<VersionSummary> historyBefore = repo.getVersionSummaries( job.getObjectId().getId() );
+    repository.renameTransformation( job.getObjectId(), job.getRepositoryDirectory(), renamed );
+    List<VersionSummary> afterBefore = repo.getVersionSummaries( job.getObjectId().getId() );
+    assertEquals( historyBefore.size() + 1, afterBefore.size() );
+  }
+
   @Test( expected = KettleException.class )
   public void renameJob_FailsIfANameConflictOccurs() throws Exception {
     final String name = "renameJob_FailsIfANameConflictOccurs";
@@ -1336,6 +1351,20 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
 
     repository.renameJob( job.getObjectId(), destFolder, null );
     assertJobExistsIn( destFolder, filename, "Job was not renamed" );
+  }
+
+  @Test
+  public void moveJob_DoesNotCreateRevision() throws Exception {
+    final String filename = "moveJob_DoesNotCreateRevision";
+
+    JobMeta job = new JobMeta();
+    saveJob( job, filename, getPublicDir() );
+
+    List<VersionSummary> historyBefore = repo.getVersionSummaries( job.getObjectId().getId() );
+    repository.renameTransformation( job.getObjectId(), getDirInsidePublic( filename ), null );
+    List<VersionSummary> historyAfter = repo.getVersionSummaries( job.getObjectId().getId() );
+
+    assertEquals( historyBefore.size(), historyAfter.size() );
   }
 
   @Test( expected = KettleException.class )
@@ -1426,6 +1455,20 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     assertTransExistsIn( directory, renamed, "Trans was not renamed" );
   }
 
+  @Test
+  public void renameTrans_CreatesNewRevision() throws Exception {
+    final String initial = "renameTrans_CreatesNewRevision";
+    final String renamed = initial + "_renamed";
+
+    TransMeta trans = new TransMeta();
+    saveTrans( trans, initial, getPublicDir() );
+
+    List<VersionSummary> historyBefore = repo.getVersionSummaries( trans.getObjectId().getId() );
+    repository.renameTransformation( trans.getObjectId(), trans.getRepositoryDirectory(), renamed );
+    List<VersionSummary> afterBefore = repo.getVersionSummaries( trans.getObjectId().getId() );
+    assertEquals( historyBefore.size() + 1, afterBefore.size() );
+  }
+
   @Test( expected = KettleException.class )
   public void renameTrans_FailsIfANameConflictOccurs() throws Exception {
     final String name = "renameTrans_FailsIfANameConflictOccurs";
@@ -1448,6 +1491,20 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
 
     repository.renameTransformation( trans.getObjectId(), destFolder, null );
     assertTransExistsIn( destFolder, filename, "Trans was not renamed" );
+  }
+
+  @Test
+  public void moveTrans_DoesNotCreateRevision() throws Exception {
+    final String filename = "moveTrans_DoesNotCreateRevision";
+
+    TransMeta trans = new TransMeta();
+    saveTrans( trans, filename, getPublicDir() );
+
+    List<VersionSummary> historyBefore = repo.getVersionSummaries( trans.getObjectId().getId() );
+    repository.renameTransformation( trans.getObjectId(), getDirInsidePublic( filename ), null );
+    List<VersionSummary> historyAfter = repo.getVersionSummaries( trans.getObjectId().getId() );
+
+    assertEquals( historyBefore.size(), historyAfter.size() );
   }
 
   @Test( expected = KettleException.class )

@@ -1693,7 +1693,11 @@ public class PurRepository extends AbstractRepository implements Repository, jav
       file = builder.build();
       NodeRepositoryFileData data = pur.getDataAtVersionForRead( file.getId(), null,
         NodeRepositoryFileData.class );
-      pur.updateFile( file, data, versionComment );
+      if ( newTitle != null ) {
+        // update file's content only if the title should be changed
+        // as this action creates another revision
+        pur.updateFile( file, data, versionComment );
+      }
       pur.moveFile( idObject.getId(), absPath, null );
       rootRef.clearRef();
       return idObject;
