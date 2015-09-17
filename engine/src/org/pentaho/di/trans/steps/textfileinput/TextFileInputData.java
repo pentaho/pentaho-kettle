@@ -134,6 +134,8 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
 
   public Map<String, Boolean> rejectedFiles;
 
+  public boolean nullForEmptyString;
+
   public TextFileInputData() {
     super();
 
