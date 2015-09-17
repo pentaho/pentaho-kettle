@@ -1115,7 +1115,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
   boolean connectToSFTP( boolean checkFolder, String Remotefoldername ) {
     boolean retval = true;
     try {
-      if ( sftpclient == null ) {
+      if ( sftpclient == null || input.hasChanged() ) {
         sftpclient = createSFTPClient();
       }
       if ( checkFolder ) {
