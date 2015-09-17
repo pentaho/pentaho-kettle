@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleException;
@@ -32,10 +33,10 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.imp.ImportRules;
+import org.pentaho.di.imp.rule.ImportValidationFeedback;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.IRepositoryExporter;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryImporter;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
@@ -203,37 +204,47 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
       return RepositoryObjectType.TRANSFORMATION.equals(repository.getObjectType(file.getName()));
     }
 
-    public void export(ProgressMonitorListener monitor, List<RepositoryFile> files, OutputStreamWriter writer)
+    public void export( ProgressMonitorListener monitor, List<RepositoryFile> files, OutputStreamWriter writer )
         throws KettleException {
-      List<TransMeta> transformations = repository.loadTransformations(monitor, log, files, true);
+      List<TransMeta> transformations = repository.loadTransformations( monitor, log, files, true );
       Iterator<TransMeta> transMetasIter = transformations.iterator();
       Iterator<RepositoryFile> filesIter = files.iterator();
-      boolean continueOnError=true;
-      while ((monitor == null || !monitor.isCanceled()) && transMetasIter.hasNext()) {
+      while ( ( monitor == null || !monitor.isCanceled() ) && transMetasIter.hasNext() ) {
         TransMeta trans = transMetasIter.next();
         RepositoryFile file = filesIter.next();
         try {
-          
           // Validate against the import rules first!
-          //
-          try {
-            RepositoryImporter.validateImportedElement(importRules, trans);
-          } catch(KettleException ve) {
-            continueOnError=false;
-            throw(ve);
+          if ( toExport( trans ) ) {
+            writer.write( trans.getXML() + Const.CR );
           }
-          
-          writer.write(trans.getXML() + Const.CR);
-        } catch (Exception ex) {
-          String message = "An error occured while saving transformation [" + trans.getName() + "] from [" + file.getPath() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-          if (continueOnError) {
-            log.logError(message, ex);
-          } else {
-            throw new KettleException(message, ex);
-          }
+        } catch ( Exception ex ) {
+          //if exception while writing one item is occurred logging it and continue looping
+          String message =
+              "An error occured while saving transformation [" + trans.getName() + "] from [" + file.getPath()
+                  + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          log.logError( message, ex );
         }
       }
     }
+  }
+
+  private boolean toExport( AbstractMeta meta ) {
+    boolean shouldImport = true;
+    List<ImportValidationFeedback> feedback = importRules.verifyRules( meta );
+    List<ImportValidationFeedback> errors = ImportValidationFeedback.getErrors( feedback );
+    if ( !errors.isEmpty() ) {
+      shouldImport = false;
+      StringBuilder message =
+          new StringBuilder( "Imported intity " + meta.getName() + " is not satisfied to import rule(s)" );
+      message.append( Const.CR );
+      for ( ImportValidationFeedback error : errors ) {
+        message.append( " - " );
+        message.append( error.toString() );
+        message.append( Const.CR );
+      }
+      log.logError( message.toString() );
+    }
+    return shouldImport;
   }
 
   private class JobBatchExporter implements RepositoryFileBatchExporter {
@@ -245,34 +256,25 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
       return RepositoryObjectType.JOB.equals(repository.getObjectType(file.getName()));
     }
 
-    public void export(ProgressMonitorListener monitor, List<RepositoryFile> files, OutputStreamWriter writer)
+    public void export( ProgressMonitorListener monitor, List<RepositoryFile> files, OutputStreamWriter writer )
         throws KettleException {
-      List<JobMeta> jobs = repository.loadJobs(monitor, log, files, true);
+      List<JobMeta> jobs = repository.loadJobs( monitor, log, files, true );
       Iterator<JobMeta> jobsMeta = jobs.iterator();
       Iterator<RepositoryFile> filesIter = files.iterator();
-      boolean continueOnError=true;
-      while ((monitor == null || !monitor.isCanceled()) && jobsMeta.hasNext()) {
-        JobMeta trans = jobsMeta.next();
+      while ( ( monitor == null || !monitor.isCanceled() ) && jobsMeta.hasNext() ) {
+        JobMeta meta = jobsMeta.next();
         RepositoryFile file = filesIter.next();
         try {
-          
           // Validate against the import rules first!
-          //
-          try {
-            RepositoryImporter.validateImportedElement(importRules, trans);
-          } catch(KettleException ve) {
-            continueOnError=false;
-            throw(ve);
+          if ( toExport( meta ) ) {
+            writer.write( meta.getXML() + Const.CR );
           }
-          
-          writer.write(trans.getXML() + Const.CR);
-        } catch (Exception ex) {
-          String message = "An error occured while saving job [" + trans.getName() + "] from [" + file.getPath() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-          if (continueOnError) {
-            log.logError(message, ex);
-          } else {
-            throw new KettleException(message, ex);
-          }
+        } catch ( Exception ex ) {
+          //if exception while writing one item is occurred logging it and continue looping
+          String message =
+              "An error occured while saving job [" + meta.getName() + "] from [" + file.getPath()
+                  + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          log.logError( message, ex );
         }
       }
     }
