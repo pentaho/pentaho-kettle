@@ -90,12 +90,7 @@ public class CentralLogStore {
         logWriter.getPentahoLogger(), // Category is deprecated
         event.getTimeStamp(),
         convertKettleLogLevelToLog4jLevel( event.getLevel() ),
-        event.getMessage(),
-        null,
-        null,
-        null,
-        null,
-        null );
+        event.getMessage(), null );
       list.add( loggingEvent );
     }
 
