@@ -116,7 +116,11 @@ public class UserRoleDelegate implements java.io.Serializable {
         }
         lookupCache.insertUserToLookupSet(newUser);
         fireUserRoleListChange();
-      } catch (Exception e) {
+      } catch (Exception e) { // it is the only way to determine AlreadyExistsException
+          if(e.getCause().toString().contains("org.pentaho.platform.api.engine.security.userroledao.AlreadyExistsException")) {
+              throw new KettleException(BaseMessages.getString(UserRoleDelegate.class,
+                      "UserRoleDelegate.ERROR_0015_USER_NAME_ALREADY_EXISTS"));
+          }
           throw new KettleException(BaseMessages.getString(UserRoleDelegate.class,
           "UserRoleDelegate.ERROR_0002_UNABLE_TO_CREATE_USER", newUser.getLogin()), e); //$NON-NLS-1$
       }
@@ -253,6 +257,11 @@ public class UserRoleDelegate implements java.io.Serializable {
       } catch (UserRoleException e) {
           throw new KettleException(BaseMessages.getString(UserRoleDelegate.class,
               "UserRoleDelegate.ERROR_0008_UNABLE_TO_CREATE_ROLE", newRole.getName()), e); //$NON-NLS-1$
+      } catch (Exception e) { // it is the only way to determine AlreadyExistsException
+          if(e.getCause().toString().contains("org.pentaho.platform.api.engine.security.userroledao.AlreadyExistsException")) {
+              throw new KettleException(BaseMessages.getString(UserRoleDelegate.class,
+                      "UserRoleDelegate.ERROR_0016_ROLE_NAME_ALREADY_EXISTS"));
+          }
       }
     } else {
       throw new KettleException(BaseMessages.getString(UserRoleDelegate.class,

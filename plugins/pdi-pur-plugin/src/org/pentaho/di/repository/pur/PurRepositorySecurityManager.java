@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.pur.model.EERoleInfo;
@@ -102,12 +103,31 @@ public class PurRepositorySecurityManager implements IRoleSupportSecurityManager
 	}
 
 	public void saveUserInfo(IUser user) throws KettleException {
+        normalizeUserData(user);
 		userRoleDelegate.createUser(user);
 	}
 
-	public void createRole(IRole newRole) throws KettleException {
+    private void normalizeUserData(IUser user) throws KettleException {
+        user.setLogin(user.getLogin().trim());
+        user.setName(user.getName().trim());
+        if(user.getLogin().isEmpty() || user.getName().isEmpty()){
+            throw new KettleException(BaseMessages.getString(PurRepositorySecurityManager.class,
+                    "PurRepositorySecurityManager.ERROR_0001_INVALID_NAME"));
+        }
+    }
+
+    public void createRole(IRole newRole) throws KettleException {
+        normalizeRoleData(newRole);
 		userRoleDelegate.createRole(newRole);
 	}
+
+    private void normalizeRoleData(IRole newRole) throws KettleException {        
+        newRole.setName(newRole.getName().trim());
+        if(newRole.getName().isEmpty()){
+            throw new KettleException(BaseMessages.getString(PurRepositorySecurityManager.class,
+                    "PurRepositorySecurityManager.ERROR_0001_INVALID_NAME"));
+        }
+    }
 
 	public void deleteRoles(List<IRole> roles) throws KettleException {
 		userRoleDelegate.deleteRoles(roles);
