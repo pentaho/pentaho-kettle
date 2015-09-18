@@ -291,6 +291,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   private CCombo wDateLocale;
   private FormData fdlDateLocale, fdDateLocale;
 
+  private Label wlNullForMissingValue;
+  private Button wNullForMissingValue;
+  private FormData fdlNullForMissingValue, fdNullForMissingValue;
+
   // ERROR HANDLING...
   private Label wlErrorIgnored;
   private Button wErrorIgnored;
@@ -1546,6 +1550,23 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       }
     } );
 
+    // Use Null For Missing Value Checkbox
+    wlNullForMissingValue = new Label( wContentComp, SWT.RIGHT );
+    wlNullForMissingValue.setText( BaseMessages.getString( PKG, "TextFileInputDialog.NullForMissing.Label" ) );
+    props.setLook( wlNullForMissingValue );
+    fdlNullForMissingValue = new FormData();
+    fdlNullForMissingValue.left = new FormAttachment( 0, 0 );
+    fdlNullForMissingValue.top = new FormAttachment( wDateLocale, margin );
+    fdlNullForMissingValue.right = new FormAttachment( middle, -margin );
+    wlNullForMissingValue.setLayoutData( fdlNullForMissingValue );
+    wNullForMissingValue = new Button( wContentComp, SWT.CHECK );
+    wNullForMissingValue.setToolTipText( BaseMessages.getString( PKG, "TextFileInputDialog.NullForMissing.Tooltip" ) );
+    props.setLook( wNullForMissingValue );
+    fdNullForMissingValue = new FormData();
+    fdNullForMissingValue.left = new FormAttachment( middle, 0 );
+    fdNullForMissingValue.top = new FormAttachment( wDateLocale, margin );
+    wNullForMissingValue.setLayoutData( fdNullForMissingValue );
+
     // ///////////////////////////////
     // START OF AddFileResult GROUP //
     // ///////////////////////////////
@@ -1564,7 +1585,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( wlAddResult );
     fdlAddResult = new FormData();
     fdlAddResult.left = new FormAttachment( 0, 0 );
-    fdlAddResult.top = new FormAttachment( wDateLocale, margin );
+    fdlAddResult.top = new FormAttachment( wNullForMissingValue, margin );
     fdlAddResult.right = new FormAttachment( middle, -margin );
     wlAddResult.setLayoutData( fdlAddResult );
     wAddResult = new Button( wAddFileResult, SWT.CHECK );
@@ -1572,12 +1593,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     wAddResult.setToolTipText( BaseMessages.getString( PKG, "TextFileInputDialog.AddResult.Tooltip" ) );
     fdAddResult = new FormData();
     fdAddResult.left = new FormAttachment( middle, 0 );
-    fdAddResult.top = new FormAttachment( wDateLocale, margin );
+    fdAddResult.top = new FormAttachment( wNullForMissingValue, margin );
     wAddResult.setLayoutData( fdAddResult );
 
     fdAddFileResult = new FormData();
     fdAddFileResult.left = new FormAttachment( 0, margin );
-    fdAddFileResult.top = new FormAttachment( wDateLocale, margin );
+    fdAddFileResult.top = new FormAttachment( wNullForMissingValue, margin );
     fdAddFileResult.right = new FormAttachment( 100, -margin );
     wAddFileResult.setLayoutData( fdAddFileResult );
 
@@ -2234,6 +2255,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     wInclRownum.setSelection( meta.includeRowNumber() );
     wRownumByFile.setSelection( meta.isRowNumberByFile() );
     wDateLenient.setSelection( meta.isDateFormatLenient() );
+    wNullForMissingValue.setSelection( meta.isNullForMissingValue() );
     wAddResult.setSelection( meta.isAddResultFile() );
 
     if ( meta.getFilenameField() != null ) {
@@ -2498,6 +2520,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     meta.setDateFormatLenient( wDateLenient.getSelection() );
     meta.setNoEmptyLines( wNoempty.getSelection() );
     meta.setEncoding( wEncoding.getText() );
+    meta.setNullForMissingValue( wNullForMissingValue.getSelection() );
 
     int nrfiles = wFilenameList.getItemCount();
     int nrfields = wFields.nrNonEmpty();

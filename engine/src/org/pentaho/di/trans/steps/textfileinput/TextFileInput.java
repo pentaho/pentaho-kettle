@@ -32,6 +32,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -623,16 +624,30 @@ public class TextFileInput extends BaseStep implements StepInterface {
     return convertLineToRow( log, textFileLine, info, null, 0, outputRowMeta, convertRowMeta, fname, rowNr, delimiter,
         StringUtil.substituteHex( info.getEnclosure() ), StringUtil.substituteHex( info.getEscapeCharacter() ),
         errorHandler, addShortFilename, addExtension, addPath, addSize, addIsHidden, addLastModificationDate, addUri,
-        addRootUri, shortFilename, path, hidden, modificationDateTime, uri, rooturi, extension, size );
+        addRootUri, shortFilename, path, hidden, modificationDateTime, uri, rooturi, extension, size, true );
   }
 
-  public static final Object[] convertLineToRow( LogChannelInterface log, TextFileLine textFileLine,
+  @Deprecated
+  public static Object[] convertLineToRow( LogChannelInterface log, TextFileLine textFileLine,
       InputFileMetaInterface info, Object[] passThruFields, int nrPassThruFields, RowMetaInterface outputRowMeta,
       RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, String enclosure,
       String escapeCharacter, FileErrorHandler errorHandler, boolean addShortFilename, boolean addExtension,
       boolean addPath, boolean addSize, boolean addIsHidden, boolean addLastModificationDate, boolean addUri,
       boolean addRootUri, String shortFilename, String path, boolean hidden, Date modificationDateTime, String uri,
       String rooturi, String extension, long size ) throws KettleException {
+    return convertLineToRow( log, textFileLine, info, passThruFields, nrPassThruFields, outputRowMeta, convertRowMeta,
+        fname, rowNr, delimiter, enclosure, escapeCharacter, errorHandler, addShortFilename, addExtension, addPath,
+        addSize, addIsHidden, addLastModificationDate, addUri, addRootUri, shortFilename, path, hidden,
+        modificationDateTime, uri, rooturi, extension, size, true );
+  }
+
+  public static Object[] convertLineToRow( LogChannelInterface log, TextFileLine textFileLine,
+      InputFileMetaInterface info, Object[] passThruFields, int nrPassThruFields, RowMetaInterface outputRowMeta,
+      RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, String enclosure,
+      String escapeCharacter, FileErrorHandler errorHandler, boolean addShortFilename, boolean addExtension,
+      boolean addPath, boolean addSize, boolean addIsHidden, boolean addLastModificationDate, boolean addUri,
+      boolean addRootUri, String shortFilename, String path, boolean hidden, Date modificationDateTime, String uri,
+      String rooturi, String extension, long size, boolean useNullForEmptyString ) throws KettleException {
     if ( textFileLine == null || textFileLine.line == null ) {
       return null;
     }
@@ -676,6 +691,10 @@ public class TextFileInput extends BaseStep implements StepInterface {
           String pol = strings[fieldnr];
           try {
             value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
+            if ( useNullForEmptyString && valueMeta.getType() == Value.VALUE_TYPE_STRING
+                && value.toString().equals( Const.EMPTY_STRING ) ) {
+              value = null;
+            }
           } catch ( Exception e ) {
             // OK, give some feedback!
             String message =
@@ -995,7 +1014,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
                   data.escapeCharacter, data.dataErrorLineHandler, data.addShortFilename, data.addExtension,
                   data.addPath, data.addSize, data.addIsHidden, data.addLastModificationDate, data.addUri,
                   data.addRootUri, data.shortFilename, data.path, data.hidden, data.lastModificationDateTime,
-                  data.uriName, data.rootUriName, data.extension, data.size );
+                  data.uriName, data.rootUriName, data.extension, data.size, data.nullForEmptyString );
           if ( r != null ) {
             putrow = true;
           }
@@ -1085,7 +1104,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
                     data.escapeCharacter, data.dataErrorLineHandler, data.addShortFilename, data.addExtension,
                     data.addPath, data.addSize, data.addIsHidden, data.addLastModificationDate, data.addUri,
                     data.addRootUri, data.shortFilename, data.path, data.hidden, data.lastModificationDateTime,
-                    data.uriName, data.rootUriName, data.extension, data.size );
+                    data.uriName, data.rootUriName, data.extension, data.size, data.nullForEmptyString );
             if ( r != null ) {
               if ( log.isRowLevel() ) {
                 logRowlevel( "Found data row: " + data.outputRowMeta.getString( r ) );
@@ -1545,6 +1564,9 @@ public class TextFileInput extends BaseStep implements StepInterface {
       data.separator = environmentSubstitute( meta.getSeparator() );
       data.enclosure = environmentSubstitute( meta.getEnclosure() );
       data.escapeCharacter = environmentSubstitute( meta.getEscapeCharacter() );
+
+      // Set flag to determine how missing values are handled
+      data.nullForEmptyString = meta.isNullForMissingValue();
 
       // Add additional fields
       if ( !Const.isEmpty( meta.getShortFileNameField() ) ) {

@@ -216,6 +216,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
   /** Specifies the Locale of the Date format, null means the default */
   private Locale dateFormatLocale;
 
+  /** Specifies whether or not missing values in input file are EMPTY_STRING or null */
+  private boolean nullForMissingValue;
+
   /** If error line are skipped, you can replay without introducing doubles. */
   private boolean errorLineSkipped;
 
@@ -417,6 +420,23 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
    */
   public void setEncoding( String encoding ) {
     this.encoding = encoding;
+  }
+
+  /**
+   *
+   * @return true if missing values should be null, false if they should be EMPTY_STRING
+   */
+  public boolean isNullForMissingValue() {
+    return nullForMissingValue;
+  }
+
+  /**
+   *
+   * @param nullForMissingValue
+   *          Flag to indicate how we want to treat missing values
+   */
+  public void setNullForMissingValue( boolean nullForMissingValue ) {
+    this.nullForMissingValue = nullForMissingValue;
   }
 
   public TextFileInputMeta() {
@@ -792,6 +812,12 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
       String nempty = XMLHandler.getTagValue( stepnode, "noempty" );
       noEmptyLines = YES.equalsIgnoreCase( nempty ) || nempty == null;
+      String nullForMissing = XMLHandler.getTagValue( stepnode, "nullForMissingValue" );
+      if ( YES.equalsIgnoreCase( nullForMissing ) || nullForMissing == null ) {
+        nullForMissingValue = true;
+      } else {
+        nullForMissingValue = false;
+      }
       includeFilename = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include" ) );
       filenameField = XMLHandler.getTagValue( stepnode, "include_field" );
       includeRowNumber = YES.equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownum" ) );
@@ -920,7 +946,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
     }
-  } 
+  }
 
   public Object clone() {
     TextFileInputMeta retval = (TextFileInputMeta) super.clone();
@@ -995,6 +1021,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     noEmptyLines = true;
     fileFormat = "DOS";
     fileType = "CSV";
+    nullForMissingValue = true;
     includeFilename = false;
     filenameField = "";
     includeRowNumber = false;
@@ -1200,6 +1227,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     retval.append( "    " ).append( XMLHandler.addTagValue( "nr_lines_doc_header", nrLinesDocHeader ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "noempty", noEmptyLines ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "include", includeFilename ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "nullForMissingValue", nullForMissingValue ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "include_field", filenameField ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "rownum", includeRowNumber ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "rownumByFile", rowNumberByFile ) );
@@ -1347,6 +1375,11 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
       nrLinesPerPage = (int) rep.getStepAttributeInteger( id_step, "nr_lines_per_page" );
       nrLinesDocHeader = (int) rep.getStepAttributeInteger( id_step, "nr_lines_doc_header" );
       noEmptyLines = rep.getStepAttributeBoolean( id_step, "noempty" );
+      try {
+        nullForMissingValue = rep.getStepAttributeBoolean( id_step, "nullForMissingValue" );
+      } catch ( KettleException e ) {
+        nullForMissingValue = true;
+      }
 
       includeFilename = rep.getStepAttributeBoolean( id_step, "include" );
       filenameField = rep.getStepAttributeString( id_step, "include_field" );
@@ -1483,6 +1516,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute( id_transformation, id_step, "nr_lines_doc_header", nrLinesDocHeader );
 
       rep.saveStepAttribute( id_transformation, id_step, "noempty", noEmptyLines );
+      rep.saveStepAttribute( id_transformation, id_step, "nullForMissingValue", nullForMissingValue );
 
       rep.saveStepAttribute( id_transformation, id_step, "include", includeFilename );
       rep.saveStepAttribute( id_transformation, id_step, "include_field", filenameField );
@@ -2045,7 +2079,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     allocateFiles( fileName.length );
     setFileName( fileName );
   }
-  
+
   protected String loadSource( Node filenode, Node filenamenode, int i, IMetaStore metaStore ) {
     return XMLHandler.getNodeValue( filenamenode );
   }
@@ -2057,7 +2091,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
   protected String loadSourceRep( Repository rep, ObjectId id_step, int i ) throws KettleException {
     return rep.getStepAttributeString( id_step, i, "file_name" );
   }
-  
+
   protected void saveSourceRep( Repository rep, ObjectId id_transformation, ObjectId id_step, int i, String fileName )
     throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, i, "file_name", fileName ); //this should be in subclass
