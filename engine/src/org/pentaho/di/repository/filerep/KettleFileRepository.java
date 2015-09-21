@@ -1020,6 +1020,8 @@ public class KettleFileRepository extends AbstractRepository {
     //
     String filename = calcDirectoryName( repdir ) + transname + ".ktr";
     TransMeta transMeta = new TransMeta( filename, this, setInternalVariables );
+    transMeta.setRepository( this );
+    transMeta.setMetaStore( getMetaStore() );
     transMeta.setFilename( null );
     transMeta.setName( transname );
     transMeta.setObjectId( new StringObjectId( calcObjectId( repdir, transname, EXT_TRANSFORMATION ) ) );
