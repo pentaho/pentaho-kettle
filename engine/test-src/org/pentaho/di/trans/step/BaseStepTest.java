@@ -28,6 +28,8 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,9 +41,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.ResultFile;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.SingleRowRowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.fileinput.NonAccessibleFileObject;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -275,5 +279,37 @@ public class BaseStepTest {
     }
     // whereas instances differ
     assertFalse( meta1 == meta2 );
+  }
+
+  @Test
+  public void testBuildLog() throws KettleValueException {
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+        mockHelper.logChannelInterface );
+    BaseStep testObject = new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
+      mockHelper.trans );
+    Date startDate = new Date( (long) 123 );
+    Date endDate = new Date( (long) 125 );
+    RowMetaAndData result = testObject.buildLog( "myStepName", 13, 123, 234, 345, 456, 567, startDate, endDate );
+
+    assertNotNull( result );
+    assertEquals( 9, result.size() );
+    assertEquals( ValueMetaInterface.TYPE_STRING, result.getValueMeta( 0 ).getType() );
+    assertEquals( "myStepName", result.getString( 0, "default" ) );
+    assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta( 1 ).getType() );
+    assertEquals( new Double( 13.0 ), Double.valueOf( result.getNumber( 1, 0.1 ) ) );
+    assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta( 2 ).getType() );
+    assertEquals( new Double( 123 ), Double.valueOf( result.getNumber( 2, 0.1 ) ) );
+    assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta( 3 ).getType() );
+    assertEquals( new Double( 234 ), Double.valueOf( result.getNumber( 3, 0.1 ) ) );
+    assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta( 4 ).getType() );
+    assertEquals( new Double( 345 ), Double.valueOf( result.getNumber( 4, 0.1 ) ) );
+    assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta( 5 ).getType() );
+    assertEquals( new Double( 456 ), Double.valueOf( result.getNumber( 5, 0.1 ) ) );
+    assertEquals( ValueMetaInterface.TYPE_NUMBER, result.getValueMeta( 6 ).getType() );
+    assertEquals( new Double( 567 ), Double.valueOf( result.getNumber( 6, 0.1 ) ) );
+    assertEquals( ValueMetaInterface.TYPE_DATE, result.getValueMeta( 7 ).getType() );
+    assertEquals( startDate, result.getDate( 7, Calendar.getInstance().getTime() ) );
+    assertEquals( ValueMetaInterface.TYPE_DATE, result.getValueMeta( 8 ).getType() );
+    assertEquals( endDate, result.getDate( 8, Calendar.getInstance().getTime() ) );
   }
 }
