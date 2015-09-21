@@ -29,14 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.EnumSet;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 import javax.jcr.Repository;
@@ -61,23 +54,19 @@ import org.junit.runner.RunWith;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.imp.ImportRules;
+import org.pentaho.di.imp.rule.ImportRuleInterface;
+import org.pentaho.di.imp.rules.TransformationHasANoteImportRule;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.ObjectRevision;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryElementInterface;
-import org.pentaho.di.repository.RepositoryObject;
-import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.repository.RepositoryTestBase;
-import org.pentaho.di.repository.StringObjectId;
-import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.repository.*;
 import org.pentaho.di.repository.pur.metastore.MetaStoreTestBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.TransMeta;
@@ -864,7 +853,6 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     }
   }
 
-  @Ignore
   @Test
   public void testExport() throws Exception {
     final String exportFileName = new File( "test.export" ).getAbsolutePath(); //$NON-NLS-1$
@@ -923,7 +911,6 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     }
   }
 
-  @Ignore
   @Test
   public void testVersionDate() throws Exception {
 
@@ -1586,4 +1573,75 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
     }
   }
 
+  @Test
+  public void testExportWithRules() throws Exception {
+    String fileName = "testExportWithRuled.xml";
+    final String exportFileName = new File( fileName ).getAbsolutePath(); //$NON-NLS-1$
+
+    RepositoryDirectoryInterface rootDir = initRepo();
+
+    String transWithoutNoteName = "2" + EXP_DBMETA_NAME;
+    TransMeta transWithoutNote = createTransMeta( transWithoutNoteName );
+    String transUniqueName = EXP_TRANS_NAME.concat( transWithoutNoteName );
+
+    RepositoryDirectoryInterface transDir = rootDir.findDirectory( DIR_TRANSFORMATIONS );
+    repository.save( transWithoutNote, VERSION_COMMENT_V1, null );
+    deleteStack.push( transWithoutNote ); // So this transformation is cleaned up afterward
+    assertNotNull( transWithoutNote.getObjectId() );
+
+    assertTrue( hasVersionWithComment( transWithoutNote, VERSION_COMMENT_V1 ) );
+    assertTrue( repository.exists( transUniqueName, transDir, RepositoryObjectType.TRANSFORMATION ) );
+
+    // Second transformation (contained note)
+    String transWithNoteName = "1" + EXP_DBMETA_NAME;
+    TransMeta transWithNote = createTransMeta( transWithNoteName );
+    transUniqueName = EXP_TRANS_NAME.concat( EXP_DBMETA_NAME );
+    TransMeta transWithRules = createTransMeta( EXP_DBMETA_NAME );
+
+    NotePadMeta note = new NotePadMeta( "Note Message", 1, 1, 100, 5 );
+    transWithRules.addNote( note );
+
+    repository.save( transWithRules, VERSION_COMMENT_V1, null );
+    deleteStack.push( transWithRules ); // So this transformation is cleaned up afterward
+    assertNotNull( transWithRules.getObjectId() );
+
+    assertTrue( hasVersionWithComment( transWithRules, VERSION_COMMENT_V1 ) );
+    assertTrue( repository.exists( transUniqueName, transDir, RepositoryObjectType.TRANSFORMATION ) );
+
+    // create rules for export to .xml file
+    List<ImportRuleInterface> rules = new AbstractList<ImportRuleInterface>() {
+      @Override public ImportRuleInterface get( int index ) {
+        TransformationHasANoteImportRule rule = new TransformationHasANoteImportRule();
+        rule.setEnabled( true );
+        return rule;
+      }
+      @Override public int size() {
+        return 1;
+      }
+    };
+    ImportRules importRules = new ImportRules();
+    importRules.setRules( rules );
+
+    //create exporter
+    IRepositoryExporter exporter = repository.getExporter();
+    exporter.setImportRulesToValidate( importRules );
+
+    //export itself
+    try {
+      exporter.exportAllObjects( new MockProgressMonitorListener(), exportFileName, null, "all" ); //$NON-NLS-1$
+      FileObject exportFile = KettleVFS.getFileObject( exportFileName );
+      assertNotNull( exportFile );
+      MockRepositoryExportParser parser = new MockRepositoryExportParser();
+      SAXParserFactory.newInstance().newSAXParser().parse( KettleVFS.getInputStream( exportFile ), parser );
+      if ( parser.getFatalError() != null ) {
+        throw parser.getFatalError();
+      }
+      //assumed transformation with note will be here and only it
+      assertEquals( "Incorrect number of transformations", 1,
+          parser.getNodesWithName( RepositoryObjectType.TRANSFORMATION.getTypeDescription() )
+              .size() ); //$NON-NLS-1$ //$NON-NLS-2$
+    } finally {
+      KettleVFS.getFileObject( exportFileName ).delete();
+    }
+  }
 }
