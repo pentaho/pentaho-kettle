@@ -23,7 +23,6 @@
 package org.pentaho.di.trans.steps.salesforceupsert;
 
 import java.util.ArrayList;
-
 import org.apache.axis.message.MessageElement;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -39,7 +38,9 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforceutils.SalesforceUtils;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.sforce.soap.partner.sobject.SObject;
 
 /**
@@ -112,7 +113,8 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
     return true;
   }
 
-  private void writeToSalesForce( Object[] rowData ) throws KettleException {
+  @VisibleForTesting
+  void writeToSalesForce( Object[] rowData ) throws KettleException {
     try {
 
       if ( log.isDetailed() ) {
@@ -133,11 +135,12 @@ public class SalesforceUpsert extends BaseStep implements StepInterface {
           if ( valueMeta.isNull( object ) ) {
             // The value is null
             // We need to keep track of this field
-            fieldsToNull.add( meta.getUpdateLookup()[i] );
+            fieldsToNull.add( SalesforceUtils.getFieldToNullName( log, meta.getUpdateLookup()[i], meta
+                .getUseExternalId()[i] ) );
           } else {
             Object normalObject = valueMeta.convertToNormalStorageType( object );
-            upsertfields.add( SalesforceConnection.createMessageElement(
-              meta.getUpdateLookup()[i], normalObject, meta.getUseExternalId()[i] ) );
+            upsertfields.add( SalesforceConnection.createMessageElement( meta.getUpdateLookup()[i], normalObject, meta
+                .getUseExternalId()[i] ) );
           }
         }
 

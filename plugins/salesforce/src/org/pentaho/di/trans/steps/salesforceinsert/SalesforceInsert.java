@@ -41,7 +41,9 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
+import org.pentaho.di.trans.steps.salesforceutils.SalesforceUtils;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.sforce.soap.partner.sobject.SObject;
 
 /**
@@ -115,7 +117,8 @@ public class SalesforceInsert extends BaseStep implements StepInterface {
     return true;
   }
 
-  private void writeToSalesForce( Object[] rowData ) throws KettleException {
+  @VisibleForTesting
+  void writeToSalesForce( Object[] rowData ) throws KettleException {
     try {
 
       if ( log.isDetailed() ) {
@@ -137,7 +140,8 @@ public class SalesforceInsert extends BaseStep implements StepInterface {
           if ( valueMeta.isNull( value ) ) {
             // The value is null
             // We need to keep track of this field
-            fieldsToNull.add( meta.getUpdateLookup()[i] );
+            fieldsToNull.add( SalesforceUtils.getFieldToNullName( log, meta.getUpdateLookup()[i], meta
+                .getUseExternalId()[i] ) );
           } else {
             if ( valueMeta.isDate() ) {
               // Pass date field converted to UTC, see PDI-10836
