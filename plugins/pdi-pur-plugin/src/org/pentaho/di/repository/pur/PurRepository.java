@@ -255,6 +255,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
       this.user = new EEUserInfo( "testuser", "testUserPwd", "testUser", "test user", true );
       this.jobDelegate = new JobDelegate( this, pur );
       this.transDelegate = new TransDelegate( this, pur );
+      this.unifiedRepositoryLockService = new UnifiedRepositoryLockService( pur );
       return;
     }
     try {
