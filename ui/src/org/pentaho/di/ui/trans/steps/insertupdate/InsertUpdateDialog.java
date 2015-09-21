@@ -567,8 +567,10 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
     }
 
     // Create the existing mapping list...
+    // Also copy the update status of targets in to a hashmap
     //
     List<SourceToTargetMapping> mappings = new ArrayList<SourceToTargetMapping>();
+    Map<String, String> targetUpdateStatus = new HashMap<String, String>();
     StringBuilder missingSourceFields = new StringBuilder();
     StringBuilder missingTargetFields = new StringBuilder();
 
@@ -577,7 +579,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
       TableItem item = wReturn.getNonEmpty( i );
       String source = item.getText( 2 );
       String target = item.getText( 1 );
-
+      targetUpdateStatus.put( item.getText( 1 ), item.getText( 3 ) );
       int sourceIndex = sourceFields.indexOfValue( source );
       if ( sourceIndex < 0 ) {
         missingSourceFields.append( Const.CR ).append( "   " ).append( source ).append( " --> " ).append( target );
@@ -639,6 +641,11 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
         TableItem item = wReturn.table.getItem( i );
         item.setText( 2, sourceFields.getValueMeta( mapping.getSourcePosition() ).getName() );
         item.setText( 1, targetFields.getValueMeta( mapping.getTargetPosition() ).getName() );
+        if ( targetUpdateStatus.get( item.getText( 1 ) ) == null ) {
+          item.setText( 3, "Y" );
+        } else {
+          item.setText( 3, targetUpdateStatus.get( item.getText( 1 ) ) );
+        }
       }
       wReturn.setRowNums();
       wReturn.optWidth( true );
