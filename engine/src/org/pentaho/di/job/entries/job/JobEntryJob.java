@@ -1194,9 +1194,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           String realFilename = tmpSpace.environmentSubstitute( getFilename() );
           if ( rep != null ) {
             // need to try to load from the repository
-            while ( realFilename.contains( "//" ) ) {
-              realFilename = realFilename.replace( "//", "/" );
-            }
+            realFilename = r.normalizeSlashes( realFilename );
             try {
               String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
               String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1 );
@@ -1226,9 +1224,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           String realJobName = tmpSpace.environmentSubstitute( getJobName() );
 
           if ( rep != null ) {
-            while ( realDirectory.contains( "//" ) ) {
-              realDirectory = realDirectory.replace( "//", "/" );
-            }
+            realDirectory = r.normalizeSlashes( realDirectory );
             RepositoryDirectoryInterface repositoryDirectory =
               rep.loadRepositoryDirectoryTree().findDirectory( realDirectory );
             if ( repositoryDirectory == null ) {

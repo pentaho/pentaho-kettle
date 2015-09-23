@@ -644,9 +644,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
           //
           if ( rep != null ) {
             // need to try to load from the repository
-            while ( realFilename.contains( "//" ) ) {
-              realFilename = realFilename.replace( "//", "/" );
-            }
+            realFilename = r.normalizeSlashes( realFilename );
             try {
               String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
               String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1 );
@@ -685,9 +683,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
         if ( rep != null ) {
           if ( !Const.isEmpty( realTransname ) && !Const.isEmpty( realDirectory ) ) {
-            while ( realDirectory.contains( "//" ) ) {
-              realDirectory = realDirectory.replace( "//", "/" );
-            }
+            realDirectory = r.normalizeSlashes( realDirectory );
             RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
             if ( repdir != null ) {
               try {

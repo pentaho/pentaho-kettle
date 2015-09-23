@@ -1160,9 +1160,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         case FILENAME:
           String realFilename = tmpSpace.environmentSubstitute( getFilename() );
           if ( rep != null ) {
-            while ( realFilename.contains( "//" ) ) {
-              realFilename = realFilename.replace( "//", "/" );
-            }
+            realFilename = r.normalizeSlashes( realFilename );
             // need to try to load from the repository
             try {
               String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
@@ -1202,9 +1200,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             //
             // It reads last the last revision from the repository.
             //
-            while ( realDirectory.contains( "//" ) ) {
-              realDirectory = realDirectory.replace( "//", "/" );
-            }
+            realDirectory = r.normalizeSlashes( realDirectory );
             
             RepositoryDirectoryInterface repositoryDirectory = rep.findDirectory( realDirectory );
             transMeta = rep.loadTransformation( transname, repositoryDirectory, null, true, null );
