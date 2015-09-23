@@ -600,9 +600,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
           // Don't set internal variables: they belong to the parent thread!
           //
           if ( rep != null ) {
-            while ( realFilename.contains( "//" ) ) {
-              realFilename = realFilename.replace( "//", "/" );
-            }
+            realFilename = r.normalizeSlashes( realFilename );
             // need to try to load from the repository
             try {
               String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
@@ -640,9 +638,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
         
         if ( rep != null ) {
           if ( !Const.isEmpty( realJobname ) && !Const.isEmpty( realDirectory ) ) {
-            while ( realDirectory.contains( "//" ) ) {
-              realDirectory = realDirectory.replace( "//", "/" );
-            }
+            realDirectory = r.normalizeSlashes( realDirectory );
             RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
             if ( repdir != null ) {
               try {
