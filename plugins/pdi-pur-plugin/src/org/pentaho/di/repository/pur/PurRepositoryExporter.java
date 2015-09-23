@@ -32,6 +32,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.ImportRules;
 import org.pentaho.di.imp.rule.ImportValidationFeedback;
 import org.pentaho.di.job.JobMeta;
@@ -50,6 +51,9 @@ import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
 public class PurRepositoryExporter implements IRepositoryExporter, java.io.Serializable {
 
   private static final long serialVersionUID = -8972308694755905930L; /* EESOURCE: UPDATE SERIALVERUID */
+
+  private static Class<?> PKG = PurRepositoryExporter.class;
+
   /**
    * Amount of repository files and content to load from the repository at once.
    */
@@ -116,7 +120,8 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
         monitor.worked(1);
       }
     } catch (IOException e) {
-      System.out.println("Couldn't create file [" + xmlFilename + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+      log.logError( BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_CREATE_FILE", xmlFilename ),
+          e ); //$NON-NLS-1$
     } finally {
       try {
         if (writer != null) {
@@ -126,7 +131,8 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
           os.close();
         }
       } catch (Exception e) {
-        System.out.println("Exception closing XML file writer to [" + xmlFilename + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+        log.logError( BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_CLOSE_FILE", xmlFilename ),
+            e ); //$NON-NLS-1$
       }
     }
 
@@ -154,9 +160,12 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
     }
     if (err) {
       batchSize = DEFAULT_BATCH_SIZE;
-      log.logError("Invalid {0} [{1}].  Reverting to [{2}].", REPOSITORY_BATCH_SIZE_PROPERTY, batchProp, batchSize); //$NON-NLS-1$
+      log.logError( BaseMessages
+          .getString( PKG, "PurRepositoryExporter.ERROR_INVALID_BATCH_SIZE", REPOSITORY_BATCH_SIZE_PROPERTY, batchProp,
+              batchSize ), err ); //$NON-NLS-1$
     }
-    log.logDetailed("Using batch size of {0}", batchSize); //$NON-NLS-1$
+    log.logDetailed(
+        BaseMessages.getString( PKG, "PurRepositoryExporter.DETAILED_USED_BATCH_SIZE", batchSize ) ); //$NON-NLS-1$
   }
 
   /**
@@ -219,32 +228,28 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
           }
         } catch ( Exception ex ) {
           //if exception while writing one item is occurred logging it and continue looping
-          String message =
-              "An error occured while saving transformation [" + trans.getName() + "] from [" + file.getPath()
-                  + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-          log.logError( message, ex );
+          log.logError( BaseMessages
+                  .getString( PKG, "PurRepositoryExporter.ERROR_SAVE_TRANSFORMATION", trans.getName(), file.getPath() ),
+              ex ); //$NON-NLS-1$
         }
       }
     }
   }
 
   private boolean toExport( AbstractMeta meta ) {
-    boolean shouldImport = true;
+    boolean shouldExport = true;
     List<ImportValidationFeedback> feedback = importRules.verifyRules( meta );
     List<ImportValidationFeedback> errors = ImportValidationFeedback.getErrors( feedback );
     if ( !errors.isEmpty() ) {
-      shouldImport = false;
-      StringBuilder message =
-          new StringBuilder( "Imported intity " + meta.getName() + " is not satisfied to import rule(s)" );
-      message.append( Const.CR );
+      shouldExport = false;
+      log.logError(
+          BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_EXPORT_ITEM", meta.getName() ) ); //$NON-NLS-1$
       for ( ImportValidationFeedback error : errors ) {
-        message.append( " - " );
-        message.append( error.toString() );
-        message.append( Const.CR );
+        log.logError( BaseMessages
+            .getString( PKG, "PurRepositoryExporter.ERROR_EXPORT_ITEM_RULE", error.toString() ) ); //$NON-NLS-1$
       }
-      log.logError( message.toString() );
     }
-    return shouldImport;
+    return shouldExport;
   }
 
   private class JobBatchExporter implements RepositoryFileBatchExporter {
@@ -271,10 +276,9 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
           }
         } catch ( Exception ex ) {
           //if exception while writing one item is occurred logging it and continue looping
-          String message =
-              "An error occured while saving job [" + meta.getName() + "] from [" + file.getPath()
-                  + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-          log.logError( message, ex );
+          log.logError(
+              BaseMessages.getString( PKG, "PurRepositoryExporter.ERROR_SAVE_JOB", meta.getName(), file.getPath() ),
+              ex ); //$NON-NLS-1$
         }
       }
     }
@@ -311,23 +315,23 @@ public class PurRepositoryExporter implements IRepositoryExporter, java.io.Seria
         files.add(repObj.getFile());
       }
       if (!files.isEmpty()) {
-        log.logBasic(
-            "Exporting {0} {1} from directory [{2}]", files.size(), exporter.getFriendlyTypeName(), root.getFile().getPath()); //$NON-NLS-1$
+        log.logBasic( BaseMessages
+            .getString( PKG, "PurRepositoryExporter.BASIC_EXPORT_FROM", files.size(), exporter.getFriendlyTypeName(),
+                root.getFile().getPath() ) ); //$NON-NLS-1$
         // Only fetch batchSize transformations at a time
         for (int i = 0; (monitor == null || !monitor.isCanceled()) && i < files.size(); i += batchSize) {
           int start = i;
           int end = Math.min(i + batchSize, files.size());
           List<RepositoryFile> group = files.subList(start, end);
-          if (monitor != null) {
-            monitor
-                .subTask("Loading " + group.size() + " " + exporter.getFriendlyTypeName() + " from " + root.getFile().getPath()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          if ( monitor != null ) {
+            monitor.subTask( "Loading " + group.size() + " " + exporter.getFriendlyTypeName() + " from " + root.getFile().getPath()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
           }
           try {
             exporter.export(monitor, group, writer);
-          } catch (KettleException ex) {
-            // TODO i18n
-            log.logError(
-                "Error exporting " + exporter.getFriendlyTypeName() + " from directory [" + root.getFile().getPath() + "]", ex); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          } catch ( KettleException ex ) {
+            log.logError( BaseMessages
+                .getString( PKG, "PurRepositoryExporter.ERROR_EXPORT", exporter.getFriendlyTypeName(),
+                    root.getFile().getPath() ), ex ); //$NON-NLS-1$
           }
         }
       }
