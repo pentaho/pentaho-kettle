@@ -31,16 +31,18 @@ import org.pentaho.di.repository.BaseRepositorySecurityProvider;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryCapabilities;
+import org.pentaho.di.repository.RepositoryCommonValidations;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.di.repository.RepositorySecurityUserValidator;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryUserDelegate;
 
 public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecurityProvider implements
-  RepositorySecurityProvider, RepositorySecurityManager {
+  RepositorySecurityProvider, RepositorySecurityManager, RepositorySecurityUserValidator {
 
   private RepositoryCapabilities capabilities;
 
@@ -90,6 +92,10 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
   }
 
   public void saveUserInfo( IUser userInfo ) throws KettleException {
+    normalizeUserInfo( userInfo );
+    if ( !validateUserInfo( userInfo ) ) {
+      throw new KettleException( "Empty name is not allowed" );
+    }
     userDelegate.saveUserInfo( userInfo );
   }
 
@@ -170,5 +176,16 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
   @Override
   public boolean isVersioningEnabled( String fullPath ) {
     return false;
+  }
+
+
+  @Override
+  public boolean validateUserInfo( IUser user ) {
+    return RepositoryCommonValidations.checkUserInfo( user );
+  }
+
+  @Override
+  public void normalizeUserInfo( IUser user ) {
+    RepositoryCommonValidations.normalizeUserInfo( user );
   }
 }
