@@ -91,11 +91,33 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
     return userDelegate.loadUserInfo( new UserInfo(), login );
   }
 
+  /**
+   * This method creates new user after all validations have been done. For updating user's data please use {@linkplain
+   * #updateUser(IUser)}.
+   *
+   * @param userInfo user's info
+   * @throws KettleException
+   * @throws IllegalArgumentException if {@code userInfo.getObjectId() != null}
+   */
   public void saveUserInfo( IUser userInfo ) throws KettleException {
     normalizeUserInfo( userInfo );
     if ( !validateUserInfo( userInfo ) ) {
       throw new KettleException( "Empty name is not allowed" );
     }
+
+    if ( userInfo.getObjectId() != null ) {
+      throw new IllegalArgumentException( "Use updateUser() for updating" );
+    }
+
+    String userLogin = userInfo.getLogin();
+    ObjectId exactMatch = userDelegate.getUserID( userLogin );
+    if ( exactMatch != null ) {
+      // found the corresponding record in db, prohibit creation!
+      throw new KettleException(
+        "Cannot create a user with name [" + userLogin + "] because another one already exists: [" + userLogin
+          + "]. Please try different name." );
+    }
+
     userDelegate.saveUserInfo( userInfo );
   }
 
