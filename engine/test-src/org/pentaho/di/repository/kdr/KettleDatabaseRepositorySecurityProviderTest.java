@@ -32,8 +32,7 @@ import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryUserDelegate;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Andrey Khayrutdinov
@@ -55,23 +54,41 @@ public class KettleDatabaseRepositorySecurityProviderTest {
     repository.userDelegate = mock( KettleDatabaseRepositoryUserDelegate.class );
     provider =
       new KettleDatabaseRepositorySecurityProvider( repository, new KettleDatabaseRepositoryMeta(), new UserInfo() );
+    provider = spy( provider );
   }
 
-  @Test
-  public void saveUserInfo_NormalizesInfo_PassesIfNoViolations() throws Exception {
-    UserInfo info = new UserInfo( "login    " );
-
-    ArgumentCaptor<UserInfo> captor = ArgumentCaptor.forClass( UserInfo.class );
-    provider.saveUserInfo( info );
-    verify( repository.userDelegate ).saveUserInfo( captor.capture() );
-
-    info = captor.getValue();
-    assertEquals( "Spaces should be trimmed", "login", info.getLogin() );
-  }
 
   @Test( expected = KettleException.class )
   public void saveUserInfo_NormalizesInfo_FailsIfStillBreaches() throws Exception {
-    UserInfo info = new UserInfo( "    " );
-    provider.saveUserInfo( info );
+    provider.saveUserInfo( new UserInfo( "    " ) );
+  }
+
+  @Test( expected = KettleException.class )
+  public void saveUserInfo_CheckDuplication_FailsIfFoundSimilar() throws Exception {
+    doReturn( new String[] { "login".toUpperCase() } ).when( provider ).getUserLogins();
+    provider.saveUserInfo( new UserInfo( "login" ) );
+  }
+
+
+  @Test
+  public void saveUserInfo_NormalizesInfo_PassesIfNoViolations() throws Exception {
+    testSaveUserInfo_Passes( "login    ", "login" );
+  }
+
+  @Test
+  public void saveUserInfo_CheckDuplication_PassesIfFoundNothing() throws Exception {
+    testSaveUserInfo_Passes( "login", "login" );
+  }
+
+  private void testSaveUserInfo_Passes( String login, String expectedLogin ) throws Exception {
+    doReturn( new String[] { "prefix_" + login } )
+      .when( provider ).getUserLogins();
+
+    provider.saveUserInfo( new UserInfo( login ) );
+
+    ArgumentCaptor<UserInfo> captor = ArgumentCaptor.forClass( UserInfo.class );
+    verify( repository.userDelegate ).saveUserInfo( captor.capture() );
+
+    assertEquals( "UserInfo should be passed", expectedLogin, captor.getValue().getLogin() );
   }
 }
