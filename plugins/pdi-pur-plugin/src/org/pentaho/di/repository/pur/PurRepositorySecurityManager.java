@@ -38,11 +38,11 @@ import java.util.List;
 public class PurRepositorySecurityManager implements IRoleSupportSecurityManager, IUserRoleListChangeListener,
   java.io.Serializable, RepositorySecurityUserValidator, RepositorySecurityRoleValidator {
 
+  private static final Log logger = LogFactory.getLog( UserRoleDelegate.class );
   private static final long serialVersionUID = 6820830385234412904L; /* EESOURCE: UPDATE SERIALVERUID */
 
   private PurRepository repository;
   private UserRoleDelegate userRoleDelegate;
-  private static final Log logger = LogFactory.getLog( UserRoleDelegate.class );
 
   public PurRepositorySecurityManager( PurRepository repository, PurRepositoryMeta repositoryMeta, IUser user,
                                        ServiceManager serviceManager ) {

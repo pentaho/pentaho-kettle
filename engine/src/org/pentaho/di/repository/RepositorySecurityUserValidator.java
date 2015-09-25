@@ -42,5 +42,5 @@ public interface RepositorySecurityUserValidator extends RepositorySecurityManag
    *
    * @param user user's info
    */
-  void normalizeUserInfo(IUser user);
+  void normalizeUserInfo( IUser user );
 }

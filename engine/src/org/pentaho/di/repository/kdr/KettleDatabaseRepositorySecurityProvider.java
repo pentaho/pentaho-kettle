@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.repository.BaseRepositorySecurityProvider;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
@@ -134,7 +133,7 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
         + "]. Please try different name." );
   }
 
-  public void validateAction( RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
+  public void validateAction( RepositoryOperation... operations ) throws KettleException {
 
   }
 

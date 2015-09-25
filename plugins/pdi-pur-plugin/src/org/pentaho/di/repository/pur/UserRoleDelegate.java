@@ -435,7 +435,6 @@ public class UserRoleDelegate implements java.io.Serializable {
    * Fire all current {@link IUserRoleListChangeListener}.
    */
   void fireUserRoleListChange() {
-
     if ( userRoleListChangeListeners != null ) {
       userRoleListChangeListeners.fireOnChange();
     }
