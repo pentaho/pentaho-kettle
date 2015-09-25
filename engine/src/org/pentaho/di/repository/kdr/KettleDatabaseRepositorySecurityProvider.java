@@ -91,12 +91,47 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
     return userDelegate.loadUserInfo( new UserInfo(), login );
   }
 
+  /**
+   * This method creates new user after all validations have been done. For updating user's data please use {@linkplain
+   * #updateUser(IUser)}.
+   *
+   * @param userInfo user's info
+   * @throws KettleException
+   * @throws IllegalArgumentException if {@code userInfo.getObjectId() != null}
+   */
   public void saveUserInfo( IUser userInfo ) throws KettleException {
     normalizeUserInfo( userInfo );
     if ( !validateUserInfo( userInfo ) ) {
       throw new KettleException( "Empty name is not allowed" );
     }
+
+    if ( userInfo.getObjectId() != null ) {
+      throw new IllegalArgumentException( "Use updateUser() for updating" );
+    }
+
+    String userLogin = userInfo.getLogin();
+    ObjectId exactMatch = userDelegate.getUserID( userLogin );
+    if ( exactMatch != null ) {
+      // found the corresponding record in db, prohibit creation!
+      throw userAlreadyExistsException( userLogin, userLogin );
+    } else {
+      // found nothing by exact match
+      // let's look for similar name
+      String[] existingLogins = getUserLogins();
+      for ( String login : existingLogins ) {
+        if ( userLogin.equalsIgnoreCase( login ) ) {
+          // found similar, prohibit the creation!
+          throw userAlreadyExistsException( userLogin, login );
+        }
+      }
+    }
     userDelegate.saveUserInfo( userInfo );
+  }
+
+  private KettleException userAlreadyExistsException( String existing, String login ) {
+    return new KettleException(
+      "Cannot create a user with name [" + login + "] because another one already exists: [" + existing
+        + "]. Please try different name." );
   }
 
   public void validateAction( RepositoryOperation... operations ) throws KettleException, KettleSecurityException {

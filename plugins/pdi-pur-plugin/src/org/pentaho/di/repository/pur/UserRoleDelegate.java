@@ -46,13 +46,13 @@ public class UserRoleDelegate implements java.io.Serializable {
   private static final long serialVersionUID = 1295309456550391059L; /* EESOURCE: UPDATE SERIALVERUID */
   private UserRoleListChangeListenerCollection userRoleListChangeListeners;
 
+  private final Log logger;
+
   IUserRoleWebService userRoleWebService;
 
   IUserRoleListWebService userDetailsRoleListWebService;
 
   IRoleSupportSecurityManager rsm;
-
-  Log logger;
 
   UserRoleLookupCache lookupCache;
 
@@ -65,19 +65,30 @@ public class UserRoleDelegate implements java.io.Serializable {
 
   public UserRoleDelegate( IRoleSupportSecurityManager rsm, PurRepositoryMeta repositoryMeta, IUser userInfo,
                            Log logger, ServiceManager serviceManager ) {
+    this.logger = logger;
+
+    String login = userInfo.getLogin();
+    String password = userInfo.getPassword();
     try {
-      this.logger = logger;
-      userDetailsRoleListWebService =
-        serviceManager.createService( userInfo.getLogin(), userInfo.getPassword(), IUserRoleListWebService.class );
-      userRoleWebService =
-        serviceManager.createService( userInfo.getLogin(), userInfo.getPassword(), IUserRoleWebService.class );
+      this.userDetailsRoleListWebService =
+        serviceManager.createService( login, password, IUserRoleListWebService.class );
+      this.userRoleWebService =
+        serviceManager.createService( login, password, IUserRoleWebService.class );
       this.rsm = rsm;
       initManaged( repositoryMeta, userInfo );
       updateUserRoleInfo();
     } catch ( Exception e ) {
       this.logger.error( BaseMessages.getString( UserRoleDelegate.class,
-          "UserRoleDelegate.ERROR_0001_UNABLE_TO_INITIALIZE_USER_ROLE_WEBSVC" ), e ); //$NON-NLS-1$
+        "UserRoleDelegate.ERROR_0001_UNABLE_TO_INITIALIZE_USER_ROLE_WEBSVC" ), e ); //$NON-NLS-1$
     }
+  }
+
+  // package-local constructor for testing purposes
+  UserRoleDelegate( Log logger, IUserRoleListWebService userDetailsRoleListWebService,
+                    IUserRoleWebService userRoleWebService ) {
+    this.logger = logger;
+    this.userDetailsRoleListWebService = userDetailsRoleListWebService;
+    this.userRoleWebService = userRoleWebService;
   }
 
   private void initManaged( PurRepositoryMeta repositoryMeta, IUser userInfo ) throws JSONException {
@@ -117,8 +128,17 @@ public class UserRoleDelegate implements java.io.Serializable {
   public void createUser( IUser newUser ) throws KettleException {
     ensureHasPermissions();
 
+    ProxyPentahoUser user = UserRoleHelper.convertToPentahoProxyUser( newUser );
     try {
-      ProxyPentahoUser user = UserRoleHelper.convertToPentahoProxyUser( newUser );
+      ProxyPentahoUser[] existingUsers = userRoleWebService.getUsers();
+      if ( existsAmong( existingUsers, user ) ) {
+        throw userExistsException();
+      }
+    } catch ( UserRoleException e ) {
+      throw cannotCreateUserException( newUser, e );
+    }
+
+    try {
       userRoleWebService.createUser( user );
       if ( newUser instanceof IEEUser ) {
         userRoleWebService
@@ -129,13 +149,34 @@ public class UserRoleDelegate implements java.io.Serializable {
     } catch ( Exception e ) { // it is the only way to determine AlreadyExistsException
       if ( e.getCause().toString()
         .contains( "org.pentaho.platform.api.engine.security.userroledao.AlreadyExistsException" ) ) {
-        throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-          "UserRoleDelegate.ERROR_0015_USER_NAME_ALREADY_EXISTS" ) );
+        throw userExistsException();
       }
-      throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0002_UNABLE_TO_CREATE_USER", newUser.getLogin() ), e ); //$NON-NLS-1$
+      throw cannotCreateUserException( newUser, e );
     }
   }
+
+  private boolean existsAmong( ProxyPentahoUser[] existing, ProxyPentahoUser user ) {
+    if ( existing != null ) {
+      String name = user.getName();
+      for ( ProxyPentahoUser pentahoUser : existing ) {
+        if ( name.equalsIgnoreCase( pentahoUser.getName() ) ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private KettleException userExistsException() {
+    return new KettleException( BaseMessages.getString( UserRoleDelegate.class,
+      "UserRoleDelegate.ERROR_0015_USER_NAME_ALREADY_EXISTS" ) );
+  }
+
+  private KettleException cannotCreateUserException( IUser user, Exception e ) {
+    return new KettleException( BaseMessages.getString( UserRoleDelegate.class,
+      "UserRoleDelegate.ERROR_0002_UNABLE_TO_CREATE_USER", user.getName() ), e );
+  }
+
 
   public void deleteUsers( List<IUser> users ) throws KettleException {
     ensureHasPermissions();
@@ -240,22 +281,51 @@ public class UserRoleDelegate implements java.io.Serializable {
   public void createRole( IRole newRole ) throws KettleException {
     ensureHasPermissions();
 
+    ProxyPentahoRole role = UserRoleHelper.convertToPentahoProxyRole( newRole );
     try {
-      ProxyPentahoRole role = UserRoleHelper.convertToPentahoProxyRole( newRole );
+      ProxyPentahoRole[] existingRoles = userRoleWebService.getRoles();
+      if ( existsAmong( existingRoles, role ) ) {
+        throw userExistsException();
+      }
+    } catch ( UserRoleException e ) {
+      throw cannotCreateRoleException( newRole, e );
+    }
+
+    try {
       userRoleWebService.createRole( role );
       userRoleWebService.setUsers( role, UserRoleHelper.convertToPentahoProxyUsers( newRole.getUsers() ) );
       lookupCache.insertRoleToLookupSet( newRole );
       fireUserRoleListChange();
     } catch ( UserRoleException e ) {
-      throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-        "UserRoleDelegate.ERROR_0008_UNABLE_TO_CREATE_ROLE", newRole.getName() ), e ); //$NON-NLS-1$
+      throw cannotCreateRoleException( newRole, e );
     } catch ( Exception e ) { // it is the only way to determine AlreadyExistsException
       if ( e.getCause().toString()
         .contains( "org.pentaho.platform.api.engine.security.userroledao.AlreadyExistsException" ) ) {
-        throw new KettleException( BaseMessages.getString( UserRoleDelegate.class,
-          "UserRoleDelegate.ERROR_0016_ROLE_NAME_ALREADY_EXISTS" ) );
+        throw roleExistsException();
       }
     }
+  }
+
+  private boolean existsAmong( ProxyPentahoRole[] existing, ProxyPentahoRole role ) {
+    if ( existing != null ) {
+      String name = role.getName();
+      for ( ProxyPentahoRole pentahoRole : existing ) {
+        if ( name.equalsIgnoreCase( pentahoRole.getName() ) ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private KettleException roleExistsException() {
+    return new KettleException( BaseMessages.getString( UserRoleDelegate.class,
+      "UserRoleDelegate.ERROR_0016_ROLE_NAME_ALREADY_EXISTS" ) );
+  }
+
+  private KettleException cannotCreateRoleException( IRole role, Exception e ) {
+    return new KettleException( BaseMessages.getString( UserRoleDelegate.class,
+      "UserRoleDelegate.ERROR_0008_UNABLE_TO_CREATE_ROLE", role.getName() ), e );
   }
 
   public void deleteRoles( List<IRole> roles ) throws KettleException {
