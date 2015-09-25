@@ -18,7 +18,7 @@
  * prohibited to anyone except those individuals and entities who have executed 
  * confidentiality and non-disclosure agreements or other agreements with Pentaho, 
  * explicitly covering such access. 
- */ 
+ */
 
 package org.pentaho.di.www;
 
@@ -105,9 +105,9 @@ public class StopCarteServlet extends BaseHttpServlet implements CartePluginInte
         @Override
         public void run() {
           carte.getWebServer().stopServer();
+          exitJVM( 0 );
         }
       }, 1000 );
-      
     }
   }
 
@@ -120,7 +120,7 @@ public class StopCarteServlet extends BaseHttpServlet implements CartePluginInte
   public String getContextPath() {
     return CONTEXT_PATH;
   }
-  
+
   public static class DelayedExecutor {
     public void execute( final Runnable runnable, final long delay ) {
       ExecutorUtil.getExecutor().execute( new Runnable() {
@@ -135,6 +135,10 @@ public class StopCarteServlet extends BaseHttpServlet implements CartePluginInte
         }
       } );
     }
+  }
+
+  private static final void exitJVM( int status ) {
+    System.exit( status );
   }
 }
 
