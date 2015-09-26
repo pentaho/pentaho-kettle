@@ -149,7 +149,10 @@ public class PluginRegistry {
     }
     } finally {
       lock.writeLock().unlock();
-  }
+      synchronized ( this ) {
+        notifyAll();
+      }
+    }
   }
 
   public void addParentClassLoaderPatterns( PluginInterface plugin, String[] patterns ) {
@@ -158,7 +161,7 @@ public class PluginRegistry {
     parentClassloaderPatternMap.put( plugin, patterns );
     } finally {
       lock.writeLock().unlock();
-  }
+    }
   }
 
   public void registerPlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin )
@@ -248,7 +251,10 @@ public class PluginRegistry {
     }
     } finally {
       lock.writeLock().unlock();
-  }
+      synchronized ( this ) {
+        notifyAll();
+      }
+    }
   }
 
   /**
