@@ -26,21 +26,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.repository.BaseRepositorySecurityProvider;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryCapabilities;
+import org.pentaho.di.repository.RepositoryCommonValidations;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
+import org.pentaho.di.repository.RepositorySecurityUserValidator;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryConnectionDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryUserDelegate;
 
 public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecurityProvider implements
-  RepositorySecurityProvider, RepositorySecurityManager {
+  RepositorySecurityProvider, RepositorySecurityManager, RepositorySecurityUserValidator {
 
   private RepositoryCapabilities capabilities;
 
@@ -89,11 +90,50 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
     return userDelegate.loadUserInfo( new UserInfo(), login );
   }
 
+  /**
+   * This method creates new user after all validations have been done. For updating user's data please use {@linkplain
+   * #updateUser(IUser)}.
+   *
+   * @param userInfo user's info
+   * @throws KettleException
+   * @throws IllegalArgumentException if {@code userInfo.getObjectId() != null}
+   */
   public void saveUserInfo( IUser userInfo ) throws KettleException {
+    normalizeUserInfo( userInfo );
+    if ( !validateUserInfo( userInfo ) ) {
+      throw new KettleException( "Empty name is not allowed" );
+    }
+
+    if ( userInfo.getObjectId() != null ) {
+      throw new IllegalArgumentException( "Use updateUser() for updating" );
+    }
+
+    String userLogin = userInfo.getLogin();
+    ObjectId exactMatch = userDelegate.getUserID( userLogin );
+    if ( exactMatch != null ) {
+      // found the corresponding record in db, prohibit creation!
+      throw userAlreadyExistsException( userLogin, userLogin );
+    } else {
+      // found nothing by exact match
+      // let's look for similar name
+      String[] existingLogins = getUserLogins();
+      for ( String login : existingLogins ) {
+        if ( userLogin.equalsIgnoreCase( login ) ) {
+          // found similar, prohibit the creation!
+          throw userAlreadyExistsException( userLogin, login );
+        }
+      }
+    }
     userDelegate.saveUserInfo( userInfo );
   }
 
-  public void validateAction( RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
+  private KettleException userAlreadyExistsException( String existing, String login ) {
+    return new KettleException(
+      "Cannot create a user with name [" + login + "] because another one already exists: [" + existing
+        + "]. Please try different name." );
+  }
+
+  public void validateAction( RepositoryOperation... operations ) throws KettleException {
 
   }
 
@@ -170,5 +210,16 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
   @Override
   public boolean isVersioningEnabled( String fullPath ) {
     return false;
+  }
+
+
+  @Override
+  public boolean validateUserInfo( IUser user ) {
+    return RepositoryCommonValidations.checkUserInfo( user );
+  }
+
+  @Override
+  public void normalizeUserInfo( IUser user ) {
+    RepositoryCommonValidations.normalizeUserInfo( user );
   }
 }

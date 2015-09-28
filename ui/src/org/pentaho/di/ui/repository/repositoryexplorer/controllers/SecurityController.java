@@ -22,10 +22,13 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectRecipient;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositorySecurityManager;
+import org.pentaho.di.repository.RepositorySecurityUserValidator;
 import org.pentaho.di.ui.repository.repositoryexplorer.ControllerInitializationException;
 import org.pentaho.di.ui.repository.repositoryexplorer.IUISupportController;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
@@ -45,6 +48,7 @@ import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
+import org.pentaho.ui.xul.containers.XulNativeUiDialog;
 import org.pentaho.ui.xul.swt.SwtBindingFactory;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
@@ -180,6 +184,26 @@ public class SecurityController extends LazilyInitializedController implements I
     security = new UISecurity( service );
   }
 
+  public void updateOkButtonAccessibility() throws KettleException {
+    if ( userDialog instanceof XulNativeUiDialog ) {
+      XulNativeUiDialog dialog = (XulNativeUiDialog) userDialog;
+      XulButton ok = dialog.getButton( "accept" );
+      if ( ok != null ) {
+        boolean disableButton;
+        if ( service instanceof RepositorySecurityUserValidator ) {
+          // delegate validation
+          RepositorySecurityUserValidator validator = (RepositorySecurityUserValidator) service;
+          disableButton = !validator.validateUserInfo( securityUser.getUserInfo() );
+        } else {
+          // disable ok if username is empty
+          String text = username.getText();
+          disableButton = Const.isEmpty( text );
+        }
+        ok.setDisabled( disableButton );
+      }
+    }
+  }
+
   protected void createBindings() {
     // User Details Binding
     userAddButton = (XulButton) document.getElementById( "user-add" );
@@ -239,6 +263,8 @@ public class SecurityController extends LazilyInitializedController implements I
   public void showAddUserDialog() throws Exception {
     securityUser.clear();
     securityUser.setMode( Mode.ADD );
+
+    updateOkButtonAccessibility();
     userDialog.setTitle( BaseMessages.getString( PKG, "AddUserDialog.Title" ) );
     userDialog.show();
   }

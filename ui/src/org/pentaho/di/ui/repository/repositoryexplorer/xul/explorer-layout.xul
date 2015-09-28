@@ -316,7 +316,7 @@
        <vbox>
 			<label value="${AddUserDialog.UserName}" />
 			<hbox id="user-name-box">
-				<textbox id="user-name" flex="1" multiline="false"/>
+				<textbox id="user-name" flex="1" multiline="false" oninput="iSecurityController.updateOkButtonAccessibility()"/>
 			</hbox>
 			<label value="${AddUserDialog.Password}"/>
 			<hbox id="user-password-box">
