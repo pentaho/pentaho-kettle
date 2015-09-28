@@ -98,13 +98,13 @@ public class HttpUtil {
 
   public static String execService( VariableSpace space, String hostname, String port, String webAppName,
       String serviceAndArguments, String username, String password, String proxyHostname, String proxyPort,
-      String nonProxyHosts ) throws Exception {
+      String nonProxyHosts, boolean isSecure ) throws Exception {
 
     HttpClient
         client =
         getClient( space, hostname, port, webAppName, username, password, proxyHostname, proxyPort, nonProxyHosts );
 
-    String urlString = constructUrl( space, hostname, port, webAppName, serviceAndArguments );
+    String urlString = constructUrl( space, hostname, port, webAppName, serviceAndArguments, isSecure );
     HttpMethod method = new GetMethod( urlString );
 
     try {
@@ -114,6 +114,13 @@ public class HttpUtil {
       method.releaseConnection();
     }
 
+  }
+
+  public static String execService( VariableSpace space, String hostname, String port, String webAppName,
+      String serviceAndArguments, String username, String password, String proxyHostname, String proxyPort,
+      String nonProxyHosts ) throws Exception {
+    return execService( space, hostname, port, webAppName, serviceAndArguments, username, password, proxyHostname,
+        proxyPort, nonProxyHosts, false );
   }
 
   public static int execMethod( HttpClient client, HttpMethod method ) throws Exception {
@@ -154,11 +161,17 @@ public class HttpUtil {
    */
   public static String constructUrl( VariableSpace space, String hostname, String port, String webAppName,
     String serviceAndArguments ) throws UnsupportedEncodingException {
+    return constructUrl( space, hostname, port, webAppName, serviceAndArguments, false );
+  }
+
+  public static String constructUrl( VariableSpace space, String hostname, String port, String webAppName,
+      String serviceAndArguments, boolean isSecure ) throws UnsupportedEncodingException {
     String realHostname = space.environmentSubstitute( hostname );
     if ( !StringUtils.isEmpty( webAppName ) ) {
       serviceAndArguments = "/" + space.environmentSubstitute( webAppName ) + serviceAndArguments;
     }
-    String retval = "http://" + realHostname + getPortSpecification( space, port ) + serviceAndArguments;
+    String protocol = "http" + ( isSecure ? "s" : "" );
+    String retval = protocol + "://" + realHostname + getPortSpecification( space, port ) + serviceAndArguments;
     retval = Const.replace( retval, " ", "%20" );
     return retval;
   }
