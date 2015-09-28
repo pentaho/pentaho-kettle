@@ -22,25 +22,12 @@
 
 package org.pentaho.di.cluster;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -50,9 +37,23 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
 public class HttpUtil {
 
   public static final int ZIP_BUFFER_SIZE = 8192;
+  private static final String PROTOCOL_UNSECURE = "http";
+  private static final String PROTOCOL_SECURE = "https";
 
   private static HttpClient getClient( VariableSpace space, String hostname, String port, String webAppName,
       String username, String password, String proxyHostname, String proxyPort, String nonProxyHosts ) {
@@ -170,7 +171,7 @@ public class HttpUtil {
     if ( !StringUtils.isEmpty( webAppName ) ) {
       serviceAndArguments = "/" + space.environmentSubstitute( webAppName ) + serviceAndArguments;
     }
-    String protocol = "http" + ( isSecure ? "s" : "" );
+    String protocol = isSecure ? PROTOCOL_SECURE : PROTOCOL_UNSECURE;
     String retval = protocol + "://" + realHostname + getPortSpecification( space, port ) + serviceAndArguments;
     retval = Const.replace( retval, " ", "%20" );
     return retval;
