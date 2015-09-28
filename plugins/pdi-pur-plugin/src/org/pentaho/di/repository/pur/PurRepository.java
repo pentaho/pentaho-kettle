@@ -26,6 +26,7 @@ import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.annotations.RepositoryPlugin;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleSecurityException;
@@ -1209,7 +1210,9 @@ public class PurRepository extends AbstractRepository implements Repository, jav
     try {
       return getObjectId( name, repositoryDirectory, RepositoryObjectType.JOB, false );
     } catch ( Exception e ) {
-      throw new KettleException( "Unable to get ID for job [" + name + "]", e );
+      String path = repositoryDirectory != null ? repositoryDirectory.toString() : "null";
+      throw new IdNotFoundException( "Unable to get ID for job [" + name + "]", e, name, path,
+          RepositoryObjectType.JOB );
     }
   }
 
@@ -1367,7 +1370,9 @@ public class PurRepository extends AbstractRepository implements Repository, jav
     try {
       return getObjectId( name, repositoryDirectory, RepositoryObjectType.TRANSFORMATION, false );
     } catch ( Exception e ) {
-      throw new KettleException( "Unable to get ID for transformation [" + name + "]", e );
+      String path = repositoryDirectory != null ? repositoryDirectory.toString() : "null";
+      throw new IdNotFoundException( "Unable to get ID for job [" + name + "]", e, name, path,
+          RepositoryObjectType.TRANSFORMATION );
     }
   }
 

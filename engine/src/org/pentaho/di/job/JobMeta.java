@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -47,10 +48,7 @@ import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.attributes.AttributesUtil;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.*;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.OverwritePrompter;
@@ -2877,11 +2875,23 @@ public class JobMeta extends AbstractMeta implements Cloneable, Comparable<JobMe
    *          the repository to reference.
    */
   public void lookupRepositoryReferences( Repository repository ) throws KettleException {
+    KettleException lastThrowedException = null;
+    Map<String, RepositoryObjectType> notFoundedReferences = new HashMap<String, RepositoryObjectType>();
     for ( JobEntryCopy copy : jobcopies ) {
       if ( copy.getEntry().hasRepositoryReferences() ) {
-        copy.getEntry().lookupRepositoryReferences( repository );
+        try {
+          copy.getEntry().lookupRepositoryReferences( repository );
+        } catch ( IdNotFoundException e ) {
+          lastThrowedException = e;
+          String path = e.getPathToObject();
+          String name = e.getObjectName();
+          String key = StringUtils.isEmpty( path ) || path.equals( "null" ) ? name : path + "/" + name;
+          notFoundedReferences.put( key, e.getObjectType() );
+        }
       }
     }
+    if ( lastThrowedException != null && !notFoundedReferences.isEmpty() )
+      throw new LookupReferencesException( lastThrowedException, notFoundedReferences );
   }
 
   /**
