@@ -6751,6 +6751,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       disableSave = !meta.canSave();
     }
 
+    boolean disableDatabaseExplore = disableSave;
+    
     org.pentaho.ui.xul.dom.Document doc;
     if ( mainSpoonContainer != null ) {
       doc = mainSpoonContainer.getDocumentRoot();
@@ -6812,6 +6814,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         disableMenuItem( doc, "repository-connect", isRepositoryRunning );
         disableMenuItem( doc, "repository-disconnect", !isRepositoryRunning );
         disableMenuItem( doc, "repository-explore", !isRepositoryRunning );
+        disableMenuItem( doc, "tools-dabase-explore", !isRepositoryRunning && disableDatabaseExplore );
         disableMenuItem( doc, "repository-clear-shared-object-cache", !isRepositoryRunning );
         disableMenuItem( doc, "toolbar-expore-repository", !isRepositoryRunning );
         disableMenuItem( doc, "repository-export-all", !isRepositoryRunning );
