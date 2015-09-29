@@ -69,10 +69,11 @@ import static org.pentaho.platform.security.userroledao.DefaultTenantedPrinciple
 /**
  * @author Andrey Khayrutdinov
  */
-@ContextConfiguration( locations = {
-  "classpath:/repository.spring.xml",
-  "classpath:/repository-test-override.spring.xml",
-  "classpath:/pdi-pur-plugin-test-override.spring.xml"
+@ContextConfiguration(
+  locations = {
+    "classpath:/repository.spring.xml",
+    "classpath:/repository-test-override.spring.xml",
+    "classpath:/pdi-pur-plugin-test-override.spring.xml"
 } )
 @RunWith( SpringJUnit4ClassRunner.class )
 public abstract class PurRepositoryBaseTest implements ApplicationContextAware {
