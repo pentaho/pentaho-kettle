@@ -25,7 +25,9 @@ package org.pentaho.di.core.exception;
 import org.pentaho.di.repository.RepositoryObjectType;
 
 /**
- * Created by Yury_Bakhmutski on 9/25/2015.
+ * @author Yury Bakhmutski
+ * @since 9-25-2015
+ *
  */
 public class IdNotFoundException extends KettleException {
   public static final long serialVersionUID = 3337875569693837831L;

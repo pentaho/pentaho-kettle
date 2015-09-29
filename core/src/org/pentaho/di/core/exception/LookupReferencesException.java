@@ -29,7 +29,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Yury_Bakhmutski on 9/25/2015.
+ * @author Yury Bakhmutski
+ * @since 9-25-2015
+ *
  */
 public class LookupReferencesException extends KettleException {
   public static final long serialVersionUID = 3337874569693837831L;
@@ -40,13 +42,13 @@ public class LookupReferencesException extends KettleException {
    *
    * @see org.pentaho.di.repository.RepositoryObjectType
    */
-  private Map<String, RepositoryObjectType> objectTypePairs = new HashMap<String, RepositoryObjectType>();
+  private Map<String, RepositoryObjectType> objectTypePairs = new HashMap<>();
 
   /**
    * Constructs a new throwable with null as its detail message.
    *
-   * @param objectTypePairs String-RepositoryObjectType pairs where path
-   *                        - fully qualified path to object
+   * @param objectTypePairs - String-RepositoryObjectType pairs where path
+   *                        is fully qualified path to object
    */
   public LookupReferencesException( Map<String, RepositoryObjectType> objectTypePairs ) {
     super();
@@ -57,8 +59,8 @@ public class LookupReferencesException extends KettleException {
    * Constructs a new throwable with the specified detail message.
    *
    * @param message         - the detail message. The detail message is saved for later retrieval by the getMessage() method.
-   * @param objectTypePairs String-RepositoryObjectType pairs where path
-   *                        - fully qualified path to object
+   * @param objectTypePairs - String-RepositoryObjectType pairs where path
+   *                        is fully qualified path to object
    */
   public LookupReferencesException( String message, Map<String, RepositoryObjectType> objectTypePairs ) {
     super( message );
@@ -69,10 +71,10 @@ public class LookupReferencesException extends KettleException {
    * Constructs a new throwable with the specified cause and a detail message of (cause==null ? null : cause.toString())
    * (which typically contains the class and detail message of cause).
    *
-   * @param cause           the cause (which is saved for later retrieval by the getCause() method). (A null value is permitted, and
+   * @param cause           - the cause (which is saved for later retrieval by the getCause() method). (A null value is permitted, and
    *                        indicates that the cause is nonexistent or unknown.)
-   * @param objectTypePairs String-RepositoryObjectType pairs where path
-   *                        - fully qualified path to object
+   * @param objectTypePairs - String-RepositoryObjectType pairs where path
+   *                        is fully qualified path to object
    */
   public LookupReferencesException( Throwable cause, Map<String, RepositoryObjectType> objectTypePairs ) {
     super( cause );
@@ -82,11 +84,11 @@ public class LookupReferencesException extends KettleException {
   /**
    * Constructs a new throwable with the specified detail message and cause.
    *
-   * @param message         the detail message (which is saved for later retrieval by the getMessage() method).
-   * @param cause           the cause (which is saved for later retrieval by the getCause() method). (A null value is permitted, and
+   * @param message         - the detail message (which is saved for later retrieval by the getMessage() method).
+   * @param cause           - the cause (which is saved for later retrieval by the getCause() method). (A null value is permitted, and
    *                        indicates that the cause is nonexistent or unknown.)
-   * @param objectTypePairs String-RepositoryObjectType pairs where path
-   *                        - fully qualified path to object
+   * @param objectTypePairs - String-RepositoryObjectType pairs where path
+   *                        is fully qualified path to object
    */
   public LookupReferencesException( String message, Throwable cause,
       Map<String, RepositoryObjectType> objectTypePairs ) {
@@ -98,7 +100,13 @@ public class LookupReferencesException extends KettleException {
     StringBuilder result = new StringBuilder();
     for ( Map.Entry entry : objectTypePairs.entrySet() ) {
       if ( entry.getKey() != null ) {
-        result.append( new String( Const.CR + "\"" + entry.getKey() + "\"" + " [" + entry.getValue() + "] " ) );
+        result.append( Const.CR );
+        result.append( "\"" );
+        result.append( entry.getKey() );
+        result.append( "\"" );
+        result.append( " [" );
+        result.append( entry.getValue() );
+        result.append( "] " );
       }
     }
     return result.toString();
