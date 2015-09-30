@@ -63,13 +63,13 @@ public class TransExecutorMetaTest {
   public void setUp() throws Exception {
 
     List<String> attributes =
-        Arrays.asList( "fileName", "transName", "directoryPath", "groupSize", "groupField", "groupTime",
-            "executionTimeField", "executionFilesRetrievedField", "executionLogTextField",
-            "executionLogChannelIdField", "executionResultField", "executionNrErrorsField", "executionLinesReadField",
-            "executionLinesWrittenField", "executionLinesInputField", "executionLinesOutputField",
-            "executionLinesRejectedField", "executionLinesUpdatedField", "executionLinesDeletedField",
-            "executionExitStatusField", "outputRowsField", "outputRowsType", "outputRowsLength",
-            "outputRowsPrecision" );
+      Arrays.asList( "fileName", "transName", "directoryPath", "groupSize", "groupField", "groupTime",
+        "executionTimeField", "executionFilesRetrievedField", "executionLogTextField",
+        "executionLogChannelIdField", "executionResultField", "executionNrErrorsField", "executionLinesReadField",
+        "executionLinesWrittenField", "executionLinesInputField", "executionLinesOutputField",
+        "executionLinesRejectedField", "executionLinesUpdatedField", "executionLinesDeletedField",
+        "executionExitStatusField", "outputRowsField", "outputRowsType", "outputRowsLength",
+        "outputRowsPrecision" );
 
     // executionResultTargetStepMeta -? (see for switch case meta)
     Map<String, String> getterMap = new HashMap<String, String>();
@@ -95,7 +95,7 @@ public class TransExecutorMetaTest {
     typeValidatorMap.put( int[].class.getCanonicalName(), new PrimitiveIntArrayLoadSaveValidator(
       new IntLoadSaveValidator(), 1 ) );
     loadSaveTester =
-        new LoadSaveTester( TransExecutorMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
+      new LoadSaveTester( TransExecutorMeta.class, attributes, getterMap, setterMap, attrValidatorMap, typeValidatorMap );
 
   }
 
@@ -225,10 +225,10 @@ public class TransExecutorMetaTest {
   @Test
   public void testPrepareResultsRowsFields() throws Exception {
     TransExecutorMeta meta = new TransExecutorMeta();
-    String[] outputFieldNames = new String[] { "one", "two" };
-    int[] outputFieldTypes = new int[] { 0, 1 };
-    int[] outputFieldLength = new int[] { 4, 8 };
-    int[] outputFieldPrecision = new int[] { 2, 4 };
+    String[] outputFieldNames = new String[]{ "one", "two" };
+    int[] outputFieldTypes = new int[]{ 0, 1 };
+    int[] outputFieldLength = new int[]{ 4, 8 };
+    int[] outputFieldPrecision = new int[]{ 2, 4 };
 
     meta.setOutputRowsField( outputFieldNames );
     meta.setOutputRowsType( outputFieldTypes );
@@ -245,10 +245,44 @@ public class TransExecutorMetaTest {
     meta.prepareResultsRowsFields( row );
 
     // make sure we get the name of the parent step meta... used for the origin step
-    verify( parent, times ( outputFieldNames.length ) ).getName();
+    verify( parent, times( outputFieldNames.length ) ).getName();
     ArgumentCaptor<ValueMetaInterface> argumentCaptor = ArgumentCaptor.forClass( ValueMetaInterface.class );
     verify( row, times( outputFieldNames.length ) ).addValueMeta( argumentCaptor.capture() );
     assertEquals( "parent step", argumentCaptor.getValue().getOrigin() );
+  }
+
+  @Test
+  public void testGetFields() throws Exception {
+    TransExecutorMeta meta = new TransExecutorMeta();
+    meta = spy( meta );
+
+    StepMeta nextStep = mock( StepMeta.class );
+
+    // Test null
+    meta.getFields( null, null, null, nextStep, null, null, null );
+    verify( meta, never() ).addFieldToRow( any( RowMetaInterface.class ), anyString(), anyInt() );
+
+    RowMetaInterface rowMeta = mock( RowMetaInterface.class );
+    meta.getFields( rowMeta, null, null, nextStep, null, null, null );
+    verify( rowMeta, never() ).clear();
+
+    StepMeta executionResultTargetStepMeta = mock( StepMeta.class );
+    meta.setExecutionResultTargetStepMeta( executionResultTargetStepMeta );
+    meta.getFields( rowMeta, null, null, nextStep, null, null, null );
+    verify( rowMeta, atMost( 1 ) ).clear();
+    meta.setExecutionResultTargetStepMeta( null );
+
+    StepMeta resultFilesTargetStepMeta = mock( StepMeta.class );
+    meta.setResultFilesTargetStepMeta( resultFilesTargetStepMeta );
+    meta.getFields( rowMeta, null, null, nextStep, null, null, null );
+    verify( rowMeta, atMost( 1 ) ).clear();
+    meta.setResultFilesTargetStepMeta( null );
+
+    StepMeta outputRowsSourceStepMeta = mock( StepMeta.class );
+    meta.setOutputRowsSourceStepMeta( outputRowsSourceStepMeta );
+    meta.getFields( rowMeta, null, null, nextStep, null, null, null );
+    verify( rowMeta, atMost( 1 ) ).clear();
+    meta.setOutputRowsSourceStepMeta( null );
   }
 
 
