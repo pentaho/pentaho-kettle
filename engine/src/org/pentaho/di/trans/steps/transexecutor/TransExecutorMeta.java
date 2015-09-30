@@ -600,16 +600,18 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
   @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    inputRowMeta.clear();
-
     if ( nextStep != null ) {
       if ( nextStep.equals( executionResultTargetStepMeta ) ) {
+        inputRowMeta.clear();
         prepareExecutionResultsFields( inputRowMeta, nextStep );
       } else if ( nextStep.equals( resultFilesTargetStepMeta ) ) {
+        inputRowMeta.clear();
         prepareExecutionResultsFileFields( inputRowMeta, nextStep );
       } else if ( nextStep.equals( outputRowsSourceStepMeta ) ) {
+        inputRowMeta.clear();
         prepareResultsRowsFields( inputRowMeta );
       }
+      // else don't call clear on inputRowMeta, it's the main output and should mimic the input
     }
   }
 
