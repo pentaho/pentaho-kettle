@@ -85,6 +85,7 @@ public class TextFileInputContentParsingTest {
     data.separator = meta.content.separator;
     data.enclosure = meta.content.enclosure;
     data.escapeCharacter = meta.content.escapeCharacter;
+    data.fileFormatType = meta.getFileFormatTypeNr();
 
     data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[0], new Variables() );
     data.dataErrorLineHandler = new FileErrorHandler() {
@@ -301,6 +302,30 @@ public class TextFileInputContentParsingTest {
       check( new Object[][] { { "first  ", "1      ", "1.1" }, { "second ", "2      ", "2.2" }, { "third  ", "3      ",
         "3.3" } } );
     }
+
+
+  @Test
+  public void filteremptyBacklog5381() throws Exception {
+    TextFileInputMeta m = new TextFileInputMeta();
+    m.setDefault();
+    m.content.header = false;
+    m.content.fileType = "Fixed";
+    m.content.noEmptyLines = true;
+    m.content.fileFormat = "mixed";
+    init( m );
+
+    setFields( new BaseFileInputField( "f" , 0, 100 ) );
+
+    try ( TextFileInputReader reader =
+        new TextFileInputReader( stepControl, meta, data, getFile( "filterempty-BACKLOG-5381.csv" ), log ) ) {
+      while ( reader.readRow() )
+        ;
+    }
+
+    // compare rows
+    check( new Object[][] { { "FirstLine => FirstLine " }, { "ThirdLine => SecondLine" }, { "SixthLine => ThirdLine" }, {
+      "NinthLine => FourthLine" }, {""} } );
+  }
 
   @Test
   public void testFilterVariables() throws Exception {

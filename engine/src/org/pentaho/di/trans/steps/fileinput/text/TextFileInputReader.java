@@ -164,7 +164,9 @@ public class TextFileInputReader implements IBaseFileInputReader {
 
       // Read a number of lines...
       for ( int i = 0; i < repeats && !data.doneReading; i++ ) {
-        tryToReadLine( true );
+        if ( !tryToReadLine( true ) ) {
+          repeats++;
+        }
       }
     }
 
