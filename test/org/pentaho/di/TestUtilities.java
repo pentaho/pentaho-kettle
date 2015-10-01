@@ -34,6 +34,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import junit.framework.ComparisonFailure;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -87,6 +89,8 @@ public class TestUtilities {
     checkRows( rows1, rows2, -1 );
   }
 
+  
+
   /**
    * Check the 2 lists comparing the rows in order. If they are not the same fail the test.
    *
@@ -117,20 +121,23 @@ public class TestUtilities {
       if ( rowMetaAndData1.size() != rowMetaAndData2.size() ) {
         throw new TestFailedException( "row number " + idx + " is not equal" );
       }
+
       int[] fields = new int[ rowMetaInterface1.size() ];
       for ( int ydx = 0; ydx < rowMetaInterface1.size(); ydx++ ) {
         fields[ ydx ] = ydx;
       }
 
-      if ( fileNameColumn > 0 ) {
-        try {
+      try {
+        if ( fileNameColumn >= 0 ) {
           rowObject1[ fileNameColumn ] = rowObject2[ fileNameColumn ];
-          if ( rowMetaAndData1.getRowMeta().compare( rowObject1, rowObject2, fields ) != 0 ) {
-            throw new TestFailedException( "row nr " + idx + " is not equal" );
-          }
-        } catch ( KettleValueException e ) {
-          throw new TestFailedException( "row nr " + idx + " is not equal" );
         }
+        if ( rowMetaAndData1.getRowMeta().compare( rowObject1, rowObject2, fields ) != 0 ) {
+          throw new ComparisonFailure( "row nr " + idx + " is not equal",
+          rowMetaInterface1.getString( rowObject1 ),
+          rowMetaInterface1.getString( rowObject2 ) ); 
+        }
+      } catch ( KettleValueException e ) {
+        throw new TestFailedException( "row nr " + idx + " is not equal" );
       }
       idx++;
     }
