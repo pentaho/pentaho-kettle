@@ -100,35 +100,43 @@ public class JobFileListener implements FileListener {
     return jobMeta;
   }
 
-  private JobMeta processLinkedJobs( JobMeta jobMeta ) {
+  protected JobMeta processLinkedJobs( JobMeta jobMeta ) {
     for ( int i=0; i<jobMeta.nrJobEntries(); i++ ) {
       JobEntryCopy jec = jobMeta.getJobEntry( i );
       if (jec.getEntry() instanceof JobEntryJob) {
         JobEntryJob jej = (JobEntryJob) jec.getEntry();
-        jej.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
-        String filename = jej.getFilename();
-        String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
-        String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
-        jej.setJobName( jobname );
-        jej.setDirectory( directory );
-        jobMeta.setJobEntry( i, jec );
+        ObjectLocationSpecificationMethod specMethod = jej.getSpecificationMethod();
+        // If the reference is by filename, change it to Repository By Name. Otherwise it's fine so leave it alone
+        if ( specMethod == ObjectLocationSpecificationMethod.FILENAME ) {
+          jej.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+          String filename = jej.getFilename();
+          String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
+          String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
+          jej.setJobName( jobname );
+          jej.setDirectory( directory );
+          jobMeta.setJobEntry( i, jec );
+        }
       }
     }
     return jobMeta;
   }
 
-  private JobMeta processLinkedTrans( JobMeta jobMeta ) {
+  protected JobMeta processLinkedTrans( JobMeta jobMeta ) {
     for ( int i=0; i<jobMeta.nrJobEntries(); i++ ) {
       JobEntryCopy jec = jobMeta.getJobEntry( i );
       if (jec.getEntry() instanceof JobEntryTrans) {
         JobEntryTrans jet = (JobEntryTrans) jec.getEntry();
-        jet.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
-        String filename = jet.getFilename();
-        String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
-        String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
-        jet.setTransname( jobname );
-        jet.setDirectory( directory );
-        jobMeta.setJobEntry( i, jec );
+        ObjectLocationSpecificationMethod specMethod = jet.getSpecificationMethod();
+        // If the reference is by filename, change it to Repository By Name. Otherwise it's fine so leave it alone
+        if ( specMethod == ObjectLocationSpecificationMethod.FILENAME ) {
+          jet.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+          String filename = jet.getFilename();
+          String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
+          String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
+          jet.setTransname( jobname );
+          jet.setDirectory( directory );
+          jobMeta.setJobEntry( i, jec );
+        }
       }
     }
     return jobMeta;
@@ -160,7 +168,7 @@ public class JobFileListener implements FileListener {
   }
 
   public boolean acceptsXml( String nodeName ) {
-    return nodeName.equals( "job" );
+    return "job".equals( nodeName );
   }
 
   public String[] getFileTypeDisplayNames( Locale locale ) {
