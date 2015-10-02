@@ -827,7 +827,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     ciKeys[ 3 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-        ValueMeta.getTypes() );
+        ValueMetaBase.getTypes() );
     ciKeys[ 4 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.Format" ),
@@ -860,7 +860,6 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     wGet.addListener( SWT.Selection, new Listener() {
         @Override
         public void handleEvent( Event e ) {
-          createServiceApi( input );
           Analytics.Data.Ga.Get query = getPreviewQuery();
           if ( query == null ) {
             return;
@@ -898,19 +897,19 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
                 // recognize date dimension
                 if ( name.equalsIgnoreCase( "ga:date" ) ) {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_DATE ) );
+                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_DATE ) );
                   item.setText( 5, "yyyyMMdd" );
                 } else if ( name.equalsIgnoreCase( "ga:daysSinceLastVisit" )
                     || name.equalsIgnoreCase( "ga:visitLength" )
                     || name.equalsIgnoreCase( "ga:visitCount" ) ) {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_INTEGER ) );
+                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_INTEGER ) );
                   item.setText( 5, "#;-#" );
                 } else if ( name.equalsIgnoreCase( "ga:latitude" )
                     || name.equalsIgnoreCase( "ga:longitude" ) ) {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_NUMBER ) );
+                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_NUMBER ) );
                   item.setText( 5, "#.#;-#.#" );
                 } else {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_STRING ) );
+                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
                   item.setText( 5, "" );
                 }
                 i++;
@@ -925,14 +924,14 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
                     || dataType.compareToIgnoreCase( "float" ) == 0
                     || dataType.compareToIgnoreCase( "percent" ) == 0
                     || dataType.compareToIgnoreCase( "us_currency" ) == 0 ) {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_NUMBER ) );
+                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_NUMBER ) );
                   item.setText( 5, "#.#;-#.#" );
                 } else if ( dataType.compareToIgnoreCase( "time" ) == 0
                     || dataType.compareToIgnoreCase( "integer" ) == 0 ) {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_INTEGER ) );
+                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_INTEGER ) );
                   item.setText( 5, "#;-#" );
                 } else {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_STRING ) );
+                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
                   item.setText( 5, "" );
                 }
                 i++;
@@ -943,7 +942,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
             item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_PROPERTY );
             item.setText( 2, GaInputStepMeta.PROPERTY_DATA_SOURCE_PROFILE_ID );
             item.setText( 3, GaInputStepMeta.PROPERTY_DATA_SOURCE_PROFILE_ID );
-            item.setText( 4, ValueMeta.getTypeDesc( ValueMeta.TYPE_STRING ) );
+            item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
             item.setText( 5, "" );
             i++;
 
@@ -951,7 +950,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
             item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_PROPERTY );
             item.setText( 2, GaInputStepMeta.PROPERTY_DATA_SOURCE_WEBPROP_ID );
             item.setText( 3, GaInputStepMeta.PROPERTY_DATA_SOURCE_WEBPROP_ID );
-            item.setText( 4, ValueMeta.getTypeDesc( ValueMeta.TYPE_STRING ) );
+            item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
             item.setText( 5, "" );
             i++;
 
@@ -959,7 +958,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
             item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_PROPERTY );
             item.setText( 2, GaInputStepMeta.PROPERTY_DATA_SOURCE_ACCOUNT_NAME );
             item.setText( 3, GaInputStepMeta.PROPERTY_DATA_SOURCE_ACCOUNT_NAME );
-            item.setText( 4, ValueMeta.getTypeDesc( ValueMeta.TYPE_STRING ) );
+            item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
             item.setText( 5, "" );
             i++;
 
@@ -967,7 +966,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
             item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_FIELD );
             item.setText( 2, GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_ID );
             item.setText( 3, GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_ID );
-            item.setText( 4, ValueMeta.getTypeDesc( ValueMeta.TYPE_STRING ) );
+            item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
             item.setText( 5, "" );
             i++;
 
@@ -975,7 +974,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
             item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_FIELD );
             item.setText( 2, GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_NAME );
             item.setText( 3, GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_NAME );
-            item.setText( 4, ValueMeta.getTypeDesc( ValueMeta.TYPE_STRING ) );
+            item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
             item.setText( 5, "" );
 
             wFields.removeEmptyRows();
@@ -1149,7 +1148,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
       meta.getFeedField()[ i ] = item.getText( 2 );
       meta.getOutputField()[ i ] = item.getText( 3 );
 
-      meta.getOutputType()[ i ] = ValueMeta.getType( item.getText( 4 ) );
+      meta.getOutputType()[ i ] = ValueMetaBase.getType( item.getText( 4 ) );
       meta.getConversionMask()[ i ] = item.getText( 5 );
 
       // fix unknowns
@@ -1165,7 +1164,6 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     // Create the XML input step
     GaInputStepMeta oneMeta = new GaInputStepMeta();
     getInfo( oneMeta );
-    createServiceApi( oneMeta );
     TransMeta previewMeta =
       TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
@@ -1211,7 +1209,6 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
       String metrics = transMeta.environmentSubstitute( wQuMetrics.getText() );
       if ( Const.isEmpty( metrics ) ) {
-        logError( BaseMessages.getString( PKG, "GoogleAnalytics.Error.NoMetricsSpecified.Message" ) );
         MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
         mb.setText( BaseMessages.getString( PKG, "GoogleAnalytics.Error.NoMetricsSpecified.Title" ) );
         mb.setMessage( BaseMessages.getString( PKG, "GoogleAnalytics.Error.NoMetricsSpecified.Message" ) );
@@ -1219,7 +1216,11 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
         return null;
       }
 
-      Analytics.Data.Ga.Get query = getAnalytics().data().ga().get(
+      Analytics analytics = getAnalytics();
+      if ( analytics == null ) {
+        return null;
+      }
+      Analytics.Data.Ga.Get query = analytics.data().ga().get(
         ids,
         transMeta.environmentSubstitute( wQuStartDate.getText() ),
         transMeta.environmentSubstitute( wQuEndDate.getText() ),
@@ -1248,7 +1249,6 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
       return query;
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ), e );
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogTitle" ) );
       mb.setMessage( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ) );
@@ -1289,10 +1289,9 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
   // information
   public void readGaProfiles() {
     try {
-      createServiceApi( input );
       Analytics analytics = getAnalytics();
       if ( analytics == null ) {
-        throw new IOException();
+        return;
       }
       Analytics.Management.Profiles.List profiles = analytics.management().profiles().list( "~all", "~all" );
 
@@ -1308,12 +1307,11 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
       }
 
       // put the profiles to the combo box and select first one
-      wGaProfile.setItems( profileNames.toArray( new String[ 0 ] ) );
+      wGaProfile.setItems( profileNames.toArray( new String[ profileNames.size() ] ) );
       if ( profileNames.size() > 0 ) {
         wGaProfile.select( 0 );
       }
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ), e );
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogTitle" ) );
       mb.setMessage( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ) );
@@ -1324,10 +1322,9 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
   // Collect segment list from the GA service for the given authentication information
   public void readGaSegments() {
     try {
-      createServiceApi( input );
       Analytics analytics = getAnalytics();
       if ( analytics == null ) {
-        throw new IOException();
+        return;
       }
       Segments segments = analytics.management().segments().list().execute();
 
@@ -1340,13 +1337,12 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
       }
 
       // put the segments to the combo box and select first one
-      wQuSegment.setItems( segmentNames.toArray( new String[ 0 ] ) );
+      wQuSegment.setItems( segmentNames.toArray( new String[ segmentNames.size() ] ) );
       if ( segmentNames.size() > 0 ) {
         wQuSegment.select( 0 );
       }
 
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ), e );
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogTitle" ) );
       mb.setMessage( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ) );
@@ -1446,7 +1442,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
           item.setText( 3, input.getOutputField()[ i ] );
         }
 
-        item.setText( 4, ValueMeta.getTypeDesc( input.getOutputType()[ i ] ) );
+        item.setText( 4, ValueMetaBase.getTypeDesc( input.getOutputType()[ i ] ) );
 
         if ( input.getConversionMask()[ i ] != null ) {
           item.setText( 5, input.getConversionMask()[ i ] );
@@ -1474,7 +1470,6 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
   // let the meta know about the entered data
   private void ok() {
-
     getInfo( input );
     dispose();
   }
@@ -1531,24 +1526,21 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     fdFilename.left = new FormAttachment( middle, 0 );
     fdFilename.right = new FormAttachment( fileChooser, -margin );
     keyFilename.setLayoutData( fdFilename );
-
   }
-
 
   private Analytics getAnalytics() {
-    return ( API == null ) ? null : API.getAnalytics();
-  }
-
-  private void createServiceApi( GaInputStepMeta meta ) {
     try {
-      getInfo( meta );
-      API = GoogleAnalyticsApiFacade.createFor(
-        transMeta.environmentSubstitute( wGaAppName.getText() ),
-        transMeta.environmentSubstitute( wOauthAccount.getText() ),
-        transMeta.environmentSubstitute( keyFilename.getText() )
-      );
+      getInfo( input );
+      return GoogleAnalyticsApiFacade.createFor(
+          transMeta.environmentSubstitute( wGaAppName.getText() ),
+          transMeta.environmentSubstitute( wOauthAccount.getText() ),
+          transMeta.environmentSubstitute( keyFilename.getText() )
+      ).getAnalytics();
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "GoogleAnalytics.Error.UnableToLoadPrivateKey" ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "GoogleAnalyticsDialog.RequestError.DialogTitle" ),
+          BaseMessages.getString( PKG, "GoogleAnalyticsDialog.RequestError.DialogMessage" ), e );
     }
+
+    return null;
   }
 }
