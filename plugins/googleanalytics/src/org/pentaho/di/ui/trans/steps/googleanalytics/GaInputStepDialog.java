@@ -145,6 +145,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
   private Link wQuMetricsReference;
 
   private Link wQuDimensionsReference;
+  
+  private Link wQuSamplingLevelReference;
 
   private Label wlQuCustomSegment;
 
@@ -176,6 +178,10 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
   private Button wUseSegmentEnabled;
 
+  private Label wlQuSamplingLevel;
+
+  private CCombo wQuSamplingLevel;
+
   private int middle;
   private int margin;
 
@@ -195,6 +201,8 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     "https://developers.google.com/analytics/devguides/reporting/core/v3/";
   static final String REFERENCE_TABLE_ID_URI =
     "https://developers.google.com/analytics/devguides/reporting/core/v3/reference#ids";
+  static final String REFERENCE_SAMPLING_LEVEL_URI =
+    "https://developers.google.com/analytics/devguides/reporting/core/v3/reference#samplingLevel";
 
   // constructor
   public GaInputStepDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
@@ -755,6 +763,57 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     fdGetSegments.right = new FormAttachment( 100, 0 );
     wGetSegments.setLayoutData( fdGetSegments );
 
+    // samplingLevel selection
+
+    wlQuSamplingLevel = new Label( gQuery, SWT.RIGHT );
+    wlQuSamplingLevel.setText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.Query.SamplingLevel.Label" ) );
+    props.setLook( wlQuSamplingLevel );
+
+    FormData fdlQuSamplingLevel = new FormData();
+    fdlQuSamplingLevel.top = new FormAttachment( wQuSegment, margin );
+    fdlQuSamplingLevel.left = new FormAttachment( 0, 0 );
+    fdlQuSamplingLevel.right = new FormAttachment( middle, -margin );
+    wlQuSamplingLevel.setLayoutData( fdlQuSamplingLevel );
+
+    wQuSamplingLevel = new CCombo( gQuery, SWT.BORDER | SWT.READ_ONLY );
+    props.setLook( wQuSamplingLevel );
+
+    wQuSamplingLevelReference = new Link( gQuery, SWT.SINGLE );
+
+    wQuSamplingLevelReference.setText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.Query.Reference.Label" ) );
+    props.setLook( wQuSamplingLevelReference );
+    wQuSamplingLevelReference.addListener( SWT.Selection, new Listener() {
+      @Override
+      public void handleEvent( Event ev ) {
+        BareBonesBrowserLaunch.openURL( REFERENCE_SAMPLING_LEVEL_URI );
+      }
+    } );
+
+    wQuSamplingLevelReference.pack( true );
+
+    wQuSamplingLevel.addModifyListener( lsMod );
+    wQuSamplingLevel.setToolTipText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.Query.SamplingLevel.Tooltip" ) );
+
+    FormData fdQuSamplingLevel = new FormData();
+    fdQuSamplingLevel.left = new FormAttachment( middle, 0 );
+    fdQuSamplingLevel.top = new FormAttachment( wQuSegment, margin );
+    fdQuSamplingLevel.right = new FormAttachment( 100, -wQuSamplingLevelReference.getBounds().width - margin );
+
+    FormData fdQuSamplingLevelReference = new FormData();
+    fdQuSamplingLevelReference.top = new FormAttachment( wQuSegment, margin );
+    fdQuSamplingLevelReference.left = new FormAttachment( wQuDimensions, 0 );
+    fdQuSamplingLevelReference.right = new FormAttachment( 100, 0 );
+    wQuSamplingLevelReference.setLayoutData( fdQuSamplingLevelReference );
+
+    wQuSamplingLevel.setLayoutData( fdQuSamplingLevel );
+    wQuSamplingLevel.setItems( GaInputStepMeta.TYPE_SAMPLING_LEVEL_CODE );
+
+    wQuSamplingLevel.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+      }
+    } );
+
     FormData fdQueryGroup = new FormData();
     fdQueryGroup.left = new FormAttachment( 0, 0 );
     fdQueryGroup.right = new FormAttachment( 100, 0 );
@@ -1044,6 +1103,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     wQuFilters.addSelectionListener( lsDef );
     wQuSort.addSelectionListener( lsDef );
     wQuCustomSegment.addSelectionListener( lsDef );
+    wQuSamplingLevel.addSelectionListener( lsDef );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener(
@@ -1138,6 +1198,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     meta.setUseSegment( wUseSegmentEnabled.getSelection() );
     meta.setUseCustomSegment( wCustomSegmentEnabled.getSelection() );
     meta.setCustomSegment( wQuCustomSegment.getText() );
+    meta.setSamplingLevel( wQuSamplingLevel.getText() );
 
     int nrFields = wFields.nrNonEmpty();
 
@@ -1237,6 +1298,10 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
         } else {
           query.setSegment( segmentIds.get( wQuSegment.getText() ) );
         }
+      }
+
+      if ( !Const.isEmpty( wQuSamplingLevel.getText() ) ) {
+        query.setSamplingLevel( transMeta.environmentSubstitute( wQuSamplingLevel.getText() ) );
       }
 
       if ( !Const.isEmpty( wQuFilters.getText() ) ) {
@@ -1426,6 +1491,10 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
       wQuSegment.setText( input.getSegmentName() );
       segmentIds.clear();
       segmentIds.put( input.getSegmentName(), input.getSegmentId() );
+    }
+
+    if ( input.getSamplingLevel() != null ) {
+      wQuSamplingLevel.setText( input.getSamplingLevel() );
     }
 
     if ( input.getFeedField() != null ) {
