@@ -167,6 +167,7 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
         }
       } );
     }
+    trans.setPassedBatchId( transExecutionConfiguration.getPassedBatchId() );
 
     return trans;
   }

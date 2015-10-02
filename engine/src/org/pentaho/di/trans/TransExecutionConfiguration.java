@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
@@ -89,6 +90,7 @@ public class TransExecutionConfiguration implements Cloneable {
   private boolean setAppendLogfile;
   private String logFileName;
   private boolean createParentFolder;
+  private long passedBatchId;
 
   public TransExecutionConfiguration() {
     executingLocally = true;
@@ -516,6 +518,7 @@ public class TransExecutionConfiguration implements Cloneable {
     xml.append( "    " ).append( XMLHandler.addTagValue( "clear_log", clearingLog ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "gather_metrics", gatheringMetrics ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "show_subcomponents", showingSubComponents ) );
+    xml.append( "    " ).append( XMLHandler.addTagValue( "passedBatchId", passedBatchId ) );
 
     // The source rows...
     //
@@ -611,6 +614,10 @@ public class TransExecutionConfiguration implements Cloneable {
     clearingLog = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "clear_log" ) );
     gatheringMetrics = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "gather_metrics" ) );
     showingSubComponents = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "show_subcomponents" ) );
+    String sPassedBatchId = XMLHandler.getTagValue( trecNode, "passedBatchId" );
+    if ( !StringUtils.isEmpty( sPassedBatchId ) ) {
+      passedBatchId = Long.parseLong( sPassedBatchId );
+    }
 
     Node resultNode = XMLHandler.getSubNode( trecNode, Result.XML_TAG );
     if ( resultNode != null ) {
@@ -815,6 +822,14 @@ public class TransExecutionConfiguration implements Cloneable {
 
   public void setCreateParentFolder( boolean createParentFolder ) {
     this.createParentFolder = createParentFolder;
+  }
+
+  public long getPassedBatchId() {
+    return passedBatchId;
+  }
+
+  public void setPassedBatchId( long passedBatchId ) {
+    this.passedBatchId = passedBatchId;
   }
 
 }
