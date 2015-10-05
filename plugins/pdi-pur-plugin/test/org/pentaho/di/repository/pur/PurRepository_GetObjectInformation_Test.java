@@ -40,7 +40,7 @@ import static org.pentaho.di.repository.RepositoryObjectType.JOB;
 /**
  * @author Andrey Khayrutdinov
  */
-public class PurRepository_GetObjectInformation_Test extends PurRepositoryBaseTest {
+public class PurRepository_GetObjectInformation_Test extends PurRepositoryTestBase {
 
   @Test
   public void getObjectInformation_IsDeletedFlagSet_Job() throws Exception {
