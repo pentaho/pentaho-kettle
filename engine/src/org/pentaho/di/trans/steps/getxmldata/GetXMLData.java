@@ -171,6 +171,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
           BaseStep.closeQuietly( is );
         }
       }
+      data.document.normalize();
 
       if ( meta.isNamespaceAware() ) {
         prepareNSMap( data.document.getRootElement() );
