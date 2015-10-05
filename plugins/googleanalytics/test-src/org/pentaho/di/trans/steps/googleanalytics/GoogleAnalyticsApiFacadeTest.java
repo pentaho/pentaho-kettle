@@ -22,20 +22,49 @@
 
 package org.pentaho.di.trans.steps.googleanalytics;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.pentaho.di.core.exception.KettleFileException;
 
 import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Pavel Sakun
  */
+@RunWith( Parameterized.class )
 public class GoogleAnalyticsApiFacadeTest {
-  @Test( expected = FileNotFoundException.class )
-  public void testWindowsUnixPathToKeyFile() throws Exception {
-    String[] pathsToTest = {"C:/key.p12", "C:\\key.p12", "/key.p12",
-        "file:///C:/key.p12",  "file:///C:\\key.p12", "file:///key.p12" };
-    for ( String path : pathsToTest ) {
-      GoogleAnalyticsApiFacade.createFor( "application-name", "account", path );
-    }
+
+  @Parameterized.Parameters
+  public static List<Object[]> primeNumbers() {
+    return Arrays.asList(
+      new Object[] { "C:/key.p12", FileNotFoundException.class },
+      new Object[] { "C:\\key.p12", FileNotFoundException.class },
+      new Object[] { "/key.p12", FileNotFoundException.class },
+      new Object[] { "file:///C:/key.p12", FileNotFoundException.class },
+      new Object[] { "file:///C:\\key.p12", FileNotFoundException.class },
+      new Object[] { "file:///key.p12", KettleFileException.class }
+    );
+  }
+
+  @Rule
+  public final ExpectedException expectedException;
+
+  private final String path;
+
+  public GoogleAnalyticsApiFacadeTest( String path, Class<Exception> expectedExceptionClass ) {
+    this.path = path;
+
+    this.expectedException = ExpectedException.none();
+    this.expectedException.expect( expectedExceptionClass );
+  }
+
+  @Test
+  public void exceptionIsThrowsForNonExistingFiles() throws Exception {
+    GoogleAnalyticsApiFacade.createFor( "application-name", "account", path );
   }
 }
