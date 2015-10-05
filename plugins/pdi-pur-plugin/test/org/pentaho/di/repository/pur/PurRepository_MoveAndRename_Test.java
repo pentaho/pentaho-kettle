@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.hasItem;
 
-public class PurRepository_MoveAndRename_Test extends PurRepositoryBaseTest {
+public class PurRepository_MoveAndRename_Test extends PurRepositoryTestBase {
 
   private final JobAssistant jobAssistant = new JobAssistant();
   private final TransAssistant transAssistant = new TransAssistant();
