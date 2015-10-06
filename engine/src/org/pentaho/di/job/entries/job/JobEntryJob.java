@@ -1187,7 +1187,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     JobMeta jobMeta = null;
     try {
       CurrentDirectoryResolver r = new CurrentDirectoryResolver();
-      VariableSpace tmpSpace = r.resolveCurrentDirectory( 
+      VariableSpace tmpSpace = r.resolveCurrentDirectory(
           specificationMethod, space, rep, parentJob, getFilename() );
       switch ( specificationMethod ) {
         case FILENAME:
@@ -1204,7 +1204,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
               // try without extension
               if ( realFilename.endsWith( Const.STRING_JOB_DEFAULT_EXT ) ) {
                 try {
-                  String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1, 
+                  String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1,
                       realFilename.indexOf( "." + Const.STRING_JOB_DEFAULT_EXT ) );
                   String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
                   RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
@@ -1239,7 +1239,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             } catch ( KettleException ke ) {
               try {
                 // add .kjb extension and try again
-                jobMeta = new JobMeta( tmpSpace, 
+                jobMeta = new JobMeta( tmpSpace,
                     realDirectory + "/" + realJobName + "." + Const.STRING_JOB_DEFAULT_EXT, rep, metaStore, null );
               } catch ( KettleException ke2 ) {
                 ke2.printStackTrace();
