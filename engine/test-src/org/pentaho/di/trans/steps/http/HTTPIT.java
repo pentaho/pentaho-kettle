@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.httppost;
+package org.pentaho.di.trans.steps.http;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -52,9 +52,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
@@ -63,16 +61,17 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 /**
- * User: Dzmitry Stsiapanau Date: 12/2/13 Time: 4:35 PM
+ * User: Dzmitry Stsiapanau Date: 12/2/13 Time: 1:24 PM
  */
-public class HTTPPOSTTest {
-  private class HTTPPOSTHandler extends HTTPPOST {
+public class HTTPIT {
+
+  private class HTTPHandler extends HTTP {
 
     Object[] row = new Object[] { "anyData" };
     Object[] outputRow;
 
-    public HTTPPOSTHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+    public HTTPHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+        Trans trans ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     }
 
@@ -110,7 +109,7 @@ public class HTTPPOSTTest {
   public static final int port = 9998;
   public static final String HTTP_LOCALHOST_9998 = "http://localhost:9998/";
   @InjectMocks
-  private StepMockHelper<HTTPPOSTMeta, HTTPPOSTData> stepMockHelper;
+  private StepMockHelper<HTTPMeta, HTTPData> stepMockHelper;
   private HttpServer httpServer;
 
   @BeforeClass
@@ -120,11 +119,9 @@ public class HTTPPOSTTest {
 
   @Before
   public void setUp() throws Exception {
-    stepMockHelper =
-      new StepMockHelper<HTTPPOSTMeta, HTTPPOSTData>( "HTTPPOST CLIENT TEST",
-        HTTPPOSTMeta.class, HTTPPOSTData.class );
+    stepMockHelper = new StepMockHelper<HTTPMeta, HTTPData>( "HTTP CLIENT TEST", HTTPMeta.class, HTTPData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-      stepMockHelper.logChannelInterface );
+        stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
     verify( stepMockHelper.trans, never() ).stopAll();
     startHttp204Answer();
@@ -138,28 +135,27 @@ public class HTTPPOSTTest {
 
   @Test
   public void test204Answer() throws Exception {
-    HTTPPOSTData data = new HTTPPOSTData();
+    HTTPData data = new HTTPData();
     Object[] expectedRow = new Object[] { "", 204L, null, null, null, null, null, null, null, null, null, null };
-    HTTPPOST HTTPPOST =
-      new HTTPPOSTHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans );
+    HTTP http = new HTTPHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans );
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
-    HTTPPOST.setInputRowMeta( inputRowMeta );
+    http.setInputRowMeta( inputRowMeta );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
     when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn( HTTP_LOCALHOST_9998 );
-    when( stepMockHelper.processRowsStepMetaInterface.getQueryField() ).thenReturn( new String[] {} );
+    when( stepMockHelper.processRowsStepMetaInterface.getHeaderField() ).thenReturn( new String[] {} );
     when( stepMockHelper.processRowsStepMetaInterface.getArgumentField() ).thenReturn( new String[] {} );
     when( stepMockHelper.processRowsStepMetaInterface.getResultCodeFieldName() ).thenReturn( "ResultCodeFieldName" );
     when( stepMockHelper.processRowsStepMetaInterface.getFieldName() ).thenReturn( "ResultFieldName" );
-    HTTPPOST.init( stepMockHelper.processRowsStepMetaInterface, data );
-    assertTrue( HTTPPOST.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    http.init( stepMockHelper.processRowsStepMetaInterface, data );
+    assertTrue( http.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
     System.out.println( Arrays.toString( expectedRow ) );
-    Object[] out = ( (HTTPPOSTHandler) HTTPPOST ).getOutputRow();
+    Object[] out = ( (HTTPHandler) http ).getOutputRow();
     System.out.println( Arrays.toString( out ) );
     assertTrue( Arrays.equals( expectedRow, out ) );
   }
 
   private void startHttp204Answer() throws IOException {
-    httpServer = HttpServer.create( new InetSocketAddress( HTTPPOSTTest.host, HTTPPOSTTest.port ), 10 );
+    httpServer = HttpServer.create( new InetSocketAddress( HTTPIT.host, HTTPIT.port ), 10 );
     httpServer.createContext( "/", new HttpHandler() {
       @Override
       public void handle( HttpExchange httpExchange ) throws IOException {
@@ -173,10 +169,10 @@ public class HTTPPOSTTest {
   @Test
   public void testLoadSaveRoundTrip() throws KettleException {
     List<String> attributes =
-        Arrays.asList( "postAFile", "encoding", "url", "urlInField", "urlField", "requestEntity", "httpLogin",
-            "httpPassword", "proxyHost", "proxyPort", "socketTimeout", "connectionTimeout",
-            "closeIdleConnectionsTime", "argumentField", "argumentParameter", "argumentHeader", "queryField",
-            "queryParameter", "fieldName", "resultCodeFieldName", "responseTimeFieldName" );
+        Arrays.asList( "url", "urlInField", "urlField", "encoding", "httpLogin", "httpPassword", "proxyHost",
+            "proxyPort", "socketTimeout", "connectionTimeout", "closeIdleConnectionsTime", "argumentField",
+            "argumentParameter", "headerField", "headerParameter", "fieldName", "resultCodeFieldName",
+            "responseTimeFieldName" );
 
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
         new HashMap<String, FieldLoadSaveValidator<?>>();
@@ -184,16 +180,13 @@ public class HTTPPOSTTest {
     //Arrays need to be consistent length
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
         new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 );
-    FieldLoadSaveValidator<boolean[]> booleanArrayLoadSaveValidator =
-        new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 25 );
     fieldLoadSaveValidatorAttributeMap.put( "argumentField", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "argumentParameter", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "argumentHeader", booleanArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "queryField", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "queryParameter", stringArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "headerField", stringArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "headerParameter", stringArrayLoadSaveValidator );
 
     LoadSaveTester loadSaveTester =
-        new LoadSaveTester( HTTPPOSTMeta.class, attributes, new HashMap<String, String>(),
+        new LoadSaveTester( HTTPMeta.class, attributes, new HashMap<String, String>(),
             new HashMap<String, String>(), fieldLoadSaveValidatorAttributeMap,
             new HashMap<String, FieldLoadSaveValidator<?>>() );
 
