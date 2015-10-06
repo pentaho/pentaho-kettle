@@ -59,7 +59,7 @@ public class GoogleAnalyticsApiFacade {
 
   public static GoogleAnalyticsApiFacade createFor(
     String application, String oauthServiceAccount, String oauthKeyFile )
-      throws GeneralSecurityException, IOException, KettleFileException {
+    throws GeneralSecurityException, IOException, KettleFileException {
 
     return new GoogleAnalyticsApiFacade(
       GoogleNetHttpTransport.newTrustedTransport(),
