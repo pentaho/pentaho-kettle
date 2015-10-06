@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.pentaho.di.core.exception.KettleFileException;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
@@ -47,7 +46,8 @@ public class GoogleAnalyticsApiFacadeTest {
       new Object[] { "/key.p12", FileNotFoundException.class },
       new Object[] { "file:///C:/key.p12", FileNotFoundException.class },
       new Object[] { "file:///C:\\key.p12", FileNotFoundException.class },
-      new Object[] { "file:///key.p12", KettleFileException.class }
+      // KettleFileException on Windows, FileNotFoundException on Ubuntu
+      new Object[] { "file:///key.p12", Exception.class }
     );
   }
 
