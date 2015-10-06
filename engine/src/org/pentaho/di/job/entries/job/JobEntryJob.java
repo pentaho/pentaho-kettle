@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -911,6 +911,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             String defValue = namedParam.getParameterDefault( param );
             String value = namedParam.getParameterValue( param );
             jobExecutionConfiguration.getParams().put( param, Const.NVL( value, defValue ) );
+          }
+          if ( parentJob.getJobMeta().isBatchIdPassed() ) {
+            jobExecutionConfiguration.setPassedBatchId( parentJob.getBatchId() );
           }
 
           // Send the XML over to the slave server
