@@ -1154,7 +1154,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     try {
       TransMeta transMeta = null;
       CurrentDirectoryResolver r = new CurrentDirectoryResolver();
-      VariableSpace tmpSpace = r.resolveCurrentDirectory( 
+      VariableSpace tmpSpace = r.resolveCurrentDirectory(
           specificationMethod, space, rep, parentJob, getFilename() );
       switch( specificationMethod ) {
         case FILENAME:
@@ -1171,7 +1171,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
               // try without extension
               if ( realFilename.endsWith( Const.STRING_TRANS_DEFAULT_EXT ) ) {
                 try {
-                  String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1, 
+                  String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1,
                       realFilename.indexOf( "." + Const.STRING_TRANS_DEFAULT_EXT ) );
                   String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
                   RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
@@ -1201,7 +1201,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             // It reads last the last revision from the repository.
             //
             realDirectory = r.normalizeSlashes( realDirectory );
-            
+
             RepositoryDirectoryInterface repositoryDirectory = rep.findDirectory( realDirectory );
             transMeta = rep.loadTransformation( transname, repositoryDirectory, null, true, null );
           } else {
@@ -1211,7 +1211,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             } catch ( KettleException ke ) {
               try {
                 // add .ktr extension and try again
-                transMeta = new TransMeta( realDirectory + "/" + transname + "." + Const.STRING_TRANS_DEFAULT_EXT, 
+                transMeta = new TransMeta( realDirectory + "/" + transname + "." + Const.STRING_TRANS_DEFAULT_EXT,
                     metaStore, null, true, this, null );
               } catch ( KettleException ke2 ) {
                 throw new KettleException( BaseMessages.getString( PKG, "JobTrans.Exception.NoRepDefined" ), ke2 );
