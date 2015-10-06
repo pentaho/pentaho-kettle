@@ -27,7 +27,7 @@ import javax.xml.ws.Service;
 import org.junit.Before;
 
 @SuppressWarnings ( "nls" )
-public class RepositorySyncWebServiceClientTest extends RepositorySyncWebServiceTest implements Serializable {
+public class RepositorySyncWebServiceClientIT extends RepositorySyncWebServiceTest implements Serializable {
 
   private static final long serialVersionUID = -6806897012063786589L; /* EESOURCE: UPDATE SERIALVERUID */
 
