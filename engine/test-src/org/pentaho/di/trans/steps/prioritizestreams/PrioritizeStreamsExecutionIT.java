@@ -56,7 +56,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 @RunWith( Parameterized.class )
-public class PrioritizeStreamsExecutionTest {
+public class PrioritizeStreamsExecutionIT {
 
   private String old_timeout_get;
 
@@ -66,7 +66,7 @@ public class PrioritizeStreamsExecutionTest {
 
   private static ExecutorService service = Executors.newCachedThreadPool();
 
-  public PrioritizeStreamsExecutionTest( TestData code ) {
+  public PrioritizeStreamsExecutionIT( TestData code ) {
     this.code = code;
   }
 

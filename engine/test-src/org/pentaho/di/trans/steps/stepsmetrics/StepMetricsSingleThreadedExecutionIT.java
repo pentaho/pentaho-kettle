@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.stepsmetrics;
 
 import org.pentaho.test.util.SingleThreadedExecutionGuarder;
 
-public class StepMetricsSingleThreadedExecutionTest extends SingleThreadedExecutionGuarder<StepsMetricsMeta> {
+public class StepMetricsSingleThreadedExecutionIT extends SingleThreadedExecutionGuarder<StepsMetricsMeta> {
 
   @Override protected StepsMetricsMeta createMeta() {
     return new StepsMetricsMeta();

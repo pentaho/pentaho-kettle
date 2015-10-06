@@ -27,7 +27,7 @@ import org.pentaho.test.util.SingleThreadedExecutionGuarder;
 /**
  * @author Andrey Khayrutdinov
  */
-public class GroupBySingleThreadedExecutionTest extends SingleThreadedExecutionGuarder<GroupByMeta> {
+public class GroupBySingleThreadedExecutionIT extends SingleThreadedExecutionGuarder<GroupByMeta> {
 
   @Override protected GroupByMeta createMeta() {
     return new GroupByMeta();
