@@ -135,7 +135,7 @@ import org.xml.sax.ext.DefaultHandler2;
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:/repository.spring.xml",
     "classpath:/repository-test-override.spring.xml" } )
-public class PurRepositoryTest extends RepositoryTestBase implements ApplicationContextAware, java.io.Serializable {
+public class PurRepositoryIT extends RepositoryTestBase implements ApplicationContextAware, java.io.Serializable {
 
   static final long serialVersionUID = 2064159405078106703L; /* EESOURCE: UPDATE SERIALVERUID */
 
@@ -177,7 +177,7 @@ public class PurRepositoryTest extends RepositoryTestBase implements Application
   @BeforeClass
   public static void setUpClass() throws Exception {
     System.out.println(
-      "Repository: " + PurRepositoryTest.class.getClassLoader().getResource( "repository.spring.xml" ).getPath() );
+      "Repository: " + PurRepositoryIT.class.getClassLoader().getResource( "repository.spring.xml" ).getPath() );
 
     // folder cannot be deleted at teardown shutdown hooks have not yet necessarily completed
     // parent folder must match jcrRepository.homeDir bean property in repository-test-override.spring.xml
