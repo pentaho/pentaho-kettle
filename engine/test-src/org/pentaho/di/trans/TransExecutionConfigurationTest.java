@@ -34,12 +34,15 @@ import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public class TransExecutionConfigurationTest {
 
@@ -106,5 +109,46 @@ public class TransExecutionConfigurationTest {
     assertEquals( "Repository didn't change", repository, transExecConf.getRepository() );
     assertTrue( "Repository not connected", connectionSuccess[0] );
   }
-  private interface MockRepositoryPlugin extends PluginInterface, ClassLoadingPluginInterface { }
+
+  private interface MockRepositoryPlugin extends PluginInterface, ClassLoadingPluginInterface {
+  }
+
+  @Test
+  public void testCopy() {
+    TransExecutionConfiguration tec = new TransExecutionConfiguration();
+    tec.setPassedBatchId( 5L );
+    TransExecutionConfiguration tecCopy = (TransExecutionConfiguration) tec.clone();
+    assertEquals( "clone-copy", tec.getPassedBatchId(), tecCopy.getPassedBatchId() );
+  }
+
+  @Test
+  public void testCopyXml() throws Exception {
+    TransExecutionConfiguration tec = new TransExecutionConfiguration();
+    final long defaultPassedBatchId = tec.getPassedBatchId();
+    final long passedBatchId2 = 5L;
+    {
+      String xml = tec.getXML();
+      Document doc = XMLHandler.loadXMLString( xml );
+      Node node = XMLHandler.getSubNode( doc, TransExecutionConfiguration.XML_TAG );
+      TransExecutionConfiguration tecCopy = new TransExecutionConfiguration( node );
+      assertEquals( "xml-copy", tec.getPassedBatchId(), tecCopy.getPassedBatchId() );
+    }
+    tec.setPassedBatchId( passedBatchId2 );
+    {
+      String xml = tec.getXML();
+      Document doc = XMLHandler.loadXMLString( xml );
+      Node node = XMLHandler.getSubNode( doc, TransExecutionConfiguration.XML_TAG );
+      TransExecutionConfiguration tecCopy = new TransExecutionConfiguration( node );
+      assertEquals( "xml-copy", tec.getPassedBatchId(), tecCopy.getPassedBatchId() );
+    }
+    {
+      String xml0 = tec.getXML();
+      String xml = xml0.replaceAll( "<passedBatchId>[^<]</passedBatchId>", "" );
+      assertFalse( "cannot remove tag <passedBatchId> from xml", xml0.equals( xml ) );
+      Document doc = XMLHandler.loadXMLString( xml );
+      Node node = XMLHandler.getSubNode( doc, TransExecutionConfiguration.XML_TAG );
+      TransExecutionConfiguration tecCopy = new TransExecutionConfiguration( node );
+      assertEquals( "xml-copy", defaultPassedBatchId, tecCopy.getPassedBatchId() );
+    }
+  }
 }

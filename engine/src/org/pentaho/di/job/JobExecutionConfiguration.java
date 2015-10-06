@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -90,6 +91,8 @@ public class JobExecutionConfiguration implements Cloneable {
   private boolean expandingRemoteJob;
 
   private Map<String, String> extensionOptions;
+
+  private long passedBatchId;
 
   public JobExecutionConfiguration() {
     executingLocally = true;
@@ -376,6 +379,8 @@ public class JobExecutionConfiguration implements Cloneable {
     xml.append( "    " ).append( XMLHandler.addTagValue( "gather_metrics", gatheringMetrics ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "expand_remote_job", expandingRemoteJob ) );
 
+    xml.append( "    " ).append( XMLHandler.addTagValue( "passedBatchId", passedBatchId ) );
+
     // The source rows...
     //
     if ( previousResult != null ) {
@@ -461,6 +466,11 @@ public class JobExecutionConfiguration implements Cloneable {
     startCopyNr = Const.toInt( XMLHandler.getTagValue( trecNode, "start_copy_nr" ), 0 );
 
     gatheringMetrics = "Y".equalsIgnoreCase( XMLHandler.getTagValue( trecNode, "gather_metrics" ) );
+
+    String sPassedBatchId = XMLHandler.getTagValue( trecNode, "passedBatchId" );
+    if ( !StringUtils.isEmpty( sPassedBatchId ) ) {
+      passedBatchId = Long.parseLong( sPassedBatchId );
+    }
 
     Node resultNode = XMLHandler.getSubNode( trecNode, Result.XML_TAG );
     if ( resultNode != null ) {
@@ -652,5 +662,13 @@ public class JobExecutionConfiguration implements Cloneable {
 
   public void setExtensionOptions( Map<String, String> extensionOptions ) {
     this.extensionOptions = extensionOptions;
+  }
+
+  public long getPassedBatchId() {
+    return passedBatchId;
+  }
+
+  public void setPassedBatchId( long passedBatchId ) {
+    this.passedBatchId = passedBatchId;
   }
 }
