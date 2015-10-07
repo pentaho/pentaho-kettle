@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+* Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -41,11 +41,14 @@ import org.pentaho.di.core.vfs.KettleVFS;
 
 /**
  * This class handles the logging.
- *
+ * 
  * @author Matt
  * @since 25-04-2003
- *
+ * 
+ * @deprecated As of release 7.0, no longer needed. This class is used only in
+ *             {@link org.pentaho.di.core.logging.CentralLogStore} which is never used in project
  */
+@Deprecated
 public class LogWriter {
   // private static Class<?> PKG = LogWriter.class; // for i18n purposes, needed by Translator2!!
 

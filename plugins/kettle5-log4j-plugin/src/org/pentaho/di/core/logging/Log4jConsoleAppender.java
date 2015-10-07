@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+* Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -28,6 +28,11 @@ import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 
+/**
+ * 
+ * @deprecated As of release 7.0, use log4j appender {@link org.apache.log4j.ConsoleAppender} instead
+ */
+@Deprecated
 public class Log4jConsoleAppender implements Appender {
   private Layout layout;
   private Filter filter;
