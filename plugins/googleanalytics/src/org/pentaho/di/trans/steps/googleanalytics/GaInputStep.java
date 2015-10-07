@@ -231,7 +231,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
       // There is necessarily an account name associated with this, so any NPEs or other exceptions mean bail out
       accountName = analytics.management().accounts().list().execute().getItems().iterator().next().getName();
     } catch ( Exception e ) {
-      logError( e.toString() );
+      logError( BaseMessages.getString( PKG, "GoogleAnalytics.Error.AccessingGaApi" ), e );
       return false;
     }
     return true;
