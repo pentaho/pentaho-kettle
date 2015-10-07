@@ -245,7 +245,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="0.7.4.201502262128"
             description="The version of jacoco to use for code coverage"/>
   <property name="cobertura.version"
-            value="2.0.3"
+            value="2.1.1"
             description="The version of cobertura to use for code coverage"/>
   <property name="cobertura.data.dir"
             value="${testbin.dir}/cobertura-bin"
@@ -510,7 +510,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Runs a typical build process (cobertura+sonar)
       ====================================================================-->
-  <target name="build-sonar" depends="clean-all,resolve,dist,dist-source,sonar"/>
+  <target name="build-sonar" depends="clean-all,resolve,dist,dist-source,sonar-unit-tests"/>
 
 
   <!--=======================================================================
@@ -2657,6 +2657,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                       classname="${sonar.classname}"/>
   </target>
 
+
+
+
+  <target name="sonar-unit-tests" depends="jacoco">
+    <antcall target="sonar"/>
+  </target>
+
+  <target name="sonar-it-tests" depends="jacoco-integration">
+    <antcall target="sonar"/>
+  </target>
+
+  <target name="sonar-all-tests" depends="jacoco, jacoco-integration">
+    <antcall target="sonar"/>
+  </target>
+
   <!--=======================================================================
   sonar
 
@@ -2672,7 +2687,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   Also, SCM_BRANCH is a required parameter.
   ====================================================================-->
-  <target name="sonar" depends="install-sonar,jacoco">
+  <target name="sonar" depends="install-sonar">
 
     <path id="sonar.classpath">
       <fileset dir="${subfloor.resources.dir}/sonar-ant-task-${sonar-ant-task-version}">
