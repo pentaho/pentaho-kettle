@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.BaseRepositorySecurityProvider;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
@@ -102,10 +103,12 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
   public void saveUserInfo( IUser userInfo ) throws KettleException {
     normalizeUserInfo( userInfo );
     if ( !validateUserInfo( userInfo ) ) {
-      throw new KettleException( "Empty name is not allowed" );
+      throw new KettleException( BaseMessages.getString( KettleDatabaseRepositorySecurityProvider.class,
+        "KettleDatabaseRepositorySecurityProvider.ERROR_0001_UNABLE_TO_CREATE_USER" ) );
     }
 
     if ( userInfo.getObjectId() != null ) {
+      // not a message for UI
       throw new IllegalArgumentException( "Use updateUser() for updating" );
     }
 
@@ -113,9 +116,8 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
     ObjectId exactMatch = userDelegate.getUserID( userLogin );
     if ( exactMatch != null ) {
       // found the corresponding record in db, prohibit creation!
-      throw new KettleException(
-        "Cannot create a user with name [" + userLogin + "] because another one already exists: [" + userLogin
-          + "]. Please try different name." );
+      throw new KettleException( BaseMessages.getString( KettleDatabaseRepositorySecurityProvider.class,
+        "KettleDatabaseRepositorySecurityProvider.ERROR_0001_USER_NAME_ALREADY_EXISTS" ) );
     }
 
     userDelegate.saveUserInfo( userInfo );
