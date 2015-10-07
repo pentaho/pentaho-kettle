@@ -17,22 +17,26 @@
 
 package org.pentaho.di.repository.pur;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositoryCommonValidations;
+import org.pentaho.di.repository.RepositorySecurityUserValidator;
 import org.pentaho.di.repository.pur.model.EERoleInfo;
 import org.pentaho.di.repository.pur.model.EEUserInfo;
 import org.pentaho.di.repository.pur.model.IRole;
 import org.pentaho.di.ui.repository.pur.services.IRoleSupportSecurityManager;
+import org.pentaho.di.ui.repository.pur.services.RepositorySecurityRoleValidator;
 import org.pentaho.platform.security.userroledao.ws.UserRoleException;
 
 import java.util.List;
 
-public class PurRepositorySecurityManager
-    implements IRoleSupportSecurityManager, IUserRoleListChangeListener, java.io.Serializable {
+public class PurRepositorySecurityManager implements IRoleSupportSecurityManager, IUserRoleListChangeListener,
+  java.io.Serializable, RepositorySecurityUserValidator, RepositorySecurityRoleValidator {
 
   private static final long serialVersionUID = 6820830385234412904L; /* EESOURCE: UPDATE SERIALVERUID */
 
@@ -104,30 +108,42 @@ public class PurRepositorySecurityManager
   }
 
   public void saveUserInfo( IUser user ) throws KettleException {
-    normalizeUserData( user );
+    normalizeUserInfo( user );
+    if ( !validateUserInfo( user ) ) {
+      throw new KettleException( BaseMessages.getString( PurRepositorySecurityManager.class,
+        "PurRepositorySecurityManager.ERROR_0001_INVALID_NAME" ) );
+    }
     userRoleDelegate.createUser( user );
   }
 
-  private void normalizeUserData( IUser user ) throws KettleException {
-    user.setLogin( user.getLogin().trim() );
-    user.setName( user.getName().trim() );
-    if ( user.getLogin().isEmpty() || user.getName().isEmpty() ) {
+  @Override
+  public boolean validateUserInfo( IUser user ) {
+    return RepositoryCommonValidations.checkUserInfo( user );
+  }
+
+  @Override
+  public void normalizeUserInfo( IUser user ) {
+    RepositoryCommonValidations.normalizeUserInfo( user );
+  }
+
+
+  public void createRole( IRole newRole ) throws KettleException {
+    normalizeRoleInfo( newRole );
+    if ( !validateRoleInfo( newRole ) ) {
       throw new KettleException( BaseMessages.getString( PurRepositorySecurityManager.class,
         "PurRepositorySecurityManager.ERROR_0001_INVALID_NAME" ) );
     }
-  }
-
-  public void createRole( IRole newRole ) throws KettleException {
-    normalizeRoleData( newRole );
     userRoleDelegate.createRole( newRole );
   }
 
-  private void normalizeRoleData( IRole newRole ) throws KettleException {
-    newRole.setName( newRole.getName().trim() );
-    if ( newRole.getName().isEmpty() ) {
-      throw new KettleException( BaseMessages.getString( PurRepositorySecurityManager.class,
-        "PurRepositorySecurityManager.ERROR_0001_INVALID_NAME" ) );
-    }
+  @Override
+  public boolean validateRoleInfo( IRole role ) {
+    return StringUtils.isNotBlank( role.getName() );
+  }
+
+  @Override
+  public void normalizeRoleInfo( IRole role ) {
+    role.setName( role.getName().trim() );
   }
 
   public void deleteRoles( List<IRole> roles ) throws KettleException {
