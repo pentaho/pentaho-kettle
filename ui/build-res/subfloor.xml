@@ -502,15 +502,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Runs a typical build process to create the project locally
       ====================================================================-->
-  <target name="build" depends="clean-all,resolve,cobertura,dist-source,dist"/>
+  <target name="build" depends="clean-all,resolve,dist-source,dist,jacoco"/>
 
 
   <!--=======================================================================
-      build-sonar
+      build-sonar-unit-tests
 
-      Runs a typical build process (cobertura+sonar)
+      Runs a typical build process + junit + sonar
       ====================================================================-->
-  <target name="build-sonar" depends="clean-all,resolve,dist,dist-source,sonar-unit-tests"/>
+  <target name="build-sonar-unit-tests" depends="build,sonar"/>
+
+  <!--=======================================================================
+      build-sonar-it-tests
+
+      Runs a typical build process + integration tests + sonar
+      ====================================================================-->
+  <target name="build-sonar-it-tests" depends="build-testless,sonar-it-tests"/>
+
+  <!--=======================================================================
+      build-sonar-all-tests
+
+      Runs a typical build process + junit tests + integration tests + sonar
+      ====================================================================-->
+  <target name="build-sonar-all-tests" depends="build,sonar-it-tests"/>
 
 
   <!--=======================================================================
@@ -547,7 +561,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Cobertura coverage was always pushed to Sonar by using the Jenkins
       Sonar plugin
       ====================================================================-->
-  <target name="continuous-sonar" depends="build-sonar, publish"/>
+  <target name="continuous-sonar" depends="build-sonar-unit-tests, publish"/>
 
 
   <!--=======================================================================
@@ -1738,6 +1752,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <target name="init-tests" depends="clean-tests,junit.exists-check">
     <mkdir dir="${testclasses.dir}"/>
     <mkdir dir="${testsrc.dir}"/>
+    <mkdir dir="${inttestsrc.dir}"/>
+    <mkdir dir="${inttestclasses.dir}"/>
     <!-- Sonar will fail if no src or classes dir -->
     <mkdir dir="${src.dir}"/>
     <mkdir dir="${classes.dir}"/>
