@@ -22,9 +22,6 @@
 
 package org.pentaho.di.core.logging.log4j;
 
-import java.io.FileNotFoundException;
-
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -38,9 +35,9 @@ import org.pentaho.di.core.logging.LoggingPluginInterface;
 @LoggingPlugin(
   id = "Log4jLogging", isSeparateClassLoaderNeeded = true )
 public class Log4jLogging implements LoggingPluginInterface {
-  
+
   public static final String PLUGIN_PROPERTIES_FILE = "plugins/kettle5-log4j-plugin/log4j.xml";
-  
+
   public static final String STRING_PENTAHO_DI_LOGGER_NAME = "org.pentaho.di";
 
   public static final String STRING_PENTAHO_DI_CONSOLE_APPENDER = "ConsoleAppender:" + STRING_PENTAHO_DI_LOGGER_NAME;
@@ -68,8 +65,7 @@ public class Log4jLogging implements LoggingPluginInterface {
 
   @Override
   public void init() {
-    applyLog4jConfiguration();
-    pentahoLogger = Logger.getLogger( STRING_PENTAHO_DI_LOGGER_NAME );
+    pentahoLogger = createLogger( STRING_PENTAHO_DI_LOGGER_NAME );
     pentahoLogger.setAdditivity( false );
     KettleLogStore.getAppender().addLoggingEventListener( this );
   }
@@ -77,11 +73,27 @@ public class Log4jLogging implements LoggingPluginInterface {
   public void dispose() {
     KettleLogStore.getAppender().removeLoggingEventListener( this );
   }
-  
-  private static void applyLog4jConfiguration() {
+
+  private void applyLog4jConfiguration() {
     LogLog.setQuietMode( true );
     LogManager.resetConfiguration();
     LogLog.setQuietMode( false );
-    DOMConfigurator.configure( PLUGIN_PROPERTIES_FILE );
+    DOMConfigurator.configure( getConfigurationFileName() );
+  }
+
+  /**
+   * package-local visibility for testing purposes
+   * 
+   */
+  Logger createLogger( String loggerName ) {
+    applyLog4jConfiguration();
+    return Logger.getLogger( loggerName );
+  }
+
+  /**
+   * package-local visibility for testing purposes
+   */
+  String getConfigurationFileName() {
+    return PLUGIN_PROPERTIES_FILE;
   }
 }
