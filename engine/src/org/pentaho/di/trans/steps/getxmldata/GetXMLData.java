@@ -58,6 +58,8 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import com.google.common.annotations.VisibleForTesting;
+
 /**
  * Read XML files, parse them and convert them to rows and writes these to one or more output streams.
  *
@@ -169,6 +171,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
           BaseStep.closeQuietly( is );
         }
       }
+      data.document.normalize();
 
       if ( meta.isNamespaceAware() ) {
         prepareNSMap( data.document.getRootElement() );
@@ -991,4 +994,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
+  @VisibleForTesting
+  GetXMLDataData getData() {
+    return data;
+  }
 }
