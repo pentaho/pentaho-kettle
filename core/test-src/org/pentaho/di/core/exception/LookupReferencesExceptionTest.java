@@ -25,7 +25,7 @@ package org.pentaho.di.core.exception;
 import org.junit.Test;
 import org.pentaho.di.repository.RepositoryObjectType;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -42,11 +42,11 @@ public class LookupReferencesExceptionTest {
   public void testObjectTypePairsToString() throws Exception {
     Exception cause = new NullPointerException();
 
-    Map<String, RepositoryObjectType> notFoundedReferences = new HashMap<String, RepositoryObjectType>();
-    String pathToJobStub = "/path/Job.ktr";
+    Map<String, RepositoryObjectType> notFoundedReferences = new LinkedHashMap<String, RepositoryObjectType>();
     String pathToTransStub = "/path/Trans.ktr";
-    notFoundedReferences.put( pathToJobStub, RepositoryObjectType.JOB );
+    String pathToJobStub = "/path/Job.ktr";
     notFoundedReferences.put( pathToTransStub, RepositoryObjectType.TRANSFORMATION );
+    notFoundedReferences.put( pathToJobStub, RepositoryObjectType.JOB );
 
     String expectedOutput =
         System.lineSeparator() + "\"/path/Trans.ktr\" [transformation] " + System.lineSeparator()
