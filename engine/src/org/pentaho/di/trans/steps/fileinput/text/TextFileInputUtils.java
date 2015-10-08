@@ -338,7 +338,7 @@ public class TextFileInputUtils {
       RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, String enclosure,
       String escapeCharacter, FileErrorHandler errorHandler,
       BaseFileInputStepMeta.AdditionalOutputFields additionalOutputFields, String shortFilename, String path,
-      boolean hidden, Date modificationDateTime, String uri, String rooturi, String extension, long size )
+      boolean hidden, Date modificationDateTime, String uri, String rooturi, String extension, Long size )
     throws KettleException {
     if ( textFileLine == null || textFileLine.line == null ) {
       return null;
@@ -497,7 +497,7 @@ public class TextFileInputUtils {
         }
         // Add Size
         if ( additionalOutputFields.sizeField != null ) {
-          r[index] = new Long( size );
+          r[index] = size;
           index++;
         }
         // add Hidden
