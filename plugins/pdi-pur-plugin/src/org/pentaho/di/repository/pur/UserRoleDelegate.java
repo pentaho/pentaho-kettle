@@ -285,7 +285,7 @@ public class UserRoleDelegate implements java.io.Serializable {
     try {
       ProxyPentahoRole[] existingRoles = userRoleWebService.getRoles();
       if ( existsAmong( existingRoles, role ) ) {
-        throw userExistsException();
+        throw roleExistsException();
       }
     } catch ( UserRoleException e ) {
       throw cannotCreateRoleException( newRole, e );
