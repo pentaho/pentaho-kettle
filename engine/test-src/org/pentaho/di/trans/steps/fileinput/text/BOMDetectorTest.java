@@ -13,7 +13,7 @@ import org.junit.Test;
 public class BOMDetectorTest {
 
   BufferedInputStream getFile( String filename ) throws Exception {
-    String inPrefix = '/' + TextFileInputContentParsingTest.class.getPackage().getName().replace( '.', '/' ) + "/texts/";
+    String inPrefix = '/' + this.getClass().getPackage().getName().replace( '.', '/' ) + "/files/";
     InputStream file = this.getClass().getResourceAsStream( inPrefix + filename );
     assertNotNull( "There is no file " + filename, file );
     return new BufferedInputStream( file );
