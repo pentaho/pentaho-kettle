@@ -25,15 +25,15 @@ package org.pentaho.di.trans.steps.xsdvalidator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
 import org.apache.poi.util.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -41,8 +41,6 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -54,6 +52,7 @@ import org.pentaho.di.trans.TransTestFactory;
 public class XsdValidatorIntTest {
 
   private static final String RAMDIR = "ram://" + XsdValidatorIntTest.class.getSimpleName();
+  private static final String TEST_FILES_DIR = "testfiles/xsdvalidator/";
   private static FileObject schemaRamFile = null;
   private static FileObject dataRamFile = null;
 
@@ -77,92 +76,64 @@ public class XsdValidatorIntTest {
   }
 
   @Test
-  public void testVfsInputFiles() throws FileSystemException {
-    testVfsFileTypes( getDataRamFile().getURL().toString(), getSchemaRamFile().getURL().toString(), true );
-    testVfsFileTypes( getDataRamFile().getURL().toString(), getSchemaUrlFile().getURL().toString(), true );
-    testVfsFileTypes( getDataUrlFile().getURL().toString(), getSchemaRamFile().getURL().toString(), true );
-    testVfsFileTypes( getDataUrlFile().getURL().toString(), getSchemaUrlFile().getURL().toString(), true );
+  public void testVfsInputFiles() throws Exception {
+    testVfsFileTypes(
+        getDataRamFile().getURL().toString(),
+        getSchemaRamFile().getURL().toString(), true );
+    testVfsFileTypes( getDataRamFile().getURL().toString(), getSchemaFileUrl(), true );
+    testVfsFileTypes( getDataFileUrl(), getSchemaRamFile().getURL().toString(), true );
+    testVfsFileTypes( getDataFileUrl(), getSchemaFileUrl(), true );
   }
 
-  private FileObject getSchemaRamFile() {
-    try {
-      if ( schemaRamFile != null && schemaRamFile.exists() && schemaRamFile.getContent().getSize() > 0 ) {
-        return schemaRamFile;
+  private FileObject getSchemaRamFile() throws Exception {
+    if ( schemaRamFile != null && schemaRamFile.exists() && schemaRamFile.getContent().getSize() > 0 ) {
+      return schemaRamFile;
+    }
+    schemaRamFile = loadRamFile( "schema.xsd" );
+    return schemaRamFile;
+  }
+
+  private FileObject getDataRamFile() throws Exception {
+    if ( dataRamFile != null && dataRamFile.exists() && dataRamFile.getContent().getSize() > 0 ) {
+      return dataRamFile;
+    }
+    dataRamFile = loadRamFile( "data.xml" );
+    return dataRamFile;
+  }
+
+  private String getFileUrl( String filename ) throws Exception {
+    File file = new File( TEST_FILES_DIR + filename );
+    return file.toURI().toURL().toExternalForm();
+  }
+  private InputStream getFileInputStream( String filename ) throws Exception {
+    File file = new File( TEST_FILES_DIR + filename );
+    return new FileInputStream( file );
+  }
+
+  private String getSchemaFileUrl() throws Exception {
+    return getFileUrl( "schema.xsd" );
+  }
+
+  private String getDataFileUrl() throws Exception {
+    return getFileUrl( "data.xml" );
+  }
+
+  private FileObject loadRamFile( String filename ) throws Exception {
+    String targetUrl = RAMDIR + "/" + filename;
+    try ( InputStream source = getFileInputStream( filename ) ) {
+      FileObject fileObject = KettleVFS.getFileObject( targetUrl );
+      try ( OutputStream targetStream = fileObject.getContent().getOutputStream() ) {
+        IOUtils.copy( source, targetStream );
       }
-      schemaRamFile = KettleVFS.getFileObject( RAMDIR + "/schema.xsd" );
-      if ( loadRamFile( this.getClass().getResourceAsStream( "schema.xsd" ), schemaRamFile ) ) {
-        return schemaRamFile;
-      }
-    } catch ( Exception e ) {
-      return null;
-    }
-    return null;
-  }
-
-  private FileObject getDataRamFile() {
-    try {
-      if ( dataRamFile != null && dataRamFile.exists() && dataRamFile.getContent().getSize() > 0 ) {
-        return dataRamFile;
-      }
-      dataRamFile = KettleVFS.getFileObject( RAMDIR + "/data.xml" );
-      if ( loadRamFile( this.getClass().getResourceAsStream( "data.xml" ), dataRamFile ) ) {
-        return dataRamFile;
-      }
-    } catch ( Exception e ) {
-      return null;
-    }
-    return null;
-  }
-
-  private FileObject getSchemaUrlFile() {
-    try {
-      return KettleVFS.getFileObject( this.getClass().getResource( "schema.xsd" ).toString() );
-    } catch ( KettleFileException e ) {
-      return null;
+      return fileObject;
     }
   }
 
-  private FileObject getDataUrlFile() {
-    try {
-      return KettleVFS.getFileObject( this.getClass().getResource( "data.xml" ).toString() );
-    } catch ( KettleFileException e ) {
-      return null;
-    }
-  }
-
-  private boolean loadRamFile( InputStream sourceStream, FileObject targetFile ) {
-    if ( sourceStream == null || targetFile == null ) {
-      return false;
-    }
-    boolean result = false;
-    OutputStream targetStream = null;
-    try {
-      targetStream = targetFile.getContent().getOutputStream();
-      IOUtils.copy( sourceStream, targetStream );
-      result = true;
-    } catch ( Exception e ) {
-      // Ignore, we'll return false anyways
-    }
-    try {
-      sourceStream.close();
-      if ( targetStream != null ) {
-        targetStream.close();
-      }
-    } catch ( Exception e ) {
-      // Ignore
-    }
-    return result;
-  }
-
-  private void testVfsFileTypes( String dataFilename, String schemaFilename, boolean expected ) {
+  private void testVfsFileTypes( String dataFilename, String schemaFilename, boolean expected ) throws Exception {
     assertNotNull( dataFilename );
     assertNotNull( schemaFilename );
-    try {
-      assertTrue( KettleVFS.getFileObject( dataFilename ).exists() );
-      assertTrue( KettleVFS.getFileObject( schemaFilename ).exists() );
-    } catch ( Exception e ) {
-      fail();
-    }
+    assertTrue( KettleVFS.getFileObject( dataFilename ).exists() );
+    assertTrue( KettleVFS.getFileObject( schemaFilename ).exists() );
 
     RowMetaInterface inputRowMeta = new RowMeta();
     inputRowMeta.addValueMeta( new ValueMetaString( "DataFile" ) );
@@ -180,12 +151,8 @@ public class XsdValidatorIntTest {
     TransMeta transMeta = TransTestFactory.generateTestTransformation( null, meta, stepName );
 
     List<RowMetaAndData> result = null;
-    try {
-      result = TransTestFactory.executeTestTransformation( transMeta, TransTestFactory.INJECTOR_STEPNAME, stepName,
-        TransTestFactory.DUMMY_STEPNAME, inputData );
-    } catch ( KettleException e ) {
-      fail();
-    }
+    result = TransTestFactory.executeTestTransformation( transMeta, TransTestFactory.INJECTOR_STEPNAME, stepName,
+      TransTestFactory.DUMMY_STEPNAME, inputData );
 
     assertNotNull( result );
     assertEquals( 1, result.size() );
@@ -199,12 +166,8 @@ public class XsdValidatorIntTest {
     assertEquals( "result", result.get( 0 ).getValueMeta( 2 ).getName() );
 
     // Check result
-    try {
-      assertEquals( dataFilename, result.get( 0 ).getString( 0, "default" ) );
-      assertEquals( schemaFilename, result.get( 0 ).getString( 1, "default" ) );
-      assertEquals( expected, result.get( 0 ).getBoolean( 2, !expected ) );
-    } catch ( KettleValueException e ) {
-      fail();
-    }
+    assertEquals( dataFilename, result.get( 0 ).getString( 0, "default" ) );
+    assertEquals( schemaFilename, result.get( 0 ).getString( 1, "default" ) );
+    assertEquals( expected, result.get( 0 ).getBoolean( 2, !expected ) );
   }
 }

@@ -29,8 +29,9 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
-import org.mockito.Mockito;
 import org.pentaho.di.TestUtilities;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
@@ -40,8 +41,9 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -177,7 +179,7 @@ public class JsonOutputTest extends TestCase {
   public RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rowMetaInterface = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta = { new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
+    ValueMetaInterface[] valuesMeta = { new ValueMetaString( "filename" ), };
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rowMetaInterface.addValueMeta( valuesMeta[i] );
     }
@@ -210,8 +212,8 @@ public class JsonOutputTest extends TestCase {
 
     ValueMetaInterface[] valuesMeta =
       {
-        new ValueMeta( "Id", ValueMeta.TYPE_INTEGER ), new ValueMeta( "State", ValueMeta.TYPE_STRING ),
-        new ValueMeta( "City", ValueMeta.TYPE_STRING ) };
+        new ValueMetaInteger( "Id" ), new ValueMetaString( "State" ),
+        new ValueMetaString( "City" ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rowMetaInterface.addValueMeta( valuesMeta[i] );
@@ -334,7 +336,7 @@ public class JsonOutputTest extends TestCase {
 
   public void testNonCompatibilityMode() throws Exception {
     String jsonStructure = test( false );
-    Assert.assertEquals( EXPECTED_NON_COMPATIBILITY_JSON, jsonStructure );
+    Assert.assertTrue( jsonEquals( EXPECTED_NON_COMPATIBILITY_JSON, jsonStructure ) );
   }
 
   public void testCompatibilityMode() throws Exception {
@@ -358,5 +360,15 @@ public class JsonOutputTest extends TestCase {
     doReturn( null ).when( step ).getRow();
 
     step.processRow( mockHelper.processRowsStepMetaInterface, mockHelper.processRowsStepDataInterface );
+  }
+
+  /**
+   * compare json (deep equals ignoring order)
+   */
+  protected boolean jsonEquals( String json1, String json2 ) throws Exception {
+    ObjectMapper om = new ObjectMapper();
+    JsonNode parsedJson1 = om.readTree( json1 );
+    JsonNode parsedJson2 = om.readTree( json2 );
+    return parsedJson1.equals( parsedJson2 );
   }
 }

@@ -25,11 +25,12 @@ package org.pentaho.di.job;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.LookupReferencesException;
 import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
-import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.Repository;
 
@@ -106,7 +107,8 @@ public class JobMetaTest {
     verifyNoMoreInteractions( listener );
   }
 
-  @Test public void testLookupRepositoryReferences() throws Exception {
+  @Test
+  public void testLookupRepositoryReferences() throws Exception {
     JobMeta jobMetaMock = mock( JobMeta.class );
     doCallRealMethod().when( jobMetaMock ).lookupRepositoryReferences( any( Repository.class) );
     doCallRealMethod().when( jobMetaMock ).addJobEntry( anyInt(), any( JobEntryCopy.class ) );
@@ -119,7 +121,8 @@ public class JobMetaTest {
 
     JobEntryTrans brokenJobEntryMock = mock(JobEntryTrans.class);
     when(brokenJobEntryMock.hasRepositoryReferences()).thenReturn( true );
-    doThrow( new RuntimeException() ).when( brokenJobEntryMock ).lookupRepositoryReferences( any( Repository.class ) );
+    doThrow( mock( IdNotFoundException.class ) )
+      .when( brokenJobEntryMock ).lookupRepositoryReferences( any( Repository.class ) );
 
     JobEntryCopy jobEntryCopy1 = mock( JobEntryCopy.class );
     when( jobEntryCopy1.getEntry() ).thenReturn( jobEntryMock );
@@ -133,7 +136,15 @@ public class JobMetaTest {
     when( jobEntryCopy3.getEntry() ).thenReturn( jobEntryMock );
     jobMetaMock.addJobEntry( 2, jobEntryCopy3 );
 
-    jobMetaMock.lookupRepositoryReferences( any( Repository.class ) );
+    Repository repo = mock( Repository.class );
+    try {
+      jobMetaMock.lookupRepositoryReferences( repo );
+      Assert.fail( "no exception for broken entry" );
+    } catch ( LookupReferencesException e ) {
+      // ok
+    }
+
+    verify( jobEntryMock, times(2) ).lookupRepositoryReferences( any( Repository.class) );
 
   }
 }
