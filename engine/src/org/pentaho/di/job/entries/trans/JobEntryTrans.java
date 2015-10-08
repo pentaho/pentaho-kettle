@@ -865,6 +865,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           //
           executionConfiguration.setArgumentStrings( args );
 
+          if ( parentJob.getJobMeta().isBatchIdPassed() ) {
+            executionConfiguration.setPassedBatchId( parentJob.getPassedBatchId() );
+          }
+
           TransSplitter transSplitter = null;
           long errors = 0;
           try {
@@ -940,6 +944,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
               Const.NVL( transMeta.getParameterValue( param ), Const.NVL(
                 transMeta.getParameterDefault( param ), transMeta.getVariable( param ) ) );
             params.put( param, value );
+          }
+
+          if ( parentJob.getJobMeta().isBatchIdPassed() ) {
+            transExecutionConfiguration.setPassedBatchId( parentJob.getPassedBatchId() );
           }
 
           // Send the XML over to the slave server
