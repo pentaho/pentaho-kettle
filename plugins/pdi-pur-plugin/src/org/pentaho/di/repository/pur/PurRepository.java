@@ -1,3 +1,4 @@
+// CHECKSTYLE:FileLength:OFF
 /*!
 * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
 *
@@ -255,6 +256,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
       this.user = new EEUserInfo( "testuser", "testUserPwd", "testUser", "test user", true );
       this.jobDelegate = new JobDelegate( this, pur );
       this.transDelegate = new TransDelegate( this, pur );
+      this.unifiedRepositoryLockService = new UnifiedRepositoryLockService( pur );
       return;
     }
     try {
@@ -2828,7 +2830,7 @@ public class PurRepository extends AbstractRepository implements Repository, jav
   protected void saveKettleEntity( final RepositoryElementInterface element, final String versionComment,
       Calendar versionDate, final boolean saveSharedObjects, final boolean checkLock, final boolean checkRename,
       final boolean loadRevision, final boolean checkDeleted )
-      throws KettleException {
+    throws KettleException {
     ISharedObjectsTransformer objectTransformer = null;
     switch ( element.getRepositoryElementType() ) {
       case TRANSFORMATION:
@@ -2891,8 +2893,8 @@ public class PurRepository extends AbstractRepository implements Repository, jav
 
   protected ObjectId renameKettleEntity( final RepositoryElementInterface transOrJob,
       final RepositoryDirectoryInterface newDirectory, final String newName )
-      throws KettleException {
-    switch ( transOrJob.getRepositoryElementType()) {
+    throws KettleException {
+    switch ( transOrJob.getRepositoryElementType() ) {
       case TRANSFORMATION:
         return renameTransformation( transOrJob.getObjectId(), null, newDirectory, newName );
       case JOB:
