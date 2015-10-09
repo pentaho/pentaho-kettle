@@ -401,7 +401,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   @Override
   public int nrDatabases() {
-    return databases.size();
+    return ( databases == null ? 0 : databases.size() );
   }
 
   /*
@@ -443,7 +443,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     if ( nameChangedListeners == null ) {
       nameChangedListeners = new ArrayList<NameChangedListener>();
     }
-    nameChangedListeners.add( listener );
+    if( listener != null ) {
+      nameChangedListeners.add( listener );
+    }
   }
 
   /**
@@ -484,7 +486,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     if ( filenameChangedListeners == null ) {
       filenameChangedListeners = new ArrayList<FilenameChangedListener>();
     }
-    filenameChangedListeners.add( listener );
+    if( listener != null ) {
+      filenameChangedListeners.add( listener );
+    }
   }
 
   /**
@@ -1788,7 +1792,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     if ( oldName == null && newName != null ) {
       return true;
     }
-    return oldName.equals( newName );
+    return !oldName.equals( newName );
   }
 
   protected boolean shouldOverwrite( OverwritePrompter prompter, Props props, String message, String rememberMessage ) {
