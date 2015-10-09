@@ -90,7 +90,7 @@ public class TransExecutionConfiguration implements Cloneable {
   private boolean setAppendLogfile;
   private String logFileName;
   private boolean createParentFolder;
-  private long passedBatchId;
+  private Long passedBatchId;
 
   public TransExecutionConfiguration() {
     executingLocally = true;
@@ -518,7 +518,9 @@ public class TransExecutionConfiguration implements Cloneable {
     xml.append( "    " ).append( XMLHandler.addTagValue( "clear_log", clearingLog ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "gather_metrics", gatheringMetrics ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "show_subcomponents", showingSubComponents ) );
-    xml.append( "    " ).append( XMLHandler.addTagValue( "passedBatchId", passedBatchId ) );
+    if ( passedBatchId != null ) {
+      xml.append( "    " ).append( XMLHandler.addTagValue( "passedBatchId", passedBatchId ) );
+    }
 
     // The source rows...
     //
@@ -824,11 +826,11 @@ public class TransExecutionConfiguration implements Cloneable {
     this.createParentFolder = createParentFolder;
   }
 
-  public long getPassedBatchId() {
+  public Long getPassedBatchId() {
     return passedBatchId;
   }
 
-  public void setPassedBatchId( long passedBatchId ) {
+  public void setPassedBatchId( Long passedBatchId ) {
     this.passedBatchId = passedBatchId;
   }
 
