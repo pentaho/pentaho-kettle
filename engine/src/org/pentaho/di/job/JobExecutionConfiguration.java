@@ -92,7 +92,7 @@ public class JobExecutionConfiguration implements Cloneable {
 
   private Map<String, String> extensionOptions;
 
-  private long passedBatchId;
+  private Long passedBatchId;
 
   public JobExecutionConfiguration() {
     executingLocally = true;
@@ -378,8 +378,9 @@ public class JobExecutionConfiguration implements Cloneable {
 
     xml.append( "    " ).append( XMLHandler.addTagValue( "gather_metrics", gatheringMetrics ) );
     xml.append( "    " ).append( XMLHandler.addTagValue( "expand_remote_job", expandingRemoteJob ) );
-
-    xml.append( "    " ).append( XMLHandler.addTagValue( "passedBatchId", passedBatchId ) );
+    if ( passedBatchId != null ) {
+      xml.append( "    " ).append( XMLHandler.addTagValue( "passedBatchId", passedBatchId ) );
+    }
 
     // The source rows...
     //
@@ -664,11 +665,11 @@ public class JobExecutionConfiguration implements Cloneable {
     this.extensionOptions = extensionOptions;
   }
 
-  public long getPassedBatchId() {
+  public Long getPassedBatchId() {
     return passedBatchId;
   }
 
-  public void setPassedBatchId( long passedBatchId ) {
+  public void setPassedBatchId( Long passedBatchId ) {
     this.passedBatchId = passedBatchId;
   }
 }
