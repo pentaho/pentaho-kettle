@@ -300,7 +300,7 @@ public class TextFileCSVImportProgressDialog {
               outputRowMeta, convertRowMeta, FileInputList.createFilePathList( transMeta, meta.inputFiles.fileName,
                   meta.inputFiles.fileMask, meta.inputFiles.excludeFileMask, meta.inputFiles.fileRequired, meta
                       .includeSubFolderBoolean() )[0], rownumber, delimiter, enclosure, escapeCharacter, null,
-              new BaseFileInputStepMeta.AdditionalOutputFields(), null, null, false, null, null, null, null, 0 );
+              new BaseFileInputStepMeta.AdditionalOutputFields(), null, null, false, null, null, null, null, null );
 
       if ( r == null ) {
         errorFound = true;
