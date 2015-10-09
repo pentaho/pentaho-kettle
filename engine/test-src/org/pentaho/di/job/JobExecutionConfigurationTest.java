@@ -22,8 +22,15 @@
 
 package org.pentaho.di.job;
 
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -34,12 +41,12 @@ import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public class JobExecutionConfigurationTest {
 
@@ -107,4 +114,67 @@ public class JobExecutionConfigurationTest {
     assertTrue( "Repository not connected", connectionSuccess[0] );
   }
   private interface MockRepositoryPlugin extends PluginInterface, ClassLoadingPluginInterface { }
+
+  @Test
+  public void testDefaultPassedBatchId() {
+    JobExecutionConfiguration jec = new JobExecutionConfiguration();
+    assertEquals( "default passedBatchId value must be null", null, jec.getPassedBatchId() );
+  }
+
+  @Test
+  public void testCopy() {
+    JobExecutionConfiguration jec = new JobExecutionConfiguration();
+    final Long passedBatchId0 = null;
+    final long passedBatchId1 = 0L;
+    final long passedBatchId2 = 5L;
+
+    jec.setPassedBatchId( passedBatchId0 );
+    {
+      JobExecutionConfiguration jecCopy = (JobExecutionConfiguration) jec.clone();
+      assertEquals( "clone-copy", jec.getPassedBatchId(), jecCopy.getPassedBatchId() );
+    }
+    jec.setPassedBatchId( passedBatchId1 );
+    {
+      JobExecutionConfiguration jecCopy = (JobExecutionConfiguration) jec.clone();
+      assertEquals( "clone-copy", jec.getPassedBatchId(), jecCopy.getPassedBatchId() );
+    }
+    jec.setPassedBatchId( passedBatchId2 );
+    {
+      JobExecutionConfiguration jecCopy = (JobExecutionConfiguration) jec.clone();
+      assertEquals( "clone-copy", jec.getPassedBatchId(), jecCopy.getPassedBatchId() );
+    }
+  }
+
+  @Test
+  public void testCopyXml() throws Exception {
+    JobExecutionConfiguration jec = new JobExecutionConfiguration();
+    final Long passedBatchId0 = null;
+    final long passedBatchId1 = 0L;
+    final long passedBatchId2 = 5L;
+
+    jec.setPassedBatchId( passedBatchId0 );
+    {
+      String xml = jec.getXML();
+      Document doc = XMLHandler.loadXMLString( xml );
+      Node node = XMLHandler.getSubNode( doc, JobExecutionConfiguration.XML_TAG );
+      JobExecutionConfiguration jecCopy = new JobExecutionConfiguration( node );
+      assertEquals( "xml-copy", jec.getPassedBatchId(), jecCopy.getPassedBatchId() );
+    }
+    jec.setPassedBatchId( passedBatchId1 );
+    {
+      String xml = jec.getXML();
+      Document doc = XMLHandler.loadXMLString( xml );
+      Node node = XMLHandler.getSubNode( doc, JobExecutionConfiguration.XML_TAG );
+      JobExecutionConfiguration jecCopy = new JobExecutionConfiguration( node );
+      assertEquals( "xml-copy", jec.getPassedBatchId(), jecCopy.getPassedBatchId() );
+    }
+    jec.setPassedBatchId( passedBatchId2 );
+    {
+      String xml = jec.getXML();
+      Document doc = XMLHandler.loadXMLString( xml );
+      Node node = XMLHandler.getSubNode( doc, JobExecutionConfiguration.XML_TAG );
+      JobExecutionConfiguration jecCopy = new JobExecutionConfiguration( node );
+      assertEquals( "xml-copy", jec.getPassedBatchId(), jecCopy.getPassedBatchId() );
+    }
+  }
 }
