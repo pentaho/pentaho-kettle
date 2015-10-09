@@ -82,19 +82,27 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace,
-    EngineMetaInterface, NamedParams, HasSlaveServersInterface, AttributesInterface, HasRepositoryInterface,
-    LoggingObjectInterface {
+  EngineMetaInterface, NamedParams, HasSlaveServersInterface, AttributesInterface, HasRepositoryInterface,
+  LoggingObjectInterface {
 
-  /** Constant = 1 **/
+  /**
+   * Constant = 1
+   **/
   public static final int TYPE_UNDO_CHANGE = 1;
 
-  /** Constant = 2 **/
+  /**
+   * Constant = 2
+   **/
   public static final int TYPE_UNDO_NEW = 2;
 
-  /** Constant = 3 **/
+  /**
+   * Constant = 3
+   **/
   public static final int TYPE_UNDO_DELETE = 3;
 
-  /** Constant = 4 **/
+  /**
+   * Constant = 4
+   **/
   public static final int TYPE_UNDO_POSITION = 4;
 
   protected ObjectId objectId;
@@ -113,7 +121,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   protected RepositoryDirectoryInterface directory;
 
-  /** The repository to reference in the one-off case that it is needed */
+  /**
+   * The repository to reference in the one-off case that it is needed
+   */
   protected Repository repository;
 
   protected List<DatabaseMeta> databases;
@@ -155,10 +165,12 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   protected String sharedObjectsFile;
 
-  /** The last loaded version of the shared objects */
+  /**
+   * The last loaded version of the shared objects
+   */
   protected SharedObjects sharedObjects;
 
-  final protected ChangedFlag changedFlag = new ChangedFlag();
+  protected final ChangedFlag changedFlag = new ChangedFlag();
 
   protected int max_undo;
 
@@ -169,6 +181,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    * load/save the meta in JCR repository.
    * <p/>
    * Should be {@code null} if we use old meta
+   *
    * @see <a href="http://jira.pentaho.com/browse/PPP-3405">PPP-3405</a>,
    * <a href="http://jira.pentaho.com/browse/PPP-3413">PPP-3413</a>
    **/
@@ -196,7 +209,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the container object id.
-   * 
+   *
    * @return the carteObjectId
    */
   @Override
@@ -206,9 +219,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the carte object id.
-   * 
-   * @param containerObjectId
-   *          the execution container Object id to set
+   *
+   * @param containerObjectId the execution container Object id to set
    */
   public void setCarteObjectId( String containerObjectId ) {
     this.containerObjectId = containerObjectId;
@@ -216,7 +228,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Get the name of the transformation.
-   * 
+   *
    * @return The name of the transformation
    */
   @Override
@@ -226,9 +238,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Set the name.
-   * 
-   * @param newName
-   *          The new name
+   *
+   * @param newName The new name
    */
   @Override
   public void setName( String newName ) {
@@ -239,7 +250,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the description of the job.
-   * 
+   *
    * @return The description of the job
    */
   @Override
@@ -249,9 +260,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Set the description of the job.
-   * 
-   * @param description
-   *          The new description of the job
+   *
+   * @param description The new description of the job
    */
   @Override
   public void setDescription( String description ) {
@@ -260,7 +270,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the extended description of the job.
-   * 
+   *
    * @return The extended description of the job
    */
   public String getExtendedDescription() {
@@ -269,9 +279,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Set the description of the job.
-   * 
-   * @param extendedDescription
-   *          The new extended description of the job
+   *
+   * @param extendedDescription The new extended description of the job
    */
   public void setExtendedDescription( String extendedDescription ) {
     this.extendedDescription = extendedDescription;
@@ -289,7 +298,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the filename.
-   * 
+   *
    * @return filename
    * @see org.pentaho.di.core.EngineMetaInterface#getFilename()
    */
@@ -300,9 +309,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Set the filename of the job
-   * 
-   * @param newFilename
-   *          The new filename of the job
+   *
+   * @param newFilename The new filename of the job
    */
   @Override
   public void setFilename( String newFilename ) {
@@ -313,7 +321,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the directory.
-   * 
+   *
    * @return Returns the directory.
    */
   @Override
@@ -323,9 +331,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the directory.
-   * 
-   * @param directory
-   *          The directory to set.
+   *
+   * @param directory The directory to set.
    */
   @Override
   public void setRepositoryDirectory( RepositoryDirectoryInterface directory ) {
@@ -335,7 +342,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the repository.
-   * 
+   *
    * @return the repository
    */
   @Override
@@ -345,9 +352,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the repository.
-   * 
-   * @param repository
-   *          the repository to set
+   *
+   * @param repository the repository to set
    */
   @Override
   public void setRepository( Repository repository ) {
@@ -369,17 +375,15 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the internal filename kettle variables.
-   * 
-   * @param var
-   *          the new internal filename kettle variables
+   *
+   * @param var the new internal filename kettle variables
    */
   protected abstract void setInternalFilenameKettleVariables( VariableSpace var );
 
   /**
    * Find a database connection by it's name
-   * 
-   * @param name
-   *          The database name to look for
+   *
+   * @param name The database name to look for
    * @return The database connection or null if nothing was found.
    */
   @Override
@@ -387,7 +391,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     for ( int i = 0; i < nrDatabases(); i++ ) {
       DatabaseMeta ci = getDatabase( i );
       if ( ( ci != null ) && ( ci.getName().equalsIgnoreCase( name ) )
-          || ( ci.getDisplayName().equalsIgnoreCase( name ) ) ) {
+        || ( ci.getDisplayName().equalsIgnoreCase( name ) ) ) {
         return ci;
       }
     }
@@ -435,24 +439,22 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Adds the name changed listener.
-   * 
-   * @param listener
-   *          the listener
+   *
+   * @param listener the listener
    */
   public void addNameChangedListener( NameChangedListener listener ) {
     if ( nameChangedListeners == null ) {
       nameChangedListeners = new ArrayList<NameChangedListener>();
     }
-    if( listener != null ) {
+    if ( listener != null ) {
       nameChangedListeners.add( listener );
     }
   }
 
   /**
    * Removes the name changed listener.
-   * 
-   * @param listener
-   *          the listener
+   *
+   * @param listener the listener
    */
   public void removeNameChangedListener( NameChangedListener listener ) {
     nameChangedListeners.remove( listener );
@@ -460,11 +462,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Fire name changed listeners.
-   * 
-   * @param oldName
-   *          the old name
-   * @param newName
-   *          the new name
+   *
+   * @param oldName the old name
+   * @param newName the new name
    */
   protected void fireNameChangedListeners( String oldName, String newName ) {
     if ( nameChanged( oldName, newName ) ) {
@@ -478,24 +478,22 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Adds the filename changed listener.
-   * 
-   * @param listener
-   *          the listener
+   *
+   * @param listener the listener
    */
   public void addFilenameChangedListener( FilenameChangedListener listener ) {
     if ( filenameChangedListeners == null ) {
       filenameChangedListeners = new ArrayList<FilenameChangedListener>();
     }
-    if( listener != null ) {
+    if ( listener != null ) {
       filenameChangedListeners.add( listener );
     }
   }
 
   /**
    * Removes the filename changed listener.
-   * 
-   * @param listener
-   *          the listener
+   *
+   * @param listener the listener
    */
   public void removeFilenameChangedListener( FilenameChangedListener listener ) {
     filenameChangedListeners.remove( listener );
@@ -503,11 +501,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Fire filename changed listeners.
-   * 
-   * @param oldFilename
-   *          the old filename
-   * @param newFilename
-   *          the new filename
+   *
+   * @param oldFilename the old filename
+   * @param newFilename the new filename
    */
   protected void fireFilenameChangedListeners( String oldFilename, String newFilename ) {
     if ( nameChanged( oldFilename, newFilename ) ) {
@@ -521,7 +517,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Adds the passed ContentChangedListener to the list of listeners.
-   * 
+   *
    * @param listener
    */
   public void addContentChangedListener( ContentChangedListener listener ) {
@@ -571,9 +567,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Add a new slave server to the transformation if that didn't exist yet. Otherwise, replace it.
-   * 
-   * @param slaveServer
-   *          The slave server to be added.
+   *
+   * @param slaveServer The slave server to be added.
    */
   public void addOrReplaceSlaveServer( SlaveServer slaveServer ) {
     int index = slaveServers.indexOf( slaveServer );
@@ -588,7 +583,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets a list of slave servers.
-   * 
+   *
    * @return the slaveServer list
    */
   @Override
@@ -598,9 +593,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the slave servers.
-   * 
-   * @param slaveServers
-   *          the slaveServers to set
+   *
+   * @param slaveServers the slaveServers to set
    */
   public void setSlaveServers( List<SlaveServer> slaveServers ) {
     this.slaveServers = slaveServers;
@@ -608,9 +602,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Find a slave server using the name
-   * 
-   * @param serverString
-   *          the name of the slave server
+   *
+   * @param serverString the name of the slave server
    * @return the slave server or null if we couldn't spot an approriate entry.
    */
   public SlaveServer findSlaveServer( String serverString ) {
@@ -619,7 +612,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets an array of slave server names.
-   * 
+   *
    * @return An array list slave server names
    */
   public String[] getSlaveServerNames() {
@@ -634,7 +627,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   @Override
   public void addUndo( Object[] from, Object[] to, int[] pos, Point[] prev, Point[] curr, int type_of_change,
-      boolean nextAlso ) {
+                       boolean nextAlso ) {
     // First clean up after the current position.
     // Example: position at 3, size=5
     // 012345
@@ -739,7 +732,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * View current undo, don't change undo position
-   * 
+   *
    * @return The current undo transaction
    */
   @Override
@@ -795,7 +788,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the undo size.
-   * 
+   *
    * @return the undo size
    */
   public int getUndoSize() {
@@ -850,11 +843,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Add a new note at a certain location (i.e. the specified index). Also marks that the notes have changed.
-   * 
-   * @param p
-   *          The index into the notes list
-   * @param ni
-   *          The note to be added.
+   *
+   * @param p  The index into the notes list
+   * @param ni The note to be added.
    */
   public void addNote( int p, NotePadMeta ni ) {
     notes.add( p, ni );
@@ -863,9 +854,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Add a new note. Also marks that the notes have changed.
-   * 
-   * @param ni
-   *          The note to be added.
+   *
+   * @param ni The note to be added.
    */
   public void addNote( NotePadMeta ni ) {
     notes.add( ni );
@@ -875,10 +865,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   /**
    * Find the note that is located on a certain point on the canvas.
    *
-   * @param x
-   *          the x-coordinate of the point queried
-   * @param y
-   *          the y-coordinate of the point queried
+   * @param x the x-coordinate of the point queried
+   * @param y the y-coordinate of the point queried
    * @return The note information if a note is located at the point. Otherwise, if nothing was found: null.
    */
   public NotePadMeta getNote( int x, int y ) {
@@ -891,7 +879,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
       Point loc = ni.getLocation();
       Point p = new Point( loc.x, loc.y );
       if ( x >= p.x && x <= p.x + ni.width + 2 * Const.NOTE_MARGIN && y >= p.y
-          && y <= p.y + ni.height + 2 * Const.NOTE_MARGIN ) {
+        && y <= p.y + ni.height + 2 * Const.NOTE_MARGIN ) {
         return ni;
       }
     }
@@ -900,9 +888,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the note.
-   * 
-   * @param i
-   *          the i
+   *
+   * @param i the i
    * @return the note
    */
   public NotePadMeta getNote( int i ) {
@@ -911,7 +898,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the notes.
-   * 
+   *
    * @return the notes
    */
   public List<NotePadMeta> getNotes() {
@@ -920,7 +907,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets a list of all selected notes.
-   * 
+   *
    * @return A list of all the selected notes.
    */
   public List<NotePadMeta> getSelectedNotes() {
@@ -936,8 +923,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   /**
    * Finds the location (index) of the specified note.
    *
-   * @param ni
-   *          The note queried
+   * @param ni The note queried
    * @return The location of the note, or -1 if nothing was found.
    */
   public int indexOfNote( NotePadMeta ni ) {
@@ -947,9 +933,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   /**
    * Lowers a note to the "bottom" of the list by removing the note at the specified index and re-inserting it at the
    * front. Also marks that the notes have changed.
-   * 
-   * @param p
-   *          the index into the notes list.
+   *
+   * @param p the index into the notes list.
    */
   public void lowerNote( int p ) {
     // if valid index and not first index
@@ -972,9 +957,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   /**
    * Raises a note to the "top" of the list by removing the note at the specified index and re-inserting it at the end.
    * Also marks that the notes have changed.
-   * 
-   * @param p
-   *          the index into the notes list.
+   *
+   * @param p the index into the notes list.
    */
   public void raiseNote( int p ) {
     // if valid index and not last index
@@ -987,9 +971,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Removes a note at a certain location (i.e. the specified index). Also marks that the notes have changed.
-   * 
-   * @param i
-   *          The index into the notes list
+   *
+   * @param i The index into the notes list
    */
   public void removeNote( int i ) {
     if ( i < 0 || i >= notes.size() ) {
@@ -1001,7 +984,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Checks whether or not any of the notes have been changed.
-   * 
+   *
    * @return true if the notes have been changed, false otherwise
    */
   public boolean haveNotesChanged() {
@@ -1020,9 +1003,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Get an array of the locations of an array of notes
-   * 
-   * @param notes
-   *          An array of notes
+   *
+   * @param notes An array of notes
    * @return an array of the locations of an array of notes
    */
   public int[] getNoteIndexes( List<NotePadMeta> notes ) {
@@ -1037,7 +1019,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the channel log table for the job.
-   * 
+   *
    * @return the channel log table for the job.
    */
   public ChannelLogTable getChannelLogTable() {
@@ -1090,7 +1072,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Returns a list of the databases.
-   * 
+   *
    * @return Returns the databases.
    */
   @Override
@@ -1100,7 +1082,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the database names.
-   * 
+   *
    * @return the database names
    */
   public String[] getDatabaseNames() {
@@ -1123,9 +1105,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the databases.
-   * 
-   * @param databases
-   *          The databases to set.
+   *
+   * @param databases The databases to set.
    */
   @Override
   public void setDatabases( List<DatabaseMeta> databases ) {
@@ -1169,7 +1150,6 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Clears the flags for whether the transformation's databases have changed.
-   *
    */
   public void clearChangedDatabases() {
     changedDatabases = false;
@@ -1181,9 +1161,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the channel log table for the job.
-   * 
-   * @param channelLogTable
-   *          the channelLogTable to set
+   *
+   * @param channelLogTable the channelLogTable to set
    */
   public void setChannelLogTable( ChannelLogTable channelLogTable ) {
     this.channelLogTable = channelLogTable;
@@ -1467,9 +1446,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the log level.
-   * 
-   * @param logLevel
-   *          the new log level
+   *
+   * @param logLevel the new log level
    */
   public void setLogLevel( LogLevel logLevel ) {
     this.logLevel = logLevel;
@@ -1485,7 +1463,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the shared objects file.
-   * 
+   *
    * @return the sharedObjectsFile
    */
   public String getSharedObjectsFile() {
@@ -1494,9 +1472,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the shared objects file.
-   * 
-   * @param sharedObjectsFile
-   *          the sharedObjectsFile to set
+   *
+   * @param sharedObjectsFile the sharedObjectsFile to set
    */
   public void setSharedObjectsFile( String sharedObjectsFile ) {
     this.sharedObjectsFile = sharedObjectsFile;
@@ -1504,7 +1481,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the shared objects.
-   * 
+   *
    * @return the sharedObjects
    */
   public SharedObjects getSharedObjects() {
@@ -1521,9 +1498,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the shared objects.
-   * 
-   * @param sharedObjects
-   *          the sharedObjects to set
+   *
+   * @param sharedObjects the sharedObjects to set
    */
   public void setSharedObjects( SharedObjects sharedObjects ) {
     this.sharedObjects = sharedObjects;
@@ -1531,15 +1507,14 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the internal name kettle variable.
-   * 
-   * @param var
-   *          the new internal name kettle variable
+   *
+   * @param var the new internal name kettle variable
    */
   protected abstract void setInternalNameKettleVariable( VariableSpace var );
 
   /**
    * Gets the date the transformation was created.
-   * 
+   *
    * @return the date the transformation was created.
    */
   @Override
@@ -1549,9 +1524,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the date the transformation was created.
-   * 
-   * @param createdDate
-   *          The creation date to set.
+   *
+   * @param createdDate The creation date to set.
    */
   @Override
   public void setCreatedDate( Date createdDate ) {
@@ -1560,9 +1534,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the user by whom the transformation was created.
-   * 
-   * @param createdUser
-   *          The user to set.
+   *
+   * @param createdUser The user to set.
    */
   @Override
   public void setCreatedUser( String createdUser ) {
@@ -1571,7 +1544,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the user by whom the transformation was created.
-   * 
+   *
    * @return the user by whom the transformation was created.
    */
   @Override
@@ -1581,9 +1554,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the date the transformation was modified.
-   * 
-   * @param modifiedDate
-   *          The modified date to set.
+   *
+   * @param modifiedDate The modified date to set.
    */
   @Override
   public void setModifiedDate( Date modifiedDate ) {
@@ -1592,7 +1564,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the date the transformation was modified.
-   * 
+   *
    * @return the date the transformation was modified.
    */
   @Override
@@ -1602,9 +1574,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets the user who last modified the transformation.
-   * 
-   * @param modifiedUser
-   *          The user name to set.
+   *
+   * @param modifiedUser The user name to set.
    */
   @Override
   public void setModifiedUser( String modifiedUser ) {
@@ -1613,7 +1584,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the user who last modified the transformation.
-   * 
+   *
    * @return the user who last modified the transformation.
    */
   @Override
@@ -1656,7 +1627,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     fireContentChangedListeners( false );
   }
 
-  @Override public void setChanged() {
+  @Override
+  public void setChanged() {
     changedFlag.setChanged();
     fireContentChangedListeners( true );
   }
@@ -1714,7 +1686,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the registration date for the transformation. For AbstractMeta, this method always returns null.
-   * 
+   *
    * @return null
    */
   @Override
@@ -1724,7 +1696,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Gets the interface to the parent log object. For AbstractMeta, this method always returns null.
-   * 
+   *
    * @return null
    * @see org.pentaho.di.core.logging.LoggingObjectInterface#getParent()
    */
@@ -1778,11 +1750,9 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    * Checks whether the specified name has changed (i.e. is different from the specified old name). If both names are
    * null, false is returned. If the old name is null and the new new name is non-null, true is returned. Otherwise, if
    * the name strings are equal then true is returned; false is returned if the name strings are not equal.
-   * 
-   * @param oldName
-   *          the old name
-   * @param newName
-   *          the new name
+   *
+   * @param oldName the old name
+   * @param newName the new name
    * @return true if the names have changed, false otherwise
    */
   private boolean nameChanged( String oldName, String newName ) {
@@ -1813,6 +1783,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   /**
    * Returns the set of databases available only for this meta or <b>null</b> if it was not initialized.
    * Note, that the internal collection is returned with no protection wrapper!
+   *
    * @return <b>nonSharableDatabases</b>
    */
   public Set<String> getPrivateDatabases() {
@@ -1821,6 +1792,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   /**
    * Sets private databases' names
+   *
    * @param privateDatabases - The list of databases available only for this meta
    */
   public void setPrivateDatabases( Set<String> privateDatabases ) {
