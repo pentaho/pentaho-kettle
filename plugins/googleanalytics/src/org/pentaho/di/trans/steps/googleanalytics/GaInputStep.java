@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.googleanalytics;
 import java.io.IOException;
 import java.util.List;
 
+import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.services.analytics.Analytics;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -230,6 +231,14 @@ public class GaInputStep extends BaseStep implements StepInterface {
       analytics = GoogleAnalyticsApiFacade.createFor( appName, serviceAccount, OAuthKeyFile ).getAnalytics();
       // There is necessarily an account name associated with this, so any NPEs or other exceptions mean bail out
       accountName = analytics.management().accounts().list().execute().getItems().iterator().next().getName();
+    } catch ( TokenResponseException tre ) {
+      Exception exceptionToLog = tre;
+      if ( tre.getDetails() != null && tre.getDetails().getError() != null ) {
+        exceptionToLog = new IOException( BaseMessages.getString( PKG, "GoogleAnalytics.Error.OAuth2.Auth",
+            tre.getDetails().getError() ), tre );
+      }
+      logError( BaseMessages.getString( PKG, "GoogleAnalytics.Error.AccessingGaApi" ), exceptionToLog );
+      return false;
     } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "GoogleAnalytics.Error.AccessingGaApi" ), e );
       return false;
