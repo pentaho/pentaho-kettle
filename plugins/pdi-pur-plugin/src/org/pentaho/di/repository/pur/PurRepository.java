@@ -106,9 +106,9 @@ import java.util.Set;
  * @author mlowery
  */
 @RepositoryPlugin( id = "PentahoEnterpriseRepository", name = "DI Repository",
-    description = "i18n:org.pentaho.di.ui.repository.pur:RepositoryType.Description.EnterpriseRepository",
-    metaClass = "org.pentaho.di.repository.pur.PurRepositoryMeta" ) public class PurRepository
-    extends AbstractRepository implements Repository, java.io.Serializable {
+  description = "i18n:org.pentaho.di.ui.repository.pur:RepositoryType.Description.EnterpriseRepository",
+  metaClass = "org.pentaho.di.repository.pur.PurRepositoryMeta" )
+public class PurRepository extends AbstractRepository implements Repository, java.io.Serializable {
 
   private static final long serialVersionUID = 7460109109707189479L; /* EESOURCE: UPDATE SERIALVERUID */
 
@@ -253,7 +253,7 @@ import java.util.Set;
                 .getString( PKG, "PurRepositoryMetastore.NamespaceCreateException.Message", PentahoDefaults.NAMESPACE ),
             e );
       }
-      this.user = new EEUserInfo( "testuser", "testUserPwd", "testUser", "test user", true );
+      this.user = new EEUserInfo( username, password, username, "test user", true );
       this.jobDelegate = new JobDelegate( this, pur );
       this.transDelegate = new TransDelegate( this, pur );
       this.unifiedRepositoryLockService = new UnifiedRepositoryLockService( pur );
@@ -386,11 +386,11 @@ import java.util.Set;
 
       if (
         // If the folders are equal
-          baseFolder.getId().equals( folder.getId() ) || (
-              // OR if the folders are NOT siblings AND the folder to move IS an ancestor to the users home folder
-              baseFolder.getPath().lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR ) != folder.getPath()
-                  .lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR ) && baseFolder.getPath()
-                  .startsWith( folder.getPath() ) ) ) {
+        baseFolder.getId().equals( folder.getId() ) || (
+          // OR if the folders are NOT siblings AND the folder to move IS an ancestor to the users home folder
+          baseFolder.getPath().lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR )
+            != folder.getPath().lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR )
+          && baseFolder.getPath().startsWith( folder.getPath() ) ) ) {
         return true;
       }
 
@@ -1488,7 +1488,7 @@ import java.util.Set;
 
   @Override
   public ClusterSchema loadClusterSchema( ObjectId idClusterSchema, List<SlaveServer> slaveServers, String versionId )
-      throws KettleException {
+    throws KettleException {
     try {
       // We dont need to use slaveServer variable as the dataNoteToElement method finds the server from the repository
       NodeRepositoryFileData
@@ -1858,53 +1858,16 @@ import java.util.Set;
     pur.moveFile( file.getId(), buf.toString(), null );
   }
 
+  /**
+   * Use {@linkplain #saveKettleEntity} instead
+   */
   @Deprecated
-  protected void saveJob0( final RepositoryElementInterface element, final String versionComment,
-                           final boolean saveSharedObjects, final boolean checkLock, final boolean checkRename,
-                           final boolean loadRevision,
-                           final boolean checkDeleted ) throws KettleException {
-    if ( saveSharedObjects ) {
-      jobDelegate.saveSharedObjects( element, versionComment );
-    }
-    boolean isUpdate = element.getObjectId() != null;
-    RepositoryFile file = null;
-    if ( isUpdate ) {
-      ObjectId id = element.getObjectId();
-      file = pur.getFileById( id.getId() );
-      if ( checkLock && file.isLocked() && !unifiedRepositoryLockService.canUnlockFileById( id ) ) {
-        throw new KettleException( "File is currently locked by another user for editing" );
-      }
-      if ( checkDeleted && isInTrash( file ) ) {
-        // absolutely awful to have UI references in this class :(
-        throw new KettleException( "File is in the Trash. Use Save As." );
-      }
-      // update title and description
-      file =
-        new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, element.getName() ).description(
-          RepositoryFile.DEFAULT_LOCALE, Const.NVL( element.getDescription(), "" ) ).build();
-      file =
-        pur.updateFile( file, new NodeRepositoryFileData( jobDelegate.elementToDataNode( element ) ), versionComment );
-      if ( checkRename && isRenamed( element, file ) ) {
-        renameJob( element.getObjectId(), null, element.getName() );
-      }
-    } else {
-      file =
-        new RepositoryFile.Builder( checkAndSanitize( element.getName() + RepositoryObjectType.JOB.getExtension() ) )
-          .versioned( true ).title( RepositoryFile.DEFAULT_LOCALE, element.getName() ).description(
-          RepositoryFile.DEFAULT_LOCALE, Const.NVL( element.getDescription(), "" ) ).build();
-      file =
-        pur.createFile( element.getRepositoryDirectory().getObjectId().getId(), file, new NodeRepositoryFileData(
-          jobDelegate.elementToDataNode( element ) ), versionComment );
-    }
-    // side effects
-    ObjectId objectId = new StringObjectId( file.getId().toString() );
-    element.setObjectId( objectId );
-    if ( loadRevision ) {
-      element.setObjectRevision( getObjectRevision( objectId, null ) );
-    }
-    if ( element instanceof ChangedFlagInterface ) {
-      ( (ChangedFlagInterface) element ).clearChanged();
-    }
+  protected void saveJob0( RepositoryElementInterface element, String versionComment,
+                           boolean saveSharedObjects,
+                           boolean checkLock, boolean checkRename,
+                           boolean loadRevision, boolean checkDeleted ) throws KettleException {
+    saveTransOrJob( jobDelegate, element, versionComment, null, saveSharedObjects,
+      checkLock, checkRename, loadRevision, checkDeleted );
   }
 
   protected void saveJob( final RepositoryElementInterface element, final String versionComment, Calendar versionDate )
@@ -1912,58 +1875,16 @@ import java.util.Set;
     saveKettleEntity( element, versionComment, versionDate, true, true, true, true, true );
   }
 
+  /**
+   * Use {@linkplain #saveKettleEntity} instead
+   */
   @Deprecated
-  protected void saveTrans0( final RepositoryElementInterface element, final String versionComment,
-                             Calendar versionDate, final boolean saveSharedObjects, final boolean checkLock,
-                             final boolean checkRename,
-                             final boolean loadRevision, final boolean checkDeleted ) throws KettleException {
-    if ( saveSharedObjects ) {
-      transDelegate.saveSharedObjects( element, versionComment );
-    }
-    boolean isUpdate = element.getObjectId() != null;
-    RepositoryFile file = null;
-    if ( isUpdate ) {
-      ObjectId id = element.getObjectId();
-      file = pur.getFileById( id.getId() );
-      if ( checkLock && file.isLocked() && !unifiedRepositoryLockService.canUnlockFileById( id ) ) {
-        throw new KettleException( "File is currently locked by another user for editing" );
-      }
-      if ( checkDeleted && isInTrash( file ) ) {
-        // absolutely awful to have UI references in this class :(
-        throw new KettleException( "File is in the Trash. Use Save As." );
-      }
-      // update title and description
-      file =
-        new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, element.getName() ).createdDate(
-          versionDate != null ? versionDate.getTime() : new Date() ).description( RepositoryFile.DEFAULT_LOCALE,
-          Const.NVL( element.getDescription(), "" ) ).build();
-      file =
-        pur.updateFile( file, new NodeRepositoryFileData( transDelegate.elementToDataNode( element ) ),
-          versionComment );
-      if ( checkRename && isRenamed( element, file ) ) {
-        renameTransformation( element.getObjectId(), null, element.getName() );
-      }
-    } else {
-      file =
-        new RepositoryFile.Builder( checkAndSanitize( element.getName()
-          + RepositoryObjectType.TRANSFORMATION.getExtension() ) ).versioned( true ).title(
-          RepositoryFile.DEFAULT_LOCALE, element.getName() ).createdDate(
-          versionDate != null ? versionDate.getTime() : new Date() ).description( RepositoryFile.DEFAULT_LOCALE,
-          Const.NVL( element.getDescription(), "" ) ).build();
-      file =
-        pur.createFile( element.getRepositoryDirectory().getObjectId().getId(), file, new NodeRepositoryFileData(
-          transDelegate.elementToDataNode( element ) ), versionComment );
-    }
-    // side effects
-    ObjectId objectId = new StringObjectId( file.getId().toString() );
-    element.setObjectId( objectId );
-    if ( loadRevision ) {
-      element.setObjectRevision( getObjectRevision( objectId, null ) );
-    }
-    if ( element instanceof ChangedFlagInterface ) {
-      ( (ChangedFlagInterface) element ).clearChanged();
-    }
-
+  protected void saveTrans0( RepositoryElementInterface element, String versionComment, Calendar versionDate,
+                             boolean saveSharedObjects,
+                             boolean checkLock, boolean checkRename,
+                             boolean loadRevision, boolean checkDeleted ) throws KettleException {
+    saveTransOrJob( transDelegate, element, versionComment, versionDate, saveSharedObjects,
+      checkLock, checkRename, loadRevision, checkDeleted );
   }
 
   protected boolean isDeleted( RepositoryFile file ) {
@@ -2038,7 +1959,7 @@ import java.util.Set;
 
   @Override
   public DatabaseMeta loadDatabaseMeta( final ObjectId databaseId, final String versionId )
-      throws KettleException {
+    throws KettleException {
     try {
       NodeRepositoryFileData
           data =
@@ -2183,7 +2104,7 @@ import java.util.Set;
 
   private JobMeta buildJobMeta( final RepositoryFile file, final RepositoryDirectoryInterface parentDir,
                                 final NodeRepositoryFileData data, final ObjectRevision revision )
-      throws KettleException {
+    throws KettleException {
     JobMeta jobMeta = new JobMeta();
     jobMeta.setName( file.getTitle() );
     jobMeta.setDescription( file.getDescription() );
@@ -2775,7 +2696,7 @@ import java.util.Set;
   }
 
   protected List<RepositoryFile> getReferrers( ObjectId fileId, List<RepositoryObjectType> referrerTypes )
-      throws KettleException {
+    throws KettleException {
     // Use a result list to append to; Removing from the files list was causing a concurrency exception
     List<RepositoryFile> result = new ArrayList<RepositoryFile>();
     List<RepositoryFile> files = pur.getReferrers( fileId.getId() );
@@ -2833,24 +2754,33 @@ import java.util.Set;
   }
 
   /**
-   * Saves either <b>transformation</b> or <b>job</b> in repository.
+   * Saves {@code element} in repository. {@code element} show represent either a transformation or a job. <br/>
+   * The method throws {@code KettleException} in the following cases:
+   * <ul>
+   *   <li>{@code element} is not a {@linkplain TransMeta} or {@linkplain JobMeta}</li>
+   *   <li>{@code checkLock == true} and the file is locked and cannot be unlocked</li>
+   *   <li>{@code checkDeleted == true} and the file was removed</li>
+   *   <li>{@code checkRename == true} and the file was renamed and renaming failed</li>
+   * </ul>
    *
-   * @param element
-   * @param versionComment
-   * @param versionDate
-   * @param saveSharedObjects
-   * @param checkLock
-   * @param checkRename
-   * @param loadRevision
-   * @param checkDeleted
-   * @throws KettleException
+   * @param element           job or transformation
+   * @param versionComment    revision comment
+   * @param versionDate       revision timestamp
+   * @param saveSharedObjects flag of saving element's shared objects
+   * @param checkLock         flag of checking whether the corresponding file is locked
+   * @param checkRename       flag of checking whether it is necessary to rename the file
+   * @param loadRevision      flag of setting element's revision
+   * @param checkDeleted      flag of checking whether the file was deleted
+   * @throws KettleException if any of aforementioned conditions is {@code true}
    */
-  protected void saveKettleEntity( final RepositoryElementInterface element, final String versionComment,
-      Calendar versionDate, final boolean saveSharedObjects, final boolean checkLock, final boolean checkRename,
-      final boolean loadRevision, final boolean checkDeleted )
-      throws KettleException {
-    ISharedObjectsTransformer objectTransformer = null;
-    switch ( element.getRepositoryElementType() ) {
+  protected void saveKettleEntity( RepositoryElementInterface element,
+                                   String versionComment, Calendar versionDate,
+                                   boolean saveSharedObjects,
+                                   boolean checkLock, boolean checkRename,
+                                   boolean loadRevision, boolean checkDeleted )
+    throws KettleException {
+    ISharedObjectsTransformer objectTransformer;
+    switch( element.getRepositoryElementType() ) {
       case TRANSFORMATION:
         objectTransformer = transDelegate;
         break;
@@ -2859,16 +2789,26 @@ import java.util.Set;
         break;
       default:
         throw new KettleException(
-            "Unknown RepositoryObjectType. Should be TRANSFORMATION or JOB " );
+          "Unknown RepositoryObjectType. Should be TRANSFORMATION or JOB " );
     }
+    saveTransOrJob( objectTransformer, element, versionComment, versionDate, saveSharedObjects, checkLock, checkRename,
+      loadRevision, checkDeleted );
+  }
+
+  private void saveTransOrJob( ISharedObjectsTransformer objectTransformer, RepositoryElementInterface element,
+                               String versionComment, Calendar versionDate,
+                               boolean saveSharedObjects,
+                               boolean checkLock, boolean checkRename,
+                               boolean loadRevision, boolean checkDeleted ) throws KettleException {
     if ( saveSharedObjects ) {
       objectTransformer.saveSharedObjects( element, versionComment );
     }
-    boolean isUpdate = element.getObjectId() != null;
-    RepositoryFile file = null;
+
+    final boolean isUpdate = ( element.getObjectId() != null );
+    RepositoryFile file;
     if ( isUpdate ) {
       ObjectId id = element.getObjectId();
-      file = getPur().getFileById( id.getId() );
+      file = pur.getFileById( id.getId() );
       if ( checkLock && file.isLocked() && !unifiedRepositoryLockService.canUnlockFileById( id ) ) {
         throw new KettleException( "File is currently locked by another user for editing" );
       }
@@ -2878,25 +2818,29 @@ import java.util.Set;
       }
       // update title and description
       file =
-          new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, element.getName() )
-              .createdDate( versionDate != null ? versionDate.getTime() : new Date() )
-              .description( RepositoryFile.DEFAULT_LOCALE, Const.NVL( element.getDescription(), "" ) ).build();
+        new RepositoryFile.Builder( file )
+          .title( RepositoryFile.DEFAULT_LOCALE, element.getName() )
+          .createdDate( versionDate != null ? versionDate.getTime() : new Date() )
+          .description( RepositoryFile.DEFAULT_LOCALE, Const.NVL( element.getDescription(), "" ) )
+          .build();
       file =
-          getPur().updateFile( file, new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ),
-              versionComment );
+        pur.updateFile( file, new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ),
+          versionComment );
       if ( checkRename && isRenamed( element, file ) ) {
         renameKettleEntity( element, null, element.getName() );
       }
     } else {
       file =
-          new RepositoryFile.Builder( checkAndSanitize( element.getName()
-              + element.getRepositoryElementType().getExtension() ) )
-              .versioned( true ).title( RepositoryFile.DEFAULT_LOCALE, element.getName() )
-              .createdDate( versionDate != null ? versionDate.getTime() : new Date() )
-              .description( RepositoryFile.DEFAULT_LOCALE, Const.NVL( element.getDescription(), "" ) ).build();
+        new RepositoryFile.Builder(
+          checkAndSanitize( element.getName() + element.getRepositoryElementType().getExtension() ) )
+          .versioned( true )
+          .title( RepositoryFile.DEFAULT_LOCALE, element.getName() )
+          .createdDate( versionDate != null ? versionDate.getTime() : new Date() )
+          .description( RepositoryFile.DEFAULT_LOCALE, Const.NVL( element.getDescription(), "" ) )
+          .build();
       file =
-          pur.createFile( element.getRepositoryDirectory().getObjectId().getId(), file,
-              new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ), versionComment );
+        pur.createFile( element.getRepositoryDirectory().getObjectId().getId(), file,
+          new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ), versionComment );
     }
     // side effects
     ObjectId objectId = new StringObjectId( file.getId().toString() );
