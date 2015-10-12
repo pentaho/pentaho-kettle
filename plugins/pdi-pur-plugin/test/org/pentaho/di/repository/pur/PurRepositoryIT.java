@@ -26,14 +26,10 @@ import static org.pentaho.di.repository.pur.PurRepositoryTestingUtils.*;
 
 import java.io.File;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -813,53 +809,6 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
   }
 
   @Test
-  public void testVersionDate() throws Exception {
-
-    RepositoryDirectoryInterface rootDir = initRepo();
-    String uniqueTransName = EXP_TRANS_NAME.concat( EXP_DBMETA_NAME );
-    TransMeta transMeta = createTransMeta( EXP_DBMETA_NAME );
-
-    // Create a database association
-    DatabaseMeta dbMeta = createDatabaseMeta( EXP_DBMETA_NAME );
-    repository.save( dbMeta, VERSION_COMMENT_V1, null );
-
-    TableInputMeta tableInputMeta = new TableInputMeta();
-    tableInputMeta.setDatabaseMeta( dbMeta );
-
-    transMeta.addStep( new StepMeta( EXP_TRANS_STEP_1_NAME, tableInputMeta ) );
-
-    RepositoryDirectoryInterface transDir = rootDir.findDirectory( DIR_TRANSFORMATIONS );
-    Calendar cal = Calendar.getInstance( Locale.US );
-
-    SimpleDateFormat df = new SimpleDateFormat( "EEE, d MMM yyyy HH:mm:ss Z", Locale.US );
-    cal.setTime( df.parse( "Wed, 4 Jul 2001 12:08:56 -0700" ) );
-    repository.save( transMeta, VERSION_COMMENT_V1, null, null, true );
-
-    repository.save( transMeta, VERSION_COMMENT_V1 + "2", cal, null, true );
-    deleteStack.push( transMeta ); // So this transformation is cleaned up afterward
-    assertNotNull( transMeta.getObjectId() );
-    ObjectRevision version = transMeta.getObjectRevision();
-    assertNotNull( version );
-    assertTrue( hasVersionWithComment( transMeta, VERSION_COMMENT_V1 ) );
-
-    assertTrue( hasVersionWithCal( transMeta, cal ) );
-
-
-    assertTrue( repository.exists( uniqueTransName, transDir, RepositoryObjectType.TRANSFORMATION ) );
-
-    JobMeta jobMeta = createJobMeta( EXP_JOB_NAME );
-    RepositoryDirectoryInterface jobsDir = rootDir.findDirectory( DIR_JOBS );
-    repository.save( jobMeta, VERSION_COMMENT_V1, null );
-    deleteStack.push( jobMeta );
-    assertNotNull( jobMeta.getObjectId() );
-    version = jobMeta.getObjectRevision();
-    assertNotNull( version );
-    assertTrue( hasVersionWithComment( jobMeta, VERSION_COMMENT_V1 ) );
-    assertTrue( repository.exists( EXP_JOB_NAME, jobsDir, RepositoryObjectType.JOB ) );
-
-  }
-
-  @Test
   public void testMetaStoreBasics() throws MetaStoreException {
     IMetaStore metaStore = repository.getMetaStore();
     assertNotNull( metaStore );
@@ -1117,28 +1066,6 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     assertEquals( element2, loaded );
   }
 
-
-  @Test
-  public void testJobRevisionDate() {
-    final Long createdTime = 1441961024857L;
-    RepositoryElementInterface job = new JobMeta();
-    job.setName( "Job" );
-    try {
-      RepositoryDirectoryInterface directory = repository.findDirectory( "public" );
-      job.setRepositoryDirectory( directory );
-
-      Calendar cal = Calendar.getInstance( Locale.US );
-      cal.setTime( new Date( createdTime ) );
-
-      repository.save( job, VERSION_COMMENT_V1, cal, null, true );
-
-      assertEquals( "Revision date is incorrect", job.getObjectRevision().getCreationDate().getTime(),
-          (long) createdTime );
-    } catch ( Exception e ) {
-      e.printStackTrace();
-      fail( "Unexpected error" );
-    }
-  }
 
   @Test
   public void testExportWithRules() throws Exception {
