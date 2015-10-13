@@ -18,6 +18,7 @@
 package org.pentaho.di.repository.pur;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,9 +42,12 @@ public class UserRoleHelper implements java.io.Serializable {
   private static final long serialVersionUID = -8850597631894280354L; /* EESOURCE: UPDATE SERIALVERUID */
 
   public static List<IUser> convertFromProxyPentahoUsers( UserRoleSecurityInfo info, IRoleSupportSecurityManager rsm ) {
-    List<IUser> userList = new ArrayList<IUser>();
     List<ProxyPentahoUser> users = info.getUsers();
+    if ( users == null || users.isEmpty() ) {
+      return Collections.emptyList();
+    }
     List<UserToRoleAssignment> assignments = info.getAssignments();
+    List<IUser> userList = new ArrayList<IUser>( users.size() );
     for ( ProxyPentahoUser user : users ) {
       userList.add( convertFromProxyPentahoUser( user, assignments, rsm ) );
     }
@@ -360,7 +364,11 @@ public class UserRoleHelper implements java.io.Serializable {
 
   public static Set<IRole> getRolesForUser( String name, List<UserToRoleAssignment> assignments,
                                             IRoleSupportSecurityManager rsm ) {
-    Set<IRole> roles = new HashSet<IRole>();
+    if ( assignments == null || assignments.isEmpty() ) {
+      return Collections.emptySet();
+    }
+
+    Set<IRole> roles = new HashSet<IRole>( assignments.size() );
     for ( UserToRoleAssignment assignment : assignments ) {
       if ( name.equals( assignment.getUserId() ) ) {
         IRole role = null;
@@ -370,8 +378,10 @@ public class UserRoleHelper implements java.io.Serializable {
           // TODO Auto-generated catch block
           e.printStackTrace();
         }
-        role.setName( assignment.getRoleId() );
-        roles.add( role );
+        if ( role != null ) {
+          role.setName( assignment.getRoleId() );
+          roles.add( role );
+        }
       }
     }
     return roles;
