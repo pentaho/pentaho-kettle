@@ -539,70 +539,6 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
   }
 
   @Test
-  public void testLoadSharedObjects_databases() throws Exception {
-    PurRepository repo = (PurRepository) repository;
-    DatabaseMeta dbMeta = createDatabaseMeta( EXP_DBMETA_NAME );
-    repository.save( dbMeta, VERSION_COMMENT_V1, null );
-
-    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType =
-      new HashMap<RepositoryObjectType, List<? extends SharedObjectInterface>>();
-    repo.readSharedObjects( sharedObjectsByType, RepositoryObjectType.DATABASE );
-    assertNotNull( sharedObjectsByType );
-    @SuppressWarnings( "unchecked" )
-    List<DatabaseMeta> databaseMetas = (List<DatabaseMeta>) sharedObjectsByType.get( RepositoryObjectType.DATABASE );
-    assertNotNull( databaseMetas );
-    assertEquals( 1, databaseMetas.size() );
-    DatabaseMeta dbMetaResult = databaseMetas.get( 0 );
-    assertNotNull( dbMetaResult );
-    assertEquals( dbMeta, dbMetaResult );
-
-    repository.deleteDatabaseMeta( EXP_DBMETA_NAME );
-  }
-
-  @Test
-  public void testLoadSharedObjects_slaves() throws Exception {
-    PurRepository repo = (PurRepository) repository;
-    SlaveServer slave = createSlaveServer( "" ); //$NON-NLS-1$
-    repository.save( slave, VERSION_COMMENT_V1, null );
-
-    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType =
-      new HashMap<RepositoryObjectType, List<? extends SharedObjectInterface>>();
-    repo.readSharedObjects( sharedObjectsByType, RepositoryObjectType.SLAVE_SERVER );
-    assertNotNull( sharedObjectsByType );
-    @SuppressWarnings( "unchecked" )
-    List<SlaveServer> slaveServers = (List<SlaveServer>) sharedObjectsByType.get( RepositoryObjectType.SLAVE_SERVER );
-    assertNotNull( slaveServers );
-    assertEquals( 1, slaveServers.size() );
-    SlaveServer slaveResult = slaveServers.get( 0 );
-    assertNotNull( slaveResult );
-    assertEquals( slave, slaveResult );
-
-    repository.deleteSlave( slave.getObjectId() );
-  }
-
-  @Test
-  public void testLoadSharedObjects_partitions() throws Exception {
-    PurRepository repo = (PurRepository) repository;
-    PartitionSchema partSchema = createPartitionSchema( "" ); //$NON-NLS-1$
-    repository.save( partSchema, VERSION_COMMENT_V1, null );
-
-    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType =
-      new HashMap<RepositoryObjectType, List<? extends SharedObjectInterface>>();
-    repo.readSharedObjects( sharedObjectsByType, RepositoryObjectType.PARTITION_SCHEMA );
-    assertNotNull( sharedObjectsByType );
-    @SuppressWarnings( "unchecked" )
-    List<PartitionSchema> partitionSchemas = (List<PartitionSchema>) sharedObjectsByType
-      .get( RepositoryObjectType.PARTITION_SCHEMA );
-    assertNotNull( partitionSchemas );
-    assertEquals( 1, partitionSchemas.size() );
-    PartitionSchema partitionSchemaResult = partitionSchemas.get( 0 );
-    assertNotNull( partitionSchemaResult );
-    assertEquals( partSchema, partitionSchemaResult );
-
-    repository.deletePartitionSchema( partSchema.getObjectId() );
-  }
-
-  @Test
   public void testNewNonAmbiguousNaming() throws Exception {
     PurRepository repo = (PurRepository) repository;
 
@@ -633,63 +569,6 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     partitionSchemas = (List<PartitionSchema>) sharedObjectsByType
       .get( RepositoryObjectType.PARTITION_SCHEMA );
     assertEquals( 3, partitionSchemas.size() );
-  }
-
-  @Test
-  public void testLoadSharedObjects_clusters() throws Exception {
-    PurRepository repo = (PurRepository) repository;
-    ClusterSchema clusterSchema = createClusterSchema( EXP_CLUSTER_SCHEMA_NAME );
-    repository.save( clusterSchema, VERSION_COMMENT_V1, null );
-
-    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType =
-      new HashMap<RepositoryObjectType, List<? extends SharedObjectInterface>>();
-    repo.readSharedObjects( sharedObjectsByType, RepositoryObjectType.CLUSTER_SCHEMA );
-    assertNotNull( sharedObjectsByType );
-    @SuppressWarnings( "unchecked" )
-    List<ClusterSchema> clusterSchemas = (List<ClusterSchema>) sharedObjectsByType
-      .get( RepositoryObjectType.CLUSTER_SCHEMA );
-    assertNotNull( clusterSchemas );
-    assertEquals( 1, clusterSchemas.size() );
-    ClusterSchema clusterSchemaResult = clusterSchemas.get( 0 );
-    assertNotNull( clusterSchemaResult );
-    assertEquals( clusterSchema, clusterSchemaResult );
-
-    repository.deleteClusterSchema( clusterSchema.getObjectId() );
-  }
-
-  @Test
-  public void testLoadSharedObjects_databases_and_clusters() throws Exception {
-    PurRepository repo = (PurRepository) repository;
-    DatabaseMeta dbMeta = createDatabaseMeta( EXP_DBMETA_NAME );
-    repository.save( dbMeta, VERSION_COMMENT_V1, null );
-    ClusterSchema clusterSchema = createClusterSchema( EXP_CLUSTER_SCHEMA_NAME );
-    repository.save( clusterSchema, VERSION_COMMENT_V1, null );
-
-    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType =
-      new HashMap<RepositoryObjectType, List<? extends SharedObjectInterface>>();
-    repo.readSharedObjects( sharedObjectsByType, RepositoryObjectType.CLUSTER_SCHEMA, RepositoryObjectType.DATABASE );
-    assertNotNull( sharedObjectsByType );
-    assertEquals( 2, sharedObjectsByType.size() );
-
-    @SuppressWarnings( "unchecked" )
-    List<DatabaseMeta> databaseMetas = (List<DatabaseMeta>) sharedObjectsByType.get( RepositoryObjectType.DATABASE );
-    assertNotNull( databaseMetas );
-    assertEquals( 1, databaseMetas.size() );
-    DatabaseMeta dbMetaResult = databaseMetas.get( 0 );
-    assertNotNull( dbMetaResult );
-    assertEquals( dbMeta, dbMetaResult );
-
-    @SuppressWarnings( "unchecked" )
-    List<ClusterSchema> clusterSchemas = (List<ClusterSchema>) sharedObjectsByType
-      .get( RepositoryObjectType.CLUSTER_SCHEMA );
-    assertNotNull( clusterSchemas );
-    assertEquals( 1, clusterSchemas.size() );
-    ClusterSchema clusterSchemaResult = clusterSchemas.get( 0 );
-    assertNotNull( clusterSchemaResult );
-    assertEquals( clusterSchema, clusterSchemaResult );
-
-    repository.deleteDatabaseMeta( EXP_DBMETA_NAME );
-    repository.deleteClusterSchema( clusterSchema.getObjectId() );
   }
 
   private class MockProgressMonitorListener implements ProgressMonitorListener {
