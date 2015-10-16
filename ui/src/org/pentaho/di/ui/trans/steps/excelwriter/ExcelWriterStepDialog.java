@@ -1455,8 +1455,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
     wPassword.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        wPassword.setToolTipText( transMeta.environmentSubstitute( wPassword.getText() )
-          + "\n\n" + BaseMessages.getString( PKG, "ExcelWriterDialog.Password.Tooltip" ) );
+        wPassword.setToolTipText( BaseMessages.getString( PKG, "ExcelWriterDialog.Password.Tooltip" ) );
       }
     } );
 
