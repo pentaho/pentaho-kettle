@@ -111,6 +111,7 @@ public abstract class PurRepositoryTestBase implements ApplicationContextAware {
   private ITenant testingTenant;
 
   // this block stores those values, that should be restored after test's execution
+  private MicroPlatform mp;
   private IRepositoryVersionManager existingVersionManager;
 
 
@@ -150,7 +151,7 @@ public abstract class PurRepositoryTestBase implements ApplicationContextAware {
   }
 
   private void startMicroPlatform() throws Exception {
-    MicroPlatform mp = new MicroPlatform();
+    mp = new MicroPlatform();
     mp.defineInstance( "tenantedUserNameUtils", userNameUtils );
     mp.defineInstance( "tenantedRoleNameUtils", roleNameUtils );
     mp.defineInstance( IAuthorizationPolicy.class, authorizationPolicy );
@@ -254,6 +255,9 @@ public abstract class PurRepositoryTestBase implements ApplicationContextAware {
     repositoryFileDao = null;
     txnTemplate = null;
     systemTenant = testingTenant = null;
+
+    mp.stop();
+    mp = null;
 
     JcrRepositoryFileUtils.setRepositoryVersionManager( existingVersionManager );
     PentahoSessionHolder.setStrategyName( MODE_INHERITABLETHREADLOCAL );

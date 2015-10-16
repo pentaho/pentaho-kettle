@@ -423,6 +423,9 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     // null out fields to get back memory
     tenantManager = null;
     repo = null;
+
+    mp.stop();
+    mp = null;
   }
 
   @Override
