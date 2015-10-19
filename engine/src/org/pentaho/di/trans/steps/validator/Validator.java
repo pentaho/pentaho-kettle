@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -131,9 +131,9 @@ public class Validator extends BaseStep implements StepInterface {
       if ( exceptions.size() > 0 ) {
         if ( getStepMeta().isDoingErrorHandling() ) {
           if ( meta.isConcatenatingErrors() ) {
-            StringBuffer messages = new StringBuffer();
-            StringBuffer fields = new StringBuffer();
-            StringBuffer codes = new StringBuffer();
+            StringBuilder messages = new StringBuilder();
+            StringBuilder fields = new StringBuilder();
+            StringBuilder codes = new StringBuilder();
             boolean notFirst = false;
             for ( KettleValidatorException e : exceptions ) {
               if ( notFirst ) {
@@ -232,14 +232,11 @@ public class Validator extends BaseStep implements StepInterface {
   }
 
   /**
-   * @param inputRowMeta
-   *          the input row metadata
-   * @param r
-   *          the input row (data)
-   * @throws KettleValidatorException
-   *           in case there is a validation error, details are stored in the exception.
+   * @param inputRowMeta the input row metadata
+   * @param r            the input row (data)
+   * @throws KettleValidatorException in case there is a validation error, details are stored in the exception.
    */
-  private List<KettleValidatorException> validateFields( RowMetaInterface inputRowMeta, Object[] r ) throws KettleValidatorException, KettleValueException {
+  private List<KettleValidatorException> validateFields( RowMetaInterface inputRowMeta, Object[] r ) throws KettleValueException {
     List<KettleValidatorException> exceptions = new ArrayList<KettleValidatorException>();
 
     for ( int i = 0; i < meta.getValidations().size(); i++ ) {
@@ -410,12 +407,8 @@ public class Validator extends BaseStep implements StepInterface {
 
           // Numeric data or strings with only
           if ( field.isOnlyNumericAllowed() ) {
-            if ( valueMeta.isNumeric() || !containsOnlyDigits( valueMeta.getString( valueData ) ) ) {
-              KettleValidatorException exception =
-                new KettleValidatorException(
-                  this, field, KettleValidatorException.ERROR_NON_NUMERIC_DATA, BaseMessages.getString(
-                    PKG, "Validator.Exception.NonNumericDataNotAllowed", field.getFieldName(), valueMeta
-                      .toStringMeta() ), field.getFieldName() );
+            KettleValidatorException exception = assertNumeric( valueMeta, valueData, field );
+            if ( exception != null ) {
               exceptions.add( exception );
               if ( !meta.isValidatingAll() ) {
                 return exceptions;
@@ -523,6 +516,18 @@ public class Validator extends BaseStep implements StepInterface {
     }
 
     return exceptions;
+  }
+
+  // package-local visibility for testing purposes
+  KettleValidatorException assertNumeric( ValueMetaInterface valueMeta,
+                                          Object valueData,
+                                          Validation field ) throws KettleValueException {
+    if ( valueMeta.isNumeric() || containsOnlyDigits( valueMeta.getString( valueData ) ) ) {
+      return null;
+    }
+    return new KettleValidatorException( this, field, KettleValidatorException.ERROR_NON_NUMERIC_DATA,
+      BaseMessages.getString( PKG, "Validator.Exception.NonNumericDataNotAllowed", field.getFieldName(),
+        valueMeta.toStringMeta() ), field.getFieldName() );
   }
 
   private boolean containsOnlyDigits( String string ) {
