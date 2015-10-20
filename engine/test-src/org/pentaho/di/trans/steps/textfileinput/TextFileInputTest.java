@@ -44,6 +44,7 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
+import org.pentaho.di.utils.TestUtils;
 
 import static org.junit.Assert.*;
 
@@ -111,28 +112,16 @@ public class TextFileInputTest {
 
   @Test
   public void readWrappedInputWithoutHeaders() throws Exception {
-    final String virtualFile = "ram://pdi-2607.txt";
-    KettleVFS.getFileObject( virtualFile ).createFile();
-
     final String content = new StringBuilder()
       .append( "r1c1" ).append( '\n' ).append( ";r1c2\n" )
       .append( "r2c1" ).append( '\n' ).append( ";r2c2" )
       .toString();
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    bos.write( content.getBytes() );
-
-    OutputStream os = KettleVFS.getFileObject( virtualFile ).getContent().getOutputStream();
-    IOUtils.copy( new ByteArrayInputStream( bos.toByteArray() ), os );
-    os.close();
-
+    final String virtualFile = createVirtualFile( "pdi-2607.txt", content );
 
     TextFileInputMeta meta = new TextFileInputMeta();
     meta.setLineWrapped( true );
     meta.setNrWraps( 1 );
-    meta.setInputFields( new TextFileInputField[] {
-      new TextFileInputField( "col1", -1, -1 ),
-      new TextFileInputField( "col2", -1, -1 )
-    } );
+    meta.setInputFields( new TextFileInputField[] { field( "col1" ), field( "col2" ) } );
     meta.setFileCompression( "None" );
     meta.setFileType( "CSV" );
     meta.setHeader( false );
@@ -156,11 +145,7 @@ public class TextFileInputTest {
 
 
     RowSet output = new BlockingRowSet( 5 );
-    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
-    input.setOutputRowSets( Collections.singletonList( output ) );
-    while ( input.processRow( meta, data ) ) {
-      // wait until the step completes executing
-    }
+    executeStep( meta, data, output, 2 );
 
     Object[] row1 = output.getRowImmediate();
     assertRow( row1, "r1c1", "r1c2" );
@@ -169,7 +154,95 @@ public class TextFileInputTest {
     assertRow( row2, "r2c1", "r2c2" );
 
 
-    KettleVFS.getFileObject( virtualFile ).delete();
+    deleteVfsFile( virtualFile );
+  }
+
+  @Test
+  public void readInputWithMissedValues() throws Exception {
+    final String virtualFile = createVirtualFile( "pdi-14172.txt", "1,1,1\n", "2,,2\n" );
+
+    TextFileInputMeta meta = new TextFileInputMeta();
+    TextFileInputField field2 = field( "col2" );
+    field2.setRepeated( true );
+    meta.setInputFields( new TextFileInputField[] {
+      field( "col1" ), field2, field( "col3" )
+    } );
+    meta.setFileCompression( "None" );
+    meta.setFileType( "CSV" );
+    meta.setHeader( false );
+    meta.setNrHeaderLines( -1 );
+    meta.setFooter( false );
+    meta.setNrFooterLines( -1 );
+
+    TextFileInputData data = new TextFileInputData();
+    data.setFiles( new FileInputList() );
+    data.getFiles().addFile( KettleVFS.getFileObject( virtualFile ) );
+
+    data.outputRowMeta = new RowMeta();
+    data.outputRowMeta.addValueMeta( new ValueMetaString( "col1" ) );
+    data.outputRowMeta.addValueMeta( new ValueMetaString( "col2" ) );
+    data.outputRowMeta.addValueMeta( new ValueMetaString( "col3" ) );
+
+    data.dataErrorLineHandler = Mockito.mock( FileErrorHandler.class );
+    data.fileFormatType = TextFileInputMeta.FILE_FORMAT_UNIX;
+    data.separator = ",";
+    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ] );
+    data.filePlayList = new FilePlayListAll();
+
+
+    RowSet output = new BlockingRowSet( 5 );
+    executeStep( meta, data, output, 2 );
+
+    Object[] row1 = output.getRowImmediate();
+    assertRow( row1, "1", "1", "1" );
+
+    Object[] row2 = output.getRowImmediate();
+    assertRow( row2, "2", "1", "2" );
+
+
+    deleteVfsFile( virtualFile );
+  }
+
+  private void executeStep( TextFileInputMeta meta, TextFileInputData data, RowSet output, int expectedRounds )
+    throws Exception {
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+    input.setOutputRowSets( Collections.singletonList( output ) );
+    int i = 0;
+    while ( input.processRow( meta, data ) && i < expectedRounds ) {
+      i++;
+    }
+
+    assertEquals( "The amount of executions should be equal to expected", expectedRounds, i );
+  }
+
+  private static String createVirtualFile( String filename, String... rows ) throws Exception {
+    String virtualFile = TestUtils.createRamFile( filename );
+
+    StringBuilder content = new StringBuilder();
+    if ( rows != null ) {
+      for ( String row : rows ) {
+        content.append( row );
+      }
+    }
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    bos.write( content.toString().getBytes() );
+
+    OutputStream os = KettleVFS.getFileObject( virtualFile ).getContent().getOutputStream();
+    try {
+      IOUtils.copy( new ByteArrayInputStream( bos.toByteArray() ), os );
+    } finally {
+      os.close();
+    }
+
+    return virtualFile;
+  }
+
+  private static void deleteVfsFile( String path ) throws Exception {
+    TestUtils.getFileObject( path ).delete();
+  }
+
+  private static TextFileInputField field( String name ) {
+    return new TextFileInputField( name, -1, -1 );
   }
 
   private static void assertRow( Object[] row, Object... values ) {

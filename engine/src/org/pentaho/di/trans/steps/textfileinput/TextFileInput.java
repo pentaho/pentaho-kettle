@@ -626,7 +626,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
         addRootUri, shortFilename, path, hidden, modificationDateTime, uri, rooturi, extension, size );
   }
 
-  public static final Object[] convertLineToRow( LogChannelInterface log, TextFileLine textFileLine,
+  public static Object[] convertLineToRow( LogChannelInterface log, TextFileLine textFileLine,
       InputFileMetaInterface info, Object[] passThruFields, int nrPassThruFields, RowMetaInterface outputRowMeta,
       RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, String enclosure,
       String escapeCharacter, FileErrorHandler errorHandler, boolean addShortFilename, boolean addExtension,
@@ -673,9 +673,13 @@ public class TextFileInput extends BaseStep implements StepInterface {
         int trim_type = fieldnr < nrfields ? f.getTrimType() : ValueMetaInterface.TRIM_TYPE_NONE;
 
         if ( fieldnr < strings.length ) {
-          String pol = strings[fieldnr];
+          String pol = strings[ fieldnr ];
           try {
-            value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
+            if ( valueMeta.isNull( pol ) ) {
+              value = null;
+            } else {
+              value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
+            }
           } catch ( Exception e ) {
             // OK, give some feedback!
             String message =
