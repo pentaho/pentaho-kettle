@@ -26,11 +26,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.changed.ChangedFlagInterface;
 import org.pentaho.di.core.changed.PDIObserver;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
@@ -38,11 +40,14 @@ import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.parameters.NamedParams;
+import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -72,16 +77,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-/**
- * Created by mburgess on 10/8/15.
- */
 public class AbstractMetaTest {
   AbstractMeta meta;
   ObjectId objectId;
@@ -364,6 +368,13 @@ public class AbstractMetaTest {
     assertNotNull( meta.viewThisUndo() );
     assertNotNull( meta.viewPreviousUndo() );
     assertNotNull( meta.viewNextUndo() );
+    meta.addUndo( from, to, pos, prev, curr, AbstractMeta.TYPE_UNDO_DELETE, false );
+    meta.addUndo( from, to, pos, prev, curr, AbstractMeta.TYPE_UNDO_POSITION, false );
+    assertNotNull( meta.previousUndo() );
+    assertNotNull( meta.nextUndo() );
+    meta.setMaxUndo( 1 );
+    assertEquals( 1, meta.getUndoSize() );
+    meta.addUndo( from, to, pos, prev, curr, AbstractMeta.TYPE_UNDO_NEW, false );
   }
 
   @Test
@@ -388,7 +399,7 @@ public class AbstractMetaTest {
   }
 
   @Test
-  public void testAddRemoveNote() throws Exception {
+  public void testNotes() throws Exception {
     assertNull( meta.getNotes() );
     // most note methods will NPE at this point, so call clear() to create an empty note list
     meta.clear();
@@ -409,7 +420,15 @@ public class AbstractMetaTest {
     meta.addNote( note1 );
     assertTrue( meta.hasChanged() );
     NotePadMeta note2 = mock( NotePadMeta.class );
+    when( note2.getLocation() ).thenReturn( new Point( 0, 0 ) );
+    when( note2.isSelected() ).thenReturn( true );
     meta.addNote( 1, note2 );
+    assertEquals( note2, meta.getNote( 0, 0 ) );
+    List<NotePadMeta> selectedNotes = meta.getSelectedNotes();
+    assertNotNull( selectedNotes );
+    assertEquals( 1, selectedNotes.size() );
+    assertEquals( note2, selectedNotes.get( 0 ) );
+    assertEquals( 1, meta.indexOfNote( note2 ) );
     meta.removeNote( 2 );
     assertEquals( 2, meta.nrNotes() );
     meta.removeNote( 1 );
@@ -417,6 +436,19 @@ public class AbstractMetaTest {
     assertTrue( meta.haveNotesChanged() );
     meta.clearChanged();
     assertFalse( meta.haveNotesChanged() );
+
+    meta.addNote( 1, note2 );
+    meta.lowerNote( 1 );
+    assertTrue( meta.haveNotesChanged() );
+    meta.clearChanged();
+    assertFalse( meta.haveNotesChanged() );
+    meta.raiseNote( 0 );
+    assertTrue( meta.haveNotesChanged() );
+    meta.clearChanged();
+    assertFalse( meta.haveNotesChanged() );
+    int[] indexes = meta.getNoteIndexes( Arrays.asList( note1, note2 ) );
+    assertNotNull( indexes );
+    assertEquals( 2, indexes.length );
   }
 
 
@@ -493,6 +525,9 @@ public class AbstractMetaTest {
     assertEquals( "y", meta.getParameterValue( "var2" ) );
     assertEquals( "z", meta.getParameterDefault( "var2" ) );
 
+    String[] params = meta.listParameters();
+    assertNotNull( params );
+
     // clearParameters() just clears their values, not their presence
     meta.clearParameters();
     assertEquals( "", meta.getParameterValue( "var2" ) );
@@ -500,6 +535,13 @@ public class AbstractMetaTest {
     // eraseParameters() clears the list of parameters
     meta.eraseParameters();
     assertNull( meta.getParameterValue( "var1" ) );
+
+    NamedParams newParams = new NamedParamsDefault();
+    newParams.addParameterDefinition( "var3", "default", "description" );
+    newParams.setParameterValue( "var3", "a" );
+    meta.copyParametersFrom( newParams );
+    meta.activateParameters();
+    assertEquals( "default", meta.getParameterDefault( "var3" ) );
   }
 
   @Test
@@ -518,10 +560,14 @@ public class AbstractMetaTest {
 
   @Test
   public void testGetSetSharedObjects() throws Exception {
-    assertNull( meta.getSharedObjects() );
+    assertNotNull( meta.getSharedObjects() );
     SharedObjects sharedObjects = mock( SharedObjects.class );
     meta.setSharedObjects( sharedObjects );
     assertEquals( sharedObjects, meta.getSharedObjects() );
+    meta.setSharedObjects( null );
+    AbstractMeta spyMeta = spy( meta );
+    when( spyMeta.environmentSubstitute( anyString() ) ).thenThrow( KettleException.class );
+    assertNull( spyMeta.getSharedObjects() );
   }
 
   @Test
@@ -605,6 +651,73 @@ public class AbstractMetaTest {
     meta.setChannelLogTable( table );
     assertEquals( table, meta.getChannelLogTable() );
   }
+
+  @Test
+  public void testGetEmbeddedMetaStore() {
+    assertNotNull( meta.getEmbeddedMetaStore() );
+  }
+
+  @Test
+  public void testGetBooleanValueOfVariable() {
+    assertFalse( meta.getBooleanValueOfVariable( null, false ) );
+    assertTrue( meta.getBooleanValueOfVariable( "", true ) );
+    assertTrue( meta.getBooleanValueOfVariable( "true", true ) );
+    assertFalse( meta.getBooleanValueOfVariable( "${myVar}", false ) );
+    meta.setVariable( "myVar", "Y" );
+    assertTrue( meta.getBooleanValueOfVariable( "${myVar}", false ) );
+  }
+
+  @Test
+  public void testInitializeShareInjectVariables() {
+    meta.initializeVariablesFrom( null );
+    VariableSpace parent = mock( VariableSpace.class );
+    when( parent.getVariable( "var1" ) ).thenReturn( "x" );
+    when( parent.listVariables() ).thenReturn( new String[]{ "var1" } );
+    meta.initializeVariablesFrom( parent );
+    assertEquals( "x", meta.getVariable( "var1" ) );
+    assertNotNull( meta.listVariables() );
+    VariableSpace newVars = mock( VariableSpace.class );
+    when( newVars.getVariable( "var2" ) ).thenReturn( "y" );
+    when( newVars.listVariables() ).thenReturn( new String[]{ "var2" } );
+    meta.shareVariablesWith( newVars );
+    assertEquals( "y", meta.getVariable( "var2" ) );
+    Map<String, String> props = new HashMap<>();
+    props.put( "var3", "a" );
+    props.put( "var4", "b" );
+    meta.shareVariablesWith( new Variables() );
+    meta.injectVariables( props );
+    // Need to "Activate" the injection, we can initialize from null
+    meta.initializeVariablesFrom( null );
+    assertEquals( "a", meta.getVariable( "var3" ) );
+    assertEquals( "b", meta.getVariable( "var4" ) );
+  }
+
+  @Test
+  public void testCanSave() {
+    assertTrue( meta.canSave() );
+  }
+
+  @Test
+  public void testHasChanged() {
+    meta.clear();
+    assertFalse( meta.hasChanged() );
+    meta.setChanged( true );
+    assertTrue( meta.hasChanged() );
+  }
+
+  @Test
+  public void testShouldOverwrite() {
+    assertTrue( meta.shouldOverwrite( null, null, null, null ) );
+    Props.init( Props.TYPE_PROPERTIES_EMPTY );
+    assertTrue( meta.shouldOverwrite( null, Props.getInstance(), "message", "remember" ) );
+
+    Props.getInstance().setProperty( Props.STRING_ASK_ABOUT_REPLACING_DATABASES, "Y" );
+    OverwritePrompter prompter = mock( OverwritePrompter.class );
+    when( prompter.overwritePrompt( "message", "remember", Props.STRING_ASK_ABOUT_REPLACING_DATABASES ) )
+      .thenReturn( false );
+    assertFalse( meta.shouldOverwrite( prompter, Props.getInstance(), "message", "remember" ) );
+  }
+
 
   /**
    * Stub class for AbstractMeta. No need to test the abstract methods here, they should be done in unit tests for
