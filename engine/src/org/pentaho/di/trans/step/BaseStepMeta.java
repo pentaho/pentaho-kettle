@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -113,7 +113,13 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    */
   public Object clone() {
     try {
-      Object retval = super.clone();
+      BaseStepMeta retval = (BaseStepMeta) super.clone();
+      // PDI-14419: there are several problems with cloning ioMeta
+      //  - we cannot clone all existing streams, as the duplicate should be treated independently
+      //  - we cannot clear ioMeta's stream list, because other classes do not expect the list to be empty
+      // hence, the best solution for now is to assign NULL to the field
+      // meta will re-create properly-configured instance on next attempt to get it
+      retval.ioMeta = null;
       return retval;
     } catch ( CloneNotSupportedException e ) {
       return null;
