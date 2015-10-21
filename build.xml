@@ -126,13 +126,13 @@
           <equals arg1="${modules.publish-local}" arg2="true"/>
           <then>
             <ant antfile="build.xml" dir="@{module}" inheritall="false">
-              <target name="resolve"/>
+              <target name="build"/>
               <target name="publish-local"/>
             </ant>
           </then>
           <else>
             <ant antfile="build.xml" dir="@{module}" inheritall="false">
-              <target name="resolve"/>
+              <target name="build"/>
               <target name="publish"/>
             </ant>
           </else>
@@ -164,19 +164,13 @@
           <equals arg1="${plugins.publish-local}" arg2="true"/>
           <then>
             <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
-              <target name="resolve"/>
-              <target name="test"/>	
-              <target name="cobertura"/> 	
-              <target name="package"/>
+              <target name="build"/>
               <target name="publish-local"/>
             </ant>
           </then>
           <else>
             <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
-              <target name="resolve"/>
-              <target name="test"/>	
-              <target name="cobertura"/> 	
-              <target name="package"/>
+              <target name="build"/>
               <target name="publish"/>
             </ant>
           </else>
