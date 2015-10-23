@@ -1699,7 +1699,9 @@ public class PurRepository extends AbstractRepository implements Repository, jav
       fullName = file.getName();
     } else {
       // set new title
-      builder.title( RepositoryFile.DEFAULT_LOCALE, newTitle );
+      builder.title( RepositoryFile.DEFAULT_LOCALE, newTitle )
+        // rename operation creates new revision, hence clear old value to be overwritten during saving
+        .createdDate( null );
       fullName = checkAndSanitize( newTitle ) + objectType.getExtension();
     }
 
