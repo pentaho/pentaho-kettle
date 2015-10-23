@@ -80,6 +80,8 @@ import com.enterprisedt.net.ftp.FTPTransferType;
 public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryFTPPUT.class; // for i18n purposes, needed by Translator2!!
 
+  public static final int FTP_DEFAULT_PORT = 21;
+
   private String serverName;
   private String serverPort;
   private String userName;
@@ -587,92 +589,14 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.Starting" ) );
     }
 
-    // String substitution..
-    String realServerName = environmentSubstitute( serverName );
-    String realServerPort = environmentSubstitute( serverPort );
-    String realUsername = environmentSubstitute( userName );
-    String realPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) );
-    String realRemoteDirectory = environmentSubstitute( remoteDirectory );
-    String realWildcard = environmentSubstitute( wildcard );
-    String realLocalDirectory = environmentSubstitute( localDirectory );
-
     FTPClient ftpclient = null;
-
     try {
       // Create ftp client to host:port ...
-      ftpclient = new PDIFTPClient( log );
-      ftpclient.setRemoteAddr( InetAddress.getByName( realServerName ) );
-      if ( !Const.isEmpty( realServerPort ) ) {
-        ftpclient.setRemotePort( Const.toInt( realServerPort, 21 ) );
-      }
-
-      if ( !Const.isEmpty( proxyHost ) ) {
-        String realProxy_host = environmentSubstitute( proxyHost );
-        ftpclient.setRemoteAddr( InetAddress.getByName( realProxy_host ) );
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntryFTPPUT.OpenedProxyConnectionOn", realProxy_host ) );
-        }
-
-        // FIXME: Proper default port for proxy
-        int port = Const.toInt( environmentSubstitute( proxyPort ), 21 );
-        if ( port != 0 ) {
-          ftpclient.setRemotePort( port );
-        }
-      } else {
-        ftpclient.setRemoteAddr( InetAddress.getByName( realServerName ) );
-
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobEntryFTPPUT.OpenConnection", realServerName ) );
-        }
-      }
-
-      // set activeConnection connectmode ...
-      if ( activeConnection ) {
-        ftpclient.setConnectMode( FTPConnectMode.ACTIVE );
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.SetActiveConnection" ) );
-        }
-      } else {
-        ftpclient.setConnectMode( FTPConnectMode.PASV );
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.SetPassiveConnection" ) );
-        }
-      }
-
-      // Set the timeout
-      if ( timeout > 0 ) {
-        ftpclient.setTimeout( timeout );
-        if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.SetTimeout", "" + timeout ) );
-        }
-      }
-
-      ftpclient.setControlEncoding( controlEncoding );
-      if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.SetEncoding", controlEncoding ) );
-      }
-
-      // If socks proxy server was provided
-      if ( !Const.isEmpty( socksProxyHost ) ) {
-        // if a port was provided
-        if ( !Const.isEmpty( socksProxyPort ) ) {
-          FTPClient.initSOCKS( environmentSubstitute( socksProxyPort ), environmentSubstitute( socksProxyHost ) );
-        } else { // looks like we have a host and no port
-          throw new FTPException( BaseMessages.getString(
-            PKG, "JobFTPPUT.SocksProxy.PortMissingException", environmentSubstitute( socksProxyHost ) ) );
-        }
-        // now if we have authentication information
-        if ( !Const.isEmpty( socksProxyUsername )
-          && Const.isEmpty( socksProxyPassword ) || Const.isEmpty( socksProxyUsername )
-          && !Const.isEmpty( socksProxyPassword ) ) {
-          // we have a username without a password or vica versa
-          throw new FTPException( BaseMessages.getString(
-            PKG, "JobFTPPUT.SocksProxy.IncompleteCredentials", environmentSubstitute( socksProxyHost ),
-            getName() ) );
-        }
-      }
+      ftpclient = createAndSetUpFtpClient();
 
       // login to ftp host ...
+      String realUsername = environmentSubstitute( userName );
+      String realPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) );
       ftpclient.connect();
       ftpclient.login( realUsername, realPassword );
 
@@ -693,6 +617,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
       this.hookInOtherParsers( ftpclient );
 
       // move to spool dir ...
+      String realRemoteDirectory = environmentSubstitute( remoteDirectory );
       if ( !Const.isEmpty( realRemoteDirectory ) ) {
         ftpclient.chdir( realRemoteDirectory );
         if ( log.isDetailed() ) {
@@ -700,9 +625,14 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
         }
       }
 
-      // handle file:/// prefix
-      if ( realLocalDirectory.startsWith( "file:" ) ) {
-        realLocalDirectory = new URI( realLocalDirectory ).getPath();
+      String realLocalDirectory = environmentSubstitute( localDirectory );
+      if ( realLocalDirectory == null ) {
+        throw new FTPException( BaseMessages.getString( PKG, "JobFTPPUT.LocalDir.NotSpecified" ) );
+      } else {
+        // handle file:/// prefix
+        if ( realLocalDirectory.startsWith( "file:" ) ) {
+          realLocalDirectory = new URI( realLocalDirectory ).getPath();
+        }
       }
 
       final List<String> files;
@@ -719,17 +649,18 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
           }
         }
       }
-
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString(
           PKG, "JobFTPPUT.Log.FoundFileLocalDirectory", "" + files.size(), realLocalDirectory ) );
       }
 
-      Pattern pattern = null;
+      String realWildcard = environmentSubstitute( wildcard );
+      Pattern pattern;
       if ( !Const.isEmpty( realWildcard ) ) {
         pattern = Pattern.compile( realWildcard );
-
-      } // end if
+      } else {
+        pattern = null;
+      }
 
       for ( String file : files ) {
         if ( parentJob.isStopped() ) {
@@ -761,7 +692,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
             }
           }
 
-          if ( !fileExist || ( !onlyPuttingNewFiles && fileExist ) ) {
+          if ( !fileExist || !onlyPuttingNewFiles ) {
             if ( log.isDebug() ) {
               logDebug( BaseMessages.getString(
                 PKG, "JobFTPPUT.Log.PuttingFileToRemoteDirectory", file, realRemoteDirectory ) );
@@ -804,6 +735,89 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
     }
 
     return result;
+  }
+
+  // package-local visibility for testing purposes
+  FTPClient createAndSetUpFtpClient() throws IOException, FTPException {
+    String realServerName = environmentSubstitute( serverName );
+    String realServerPort = environmentSubstitute( serverPort );
+
+    FTPClient ftpClient = createFtpClient();
+    ftpClient.setRemoteAddr( InetAddress.getByName( realServerName ) );
+    if ( !Const.isEmpty( realServerPort ) ) {
+      ftpClient.setRemotePort( Const.toInt( realServerPort, FTP_DEFAULT_PORT ) );
+    }
+
+    if ( !Const.isEmpty( proxyHost ) ) {
+      String realProxyHost = environmentSubstitute( proxyHost );
+      ftpClient.setRemoteAddr( InetAddress.getByName( realProxyHost ) );
+      if ( log.isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobEntryFTPPUT.OpenedProxyConnectionOn", realProxyHost ) );
+      }
+
+      // FIXME: Proper default port for proxy
+      int port = Const.toInt( environmentSubstitute( proxyPort ), FTP_DEFAULT_PORT );
+      if ( port != 0 ) {
+        ftpClient.setRemotePort( port );
+      }
+    } else {
+      if ( log.isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobEntryFTPPUT.OpenConnection", realServerName ) );
+      }
+    }
+
+    // set activeConnection connectmode ...
+    if ( activeConnection ) {
+      ftpClient.setConnectMode( FTPConnectMode.ACTIVE );
+      if ( log.isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.SetActiveConnection" ) );
+      }
+    } else {
+      ftpClient.setConnectMode( FTPConnectMode.PASV );
+      if ( log.isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.SetPassiveConnection" ) );
+      }
+    }
+
+    // Set the timeout
+    if ( timeout > 0 ) {
+      ftpClient.setTimeout( timeout );
+      if ( log.isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.SetTimeout", "" + timeout ) );
+      }
+    }
+
+    ftpClient.setControlEncoding( controlEncoding );
+    if ( log.isDetailed() ) {
+      logDetailed( BaseMessages.getString( PKG, "JobFTPPUT.Log.SetEncoding", controlEncoding ) );
+    }
+
+    // If socks proxy server was provided
+    if ( !Const.isEmpty( socksProxyHost ) ) {
+      // if a port was provided
+      if ( !Const.isEmpty( socksProxyPort ) ) {
+        FTPClient.initSOCKS( environmentSubstitute( socksProxyPort ), environmentSubstitute( socksProxyHost ) );
+      } else { // looks like we have a host and no port
+        throw new FTPException( BaseMessages.getString(
+          PKG, "JobFTPPUT.SocksProxy.PortMissingException", environmentSubstitute( socksProxyHost ) ) );
+      }
+      // now if we have authentication information
+      if ( !Const.isEmpty( socksProxyUsername )
+        && Const.isEmpty( socksProxyPassword ) || Const.isEmpty( socksProxyUsername )
+        && !Const.isEmpty( socksProxyPassword ) ) {
+        // we have a username without a password or vica versa
+        throw new FTPException( BaseMessages.getString(
+          PKG, "JobFTPPUT.SocksProxy.IncompleteCredentials", environmentSubstitute( socksProxyHost ),
+          getName() ) );
+      }
+    }
+
+    return ftpClient;
+  }
+
+  // package-local visibility for testing purposes
+  FTPClient createFtpClient() {
+    return new PDIFTPClient( log );
   }
 
   public boolean evaluates() {
