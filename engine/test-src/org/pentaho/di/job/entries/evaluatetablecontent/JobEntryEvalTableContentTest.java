@@ -64,6 +64,7 @@ import org.pentaho.di.job.entry.JobEntryCopy;
 public class JobEntryEvalTableContentTest {
   private static final Map<Class<?>, String> dbMap = new HashMap<Class<?>, String>();
   JobEntryEvalTableContent entry;
+  private static PluginInterface mockDbPlugin;
 
   public static class DBMockIface extends BaseDatabaseMeta {
 
@@ -74,7 +75,7 @@ public class JobEntryEvalTableContentTest {
 
     @Override
     public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc,
-      boolean add_fieldname, boolean add_cr ) {
+        boolean add_fieldname, boolean add_cr ) {
       // TODO Auto-generated method stub
       return null;
     }
@@ -91,14 +92,14 @@ public class JobEntryEvalTableContentTest {
 
     @Override
     public String getAddColumnStatement( String tablename, ValueMetaInterface v, String tk, boolean use_autoinc,
-      String pk, boolean semicolon ) {
+        String pk, boolean semicolon ) {
       // TODO Auto-generated method stub
       return null;
     }
 
     @Override
     public String getModifyColumnStatement( String tablename, ValueMetaInterface v, String tk,
-      boolean use_autoinc, String pk, boolean semicolon ) {
+        boolean use_autoinc, String pk, boolean semicolon ) {
       // TODO Auto-generated method stub
       return null;
     }
@@ -127,7 +128,7 @@ public class JobEntryEvalTableContentTest {
 
     PluginRegistry preg = PluginRegistry.getInstance();
 
-    PluginInterface mockDbPlugin = mock( PluginInterface.class );
+    mockDbPlugin = mock( PluginInterface.class );
     when( mockDbPlugin.matches( anyString() ) ).thenReturn( true );
     when( mockDbPlugin.isNativePlugin() ).thenReturn( true );
     when( mockDbPlugin.getMainType() ).thenAnswer( new Answer<Class<?>>() {
@@ -153,6 +154,7 @@ public class JobEntryEvalTableContentTest {
 
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
+    PluginRegistry.getInstance().removePlugin( DatabasePluginType.class, mockDbPlugin );
   }
 
   @Before
@@ -187,7 +189,7 @@ public class JobEntryEvalTableContentTest {
 
     assertFalse( "Eval number of rows should fail", res.getResult() );
     assertEquals(
-      "No errors should be reported in result object accoding to the new behavior", res.getNrErrors(), 0 );
+        "No errors should be reported in result object accoding to the new behavior", res.getNrErrors(), 0 );
   }
 
   @Test
@@ -202,7 +204,7 @@ public class JobEntryEvalTableContentTest {
 
     assertFalse( "Eval number of rows should fail", res.getResult() );
     assertEquals(
-      "An error should be reported in result object accoding to the old behavior", res.getNrErrors(), 1 );
+        "An error should be reported in result object accoding to the old behavior", res.getNrErrors(), 1 );
   }
 
   @Test
