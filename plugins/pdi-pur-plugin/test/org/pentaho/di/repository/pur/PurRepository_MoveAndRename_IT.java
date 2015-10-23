@@ -28,9 +28,7 @@ import org.pentaho.platform.api.repository2.unified.VersionSummary;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.hasItem;
 
 public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
@@ -77,11 +75,18 @@ public class PurRepository_MoveAndRename_IT extends PurRepositoryTestBase {
     AbstractMeta meta = assistant.createNew();
 
     assistant.save( meta, initial, getPublicDir() );
-
     List<VersionSummary> historyBefore = unifiedRepository.getVersionSummaries( meta.getObjectId().getId() );
+
+    long before = System.currentTimeMillis();
     assistant.rename( meta, renamed );
+    long after = System.currentTimeMillis();
+
     List<VersionSummary> historyAfter = unifiedRepository.getVersionSummaries( meta.getObjectId().getId() );
     assertEquals( historyBefore.size() + 1, historyAfter.size() );
+
+    long newRevisionTs = historyAfter.get( historyAfter.size() - 1 ).getDate().getTime();
+    assertTrue( String.format( "%d <= %d <= %d", before, newRevisionTs, after ),
+      ( before <= newRevisionTs ) && ( newRevisionTs <= after ) );
   }
 
 
