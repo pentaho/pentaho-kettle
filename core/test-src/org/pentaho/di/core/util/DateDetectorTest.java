@@ -100,7 +100,7 @@ public class DateDetectorTest {
       // expected exception
     }
   }
-  
+
   @Test
   public void testGetDateFromStringLocale() throws ParseException {
     assertEquals( SAMPLE_DATE_US, DateDetector.getDateFromString( SAMPLE_DATE_STRING_US, LOCALE_en_US ) );
@@ -159,5 +159,5 @@ public class DateDetectorTest {
     assertFalse( DateDetector.isValidDateFormatToStringDate( SAMPLE_DATE_FORMAT_US, null, LOCALE_en_US ) );
     assertFalse( DateDetector.isValidDateFormatToStringDate( SAMPLE_DATE_FORMAT_US, SAMPLE_DATE_STRING_US, null ) );
   }
-  
+
 }
