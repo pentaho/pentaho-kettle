@@ -279,6 +279,11 @@ public class StringEvaluatorTest {
   }
 
   @Test
+  public void testDate2YearDigits() {
+    testDefaultDateFormat( "MM/dd/yy", "10/10/20", "11/10/20", "12/10/20" );
+  }
+
+  @Test
   public void testCustomDateFormat() {
     String sampleFormat = "MM/dd/yyyy HH:mm:ss";
     ArrayList<String> dateFormats = new ArrayList<String>();
@@ -288,6 +293,22 @@ public class StringEvaluatorTest {
     assertFalse( evaluator.getStringEvaluationResults().isEmpty() );
     assertTrue( evaluator.getAdvicedResult().getConversionMeta().isDate() );
     assertTrue( sampleFormat.equals( evaluator.getAdvicedResult().getConversionMeta().getConversionMask() ) );
+  }
+
+  @Test
+  public void testAdviceedOneDateFormat() {
+    String sampleLongFormat = "MM/dd/yyyy HH:mm:ss";
+    String sampleShortFormat = "MM/dd/yy HH:mm:ss";
+    ArrayList<String> dateFormats = new ArrayList<String>();
+    dateFormats.add( sampleLongFormat );
+    dateFormats.add( sampleShortFormat );
+    StringEvaluator evaluator = new StringEvaluator( true, new ArrayList<String>(), dateFormats );
+    evaluator.evaluateString( "02/29/20 00:00:00"  );
+    assertFalse( evaluator.getStringEvaluationResults().isEmpty() );
+    assertTrue( evaluator.getAdvicedResult().getConversionMeta().isDate() );
+    assertFalse( sampleLongFormat.equals( evaluator.getAdvicedResult().getConversionMeta().getConversionMask() ) );
+    //should advice short format
+    assertTrue( sampleShortFormat.equals( evaluator.getAdvicedResult().getConversionMeta().getConversionMask() ) );
   }
 
 }
