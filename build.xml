@@ -898,6 +898,7 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.sftp.JobEntrySFTPTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.ftpsget.FTPSConnectionTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.ftpsget.JobEntryFTPSGetTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.ftpput.JobEntryFTPPUTTest" haltonerror="false"/>
 
       <!-- Some extra things to run -->
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.copyfiles.CopyFilesTest"
