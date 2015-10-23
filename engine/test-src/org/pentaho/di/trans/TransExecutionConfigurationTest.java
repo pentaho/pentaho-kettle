@@ -40,6 +40,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -73,6 +74,10 @@ public class TransExecutionConfigurationTest {
         return dbMap;
       }
     } );
+    List<PluginInterface> registeredPlugins = PluginRegistry.getInstance().getPlugins( RepositoryPluginType.class );
+    for ( PluginInterface registeredPlugin : registeredPlugins ) {
+      PluginRegistry.getInstance().removePlugin( RepositoryPluginType.class, registeredPlugin );
+    }
     PluginRegistry.getInstance().registerPlugin( RepositoryPluginType.class, mockRepositoryPlugin );
 
     // Define valid connection criteria
