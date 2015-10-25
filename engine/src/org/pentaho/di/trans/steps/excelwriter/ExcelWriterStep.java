@@ -229,7 +229,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         recalculateAllWorkbookFormulas();
       }
 
-      BufferedOutputStream out = new BufferedOutputStream( KettleVFS.getOutputStream( data.file, false ) );
+      BufferedOutputStreamWithCloseDetection out =
+          new BufferedOutputStreamWithCloseDetection( KettleVFS.getOutputStream( data.file, false ) );
       data.wb.write( out );
       out.close();
     } catch ( IOException e ) {
@@ -700,7 +701,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           // handle fresh file case, just create a fresh workbook
 
           Workbook wb = meta.getExtension().equalsIgnoreCase( "xlsx" ) ? new XSSFWorkbook() : new HSSFWorkbook();
-          OutputStream out = KettleVFS.getOutputStream( data.file, false );
+          BufferedOutputStreamWithCloseDetection out =
+              new BufferedOutputStreamWithCloseDetection( KettleVFS.getOutputStream( data.file, false ) );
           wb.createSheet( data.realSheetname );
           wb.write( out );
           out.close();
@@ -956,4 +958,41 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     }
   }
 
+  /**
+   * Workaround for stream close issue under Java 8.
+   * 
+   * The problem is: during Workbook writing to stream, Apache POI closes output stream itself. After that,
+   * ExcelWriteStep closes this stream also because it was open in the ExcelWriterStep. But Java 8 contains bug
+   * https://bugs.openjdk.java.net/browse/JDK-8042377 with second stream closing. As result, second close() throws
+   * exception.
+   */
+  public static class BufferedOutputStreamWithCloseDetection extends BufferedOutputStream {
+    boolean alreadyClosed = false;
+
+    public BufferedOutputStreamWithCloseDetection( OutputStream out ) {
+      super( out );
+    }
+
+    /**
+     * Don't flush empty buffer if already closed.
+     */
+    @Override
+    public synchronized void flush() throws IOException {
+      if ( alreadyClosed && count == 0 ) {
+        return;
+      }
+      super.flush();
+    }
+
+    /**
+     * Close only once.
+     */
+    @Override
+    public void close() throws IOException {
+      if ( !alreadyClosed ) {
+        super.close();
+        alreadyClosed = true;
+      }
+    }
+  }
 }
