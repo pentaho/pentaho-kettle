@@ -40,15 +40,23 @@ public class NamedParamsExceptionTest {
   public void testConstructors() {
     exception = new NamedParamsException();
     assertNotNull( exception );
-    assertEquals( "\nnull\n", exception.getMessage() );
+    assertMessage( "null", exception );
+
     exception = new NamedParamsException( "message" );
-    assertEquals( "\nmessage\n", exception.getMessage() );
+    assertMessage( "message", exception );
+
     Throwable t = mock( Throwable.class );
-    when( t.getStackTrace() ).thenReturn( new StackTraceElement[0] );
+    when( t.getStackTrace() ).thenReturn( new StackTraceElement[ 0 ] );
     exception = new NamedParamsException( t );
     assertEquals( t, exception.getCause() );
+
     exception = new NamedParamsException( "message", t );
-    assertEquals( "\nmessage\n", exception.getMessage() );
+    assertMessage( "message", exception );
     assertEquals( t, exception.getCause() );
+  }
+
+  static void assertMessage( String expected, NamedParamsException exception ) {
+    String surrounded = System.lineSeparator() + expected + System.lineSeparator();
+    assertEquals( surrounded, exception.getMessage() );
   }
 }

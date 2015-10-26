@@ -28,6 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.pentaho.di.core.parameters.NamedParamsExceptionTest.assertMessage;
 
 /**
  * Created by mburgess on 10/13/15.
@@ -44,15 +45,18 @@ public class DuplicateParamExceptionTest {
   public void testConstructors() {
     exception = new DuplicateParamException();
     assertNotNull( exception );
-    assertEquals( "\nnull\n", exception.getMessage() );
+    assertMessage( "null", exception );
+
     exception = new DuplicateParamException( "message" );
-    assertEquals( "\nmessage\n", exception.getMessage() );
+    assertMessage( "message", exception );
+
     Throwable t = mock( Throwable.class );
     when( t.getStackTrace() ).thenReturn( new StackTraceElement[0] );
     exception = new DuplicateParamException( t );
     assertEquals( t, exception.getCause() );
+
     exception = new DuplicateParamException( "message", t );
-    assertEquals( "\nmessage\n", exception.getMessage() );
+    assertMessage( "message", exception );
     assertEquals( t, exception.getCause() );
   }
 }
