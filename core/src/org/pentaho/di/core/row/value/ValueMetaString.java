@@ -39,4 +39,9 @@ public class ValueMetaString extends ValueMetaBase implements ValueMetaInterface
   public Object getNativeDataType( Object object ) throws KettleValueException {
     return getString( object );
   }
+
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    return String.class;
+  }
 }

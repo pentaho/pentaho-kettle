@@ -50,4 +50,9 @@ public class ValueMetaDate extends ValueMetaBase implements ValueMetaInterface {
   public Object getNativeDataType( Object object ) throws KettleValueException {
     return getDate( object );
   }
+
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    return Date.class;
+  }
 }

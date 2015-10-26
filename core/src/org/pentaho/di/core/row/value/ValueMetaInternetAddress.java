@@ -503,4 +503,9 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
 
     return retval;
   }
+
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    return InetAddress.class;
+  }
 }

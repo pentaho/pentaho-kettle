@@ -4923,4 +4923,9 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
     return quotes;
   }
+
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    // Not implemented for base class
+    throw new KettleValueException( getTypeDesc() + " does not implement this method" );
+  }
 }

@@ -411,6 +411,8 @@ public class ValueMetaTimestamp extends ValueMetaDate {
   @Override
   public Object convertData( ValueMetaInterface meta2, Object data2 ) throws KettleValueException {
     switch ( meta2.getType() ) {
+      case TYPE_TIMESTAMP:
+        return ( (ValueMetaTimestamp) meta2 ).getTimestamp( data2 );
       case TYPE_STRING:
         return convertStringToTimestamp( meta2.getString( data2 ) );
       case TYPE_INTEGER:
@@ -654,5 +656,10 @@ public class ValueMetaTimestamp extends ValueMetaDate {
       dateFormatChanged = false;
     }
     return dateFormat;
+  }
+
+  @Override
+  public Class<?> getNativeDataTypeClass() throws KettleValueException {
+    return Timestamp.class;
   }
 }
