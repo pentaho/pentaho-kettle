@@ -25,7 +25,6 @@ package org.pentaho.di.trans.steps.excelwriter;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -63,6 +62,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.workarounds.BufferedOutputStreamWithCloseDetection;
 
 public class ExcelWriterStep extends BaseStep implements StepInterface {
 
@@ -229,7 +229,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         recalculateAllWorkbookFormulas();
       }
 
-      BufferedOutputStream out = new BufferedOutputStream( KettleVFS.getOutputStream( data.file, false ) );
+      BufferedOutputStreamWithCloseDetection out =
+          new BufferedOutputStreamWithCloseDetection( KettleVFS.getOutputStream( data.file, false ) );
       data.wb.write( out );
       out.close();
     } catch ( IOException e ) {
@@ -700,7 +701,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           // handle fresh file case, just create a fresh workbook
 
           Workbook wb = meta.getExtension().equalsIgnoreCase( "xlsx" ) ? new XSSFWorkbook() : new HSSFWorkbook();
-          OutputStream out = KettleVFS.getOutputStream( data.file, false );
+          BufferedOutputStreamWithCloseDetection out =
+              new BufferedOutputStreamWithCloseDetection( KettleVFS.getOutputStream( data.file, false ) );
           wb.createSheet( data.realSheetname );
           wb.write( out );
           out.close();
@@ -955,5 +957,4 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       sheet.protectSheet( password );
     }
   }
-
 }
