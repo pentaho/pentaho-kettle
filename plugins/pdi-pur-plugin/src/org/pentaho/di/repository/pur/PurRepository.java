@@ -108,7 +108,6 @@ import static org.pentaho.di.repository.RepositoryObjectType.TRANSFORMATION;
  * @author Matt
  * @author mlowery
  */
- */
 @RepositoryPlugin( id = "PentahoEnterpriseRepository", name = "DI Repository",
     description = "i18n:org.pentaho.di.ui.repository.pur:RepositoryType.Description.EnterpriseRepository",
     metaClass = "org.pentaho.di.repository.pur.PurRepositoryMeta" )
