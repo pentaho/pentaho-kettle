@@ -1747,7 +1747,14 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   }
 
   public ObjectId getDatabaseID( String name ) throws KettleException {
-    return databaseDelegate.getDatabaseID( name );
+    ObjectId exactMatch = databaseDelegate.getDatabaseID( name );
+    if ( exactMatch == null ) {
+      // look for a database
+      DatabaseMeta database = DatabaseMeta.findDatabase( getDatabases(), name );
+      return ( database == null ) ? null : database.getObjectId();
+    } else {
+      return exactMatch;
+    }
   }
 
   public ObjectId getJobId( String name, RepositoryDirectoryInterface repositoryDirectory ) throws KettleException {
