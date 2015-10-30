@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -65,8 +66,12 @@ public class StringEvaluatorTest {
       evaluator.evaluateString( string );
     }
     assertEquals( strings.size(), evaluator.getValues().size() );
+    List<String> actualStrings = new ArrayList<String>( evaluator.getValues() );
+    Collections.sort( strings );
+    Collections.sort( actualStrings );
+
     Iterator<String> exIterator = strings.iterator();
-    Iterator<String> iterator = evaluator.getValues().iterator();
+    Iterator<String> iterator = actualStrings.iterator();
     while ( iterator.hasNext() ) {
       assertEquals( exIterator.next(), iterator.next() );
     }
