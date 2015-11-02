@@ -22,17 +22,15 @@
 
 package org.pentaho.di.job;
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.pentaho.di.core.exception.IdNotFoundException;
+import org.pentaho.di.core.exception.LookupReferencesException;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.Repository;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class JobMetaTest {
 
@@ -50,7 +48,8 @@ public class JobMetaTest {
 
     JobEntryTrans brokenJobEntryMock = mock( JobEntryTrans.class );
     when( brokenJobEntryMock.hasRepositoryReferences() ).thenReturn( true );
-    doThrow( new RuntimeException() ).when( brokenJobEntryMock ).lookupRepositoryReferences( any( Repository.class ) );
+    doThrow( mock( IdNotFoundException.class ) )
+      .when( brokenJobEntryMock ).lookupRepositoryReferences( any( Repository.class ) );
 
     JobEntryCopy jobEntryCopy1 = mock( JobEntryCopy.class );
     when( jobEntryCopy1.getEntry() ).thenReturn( jobEntryMock );
@@ -64,7 +63,15 @@ public class JobMetaTest {
     when( jobEntryCopy3.getEntry() ).thenReturn( jobEntryMock );
     jobMetaMock.addJobEntry( 2, jobEntryCopy3 );
 
-    jobMetaMock.lookupRepositoryReferences( any( Repository.class ) );
+    Repository repo = mock( Repository.class );
+    try {
+      jobMetaMock.lookupRepositoryReferences( repo );
+      Assert.fail( "no exception for broken entry" );
+    } catch ( LookupReferencesException e ) {
+      // ok
+    }
+
+    verify( jobEntryMock, times( 2 ) ).lookupRepositoryReferences( any( Repository.class ) );
 
   }
 }
