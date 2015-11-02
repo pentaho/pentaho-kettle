@@ -189,6 +189,7 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
    */
 
   public void setFolderRequired( String[] folderRequiredin ) {
+    this.folderRequired = new String[folderRequiredin.length];
     for ( int i = 0; i < folderRequiredin.length; i++ ) {
       this.folderRequired[i] = getRequiredFoldersCode( folderRequiredin[i] );
     }
