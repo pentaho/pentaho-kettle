@@ -320,29 +320,29 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
-      encoding = XMLHandler.getTagValue( stepnode, "encoding" );
-      nameSpace = XMLHandler.getTagValue( stepnode, "name_space" );
-      mainElement = XMLHandler.getTagValue( stepnode, "xml_main_element" );
-      repeatElement = XMLHandler.getTagValue( stepnode, "xml_repeat_element" );
+      setEncoding( XMLHandler.getTagValue( stepnode, "encoding" ) );
+      setNameSpace( XMLHandler.getTagValue( stepnode, "name_space" ) );
+      setMainElement( XMLHandler.getTagValue( stepnode, "xml_main_element" ) );
+      setRepeatElement( XMLHandler.getTagValue( stepnode, "xml_repeat_element" ) );
 
-      fileName = XMLHandler.getTagValue( stepnode, "file", "name" );
-      extension = XMLHandler.getTagValue( stepnode, "file", "extention" );
-      servletOutput = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "servlet_output" ) );
+      setFileName( XMLHandler.getTagValue( stepnode, "file", "name" ) );
+      setExtension( XMLHandler.getTagValue( stepnode, "file", "extention" ) );
+      setServletOutput( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "servlet_output" ) ) );
 
-      doNotOpenNewFileInit =
-        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "do_not_open_newfile_init" ) );
-      stepNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "split" ) );
-      dateInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_date" ) );
-      timeInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_time" ) );
-      SpecifyFormat = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "SpecifyFormat" ) );
-      omitNullValues = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "omit_null_values" ) );
-      date_time_format = XMLHandler.getTagValue( stepnode, "file", "date_time_format" );
+      setDoNotOpenNewFileInit(
+          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "do_not_open_newfile_init" ) ) );
+      setStepNrInFilename( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "split" ) ) );
+      setDateInFilename( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_date" ) ) );
+      setTimeInFilename( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_time" ) ) );
+      setSpecifyFormat( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "SpecifyFormat" ) ) );
+      setOmitNullValues( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "omit_null_values" ) ) );
+      setDateTimeFormat( XMLHandler.getTagValue( stepnode, "file", "date_time_format" ) );
 
-      addToResultFilenames =
-        "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_to_result_filenames" ) );
+      setAddToResultFiles(
+          "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_to_result_filenames" ) ) );
 
-      zipped = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "zipped" ) );
-      splitEvery = Const.toInt( XMLHandler.getTagValue( stepnode, "file", "splitevery" ), 0 );
+      setZipped( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "zipped" ) ) );
+      setSplitEvery( Const.toInt( XMLHandler.getTagValue( stepnode, "file", "splitevery" ), 0 ) );
 
       Node fields = XMLHandler.getSubNode( stepnode, "fields" );
       int nrfields = XMLHandler.countNodes( fields, "field" );
@@ -409,21 +409,6 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     int nrfields = 0;
 
     allocate( nrfields );
-
-    for ( int i = 0; i < nrfields; i++ ) {
-      outputFields[i] = new XMLField();
-      outputFields[i].setContentType( ContentType.Element );
-      outputFields[i].setFieldName( "field" + i );
-      outputFields[i].setElementName( "field" + i );
-      outputFields[i].setType( "Number" );
-      outputFields[i].setFormat( " 0,000,000.00;-0,000,000.00" );
-      outputFields[i].setCurrencySymbol( "" );
-      outputFields[i].setDecimalSymbol( "," );
-      outputFields[i].setGroupingSymbol( "." );
-      outputFields[i].setNullString( "" );
-      outputFields[i].setLength( -1 );
-      outputFields[i].setPrecision( -1 );
-    }
   }
 
   public String[] getFiles( VariableSpace space ) {
