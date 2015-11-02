@@ -1332,9 +1332,16 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     saveJob( job, initial, getPublicDir() );
 
     List<VersionSummary> historyBefore = repo.getVersionSummaries( job.getObjectId().getId() );
+
+    long before = System.currentTimeMillis();
     repository.renameTransformation( job.getObjectId(), job.getRepositoryDirectory(), renamed );
+    long after = System.currentTimeMillis();
+
     List<VersionSummary> historyAfter = repo.getVersionSummaries( job.getObjectId().getId() );
     assertEquals( historyBefore.size() + 1, historyAfter.size() );
+    long newRevisionTs = historyAfter.get( historyAfter.size() - 1 ).getDate().getTime();
+    assertTrue( String.format( "%d <= %d <= %d", before, newRevisionTs, after ),
+        ( before <= newRevisionTs ) && ( newRevisionTs <= after ) );
   }
 
   @Test( expected = KettleException.class )
@@ -1472,9 +1479,16 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     saveTrans( trans, initial, getPublicDir() );
 
     List<VersionSummary> historyBefore = repo.getVersionSummaries( trans.getObjectId().getId() );
+
+    long before = System.currentTimeMillis();
     repository.renameTransformation( trans.getObjectId(), trans.getRepositoryDirectory(), renamed );
+    long after = System.currentTimeMillis();
+
     List<VersionSummary> historyAfter = repo.getVersionSummaries( trans.getObjectId().getId() );
     assertEquals( historyBefore.size() + 1, historyAfter.size() );
+    long newRevisionTs = historyAfter.get( historyAfter.size() - 1 ).getDate().getTime();
+    assertTrue( String.format( "%d <= %d <= %d", before, newRevisionTs, after ),
+        ( before <= newRevisionTs ) && ( newRevisionTs <= after ) );
   }
 
   @Test( expected = KettleException.class )
