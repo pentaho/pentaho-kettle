@@ -54,7 +54,7 @@ import static org.pentaho.di.repository.kdr.KettleDatabaseRepositoryBase.*;
 /**
  * @author Andrey Khayrutdinov
  */
-public class KettleDatabaseRepositoryUnitTest {
+public class KettleDatabaseRepository_GetObjectInformation_Test {
   private static final String ABSENT_ID = "non-existing object";
   private static final String EXISTING_ID = "existing object";
 

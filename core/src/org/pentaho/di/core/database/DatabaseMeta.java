@@ -2534,6 +2534,21 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     return null;
   }
 
+  public static int indexOfName( String[] databaseNames, String name ) {
+    if ( databaseNames == null || name == null ) {
+      return -1;
+    }
+
+    for ( int i = 0; i < databaseNames.length; i++ ) {
+      String databaseName = databaseNames[ i ];
+      if ( name.equalsIgnoreCase( databaseName ) ) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
   /**
    * Find a database with a certain ID in an arraylist of databases.
    *
