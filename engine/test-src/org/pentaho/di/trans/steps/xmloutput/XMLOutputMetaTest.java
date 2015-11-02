@@ -22,20 +22,33 @@
 
 package org.pentaho.di.trans.steps.xmloutput;
 
+import org.apache.commons.vfs2.FileObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -56,6 +69,10 @@ public class XMLOutputMetaTest {
     DatabaseMeta dbMeta = mock( DatabaseMeta.class );
     IMetaStore metaStore = mock( IMetaStore.class );
     xmlOutputMeta.loadXML( stepnode, Collections.singletonList( dbMeta ), metaStore );
+    assertXmlOutputMeta( xmlOutputMeta );
+  }
+
+  private void assertXmlOutputMeta( XMLOutputMeta xmlOutputMeta ) {
     assertEquals( "xmlOutputFile", xmlOutputMeta.getFileName() );
     assertFalse( xmlOutputMeta.isDoNotOpenNewFileInit() );
     assertFalse( xmlOutputMeta.isServletOutput() );
@@ -324,5 +341,199 @@ public class XMLOutputMetaTest {
 
 
     Mockito.verifyNoMoreInteractions( rep, metastore );
+  }
+
+  @Test
+  public void testGetNewline() throws Exception {
+    XMLOutputMeta xmlOutputMeta = new XMLOutputMeta();
+    assertEquals( "\r\n", xmlOutputMeta.getNewLine( "DOS" ) );
+    assertEquals( "\n", xmlOutputMeta.getNewLine( "UNIX" ) );
+    assertEquals( System.getProperty( "line.separator" ), xmlOutputMeta.getNewLine( null ) );
+  }
+
+  @Test
+  public void testClone() throws Exception {
+    XMLOutputMeta xmlOutputMeta = new XMLOutputMeta();
+    Node stepnode = getTestNode();
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    IMetaStore metaStore = mock( IMetaStore.class );
+    xmlOutputMeta.loadXML( stepnode, Collections.singletonList( dbMeta ), metaStore );
+    XMLOutputMeta cloned = (XMLOutputMeta) xmlOutputMeta.clone();
+    assertNotSame( cloned, xmlOutputMeta );
+    assertXmlOutputMeta( cloned );
+  }
+
+  @Test
+  public void testSetDefault() throws Exception {
+    XMLOutputMeta xmlOutputMeta = new XMLOutputMeta();
+    xmlOutputMeta.setDefault();
+    assertEquals( "file", xmlOutputMeta.getFileName() );
+    assertEquals( "xml", xmlOutputMeta.getExtension() );
+    assertFalse( xmlOutputMeta.isStepNrInFilename() );
+    assertFalse( xmlOutputMeta.isDoNotOpenNewFileInit() );
+    assertFalse( xmlOutputMeta.isDateInFilename() );
+    assertFalse( xmlOutputMeta.isTimeInFilename() );
+    assertFalse( xmlOutputMeta.isAddToResultFiles() );
+    assertFalse( xmlOutputMeta.isZipped() );
+    assertEquals( 0, xmlOutputMeta.getSplitEvery() );
+    assertEquals( Const.XML_ENCODING, xmlOutputMeta.getEncoding() );
+    assertEquals( "", xmlOutputMeta.getNameSpace() );
+    assertNull( xmlOutputMeta.getDateTimeFormat() );
+    assertFalse( xmlOutputMeta.isSpecifyFormat() );
+    assertFalse( xmlOutputMeta.isOmitNullValues() );
+    assertEquals( "Rows", xmlOutputMeta.getMainElement() );
+    assertEquals( "Row", xmlOutputMeta.getRepeatElement() );
+  }
+
+  @Test
+  public void testGetFiles() throws Exception {
+    XMLOutputMeta xmlOutputMeta = new XMLOutputMeta();
+    xmlOutputMeta.setDefault();
+    xmlOutputMeta.setStepNrInFilename( true );
+    xmlOutputMeta.setSplitEvery( 100 );
+    xmlOutputMeta.setSpecifyFormat( true );
+    xmlOutputMeta.setDateTimeFormat( "99" );
+    String[] files = xmlOutputMeta.getFiles( new Variables() );
+    assertEquals( 10, files.length );
+    assertArrayEquals(
+        new String[] {
+            "file99_0_00001.xml",
+            "file99_0_00002.xml",
+            "file99_0_00003.xml",
+            "file99_1_00001.xml",
+            "file99_1_00002.xml",
+            "file99_1_00003.xml",
+            "file99_2_00001.xml",
+            "file99_2_00002.xml",
+            "file99_2_00003.xml",
+            "..."}, files );
+  }
+
+  @Test
+  public void testGetFields() throws Exception {
+    XMLOutputMeta xmlOutputMeta = new XMLOutputMeta();
+    xmlOutputMeta.setDefault();
+    XMLField xmlField = new XMLField();
+    xmlField.setFieldName( "aField" );
+    xmlField.setLength( 10 );
+    xmlField.setPrecision( 3 );
+    xmlOutputMeta.setOutputFields( new XMLField[]{xmlField} );
+    RowMetaInterface row = mock( RowMetaInterface.class );
+    RowMetaInterface rmi = mock( RowMetaInterface.class );
+    StepMeta nextStep = mock( StepMeta.class );
+    Repository repo = mock( Repository.class );
+    IMetaStore metastore = mock( IMetaStore.class );
+    ValueMetaInterface vmi = mock( ValueMetaInterface.class );
+    when( row.searchValueMeta( "aField" ) ).thenReturn( vmi );
+    xmlOutputMeta.getFields( row, "", new RowMetaInterface[] { rmi }, nextStep, new Variables(), repo, metastore );
+    verify( vmi ).setLength( 10, 3 );
+  }
+
+  @Test
+  public void testLoadXmlException() throws Exception {
+    XMLOutputMeta xmlOutputMeta = new XMLOutputMeta();
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    IMetaStore metaStore = mock( IMetaStore.class );
+    Node stepNode = mock( Node.class );
+    when( stepNode.getChildNodes() ).thenThrow( new RuntimeException( "some words" ) );
+    try {
+      xmlOutputMeta.loadXML( stepNode, Collections.singletonList( dbMeta ), metaStore );
+    } catch ( KettleXMLException e ) {
+      assertEquals( "some words", e.getCause().getMessage() );
+    }
+  }
+
+  @Test
+  public void testReadRepException() throws Exception {
+    XMLOutputMeta xmlOutputMeta = new XMLOutputMeta();
+    Repository rep = mock( Repository.class );
+    IMetaStore metastore = mock( IMetaStore.class );
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    ObjectId oid = new StringObjectId( "oid" );
+    when( rep.getStepAttributeString( oid, "encoding" ) ).thenThrow( new RuntimeException( "encoding exception" ) );
+    try {
+      xmlOutputMeta.readRep( rep, metastore, oid, Collections.singletonList( dbMeta ) );
+    } catch ( KettleException e ) {
+      assertEquals( "encoding exception", e.getCause().getMessage() );
+    }
+  }
+
+  @Test
+  public void testGetRequiredFields() throws Exception {
+    XMLOutputMeta xmlOutputMeta = new XMLOutputMeta();
+    xmlOutputMeta.setDefault();
+    XMLField xmlField = new XMLField();
+    xmlField.setFieldName( "aField" );
+    xmlField.setType( 1 );
+    xmlField.setLength( 10 );
+    xmlField.setPrecision( 3 );
+
+    XMLField xmlField2 = new XMLField();
+    xmlField2.setFieldName( "bField" );
+    xmlField2.setType( 3 );
+    xmlField2.setLength( 4 );
+    xmlField2.setPrecision( 5 );
+    xmlOutputMeta.setOutputFields( new XMLField[]{ xmlField, xmlField2 } );
+    RowMetaInterface requiredFields = xmlOutputMeta.getRequiredFields( new Variables() );
+    List<ValueMetaInterface> valueMetaList = requiredFields.getValueMetaList();
+    assertEquals( 2, valueMetaList.size() );
+    assertEquals( "aField", valueMetaList.get( 0 ).getName() );
+    assertEquals( 1, valueMetaList.get( 0 ).getType() );
+    assertEquals( 10, valueMetaList.get( 0 ).getLength() );
+    assertEquals( 3, valueMetaList.get( 0 ).getPrecision() );
+
+    assertEquals( "bField", valueMetaList.get( 1 ).getName() );
+    assertEquals( 3, valueMetaList.get( 1 ).getType() );
+    assertEquals( 4, valueMetaList.get( 1 ).getLength() );
+    assertEquals( 5, valueMetaList.get( 1 ).getPrecision() );
+  }
+
+  @Test
+  public void testExportResources() throws Exception {
+    XMLOutputMeta xmlOutputMeta = new XMLOutputMeta();
+    xmlOutputMeta.setDefault();
+    ResourceNamingInterface resourceNamingInterface = mock( ResourceNamingInterface.class );
+    Variables space = new Variables();
+    when( resourceNamingInterface.nameResource( any( FileObject.class ), eq( space ), eq( true ) ) )
+        .thenReturn( "exportFile" );
+    xmlOutputMeta.exportResources( space, null, resourceNamingInterface, null, null );
+    assertEquals( "exportFile", xmlOutputMeta.getFileName() );
+  }
+
+  @Test
+  public void testCheck() throws Exception {
+    XMLOutputMeta xmlOutputMeta = new XMLOutputMeta();
+    xmlOutputMeta.setDefault();
+    TransMeta transMeta = mock( TransMeta.class );
+    StepMeta stepInfo = mock( StepMeta.class );
+    RowMetaInterface prev = mock( RowMetaInterface.class );
+    Repository repos = mock( Repository.class );
+    IMetaStore metastore = mock( IMetaStore.class );
+    RowMetaInterface info = mock( RowMetaInterface.class );
+    ArrayList<CheckResultInterface> remarks = new ArrayList<>();
+    xmlOutputMeta.check( remarks, transMeta, stepInfo,
+        prev, new String[]{"input"}, new String[]{"output"}, info, new Variables(),
+        repos, metastore  );
+    assertEquals( 2,  remarks.size() );
+    assertEquals( "Step is receiving info from other steps.", remarks.get( 0 ).getText() );
+    assertEquals( "File specifications are not checked.", remarks.get( 1 ).getText() );
+
+    XMLField xmlField = new XMLField();
+    xmlField.setFieldName( "aField" );
+    xmlField.setType( 1 );
+    xmlField.setLength( 10 );
+    xmlField.setPrecision( 3 );
+    xmlOutputMeta.setOutputFields( new XMLField[] { xmlField } );
+    when( prev.size() ).thenReturn( 1 );
+    remarks.clear();
+    xmlOutputMeta.check( remarks, transMeta, stepInfo,
+        prev, new String[]{"input"}, new String[]{"output"}, info, new Variables(),
+        repos, metastore  );
+    assertEquals( 4,  remarks.size() );
+    assertEquals( "Step is connected to previous one, receiving 1 fields", remarks.get( 0 ).getText() );
+    assertEquals( "All output fields are found in the input stream.", remarks.get( 1 ).getText() );
+    assertEquals( "Step is receiving info from other steps.", remarks.get( 2 ).getText() );
+    assertEquals( "File specifications are not checked.", remarks.get( 3 ).getText() );
+
   }
 }
