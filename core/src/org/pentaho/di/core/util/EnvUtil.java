@@ -109,6 +109,12 @@ public class EnvUtil {
     System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, "0" );
     System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_UNIQUE_COUNT, "1" );
     System.getProperties().put( Const.INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER, "0" );
+
+    // If user didn't set value for USER_DIR_IS_ROOT set it to "false". See PDI-14522
+    if ( !kettleProperties.containsKey( Const.VFS_USER_DIR_IS_ROOT ) ) {
+      System.getProperties().put( Const.VFS_USER_DIR_IS_ROOT, "false" );
+    }
+
   }
 
   public static void applyKettleProperties( Map<?, ?> kettleProperties ) {
