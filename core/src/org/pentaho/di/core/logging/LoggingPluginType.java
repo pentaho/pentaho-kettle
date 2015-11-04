@@ -167,7 +167,7 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
 
   @Override
   protected boolean extractSeparateClassLoader( Annotation annotation ) {
-    return false;
+    return ( (LoggingPlugin) annotation ).isSeparateClassLoaderNeeded();
   }
 
   @Override

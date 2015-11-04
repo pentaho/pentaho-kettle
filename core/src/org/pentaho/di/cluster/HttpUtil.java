@@ -22,25 +22,12 @@
 
 package org.pentaho.di.cluster;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -50,9 +37,23 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
 public class HttpUtil {
 
   public static final int ZIP_BUFFER_SIZE = 8192;
+  private static final String PROTOCOL_UNSECURE = "http";
+  private static final String PROTOCOL_SECURE = "https";
 
   private static HttpClient getClient( VariableSpace space, String hostname, String port, String webAppName,
       String username, String password, String proxyHostname, String proxyPort, String nonProxyHosts ) {
@@ -98,13 +99,13 @@ public class HttpUtil {
 
   public static String execService( VariableSpace space, String hostname, String port, String webAppName,
       String serviceAndArguments, String username, String password, String proxyHostname, String proxyPort,
-      String nonProxyHosts ) throws Exception {
+      String nonProxyHosts, boolean isSecure ) throws Exception {
 
     HttpClient
         client =
         getClient( space, hostname, port, webAppName, username, password, proxyHostname, proxyPort, nonProxyHosts );
 
-    String urlString = constructUrl( space, hostname, port, webAppName, serviceAndArguments );
+    String urlString = constructUrl( space, hostname, port, webAppName, serviceAndArguments, isSecure );
     HttpMethod method = new GetMethod( urlString );
 
     try {
@@ -114,6 +115,13 @@ public class HttpUtil {
       method.releaseConnection();
     }
 
+  }
+
+  public static String execService( VariableSpace space, String hostname, String port, String webAppName,
+      String serviceAndArguments, String username, String password, String proxyHostname, String proxyPort,
+      String nonProxyHosts ) throws Exception {
+    return execService( space, hostname, port, webAppName, serviceAndArguments, username, password, proxyHostname,
+        proxyPort, nonProxyHosts, false );
   }
 
   public static int execMethod( HttpClient client, HttpMethod method ) throws Exception {
@@ -154,11 +162,17 @@ public class HttpUtil {
    */
   public static String constructUrl( VariableSpace space, String hostname, String port, String webAppName,
     String serviceAndArguments ) throws UnsupportedEncodingException {
+    return constructUrl( space, hostname, port, webAppName, serviceAndArguments, false );
+  }
+
+  public static String constructUrl( VariableSpace space, String hostname, String port, String webAppName,
+      String serviceAndArguments, boolean isSecure ) throws UnsupportedEncodingException {
     String realHostname = space.environmentSubstitute( hostname );
     if ( !StringUtils.isEmpty( webAppName ) ) {
       serviceAndArguments = "/" + space.environmentSubstitute( webAppName ) + serviceAndArguments;
     }
-    String retval = "http://" + realHostname + getPortSpecification( space, port ) + serviceAndArguments;
+    String protocol = isSecure ? PROTOCOL_SECURE : PROTOCOL_UNSECURE;
+    String retval = protocol + "://" + realHostname + getPortSpecification( space, port ) + serviceAndArguments;
     retval = Const.replace( retval, " ", "%20" );
     return retval;
   }

@@ -92,6 +92,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
       }
 
       boolean newGroup = false;
+      transExecutorData.groupBuffer.add( new RowMetaAndData( getInputRowMeta(), row ) ); // should we clone for safety?
       if ( transExecutorData.groupSize >= 0 ) {
         // Pass the input rows in blocks to the transformation result rows...
         if ( transExecutorData.groupSize != 0 ) {
@@ -117,8 +118,6 @@ public class TransExecutor extends BaseStep implements StepInterface {
       if ( newGroup ) {
         executeTransformation();
       }
-
-      transExecutorData.groupBuffer.add( new RowMetaAndData( getInputRowMeta(), row ) ); // should we clone for safety?
 
       return true;
     } catch ( Exception e ) {

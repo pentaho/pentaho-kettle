@@ -600,16 +600,18 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
   @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    inputRowMeta.clear();
-
     if ( nextStep != null ) {
       if ( nextStep.equals( executionResultTargetStepMeta ) ) {
+        inputRowMeta.clear();
         prepareExecutionResultsFields( inputRowMeta, nextStep );
       } else if ( nextStep.equals( resultFilesTargetStepMeta ) ) {
+        inputRowMeta.clear();
         prepareExecutionResultsFileFields( inputRowMeta, nextStep );
       } else if ( nextStep.equals( outputRowsSourceStepMeta ) ) {
+        inputRowMeta.clear();
         prepareResultsRowsFields( inputRowMeta );
       }
+      // else don't call clear on inputRowMeta, it's the main output and should mimic the input
     }
   }
 
@@ -644,9 +646,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
           //
           if ( rep != null ) {
             // need to try to load from the repository
-            while ( realFilename.contains( "//" ) ) {
-              realFilename = realFilename.replace( "//", "/" );
-            }
+            realFilename = r.normalizeSlashes( realFilename );
             try {
               String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
               String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1 );
@@ -685,9 +685,7 @@ public class TransExecutorMeta extends BaseStepMeta implements StepMetaInterface
 
         if ( rep != null ) {
           if ( !Const.isEmpty( realTransname ) && !Const.isEmpty( realDirectory ) ) {
-            while ( realDirectory.contains( "//" ) ) {
-              realDirectory = realDirectory.replace( "//", "/" );
-            }
+            realDirectory = r.normalizeSlashes( realDirectory );
             RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
             if ( repdir != null ) {
               try {

@@ -23,20 +23,6 @@
 
 package org.pentaho.di.core.database;
 
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
@@ -53,6 +39,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.util.ExecutorUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -67,6 +54,20 @@ import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjectBase;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.w3c.dom.Node;
+
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 /**
  * This class defines the database specific parameters for a certain database type. It also provides static information
@@ -94,9 +95,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
   private DatabaseInterface databaseInterface;
 
-  private static final ReadWriteLock databaseInterfacesMapLock = new ReentrantReadWriteLock();
-
-  private static Map<String, DatabaseInterface> allDatabaseInterfaces;
+  private static volatile Future<Map<String, DatabaseInterface>> allDatabaseInterfaces;
 
   static {
     PluginRegistry.getInstance().addPluginListener( DatabasePluginType.class,
@@ -1360,58 +1359,60 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * next call to getDatabaseInterfacesMap() will reload the map.
    */
   public static final void clearDatabaseInterfacesMap() {
-    databaseInterfacesMapLock.writeLock().lock();
     allDatabaseInterfaces = null;
-    databaseInterfacesMapLock.writeLock().unlock();
   }
 
-  private static final Map<String, DatabaseInterface> createDatabaseInterfacesMap() {
-    LogChannelInterface log = LogChannel.GENERAL;
-    PluginRegistry registry = PluginRegistry.getInstance();
+  private static final Future<Map<String, DatabaseInterface>> createDatabaseInterfacesMap() {
+    return ExecutorUtil.getExecutor().submit( new Callable<Map<String, DatabaseInterface>>() {
+      private Map<String, DatabaseInterface> doCreate() {
+        LogChannelInterface log = LogChannel.GENERAL;
+        PluginRegistry registry = PluginRegistry.getInstance();
 
-    List<PluginInterface> plugins = registry.getPlugins( DatabasePluginType.class );
-    HashMap<String, DatabaseInterface> tmpAllDatabaseInterfaces = new HashMap<String, DatabaseInterface>();
-    for ( PluginInterface plugin : plugins ) {
-      try {
-        DatabaseInterface databaseInterface = (DatabaseInterface) registry.loadClass( plugin );
-        databaseInterface.setPluginId( plugin.getIds()[0] );
-        databaseInterface.setPluginName( plugin.getName() );
-        tmpAllDatabaseInterfaces.put( plugin.getIds()[0], databaseInterface );
-      } catch ( KettlePluginException cnfe ) {
-        System.out.println( "Could not create connection entry for "
-          + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
-        log.logError( "Could not create connection entry for "
-          + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
-        if ( log.isDebug() ) {
-          log.logDebug( "Debug-Error loading plugin: " + plugin, cnfe );
+        List<PluginInterface> plugins = registry.getPlugins( DatabasePluginType.class );
+        HashMap<String, DatabaseInterface> tmpAllDatabaseInterfaces = new HashMap<String, DatabaseInterface>();
+        for ( PluginInterface plugin : plugins ) {
+          try {
+            DatabaseInterface databaseInterface = (DatabaseInterface) registry.loadClass( plugin );
+            databaseInterface.setPluginId( plugin.getIds()[ 0 ] );
+            databaseInterface.setPluginName( plugin.getName() );
+            tmpAllDatabaseInterfaces.put( plugin.getIds()[ 0 ], databaseInterface );
+          } catch ( KettlePluginException cnfe ) {
+            System.out.println( "Could not create connection entry for "
+              + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
+            log.logError( "Could not create connection entry for "
+              + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
+            if ( log.isDebug() ) {
+              log.logDebug( "Debug-Error loading plugin: " + plugin, cnfe );
+            }
+          } catch ( Exception e ) {
+            log.logError( "Error loading plugin: " + plugin, e );
+          }
         }
-      } catch ( Exception e ) {
-        log.logError( "Error loading plugin: " + plugin, e );
+        return Collections.unmodifiableMap( tmpAllDatabaseInterfaces );
       }
-    }
-    return Collections.unmodifiableMap( tmpAllDatabaseInterfaces );
+
+      @Override public Map<String, DatabaseInterface> call() throws Exception {
+        return doCreate();
+      }
+    } );
   }
 
   public static final Map<String, DatabaseInterface> getDatabaseInterfacesMap() {
-    // Acquire read lock
-    databaseInterfacesMapLock.readLock().lock();
+    Future<Map<String, DatabaseInterface>> allDatabaseInterfaces = DatabaseMeta.allDatabaseInterfaces;
+    while ( allDatabaseInterfaces == null ) {
+      DatabaseMeta.allDatabaseInterfaces = createDatabaseInterfacesMap();
+      allDatabaseInterfaces = DatabaseMeta.allDatabaseInterfaces;
+    }
     try {
-      if ( allDatabaseInterfaces == null ) {
-        // Upgrade lock to write and load database map (Must release read to acquire write)
-        databaseInterfacesMapLock.readLock().unlock();
-        try {
-          databaseInterfacesMapLock.writeLock().lock();
-          allDatabaseInterfaces = createDatabaseInterfacesMap();
-        } finally {
-          // Downgrade the lock to read
-          databaseInterfacesMapLock.readLock().lock();
-          databaseInterfacesMapLock.writeLock().unlock();
-        }
+      return allDatabaseInterfaces.get();
+    } catch ( Exception e ) {
+      clearDatabaseInterfacesMap();
+      // doCreate() above doesn't declare any exceptions so anything that comes out SHOULD be a runtime exception
+      if ( e instanceof RuntimeException ) {
+        throw (RuntimeException) e;
+      } else {
+        throw new RuntimeException( e );
       }
-      return allDatabaseInterfaces;
-    } finally {
-      // Release read lock
-      databaseInterfacesMapLock.readLock().unlock();
     }
   }
 
@@ -2566,6 +2567,21 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     return null;
   }
 
+  public static int indexOfName( String[] databaseNames, String name ) {
+    if ( databaseNames == null || name == null ) {
+      return -1;
+    }
+
+    for ( int i = 0; i < databaseNames.length; i++ ) {
+      String databaseName = databaseNames[ i ];
+      if ( name.equalsIgnoreCase( databaseName ) ) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
   /**
    * Find a database with a certain ID in an arraylist of databases.
    *
@@ -2922,8 +2938,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    *
    * @return String the create table statement
    */
-   public String getCreateTableStatement() {
-     return databaseInterface.getCreateTableStatement();
-   }
-
+  public String getCreateTableStatement() {
+    return databaseInterface.getCreateTableStatement();
+  }
 }

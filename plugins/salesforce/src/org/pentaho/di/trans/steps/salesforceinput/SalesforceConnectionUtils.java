@@ -32,7 +32,7 @@ public class SalesforceConnectionUtils {
 
   public static final String LIB_VERION = "21.0";
 
-  public static final String TARGET_DEFAULT_URL = "https://www.salesforce.com/services/Soap/u/21.0";
+  public static final String TARGET_DEFAULT_URL = "https://login.salesforce.com/services/Soap/u/21.0";
 
   public static final String DEFAULT_TIMEOUT = "60000";
 

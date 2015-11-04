@@ -138,7 +138,7 @@ public class DimensionLookupMetaTest {
         dlm.getSQLStatements( new TransMeta(), stepMeta, rowMetaInterface, repository, metaStore );
 
     String sql = sqlStatement.getSQL();
-    Assert.assertTrue( StringUtils.countMatches( sql, schemaTable ) == 3 );
+    assertEquals( 3, StringUtils.countMatches( sql, schemaTable ) );
   }
 
   @Test

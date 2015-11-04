@@ -255,7 +255,8 @@ public class KettleFileRepository extends AbstractRepository {
     return calcDirectoryName( null ) + id.toString();
   }
 
-  private FileObject getFileObject( RepositoryElementInterface element ) throws KettleFileException {
+  // package-local visibility for testing purposes
+  FileObject getFileObject( RepositoryElementInterface element ) throws KettleFileException {
     return KettleVFS.getFileObject( calcFilename( element.getRepositoryDirectory(), element.getName(), element
       .getRepositoryElementType().getExtension() ) );
   }
@@ -496,7 +497,18 @@ public class KettleFileRepository extends AbstractRepository {
   }
 
   public ObjectId getDatabaseID( String name ) throws KettleException {
-    return getObjectId( null, name, EXT_DATABASE );
+    ObjectId match = getObjectId( null, name, EXT_DATABASE );
+    if ( match == null ) {
+      // exact match failed, trying to find the DB case-insensitively
+      ObjectId[] existingIds = getDatabaseIDs( false );
+      String[] existingNames = getDatabaseNames( existingIds );
+      int index = DatabaseMeta.indexOfName( existingNames, name );
+      if ( index != -1 ) {
+        return getObjectId( null, existingNames[ index ], EXT_DATABASE );
+      }
+    }
+
+    return match;
   }
 
   public ObjectId[] getTransformationDatabaseIDs( ObjectId id_transformation ) throws KettleException {
@@ -509,6 +521,10 @@ public class KettleFileRepository extends AbstractRepository {
 
   public String[] getDatabaseNames( boolean includeDeleted ) throws KettleException {
     return convertRootIDsToNames( getDatabaseIDs( false ) );
+  }
+
+  private String[] getDatabaseNames( ObjectId[] databaseIds ) throws KettleException {
+    return convertRootIDsToNames( databaseIds );
   }
 
   public String[] getDirectoryNames( ObjectId id_directory ) throws KettleException {
@@ -1020,6 +1036,8 @@ public class KettleFileRepository extends AbstractRepository {
     //
     String filename = calcDirectoryName( repdir ) + transname + ".ktr";
     TransMeta transMeta = new TransMeta( filename, this, setInternalVariables );
+    transMeta.setRepository( this );
+    transMeta.setMetaStore( getMetaStore() );
     transMeta.setFilename( null );
     transMeta.setName( transname );
     transMeta.setObjectId( new StringObjectId( calcObjectId( repdir, transname, EXT_TRANSFORMATION ) ) );

@@ -82,8 +82,9 @@ public class SpoonSlaveDelegate extends SpoonDelegate {
 
   public void newSlaveServer( HasSlaveServersInterface hasSlaveServersInterface ) {
     SlaveServer slaveServer = new SlaveServer();
-
-    SlaveServerDialog dialog = new SlaveServerDialog( spoon.getShell(), slaveServer );
+    
+    SlaveServerDialog dialog =
+        new SlaveServerDialog( spoon.getShell(), slaveServer, hasSlaveServersInterface.getSlaveServers() );
     if ( dialog.open() ) {
       slaveServer.verifyAndModifySlaveServerName( hasSlaveServersInterface.getSlaveServers(), null );
       hasSlaveServersInterface.getSlaveServers().add( slaveServer );

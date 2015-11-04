@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,7 +56,7 @@ public class TransFileListener implements FileListener {
     try {
       // Call extension point(s) before the file has been opened
       ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.TransBeforeOpen.id, fname );
-      
+
       TransMeta transMeta = new TransMeta();
       transMeta.loadXML(
         transNode, fname, spoon.getMetaStore(), spoon.getRepository(), true, new Variables(),
@@ -67,7 +67,7 @@ public class TransFileListener implements FileListener {
             Object[] res =
               spoon.messageDialogWithToggle(
                 BaseMessages.getString( PKG, "System.Button.Yes" ), null, message, Const.WARNING,
-                new String[] {
+                new String[]{
                   BaseMessages.getString( PKG, "System.Button.Yes" ),
                   BaseMessages.getString( PKG, "System.Button.No" ) }, 1, rememberText, !props
                   .askAboutReplacingDatabaseConnections() );
@@ -79,12 +79,12 @@ public class TransFileListener implements FileListener {
           }
 
         } );
-      
+
       if ( transMeta.hasMissingPlugins() ) {
         StepMeta stepMeta = transMeta.getStep( 0 );
         MissingTransDialog missingDialog =
-            new MissingTransDialog( spoon.getShell(), transMeta.getMissingTrans(), stepMeta.getStepMetaInterface(),
-                transMeta, stepMeta.getName() );
+          new MissingTransDialog( spoon.getShell(), transMeta.getMissingTrans(), stepMeta.getStepMetaInterface(),
+            transMeta, stepMeta.getName() );
         if ( missingDialog.open() == null ) {
           return true;
         }
@@ -95,7 +95,7 @@ public class TransFileListener implements FileListener {
       spoon.setTransMetaVariables( transMeta );
       spoon.getProperties().addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, fname, null, false, null );
       spoon.addMenuLast();
-      
+
       // If we are importing into a repository we need to fix 
       // up the references to other jobs and transformations
       // if any exist.
@@ -123,8 +123,8 @@ public class TransFileListener implements FileListener {
     } catch ( KettleException e ) {
       new ErrorDialog(
         spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorOpening.Title" ), BaseMessages
-          .getString( PKG, "Spoon.Dialog.ErrorOpening.Message" )
-          + fname, e );
+        .getString( PKG, "Spoon.Dialog.ErrorOpening.Message" )
+        + fname, e );
     }
     return false;
   }
@@ -132,35 +132,43 @@ public class TransFileListener implements FileListener {
   private TransMeta fixLinks( TransMeta transMeta ) {
     transMeta = processLinkedJobs( transMeta );
     transMeta = processLinkedTrans( transMeta );
-    
+
     return transMeta;
   }
 
-  private TransMeta processLinkedJobs( TransMeta transMeta ) {
+  protected TransMeta processLinkedJobs( TransMeta transMeta ) {
     for ( StepMeta stepMeta : transMeta.getSteps() ) {
       if ( stepMeta.getStepID().equalsIgnoreCase( "JobExecutor" ) ) {
-        JobExecutorMeta jem = ( JobExecutorMeta ) stepMeta.getStepMetaInterface();
-        jem.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
-        String filename = jem.getFileName();
-        String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
-        String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
-        jem.setJobName( jobname );
-        jem.setDirectoryPath( directory );
+        JobExecutorMeta jem = (JobExecutorMeta) stepMeta.getStepMetaInterface();
+        ObjectLocationSpecificationMethod specMethod = jem.getSpecificationMethod();
+        // If the reference is by filename, change it to Repository By Name. Otherwise it's fine so leave it alone
+        if ( specMethod == ObjectLocationSpecificationMethod.FILENAME ) {
+          jem.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+          String filename = jem.getFileName();
+          String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
+          String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
+          jem.setJobName( jobname );
+          jem.setDirectoryPath( directory );
+        }
       }
     }
     return transMeta;
   }
 
-  private TransMeta processLinkedTrans( TransMeta transMeta ) {
+  protected TransMeta processLinkedTrans( TransMeta transMeta ) {
     for ( StepMeta stepMeta : transMeta.getSteps() ) {
       if ( stepMeta.getStepID().equalsIgnoreCase( "TransExecutor" ) ) {
-        TransExecutorMeta tem = ( TransExecutorMeta ) stepMeta.getStepMetaInterface();
-        tem.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
-        String filename = tem.getFileName();
-        String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
-        String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
-        tem.setTransName( jobname );
-        tem.setDirectoryPath( directory );
+        TransExecutorMeta tem = (TransExecutorMeta) stepMeta.getStepMetaInterface();
+        ObjectLocationSpecificationMethod specMethod = tem.getSpecificationMethod();
+        // If the reference is by filename, change it to Repository By Name. Otherwise it's fine so leave it alone
+        if ( specMethod == ObjectLocationSpecificationMethod.FILENAME ) {
+          tem.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+          String filename = tem.getFileName();
+          String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
+          String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
+          tem.setTransName( jobname );
+          tem.setDirectoryPath( directory );
+        }
       }
     }
     return transMeta;
@@ -183,7 +191,7 @@ public class TransFileListener implements FileListener {
 
     boolean saveStatus = spoon.saveMeta( lmeta, fname );
 
-    if( saveStatus ) {
+    if ( saveStatus ) {
       try {
         ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.TransAfterClose.id, lmeta );
       } catch ( KettleException e ) {
@@ -207,14 +215,14 @@ public class TransFileListener implements FileListener {
   }
 
   public boolean acceptsXml( String nodeName ) {
-    if ( nodeName.equals( "transformation" ) ) {
+    if ( "transformation".equals( nodeName ) ) {
       return true;
     }
     return false;
   }
 
   public String[] getFileTypeDisplayNames( Locale locale ) {
-    return new String[] { "Transformations", "XML" };
+    return new String[]{ "Transformations", "XML" };
   }
 
   public String getRootNodeName() {
@@ -222,7 +230,7 @@ public class TransFileListener implements FileListener {
   }
 
   public String[] getSupportedExtensions() {
-    return new String[] { "ktr", "xml" };
+    return new String[]{ "ktr", "xml" };
   }
 
 }

@@ -22,8 +22,8 @@
 
 package org.pentaho.di.ui.job.entries.missing;
 
-import java.net.URL;
 import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -46,7 +46,6 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MissingEntryDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = MissingEntryDialog.class;
@@ -93,7 +92,7 @@ public class MissingEntryDialog extends JobEntryDialog implements JobEntryDialog
           BaseMessages.getString( PKG, "MissingEntryDialog.MissingJobEntryId", jobEntryInt.getName() + " - "
               + ( (MissingEntry) jobEntryInt ).getMissingPluginId() );
     }
-    return message.toString();
+    return message;
   }
 
   public JobEntryInterface open() {
@@ -103,7 +102,7 @@ public class MissingEntryDialog extends JobEntryDialog implements JobEntryDialog
     int margin = Const.MARGIN;
 
     shell =
-        new Shell( shellParent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.CLOSE | SWT.MAX | SWT.MIN | SWT.ICON
+        new Shell( shellParent, SWT.DIALOG_TRIM | SWT.CLOSE | SWT.ICON
             | SWT.APPLICATION_MODAL );
 
     props.setLook( shell );
@@ -111,6 +110,7 @@ public class MissingEntryDialog extends JobEntryDialog implements JobEntryDialog
 
     FormLayout formLayout = new FormLayout();
     formLayout.marginWidth = Const.FORM_MARGIN;
+    formLayout.marginLeft = Const.FORM_MARGIN;
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setText( BaseMessages.getString( PKG, "MissingEntryDialog.MissingPlugins" ) );
@@ -120,51 +120,33 @@ public class MissingEntryDialog extends JobEntryDialog implements JobEntryDialog
     props.setLook( image );
     Image icon = display.getSystemImage( SWT.ICON_QUESTION );
     image.setImage( icon );
-
-    Label error = new Label( shell, SWT.NONE );
-    props.setLook( error );
-    error.setText( getErrorMessage( missingEntries, mode ) );
-
     FormData imageData = new FormData();
     imageData.left = new FormAttachment( 0, 5 );
-    imageData.right = new FormAttachment( 10, 0 );
+    imageData.right = new FormAttachment( 11, 0 );
     imageData.top = new FormAttachment( 0, 10 );
     image.setLayoutData( imageData );
 
+    Label error = new Label( shell, SWT.WRAP );
+    props.setLook( error );
+    error.setText( getErrorMessage( missingEntries, mode ) );
     FormData errorData = new FormData();
     errorData.left = new FormAttachment( image, 5 );
-    errorData.right = new FormAttachment( 90, -5 );
+    errorData.right = new FormAttachment( 100, -5 );
     errorData.top = new FormAttachment( 0, 10 );
     error.setLayoutData( errorData );
 
-    if ( this.mode == MISSING_JOB_ENTRIES ) {
-      int height = 233;
-      int increase = 10 * missingEntries.size();
-      height = height + increase;
-      shell.setSize( 600, height );
-      shell.setMinimumSize( 600, height );
-    } else {
-      shell.setSize( 660, 150 );
-      shell.setMinimumSize( 660, 150 );
-    }
-
-    Button searchButton = new Button( shell, SWT.PUSH );
-    searchButton.setText( BaseMessages.getString( PKG, "MissingEntryDialog.SearchMarketplace" ) );
-    searchButton.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        try {
-          shell.dispose();
-          String marketURLStr = System.getProperty( "market-url" );
-          String marketTabLabel = System.getProperty( "market-tab-label" );
-          URL marketURL = new URL( marketURLStr );
-          Spoon.getInstance().addSpoonBrowser( marketTabLabel, marketURL.toString() );
-        } catch ( Exception ex ) {
-          ex.printStackTrace();
-        }
-      }
-    } );
+    Label separator = new Label( shell, SWT.WRAP );
+    props.setLook( separator );
+    FormData separatorData = new FormData();
+    separatorData.top = new FormAttachment( error, 10 );
+    separator.setLayoutData( separatorData );
 
     Button closeButton = new Button( shell, SWT.PUSH );
+    props.setLook( closeButton );
+    FormData fdClose = new FormData();
+    fdClose.right = new FormAttachment( 98 );
+    fdClose.top = new FormAttachment( separator );
+    closeButton.setLayoutData( fdClose );
     closeButton.setText( BaseMessages.getString( PKG, "MissingEntryDialog.Close" ) );
     closeButton.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
@@ -173,9 +155,14 @@ public class MissingEntryDialog extends JobEntryDialog implements JobEntryDialog
       }
     } );
 
-    Button[] buttons = null;
+    FormData fdSearch = new FormData();
     if ( this.mode == MISSING_JOB_ENTRIES ) {
       Button openButton = new Button( shell, SWT.PUSH );
+      props.setLook( openButton );
+      FormData fdOpen = new FormData();
+      fdOpen.right = new FormAttachment( closeButton, -5 );
+      fdOpen.bottom = new FormAttachment( closeButton, 0, SWT.BOTTOM );
+      openButton.setLayoutData( fdOpen );
       openButton.setText( BaseMessages.getString( PKG, "MissingEntryDialog.OpenFile" ) );
       openButton.addSelectionListener( new SelectionAdapter() {
         public void widgetSelected( SelectionEvent e ) {
@@ -183,13 +170,29 @@ public class MissingEntryDialog extends JobEntryDialog implements JobEntryDialog
           jobEntryResult = new MissingEntry();
         }
       } );
-      buttons = new Button[] { searchButton, openButton, closeButton };
+      fdSearch.right = new FormAttachment( openButton, -5 );
+      fdSearch.bottom = new FormAttachment( openButton, 0, SWT.BOTTOM );
     } else {
-      buttons = new Button[] { searchButton, closeButton, };
+      fdSearch.right = new FormAttachment( closeButton, -5 );
+      fdSearch.bottom = new FormAttachment( closeButton, 0, SWT.BOTTOM );
     }
 
-    BaseStepDialog.positionBottomButtons( shell, buttons, margin, null );
+    Button searchButton = new Button( shell, SWT.PUSH );
+    props.setLook( searchButton );
+    searchButton.setText( BaseMessages.getString( PKG, "MissingEntryDialog.SearchMarketplace" ) );
+    searchButton.setLayoutData( fdSearch );
+    searchButton.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        try {
+          shell.dispose();
+          Spoon.getInstance().openMarketplace();
+        } catch ( Exception ex ) {
+          ex.printStackTrace();
+        }
+      }
+    } );
 
+    shell.pack();
     shell.open();
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {

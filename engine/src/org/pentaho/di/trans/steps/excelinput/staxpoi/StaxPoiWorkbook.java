@@ -29,6 +29,7 @@ package org.pentaho.di.trans.steps.excelinput.staxpoi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
@@ -44,7 +45,13 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
 
+/**
+ * Streaming reader for XLSX files.<br>
+ * Does not open XLS.
+ */
 public class StaxPoiWorkbook implements KWorkbook {
+
+  private static final String RELATION_NS_URI = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 
   private LogChannelInterface log;
 
@@ -52,13 +59,15 @@ public class StaxPoiWorkbook implements KWorkbook {
 
   // maintain the mapping of the sheet name to its ID
   private Map<String, String> sheetNameIDMap;
+  // sheet names in order
+  private String[] sheetNames;
 
   // mapping of the sheet object with its ID/Name
   private Map<String, StaxPoiSheet> openSheetsMap;
 
   private OPCPackage opcpkg;
 
-  public StaxPoiWorkbook() {
+  protected StaxPoiWorkbook() {
     openSheetsMap = new HashMap<String, StaxPoiSheet>();
     this.log = KettleLogStore.getLogChannelInterfaceFactory().create( this );
   }
@@ -88,16 +97,22 @@ public class StaxPoiWorkbook implements KWorkbook {
     XMLStreamReader workbookReader = null;
     try {
       reader = new XSSFReader( pkg );
-      sheetNameIDMap = new HashMap<String, String>();
+      sheetNameIDMap = new LinkedHashMap<String, String>();
       workbookData = reader.getWorkbookData();
       XMLInputFactory factory = XMLInputFactory.newInstance();
       workbookReader = factory.createXMLStreamReader( workbookData );
       while ( workbookReader.hasNext() ) {
-        if ( workbookReader.next() == XMLStreamConstants.START_ELEMENT && workbookReader.getLocalName().equals( "sheet" ) ) {
+        if ( workbookReader.next() == XMLStreamConstants.START_ELEMENT
+            && workbookReader.getLocalName().equals( "sheet" ) ) {
           String sheetName = workbookReader.getAttributeValue( null, "name" );
-          String sheetID = workbookReader.getAttributeValue( "http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id" );
+          String sheetID = workbookReader.getAttributeValue( RELATION_NS_URI, "id" );
           sheetNameIDMap.put( sheetName, sheetID );
         }
+      }
+      sheetNames = new String[ sheetNameIDMap.size() ];
+      int i = 0;
+      for ( String sheetName : sheetNameIDMap.keySet() ) {
+        sheetNames[i++] = sheetName;
       }
     } catch ( Exception e ) {
       throw new KettleException( e );
@@ -125,10 +140,17 @@ public class StaxPoiWorkbook implements KWorkbook {
    */
   public KSheet getSheet( String sheetName ) {
     String sheetID = sheetNameIDMap.get( sheetName );
+    if ( sheetID == null ) {
+      return null;
+    }
     StaxPoiSheet sheet = openSheetsMap.get( sheetID );
-    if ( openSheetsMap.get( sheetID ) == null ) {
-      sheet = new StaxPoiSheet( reader, sheetName, sheetID );
-      openSheetsMap.put( sheetID, sheet );
+    if ( sheet == null ) {
+      try {
+        sheet = new StaxPoiSheet( reader, sheetName, sheetID );
+        openSheetsMap.put( sheetID, sheet );
+      } catch ( Exception e ) {
+        log.logError( sheetName, e );
+      }
     }
     return sheet;
   }
@@ -164,24 +186,16 @@ public class StaxPoiWorkbook implements KWorkbook {
 
   @Override
   public KSheet getSheet( int sheetNr ) {
-    for ( Map.Entry<String, String> entry : sheetNameIDMap.entrySet() ) {
-      String sheetName = entry.getKey();
-      String sheetID = entry.getValue();
-      if ( sheetID.endsWith( Integer.toString( sheetNr + 1 ) ) ) {
-        return getSheet( sheetName );
-      }
+    if ( sheetNr >= 0 && sheetNr < sheetNames.length ) {
+      return getSheet( sheetNames[sheetNr] );
     }
     return null;
   }
 
   @Override
   public String getSheetName( int sheetNr ) {
-    for ( Map.Entry<String, String> entry : sheetNameIDMap.entrySet() ) {
-      String sheetName = entry.getKey();
-      String sheetID = entry.getValue();
-      if ( sheetID.endsWith( Integer.toString( sheetNr ) ) ) {
-        return sheetName;
-      }
+    if ( sheetNr >= 0 && sheetNr < sheetNames.length ) {
+      return sheetNames[sheetNr];
     }
     return null;
   }

@@ -26,6 +26,7 @@ package org.pentaho.di.trans.steps.textfileinput;
  * Processor of Filters. Kind of inversion principle, and to make unit testing easier.
  *
  * @author Sven Boden
+ * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
 public class TextFileFilterProcessor {
 

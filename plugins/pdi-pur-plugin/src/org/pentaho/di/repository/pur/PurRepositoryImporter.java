@@ -125,11 +125,11 @@ public class PurRepositoryImporter extends RepositoryImporter implements java.io
 
   @Override
   protected void saveTransMeta( TransMeta transMeta ) throws KettleException {
-    rep.saveTrans0( transMeta, getVersionComment(), null, true, false, false, false, false );
+    rep.saveKettleEntity( transMeta, getVersionComment(), null, true, false, false, false, false );
   }
 
   @Override
   protected void saveJobMeta( JobMeta jobMeta ) throws KettleException {
-    rep.saveJob0( jobMeta, getVersionComment(), true, false, false, false, false );
+    rep.saveKettleEntity( jobMeta, getVersionComment(), null, true, false, false, false, false );
   }
 }

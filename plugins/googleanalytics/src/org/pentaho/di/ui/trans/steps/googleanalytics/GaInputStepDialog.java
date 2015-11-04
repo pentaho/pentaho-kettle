@@ -54,7 +54,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.i18n.BaseMessages;
@@ -199,7 +198,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
   // constructor
   public GaInputStepDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
-    input = (GaInputStepMeta) in;
+    setInput( (GaInputStepMeta) in );
   }
 
   // builds and shows the dialog
@@ -209,14 +208,14 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX );
     props.setLook( shell );
-    setShellImage( shell, input );
+    setShellImage( shell, getInput() );
 
     lsMod = new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
-        input.setChanged();
+        getInput().setChanged();
       }
     };
-    backupChanged = input.hasChanged();
+    backupChanged = getInput().hasChanged();
 
     FormLayout formLayout = new FormLayout();
     formLayout.marginWidth = Const.FORM_MARGIN;
@@ -316,7 +315,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
     wCustomProfileEnabled.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        input.setChanged();
+        getInput().setChanged();
         setActive();
         if ( wCustomProfileEnabled.getSelection() ) {
           wGaCustomProfile.setFocus();
@@ -631,7 +630,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
     wUseSegmentEnabled.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        input.setChanged();
+        getInput().setChanged();
         setActive();
         if ( wUseSegmentEnabled.getSelection() ) {
           if ( wCustomSegmentEnabled.getSelection() ) {
@@ -664,7 +663,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
     wCustomSegmentEnabled.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        input.setChanged();
+        getInput().setChanged();
         setActive();
         if ( wCustomSegmentEnabled.getSelection() ) {
           wQuCustomSegment.setFocus();
@@ -805,7 +804,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     wlFields.setLayoutData( fdlReturn );
 
     int fieldWidgetCols = 5;
-    int fieldWidgetRows = ( input.getFeedField() != null ? input.getFeedField().length : 1 );
+    int fieldWidgetRows = ( getInput().getFeedField() != null ? getInput().getFeedField().length : 1 );
 
     ColumnInfo[] ciKeys = new ColumnInfo[ fieldWidgetCols ];
     ciKeys[ 0 ] =
@@ -827,23 +826,22 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     ciKeys[ 3 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.Type" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
-        ValueMeta.getTypes() );
+        ValueMetaBase.getTypes() );
     ciKeys[ 4 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "GoogleAnalyticsDialog.ColumnInfo.Format" ),
         ColumnInfo.COLUMN_TYPE_FORMAT, 4 );
 
-    wFields =
-      new TableView(
+    setTableView( new TableView(
         transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKeys,
-        fieldWidgetRows, lsMod, props );
+        fieldWidgetRows, lsMod, props ) );
 
     FormData fdReturn = new FormData();
     fdReturn.left = new FormAttachment( 0, 0 );
     fdReturn.top = new FormAttachment( wlFields, margin );
     fdReturn.right = new FormAttachment( 100, 0 );
     fdReturn.bottom = new FormAttachment( wLimit, -margin );
-    wFields.setLayoutData( fdReturn );
+    getTableView().setLayoutData( fdReturn );
 
     /*************************************************
      * // OK AND CANCEL BUTTONS
@@ -860,140 +858,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     wGet.addListener( SWT.Selection, new Listener() {
         @Override
         public void handleEvent( Event e ) {
-          createServiceApi( input );
-          Analytics.Data.Ga.Get query = getPreviewQuery();
-          if ( query == null ) {
-            return;
-          }
-          query.setMaxResults( 1 );
-
-          try {
-            GaData dataFeed = query.execute();
-
-            if ( dataFeed == null || dataFeed.getRows() == null || dataFeed.getRows().size() < 1 ) {
-
-              MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-              mb.setText( "Query yields empty feed" );
-              mb.setMessage( "The feed did not give any results. Please specify a query that returns data." );
-              mb.open();
-
-              return;
-            }
-
-
-            int i = 0;
-            List<GaData.ColumnHeaders> colHeaders = dataFeed.getColumnHeaders();
-            wFields.table.setItemCount( colHeaders.size() + dataFeed.getProfileInfo().size() );
-            for ( GaData.ColumnHeaders colHeader : colHeaders ) {
-              String name = colHeader.getName();
-              String dataType = colHeader.getDataType();
-              String columnType = colHeader.getColumnType();
-
-              TableItem item = wFields.table.getItem( i );
-
-              if ( columnType.equals( "DIMENSION" ) ) {
-                item.setText( 1, GaInputStepMeta.FIELD_TYPE_DIMENSION );
-                item.setText( 2, name );
-                item.setText( 3, name );
-
-                // recognize date dimension
-                if ( name.equalsIgnoreCase( "ga:date" ) ) {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_DATE ) );
-                  item.setText( 5, "yyyyMMdd" );
-                } else if ( name.equalsIgnoreCase( "ga:daysSinceLastVisit" )
-                    || name.equalsIgnoreCase( "ga:visitLength" )
-                    || name.equalsIgnoreCase( "ga:visitCount" ) ) {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_INTEGER ) );
-                  item.setText( 5, "#;-#" );
-                } else if ( name.equalsIgnoreCase( "ga:latitude" )
-                    || name.equalsIgnoreCase( "ga:longitude" ) ) {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_NUMBER ) );
-                  item.setText( 5, "#.#;-#.#" );
-                } else {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_STRING ) );
-                  item.setText( 5, "" );
-                }
-                i++;
-              } else if ( columnType.equals( "METRIC" ) ) {
-
-                item.setText( 1, GaInputStepMeta.FIELD_TYPE_METRIC );
-                item.setText( 2, name );
-                item.setText( 3, name );
-
-                // depending on type
-                if ( dataType.compareToIgnoreCase( "currency" ) == 0
-                    || dataType.compareToIgnoreCase( "float" ) == 0
-                    || dataType.compareToIgnoreCase( "percent" ) == 0
-                    || dataType.compareToIgnoreCase( "us_currency" ) == 0 ) {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_NUMBER ) );
-                  item.setText( 5, "#.#;-#.#" );
-                } else if ( dataType.compareToIgnoreCase( "time" ) == 0
-                    || dataType.compareToIgnoreCase( "integer" ) == 0 ) {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_INTEGER ) );
-                  item.setText( 5, "#;-#" );
-                } else {
-                  item.setText( 4, ValueMetaBase.getTypeDesc( ValueMeta.TYPE_STRING ) );
-                  item.setText( 5, "" );
-                }
-                i++;
-              }
-            }
-            // Fill ds property and ds fields
-            TableItem item = wFields.table.getItem( i );
-            item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_PROPERTY );
-            item.setText( 2, GaInputStepMeta.PROPERTY_DATA_SOURCE_PROFILE_ID );
-            item.setText( 3, GaInputStepMeta.PROPERTY_DATA_SOURCE_PROFILE_ID );
-            item.setText( 4, ValueMeta.getTypeDesc( ValueMeta.TYPE_STRING ) );
-            item.setText( 5, "" );
-            i++;
-
-            item = wFields.table.getItem( i );
-            item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_PROPERTY );
-            item.setText( 2, GaInputStepMeta.PROPERTY_DATA_SOURCE_WEBPROP_ID );
-            item.setText( 3, GaInputStepMeta.PROPERTY_DATA_SOURCE_WEBPROP_ID );
-            item.setText( 4, ValueMeta.getTypeDesc( ValueMeta.TYPE_STRING ) );
-            item.setText( 5, "" );
-            i++;
-
-            item = wFields.table.getItem( i );
-            item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_PROPERTY );
-            item.setText( 2, GaInputStepMeta.PROPERTY_DATA_SOURCE_ACCOUNT_NAME );
-            item.setText( 3, GaInputStepMeta.PROPERTY_DATA_SOURCE_ACCOUNT_NAME );
-            item.setText( 4, ValueMeta.getTypeDesc( ValueMeta.TYPE_STRING ) );
-            item.setText( 5, "" );
-            i++;
-
-            item = wFields.table.getItem( i );
-            item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_FIELD );
-            item.setText( 2, GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_ID );
-            item.setText( 3, GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_ID );
-            item.setText( 4, ValueMeta.getTypeDesc( ValueMeta.TYPE_STRING ) );
-            item.setText( 5, "" );
-            i++;
-
-            item = wFields.table.getItem( i );
-            item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_FIELD );
-            item.setText( 2, GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_NAME );
-            item.setText( 3, GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_NAME );
-            item.setText( 4, ValueMeta.getTypeDesc( ValueMeta.TYPE_STRING ) );
-            item.setText( 5, "" );
-
-            wFields.removeEmptyRows();
-            wFields.setRowNums();
-            wFields.optWidth( true );
-            input.setChanged();
-          } catch ( IOException ioe ) {
-            Exception exceptionToDisplay = ioe;
-            // Try to display something more user friendly than plain JSON
-            if ( ioe instanceof GoogleJsonResponseException ) {
-              GoogleJsonResponseException gjre = (GoogleJsonResponseException) ioe;
-              if ( gjre.getDetails() != null && gjre.getDetails().getMessage() != null ) {
-                exceptionToDisplay = new IOException( gjre.getDetails().getMessage(), gjre );
-              }
-            }
-            new ErrorDialog( shell, BaseMessages.getString( PKG, "GoogleAnalyticsDialog.RequestError.DialogTitle" ),
-                BaseMessages.getString( PKG, "GoogleAnalyticsDialog.RequestError.DialogMessage" ), exceptionToDisplay );
-          }
+          getFields();
         }
       }
     );
@@ -1086,10 +951,10 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
     getData();
 
-    input.setChanged( backupChanged );
+    getInput().setChanged( backupChanged );
     wStepname.setFocus();
 
-    shell.setTabList( new Control[] { wStepname, gConnect, gQuery, wFields } );
+    shell.setTabList( new Control[] { wStepname, gConnect, gQuery, getTableView() } );
     shell.open();
 
     while ( !shell.isDisposed() ) {
@@ -1099,6 +964,143 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     }
 
     return stepname;
+  }
+
+  // Visible for testing
+  void getFields() {
+    Analytics.Data.Ga.Get query = getPreviewQuery();
+    if ( query == null ) {
+      return;
+    }
+    query.setMaxResults( 1 );
+
+    try {
+      GaData dataFeed = query.execute();
+
+      if ( dataFeed == null || dataFeed.getRows() == null || dataFeed.getRows().size() < 1 ) {
+
+        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+        mb.setText( "Query yields empty feed" );
+        mb.setMessage( "The feed did not give any results. Please specify a query that returns data." );
+        mb.open();
+
+        return;
+      }
+
+
+      int i = 0;
+      List<GaData.ColumnHeaders> colHeaders = dataFeed.getColumnHeaders();
+      getTableView().table.setItemCount( colHeaders.size() + dataFeed.getProfileInfo().size() );
+      for ( GaData.ColumnHeaders colHeader : colHeaders ) {
+        String name = colHeader.getName();
+        String dataType = colHeader.getDataType();
+        String columnType = colHeader.getColumnType();
+
+        TableItem item = getTableView().table.getItem( i );
+
+        if ( columnType.equals( "DIMENSION" ) ) {
+          item.setText( 1, GaInputStepMeta.FIELD_TYPE_DIMENSION );
+          item.setText( 2, name );
+          item.setText( 3, name );
+
+          // recognize date dimension
+          if ( name.equalsIgnoreCase( "ga:date" ) ) {
+            item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_DATE ) );
+            item.setText( 5, "yyyyMMdd" );
+          } else if ( name.equalsIgnoreCase( "ga:daysSinceLastVisit" )
+              || name.equalsIgnoreCase( "ga:visitLength" )
+              || name.equalsIgnoreCase( "ga:visitCount" ) ) {
+            item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_INTEGER ) );
+            item.setText( 5, "#;-#" );
+          } else if ( name.equalsIgnoreCase( "ga:latitude" )
+              || name.equalsIgnoreCase( "ga:longitude" ) ) {
+            item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_NUMBER ) );
+            item.setText( 5, "#.#;-#.#" );
+          } else {
+            item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
+            item.setText( 5, "" );
+          }
+          i++;
+        } else if ( columnType.equals( "METRIC" ) ) {
+
+          item.setText( 1, GaInputStepMeta.FIELD_TYPE_METRIC );
+          item.setText( 2, name );
+          item.setText( 3, name );
+
+          // depending on type
+          if ( dataType.compareToIgnoreCase( "currency" ) == 0
+              || dataType.compareToIgnoreCase( "float" ) == 0
+              || dataType.compareToIgnoreCase( "percent" ) == 0
+              || dataType.compareToIgnoreCase( "us_currency" ) == 0 ) {
+            item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_NUMBER ) );
+            item.setText( 5, "#.#;-#.#" );
+          } else if ( dataType.compareToIgnoreCase( "time" ) == 0
+              || dataType.compareToIgnoreCase( "integer" ) == 0 ) {
+            item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_INTEGER ) );
+            item.setText( 5, "#;-#" );
+          } else {
+            item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
+            item.setText( 5, "" );
+          }
+          i++;
+        }
+      }
+      // Fill ds property and ds fields
+      TableItem item = getTableView().table.getItem( i );
+      item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_PROPERTY );
+      item.setText( 2, GaInputStepMeta.PROPERTY_DATA_SOURCE_PROFILE_ID );
+      item.setText( 3, GaInputStepMeta.PROPERTY_DATA_SOURCE_PROFILE_ID );
+      item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
+      item.setText( 5, "" );
+      i++;
+
+      item = getTableView().table.getItem( i );
+      item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_PROPERTY );
+      item.setText( 2, GaInputStepMeta.PROPERTY_DATA_SOURCE_WEBPROP_ID );
+      item.setText( 3, GaInputStepMeta.PROPERTY_DATA_SOURCE_WEBPROP_ID );
+      item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
+      item.setText( 5, "" );
+      i++;
+
+      item = getTableView().table.getItem( i );
+      item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_PROPERTY );
+      item.setText( 2, GaInputStepMeta.PROPERTY_DATA_SOURCE_ACCOUNT_NAME );
+      item.setText( 3, GaInputStepMeta.PROPERTY_DATA_SOURCE_ACCOUNT_NAME );
+      item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
+      item.setText( 5, "" );
+      i++;
+
+      item = getTableView().table.getItem( i );
+      item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_FIELD );
+      item.setText( 2, GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_ID );
+      item.setText( 3, GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_ID );
+      item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
+      item.setText( 5, "" );
+      i++;
+
+      item = getTableView().table.getItem( i );
+      item.setText( 1, GaInputStepMeta.FIELD_TYPE_DATA_SOURCE_FIELD );
+      item.setText( 2, GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_NAME );
+      item.setText( 3, GaInputStepMeta.FIELD_DATA_SOURCE_TABLE_NAME );
+      item.setText( 4, ValueMetaBase.getTypeDesc( ValueMetaInterface.TYPE_STRING ) );
+      item.setText( 5, "" );
+
+      getTableView().removeEmptyRows();
+      getTableView().setRowNums();
+      getTableView().optWidth( true );
+      getInput().setChanged();
+    } catch ( IOException ioe ) {
+      Exception exceptionToDisplay = ioe;
+      // Try to display something more user friendly than plain JSON
+      if ( ioe instanceof GoogleJsonResponseException ) {
+        GoogleJsonResponseException gjre = (GoogleJsonResponseException) ioe;
+        if ( gjre.getDetails() != null && gjre.getDetails().getMessage() != null ) {
+          exceptionToDisplay = new IOException( gjre.getDetails().getMessage(), gjre );
+        }
+      }
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "GoogleAnalyticsDialog.RequestError.DialogTitle" ),
+          BaseMessages.getString( PKG, "GoogleAnalyticsDialog.RequestError.DialogMessage" ), exceptionToDisplay );
+    }
   }
 
   private void getInfo( GaInputStepMeta meta ) {
@@ -1139,17 +1141,17 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     meta.setUseCustomSegment( wCustomSegmentEnabled.getSelection() );
     meta.setCustomSegment( wQuCustomSegment.getText() );
 
-    int nrFields = wFields.nrNonEmpty();
+    int nrFields = getTableView().nrNonEmpty();
 
     meta.allocate( nrFields );
 
     for ( int i = 0; i < nrFields; i++ ) {
-      TableItem item = wFields.getNonEmpty( i );
+      TableItem item = getTableView().getNonEmpty( i );
       meta.getFeedFieldType()[ i ] = item.getText( 1 );
       meta.getFeedField()[ i ] = item.getText( 2 );
       meta.getOutputField()[ i ] = item.getText( 3 );
 
-      meta.getOutputType()[ i ] = ValueMeta.getType( item.getText( 4 ) );
+      meta.getOutputType()[ i ] = ValueMetaBase.getType( item.getText( 4 ) );
       meta.getConversionMask()[ i ] = item.getText( 5 );
 
       // fix unknowns
@@ -1165,7 +1167,6 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     // Create the XML input step
     GaInputStepMeta oneMeta = new GaInputStepMeta();
     getInfo( oneMeta );
-    createServiceApi( oneMeta );
     TransMeta previewMeta =
       TransPreviewFactory.generatePreviewTransformation( transMeta, oneMeta, wStepname.getText() );
 
@@ -1203,7 +1204,6 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
   }
 
   protected Analytics.Data.Ga.Get getPreviewQuery() {
-
     try {
       String ids = wCustomProfileEnabled.getSelection()
         ? transMeta.environmentSubstitute( wGaCustomProfile.getText() )
@@ -1211,7 +1211,6 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
       String metrics = transMeta.environmentSubstitute( wQuMetrics.getText() );
       if ( Const.isEmpty( metrics ) ) {
-        logError( BaseMessages.getString( PKG, "GoogleAnalytics.Error.NoMetricsSpecified.Message" ) );
         MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
         mb.setText( BaseMessages.getString( PKG, "GoogleAnalytics.Error.NoMetricsSpecified.Title" ) );
         mb.setMessage( BaseMessages.getString( PKG, "GoogleAnalytics.Error.NoMetricsSpecified.Message" ) );
@@ -1219,7 +1218,11 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
         return null;
       }
 
-      Analytics.Data.Ga.Get query = getAnalytics().data().ga().get(
+      Analytics analytics = getAnalytics();
+      if ( analytics == null ) {
+        return null;
+      }
+      Analytics.Data.Ga.Get query = analytics.data().ga().get(
         ids,
         transMeta.environmentSubstitute( wQuStartDate.getText() ),
         transMeta.environmentSubstitute( wQuEndDate.getText() ),
@@ -1248,7 +1251,6 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
       return query;
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ), e );
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogTitle" ) );
       mb.setMessage( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ) );
@@ -1289,10 +1291,9 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
   // information
   public void readGaProfiles() {
     try {
-      createServiceApi( input );
       Analytics analytics = getAnalytics();
       if ( analytics == null ) {
-        throw new IOException();
+        return;
       }
       Analytics.Management.Profiles.List profiles = analytics.management().profiles().list( "~all", "~all" );
 
@@ -1308,12 +1309,11 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
       }
 
       // put the profiles to the combo box and select first one
-      wGaProfile.setItems( profileNames.toArray( new String[ 0 ] ) );
+      wGaProfile.setItems( profileNames.toArray( new String[ profileNames.size() ] ) );
       if ( profileNames.size() > 0 ) {
         wGaProfile.select( 0 );
       }
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ), e );
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogTitle" ) );
       mb.setMessage( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ) );
@@ -1324,10 +1324,9 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
   // Collect segment list from the GA service for the given authentication information
   public void readGaSegments() {
     try {
-      createServiceApi( input );
       Analytics analytics = getAnalytics();
       if ( analytics == null ) {
-        throw new IOException();
+        return;
       }
       Segments segments = analytics.management().segments().list().execute();
 
@@ -1340,13 +1339,12 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
       }
 
       // put the segments to the combo box and select first one
-      wQuSegment.setItems( segmentNames.toArray( new String[ 0 ] ) );
+      wQuSegment.setItems( segmentNames.toArray( new String[ segmentNames.size() ] ) );
       if ( segmentNames.size() > 0 ) {
         wQuSegment.select( 0 );
       }
 
     } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ), e );
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogTitle" ) );
       mb.setMessage( BaseMessages.getString( PKG, "GoogleAnalyticsDialog.AuthenticationFailure.DialogMessage" ) );
@@ -1359,106 +1357,106 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
    */
   public void getData() {
 
-    if ( input.getGaAppName() != null ) {
-      wGaAppName.setText( input.getGaAppName() );
+    if ( getInput().getGaAppName() != null ) {
+      wGaAppName.setText( getInput().getGaAppName() );
     }
 
-    wOauthAccount.setText( Const.NVL( input.getOAuthServiceAccount(), "" ) );
-    keyFilename.setText( Const.NVL( input.getOAuthKeyFile(), "" ) );
+    wOauthAccount.setText( Const.NVL( getInput().getOAuthServiceAccount(), "" ) );
+    keyFilename.setText( Const.NVL( getInput().getOAuthKeyFile(), "" ) );
 
-    if ( input.getGaProfileName() != null ) {
-      wGaProfile.setText( input.getGaProfileName() );
+    if ( getInput().getGaProfileName() != null ) {
+      wGaProfile.setText( getInput().getGaProfileName() );
       profileTableIds.clear();
-      profileTableIds.put( input.getGaProfileName(), input.getGaProfileTableId() );
+      profileTableIds.put( getInput().getGaProfileName(), getInput().getGaProfileTableId() );
     }
 
-    if ( input.isUseCustomTableId() ) {
+    if ( getInput().isUseCustomTableId() ) {
       wCustomProfileEnabled.setSelection( true );
     } else {
       wCustomProfileEnabled.setSelection( false );
     }
 
-    if ( input.getGaCustomTableId() != null ) {
-      wGaCustomProfile.setText( input.getGaCustomTableId() );
+    if ( getInput().getGaCustomTableId() != null ) {
+      wGaCustomProfile.setText( getInput().getGaCustomTableId() );
     }
 
-    if ( input.getStartDate() != null ) {
-      wQuStartDate.setText( input.getStartDate() );
+    if ( getInput().getStartDate() != null ) {
+      wQuStartDate.setText( getInput().getStartDate() );
     }
 
-    if ( input.getEndDate() != null ) {
-      wQuEndDate.setText( input.getEndDate() );
+    if ( getInput().getEndDate() != null ) {
+      wQuEndDate.setText( getInput().getEndDate() );
     }
 
-    if ( input.getDimensions() != null ) {
-      wQuDimensions.setText( input.getDimensions() );
+    if ( getInput().getDimensions() != null ) {
+      wQuDimensions.setText( getInput().getDimensions() );
     }
 
-    if ( input.getMetrics() != null ) {
-      wQuMetrics.setText( input.getMetrics() );
+    if ( getInput().getMetrics() != null ) {
+      wQuMetrics.setText( getInput().getMetrics() );
     }
 
-    if ( input.getFilters() != null ) {
-      wQuFilters.setText( input.getFilters() );
+    if ( getInput().getFilters() != null ) {
+      wQuFilters.setText( getInput().getFilters() );
     }
 
-    if ( input.getSort() != null ) {
-      wQuSort.setText( input.getSort() );
+    if ( getInput().getSort() != null ) {
+      wQuSort.setText( getInput().getSort() );
     }
 
-    if ( input.isUseSegment() ) {
+    if ( getInput().isUseSegment() ) {
       wUseSegmentEnabled.setSelection( true );
     } else {
       wUseSegmentEnabled.setSelection( false );
     }
 
-    if ( input.isUseCustomSegment() ) {
+    if ( getInput().isUseCustomSegment() ) {
       wCustomSegmentEnabled.setSelection( true );
     } else {
       wCustomSegmentEnabled.setSelection( false );
     }
 
-    if ( input.getCustomSegment() != null ) {
-      wQuCustomSegment.setText( input.getCustomSegment() );
+    if ( getInput().getCustomSegment() != null ) {
+      wQuCustomSegment.setText( getInput().getCustomSegment() );
     }
 
-    if ( input.getSegmentName() != null ) {
-      wQuSegment.setText( input.getSegmentName() );
+    if ( getInput().getSegmentName() != null ) {
+      wQuSegment.setText( getInput().getSegmentName() );
       segmentIds.clear();
-      segmentIds.put( input.getSegmentName(), input.getSegmentId() );
+      segmentIds.put( getInput().getSegmentName(), getInput().getSegmentId() );
     }
 
-    if ( input.getFeedField() != null ) {
+    if ( getInput().getFeedField() != null ) {
 
-      for ( int i = 0; i < input.getFeedField().length; i++ ) {
+      for ( int i = 0; i < getInput().getFeedField().length; i++ ) {
 
-        TableItem item = wFields.table.getItem( i );
+        TableItem item = getTableView().table.getItem( i );
 
-        if ( input.getFeedFieldType()[ i ] != null ) {
-          item.setText( 1, input.getFeedFieldType()[ i ] );
+        if ( getInput().getFeedFieldType()[ i ] != null ) {
+          item.setText( 1, getInput().getFeedFieldType()[ i ] );
         }
 
-        if ( input.getFeedField()[ i ] != null ) {
-          item.setText( 2, input.getFeedField()[ i ] );
+        if ( getInput().getFeedField()[ i ] != null ) {
+          item.setText( 2, getInput().getFeedField()[ i ] );
         }
 
-        if ( input.getOutputField()[ i ] != null ) {
-          item.setText( 3, input.getOutputField()[ i ] );
+        if ( getInput().getOutputField()[ i ] != null ) {
+          item.setText( 3, getInput().getOutputField()[ i ] );
         }
 
-        item.setText( 4, ValueMeta.getTypeDesc( input.getOutputType()[ i ] ) );
+        item.setText( 4, ValueMetaBase.getTypeDesc( getInput().getOutputType()[ i ] ) );
 
-        if ( input.getConversionMask()[ i ] != null ) {
-          item.setText( 5, input.getConversionMask()[ i ] );
+        if ( getInput().getConversionMask()[ i ] != null ) {
+          item.setText( 5, getInput().getConversionMask()[ i ] );
         }
 
       }
     }
 
-    wFields.setRowNums();
-    wFields.optWidth( true );
+    getTableView().setRowNums();
+    getTableView().optWidth( true );
 
-    wLimit.setText( input.getRowLimit() + "" );
+    wLimit.setText( getInput().getRowLimit() + "" );
 
     setActive();
 
@@ -1468,14 +1466,13 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
   private void cancel() {
     stepname = null;
-    input.setChanged( backupChanged );
+    getInput().setChanged( backupChanged );
     dispose();
   }
 
   // let the meta know about the entered data
   private void ok() {
-
-    getInfo( input );
+    getInfo( getInput() );
     dispose();
   }
 
@@ -1531,24 +1528,37 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
     fdFilename.left = new FormAttachment( middle, 0 );
     fdFilename.right = new FormAttachment( fileChooser, -margin );
     keyFilename.setLayoutData( fdFilename );
-
   }
-
 
   private Analytics getAnalytics() {
-    return ( API == null ) ? null : API.getAnalytics();
+    try {
+      getInfo( getInput() );
+      return GoogleAnalyticsApiFacade.createFor(
+          transMeta.environmentSubstitute( wGaAppName.getText() ),
+          transMeta.environmentSubstitute( wOauthAccount.getText() ),
+          transMeta.environmentSubstitute( keyFilename.getText() )
+      ).getAnalytics();
+    } catch ( Exception e ) {
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "GoogleAnalyticsDialog.RequestError.DialogTitle" ),
+          BaseMessages.getString( PKG, "GoogleAnalyticsDialog.RequestError.DialogMessage" ), e );
+    }
+
+    return null;
   }
 
-  private void createServiceApi( GaInputStepMeta meta ) {
-    try {
-      getInfo( meta );
-      API = GoogleAnalyticsApiFacade.createFor(
-        transMeta.environmentSubstitute( wGaAppName.getText() ),
-        transMeta.environmentSubstitute( wOauthAccount.getText() ),
-        transMeta.environmentSubstitute( keyFilename.getText() )
-      );
-    } catch ( Exception e ) {
-      logError( BaseMessages.getString( PKG, "GoogleAnalytics.Error.UnableToLoadPrivateKey" ), e );
-    }
+  TableView getTableView() {
+    return wFields;
+  }
+
+  void setTableView( TableView wFields ) {
+    this.wFields = wFields;
+  }
+
+  GaInputStepMeta getInput() {
+    return input;
+  }
+
+  void setInput( GaInputStepMeta input ) {
+    this.input = input;
   }
 }

@@ -50,6 +50,7 @@ import com.sforce.soap.partner.DescribeGlobalResult;
 import com.sforce.soap.partner.DescribeGlobalSObjectResult;
 import com.sforce.soap.partner.DescribeSObjectResult;
 import com.sforce.soap.partner.Field;
+import com.sforce.soap.partner.FieldType;
 import com.sforce.soap.partner.GetDeletedResult;
 import com.sforce.soap.partner.GetUpdatedResult;
 import com.sforce.soap.partner.GetUserInfoResult;
@@ -65,6 +66,9 @@ import com.sforce.soap.partner.fault.LoginFault;
 import com.sforce.soap.partner.sobject.SObject;
 
 public class SalesforceConnection {
+  private static final FieldType ID_FIELD_TYPE = FieldType.fromString( "id" );
+  private static final FieldType REFERENCE_FIELD_TYPE = FieldType.fromString( "reference" );
+
   private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private String url;
@@ -724,6 +728,36 @@ public class SalesforceConnection {
     }
   }
 
+  /**Returns only updatable object fields and ID field if <b>excludeNonUpdatableFields</b> is true,
+   * otherwise all object field
+   * @param objectName the name of Saleforce object
+   * @param excludeNonUpdatableFields the flag that indicates if non-updatable fields should be excluded or not
+   * @return the list of object fields depending on filter or not non-updatable fields.
+   * @throws KettleException if any exception occurs
+   */
+  public Field[] getObjectFields( String objectName, boolean excludeNonUpdatableFields ) throws KettleException {
+    Field[] fieldList = getObjectFields( objectName );
+    if ( excludeNonUpdatableFields ) {
+      ArrayList<Field> finalFieldList = new ArrayList<Field>();
+      for ( Field f : fieldList ) {
+        // Leave out fields that can't be updated but
+        if ( isIdField( f ) || !f.isCalculated() && f.isUpdateable() ) {
+          finalFieldList.add( f );
+        }
+      }
+      fieldList = finalFieldList.toArray( new Field[finalFieldList.size()] );
+    }
+    return fieldList;
+  }
+
+  private boolean isIdField( Field field ) {
+    return field.getType() == ID_FIELD_TYPE ? true : false;
+  }
+
+  private boolean isReferenceField( Field field ) {
+    return field.getType() == REFERENCE_FIELD_TYPE ? true : false;
+  }
+
   /**
    * Method returns specified object's fields' names, use #getObjectFields to get fields itself
    * @param objectName object name
@@ -733,6 +767,21 @@ public class SalesforceConnection {
    */
   public String[] getFields( String objectName ) throws KettleException {
     return getFields( getObjectFields( objectName ) );
+  }
+
+  /**
+   * Method returns specified object's fields' names, use #getObjectFields to get fields itself
+   * 
+   * @param objectName
+   *          object name
+   * @param excludeNonUpdatableFields
+   *          the flag that indicates if non-updatable fields should be excluded or not
+   * @return fields' names
+   * @throws KettleException
+   *           in case of error
+   */
+  public String[] getFields( String objectName, boolean excludeNonUpdatableFields ) throws KettleException {
+    return getFields( getObjectFields( objectName, excludeNonUpdatableFields ), excludeNonUpdatableFields );
   }
 
   /**
@@ -761,6 +810,42 @@ public class SalesforceConnection {
     }
     return null;
   }
+
+  /**
+   * Method returns names of the fields specified.<br>
+   * For the type='reference' it also returns name in the
+   * <code>format: objectReferenceTo:externalIdField/lookupField</code>
+   * 
+   * @param fields
+   *          fields
+   * @param excludeNonUpdatableFields
+   *          the flag that indicates if non-updatable fields should be excluded or not
+   * @return fields' names 
+   * @throws KettleException
+   */
+  public String[] getFields( Field[] fields, boolean excludeNonUpdatableFields ) throws KettleException {
+    if ( fields != null ) {
+      ArrayList<String> fieldsList = new ArrayList<String>( fields.length );
+      for ( Field field : fields ) {
+        //Add the name of the field - always
+        fieldsList.add( field.getName() );
+        //Get the referenced to the field object and for this object get all its field to find possible idLookup fields
+        if ( isReferenceField( field ) ) {
+          String referenceTo = field.getReferenceTo( 0 );
+          Field[] referenceObjectFields = this.getObjectFields( referenceTo, excludeNonUpdatableFields );
+
+          for ( Field f : referenceObjectFields ) {
+            if ( f.isIdLookup() && !isIdField( f ) ) {
+              fieldsList.add( String.format( "%s:%s/%s", referenceTo, f.getName(), field.getRelationshipName() ) );
+            }
+          }
+        }
+      }
+      return fieldsList.toArray( new String[fieldsList.size()] );
+    }
+    return null;
+  }
+
 
   public UpsertResult[] upsert( String upsertField, SObject[] sfBuffer ) throws KettleException {
     try {

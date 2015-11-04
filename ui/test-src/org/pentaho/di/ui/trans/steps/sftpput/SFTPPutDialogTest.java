@@ -33,11 +33,10 @@ import org.pentaho.di.trans.steps.sftpput.SFTPPutMeta;
 import org.pentaho.di.ui.core.PropsUI;
 
 import java.lang.reflect.Field;
+import java.net.UnknownHostException;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by Yury_Ilyukevich on 7/1/2015.
@@ -87,5 +86,23 @@ public class SFTPPutDialogTest {
 
     assertTrue( sodSpy.connectToSFTP( false, null ) );
     assertTrue( sodSpy.connectToSFTP( false, null ) );
+  }
+
+  @Test
+  public void connectToSFTP_CreateNewConnection_AfterChange() throws Exception {
+    SFTPClient sftp = mock( SFTPClient.class );
+    SFTPPutMeta sodMeta = new SFTPPutMeta();
+
+    SFTPPutDialog sod =
+      new SFTPPutDialog( mock( Shell.class ), sodMeta, mock( TransMeta.class ), "SFTPPutDialogTest" );
+    SFTPPutDialog sodSpy = spy( sod );
+
+    doReturn( sftp ).when( sodSpy ).createSFTPClient();
+
+    assertTrue( sodSpy.connectToSFTP( false, null ) );
+    sodMeta.setChanged( true );
+    assertTrue( sodSpy.connectToSFTP( false, null ) );
+
+    verify( sodSpy, times( 2 ) ).createSFTPClient();
   }
 }

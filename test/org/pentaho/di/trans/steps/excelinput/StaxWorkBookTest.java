@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -57,6 +58,7 @@ public class StaxWorkBookTest {
     FileLock lock = null;
     RandomAccessFile randomAccessFile = null;
     try {
+      readData();
       File fileAfterRead = new File( "testfiles/sample-file.xlsx" );
       randomAccessFile = new RandomAccessFile( fileAfterRead, "rw" );
       FileChannel fileChannel = randomAccessFile.getChannel();
@@ -73,8 +75,73 @@ public class StaxWorkBookTest {
     }
   }
 
+  @Test
+  public void testEmptySheet() throws Exception {
+    KWorkbook workbook = getWorkbook( "testfiles/sample-file.xlsx", null );
+    int numberOfSheets = workbook.getNumberOfSheets();
+    assertEquals( 3, numberOfSheets );
+    // last two sheets are empty, check if no exception opening
+    for ( int i = 1; i< numberOfSheets; i++ ) {
+      KSheet sheet = workbook.getSheet( i );
+      for ( int j = 0; j < sheet.getRows(); j++ ) {
+        sheet.getRow( j );
+      }
+    }
+  }
+
+  @Test
+  public void testReadSameRow() throws Exception {
+    KWorkbook workbook = getWorkbook( "testfiles/sample-file.xlsx", null );
+    KSheet sheet1 = workbook.getSheet( 0 );
+    KCell[] row = sheet1.getRow( 3 );
+    assertEquals( "Two", row[1].getValue() );
+    row = sheet1.getRow( 3 );
+    assertEquals( "Two", row[1].getValue() );
+  }
+
+  @Test
+  public void testReadRowRA() throws Exception {
+    KWorkbook workbook = getWorkbook( "testfiles/sample-file.xlsx", null );
+    KSheet sheet1 = workbook.getSheet( 0 );
+    KCell[] row = sheet1.getRow( 4 );
+    assertEquals( "Three", row[1].getValue() );
+    row = sheet1.getRow( 2 );
+    assertEquals( "One", row[1].getValue() );
+  }
+
+
+  @Test
+  public void testReadEmptyRow() throws Exception {
+    KWorkbook workbook = getWorkbook( "testfiles/sample-file.xlsx", null );
+    KSheet sheet1 = workbook.getSheet( 0 );
+    KCell[] row = sheet1.getRow( 0 );
+    assertEquals( 0, row.length );
+  }
+
+  @Test
+  public void testReadCells() throws Exception {
+    KWorkbook workbook = getWorkbook( "testfiles/sample-file.xlsx", null );
+    KSheet sheet = workbook.getSheet( 0 );
+
+    KCell cell = sheet.getCell( 1, 2 );
+    assertEquals( "One", cell.getValue() );
+    assertEquals( KCellType.LABEL, cell.getType() );
+
+    cell = sheet.getCell( 2, 2 );
+    assertEquals( KCellType.DATE, cell.getType() );
+    assertEquals( new Date( 1283817600000L ), cell.getValue() );
+
+    cell = sheet.getCell( 1, 3 );
+    assertEquals( "Two", cell.getValue() );
+    assertEquals( KCellType.LABEL, cell.getType() );
+  }
+
+  protected KWorkbook getWorkbook( String file, String encoding ) throws KettleException {
+    return WorkbookFactory.getWorkbook( SpreadSheetType.SAX_POI, file, encoding );
+  }
+
   private void readData() throws KettleException {
-    KWorkbook workbook = WorkbookFactory.getWorkbook( SpreadSheetType.SAX_POI, "testfiles/sample-file.xlsx", null );
+    KWorkbook workbook = getWorkbook( "testfiles/sample-file.xlsx", null );
     int numberOfSheets = workbook.getNumberOfSheets();
     assertEquals( 3, numberOfSheets );
     KSheet sheet1 = workbook.getSheet( 0 );
@@ -85,40 +152,47 @@ public class StaxWorkBookTest {
     assertEquals( 5, sheet1.getRows() );
 
     KCell[] row = sheet1.getRow( 2 );
-    assertEquals( KCellType.STRING_FORMULA, row[1].getType() );
+    assertEquals( KCellType.LABEL, row[1].getType() );
     assertEquals( "One", row[1].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, row[2].getType() );
-    assertEquals( "40428", row[2].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, row[3].getType() );
-    assertEquals( "75", row[3].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, row[4].getType() );
-    assertEquals( "1", row[4].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, row[5].getType() );
-    assertEquals( "75", row[5].getValue() );
+    assertEquals( KCellType.DATE, row[2].getType() );
+    assertEquals( new Date( 1283817600000L ), row[2].getValue() );
+    assertEquals( KCellType.NUMBER, row[3].getType() );
+    assertEquals( Double.valueOf( "75" ), row[3].getValue() );
+    assertEquals( KCellType.BOOLEAN, row[4].getType() );
+    assertEquals( Boolean.valueOf( true ), row[4].getValue() );
+    assertEquals( KCellType.NUMBER_FORMULA, row[5].getType() );
+    assertEquals( Double.valueOf( "75" ), row[5].getValue() );
 
     row = sheet1.getRow( 3 );
-    assertEquals( KCellType.STRING_FORMULA, row[1].getType() );
+    assertEquals( KCellType.LABEL, row[1].getType() );
     assertEquals( "Two", row[1].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, row[2].getType() );
-    assertEquals( "40429", row[2].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, row[3].getType() );
-    assertEquals( "42", row[3].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, row[4].getType() );
-    assertEquals( "0", row[4].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, row[5].getType() );
-    assertEquals( "117", row[5].getValue() );
+    assertEquals( KCellType.DATE, row[2].getType() );
+    assertEquals( new Date( 1283904000000L ), row[2].getValue() );
+    assertEquals( KCellType.NUMBER, row[3].getType() );
+    assertEquals( Double.valueOf( "42" ), row[3].getValue() );
+    assertEquals( KCellType.BOOLEAN, row[4].getType() );
+    assertEquals( Boolean.valueOf( false ), row[4].getValue() );
+    assertEquals( KCellType.NUMBER_FORMULA, row[5].getType() );
+    assertEquals( Double.valueOf( "117" ), row[5].getValue() );
 
     row = sheet1.getRow( 4 );
-    assertEquals( KCellType.STRING_FORMULA, row[1].getType() );
+    assertEquals( KCellType.LABEL, row[1].getType() );
     assertEquals( "Three", row[1].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, row[2].getType() );
-    assertEquals( "40430", row[2].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, row[3].getType() );
-    assertEquals( "93", row[3].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, row[4].getType() );
-    assertEquals( "1", row[4].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, row[5].getType() );
-    assertEquals( "210", row[5].getValue() );
-    workbook.close();
+    assertEquals( KCellType.DATE, row[2].getType() );
+    assertEquals( new Date( 1283990400000L ), row[2].getValue() );
+    assertEquals( KCellType.NUMBER, row[3].getType() );
+    assertEquals( Double.valueOf( "93" ), row[3].getValue() );
+    assertEquals( KCellType.BOOLEAN, row[4].getType() );
+    assertEquals( Boolean.valueOf( true ), row[4].getValue() );
+    assertEquals( KCellType.NUMBER_FORMULA, row[5].getType() );
+    assertEquals( Double.valueOf( "210" ), row[5].getValue() );
+
+    try {
+      row = sheet1.getRow( 5 );
+      fail( "No out of bounds exception thrown when expected" );
+    } catch ( ArrayIndexOutOfBoundsException e ) {
+      // OK!
+    }
   }
+
 }

@@ -22,6 +22,11 @@
 
 package org.pentaho.di.cluster;
 
+import junit.framework.Assert;
+import org.apache.commons.codec.binary.Base64;
+import org.junit.Test;
+import org.pentaho.di.core.variables.Variables;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -30,11 +35,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.util.zip.GZIPOutputStream;
-
-import junit.framework.Assert;
-
-import org.apache.commons.codec.binary.Base64;
-import org.junit.Test;
 
 public class HttpUtilTest {
 
@@ -55,6 +55,21 @@ public class HttpUtilTest {
     String decoded = HttpUtil.decodeBase64ZippedString( enc64 );
 
     Assert.assertEquals( "Strings are the same after transformation", STANDART, decoded );
+  }
+
+  @Test
+  public void testConstructUrl() throws Exception {
+    Variables variables = new Variables();
+    String expected = "hostname:1234/webAppName?param=value";
+
+    Assert.assertEquals( "http://" + expected,
+      HttpUtil.constructUrl( variables, "hostname", String.valueOf( 1234 ), "webAppName", "?param=value" ) );
+
+    Assert.assertEquals( "http://" + expected,
+      HttpUtil.constructUrl( variables, "hostname", String.valueOf( 1234 ), "webAppName", "?param=value", false ) );
+
+    Assert.assertEquals( "https://" + expected,
+      HttpUtil.constructUrl( variables, "hostname", String.valueOf( 1234 ), "webAppName", "?param=value", true ) );
   }
 
   /**

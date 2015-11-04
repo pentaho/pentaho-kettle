@@ -53,6 +53,12 @@ public class CurrentDirectoryResolver {
     } else if ( filename != null ) {
       try {
         FileObject fileObject = KettleVFS.getFileObject( filename, tmpSpace );
+
+        if ( !fileObject.exists() ) {
+          // don't set variables if the file doesn't exist
+          return tmpSpace;
+        }
+
         FileName fileName = fileObject.getName();
 
         // The filename of the transformation
@@ -65,9 +71,6 @@ public class CurrentDirectoryResolver {
         tmpSpace.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, fileDir.getURI() );
       } catch ( Exception e ) {
       }
-    } else {
-      tmpSpace.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, parentVariables
-          .getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
     }
     return tmpSpace;
   }
@@ -85,7 +88,7 @@ public class CurrentDirectoryResolver {
         && specificationMethod.equals( ObjectLocationSpecificationMethod.FILENAME ) ) {
       // we're using FILENAME but we are connected to a repository
       directory = stepMeta.getParentTransMeta().getRepositoryDirectory();
-    } else if ( stepMeta != null && stepMeta.getParentTransMeta() != null ) {
+    } else if ( stepMeta != null && stepMeta.getParentTransMeta() != null && filename == null ) {
       filename = stepMeta.getParentTransMeta().getFilename();
     }
     return resolveCurrentDirectory( parentVariables, directory, filename );
@@ -104,7 +107,7 @@ public class CurrentDirectoryResolver {
         && specificationMethod.equals( ObjectLocationSpecificationMethod.FILENAME ) ) {
       // we're using FILENAME but we are connected to a repository
       directory = job.getJobMeta().getRepositoryDirectory();
-    } else if ( job != null ) {
+    } else if ( job != null && filename == null ) {
       filename = job.getFilename();
     } else if ( repository != null && JobMeta.class.isAssignableFrom( parentVariables.getClass() ) ) {
       // fallback protection for design mode: the parentVariables may actually be a JobMeta which
@@ -121,6 +124,16 @@ public class CurrentDirectoryResolver {
       filename = realParent.getFilename();
     }
     return resolveCurrentDirectory( parentVariables, directory, filename );
+  }
+
+  public String normalizeSlashes( String str ) {
+    while ( str.contains( "\\" ) ) {
+      str = str.replace( "\\", "/" );
+    }
+    while ( str.contains( "//" ) ) {
+      str = str.replace( "//", "/" );
+    }
+    return str;
   }
 
 }

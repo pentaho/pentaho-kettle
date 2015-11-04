@@ -260,9 +260,9 @@ public class SecurityController extends LazilyInitializedController implements I
         userDialog.hide();
       } catch ( Throwable th ) {
         if ( mainController == null || !mainController.handleLostRepository( th ) ) {
-          messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
-          messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-          messageBox.setMessage( BaseMessages.getString( PKG, "AddUser.UnableToAddUser", th.getLocalizedMessage() ) );
+          messageBox.setTitle( BaseMessages.getString( PKG, "CantCreateUserDialog.Title" ) );
+          messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Close" ) );
+          messageBox.setMessage( BaseMessages.getString( PKG, "CantCreateUserDialog.Message", th.getLocalizedMessage() ) );
           messageBox.open();
         }
       }

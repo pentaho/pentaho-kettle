@@ -46,5 +46,7 @@ public @interface LoggingPlugin {
 
   String classLoaderGroup() default "";
 
+  boolean isSeparateClassLoaderNeeded() default false;
+
   String name() default "";
 }

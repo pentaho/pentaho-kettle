@@ -30,9 +30,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
@@ -154,15 +156,6 @@ public class TransMeta extends AbstractMeta
 
   /** The list of dependencies associated with the transformation. */
   protected List<TransDependency> dependencies;
-
-  /** The list of name of databases available only for this transformation 
-   *  We keep only names for use it when we load/save transformation at jcr repository because 
-   *  we split transformation with datasource during save the transformation in JCR repository
-   *  http://jira.pentaho.com/browse/PPP-3405
-   *  
-   *  Should be null if we use old transformation
-   * */
-  protected List<String> privateTransformationDatabases;
 
   /** The list of cluster schemas associated with the transformation. */
   protected List<ClusterSchema> clusterSchemas;
@@ -391,12 +384,12 @@ public class TransMeta extends AbstractMeta
   // //////////////////////////////////////////////////////////////////////////
 
   /** A list of localized strings corresponding to string descriptions of the undo/redo actions. */
-  public static final String[]
-      desc_type_undo =
-      { "", BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoChange" ),
-          BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoNew" ),
-          BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoDelete" ),
-          BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoPosition" ) };
+  public static final String[] desc_type_undo = {
+    "",
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoChange" ),
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoNew" ),
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoDelete" ),
+    BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoPosition" ) };
 
   /** A constant specifying the tag value for the XML node of the transformation information. */
   protected static final String XML_TAG_INFO = "info";
@@ -473,13 +466,13 @@ public class TransMeta extends AbstractMeta
   }
 
   /**
-   * Compares two transformation on name, filename, repository directory, etc. 
+   * Compares two transformation on name, filename, repository directory, etc.
    * The comparison algorithm is as follows:<br/>
    * <ol>
    * <li>The first transformation's filename is checked first; if it has none, the transformation comes from a
    * repository. If the second transformation does not come from a repository, -1 is returned.</li>
    * <li>If the transformations are both from a repository, the transformations' names are compared. If the first
-   * transformation has no name and the second one does, a -1 is returned. 
+   * transformation has no name and the second one does, a -1 is returned.
    * If the opposite is true, a 1 is returned.</li>
    * <li>If they both have names they are compared as strings. If the result is non-zero it is returned. Otherwise the
    * repository directories are compared using the same technique of checking empty values and then performing a string
@@ -916,11 +909,11 @@ public class TransMeta extends AbstractMeta
     }
 
     steps.remove( i );
-    
+
     if ( removeStep.getStepMetaInterface() instanceof MissingTrans ) {
-      removeMissingTrans( ( MissingTrans ) removeStep.getStepMetaInterface() );
+      removeMissingTrans( (MissingTrans) removeStep.getStepMetaInterface() );
     }
-    
+
     changed_steps = true;
   }
 
@@ -1001,7 +994,7 @@ public class TransMeta extends AbstractMeta
 
   /**
    * Gets the number of stepChangeListeners in the transformation.
-   * 
+   *
    * @return The number of stepChangeListeners in the transformation.
    */
   public int nrStepChangeListeners() {
@@ -2712,8 +2705,8 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public TransMeta( String fname, IMetaStore metaStore, Repository rep, boolean setInternalVariables,
-      VariableSpace parentVariableSpace, OverwritePrompter prompter )
-      throws KettleXMLException, KettleMissingPluginsException {
+                    VariableSpace parentVariableSpace, OverwritePrompter prompter )
+    throws KettleXMLException, KettleMissingPluginsException {
     this.metaStore = metaStore;
     this.repository = rep;
 
@@ -2763,8 +2756,8 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public TransMeta( InputStream xmlStream, Repository rep, boolean setInternalVariables,
-      VariableSpace parentVariableSpace, OverwritePrompter prompter )
-      throws KettleXMLException, KettleMissingPluginsException {
+                    VariableSpace parentVariableSpace, OverwritePrompter prompter )
+    throws KettleXMLException, KettleMissingPluginsException {
     Document doc = XMLHandler.loadXMLFile( xmlStream, null, false, false );
     Node transnode = XMLHandler.getSubNode( doc, XML_TAG );
     loadXML( transnode, rep, setInternalVariables, parentVariableSpace, prompter );
@@ -2823,7 +2816,7 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public void loadXML( Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace )
-      throws KettleXMLException, KettleMissingPluginsException {
+    throws KettleXMLException, KettleMissingPluginsException {
     loadXML( transnode, rep, setInternalVariables, parentVariableSpace, null );
   }
 
@@ -2871,8 +2864,8 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public void loadXML( Node transnode, String fname, Repository rep, boolean setInternalVariables,
-      VariableSpace parentVariableSpace, OverwritePrompter prompter )
-      throws KettleXMLException, KettleMissingPluginsException {
+                       VariableSpace parentVariableSpace, OverwritePrompter prompter )
+    throws KettleXMLException, KettleMissingPluginsException {
     loadXML( transnode, fname, null, rep, setInternalVariables, parentVariableSpace, prompter );
   }
 
@@ -2897,13 +2890,13 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public void loadXML( Node transnode, String fname, IMetaStore metaStore, Repository rep, boolean setInternalVariables,
-      VariableSpace parentVariableSpace, OverwritePrompter prompter )
-      throws KettleXMLException, KettleMissingPluginsException {
+                       VariableSpace parentVariableSpace, OverwritePrompter prompter )
+    throws KettleXMLException, KettleMissingPluginsException {
 
     KettleMissingPluginsException
-        missingPluginsException =
-        new KettleMissingPluginsException(
-            BaseMessages.getString( PKG, "TransMeta.MissingPluginsFoundWhileLoadingTransformation.Exception" ) );
+      missingPluginsException =
+      new KettleMissingPluginsException(
+        BaseMessages.getString( PKG, "TransMeta.MissingPluginsFoundWhileLoadingTransformation.Exception" ) );
 
     this.metaStore = metaStore; // Remember this as the primary meta store.
 
@@ -2944,7 +2937,7 @@ public class TransMeta extends AbstractMeta
 
         // Handle connections
         int n = XMLHandler.countNodes( transnode, DatabaseMeta.XML_TAG );
-        List<String> privateTransformationDatabases = new ArrayList<String>();
+        Set<String> privateTransformationDatabases = new HashSet<String>( n );
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.WeHaveConnections", String.valueOf( n ) ) );
         }
@@ -2976,7 +2969,7 @@ public class TransMeta extends AbstractMeta
             }
           }
         }
-        setPrivateTransformationDatabases( privateTransformationDatabases );
+        setPrivateDatabases( privateTransformationDatabases );
 
         // Read the notes...
         Node notepadsnode = XMLHandler.getSubNode( transnode, XML_TAG_NOTEPADS );
@@ -3003,9 +2996,9 @@ public class TransMeta extends AbstractMeta
           StepMeta stepMeta = new StepMeta( stepnode, databases, metaStore );
           stepMeta.setParentTransMeta( this ); // for tracing, retain hierarchy
 
-          if( stepMeta.isMissing() ) {
+          if ( stepMeta.isMissing() ) {
             addMissingTrans( (MissingTrans) stepMeta.getStepMetaInterface() );
-          } 
+          }
           // Check if the step exists and if it's a shared step.
           // If so, then we will keep the shared version, not this one.
           // The stored XML is only for backup purposes.
@@ -4274,7 +4267,7 @@ public class TransMeta extends AbstractMeta
         .isEmpty( performanceLogTable.getTableName() ) ) ) {
       try {
         for ( LogTableInterface logTable : new LogTableInterface[] { transLogTable, performanceLogTable,
-            channelLogTable, stepLogTable, } ) {
+          channelLogTable, stepLogTable, } ) {
           if ( logTable.getDatabaseMeta() != null && !Const.isEmpty( logTable.getTableName() ) ) {
 
             Database db = null;
@@ -4469,10 +4462,9 @@ public class TransMeta extends AbstractMeta
                 values.put( v, BaseMessages
                     .getString( PKG, "TransMeta.Value.CheckingFieldName.FieldNameContainsSpaces.Description" ) );
               } else {
-                char[]
-                    list =
-                    new char[] { '.', ',', '-', '/', '+', '*', '\'', '\t', '"', '|', '@', '(', ')', '{', '}', '!',
-                        '^' };
+                char[] list =
+                  new char[] { '.', ',', '-', '/', '+', '*', '\'', '\t', '"', '|', '@', '(', ')', '{', '}', '!',
+                    '^' };
                 for ( int c = 0; c < list.length; c++ ) {
                   if ( name.indexOf( list[c] ) >= 0 ) {
                     values.put( v, BaseMessages.getString( PKG,
@@ -5559,15 +5551,15 @@ public class TransMeta extends AbstractMeta
         directory != null ? directory.getPath() : "" );
 
     boolean hasRepoDir = getRepositoryDirectory() != null && getRepository() != null;
-    
+
     if ( hasRepoDir ) {
-      variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, 
+      variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY,
           variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
     } else {
-      variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, 
+      variables.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY,
           variables.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
     }
-    
+
     // Here we don't remove the job specific parameters, as they may come in handy.
     //
     if ( variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) == null ) {
@@ -5582,15 +5574,15 @@ public class TransMeta extends AbstractMeta
     if ( variables.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) == null ) {
       variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, "Parent Job Repository Directory" );
     }
-    
-    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, 
-        variables.getVariable( repository != null ? Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY : 
-          Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
+
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
+      variables.getVariable( repository != null ? Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY
+        : Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
   }
 
   /**
    * Sets the internal name kettle variable.
-   * 
+   *
    * @param var
    *          the new internal name kettle variable
    */
@@ -6099,23 +6091,6 @@ public class TransMeta extends AbstractMeta
   }
 
   /**
-   * @return <b>nonSharableDatabases</b> The list of databases available only for this transformation 
-   * or <b>null</b> for old version of transformation   
-   */
-  public List<String> getPrivateTransformationDatabases() {
-    return privateTransformationDatabases;
-  }
-
-  /**
-   * @param privateTransformationDatabases - The list of databases available only for this transformation
-   * 
-   * set null for old version of transformation
-   */
-  public void setPrivateTransformationDatabases( List<String> privateTransformationDatabases ) {
-    this.privateTransformationDatabases = privateTransformationDatabases;
-  }
-
-  /**
    * Utility method to write the XML of this transformation to a file, mostly for testing purposes.
    *
    * @param filename
@@ -6270,20 +6245,20 @@ public class TransMeta extends AbstractMeta
   public List<MissingTrans> getMissingTrans() {
     return missingTrans;
   }
-  
+
   public void addMissingTrans( MissingTrans trans ) {
     if ( missingTrans == null ) {
       missingTrans = new ArrayList<MissingTrans>();
     }
     missingTrans.add( trans );
   }
-  
+
   public void removeMissingTrans( MissingTrans trans ) {
     if ( missingTrans != null && trans != null && missingTrans.contains( trans ) ) {
       missingTrans.remove( trans );
     }
   }
-  
+
   public boolean hasMissingPlugins() {
     return missingTrans != null && !missingTrans.isEmpty();
   }

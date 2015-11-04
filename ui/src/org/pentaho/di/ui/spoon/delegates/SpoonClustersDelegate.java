@@ -22,6 +22,8 @@
 
 package org.pentaho.di.ui.spoon.delegates;
 
+import java.util.List;
+
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -30,8 +32,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.spoon.Spoon;
-
-import java.util.List;
 
 public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
 
@@ -43,7 +43,7 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
     ClusterSchema clusterSchema = new ClusterSchema();
 
     ClusterSchemaDialog dialog =
-      new ClusterSchemaDialog( spoon.getShell(), clusterSchema, transMeta.getSlaveServers() );
+      new ClusterSchemaDialog( spoon.getShell(), clusterSchema, transMeta.getClusterSchemas(), transMeta.getSlaveServers() );
 
     if ( dialog.open() ) {
       List<ClusterSchema> clusterSchemas = transMeta.getClusterSchemas();

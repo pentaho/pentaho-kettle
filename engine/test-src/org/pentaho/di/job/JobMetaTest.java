@@ -22,18 +22,23 @@
 
 package org.pentaho.di.job;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.LookupReferencesException;
+import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
+import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.repository.Repository;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.*;
 
 public class JobMetaTest {
   private JobMeta jm;
@@ -78,5 +83,68 @@ public class JobMetaTest {
   @Test
   public void testPathNotExist() throws KettleXMLException, IOException, URISyntaxException {
     Assert.assertFalse( jm.isPathExist( je2, je4 ) );
+  }
+
+  @Test
+  public void testContentChangeListener() throws Exception {
+    ContentChangedListener listener = mock( ContentChangedListener.class );
+    jm.addContentChangedListener( listener );
+
+    jm.setChanged();
+    jm.setChanged( true );
+
+    verify( listener, times( 2 ) ).contentChanged( same( jm ) );
+
+    jm.clearChanged();
+    jm.setChanged( false );
+
+    verify( listener, times( 2 ) ).contentSafe( same( jm ) );
+
+    jm.removeContentChangedListener( listener );
+    jm.setChanged();
+    jm.setChanged( true );
+
+    verifyNoMoreInteractions( listener );
+  }
+
+  @Test
+  public void testLookupRepositoryReferences() throws Exception {
+    JobMeta jobMetaMock = mock( JobMeta.class );
+    doCallRealMethod().when( jobMetaMock ).lookupRepositoryReferences( any( Repository.class) );
+    doCallRealMethod().when( jobMetaMock ).addJobEntry( anyInt(), any( JobEntryCopy.class ) );
+    doCallRealMethod().when( jobMetaMock ).clear();
+
+    jobMetaMock.clear();
+
+    JobEntryTrans jobEntryMock = mock(JobEntryTrans.class);
+    when(jobEntryMock.hasRepositoryReferences()).thenReturn( true );
+
+    JobEntryTrans brokenJobEntryMock = mock(JobEntryTrans.class);
+    when(brokenJobEntryMock.hasRepositoryReferences()).thenReturn( true );
+    doThrow( mock( IdNotFoundException.class ) )
+      .when( brokenJobEntryMock ).lookupRepositoryReferences( any( Repository.class ) );
+
+    JobEntryCopy jobEntryCopy1 = mock( JobEntryCopy.class );
+    when( jobEntryCopy1.getEntry() ).thenReturn( jobEntryMock );
+    jobMetaMock.addJobEntry( 0, jobEntryCopy1 );
+
+    JobEntryCopy jobEntryCopy2 = mock( JobEntryCopy.class );
+    when( jobEntryCopy2.getEntry() ).thenReturn( brokenJobEntryMock );
+    jobMetaMock.addJobEntry( 1, jobEntryCopy2 );
+
+    JobEntryCopy jobEntryCopy3 = mock( JobEntryCopy.class );
+    when( jobEntryCopy3.getEntry() ).thenReturn( jobEntryMock );
+    jobMetaMock.addJobEntry( 2, jobEntryCopy3 );
+
+    Repository repo = mock( Repository.class );
+    try {
+      jobMetaMock.lookupRepositoryReferences( repo );
+      Assert.fail( "no exception for broken entry" );
+    } catch ( LookupReferencesException e ) {
+      // ok
+    }
+
+    verify( jobEntryMock, times(2) ).lookupRepositoryReferences( any( Repository.class) );
+
   }
 }

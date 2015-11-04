@@ -35,6 +35,9 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.widget.GetCaretPositionInterface;
 import org.pentaho.di.ui.core.widget.InsertTextInterface;
 
+/**
+ * @deprecated replaced by implementation in the ...steps.fileinput.text package
+ */
 public class VariableButtonListenerFactory {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 

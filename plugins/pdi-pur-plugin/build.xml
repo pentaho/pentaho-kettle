@@ -65,6 +65,30 @@
     <pathelement path="${classes.dir}" />
   </path>
 
+  <path id="inttest.classpath">
+    <pathelement path="${inttestclasses.dir}" />
+    <fileset dir="${lib.dir}">
+      <include name="**/pentaho-platform-repository*.jar" />
+    </fileset>
+    <fileset dir="${testlib.dir}">
+      <include name="**/pentaho-platform-repository*.jar" />
+    </fileset>
+    <fileset dir="${testlib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${devlib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${compilelib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <pathelement path="${classes.dir}" />
+  </path>
+
+
   <target name="clean-jars" depends="subfloor.clean-jars">
     <delete dir="${compilelib.dir}" />
   </target>

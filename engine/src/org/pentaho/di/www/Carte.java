@@ -245,8 +245,8 @@ public class Carte {
   }
   
   private static void setKettleEnvironment() throws Exception {
-    KettleEnvironment.init();
     KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.CARTE );
+    KettleEnvironment.init();
   }
 
   public static void runCarte( SlaveServerConfig config ) throws Exception {

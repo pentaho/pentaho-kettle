@@ -42,6 +42,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 /**
  * @author Matt
  * @since 22-jan-2005
+ * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
 public class TextFileInputData extends BaseStepData implements StepDataInterface {
 

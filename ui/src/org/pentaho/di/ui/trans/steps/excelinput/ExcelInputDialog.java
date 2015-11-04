@@ -1121,7 +1121,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
           SpreadSheetType type = SpreadSheetType.getStpreadSheetTypeByDescription( wSpreadSheetType.getText() );
           switch ( type ) {
             case POI:
-              extentions = new String[] { "*.xls;*.XLS;*.xlxs;*.XLSX", "*" };
+              extentions = new String[] { "*.xls;*.XLS;*.xlsx;*.XLSX", "*" };
+              break;
+            case SAX_POI:
+              extentions = new String[] { "*.xlsx;*.XLSX", "*" };
               break;
             case ODS:
               extentions = new String[] { "*.ods;*.ODS;", "*" };

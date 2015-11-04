@@ -126,13 +126,13 @@
           <equals arg1="${modules.publish-local}" arg2="true"/>
           <then>
             <ant antfile="build.xml" dir="@{module}" inheritall="false">
-              <target name="resolve"/>
+              <target name="build"/>
               <target name="publish-local"/>
             </ant>
           </then>
           <else>
             <ant antfile="build.xml" dir="@{module}" inheritall="false">
-              <target name="resolve"/>
+              <target name="build"/>
               <target name="publish"/>
             </ant>
           </else>
@@ -164,19 +164,13 @@
           <equals arg1="${plugins.publish-local}" arg2="true"/>
           <then>
             <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
-              <target name="resolve"/>
-              <target name="test"/>	
-              <target name="cobertura"/> 	
-              <target name="package"/>
+              <target name="build"/>
               <target name="publish-local"/>
             </ant>
           </then>
           <else>
             <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false">
-              <target name="resolve"/>
-              <target name="test"/>	
-              <target name="cobertura"/> 	
-              <target name="package"/>
+              <target name="build"/>
               <target name="publish"/>
             </ant>
           </else>
@@ -582,8 +576,8 @@
     <javac fork="true"
            srcdir="${test}"
            destdir="${testClasses}"
-           target="7"
-           source="6"
+           target="${javac.target}"
+           source="${javac.source}"
            deprecation="true"
            debug="true"
            includeantruntime="false"
@@ -720,7 +714,7 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.NormalExecutionTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.RowProducerTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.TransSingleThreadTest" haltonerror="false"/>
-      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.TransMetaIntegrationTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.TransMeta_PDI_13634_Test" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.WordCountSampleTest" haltonerror="false"/>
 
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.trans.steps.addsequence.AddSequenceTest"
@@ -898,6 +892,7 @@
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.sftp.JobEntrySFTPTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.ftpsget.FTPSConnectionTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.ftpsget.JobEntryFTPSGetTest" haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.ftpput.JobEntryFTPPUTTest" haltonerror="false"/>
 
       <!-- Some extra things to run -->
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.copyfiles.CopyFilesTest"

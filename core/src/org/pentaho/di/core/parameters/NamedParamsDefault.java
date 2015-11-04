@@ -36,7 +36,7 @@ public class NamedParamsDefault implements NamedParams {
   /**
    * Map to store named parameters in.
    */
-  private Map<String, OneNamedParam> params = new HashMap<String, OneNamedParam>();
+  protected Map<String, OneNamedParam> params = new HashMap<>();
 
   /**
    * Target class for the parameter keys.
@@ -163,7 +163,7 @@ public class NamedParamsDefault implements NamedParams {
 
   @Override
   public void copyParametersFrom( NamedParams aParam ) {
-    if ( params != null ) {
+    if ( params != null && aParam != null ) {
       params.clear();
       String[] keys = aParam.listParameters();
       for ( int idx = 0; idx < keys.length; idx++ ) {

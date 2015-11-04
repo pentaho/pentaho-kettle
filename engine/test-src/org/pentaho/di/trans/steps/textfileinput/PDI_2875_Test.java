@@ -38,6 +38,7 @@ import static org.mockito.Mockito.*;
  * Test case for PDI-2875
  *
  * @author Pavel Sakun
+ * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
 public class PDI_2875_Test {
   private static StepMockHelper<TextFileInputMeta, TextFileInputData> smh;

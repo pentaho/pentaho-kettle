@@ -24,6 +24,7 @@ package org.pentaho.di.core.util;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,6 +35,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMeta;
@@ -59,8 +61,19 @@ public class StringEvaluator {
   private String[] dateFormats;
   private String[] numberFormats;
 
-  private static final String[] DEFAULT_NUMBER_FORMATS = new String[] {
-    "#,###,###.#", "#.#", " #.#", "#", "#.0", "#.00", "#.000", "#.0000", "#.00000", "#.000000", " #.0#", };
+  private static final String[] DEFAULT_NUMBER_FORMATS = new String[]
+  {
+    "#,###,###.#",
+    "#.#",
+    "#",
+    "#.0",
+    "#.00",
+    "#.000",
+    "#.0000",
+    "#.00000",
+    "#.000000",
+    " #.0#"
+  };
 
   protected static final Pattern PRECISION_PATTERN = Pattern.compile( "[^0-9#]" );
 
@@ -119,10 +132,33 @@ public class StringEvaluator {
         } else {
           string = value;
         }
-        if ( !( "Y".equalsIgnoreCase( string )
-          || "N".equalsIgnoreCase( string ) || "TRUE".equalsIgnoreCase( string ) || "FALSE"
-          .equalsIgnoreCase( string ) ) ) {
+        if ( StringUtils.isEmpty( value ) ) {
+          cmm.incrementNrNull();
+        } else if ( !( "Y".equalsIgnoreCase( string ) || "N".equalsIgnoreCase( string ) || "TRUE".equalsIgnoreCase(
+            string ) || "FALSE".equalsIgnoreCase( string ) ) ) {
           evaluationResults.remove( cmm );
+        } else {
+          cmm.incrementSuccesses();
+        }
+      } else if ( cmm.getConversionMeta().isDate() ) {
+        String dateFormat = cmm.getConversionMeta().getConversionMask();
+        if ( !DateDetector.isValidDateFormatToStringDate( dateFormat, value, "en_US" ) ) {
+          evaluationResults.remove( cmm );
+        } else {
+          try {
+            Object object = DateDetector.getDateFromStringByFormat( value, dateFormat );
+            cmm.incrementSuccesses();
+            if ( cmm.getMin() == null || cmm.getConversionMeta().compare( cmm.getMin(), object ) > 0 ) {
+              cmm.setMin( object );
+            }
+            if ( cmm.getMax() == null || cmm.getConversionMeta().compare( cmm.getMax(), object ) < 0 ) {
+              cmm.setMax( object );
+            }
+          } catch ( ParseException e ) {
+            evaluationResults.remove( cmm );
+          } catch ( KettleValueException e ) {
+            evaluationResults.remove( cmm );
+          }
         }
       } else {
         try {
@@ -134,15 +170,15 @@ public class StringEvaluator {
             for ( char c : value.toCharArray() ) {
 
               boolean currencySymbolMatch = !String.valueOf( c ).equals( cmm.getConversionMeta().getCurrencySymbol() )
-                && c != '('
-                && c != ')';
+                  && c != '('
+                  && c != ')';
 
               if ( !Character.isDigit( c )
-                && c != '.'
-                && c != ','
-                && !Character.isSpaceChar( c )
-                && currencySymbolMatch
-                && ( pos > 0 && ( c == '+' || c == '-' ) ) // allow + & - at the 1st position
+                  && c != '.'
+                  && c != ','
+                  && !Character.isSpaceChar( c )
+                  && currencySymbolMatch
+                  && ( pos > 0 && ( c == '+' || c == '-' ) ) // allow + & - at the 1st position
               ) {
                 evaluationResults.remove( cmm );
                 stop = true;
@@ -152,7 +188,7 @@ public class StringEvaluator {
               // If the value contains a decimal or grouping symbol or some sort, it's not an integer
               //
               if ( ( c == '.' && cmm.getConversionMeta().isInteger() )
-                || ( c == ',' && cmm.getConversionMeta().isInteger() ) ) {
+                  || ( c == ',' && cmm.getConversionMeta().isInteger() ) ) {
                 evaluationResults.remove( cmm );
                 stop = true;
                 break;
@@ -190,15 +226,15 @@ public class StringEvaluator {
           //
           if ( cmm.getConversionMeta().isNull( object ) ) {
             cmm.incrementNrNull();
+          } else {
+            cmm.incrementSuccesses();
           }
-
           if ( cmm.getMin() == null || cmm.getConversionMeta().compare( cmm.getMin(), object ) > 0 ) {
             cmm.setMin( object );
           }
           if ( cmm.getMax() == null || cmm.getConversionMeta().compare( cmm.getMax(), object ) < 0 ) {
             cmm.setMax( object );
           }
-
         } catch ( KettleValueException e ) {
           // This one doesn't work, remove it from the list!
           //
@@ -223,7 +259,7 @@ public class StringEvaluator {
 
   private boolean containsInteger() {
     for ( StringEvaluationResult result : evaluationResults ) {
-      if ( result.getConversionMeta().isInteger() ) {
+      if ( result.getConversionMeta().isInteger() && result.getNrSuccesses() > 0 ) {
         return true;
       }
     }
@@ -232,7 +268,7 @@ public class StringEvaluator {
 
   private boolean containsNumber() {
     for ( StringEvaluationResult result : evaluationResults ) {
-      if ( result.getConversionMeta().isNumber() ) {
+      if ( result.getConversionMeta().isNumber() && result.getNrSuccesses() > 0 ) {
         return true;
       }
     }
@@ -241,7 +277,7 @@ public class StringEvaluator {
 
   private boolean containsDate() {
     for ( StringEvaluationResult result : evaluationResults ) {
-      if ( result.getConversionMeta().isDate() ) {
+      if ( result.getConversionMeta().isDate() && result.getNrSuccesses() > 0 ) {
         return true;
       }
     }
@@ -307,10 +343,10 @@ public class StringEvaluator {
           @Override
           public int compare( StringEvaluationResult r1, StringEvaluationResult r2 ) {
             Integer length1 =
-              r1.getConversionMeta().getConversionMask() == null ? 0 : r1
+                r1.getConversionMeta().getConversionMask() == null ? 0 : r1
                 .getConversionMeta().getConversionMask().length();
             Integer length2 =
-              r2.getConversionMeta().getConversionMask() == null ? 0 : r2
+                r2.getConversionMeta().getConversionMask() == null ? 0 : r2
                 .getConversionMeta().getConversionMask().length();
             return length2.compareTo( length1 );
           }
@@ -321,10 +357,10 @@ public class StringEvaluator {
           @Override
           public int compare( StringEvaluationResult r1, StringEvaluationResult r2 ) {
             Integer length1 =
-              r1.getConversionMeta().getConversionMask() == null ? 0 : r1
+                r1.getConversionMeta().getConversionMask() == null ? 0 : r1
                 .getConversionMeta().getConversionMask().length();
             Integer length2 =
-              r2.getConversionMeta().getConversionMask() == null ? 0 : r2
+                r2.getConversionMeta().getConversionMask() == null ? 0 : r2
                 .getConversionMeta().getConversionMask().length();
             return length1.compareTo( length2 );
           }
@@ -373,10 +409,8 @@ public class StringEvaluator {
         evaluationResults.add( new StringEvaluationResult( conversionMeta ) );
       }
 
-      EvalResultBuilder numberUsBuilder =
-        new EvalResultBuilder( "number-us", ValueMetaInterface.TYPE_NUMBER, 15, trimType, ".", "," );
-      EvalResultBuilder numberEuBuilder =
-        new EvalResultBuilder( "number-eu", ValueMetaInterface.TYPE_NUMBER, 15, trimType, ",", "." );
+      EvalResultBuilder numberUsBuilder = new EvalResultBuilder( "number-us", ValueMetaInterface.TYPE_NUMBER, 15, trimType, ".", "," );
+      EvalResultBuilder numberEuBuilder = new EvalResultBuilder( "number-eu", ValueMetaInterface.TYPE_NUMBER, 15, trimType, ",", "." );
 
       for ( String format : getNumberFormats() ) {
 
@@ -395,14 +429,11 @@ public class StringEvaluator {
 
       ValueMetaInterface conversionMeta = new ValueMeta( "number-currency", ValueMetaInterface.TYPE_NUMBER );
       // replace the universal currency symbol with the locale's currency symbol for user recognition
-      String currencyMask =
-        currencyFormat.toLocalizedPattern().replace( "\u00A4", currencyFormat.getCurrency().getSymbol() );
+      String currencyMask = currencyFormat.toLocalizedPattern().replace( "\u00A4", currencyFormat.getCurrency().getSymbol() );
       conversionMeta.setConversionMask( currencyMask );
       conversionMeta.setTrimType( trimType );
-      conversionMeta.setDecimalSymbol( String.valueOf( currencyFormat
-        .getDecimalFormatSymbols().getDecimalSeparator() ) );
-      conversionMeta.setGroupingSymbol( String.valueOf( currencyFormat
-        .getDecimalFormatSymbols().getGroupingSeparator() ) );
+      conversionMeta.setDecimalSymbol( String.valueOf( currencyFormat.getDecimalFormatSymbols().getDecimalSeparator() ) );
+      conversionMeta.setGroupingSymbol( String.valueOf( currencyFormat.getDecimalFormatSymbols().getGroupingSeparator() ) );
       conversionMeta.setCurrencySymbol( currencyFormat.getCurrency().getSymbol() );
       conversionMeta.setLength( 15 );
       int currencyPrecision = currencyFormat.getCurrency().getDefaultFractionDigits();
@@ -411,8 +442,7 @@ public class StringEvaluator {
       evaluationResults.add( new StringEvaluationResult( conversionMeta ) );
 
       // add same mask w/o currency symbol
-      String currencyMaskAsNumeric =
-        currencyMask.replaceAll( Pattern.quote( currencyFormat.getCurrency().getSymbol() ), "" );
+      String currencyMaskAsNumeric = currencyMask.replaceAll( Pattern.quote( currencyFormat.getCurrency().getSymbol() ), "" );
       evaluationResults.add( numberUsBuilder.format( currencyMaskAsNumeric, currencyPrecision ).build() );
       evaluationResults.add( numberEuBuilder.format( currencyMaskAsNumeric, currencyPrecision ).build() );
 
@@ -456,8 +486,7 @@ public class StringEvaluator {
 
   protected static int determinePrecision( String numericFormat ) {
     if ( numericFormat != null ) {
-      char decimalSymbol =
-        ( (DecimalFormat) NumberFormat.getInstance() ).getDecimalFormatSymbols().getDecimalSeparator();
+      char decimalSymbol = ( (DecimalFormat) NumberFormat.getInstance() ).getDecimalFormatSymbols().getDecimalSeparator();
       int loc = numericFormat.lastIndexOf( decimalSymbol );
       if ( loc >= 0 && loc < numericFormat.length() ) {
         Matcher m = PRECISION_PATTERN.matcher( numericFormat.substring( loc + 1 ) );
@@ -482,10 +511,18 @@ public class StringEvaluator {
   }
 
   /**
+   * PDI-7736: Only list of successful evaluations returned.
+   * 
    * @return The list of string evaluation results
    */
   public List<StringEvaluationResult> getStringEvaluationResults() {
-    return evaluationResults;
+    List<StringEvaluationResult> result = new ArrayList<>();
+    for ( StringEvaluationResult ev : evaluationResults ) {
+      if ( ev.getNrSuccesses() > 0 ) {
+        result.add( ev );
+      }
+    }
+    return result;
   }
 
   /**

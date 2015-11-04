@@ -18,8 +18,10 @@
 package org.pentaho.di.repository.pur;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -34,6 +36,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.missing.MissingEntry;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -112,6 +115,8 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
   public static final String PROP_NR_NOTES = "NR_NOTES";
 
   private static final String NODE_JOB = "job";
+
+  static final String NODE_JOB_PRIVATE_DATABASES = "jobPrivateDatabases";
 
   public static final String NODE_NOTES = "notes";
 
@@ -220,6 +225,17 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
     throws KettleException {
 
     JobMeta jobMeta = (JobMeta) element;
+
+    Set<String> privateDatabases = null;
+    // read the private databases
+    DataNode privateDbsNode = rootNode.getNode( NODE_JOB_PRIVATE_DATABASES );
+    if ( privateDbsNode != null ) {
+      privateDatabases = new HashSet<String>();
+      for ( DataNode privateDatabase : privateDbsNode.getNodes() ) {
+        privateDatabases.add( privateDatabase.getName() );
+      }
+    }
+    jobMeta.setPrivateDatabases( privateDatabases );
 
     jobMeta.setSharedObjectsFile( getString( rootNode, PROP_SHARED_FILE ) );
 
@@ -399,17 +415,27 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
 
       PluginRegistry registry = PluginRegistry.getInstance();
       PluginInterface jobPlugin = registry.findPluginWithId( JobEntryPluginType.class, typeId );
-      JobEntryInterface entry = (JobEntryInterface) registry.loadClass( jobPlugin );
-      entry.setName( name );
-      entry.setDescription( getString( copyNode, PROP_DESCRIPTION ) );
-      entry.setObjectId( new StringObjectId( copyNode.getId().toString() ) );
+      JobEntryInterface jobMetaInterface = null;
+      boolean isMissing = jobPlugin == null;
+      if ( !isMissing ) {
+        jobMetaInterface = (JobEntryInterface) registry.loadClass( jobPlugin );
+      } else {
+        MissingEntry missingEntry = new MissingEntry( jobMeta.getName(), typeId );
+        jobMeta.addMissingEntry( missingEntry );
+        jobMetaInterface = missingEntry;
+      }
+      jobMetaInterface.setName( name );
+      jobMetaInterface.setDescription( getString( copyNode, PROP_DESCRIPTION ) );
+      jobMetaInterface.setObjectId( new StringObjectId( copyNode.getId().toString() ) );
       RepositoryProxy proxy = new RepositoryProxy( copyNode.getNode( NODE_CUSTOM ) );
 
-      compatibleJobEntryLoadRep( entry, proxy, null, jobMeta.getDatabases(), jobMeta.getSlaveServers() );
-      entry.setMetaStore( jobMeta.getMetaStore() ); // make sure metastore is passed
-      entry.loadRep( proxy, jobMeta.getMetaStore(), null, jobMeta.getDatabases(), jobMeta.getSlaveServers() );
-      jobentries.add( entry );
-      return entry;
+      jobMetaInterface.setMetaStore( jobMeta.getMetaStore() ); // make sure metastore is passed
+      if ( !isMissing ) {
+        compatibleJobEntryLoadRep( jobMetaInterface, proxy, null, jobMeta.getDatabases(), jobMeta.getSlaveServers() );
+        jobMetaInterface.loadRep( proxy, jobMeta.getMetaStore(), null, jobMeta.getDatabases(), jobMeta.getSlaveServers() );
+      }
+      jobentries.add( jobMetaInterface );
+      return jobMetaInterface;
     } catch ( Exception e ) {
       throw new KettleException( "Unable to read job entry interface information from repository", e );
     }
@@ -425,7 +451,16 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
 
   public DataNode elementToDataNode( final RepositoryElementInterface element ) throws KettleException {
     JobMeta jobMeta = (JobMeta) element;
+
     DataNode rootNode = new DataNode( NODE_JOB );
+
+    if ( jobMeta.getPrivateDatabases() != null ) {
+      // save all private database names http://jira.pentaho.com/browse/PPP-3413
+      DataNode privateDatabaseNode = rootNode.addNode( NODE_JOB_PRIVATE_DATABASES );
+      for ( String privateDatabase : jobMeta.getPrivateDatabases() ) {
+        privateDatabaseNode.addNode( privateDatabase );
+      }
+    }
 
     // Save the notes
     //
@@ -578,8 +613,9 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
         if ( databaseMeta.getName() != null ) {
           databaseMeta.shareVariablesWith( jobMeta );
           jobMeta.addOrReplaceDatabase( databaseMeta );
-          if ( !overWriteShared )
+          if ( !overWriteShared ) {
             databaseMeta.setChanged( false );
+          }
         }
       }
     }
@@ -600,8 +636,9 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
         if ( !Const.isEmpty( slaveServer.getName() ) ) {
           slaveServer.shareVariablesWith( jobMeta );
           jobMeta.addOrReplaceSlaveServer( slaveServer );
-          if ( !overWriteShared )
+          if ( !overWriteShared ) {
             slaveServer.setChanged( false );
+          }
         }
       }
     }

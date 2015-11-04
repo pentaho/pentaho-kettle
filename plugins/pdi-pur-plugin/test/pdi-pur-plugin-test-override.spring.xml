@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="jcrRepository" class="org.springframework.extensions.jcr.jackrabbit.RepositoryFactoryBean">
+    <property name="configuration" value="classpath:/jackrabbit-test-repo.xml"/>
+    <property name="homeDir"
+              value="file:#{ systemProperties['java.io.tmpdir'] + systemProperties['file.separator'] + 'jcr-tests' + systemProperties['file.separator'] + T(java.util.UUID).randomUUID() }"/>
+  </bean>
+
+</beans>

@@ -2754,7 +2754,7 @@ public class RepositoryExplorerDialog extends Dialog {
   public void newSlaveServer() {
     try {
       SlaveServer slaveServer = new SlaveServer();
-      SlaveServerDialog dd = new SlaveServerDialog( shell, slaveServer );
+      SlaveServerDialog dd = new SlaveServerDialog( shell, slaveServer, rep.getSlaveServers() );
       if ( dd.open() ) {
         // See if this slave server already exists...
         ObjectId idSlave = rep.getSlaveID( slaveServer.getName() );

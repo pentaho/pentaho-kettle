@@ -42,7 +42,7 @@ public class RestServices {
   }
 
   public static void main( String[] args ) throws IOException {
-    String param = args.length > 0 ? args[0] : RestTest.HTTP_LOCALHOST_9998;
+    String param = args.length > 0 ? args[0] : RestIT.HTTP_LOCALHOST_9998;
     HttpServer server = HttpServerFactory.create( param );
     server.start();
 

@@ -47,8 +47,9 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
@@ -181,7 +182,7 @@ public class TextFileOutputTests extends TestCase {
   public RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rowMetaInterface = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta = { new ValueMeta( "filename", ValueMeta.TYPE_STRING ), };
+    ValueMetaInterface[] valuesMeta = { new ValueMetaString( "filename" ), };
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rowMetaInterface.addValueMeta( valuesMeta[i] );
     }
@@ -213,9 +214,7 @@ public class TextFileOutputTests extends TestCase {
     RowMetaInterface rowMetaInterface = new RowMeta();
 
     ValueMetaInterface[] valuesMeta =
-    {
-      new ValueMeta( "Id", ValueMeta.TYPE_INTEGER ), new ValueMeta( "City", ValueMeta.TYPE_STRING ),
-      new ValueMeta( "State", ValueMeta.TYPE_STRING ) };
+        { new ValueMetaInteger( "Id" ), new ValueMetaString( "City" ), new ValueMetaString( "State" ) };
 
     for ( int i = 0; i < valuesMeta.length; i++ ) {
       rowMetaInterface.addValueMeta( valuesMeta[i] );
@@ -279,6 +278,7 @@ public class TextFileOutputTests extends TestCase {
     fields[0].setDecimalSymbol( "" );
     fields[0].setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
 
+    // here we're swapping the order of the last 2 columns
     fields[1].setName( "city" );
     fields[1].setType( ValueMetaInterface.TYPE_STRING );
     fields[1].setFormat( "" );
@@ -323,16 +323,30 @@ public class TextFileOutputTests extends TestCase {
 
   }
 
+
+  private void readData1Rows( Object[][] rows, BufferedReader input ) {
+    int rowCount = 0;
+    try {
+      String inputLine = input.readLine();
+      while ( inputLine != null ) {
+        String[] columns = inputLine.split( ";" );
+        if ( columns.length != 3 ) {
+          fail( "Expected 3 columns, got " + columns.length );
+        }
+        rows[rowCount][0] = Long.parseLong( columns[0].trim() );
+        // column order swapped as expected from outputFields
+        rows[rowCount][1] = columns[2];
+        rows[rowCount][2] = columns[1];
+        rowCount++;
+        inputLine = input.readLine();
+      }
+    } catch ( IOException ioe ) {
+      // Ignore errors
+    }
+  }
+
   /**
-   * Check the 2 lists comparing the rows in order. If they are not the same fail the test.
-   *
-   * @param rows1
-   *          set 1 of rows to compare
-   * @param rows2
-   *          set 2 of rows to compare
-   * @param fileNameColumn
-   *          Number of the column containing the filename. This is only checked for being non-null (some systems maybe
-   *          canonize names differently than we input).
+   * Tests output rows
    */
   @Test
   public void testTextFileOutput1() throws Exception {
@@ -502,24 +516,7 @@ public class TextFileOutputTests extends TestCase {
         ZipEntry ze = entries.nextElement();
         zipEntryCount++;
         BufferedReader input = new BufferedReader( new InputStreamReader( zf.getInputStream( ze ) ) );
-
-        int rowCount = 0;
-        try {
-          String inputLine = input.readLine();
-          while ( inputLine != null ) {
-            String[] columns = inputLine.split( ";" );
-            if ( columns.length != 3 ) {
-              fail( "Expected 3 columns, got " + columns.length );
-            }
-            rows[rowCount][0] = Long.parseLong( columns[0].trim() );
-            rows[rowCount][1] = columns[1];
-            rows[rowCount][2] = columns[2];
-            inputLine = input.readLine();
-          }
-        } catch ( IOException ioe ) {
-          // Ignore errors
-        }
-
+        readData1Rows( rows, input );
       }
 
       zf.close();
@@ -529,10 +526,10 @@ public class TextFileOutputTests extends TestCase {
       fail( e.getLocalizedMessage() );
     }
 
-    List<RowMetaAndData> goldenImageRows = createResultDataFromObjects( rows );
+    List<RowMetaAndData> outFileRows = createResultDataFromObjects( rows );
 
     try {
-      TestUtilities.checkRows( goldenImageRows, resultRows );
+      TestUtilities.checkRows( resultRows, outFileRows );
     } catch ( TestFailedException tfe ) {
       fail( tfe.getMessage() );
     }
@@ -601,22 +598,7 @@ public class TextFileOutputTests extends TestCase {
       InputStreamReader xover = new InputStreamReader( gzis );
       BufferedReader input = new BufferedReader( xover );
 
-      int rowCount = 0;
-      try {
-        String inputLine = input.readLine();
-        while ( inputLine != null ) {
-          String[] columns = inputLine.split( ";" );
-          if ( columns.length != 3 ) {
-            fail( "Expected 3 columns, got " + columns.length );
-          }
-          rows[rowCount][0] = Long.parseLong( columns[0].trim() );
-          rows[rowCount][1] = columns[1];
-          rows[rowCount][2] = columns[2];
-          inputLine = input.readLine();
-        }
-      } catch ( IOException ioe ) {
-        // Ignore errors
-      }
+      readData1Rows( rows, input );
 
       fin.close();
 
@@ -624,10 +606,10 @@ public class TextFileOutputTests extends TestCase {
       fail( e.getLocalizedMessage() );
     }
 
-    List<RowMetaAndData> goldenImageRows = createResultDataFromObjects( rows );
+    List<RowMetaAndData> outFileRows = createResultDataFromObjects( rows );
 
     try {
-      TestUtilities.checkRows( goldenImageRows, resultRows );
+      TestUtilities.checkRows( resultRows, outFileRows );
     } catch ( TestFailedException tfe ) {
       fail( tfe.getMessage() );
     }
@@ -695,22 +677,7 @@ public class TextFileOutputTests extends TestCase {
       InputStreamReader xover = new InputStreamReader( fin );
       BufferedReader input = new BufferedReader( xover );
 
-      int rowCount = 0;
-      try {
-        String inputLine = input.readLine();
-        while ( inputLine != null ) {
-          String[] columns = inputLine.split( ";" );
-          if ( columns.length != 3 ) {
-            fail( "Expected 3 columns, got " + columns.length );
-          }
-          rows[rowCount][0] = Long.parseLong( columns[0].trim() );
-          rows[rowCount][1] = columns[1];
-          rows[rowCount][2] = columns[2];
-          inputLine = input.readLine();
-        }
-      } catch ( IOException ioe ) {
-        // Ignore errors
-      }
+      readData1Rows( rows, input );
 
       fin.close();
 
@@ -718,10 +685,10 @@ public class TextFileOutputTests extends TestCase {
       fail( e.getLocalizedMessage() );
     }
 
-    List<RowMetaAndData> goldenImageRows = createResultDataFromObjects( rows );
+    List<RowMetaAndData> outFileRows = createResultDataFromObjects( rows );
 
     try {
-      TestUtilities.checkRows( goldenImageRows, resultRows );
+      TestUtilities.checkRows( resultRows, outFileRows );
     } catch ( TestFailedException tfe ) {
       fail( tfe.getMessage() );
     }
