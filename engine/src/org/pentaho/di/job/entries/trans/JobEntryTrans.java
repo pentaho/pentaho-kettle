@@ -648,7 +648,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     // the repository is down.
     // Log the stack trace and return an error condition from this
     //
-    TransMeta transMeta = getTransMeta( rep, metaStore, this );
+    TransMeta transMeta = null;
+    try {
+      transMeta = getTransMeta( rep, metaStore, this );
+    } catch ( KettleException e ) {
+      logError( Const.getStackTracker( e ) );
+      result.setNrErrors( 1 );
+      result.setResult( false );
+      return result;
+    }
 
     int iteration = 0;
     String[] args1 = arguments;
