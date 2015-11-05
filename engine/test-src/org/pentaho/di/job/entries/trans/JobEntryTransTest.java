@@ -24,7 +24,11 @@ package org.pentaho.di.job.entries.trans;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -39,8 +43,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.junit.Test;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.job.Job;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
@@ -161,4 +170,19 @@ public class JobEntryTransTest {
     // connected, jobname, FILENAME method    
     testJobEntry( rep, true, ObjectLocationSpecificationMethod.FILENAME, ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
   }
+
+  @Test
+  public void testExecute_result_false_get_transMeta_exception() throws KettleException {
+    JobEntryTrans jobEntryTrans = spy( new JobEntryTrans( JOB_ENTRY_TRANS_NAME ) );
+    jobEntryTrans.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
+    jobEntryTrans.setParentJob( mock( Job.class ) );
+    jobEntryTrans.setLogLevel( LogLevel.NOTHING );
+    doThrow( new KettleException( "Error while loading transformation" ) ).when( jobEntryTrans ).getTransMeta( any(
+        Repository.class ), any( IMetaStore.class ), any( VariableSpace.class ) );
+    Result result = mock( Result.class );
+
+    jobEntryTrans.execute( result, 1 );
+    verify( result ).setResult( false );
+  }
+
 }
