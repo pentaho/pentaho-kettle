@@ -346,6 +346,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="jacoco.it.execfile.path" location="${jacoco.integration.report.dir}/jacoco-it.exec"/>
   <property name="junit.test.pattern" value="**/*Test.java"/>
   <property name="junit.integration.test.pattern" value="**/*IT.java"/>
+  <property name="jacoco.ui.class.exclude.pattern" value=""/>
 
   <!-- Maven properties -->
   <property name="maven.options" value="-q"/>
@@ -2157,7 +2158,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </executiondata>
           <structure name="${ivy.artifact.id}">
             <classfiles>
-              <fileset dir="${classes.dir}"/>
+              <fileset dir="${classes.dir}">
+                <exclude name="${jacoco.ui.class.exclude.pattern}"/>
+              </fileset>
             </classfiles>
             <sourcefiles encoding="UTF-8">
               <fileset dir="${src.dir}"/>
