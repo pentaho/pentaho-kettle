@@ -24,7 +24,10 @@ public interface IRepositoryFactory {
 
   Repository connect( String repositoryName ) throws KettleException;
 
-  IRepositoryFactory DEFAULT = new CachingRepositoryFactory();
+  IRepositoryFactory DEFAULT = new CachingRepositoryFactory(){{
+    // Make sure we're registered with PentahoSystem so we can be found.
+    PentahoSystem.registerObject( this );
+  }};
 
   /**
    * Sets the "ID" of the Repository Plugin Type to use (filebased, db, enterprise)
@@ -50,8 +53,6 @@ public interface IRepositoryFactory {
 
     public CachingRepositoryFactory( IRepositoryFactory delegate ) {
       this.delegate = delegate;
-      // Make sure we're registered with PentahoSystem so we can be found.
-      PentahoSystem.registerObject( this );
     }
 
     @Override public void setRepositoryId( String id ) {
