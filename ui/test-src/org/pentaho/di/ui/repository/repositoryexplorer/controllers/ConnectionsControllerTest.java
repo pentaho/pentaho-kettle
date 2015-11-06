@@ -77,14 +77,31 @@ public class ConnectionsControllerTest {
 
 
   @Test
-  public void createConnection_EmptyName() throws Exception {
-    when( databaseDialog.open() ).thenReturn( "" );
-    controller.createConnection();
-
-    // repository was not accessed
-    verify( repository, never() ).getDatabaseID( anyString() );
-    verify( repository, never() ).save( any( DatabaseMeta.class ), anyString(), any( ProgressMonitorListener.class ) );
+  public void createConnection_NullName() throws Exception {
+    testEditConnectionGetsWrongName( null );
   }
+
+  @Test
+  public void createConnection_EmptyName() throws Exception {
+    testEditConnectionGetsWrongName( "" );
+  }
+
+  @Test
+  public void createConnection_BlankName() throws Exception {
+    testCreateConnectionGetsWrongName( "  " );
+  }
+
+  private void testCreateConnectionGetsWrongName( String wrongName ) throws Exception {
+    when( databaseDialog.open() ).thenReturn( wrongName );
+    controller.createConnection();
+    assertRepositoryWasNotAccessed();
+  }
+
+  private void assertRepositoryWasNotAccessed() throws KettleException {
+    verify( repository, never() ).getDatabaseID( anyString() );
+    assertSaveWasNotInvoked();
+  }
+
 
   @Test
   public void createConnection_NameExists() throws Exception {
@@ -109,19 +126,33 @@ public class ConnectionsControllerTest {
     assertRepositorySavedDb();
   }
 
+
+  @Test
+  public void editConnection_NullName() throws Exception {
+    testEditConnectionGetsWrongName( null );
+  }
+
   @Test
   public void editConnection_EmptyName() throws Exception {
+    testEditConnectionGetsWrongName( "" );
+  }
+
+  @Test
+  public void editConnection_BlankName() throws Exception {
+    testEditConnectionGetsWrongName( "  " );
+  }
+
+  private void testEditConnectionGetsWrongName( String wrongName ) throws Exception {
     final String dbName = "name";
     List<UIDatabaseConnection> selectedConnection = createSelectedConnectionList( dbName );
     when( connectionsTable.<UIDatabaseConnection>getSelectedItems() ).thenReturn( selectedConnection );
 
     when( repository.getDatabaseID( dbName ) ).thenReturn( new StringObjectId( "existing" ) );
-    when( databaseDialog.open() ).thenReturn( "" );
+    when( databaseDialog.open() ).thenReturn( wrongName );
 
     controller.editConnection();
 
-    // repository.save() was not invoked
-    verify( repository, never() ).save( any( DatabaseMeta.class ), anyString(), any( ProgressMonitorListener.class ) );
+    assertSaveWasNotInvoked();
   }
 
 
@@ -172,10 +203,12 @@ public class ConnectionsControllerTest {
     return singletonList( new UIDatabaseConnection( meta, repository ) );
   }
 
+  private void assertSaveWasNotInvoked() throws KettleException {
+    verify( repository, never() ).save( any( DatabaseMeta.class ), anyString(), any( ProgressMonitorListener.class ) );
+  }
 
   private void assertShowedAlreadyExistsMessage() throws KettleException {
-    // repository.save() was not invoked
-    verify( repository, never() ).save( any( DatabaseMeta.class ), anyString(), any( ProgressMonitorListener.class ) );
+    assertSaveWasNotInvoked();
     // instead the error dialog was shown
     verify( controller ).showAlreadyExistsMessage();
   }
