@@ -1,5 +1,6 @@
 package org.pentaho.di.repository.utils;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -26,6 +27,11 @@ public class RepositoryFactoryTest {
   public static void setup() throws Exception {
     PentahoSystem.init( new StandaloneApplicationContext( "", "" ) );
     KettleEnvironment.init();
+  }
+
+  @Before
+  public void reset(){
+    PentahoSystem.clearObjectFactory();
   }
 
   @Test
