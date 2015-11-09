@@ -90,7 +90,8 @@ public class SpoonDBDelegate extends SpoonDelegate {
     if ( !Const.isEmpty( newname ) ) { // null: CANCEL
 
       databaseMeta = getDatabaseDialog().getDatabaseMeta();
-      if (!newname.equals( originalName ) && DialogUtils.objectExists( databaseMeta, hasDatabasesInterface.getDatabases() )) {
+      if ( !newname.equals( originalName ) && DialogUtils.objectWithTheSameNameExists( databaseMeta,
+          hasDatabasesInterface.getDatabases() ) ) {
         DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
         return;
       }

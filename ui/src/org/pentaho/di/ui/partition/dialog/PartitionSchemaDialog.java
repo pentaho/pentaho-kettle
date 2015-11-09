@@ -78,7 +78,7 @@ public class PartitionSchemaDialog extends Dialog {
   private static Class<?> PKG = PartitionSchemaDialog.class; // for i18n purposes, needed by Translator2!!
 
   private PartitionSchema partitionSchema;
-  
+
   private Collection<PartitionSchema> existingSchemas;
 
   private Shell shell;
@@ -108,7 +108,7 @@ public class PartitionSchemaDialog extends Dialog {
   private List<DatabaseMeta> databases;
 
   private VariableSpace variableSpace;
-  
+
   public PartitionSchemaDialog( Shell par, PartitionSchema partitionSchema,
       Collection<PartitionSchema> existingSchemas, List<DatabaseMeta> databases, VariableSpace variableSpace ) {
     super( par, SWT.NONE );
@@ -333,7 +333,7 @@ public class PartitionSchemaDialog extends Dialog {
     getInfo();
 
     if ( !partitionSchema.getName().equals( originalSchema.getName() ) ) {
-      if ( DialogUtils.objectExists( partitionSchema, existingSchemas ) ) {
+      if ( DialogUtils.objectWithTheSameNameExists( partitionSchema, existingSchemas ) ) {
         String title = BaseMessages.getString( PKG, "PartitionSchemaDialog.PartitionSchemaNameExists.Title" );
         String message =
             BaseMessages.getString( PKG, "PartitionSchemaDialog.PartitionSchemaNameExists", partitionSchema.getName() );
@@ -345,7 +345,7 @@ public class PartitionSchemaDialog extends Dialog {
         return;
       }
     }
-    
+
     originalSchema.setName( partitionSchema.getName() );
     originalSchema.setPartitionIDs( partitionSchema.getPartitionIDs() );
     originalSchema.setDynamicallyDefined( wDynamic.getSelection() );
