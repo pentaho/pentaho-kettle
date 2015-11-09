@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ivy-module version="2.0">
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
   <info organisation="pentaho" module="pentaho-kettle" revision="${project.revision}" />
   <configurations>
     <conf name="default" />
@@ -25,7 +25,9 @@
     <dependency org="org.mockito"              name="mockito-all"          rev="1.9.5"  transitive="false" conf="test->default"/>
     <dependency org="org.eclipse.jetty"        name="test-jetty-servlet" rev="8.1.15.v20140411" transitive="false" conf="test->default"/>
     <dependency org="net.sourceforge.nekohtml" name="nekohtml"             rev="1.9.7"  transitive="false" conf="test->default"/>
-    <dependency org="com.puppycrawl.tools"     name="checkstyle"           rev="5.7"    transitive="true"  conf="checkstyle->default"/>
+    <dependency org="com.puppycrawl.tools"     name="checkstyle"           rev="${checkstyle.version}" transitive="true" conf="checkstyle->default">
+      <artifact name="checkstyle" ext="jar" m:classifier="all"/>
+    </dependency>
 
     <!-- Apache Mina for settling up SFTP and FTPS servers' instances -->
     <dependency org="org.apache.sshd"     name="sshd-sftp"     rev="0.11.0"  conf="test->default" transitive="true" />
