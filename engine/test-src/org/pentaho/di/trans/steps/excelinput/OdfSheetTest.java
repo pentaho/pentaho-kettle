@@ -18,29 +18,30 @@
  * limitations under the License.
  */
 
-package org.pentaho.di.trans.steps.excelinput.ods;
+package org.pentaho.di.trans.steps.excelinput;
+
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
-import org.pentaho.di.trans.steps.excelinput.SpreadSheetType;
-import org.pentaho.di.trans.steps.excelinput.WorkbookFactory;
-
-import static org.junit.Assert.assertEquals;
-
+import org.pentaho.di.trans.steps.excelinput.ods.OdfSheet;
 
 public class OdfSheetTest {
-
 
   private KWorkbook ods341;
   private KWorkbook ods24;
 
   @Before
   public void init() throws KettleException {
-    ods341 = WorkbookFactory.getWorkbook( SpreadSheetType.ODS, this.getClass().getResource( "sample-3.4.1.ods" ).getPath() , null );
-    ods24 = WorkbookFactory.getWorkbook( SpreadSheetType.ODS, this.getClass().getResource( "sample-2.4.ods" ).getPath() , null );
+    ods341 =
+        WorkbookFactory.getWorkbook( SpreadSheetType.ODS, this.getClass().getResource( "files/sample-3.4.1.ods" )
+            .getPath(), null );
+    ods24 =
+        WorkbookFactory.getWorkbook( SpreadSheetType.ODS, this.getClass().getResource( "files/sample-2.4.ods" )
+            .getPath(), null );
   }
 
   @Test
@@ -57,10 +58,9 @@ public class OdfSheetTest {
     checkCellCount( (OdfSheet) ods341.getSheet( sameRowWidthSheet ), 15, "Cell count mismatch for ODF v3.4.1" );
     checkCellCount( (OdfSheet) ods24.getSheet( sameRowWidthSheet ), 1, "Cell count mismatch for ODF v2.4" );
     checkCellCount( (OdfSheet) ods341.getSheet( diffRowWidthSheet ), new int[] { 15, 15, 12 },
-      "Cell count mismatch for ODF v3.4.1" );
+        "Cell count mismatch for ODF v3.4.1" );
     checkCellCount( (OdfSheet) ods24.getSheet( diffRowWidthSheet ), new int[] { 3, 2 },
-      "Cell count mismatch for ODF v2.4" );
-
+        "Cell count mismatch for ODF v2.4" );
 
   }
 
@@ -82,7 +82,7 @@ public class OdfSheetTest {
     assertEquals( "Row count mismatch", expected.length, rowNo );
     for ( int i = 0; i < rowNo; i++ ) {
       KCell[] row = sheet.getRow( i );
-      assertEquals( failMsg + "; Row content: " + rowToString( row ), expected[ i ], row.length );
+      assertEquals( failMsg + "; Row content: " + rowToString( row ), expected[i], row.length );
     }
   }
 
@@ -90,9 +90,9 @@ public class OdfSheetTest {
     if ( row == null || row.length == 0 ) {
       return "";
     }
-    String result = cellToStr( row[ 0 ] );
+    String result = cellToStr( row[0] );
     for ( int j = 1; j < row.length; j++ ) {
-      result += "," + cellToStr( row[ j ] );
+      result += "," + cellToStr( row[j] );
     }
     return result;
   }
@@ -104,5 +104,4 @@ public class OdfSheetTest {
     }
     return result;
   }
-
 }
