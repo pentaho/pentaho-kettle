@@ -39,6 +39,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer.TYPE;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoerCollection;
@@ -65,6 +66,7 @@ import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.SwtBindingFactory;
 import org.pentaho.ui.xul.swt.custom.DialogConstant;
+import org.pentaho.ui.xul.swt.tags.SwtDialog;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
 /**
@@ -108,6 +110,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   protected XulMessageBox messageBox;
 
   protected XulConfirmBox confirmBox;
+
+  private Shell shell;
 
   /**
    * Allows for lookup of a UIRepositoryDirectory by ObjectId. This allows the reuse of instances that are inside a UI
@@ -170,6 +174,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   protected void createBindings() {
+    shell = ( (SwtDialog) document.getElementById( "repository-explorer-dialog" ) ).getShell();
+
     folderTree = (XulTree) document.getElementById( "folder-tree" );
     fileTable = (XulTree) document.getElementById( "file-table" );
 
@@ -536,10 +542,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
                 deleteFolder( repoDir );
               } catch ( Exception e ) {
                 if ( mainController == null || !mainController.handleLostRepository( e ) ) {
-                  messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
-                  messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-                  messageBox.setMessage( BaseMessages.getString( PKG, e.getLocalizedMessage() ) );
-                  messageBox.open();
+                  new ErrorDialog( shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.ErrorDialog.Title" ),
+                      BaseMessages.getString( PKG, "RepositoryExplorerDialog.ErrorDialog.Message" ), e );
                 }
               }
             }
