@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,7 +48,7 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
 
   public TabSet( Composite parent ) {
     super();
-    tabfolder = new CTabFolder( parent, SWT.MULTI );
+    tabfolder = createTabFolder( parent );
 
     tabfolder.setSimple( false );
     tabfolder.setUnselectedImageVisible( true );
@@ -103,6 +103,11 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
     // add to the lat used tab
     addItemToHistory( item );
   }
+
+  protected CTabFolder createTabFolder( Composite parent ) {
+    return new CTabFolder( parent, SWT.MULTI );
+  }
+
 
   /**
    * Add a tab item to the tab usage history
@@ -207,6 +212,11 @@ public class TabSet implements SelectionListener, CTabFolder2Listener {
   }
 
   public void remove( TabItem item ) {
+    int itemIndex = tabList.indexOf( item );
+    if ( itemIndex >= 0 && itemIndex < selectedIndex ) {
+      // removal would change selected
+      selectedIndex--;
+    }
     tabList.remove( item );
     item.dispose();
   }
