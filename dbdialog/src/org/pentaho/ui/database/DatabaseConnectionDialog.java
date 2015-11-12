@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,7 @@ public class DatabaseConnectionDialog {
 
   public static final String DIALOG_DEFINITION_FILE = "org/pentaho/ui/database/databasedialog.xul";
 
-  private Map<String, String> extendedClasses = new HashMap<String, String>();
+  protected Map<String, String> extendedClasses = new HashMap<>();
 
   public DatabaseConnectionDialog() {
   }
