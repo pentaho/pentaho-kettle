@@ -22,14 +22,22 @@
 
 package org.pentaho.di.ui.util;
 
-import org.junit.Test;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryElementMetaInterface;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.pentaho.di.ui.util.DialogUtils.getPathOf;
+import static org.pentaho.di.ui.util.DialogUtils.objectWithTheSameNameExists;
+
+import java.util.Collection;
+import java.util.Collections;
+
+import org.junit.Test;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.shared.SharedObjectInterface;
 
 /**
  * @author Andrey Khayrutdinov
@@ -86,4 +94,35 @@ public class DialogUtilsTest {
 
     assertEquals( expected, getPathOf( object ) );
   }
+
+  @Test
+  public void objectWithTheSameNameExists_true_if_exists() {
+    SharedObjectInterface sharedObject = mock( SharedObjectInterface.class );
+    when( sharedObject.getName() ).thenReturn( "TEST_OBJECT" );
+
+    assertTrue( objectWithTheSameNameExists( sharedObject, createTestScope( "TEST_OBJECT" ) ) );
+  }
+
+  @Test
+  public void objectWithTheSameNameExists_false_if_not_exist() {
+    SharedObjectInterface sharedObject = mock( SharedObjectInterface.class );
+    when( sharedObject.getName() ).thenReturn( "NEW_TEST_OBJECT" );
+
+    assertFalse( objectWithTheSameNameExists( sharedObject, createTestScope( "TEST_OBJECT" ) ) );
+  }
+
+  @Test
+  public void objectWithTheSameNameExists_false_if_same_object() {
+    SharedObjectInterface sharedObject = mock( SharedObjectInterface.class );
+    when( sharedObject.getName() ).thenReturn( "TEST_OBJECT" );
+
+    assertFalse( objectWithTheSameNameExists( sharedObject, Collections.singleton( sharedObject ) ) );
+  }
+
+  private static Collection<SharedObjectInterface> createTestScope( String objectName ) {
+    SharedObjectInterface sharedObject = mock( SharedObjectInterface.class );
+    when( sharedObject.getName() ).thenReturn( objectName );
+    return Collections.singleton( sharedObject );
+  }
+
 }

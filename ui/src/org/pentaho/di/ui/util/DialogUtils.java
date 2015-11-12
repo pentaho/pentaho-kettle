@@ -50,11 +50,12 @@ public class DialogUtils {
     }
     return null;
   }
-  
-  public static boolean objectExists( SharedObjectInterface object, Collection<? extends SharedObjectInterface> scope ) {
+
+  public static boolean objectWithTheSameNameExists( SharedObjectInterface object,
+      Collection<? extends SharedObjectInterface> scope ) {
     for ( SharedObjectInterface element : scope ) {
       String elementName = element.getName();
-      if ( elementName != null && elementName.equalsIgnoreCase( object.getName() ) ) {
+      if ( elementName != null && elementName.equalsIgnoreCase( object.getName() ) && object != element ) {
         return true;
       }
     }
