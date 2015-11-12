@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+<!-- Generator: Adobe Illustrator 19.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="-297 389 16 16" style="enable-background:new -297 389 16 16;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;}
+	.st1{fill:#F99C1C;}
+</style>
 <g id="Layer_2">
 	<g id="Layer_2_1_">
-		<rect fill="none" width="16" height="16"/>
+		<rect x="-297" y="389" class="st0" width="16" height="16"/>
 	</g>
 </g>
 <g id="art">
 	<g>
-		<polygon fill="#3D6480" points="11,7 11,5.3 13,5.3 9,1.2 10.2,0 14.2,4 14.2,2.1 16,2.1 16,7 		"/>
-		<polygon fill="#3D6480" points="9,11 10.7,11 10.7,13 14.8,9 16,10.2 12,14.2 13.9,14.2 13.9,16 9,16 		"/>
-		<polygon fill="#3D6480" points="5,9 5,10.7 3,10.7 7,14.8 5.8,16 1.8,12 1.8,13.9 0,13.9 0,9 		"/>
-		<polygon fill="#3D6480" points="7,5 5.3,5 5.3,3 1.2,7 0,5.8 4,1.8 2.1,1.8 2.1,0 7,0 		"/>
+		<polygon class="st1" points="-286,396 -286,394.3 -284,394.3 -288,390.2 -286.8,389 -282.8,393 -282.8,391.1 -281,391.1 -281,396 
+					"/>
+		<polygon class="st1" points="-288,400 -286.3,400 -286.3,402 -282.2,398 -281,399.2 -285,403.2 -283.1,403.2 -283.1,405 -288,405 
+					"/>
+		<polygon class="st1" points="-292,398 -292,399.7 -294,399.7 -290,403.8 -291.2,405 -295.2,401 -295.2,402.9 -297,402.9 -297,398 
+					"/>
+		<polygon class="st1" points="-290,394 -291.7,394 -291.7,392 -295.8,396 -297,394.8 -293,390.8 -294.9,390.8 -294.9,389 -290,389 
+					"/>
 	</g>
 </g>
 </svg>
