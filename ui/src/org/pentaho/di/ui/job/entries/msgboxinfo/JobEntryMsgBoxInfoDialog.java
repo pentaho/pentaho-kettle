@@ -72,7 +72,7 @@ public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntry
 
   private Label wlBodyMessage;
 
-  private Text wBodyMessage;
+  private TextVar wBodyMessage;
 
   private FormData fdlBodyMessage, fdBodyMessage;
 
@@ -183,7 +183,7 @@ public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntry
     fdlBodyMessage.right = new FormAttachment( middle, -margin );
     wlBodyMessage.setLayoutData( fdlBodyMessage );
 
-    wBodyMessage = new Text( shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL );
+    wBodyMessage = new TextVar( jobMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL );
     wBodyMessage.setText( BaseMessages.getString( PKG, "MsgBoxInfo.Name.Default" ) );
     props.setLook( wBodyMessage, Props.WIDGET_STYLE_FIXED );
     wBodyMessage.addModifyListener( lsMod );
