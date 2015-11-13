@@ -25,7 +25,8 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.gui.PrimitiveGCInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 
-@RowDistributionPlugin(code="FakeDistribution", name="Fake distribution", description="Useful only for unit testing")
+@RowDistributionPlugin( code = "FakeDistribution", name = "Fake distribution",
+    description = "Useful only for unit testing" )
 public class FakeRowDistribution implements RowDistributionInterface {
 
   @Override
@@ -39,9 +40,9 @@ public class FakeRowDistribution implements RowDistributionInterface {
   }
 
   @Override
-  public void distributeRow(RowMetaInterface paramRowMetaInterface, Object[] paramArrayOfObject, StepInterface paramStepInterface)
-    throws KettleStepException {
-    //TODO: Implement some distribution for test cases
+  public void distributeRow( RowMetaInterface paramRowMetaInterface, Object[] paramArrayOfObject,
+      StepInterface paramStepInterface ) throws KettleStepException {
+    // TODO: Implement some distribution for test cases
   }
 
   @Override

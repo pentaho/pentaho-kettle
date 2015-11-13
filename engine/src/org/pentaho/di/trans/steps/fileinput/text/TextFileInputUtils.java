@@ -339,7 +339,7 @@ public class TextFileInputUtils {
       String escapeCharacter, FileErrorHandler errorHandler,
       BaseFileInputStepMeta.AdditionalOutputFields additionalOutputFields, String shortFilename, String path,
       boolean hidden, Date modificationDateTime, String uri, String rooturi, String extension, Long size )
-    throws KettleException {
+        throws KettleException {
     if ( textFileLine == null || textFileLine.line == null ) {
       return null;
     }
@@ -383,7 +383,7 @@ public class TextFileInputUtils {
         int trim_type = fieldnr < nrfields ? f.getTrimType() : ValueMetaInterface.TRIM_TYPE_NONE;
 
         if ( fieldnr < strings.length ) {
-          String pol = strings[ fieldnr ];
+          String pol = strings[fieldnr];
           try {
             if ( valueMeta.isNull( pol ) ) {
               value = null;

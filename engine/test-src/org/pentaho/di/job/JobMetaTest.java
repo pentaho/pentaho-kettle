@@ -110,19 +110,19 @@ public class JobMetaTest {
   @Test
   public void testLookupRepositoryReferences() throws Exception {
     JobMeta jobMetaMock = mock( JobMeta.class );
-    doCallRealMethod().when( jobMetaMock ).lookupRepositoryReferences( any( Repository.class) );
+    doCallRealMethod().when( jobMetaMock ).lookupRepositoryReferences( any( Repository.class ) );
     doCallRealMethod().when( jobMetaMock ).addJobEntry( anyInt(), any( JobEntryCopy.class ) );
     doCallRealMethod().when( jobMetaMock ).clear();
 
     jobMetaMock.clear();
 
-    JobEntryTrans jobEntryMock = mock(JobEntryTrans.class);
-    when(jobEntryMock.hasRepositoryReferences()).thenReturn( true );
+    JobEntryTrans jobEntryMock = mock( JobEntryTrans.class );
+    when( jobEntryMock.hasRepositoryReferences() ).thenReturn( true );
 
-    JobEntryTrans brokenJobEntryMock = mock(JobEntryTrans.class);
-    when(brokenJobEntryMock.hasRepositoryReferences()).thenReturn( true );
-    doThrow( mock( IdNotFoundException.class ) )
-      .when( brokenJobEntryMock ).lookupRepositoryReferences( any( Repository.class ) );
+    JobEntryTrans brokenJobEntryMock = mock( JobEntryTrans.class );
+    when( brokenJobEntryMock.hasRepositoryReferences() ).thenReturn( true );
+    doThrow( mock( IdNotFoundException.class ) ).when( brokenJobEntryMock ).lookupRepositoryReferences( any(
+        Repository.class ) );
 
     JobEntryCopy jobEntryCopy1 = mock( JobEntryCopy.class );
     when( jobEntryCopy1.getEntry() ).thenReturn( jobEntryMock );
@@ -144,7 +144,7 @@ public class JobMetaTest {
       // ok
     }
 
-    verify( jobEntryMock, times(2) ).lookupRepositoryReferences( any( Repository.class) );
+    verify( jobEntryMock, times( 2 ) ).lookupRepositoryReferences( any( Repository.class ) );
 
   }
 }

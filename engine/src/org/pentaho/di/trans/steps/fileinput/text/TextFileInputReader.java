@@ -187,8 +187,7 @@ public class TextFileInputReader implements IBaseFileInputReader {
       /*
        * Different rules apply: on each page: a header a number of data lines a footer
        */
-      if ( !data.doneWithHeader && data.pageLinesRead == 0 ) // We are reading header lines
-      {
+      if ( !data.doneWithHeader && data.pageLinesRead == 0 ) { // We are reading header lines
         if ( log.isRowLevel() ) {
           log.logRowlevel( "P-HEADER (" + data.headerLinesRead + ") : " + textLine.line );
         }

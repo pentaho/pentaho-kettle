@@ -1,3 +1,25 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package org.pentaho.di.trans.steps.fileinput.text;
 
 import java.io.BufferedInputStream;
@@ -7,8 +29,8 @@ import java.io.InputStream;
 /**
  * Detector of BOM prefix in file.
  * 
- * We don't use BOMInputStream because: 1) it requires commons-io 2.1 or higher, 2) it doesn't support GB18030
- * charset, 3) it's additional abstraction level that add some microseconds to read
+ * We don't use BOMInputStream because: 1) it requires commons-io 2.1 or higher, 2) it doesn't support GB18030 charset,
+ * 3) it's additional abstraction level that add some microseconds to read
  */
 public class BOMDetector {
   public static final BOMMark[] MARKS =
@@ -50,7 +72,7 @@ public class BOMDetector {
   /**
    * Read first 6 bytes for check BOM.
    */
-    long readLong() throws IOException {
+  long readLong() throws IOException {
     long[] b = new long[6];
     for ( int i = 0; i < b.length; i++ ) {
       b[i] = in.read();
