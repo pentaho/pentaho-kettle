@@ -42,7 +42,7 @@ import org.pentaho.di.trans.steps.fileinput.IBaseFileInputReader;
  * @author Matt
  * @since 4-apr-2003
  */
-public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFileInputData>implements StepInterface {
+public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFileInputData> implements StepInterface {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public TextFileInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,

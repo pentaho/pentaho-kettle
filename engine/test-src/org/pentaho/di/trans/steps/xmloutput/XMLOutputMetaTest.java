@@ -22,6 +22,22 @@
 
 package org.pentaho.di.trans.steps.xmloutput;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.vfs2.FileObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -45,13 +61,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 public class XMLOutputMetaTest {
   @BeforeClass
@@ -216,7 +225,8 @@ public class XMLOutputMetaTest {
     return XMLHandler.loadXMLString( xml, "step" );
   }
 
-  @SuppressWarnings( "ConstantConditions" ) @Test
+  @SuppressWarnings( "ConstantConditions" )
+  @Test
   public void testReadRep() throws Exception {
     XMLOutputMeta xmlOutputMeta = new XMLOutputMeta();
     Repository rep = mock( Repository.class );
@@ -339,7 +349,6 @@ public class XMLOutputMetaTest {
     verify( rep ).saveStepAttribute( transid, oid, 0, "field_length", fieldLength );
     verify( rep ).saveStepAttribute( transid, oid, 0, "field_precision", fieldPrecision );
 
-
     Mockito.verifyNoMoreInteractions( rep, metastore );
   }
 
@@ -395,18 +404,9 @@ public class XMLOutputMetaTest {
     xmlOutputMeta.setDateTimeFormat( "99" );
     String[] files = xmlOutputMeta.getFiles( new Variables() );
     assertEquals( 10, files.length );
-    assertArrayEquals(
-        new String[] {
-            "file99_0_00001.xml",
-            "file99_0_00002.xml",
-            "file99_0_00003.xml",
-            "file99_1_00001.xml",
-            "file99_1_00002.xml",
-            "file99_1_00003.xml",
-            "file99_2_00001.xml",
-            "file99_2_00002.xml",
-            "file99_2_00003.xml",
-            "..."}, files );
+    assertArrayEquals( new String[] { "file99_0_00001.xml", "file99_0_00002.xml", "file99_0_00003.xml",
+      "file99_1_00001.xml", "file99_1_00002.xml", "file99_1_00003.xml", "file99_2_00001.xml", "file99_2_00002.xml",
+      "file99_2_00003.xml", "..." }, files );
   }
 
   @Test
@@ -417,7 +417,7 @@ public class XMLOutputMetaTest {
     xmlField.setFieldName( "aField" );
     xmlField.setLength( 10 );
     xmlField.setPrecision( 3 );
-    xmlOutputMeta.setOutputFields( new XMLField[]{xmlField} );
+    xmlOutputMeta.setOutputFields( new XMLField[] { xmlField } );
     RowMetaInterface row = mock( RowMetaInterface.class );
     RowMetaInterface rmi = mock( RowMetaInterface.class );
     StepMeta nextStep = mock( StepMeta.class );
@@ -473,7 +473,7 @@ public class XMLOutputMetaTest {
     xmlField2.setType( 3 );
     xmlField2.setLength( 4 );
     xmlField2.setPrecision( 5 );
-    xmlOutputMeta.setOutputFields( new XMLField[]{ xmlField, xmlField2 } );
+    xmlOutputMeta.setOutputFields( new XMLField[] { xmlField, xmlField2 } );
     RowMetaInterface requiredFields = xmlOutputMeta.getRequiredFields( new Variables() );
     List<ValueMetaInterface> valueMetaList = requiredFields.getValueMetaList();
     assertEquals( 2, valueMetaList.size() );
@@ -494,8 +494,8 @@ public class XMLOutputMetaTest {
     xmlOutputMeta.setDefault();
     ResourceNamingInterface resourceNamingInterface = mock( ResourceNamingInterface.class );
     Variables space = new Variables();
-    when( resourceNamingInterface.nameResource( any( FileObject.class ), eq( space ), eq( true ) ) )
-        .thenReturn( "exportFile" );
+    when( resourceNamingInterface.nameResource( any( FileObject.class ), eq( space ), eq( true ) ) ).thenReturn(
+        "exportFile" );
     xmlOutputMeta.exportResources( space, null, resourceNamingInterface, null, null );
     assertEquals( "exportFile", xmlOutputMeta.getFileName() );
   }
@@ -511,10 +511,9 @@ public class XMLOutputMetaTest {
     IMetaStore metastore = mock( IMetaStore.class );
     RowMetaInterface info = mock( RowMetaInterface.class );
     ArrayList<CheckResultInterface> remarks = new ArrayList<>();
-    xmlOutputMeta.check( remarks, transMeta, stepInfo,
-        prev, new String[]{"input"}, new String[]{"output"}, info, new Variables(),
-        repos, metastore  );
-    assertEquals( 2,  remarks.size() );
+    xmlOutputMeta.check( remarks, transMeta, stepInfo, prev, new String[] { "input" }, new String[] { "output" }, info,
+        new Variables(), repos, metastore );
+    assertEquals( 2, remarks.size() );
     assertEquals( "Step is receiving info from other steps.", remarks.get( 0 ).getText() );
     assertEquals( "File specifications are not checked.", remarks.get( 1 ).getText() );
 
@@ -526,10 +525,9 @@ public class XMLOutputMetaTest {
     xmlOutputMeta.setOutputFields( new XMLField[] { xmlField } );
     when( prev.size() ).thenReturn( 1 );
     remarks.clear();
-    xmlOutputMeta.check( remarks, transMeta, stepInfo,
-        prev, new String[]{"input"}, new String[]{"output"}, info, new Variables(),
-        repos, metastore  );
-    assertEquals( 4,  remarks.size() );
+    xmlOutputMeta.check( remarks, transMeta, stepInfo, prev, new String[] { "input" }, new String[] { "output" }, info,
+        new Variables(), repos, metastore );
+    assertEquals( 4, remarks.size() );
     assertEquals( "Step is connected to previous one, receiving 1 fields", remarks.get( 0 ).getText() );
     assertEquals( "All output fields are found in the input stream.", remarks.get( 1 ).getText() );
     assertEquals( "Step is receiving info from other steps.", remarks.get( 2 ).getText() );

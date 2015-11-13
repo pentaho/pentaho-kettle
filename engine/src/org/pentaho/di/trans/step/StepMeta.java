@@ -72,8 +72,8 @@ import org.w3c.dom.Node;
  *
  */
 public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<StepMeta>, GUIPositionInterface,
-  SharedObjectInterface, CheckResultSourceInterface, ResourceExportInterface, ResourceHolderInterface,
-  AttributesInterface {
+    SharedObjectInterface, CheckResultSourceInterface, ResourceExportInterface, ResourceHolderInterface,
+    AttributesInterface {
   private static Class<?> PKG = StepMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String XML_TAG = "step";
@@ -188,7 +188,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
     attributesMap = new HashMap<String, Map<String, String>>();
   }
-  
+
   public StepMeta() {
     this( (String) null, (String) null, (StepMetaInterface) null );
   }
@@ -205,16 +205,14 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     retval.append( "    " ).append( XMLHandler.addTagValue( "type", getStepID() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "description", description ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "distribute", distributes ) );
-    retval
-      .append( "    " ).append(
-        XMLHandler.addTagValue( "custom_distribution", rowDistribution == null ? null : rowDistribution
-          .getCode() ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "custom_distribution", rowDistribution == null ? null
+        : rowDistribution.getCode() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "copies", copiesString ) );
 
     retval.append( stepPartitioningMeta.getXML() );
     if ( targetStepPartitioningMeta != null ) {
-      retval.append( XMLHandler.openTag( "target_step_partitioning" ) ).append(
-        targetStepPartitioningMeta.getXML() ).append( XMLHandler.closeTag( "target_step_partitioning" ) );
+      retval.append( XMLHandler.openTag( "target_step_partitioning" ) ).append( targetStepPartitioningMeta.getXML() )
+          .append( XMLHandler.closeTag( "target_step_partitioning" ) );
     }
 
     if ( includeInterface ) {
@@ -223,8 +221,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
     retval.append( AttributesUtil.getAttributesXml( attributesMap ) );
 
-    retval.append( "     " ).append(
-      XMLHandler.addTagValue( "cluster_schema", clusterSchema == null ? "" : clusterSchema.getName() ) );
+    retval.append( "     " ).append( XMLHandler.addTagValue( "cluster_schema", clusterSchema == null ? ""
+        : clusterSchema.getName() ) );
 
     retval.append( " <remotesteps>" );
     // Output the remote input steps
@@ -268,10 +266,11 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
    * @deprecated
    */
   @Deprecated
-  public StepMeta( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters ) throws KettleXMLException, KettlePluginLoaderException {
+  public StepMeta( Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters )
+    throws KettleXMLException, KettlePluginLoaderException {
     this( stepnode, databases, (IMetaStore) null );
   }
-  
+
   /**
    * Read the step data from XML
    *
@@ -294,23 +293,23 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
       // Create a new StepMetaInterface object...
       PluginInterface sp = registry.findPluginWithId( StepPluginType.class, stepid );
-      
+
       if ( sp == null ) {
         setStepMetaInterface( (StepMetaInterface) new MissingTrans( stepname, stepid ) );
       } else {
         setStepMetaInterface( (StepMetaInterface) registry.loadClass( sp ) );
       }
-      if( this.stepMetaInterface != null ) {
+      if ( this.stepMetaInterface != null ) {
         if ( sp != null ) {
           stepid = sp.getIds()[0]; // revert to the default in case we loaded an alternate version
         }
-  
+
         // Load the specifics from XML...
         if ( stepMetaInterface != null ) {
           loadXmlCompatibleStepMeta( stepMetaInterface, stepnode, databases );
           stepMetaInterface.loadXML( stepnode, databases, metaStore );
         }
-  
+
         /* Handle info general to all step types... */
         description = XMLHandler.getTagValue( stepnode, "description" );
         copiesString = XMLHandler.getTagValue( stepnode, "copies" );
@@ -319,18 +318,18 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         if ( sdistri == null ) {
           distributes = true; // default=distribute
         }
-  
+
         // Load the attribute groups map
         //
         attributesMap = AttributesUtil.loadAttributes( XMLHandler.getSubNode( stepnode, AttributesUtil.XML_TAG ) );
-  
+
         // Determine the row distribution
         //
         String rowDistributionCode = XMLHandler.getTagValue( stepnode, "custom_distribution" );
         rowDistribution =
-          PluginRegistry.getInstance().loadClass(
-            RowDistributionPluginType.class, rowDistributionCode, RowDistributionInterface.class );
-  
+            PluginRegistry.getInstance().loadClass( RowDistributionPluginType.class, rowDistributionCode,
+                RowDistributionInterface.class );
+
         // Handle GUI information: location & drawstep?
         String xloc, yloc;
         int x, y;
@@ -347,14 +346,14 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
           y = 0;
         }
         location = new Point( x, y );
-  
+
         drawstep = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "GUI", "draw" ) );
-  
+
         // The partitioning information?
         //
         Node partNode = XMLHandler.getSubNode( stepnode, "partitioning" );
         stepPartitioningMeta = new StepPartitioningMeta( partNode );
-  
+
         // Target partitioning information?
         //
         Node targetPartNode = XMLHandler.getSubNode( stepnode, "target_step_partitioning" );
@@ -362,16 +361,16 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         if ( partNode != null ) {
           targetStepPartitioningMeta = new StepPartitioningMeta( partNode );
         }
-  
+
         clusterSchemaName = XMLHandler.getTagValue( stepnode, "cluster_schema" );
-  
+
         // The remote input and output steps...
         Node remotestepsNode = XMLHandler.getSubNode( stepnode, "remotesteps" );
         Node inputNode = XMLHandler.getSubNode( remotestepsNode, "input" );
         int nrInput = XMLHandler.countNodes( inputNode, RemoteStep.XML_TAG );
         for ( int i = 0; i < nrInput; i++ ) {
           remoteInputSteps.add( new RemoteStep( XMLHandler.getSubNodeByNr( inputNode, RemoteStep.XML_TAG, i ) ) );
-  
+
         }
         Node outputNode = XMLHandler.getSubNode( remotestepsNode, "output" );
         int nrOutput = XMLHandler.countNodes( outputNode, RemoteStep.XML_TAG );
@@ -382,8 +381,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     } catch ( KettlePluginLoaderException e ) {
       throw e;
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "StepMeta.Exception.UnableToLoadStepInfo" )
-        + e.toString(), e );
+      throw new KettleXMLException( BaseMessages.getString( PKG, "StepMeta.Exception.UnableToLoadStepInfo" ) + e
+          .toString(), e );
     }
   }
 
@@ -397,7 +396,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
    */
   @SuppressWarnings( "deprecation" )
   private void loadXmlCompatibleStepMeta( StepMetaInterface stepMetaInterface2, Node stepnode,
-    List<DatabaseMeta> databases ) throws KettleXMLException {
+      List<DatabaseMeta> databases ) throws KettleXMLException {
     stepMetaInterface.loadXML( stepnode, databases, new HashMap<String, Counter>() );
   }
 
@@ -479,8 +478,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     //
     if ( isPartitioned() && getStepPartitioningMeta().getPartitionSchema() != null ) {
       List<String> partitionIDs = getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-      if ( partitionIDs != null && partitionIDs.size() > 0 ) // these are the partitions the step can "reach"
-      {
+      if ( partitionIDs != null && partitionIDs.size() > 0 ) { // these are the partitions the step can "reach"
         return partitionIDs.size();
       }
     }
@@ -721,15 +719,14 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   }
 
   @Deprecated
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, RowMetaInterface prev,
-    String[] input, String[] output, RowMetaInterface info ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, RowMetaInterface prev, String[] input,
+      String[] output, RowMetaInterface info ) {
     check( remarks, transMeta, prev, input, output, info, new Variables(), null, null );
   }
 
   @SuppressWarnings( "deprecation" )
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, RowMetaInterface prev,
-    String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
-    IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, RowMetaInterface prev, String[] input,
+      String[] output, RowMetaInterface info, VariableSpace space, Repository repository, IMetaStore metaStore ) {
     stepMetaInterface.check( remarks, transMeta, this, prev, input, output, info );
     stepMetaInterface.check( remarks, transMeta, this, prev, input, output, info, space, repository, metaStore );
   }
@@ -871,8 +868,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
    * @return if error handling is supported for this step, if error handling is defined and a target step is set
    */
   public boolean isDoingErrorHandling() {
-    return stepMetaInterface.supportsErrorHandling()
-      && stepErrorMeta != null && stepErrorMeta.getTargetStep() != null && stepErrorMeta.isEnabled();
+    return stepMetaInterface.supportsErrorHandling() && stepErrorMeta != null && stepErrorMeta.getTargetStep() != null
+        && stepErrorMeta.isEnabled();
   }
 
   public boolean isSendingErrorRowsToStep( StepMeta targetStep ) {
@@ -921,13 +918,14 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   @Deprecated
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository ) throws KettleException {
+      ResourceNamingInterface resourceNamingInterface, Repository repository ) throws KettleException {
     return exportResources( space, definitions, resourceNamingInterface, repository, repository.getMetaStore() );
   }
 
   @SuppressWarnings( "deprecation" )
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+      ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore )
+        throws KettleException {
 
     // Compatibility with previous release...
     //
@@ -1093,8 +1091,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     }
     return attributes.get( key );
   }
-  
+
   public boolean isMissing() {
-    return this.stepMetaInterface instanceof MissingTrans; 
+    return this.stepMetaInterface instanceof MissingTrans;
   }
 }
