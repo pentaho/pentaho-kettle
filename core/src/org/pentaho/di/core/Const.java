@@ -1084,7 +1084,7 @@ public class Const {
   public static final double round( double f, int places, int roundingMode ) {
     // We can't round non-numbers or infinite values
     //
-    if ( f == Double.NaN || f == Double.NEGATIVE_INFINITY || f == Double.POSITIVE_INFINITY ) {
+    if ( Double.isNaN( f ) || f == Double.NEGATIVE_INFINITY || f == Double.POSITIVE_INFINITY ) {
       return f;
     }
 
@@ -2612,7 +2612,7 @@ public class Const {
     if ( idx != -1 ) {
       return sFullPath.substring( idx + 1 );
     } else {
-      idx = sFullPath.lastIndexOf( '/' ); // URL, VFS
+      idx = sFullPath.lastIndexOf( '/' ); // URL, VFS/**/
       if ( idx != -1 ) {
         return sFullPath.substring( idx + 1 );
       } else {
@@ -2750,8 +2750,8 @@ public class Const {
    * @return concatenated string representing a file url
    */
   public static String safeAppendDirectory( String dir, String file ) {
-    boolean dirHasSeparator = ( ( dir.lastIndexOf( FILE_SEPARATOR ) ) == dir.length() );
-    boolean fileHasSeparator = ( file.indexOf( FILE_SEPARATOR ) != 0 );
+    boolean dirHasSeparator = ( ( dir.lastIndexOf( FILE_SEPARATOR ) ) == dir.length() - 1 );
+    boolean fileHasSeparator = ( file.indexOf( FILE_SEPARATOR ) == 0 );
     if ( ( dirHasSeparator && !fileHasSeparator ) || ( !dirHasSeparator && fileHasSeparator ) ) {
       return dir + file;
     }
@@ -3065,6 +3065,7 @@ public class Const {
     if ( len > 0 ) {
       int start = string.indexOf( searchFor );
       while ( start != -1 ) {
+        counter++;
         start = string.indexOf( searchFor, start + len );
       }
     }
