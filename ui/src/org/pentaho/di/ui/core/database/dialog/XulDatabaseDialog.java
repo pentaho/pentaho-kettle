@@ -38,7 +38,7 @@ import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.xul.KettleXulLoader;
 import org.pentaho.ui.database.DatabaseConnectionDialog;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -141,9 +141,10 @@ public class XulDatabaseDialog {
     try {
       databaseDialogInstance = new DatabaseConnectionDialog();
       databaseDialogInstance.registerClass( EXTENDED_WIDGET_ID, EXTENDED_WIDGET_CLASSNAME );
-      container = databaseDialogInstance.getSwtInstance( parentShell ); // Attention: onload: loadConnectionData() is
-                                                                        // called here the first time, see below for
-                                                                        // second time
+      /*
+       * Attention: onload: loadConnectionData() is called here the first time, see below for second time
+       */
+      container = databaseDialogInstance.getSwtInstance( new KettleXulLoader(), parentShell );
 
       container.addEventHandler( EVENT_ID, DataOverrideHandler.class.getName() );
 
@@ -206,7 +207,6 @@ public class XulDatabaseDialog {
 
     try {
       xulDialogComponent = (XulDialog) container.getDocumentRoot().getRootElement();
-      ( (Shell) xulDialogComponent.getRootObject() ).setImage( GUIResource.getInstance().getImageConnection() );
 
       parentShell.addDisposeListener( new DisposeListener() {
 
