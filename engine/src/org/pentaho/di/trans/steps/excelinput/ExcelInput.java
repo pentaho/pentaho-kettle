@@ -37,8 +37,8 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.playlist.FilePlayListReplay;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
 import org.pentaho.di.core.spreadsheet.KSheet;
@@ -193,7 +193,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
                 case ValueMetaInterface.TYPE_DATE:
                   // number to string conversion (20070522.00 --> "20070522")
                   //
-                  ValueMetaInterface valueMetaNumber = new ValueMeta( "num", ValueMetaInterface.TYPE_NUMBER );
+                  ValueMetaInterface valueMetaNumber = new ValueMetaNumber( "num" );
                   valueMetaNumber.setConversionMask( "#" );
                   Object string = sourceMetaCopy.convertData( valueMetaNumber, r[rowcolumn] );
 
@@ -221,8 +221,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
           logBasic( BaseMessages.getString( PKG, "ExcelInput.Log.WarningProcessingExcelFile", "" + targetMeta, ""
             + data.filename, ex.toString() ) );
         }
-        if ( !errorHandled ) // check if we didn't log an error already for this one.
-        {
+        if ( !errorHandled ) {
+          // check if we didn't log an error already for this one.
           data.errorHandler.handleLineError( excelInputRow.rownr, excelInputRow.sheetName );
           errorHandled = true;
         }
