@@ -22,6 +22,19 @@
 
 package org.pentaho.di.core.row;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.pentaho.di.compatibility.Row;
+import org.pentaho.di.compatibility.Value;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleEOFException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.w3c.dom.Node;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -39,18 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.pentaho.di.compatibility.Row;
-import org.pentaho.di.compatibility.Value;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleEOFException;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.value.ValueMetaFactory;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.w3c.dom.Node;
-
 public class RowMeta implements RowMetaInterface {
   public static final String XML_META_TAG = "row-meta";
   public static final String XML_DATA_TAG = "row-data";
@@ -60,20 +61,34 @@ public class RowMeta implements RowMetaInterface {
   private List<ValueMetaInterface> valueMetaList;
 
   public RowMeta() {
+    this( new ArrayList<ValueMetaInterface>(), new RowMetaCache() );
+  }
+
+  /**
+   * Copy constructor for clone
+   *
+   * @param rowMeta
+   * @throws KettlePluginException
+   */
+  private RowMeta( RowMeta rowMeta, Integer targetType ) throws KettlePluginException {
+    this( new ArrayList<ValueMetaInterface>( rowMeta.valueMetaList.size() ), new RowMetaCache( rowMeta.cache ) );
+    for ( ValueMetaInterface valueMetaInterface : rowMeta.valueMetaList ) {
+      valueMetaList.add( ValueMetaFactory
+        .cloneValueMeta( valueMetaInterface, targetType == null ? valueMetaInterface.getType() : targetType ) );
+    }
+  }
+
+  private RowMeta( List<ValueMetaInterface> valueMetaList, RowMetaCache rowMetaCache ) {
     lock = new ReentrantReadWriteLock();
-    cache = new RowMetaCache();
-    valueMetaList = new ArrayList<ValueMetaInterface>();
+    this.cache = rowMetaCache;
+    this.valueMetaList = valueMetaList;
   }
 
   @Override
   public RowMeta clone() {
-    RowMeta rowMeta = new RowMeta();
     lock.readLock().lock();
     try {
-      for ( ValueMetaInterface valueMeta : valueMetaList ) {
-        rowMeta.addValueMeta( ValueMetaFactory.cloneValueMeta( valueMeta ) );
-      }
-      return rowMeta;
+      return new RowMeta( this, null );
     } catch ( Exception e ) {
       throw new RuntimeException( e );
     } finally {
@@ -90,13 +105,9 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public RowMetaInterface cloneToType( int targetType ) throws KettleValueException {
-    RowMeta rowMeta = new RowMeta();
     lock.readLock().lock();
     try {
-      for ( ValueMetaInterface valueMeta : valueMetaList ) {
-        rowMeta.addValueMeta( ValueMetaFactory.cloneValueMeta( valueMeta, targetType ) );
-      }
-      return rowMeta;
+      return new RowMeta( this, targetType );
     } catch ( KettlePluginException e ) {
       throw new KettleValueException( e );
     } finally {
@@ -1199,13 +1210,30 @@ public class RowMeta implements RowMetaInterface {
     }
   }
 
-  private static class RowMetaCache {
-    private final Map<String, Integer> mapping;
-    private List<Integer> needRealClone;
+  @VisibleForTesting
+  static class RowMetaCache {
+    @VisibleForTesting
+    final Map<String, Integer> mapping;
+    @VisibleForTesting
+    List<Integer> needRealClone;
 
     RowMetaCache() {
-      mapping = new HashMap<String, Integer>();
-      needRealClone = null;
+      this( new HashMap<String, Integer>(), null );
+    }
+
+    /**
+     * Copy constructor for clone
+     *
+     * @param rowMetaCache
+     */
+    RowMetaCache( RowMetaCache rowMetaCache ) {
+      this( new HashMap<>( rowMetaCache.mapping ), rowMetaCache.needRealClone == null ? null
+        : new ArrayList<>( rowMetaCache.needRealClone ) );
+    }
+
+    RowMetaCache( Map<String, Integer> mapping, List<Integer> needRealClone ) {
+      this.mapping = mapping;
+      this.needRealClone = needRealClone;
     }
 
     synchronized void invalidate() {
