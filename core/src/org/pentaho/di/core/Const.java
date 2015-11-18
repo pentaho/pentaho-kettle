@@ -79,12 +79,12 @@ public class Const {
    * @deprecated Use {@link BuildVersion#getVersion()} instead
    */
   @Deprecated
-  public static final String VERSION = BuildVersion.getInstance().getVersion();
+  public static String VERSION = BuildVersion.getInstance().getVersion();
 
   /**
    * Copyright year
    */
-  public static final String COPYRIGHT_YEAR = "2014";
+  public static String COPYRIGHT_YEAR = "2015";
 
   /**
    * Release Type
@@ -116,67 +116,67 @@ public class Const {
   /**
    * Sleep time waiting when buffer is empty (the default)
    */
-  public static final int TIMEOUT_GET_MILLIS = 50;
+  public static int TIMEOUT_GET_MILLIS = 50;
 
   /**
    * Sleep time waiting when buffer is full (the default)
    */
-  public static final int TIMEOUT_PUT_MILLIS = 50;
+  public static int TIMEOUT_PUT_MILLIS = 50;
 
   /**
    * print update every ... lines
    */
-  public static final int ROWS_UPDATE = 50000;
+  public static int ROWS_UPDATE = 50000;
 
   /**
    * Size of rowset: bigger = faster for large amounts of data
    */
-  public static final int ROWS_IN_ROWSET = 10000;
+  public static int ROWS_IN_ROWSET = 10000;
 
   /**
    * Fetch size in rows when querying a database
    */
-  public static final int FETCH_SIZE = 10000;
+  public static int FETCH_SIZE = 10000;
 
   /**
    * Sort size: how many rows do we sort in memory at once?
    */
-  public static final int SORT_SIZE = 5000;
+  public static int SORT_SIZE = 5000;
 
   /**
    * job/trans heartbeat scheduled executor periodic interval ( in seconds )
    */
-  public static final int HEARTBEAT_PERIODIC_INTERVAL_IN_SECS = 10;
+  public static int HEARTBEAT_PERIODIC_INTERVAL_IN_SECS = 10;
 
   /**
    * What's the file systems file separator on this operating system?
    */
-  public static final String FILE_SEPARATOR = System.getProperty( "file.separator" );
+  public static String FILE_SEPARATOR = System.getProperty( "file.separator" );
 
   /**
    * What's the path separator on this operating system?
    */
-  public static final String PATH_SEPARATOR = System.getProperty( "path.separator" );
+  public static String PATH_SEPARATOR = System.getProperty( "path.separator" );
 
   /**
    * CR: operating systems specific Carriage Return
    */
-  public static final String CR = System.getProperty( "line.separator" );
+  public static String CR = System.getProperty( "line.separator" );
 
   /**
    * DOSCR: MS-DOS specific Carriage Return
    */
-  public static final String DOSCR = "\n\r";
+  public static String DOSCR = "\n\r";
 
   /**
    * An empty ("") String.
    */
-  public static final String EMPTY_STRING = "";
+  public static String EMPTY_STRING = "";
 
   /**
    * The Java runtime version
    */
-  public static final String JAVA_VERSION = System.getProperty( "java.vm.version" );
+  public static String JAVA_VERSION = System.getProperty( "java.vm.version" );
 
   /**
    * Path to the users home directory (keep this entry above references to getKettleDirectory())
@@ -184,7 +184,7 @@ public class Const {
    * @deprecated Use {@link Const#getUserHomeDirectory()} instead.
    */
   @Deprecated
-  public static final String USER_HOME_DIRECTORY = NVL( System.getProperty( "KETTLE_HOME" ), System
+  public static String USER_HOME_DIRECTORY = NVL( System.getProperty( "KETTLE_HOME" ), System
     .getProperty( "user.home" ) );
 
   /**
@@ -197,151 +197,151 @@ public class Const {
   /*
    * The images directory
    *
-   * public static final String IMAGE_DIRECTORY = "/ui/images/";
+   * public static String IMAGE_DIRECTORY = "/ui/images/";
    */
 
-  public static final String PLUGIN_BASE_FOLDERS_PROP = "KETTLE_PLUGIN_BASE_FOLDERS";
+  public static String PLUGIN_BASE_FOLDERS_PROP = "KETTLE_PLUGIN_BASE_FOLDERS";
   /**
    * the default comma separated list of base plugin folders.
    */
-  public static final String DEFAULT_PLUGIN_BASE_FOLDERS = "plugins,"
+  public static String DEFAULT_PLUGIN_BASE_FOLDERS = "plugins,"
     + ( Const.isEmpty( getDIHomeDirectory() ) ? "" : getDIHomeDirectory() + FILE_SEPARATOR + "plugins," )
     + getKettleDirectory() + FILE_SEPARATOR + "plugins";
 
   /**
    * Default minimum date range...
    */
-  public static final Date MIN_DATE = new Date( -2208992400000L ); // 1900/01/01 00:00:00.000
+  public static Date MIN_DATE = new Date( -2208992400000L ); // 1900/01/01 00:00:00.000
 
   /**
    * Default maximum date range...
    */
-  public static final Date MAX_DATE = new Date( 7258114799468L ); // 2199/12/31 23:59:59.999
+  public static Date MAX_DATE = new Date( 7258114799468L ); // 2199/12/31 23:59:59.999
 
   /**
    * The default minimum year in a dimension date range
    */
-  public static final int MIN_YEAR = 1900;
+  public static int MIN_YEAR = 1900;
 
   /**
    * The default maximum year in a dimension date range
    */
-  public static final int MAX_YEAR = 2199;
+  public static int MAX_YEAR = 2199;
 
   /**
    * Specifies the number of pixels to the right we have to go in dialog boxes.
    */
-  public static final int RIGHT = 400;
+  public static int RIGHT = 400;
 
   /**
    * Specifies the length (width) of fields in a number of pixels in dialog boxes.
    */
-  public static final int LENGTH = 350;
+  public static int LENGTH = 350;
 
   /**
    * The margin between the different dialog components & widgets
    */
-  public static final int MARGIN = 4;
+  public static int MARGIN = 4;
 
   /**
    * The default percentage of the width of screen where we consider the middle of a dialog.
    */
-  public static final int MIDDLE_PCT = 35;
+  public static int MIDDLE_PCT = 35;
 
   /**
    * The default width of an arrow in the Graphical Views
    */
-  public static final int ARROW_WIDTH = 1;
+  public static int ARROW_WIDTH = 1;
 
   /**
    * The horizontal and vertical margin of a dialog box.
    */
-  public static final int FORM_MARGIN = 5;
+  public static int FORM_MARGIN = 5;
 
   /**
    * The default shadow size on the graphical view.
    */
-  public static final int SHADOW_SIZE = 0;
+  public static int SHADOW_SIZE = 0;
 
   /**
    * The size of relationship symbols
    */
-  public static final int SYMBOLSIZE = 10;
+  public static int SYMBOLSIZE = 10;
 
   /**
    * Max nr. of files to remember
    */
-  public static final int MAX_FILE_HIST = 9; // Having more than 9 files in the file history is not compatible with pre
+  public static int MAX_FILE_HIST = 9; // Having more than 9 files in the file history is not compatible with pre
                                              // 5.0 versions
 
   /**
    * The default locale for the kettle environment (system defined)
    */
-  public static final Locale DEFAULT_LOCALE = Locale.getDefault(); // new Locale("nl", "BE");
+  public static Locale DEFAULT_LOCALE = Locale.getDefault(); // new Locale("nl", "BE");
 
   /**
    * The default decimal separator . or ,
    */
-  public static final char DEFAULT_DECIMAL_SEPARATOR = ( new DecimalFormatSymbols( DEFAULT_LOCALE ) )
+  public static char DEFAULT_DECIMAL_SEPARATOR = ( new DecimalFormatSymbols( DEFAULT_LOCALE ) )
     .getDecimalSeparator();
 
   /**
    * The default grouping separator , or .
    */
-  public static final char DEFAULT_GROUPING_SEPARATOR = ( new DecimalFormatSymbols( DEFAULT_LOCALE ) )
+  public static char DEFAULT_GROUPING_SEPARATOR = ( new DecimalFormatSymbols( DEFAULT_LOCALE ) )
     .getGroupingSeparator();
 
   /**
    * The default currency symbol
    */
-  public static final String DEFAULT_CURRENCY_SYMBOL = ( new DecimalFormatSymbols( DEFAULT_LOCALE ) )
+  public static String DEFAULT_CURRENCY_SYMBOL = ( new DecimalFormatSymbols( DEFAULT_LOCALE ) )
     .getCurrencySymbol();
 
   /**
    * The default number format
    */
-  public static final String DEFAULT_NUMBER_FORMAT = ( (DecimalFormat) ( NumberFormat.getInstance() ) )
+  public static String DEFAULT_NUMBER_FORMAT = ( (DecimalFormat) ( NumberFormat.getInstance() ) )
     .toPattern();
 
   /**
    * Default string representing Null String values (empty)
    */
-  public static final String NULL_STRING = "";
+  public static String NULL_STRING = "";
 
   /**
    * Default string representing Null Number values (empty)
    */
-  public static final String NULL_NUMBER = "";
+  public static String NULL_NUMBER = "";
 
   /**
    * Default string representing Null Date values (empty)
    */
-  public static final String NULL_DATE = "";
+  public static String NULL_DATE = "";
 
   /**
    * Default string representing Null BigNumber values (empty)
    */
-  public static final String NULL_BIGNUMBER = "";
+  public static String NULL_BIGNUMBER = "";
 
   /**
    * Default string representing Null Boolean values (empty)
    */
-  public static final String NULL_BOOLEAN = "";
+  public static String NULL_BOOLEAN = "";
 
   /**
    * Default string representing Null Integer values (empty)
    */
-  public static final String NULL_INTEGER = "";
+  public static String NULL_INTEGER = "";
 
   /**
    * Default string representing Null Binary values (empty)
    */
-  public static final String NULL_BINARY = "";
+  public static String NULL_BINARY = "";
 
   /**
    * Default string representing Null Undefined values (empty)
    */
-  public static final String NULL_NONE = "";
+  public static String NULL_NONE = "";
 
   /**
    * Rounding mode, not implemented in {@code BigDecimal}. Method java.lang.Math.round(double) processes this way. <br/>
@@ -350,22 +350,22 @@ public class Const {
    * Behaves as for {@code ROUND_CEILING} if the discarded fraction is &ge; 0.5; otherwise, behaves as for
    * {@code ROUND_FLOOR}. Note that this is the most common arithmetical rounding mode.
    */
-  public static final int ROUND_HALF_CEILING = -1;
+  public static int ROUND_HALF_CEILING = -1;
 
   /**
    * The base name of the Chef logfile
    */
-  public static final String CHEF_LOG_FILE = "chef";
+  public static String CHEF_LOG_FILE = "chef";
 
   /**
    * The base name of the Spoon logfile
    */
-  public static final String SPOON_LOG_FILE = "spoon";
+  public static String SPOON_LOG_FILE = "spoon";
 
   /**
    * The base name of the Menu logfile
    */
-  public static final String MENU_LOG_FILE = "menu";
+  public static String MENU_LOG_FILE = "menu";
 
   /**
    * An array of date conversion formats
@@ -381,92 +381,92 @@ public class Const {
    * Generalized date/time format: Wherever dates are used, date and time values are organized from the most to the
    * least significant. see also method StringUtil.getFormattedDateTime()
    */
-  public static final String GENERALIZED_DATE_TIME_FORMAT = "yyyyddMM_hhmmss";
-  public static final String GENERALIZED_DATE_TIME_FORMAT_MILLIS = "yyyyddMM_hhmmssSSS";
+  public static String GENERALIZED_DATE_TIME_FORMAT = "yyyyddMM_hhmmss";
+  public static String GENERALIZED_DATE_TIME_FORMAT_MILLIS = "yyyyddMM_hhmmssSSS";
 
   /**
    * Default we store our information in Unicode UTF-8 character set.
    */
-  public static final String XML_ENCODING = "UTF-8";
+  public static String XML_ENCODING = "UTF-8";
 
   /** The possible extensions a transformation XML file can have. */
-  public static final String[] STRING_TRANS_AND_JOB_FILTER_EXT = new String[] {
+  public static String[] STRING_TRANS_AND_JOB_FILTER_EXT = new String[] {
     "*.ktr;*.kjb;*.xml", "*.ktr;*.xml", "*.kjb;*.xml", "*.xml", "*.*" };
 
-  /** The discriptions of the possible extensions a transformation XML file can have. */
+  /** The descriptions of the possible extensions a transformation XML file can have. */
   private static String[] STRING_TRANS_AND_JOB_FILTER_NAMES;
 
   /** The extension of a Kettle transformation XML file */
-  public static final String STRING_TRANS_DEFAULT_EXT = "ktr";
+  public static String STRING_TRANS_DEFAULT_EXT = "ktr";
 
   /** The possible extensions a transformation XML file can have. */
-  public static final String[] STRING_TRANS_FILTER_EXT = new String[] { "*.ktr;*.xml", "*.xml", "*.*" };
+  public static String[] STRING_TRANS_FILTER_EXT = new String[] { "*.ktr;*.xml", "*.xml", "*.*" };
 
-  /** The discriptions of the possible extensions a transformation XML file can have. */
+  /** The descriptions of the possible extensions a transformation XML file can have. */
   private static String[] STRING_TRANS_FILTER_NAMES;
 
   /** The extension of a Kettle job XML file */
-  public static final String STRING_JOB_DEFAULT_EXT = "kjb";
+  public static String STRING_JOB_DEFAULT_EXT = "kjb";
 
   /** The possible extensions a job XML file can have. */
-  public static final String[] STRING_JOB_FILTER_EXT = new String[] { "*.kjb;*.xml", "*.xml", "*.*" };
+  public static String[] STRING_JOB_FILTER_EXT = new String[] { "*.kjb;*.xml", "*.xml", "*.*" };
 
-  /** The discriptions of the possible extensions a job XML file can have. */
+  /** The descriptions of the possible extensions a job XML file can have. */
   private static String[] STRING_JOB_FILTER_NAMES;
 
   /** Name of the kettle parameters file */
-  public static final String KETTLE_PROPERTIES = "kettle.properties";
+  public static String KETTLE_PROPERTIES = "kettle.properties";
 
   /** Name of the kettle shared data file */
-  public static final String SHARED_DATA_FILE = "shared.xml";
+  public static String SHARED_DATA_FILE = "shared.xml";
 
   /** The prefix that all internal kettle variables should have */
-  public static final String INTERNAL_VARIABLE_PREFIX = "Internal";
+  public static String INTERNAL_VARIABLE_PREFIX = "Internal";
 
   /** The version number as an internal variable */
-  public static final String INTERNAL_VARIABLE_KETTLE_VERSION = INTERNAL_VARIABLE_PREFIX + ".Kettle.Version";
+  public static String INTERNAL_VARIABLE_KETTLE_VERSION = INTERNAL_VARIABLE_PREFIX + ".Kettle.Version";
 
   /** The build version as an internal variable */
-  public static final String INTERNAL_VARIABLE_KETTLE_BUILD_VERSION = INTERNAL_VARIABLE_PREFIX
+  public static String INTERNAL_VARIABLE_KETTLE_BUILD_VERSION = INTERNAL_VARIABLE_PREFIX
     + ".Kettle.Build.Version";
 
   /** The build date as an internal variable */
-  public static final String INTERNAL_VARIABLE_KETTLE_BUILD_DATE = INTERNAL_VARIABLE_PREFIX + ".Kettle.Build.Date";
+  public static String INTERNAL_VARIABLE_KETTLE_BUILD_DATE = INTERNAL_VARIABLE_PREFIX + ".Kettle.Build.Date";
 
   /** The job filename directory */
-  public static final String INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY = INTERNAL_VARIABLE_PREFIX
+  public static String INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY = INTERNAL_VARIABLE_PREFIX
     + ".Job.Filename.Directory";
 
   /** The job filename name */
-  public static final String INTERNAL_VARIABLE_JOB_FILENAME_NAME = INTERNAL_VARIABLE_PREFIX + ".Job.Filename.Name";
+  public static String INTERNAL_VARIABLE_JOB_FILENAME_NAME = INTERNAL_VARIABLE_PREFIX + ".Job.Filename.Name";
 
   /** The job name */
-  public static final String INTERNAL_VARIABLE_JOB_NAME = INTERNAL_VARIABLE_PREFIX + ".Job.Name";
+  public static String INTERNAL_VARIABLE_JOB_NAME = INTERNAL_VARIABLE_PREFIX + ".Job.Name";
 
   /** The job directory */
-  public static final String INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY = INTERNAL_VARIABLE_PREFIX
+  public static String INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY = INTERNAL_VARIABLE_PREFIX
     + ".Job.Repository.Directory";
 
   /** The job run ID */
-  public static final String INTERNAL_VARIABLE_JOB_RUN_ID = INTERNAL_VARIABLE_PREFIX + ".Job.Run.ID";
+  public static String INTERNAL_VARIABLE_JOB_RUN_ID = INTERNAL_VARIABLE_PREFIX + ".Job.Run.ID";
 
   /** The job run attempt nr */
-  public static final String INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR = INTERNAL_VARIABLE_PREFIX + ".Job.Run.AttemptNr";
+  public static String INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR = INTERNAL_VARIABLE_PREFIX + ".Job.Run.AttemptNr";
 
   /** job/trans heartbeat scheduled executor periodic interval ( in seconds ) */
-  public static final String VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS = "heartbeat.periodic.interval.seconds";
+  public static String VARIABLE_HEARTBEAT_PERIODIC_INTERVAL_SECS = "heartbeat.periodic.interval.seconds";
 
   /** comma-separated list of extension point plugins for which snmp traps should be sent */
-  public static final String VARIABLE_MONITORING_SNMP_TRAPS_ENABLED = "monitoring.snmp.traps.enabled";
+  public static String VARIABLE_MONITORING_SNMP_TRAPS_ENABLED = "monitoring.snmp.traps.enabled";
 
   /** The current transformation directory */
-  public static final String INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY = INTERNAL_VARIABLE_PREFIX
+  public static String INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY = INTERNAL_VARIABLE_PREFIX
     + ".Entry.Current.Directory";
 
   /**
    * All the internal transformation variables
    */
-  public static final String[] INTERNAL_TRANS_VARIABLES = new String[] {
+  public static String[] INTERNAL_TRANS_VARIABLES = new String[] {
     Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
     Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY,
     Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME, Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME,
@@ -476,239 +476,239 @@ public class Const {
   /**
    * All the internal job variables
    */
-  public static final String[] INTERNAL_JOB_VARIABLES = new String[] {
+  public static String[] INTERNAL_JOB_VARIABLES = new String[] {
     Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
     Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME,
     Const.INTERNAL_VARIABLE_JOB_NAME, Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
     Const.INTERNAL_VARIABLE_JOB_RUN_ID, Const.INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR, };
 
   /** The transformation filename directory */
-  public static final String INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY = INTERNAL_VARIABLE_PREFIX
+  public static String INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY = INTERNAL_VARIABLE_PREFIX
     + ".Transformation.Filename.Directory";
 
   /** The transformation filename name */
-  public static final String INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME = INTERNAL_VARIABLE_PREFIX
+  public static String INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME = INTERNAL_VARIABLE_PREFIX
     + ".Transformation.Filename.Name";
 
   /** The transformation name */
-  public static final String INTERNAL_VARIABLE_TRANSFORMATION_NAME = INTERNAL_VARIABLE_PREFIX
+  public static String INTERNAL_VARIABLE_TRANSFORMATION_NAME = INTERNAL_VARIABLE_PREFIX
     + ".Transformation.Name";
 
   /** The transformation directory */
-  public static final String INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY = INTERNAL_VARIABLE_PREFIX
+  public static String INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY = INTERNAL_VARIABLE_PREFIX
     + ".Transformation.Repository.Directory";
 
   /** The step partition ID */
-  public static final String INTERNAL_VARIABLE_STEP_PARTITION_ID = INTERNAL_VARIABLE_PREFIX + ".Step.Partition.ID";
+  public static String INTERNAL_VARIABLE_STEP_PARTITION_ID = INTERNAL_VARIABLE_PREFIX + ".Step.Partition.ID";
 
   /** The step partition number */
-  public static final String INTERNAL_VARIABLE_STEP_PARTITION_NR = INTERNAL_VARIABLE_PREFIX
+  public static String INTERNAL_VARIABLE_STEP_PARTITION_NR = INTERNAL_VARIABLE_PREFIX
     + ".Step.Partition.Number";
 
   /** The slave transformation number */
-  public static final String INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER = INTERNAL_VARIABLE_PREFIX
+  public static String INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER = INTERNAL_VARIABLE_PREFIX
     + ".Slave.Transformation.Number";
 
   /** The slave transformation name */
-  public static final String INTERNAL_VARIABLE_SLAVE_SERVER_NAME = INTERNAL_VARIABLE_PREFIX + ".Slave.Server.Name";
+  public static String INTERNAL_VARIABLE_SLAVE_SERVER_NAME = INTERNAL_VARIABLE_PREFIX + ".Slave.Server.Name";
 
   /** The size of the cluster : number of slaves */
-  public static final String INTERNAL_VARIABLE_CLUSTER_SIZE = INTERNAL_VARIABLE_PREFIX + ".Cluster.Size";
+  public static String INTERNAL_VARIABLE_CLUSTER_SIZE = INTERNAL_VARIABLE_PREFIX + ".Cluster.Size";
 
   /** The slave transformation number */
-  public static final String INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER = INTERNAL_VARIABLE_PREFIX
+  public static String INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER = INTERNAL_VARIABLE_PREFIX
     + ".Step.Unique.Number";
 
   /** Is this transformation running clustered, on the master? */
-  public static final String INTERNAL_VARIABLE_CLUSTER_MASTER = INTERNAL_VARIABLE_PREFIX + ".Cluster.Master";
+  public static String INTERNAL_VARIABLE_CLUSTER_MASTER = INTERNAL_VARIABLE_PREFIX + ".Cluster.Master";
 
   /**
    * The internal clustered run ID, unique across a clustered execution, important while doing parallel clustered runs
    */
-  public static final String INTERNAL_VARIABLE_CLUSTER_RUN_ID = INTERNAL_VARIABLE_PREFIX + ".Cluster.Run.ID";
+  public static String INTERNAL_VARIABLE_CLUSTER_RUN_ID = INTERNAL_VARIABLE_PREFIX + ".Cluster.Run.ID";
 
   /** The size of the cluster : number of slaves */
-  public static final String INTERNAL_VARIABLE_STEP_UNIQUE_COUNT = INTERNAL_VARIABLE_PREFIX + ".Step.Unique.Count";
+  public static String INTERNAL_VARIABLE_STEP_UNIQUE_COUNT = INTERNAL_VARIABLE_PREFIX + ".Step.Unique.Count";
 
   /** The step name */
-  public static final String INTERNAL_VARIABLE_STEP_NAME = INTERNAL_VARIABLE_PREFIX + ".Step.Name";
+  public static String INTERNAL_VARIABLE_STEP_NAME = INTERNAL_VARIABLE_PREFIX + ".Step.Name";
 
   /** The step copy nr */
-  public static final String INTERNAL_VARIABLE_STEP_COPYNR = INTERNAL_VARIABLE_PREFIX + ".Step.CopyNr";
+  public static String INTERNAL_VARIABLE_STEP_COPYNR = INTERNAL_VARIABLE_PREFIX + ".Step.CopyNr";
 
   /** The default maximum for the nr of lines in the GUI logs */
-  public static final int MAX_NR_LOG_LINES = 5000;
+  public static int MAX_NR_LOG_LINES = 5000;
 
   /** The default maximum for the nr of lines in the history views */
-  public static final int MAX_NR_HISTORY_LINES = 50;
+  public static int MAX_NR_HISTORY_LINES = 50;
 
   /** The default fetch size for lines of history. */
-  public static final int HISTORY_LINES_FETCH_SIZE = 10;
+  public static int HISTORY_LINES_FETCH_SIZE = 10;
 
   /** The default log line timeout in minutes : 12 hours */
-  public static final int MAX_LOG_LINE_TIMEOUT_MINUTES = 12 * 60;
+  public static int MAX_LOG_LINE_TIMEOUT_MINUTES = 12 * 60;
 
   /** UI-agnostic flag for warnings */
-  public static final int WARNING = 1;
+  public static int WARNING = 1;
 
   /** UI-agnostic flag for warnings */
-  public static final int ERROR = 2;
+  public static int ERROR = 2;
 
   /** UI-agnostic flag for warnings */
-  public static final int INFO = 3;
+  public static int INFO = 3;
 
   /**
    * The margin between the text of a note and its border.
    */
-  public static final int NOTE_MARGIN = 5;
+  public static int NOTE_MARGIN = 5;
 
   /**
    * The default undo level for Kettle
    */
-  public static final int MAX_UNDO = 100;
+  public static int MAX_UNDO = 100;
 
   /**
    * The file that documents these variables.
    */
-  public static final String KETTLE_VARIABLES_FILE = "kettle-variables.xml";
+  public static String KETTLE_VARIABLES_FILE = "kettle-variables.xml";
 
   /**
    * If you set this environment variable you can limit the log size of all transformations and jobs that don't have the
    * "log size limit" property set in their respective properties.
    */
-  public static final String KETTLE_LOG_SIZE_LIMIT = "KETTLE_LOG_SIZE_LIMIT";
+  public static String KETTLE_LOG_SIZE_LIMIT = "KETTLE_LOG_SIZE_LIMIT";
 
   /**
    * The name of the variable that defines the log database connection by default for all transformations
    */
-  public static final String KETTLE_TRANS_LOG_DB = "KETTLE_TRANS_LOG_DB";
+  public static String KETTLE_TRANS_LOG_DB = "KETTLE_TRANS_LOG_DB";
 
   /**
    * The name of the variable that defines the logging schema for all transformations
    */
-  public static final String KETTLE_TRANS_LOG_SCHEMA = "KETTLE_TRANS_LOG_SCHEMA";
+  public static String KETTLE_TRANS_LOG_SCHEMA = "KETTLE_TRANS_LOG_SCHEMA";
 
   /**
    * The name of the variable that defines the logging table for all transformations
    */
-  public static final String KETTLE_TRANS_LOG_TABLE = "KETTLE_TRANS_LOG_TABLE";
+  public static String KETTLE_TRANS_LOG_TABLE = "KETTLE_TRANS_LOG_TABLE";
 
   /**
    * The name of the variable that defines the log database connection by default for all jobs
    */
-  public static final String KETTLE_JOB_LOG_DB = "KETTLE_JOB_LOG_DB";
+  public static String KETTLE_JOB_LOG_DB = "KETTLE_JOB_LOG_DB";
 
   /**
    * The name of the variable that defines the logging schema for all jobs
    */
-  public static final String KETTLE_JOB_LOG_SCHEMA = "KETTLE_JOB_LOG_SCHEMA";
+  public static String KETTLE_JOB_LOG_SCHEMA = "KETTLE_JOB_LOG_SCHEMA";
 
   /**
    * The name of the variable that defines the logging table for all jobs
    */
-  public static final String KETTLE_JOB_LOG_TABLE = "KETTLE_JOB_LOG_TABLE";
+  public static String KETTLE_JOB_LOG_TABLE = "KETTLE_JOB_LOG_TABLE";
 
   /**
    * The name of the variable that defines the transformation performance log schema by default for all transformations
    */
-  public static final String KETTLE_TRANS_PERFORMANCE_LOG_DB = "KETTLE_TRANS_PERFORMANCE_LOG_DB";
+  public static String KETTLE_TRANS_PERFORMANCE_LOG_DB = "KETTLE_TRANS_PERFORMANCE_LOG_DB";
 
   /**
    * The name of the variable that defines the transformation performance log database connection by default for all
    * transformations
    */
-  public static final String KETTLE_TRANS_PERFORMANCE_LOG_SCHEMA = "KETTLE_TRANS_PERFORMANCE_LOG_SCHEMA";
+  public static String KETTLE_TRANS_PERFORMANCE_LOG_SCHEMA = "KETTLE_TRANS_PERFORMANCE_LOG_SCHEMA";
 
   /**
    * The name of the variable that defines the transformation performance log table by default for all transformations
    */
-  public static final String KETTLE_TRANS_PERFORMANCE_LOG_TABLE = "KETTLE_TRANS_PERFORMANCE_LOG_TABLE";
+  public static String KETTLE_TRANS_PERFORMANCE_LOG_TABLE = "KETTLE_TRANS_PERFORMANCE_LOG_TABLE";
 
   /**
    * The name of the variable that defines the job entry log database by default for all jobs
    */
-  public static final String KETTLE_JOBENTRY_LOG_DB = "KETTLE_JOBENTRY_LOG_DB";
+  public static String KETTLE_JOBENTRY_LOG_DB = "KETTLE_JOBENTRY_LOG_DB";
 
   /**
    * The name of the variable that defines the job entry log schema by default for all jobs
    */
-  public static final String KETTLE_JOBENTRY_LOG_SCHEMA = "KETTLE_JOBENTRY_LOG_SCHEMA";
+  public static String KETTLE_JOBENTRY_LOG_SCHEMA = "KETTLE_JOBENTRY_LOG_SCHEMA";
 
   /**
    * The name of the variable that defines the job entry log table by default for all jobs
    */
-  public static final String KETTLE_JOBENTRY_LOG_TABLE = "KETTLE_JOBENTRY_LOG_TABLE";
+  public static String KETTLE_JOBENTRY_LOG_TABLE = "KETTLE_JOBENTRY_LOG_TABLE";
 
   /**
    * The name of the variable that defines the steps log database by default for all transformations
    */
-  public static final String KETTLE_STEP_LOG_DB = "KETTLE_STEP_LOG_DB";
+  public static String KETTLE_STEP_LOG_DB = "KETTLE_STEP_LOG_DB";
 
   /**
    * The name of the variable that defines the steps log schema by default for all transformations
    */
-  public static final String KETTLE_STEP_LOG_SCHEMA = "KETTLE_STEP_LOG_SCHEMA";
+  public static String KETTLE_STEP_LOG_SCHEMA = "KETTLE_STEP_LOG_SCHEMA";
 
   /**
    * The name of the variable that defines the steps log table by default for all transformations
    */
-  public static final String KETTLE_STEP_LOG_TABLE = "KETTLE_STEP_LOG_TABLE";
+  public static String KETTLE_STEP_LOG_TABLE = "KETTLE_STEP_LOG_TABLE";
 
   /**
    * The name of the variable that defines the log channel log database by default for all transformations and jobs
    */
-  public static final String KETTLE_CHANNEL_LOG_DB = "KETTLE_CHANNEL_LOG_DB";
+  public static String KETTLE_CHANNEL_LOG_DB = "KETTLE_CHANNEL_LOG_DB";
 
   /**
    * The name of the variable that defines the log channel log schema by default for all transformations and jobs
    */
-  public static final String KETTLE_CHANNEL_LOG_SCHEMA = "KETTLE_CHANNEL_LOG_SCHEMA";
+  public static String KETTLE_CHANNEL_LOG_SCHEMA = "KETTLE_CHANNEL_LOG_SCHEMA";
 
   /**
    * The name of the variable that defines the log channel log table by default for all transformations and jobs
    */
-  public static final String KETTLE_CHANNEL_LOG_TABLE = "KETTLE_CHANNEL_LOG_TABLE";
+  public static String KETTLE_CHANNEL_LOG_TABLE = "KETTLE_CHANNEL_LOG_TABLE";
 
   /**
    * The name of the variable that defines the metrics log database by default for all transformations and jobs
    */
-  public static final String KETTLE_METRICS_LOG_DB = "KETTLE_METRICS_LOG_DB";
+  public static String KETTLE_METRICS_LOG_DB = "KETTLE_METRICS_LOG_DB";
 
   /**
    * The name of the variable that defines the metrics log schema by default for all transformations and jobs
    */
-  public static final String KETTLE_METRICS_LOG_SCHEMA = "KETTLE_METRICS_LOG_SCHEMA";
+  public static String KETTLE_METRICS_LOG_SCHEMA = "KETTLE_METRICS_LOG_SCHEMA";
 
   /**
    * The name of the variable that defines the metrics log table by default for all transformations and jobs
    */
-  public static final String KETTLE_METRICS_LOG_TABLE = "KETTLE_METRICS_LOG_TABLE";
+  public static String KETTLE_METRICS_LOG_TABLE = "KETTLE_METRICS_LOG_TABLE";
 
   /**
    * The name of the variable that defines the checkpoint log database by default for all jobs
    */
-  public static final String KETTLE_CHECKPOINT_LOG_DB = "KETTLE_CHECKPOINT_LOG_DB";
+  public static String KETTLE_CHECKPOINT_LOG_DB = "KETTLE_CHECKPOINT_LOG_DB";
 
   /**
    * The name of the variable that defines the checkpoint log schema by default for all jobs
    */
-  public static final String KETTLE_CHECKPOINT_LOG_SCHEMA = "KETTLE_CHECKPOINT_LOG_SCHEMA";
+  public static String KETTLE_CHECKPOINT_LOG_SCHEMA = "KETTLE_CHECKPOINT_LOG_SCHEMA";
 
   /**
    * The name of the variable that defines the checkpoint log table by default for all jobs
    */
-  public static final String KETTLE_CHECKPOINT_LOG_TABLE = "KETTLE_CHECKPOINT_LOG_TABLE";
+  public static String KETTLE_CHECKPOINT_LOG_TABLE = "KETTLE_CHECKPOINT_LOG_TABLE";
 
   /**
    * Name of the environment variable to set the location of the shared object file (xml) for transformations and jobs
    */
-  public static final String KETTLE_SHARED_OBJECTS = "KETTLE_SHARED_OBJECTS";
+  public static String KETTLE_SHARED_OBJECTS = "KETTLE_SHARED_OBJECTS";
 
   /**
    * System wide flag to drive the evaluation of null in ValueMeta. If this setting is set to "Y", an empty string and
    * null are different. Otherwise they are not.
    */
-  public static final String KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL";
+  public static String KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL";
 
   /**
    * System wide flag to allow non-strict string to number conversion for backward compatibility. If this setting is set
@@ -716,24 +716,24 @@ public class Const {
    * converted into 192 or 192.168 depending on the decimal symbol). The default (N) will be to throw an error if
    * non-numeric symbols are found in the string.
    */
-  public static final String KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION =
+  public static String KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION =
     "KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION";
 
   /**
    * System wide flag to ignore timezone while writing date/timestamp value to the database. See PDI-10749 for details.
    */
-  public static final String KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE = "KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE";
+  public static String KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE = "KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE";
 
   /**
    * System wide flag to use the root path prefix for a directory reference. See PDI-6779 for details.
    */
-  public static final String KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES = "KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES";
+  public static String KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES = "KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES";
 
   /**
    * System wide flag to set or not append and header options dependency on Text file output step. See PDI-5252 for
    * details.
    */
-  public static final String KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER =
+  public static String KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER =
     "KETTLE_COMPATIBILITY_TEXT_FILE_OUTPUT_APPEND_NO_HEADER";
 
   /**
@@ -741,318 +741,318 @@ public class Const {
    * 'Y' preserves the old behavior and takes the fields from the reference stream
    * 'N' enables the documented behavior and takes the fields from the comparison stream (correct behavior)
    */
-  public static final String KETTLE_COMPATIBILITY_MERGE_ROWS_USE_REFERENCE_STREAM_WHEN_IDENTICAL =
+  public static String KETTLE_COMPATIBILITY_MERGE_ROWS_USE_REFERENCE_STREAM_WHEN_IDENTICAL =
     "KETTLE_COMPATIBILITY_MERGE_ROWS_USE_REFERENCE_STREAM_WHEN_IDENTICAL";
 
   /**
    * You can use this variable to speed up hostname lookup.
    * Hostname lookup is performed by Kettle so that it is capable of logging the server on which a job or transformation is executed.
    */
-  public static final String KETTLE_SYSTEM_HOSTNAME = "KETTLE_SYSTEM_HOSTNAME";
+  public static String KETTLE_SYSTEM_HOSTNAME = "KETTLE_SYSTEM_HOSTNAME";
 
   /**
    * System wide flag to set the maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all
    * rows (default)
    */
-  public static final String KETTLE_MAX_LOG_SIZE_IN_LINES = "KETTLE_MAX_LOG_SIZE_IN_LINES";
+  public static String KETTLE_MAX_LOG_SIZE_IN_LINES = "KETTLE_MAX_LOG_SIZE_IN_LINES";
 
   /**
    * System wide flag to set the maximum age (in minutes) of a log line while being kept internally by Kettle. Set to 0
    * to keep all rows indefinitely (default)
    */
-  public static final String KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES = "KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES";
+  public static String KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES = "KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES";
 
   /**
    * System wide flag to determine whether standard error will be redirected to Kettle logging facilities. Will redirect
    * if the value is equal ignoring case to the string "Y"
    */
-  public static final String KETTLE_REDIRECT_STDERR = "KETTLE_REDIRECT_STDERR";
+  public static String KETTLE_REDIRECT_STDERR = "KETTLE_REDIRECT_STDERR";
 
   /**
    * System wide flag to determine whether standard out will be redirected to Kettle logging facilities. Will redirect
    * if the value is equal ignoring case to the string "Y"
    */
-  public static final String KETTLE_REDIRECT_STDOUT = "KETTLE_REDIRECT_STDOUT";
+  public static String KETTLE_REDIRECT_STDOUT = "KETTLE_REDIRECT_STDOUT";
 
   /**
    * This environment variable will set a time-out after which waiting, completed or stopped transformations and jobs
    * will be automatically cleaned up. The default value is 1440 (one day).
    */
-  public static final String KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES = "KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES";
+  public static String KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES = "KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES";
 
   /**
    * System wide parameter: the maximum number of step performance snapshots to keep in memory. Set to 0 to keep all
    * snapshots indefinitely (default)
    */
-  public static final String KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT = "KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT";
+  public static String KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT = "KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT";
 
   /**
    * A variable to configure the maximum number of job trackers kept in memory.
    */
-  public static final String KETTLE_MAX_JOB_TRACKER_SIZE = "KETTLE_MAX_JOB_TRACKER_SIZE";
+  public static String KETTLE_MAX_JOB_TRACKER_SIZE = "KETTLE_MAX_JOB_TRACKER_SIZE";
 
   /**
    * A variable to configure the maximum number of job entry results kept in memory for logging purposes.
    */
-  public static final String KETTLE_MAX_JOB_ENTRIES_LOGGED = "KETTLE_MAX_JOB_ENTRIES_LOGGED";
+  public static String KETTLE_MAX_JOB_ENTRIES_LOGGED = "KETTLE_MAX_JOB_ENTRIES_LOGGED";
 
   /**
    * A variable to configure the maximum number of logging registry entries kept in memory for logging purposes.
    */
-  public static final String KETTLE_MAX_LOGGING_REGISTRY_SIZE = "KETTLE_MAX_LOGGING_REGISTRY_SIZE";
+  public static String KETTLE_MAX_LOGGING_REGISTRY_SIZE = "KETTLE_MAX_LOGGING_REGISTRY_SIZE";
 
   /**
    * The name of the system wide variable that can contain the name of the SAP Connection factory for the test button in
    * the DB dialog. This defaults to
    */
-  public static final String KETTLE_SAP_CONNECTION_FACTORY = "KETTLE_SAP_CONNECTION_FACTORY";
+  public static String KETTLE_SAP_CONNECTION_FACTORY = "KETTLE_SAP_CONNECTION_FACTORY";
 
   /**
    * The default SAP ERP connection factory
    */
-  public static final String KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME =
+  public static String KETTLE_SAP_CONNECTION_FACTORY_DEFAULT_NAME =
     "org.pentaho.di.trans.steps.sapinput.sap.SAPConnectionFactory";
 
   /**
    * Name of the environment variable to specify additional classes to scan for plugin annotations
    */
-  public static final String KETTLE_PLUGIN_CLASSES = "KETTLE_PLUGIN_CLASSES";
+  public static String KETTLE_PLUGIN_CLASSES = "KETTLE_PLUGIN_CLASSES";
 
   /**
    * Name of the environment variable to specify additional packaged to scan for plugin annotations (warning: slow!)
    */
-  public static final String KETTLE_PLUGIN_PACKAGES = "KETTLE_PLUGIN_PACKAGES";
+  public static String KETTLE_PLUGIN_PACKAGES = "KETTLE_PLUGIN_PACKAGES";
 
   /**
    * Name of the environment variable that contains the size of the transformation rowset size. This overwrites values
    * that you set transformation settings.
    */
-  public static final String KETTLE_TRANS_ROWSET_SIZE = "KETTLE_TRANS_ROWSET_SIZE";
+  public static String KETTLE_TRANS_ROWSET_SIZE = "KETTLE_TRANS_ROWSET_SIZE";
 
   /**
    * A general initial version comment
    */
-  public static final String VERSION_COMMENT_INITIAL_VERSION = "Creation of initial version";
+  public static String VERSION_COMMENT_INITIAL_VERSION = "Creation of initial version";
 
   /**
    * A general edit version comment
    */
-  public static final String VERSION_COMMENT_EDIT_VERSION = "Modification by user";
+  public static String VERSION_COMMENT_EDIT_VERSION = "Modification by user";
 
   /**
    * The XML file that contains the list of native Kettle steps
    */
-  public static final String XML_FILE_KETTLE_STEPS = "kettle-steps.xml";
+  public static String XML_FILE_KETTLE_STEPS = "kettle-steps.xml";
 
   /**
    * The name of the environment variable that will contain the alternative location of the kettle-steps.xml file
    */
-  public static final String KETTLE_CORE_STEPS_FILE = "KETTLE_CORE_STEPS_FILE";
+  public static String KETTLE_CORE_STEPS_FILE = "KETTLE_CORE_STEPS_FILE";
 
   /**
    * The XML file that contains the list of native partition plugins
    */
-  public static final String XML_FILE_KETTLE_PARTITION_PLUGINS = "kettle-partition-plugins.xml";
+  public static String XML_FILE_KETTLE_PARTITION_PLUGINS = "kettle-partition-plugins.xml";
 
   /**
    * The name of the environment variable that will contain the alternative location of the kettle-job-entries.xml file
    */
-  public static final String KETTLE_CORE_JOBENTRIES_FILE = "KETTLE_CORE_JOBENTRIES_FILE";
+  public static String KETTLE_CORE_JOBENTRIES_FILE = "KETTLE_CORE_JOBENTRIES_FILE";
 
   /**
    * The XML file that contains the list of native Kettle Carte Servlets
    */
-  public static final String XML_FILE_KETTLE_SERVLETS = "kettle-servlets.xml";
+  public static String XML_FILE_KETTLE_SERVLETS = "kettle-servlets.xml";
 
   /**
    * The XML file that contains the list of native Kettle value metadata plugins
    */
-  public static final String XML_FILE_KETTLE_VALUEMETA_PLUGINS = "kettle-valuemeta-plugins.xml";
+  public static String XML_FILE_KETTLE_VALUEMETA_PLUGINS = "kettle-valuemeta-plugins.xml";
 
   /**
    * The XML file that contains the list of native Kettle two-way password encoder plugins
    */
-  public static final String XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS = "kettle-password-encoder-plugins.xml";
+  public static String XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS = "kettle-password-encoder-plugins.xml";
 
   /**
    * The name of the environment variable that will contain the alternative location of the kettle-valuemeta-plugins.xml
    * file
    */
-  public static final String KETTLE_VALUEMETA_PLUGINS_FILE = "KETTLE_VALUEMETA_PLUGINS_FILE";
+  public static String KETTLE_VALUEMETA_PLUGINS_FILE = "KETTLE_VALUEMETA_PLUGINS_FILE";
 
   /**
    * Specifies the password encoding plugin to use by ID (Kettle is the default).
    */
-  public static final String KETTLE_PASSWORD_ENCODER_PLUGIN = "KETTLE_PASSWORD_ENCODER_PLUGIN";
+  public static String KETTLE_PASSWORD_ENCODER_PLUGIN = "KETTLE_PASSWORD_ENCODER_PLUGIN";
 
   /**
    * The name of the environment variable that will contain the alternative location of the kettle-password-encoder-plugins.xml
    * file
    */
-  public static final String KETTLE_PASSWORD_ENCODER_PLUGINS_FILE = "KETTLE_PASSWORD_ENCODER_PLUGINS_FILE";
+  public static String KETTLE_PASSWORD_ENCODER_PLUGINS_FILE = "KETTLE_PASSWORD_ENCODER_PLUGINS_FILE";
 
   /**
    * The XML file that contains the list of native Kettle logging plugins
    */
-  public static final String XML_FILE_KETTLE_LOGGING_PLUGINS = "kettle-logging-plugins.xml";
+  public static String XML_FILE_KETTLE_LOGGING_PLUGINS = "kettle-logging-plugins.xml";
 
   /**
    * The name of the environment variable that will contain the alternative location of the kettle-logging-plugins.xml
    * file
    */
-  public static final String KETTLE_LOGGING_PLUGINS_FILE = "KETTLE_LOGGING_PLUGINS_FILE";
+  public static String KETTLE_LOGGING_PLUGINS_FILE = "KETTLE_LOGGING_PLUGINS_FILE";
 
   /**
    * The name of the environment variable that will contain the alternative location of the kettle-servlets.xml file
    */
-  public static final String KETTLE_CORE_SERVLETS_FILE = "KETTLE_CORE_SERVLETS_FILE";
+  public static String KETTLE_CORE_SERVLETS_FILE = "KETTLE_CORE_SERVLETS_FILE";
 
   /**
    * The name of the variable that optionally contains an alternative rowset get timeout (in ms). This only makes a
    * difference for extremely short lived transformations.
    */
-  public static final String KETTLE_ROWSET_GET_TIMEOUT = "KETTLE_ROWSET_GET_TIMEOUT";
+  public static String KETTLE_ROWSET_GET_TIMEOUT = "KETTLE_ROWSET_GET_TIMEOUT";
 
   /**
    * The name of the variable that optionally contains an alternative rowset put timeout (in ms). This only makes a
    * difference for extremely short lived transformations.
    */
-  public static final String KETTLE_ROWSET_PUT_TIMEOUT = "KETTLE_ROWSET_PUT_TIMEOUT";
+  public static String KETTLE_ROWSET_PUT_TIMEOUT = "KETTLE_ROWSET_PUT_TIMEOUT";
 
   /**
    * Set this variable to Y if you want to test a more efficient batching row set. (default = N)
    */
-  public static final String KETTLE_BATCHING_ROWSET = "KETTLE_BATCHING_ROWSET";
+  public static String KETTLE_BATCHING_ROWSET = "KETTLE_BATCHING_ROWSET";
 
   /**
    * Set this variable to Y to disable standard Kettle logging to the console. (stdout)
    */
-  public static final String KETTLE_DISABLE_CONSOLE_LOGGING = "KETTLE_DISABLE_CONSOLE_LOGGING";
+  public static String KETTLE_DISABLE_CONSOLE_LOGGING = "KETTLE_DISABLE_CONSOLE_LOGGING";
 
   /**
    * The XML file that contains the list of native Kettle job entries
    */
-  public static final String XML_FILE_KETTLE_JOB_ENTRIES = "kettle-job-entries.xml";
+  public static String XML_FILE_KETTLE_JOB_ENTRIES = "kettle-job-entries.xml";
 
   /**
    * The XML file that contains the list of native Kettle repository types (DB, File, etc)
    */
-  public static final String XML_FILE_KETTLE_REPOSITORIES = "kettle-repositories.xml";
+  public static String XML_FILE_KETTLE_REPOSITORIES = "kettle-repositories.xml";
 
   /**
    * The XML file that contains the list of native Kettle database types (MySQL, Oracle, etc)
    */
-  public static final String XML_FILE_KETTLE_DATABASE_TYPES = "kettle-database-types.xml";
+  public static String XML_FILE_KETTLE_DATABASE_TYPES = "kettle-database-types.xml";
 
   /**
    * The XML file that contains the list of native Kettle compression providers (None, ZIP, GZip, etc.)
    */
-  public static final String XML_FILE_KETTLE_COMPRESSION_PROVIDERS = "kettle-compression-providers.xml";
+  public static String XML_FILE_KETTLE_COMPRESSION_PROVIDERS = "kettle-compression-providers.xml";
 
   /**
    * The XML file that contains the list of native Kettle compression providers (None, ZIP, GZip, etc.)
    */
-  public static final String XML_FILE_KETTLE_AUTHENTICATION_PROVIDERS = "kettle-authentication-providers.xml";
+  public static String XML_FILE_KETTLE_AUTHENTICATION_PROVIDERS = "kettle-authentication-providers.xml";
 
   /**
    * The XML file that contains the list of native extension points (None by default, this is mostly for OEM purposes)
    */
-  public static final String XML_FILE_KETTLE_EXTENSION_POINTS = "kettle-extension-points.xml";
+  public static String XML_FILE_KETTLE_EXTENSION_POINTS = "kettle-extension-points.xml";
 
   /**
    * The XML file that contains the list of native extension points (None by default, this is mostly for OEM purposes)
    */
-  public static final String XML_FILE_KETTLE_REGISTRY_EXTENSIONS = "kettle-registry-extensions.xml";
+  public static String XML_FILE_KETTLE_REGISTRY_EXTENSIONS = "kettle-registry-extensions.xml";
 
   /**
    * The XML file that contains the list of lifecycle listeners
    */
-  public static final String XML_FILE_KETTLE_LIFECYCLE_LISTENERS = "kettle-lifecycle-listeners.xml";
+  public static String XML_FILE_KETTLE_LIFECYCLE_LISTENERS = "kettle-lifecycle-listeners.xml";
 
   /**
    * the value the Pan JVM should return on exit.
    */
-  public static final String KETTLE_TRANS_PAN_JVM_EXIT_CODE = "KETTLE_TRANS_PAN_JVM_EXIT_CODE";
+  public static String KETTLE_TRANS_PAN_JVM_EXIT_CODE = "KETTLE_TRANS_PAN_JVM_EXIT_CODE";
 
   /**
    * The name of the variable containing an alternative default number format
    */
-  public static final String KETTLE_DEFAULT_NUMBER_FORMAT = "KETTLE_DEFAULT_NUMBER_FORMAT";
+  public static String KETTLE_DEFAULT_NUMBER_FORMAT = "KETTLE_DEFAULT_NUMBER_FORMAT";
 
   /**
    * The name of the variable containing an alternative default bignumber format
    */
-  public static final String KETTLE_DEFAULT_BIGNUMBER_FORMAT = "KETTLE_DEFAULT_BIGNUMBER_FORMAT";
+  public static String KETTLE_DEFAULT_BIGNUMBER_FORMAT = "KETTLE_DEFAULT_BIGNUMBER_FORMAT";
 
   /**
    * The name of the variable containing an alternative default integer format
    */
-  public static final String KETTLE_DEFAULT_INTEGER_FORMAT = "KETTLE_DEFAULT_INTEGER_FORMAT";
+  public static String KETTLE_DEFAULT_INTEGER_FORMAT = "KETTLE_DEFAULT_INTEGER_FORMAT";
 
   /**
    * The name of the variable containing an alternative default date format
    */
-  public static final String KETTLE_DEFAULT_DATE_FORMAT = "KETTLE_DEFAULT_DATE_FORMAT";
+  public static String KETTLE_DEFAULT_DATE_FORMAT = "KETTLE_DEFAULT_DATE_FORMAT";
 
   // Null values tweaks
-  public static final String KETTLE_AGGREGATION_MIN_NULL_IS_VALUED = "KETTLE_AGGREGATION_MIN_NULL_IS_VALUED";
-  public static final String KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO = "KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO";
+  public static String KETTLE_AGGREGATION_MIN_NULL_IS_VALUED = "KETTLE_AGGREGATION_MIN_NULL_IS_VALUED";
+  public static String KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO = "KETTLE_AGGREGATION_ALL_NULLS_ARE_ZERO";
 
   /**
    * The name of the variable containing an alternative default timestamp format
    */
-  public static final String KETTLE_DEFAULT_TIMESTAMP_FORMAT = "KETTLE_DEFAULT_TIMESTAMP_FORMAT";
+  public static String KETTLE_DEFAULT_TIMESTAMP_FORMAT = "KETTLE_DEFAULT_TIMESTAMP_FORMAT";
 
   /**
    * Compatibility settings for setNrErrors
    */
   // see PDI-10270 for details.
-  public static final String KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES =
+  public static String KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES =
     "KETTLE_COMPATIBILITY_SET_ERROR_ON_SPECIFIC_JOB_ENTRIES";
 
   /**
    * The XML file that contains the list of native import rules
    */
-  public static final String XML_FILE_KETTLE_IMPORT_RULES = "kettle-import-rules.xml";
+  public static String XML_FILE_KETTLE_IMPORT_RULES = "kettle-import-rules.xml";
 
   private static String[] emptyPaddedSpacesStrings;
 
   /**
    * The release type of this compilation
    */
-  public static final ReleaseType RELEASE = ReleaseType.GA;
+  public static ReleaseType RELEASE = ReleaseType.GA;
 
   /**
    * The system environment variable indicating where the alternative location for the Pentaho metastore folder is
    * located.
    */
-  public static final String PENTAHO_METASTORE_FOLDER = "PENTAHO_METASTORE_FOLDER";
+  public static String PENTAHO_METASTORE_FOLDER = "PENTAHO_METASTORE_FOLDER";
 
   /**
    * The name of the local client MetaStore
    *
    */
-  public static final String PENTAHO_METASTORE_NAME = "Pentaho Local Client Metastore";
+  public static String PENTAHO_METASTORE_NAME = "Pentaho Local Client Metastore";
 
   /**
    * A variable to configure turning on/off detailed subjects in log.
    */
-  public static final String KETTLE_LOG_MARK_MAPPINGS = "KETTLE_LOG_MARK_MAPPINGS";
+  public static String KETTLE_LOG_MARK_MAPPINGS = "KETTLE_LOG_MARK_MAPPINGS";
 
   /**
    * A variable to configure jetty option: acceptors for Carte
    */
-  public static final String KETTLE_CARTE_JETTY_ACCEPTORS = "KETTLE_CARTE_JETTY_ACCEPTORS";
+  public static String KETTLE_CARTE_JETTY_ACCEPTORS = "KETTLE_CARTE_JETTY_ACCEPTORS";
 
   /**
    * A variable to configure jetty option: acceptQueueSize for Carte
    */
-  public static final String KETTLE_CARTE_JETTY_ACCEPT_QUEUE_SIZE = "KETTLE_CARTE_JETTY_ACCEPT_QUEUE_SIZE";
+  public static String KETTLE_CARTE_JETTY_ACCEPT_QUEUE_SIZE = "KETTLE_CARTE_JETTY_ACCEPT_QUEUE_SIZE";
 
   /**
    * A variable to configure jetty option: lowResourcesMaxIdleTime for Carte
    */
-  public static final String KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME = "KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME";
+  public static String KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME = "KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME";
 
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
@@ -1065,7 +1065,7 @@ public class Const {
    * @return The rounded floating point value
    */
 
-  public static final double round( double f, int places ) {
+  public static double round( double f, int places ) {
     return round( f, places, java.math.BigDecimal.ROUND_HALF_EVEN );
   }
 
@@ -1081,7 +1081,7 @@ public class Const {
    *          The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
    * @return The rounded floating point value
    */
-  public static final double round( double f, int places, int roundingMode ) {
+  public static double round( double f, int places, int roundingMode ) {
     // We can't round non-numbers or infinite values
     //
     if ( Double.isNaN( f ) || f == Double.NEGATIVE_INFINITY || f == Double.POSITIVE_INFINITY ) {
@@ -1106,7 +1106,7 @@ public class Const {
    *          The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
    * @return The rounded floating point value
    */
-  public static final BigDecimal round( BigDecimal f, int places, int roundingMode ) {
+  public static BigDecimal round( BigDecimal f, int places, int roundingMode ) {
     if ( roundingMode == ROUND_HALF_CEILING ) {
       if ( f.signum() >= 0 ) {
         return round( f, places, BigDecimal.ROUND_HALF_UP );
@@ -1130,7 +1130,7 @@ public class Const {
    *          The mode for rounding, e.g. java.math.BigDecimal.ROUND_HALF_EVEN
    * @return The rounded floating point value
    */
-  public static final long round( long f, int places, int roundingMode ) {
+  public static long round( long f, int places, int roundingMode ) {
     if ( places >= 0 ) {
       return f;
     }
@@ -1140,7 +1140,7 @@ public class Const {
 
   /*
    * OLD code: caused a lot of problems with very small and very large numbers. It's a miracle it worked at all. Go
-   * ahead, have a laugh... public static final float round(double f, int places) { float temp = (float) (f *
+   * ahead, have a laugh... public static float round(double f, int places) { float temp = (float) (f *
    * (Math.pow(10, places)));
    *
    * temp = (Math.round(temp));
@@ -1161,7 +1161,7 @@ public class Const {
    *          The default value
    * @return The converted value or the default.
    */
-  public static final int toInt( String str, int def ) {
+  public static int toInt( String str, int def ) {
     int retval;
     try {
       retval = Integer.parseInt( str );
@@ -1180,7 +1180,7 @@ public class Const {
    *          The default value
    * @return The converted value or the default.
    */
-  public static final long toLong( String str, long def ) {
+  public static long toLong( String str, long def ) {
     long retval;
     try {
       retval = Long.parseLong( str );
@@ -1199,7 +1199,7 @@ public class Const {
    *          The default value
    * @return The converted value or the default.
    */
-  public static final double toDouble( String str, double def ) {
+  public static double toDouble( String str, double def ) {
     double retval;
     try {
       retval = Double.parseDouble( str );
@@ -1219,7 +1219,7 @@ public class Const {
    *          The default value
    * @return The converted value or the default.
    */
-  public static final Date toDate( String str, Date def ) {
+  public static Date toDate( String str, Date def ) {
     SimpleDateFormat df = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS", Locale.US );
     try {
       return df.parse( str );
@@ -1236,7 +1236,7 @@ public class Const {
    *          The character to verify if it is a space.
    * @return true if the character is a space. false otherwise.
    */
-  public static final boolean isSpace( char c ) {
+  public static boolean isSpace( char c ) {
     return c == ' ' || c == '\t' || c == '\r' || c == '\n' || Character.isWhitespace( c );
   }
 
@@ -1286,7 +1286,7 @@ public class Const {
    *          The string to trim
    * @return The trimmed string.
    */
-  public static final String trim( String str ) {
+  public static String trim( String str ) {
     if ( str == null ) {
       return null;
     }
@@ -1318,7 +1318,7 @@ public class Const {
    *          The desired length of the padded string.
    * @return The padded String.
    */
-  public static final String rightPad( String ret, int limit ) {
+  public static String rightPad( String ret, int limit ) {
     if ( ret == null ) {
       return rightPad( new StringBuffer(), limit );
     } else {
@@ -1336,7 +1336,7 @@ public class Const {
    *          The desired length of the padded string.
    * @return The padded String.
    */
-  public static final String rightPad( StringBuffer ret, int limit ) {
+  public static String rightPad( StringBuffer ret, int limit ) {
     int len = ret.length();
     int l;
 
@@ -1361,7 +1361,7 @@ public class Const {
    *          The new text bit
    * @return The resulting string with the text pieces replaced.
    */
-  public static final String replace( String string, String repl, String with ) {
+  public static String replace( String string, String repl, String with ) {
     StringBuffer str = new StringBuffer( string );
     for ( int i = str.length() - 1; i >= 0; i-- ) {
       if ( str.substring( i ).startsWith( repl ) ) {
@@ -1404,7 +1404,7 @@ public class Const {
    *          The text to examine
    * @return The number of leading spaces found.
    */
-  public static final int nrSpacesBefore( String field ) {
+  public static int nrSpacesBefore( String field ) {
     int nr = 0;
     int len = field.length();
     while ( nr < len && field.charAt( nr ) == ' ' ) {
@@ -1420,7 +1420,7 @@ public class Const {
    *          The text to examine
    * @return The number of trailing spaces found.
    */
-  public static final int nrSpacesAfter( String field ) {
+  public static int nrSpacesAfter( String field ) {
     int nr = 0;
     int len = field.length();
     while ( nr < len && field.charAt( field.length() - 1 - nr ) == ' ' ) {
@@ -1436,7 +1436,7 @@ public class Const {
    *          The string to check
    * @return true if the string has nothing but spaces.
    */
-  public static final boolean onlySpaces( String str ) {
+  public static boolean onlySpaces( String str ) {
     for ( int i = 0; i < str.length(); i++ ) {
       if ( !isSpace( str.charAt( i ) ) ) {
         return false;
@@ -1450,7 +1450,7 @@ public class Const {
    *
    * @return The name of the OS
    */
-  public static final String getOS() {
+  public static String getOS() {
     return System.getProperty( "os.name" );
   }
 
@@ -1492,28 +1492,28 @@ public class Const {
   /**
    * @return True if the OS is a Windows derivate.
    */
-  public static final boolean isWindows() {
+  public static boolean isWindows() {
     return getOS().startsWith( "Windows" );
   }
 
   /**
    * @return True if the OS is a Linux derivate.
    */
-  public static final boolean isLinux() {
+  public static boolean isLinux() {
     return getOS().startsWith( "Linux" );
   }
 
   /**
    * @return True if the OS is an OSX derivate.
    */
-  public static final boolean isOSX() {
+  public static boolean isOSX() {
     return getOS().toUpperCase().contains( "OS X" );
   }
 
   /**
    * @return True if KDE is in use.
    */
-  public static final boolean isKDE() {
+  public static boolean isKDE() {
     return StringUtils.isNotBlank( System.getenv( "KDE_SESSION_VERSION" ) );
   }
 
@@ -1524,7 +1524,7 @@ public class Const {
    *
    * @return The hostname
    */
-  public static final String getHostname() {
+  public static String getHostname() {
 
     if ( cachedHostname != null ) {
       return cachedHostname;
@@ -1571,7 +1571,7 @@ public class Const {
    *
    * @return The hostname
    */
-  public static final String getHostnameReal() {
+  public static String getHostnameReal() {
 
     // In case we don't want to leave anything to doubt...
     //
@@ -1617,7 +1617,7 @@ public class Const {
    *
    * @return The IP address
    */
-  public static final String getIPAddress() throws Exception {
+  public static String getIPAddress() throws Exception {
     Enumeration<NetworkInterface> enumInterfaces = NetworkInterface.getNetworkInterfaces();
     while ( enumInterfaces.hasMoreElements() ) {
       NetworkInterface nwi = enumInterfaces.nextElement();
@@ -1642,7 +1642,7 @@ public class Const {
    * @throws SocketException
    *           in case of a security or network error
    */
-  public static final String getIPAddress( String networkInterfaceName ) throws SocketException {
+  public static String getIPAddress( String networkInterfaceName ) throws SocketException {
     NetworkInterface networkInterface = NetworkInterface.getByName( networkInterfaceName );
     Enumeration<InetAddress> ipAddresses = networkInterface.getInetAddresses();
     while ( ipAddresses.hasMoreElements() ) {
@@ -1660,7 +1660,7 @@ public class Const {
    *
    * @return The MAC address.
    */
-  public static final String getMACAddress() throws Exception {
+  public static String getMACAddress() throws Exception {
     String ip = getIPAddress();
     String mac = "none";
     String os = getOS();
@@ -1774,7 +1774,7 @@ public class Const {
    *
    * @return The path to the users home directory, or the System property {@code KETTLE_HOME} if set.
    */
-  public static final String getUserHomeDirectory() {
+  public static String getUserHomeDirectory() {
     return NVL( System.getenv( "KETTLE_HOME" ), NVL( System.getProperty( "KETTLE_HOME" ),
         System.getProperty( "user.home" ) ) );
   }
@@ -1784,7 +1784,7 @@ public class Const {
    *
    * @return The Kettle absolute directory.
    */
-  public static final String getKettleDirectory() {
+  public static String getKettleDirectory() {
     return getUserHomeDirectory() + FILE_SEPARATOR + getUserBaseDir();
   }
 
@@ -1793,14 +1793,14 @@ public class Const {
    *
    * @return The Kettle directory.
    */
-  public static final String getUserBaseDir() {
+  public static String getUserBaseDir() {
     return BasePropertyHandler.getProperty( "userBaseDir", ".kettle" );
   }
 
   /**
    * Returns the value of DI_HOME.
    */
-  public static final String getDIHomeDirectory() {
+  public static String getDIHomeDirectory() {
     return System.getProperty( "DI_HOME" );
   }
 
@@ -1809,7 +1809,7 @@ public class Const {
    *
    * @return the name of the shared objects file
    */
-  public static final String getSharedObjectsFile() {
+  public static String getSharedObjectsFile() {
     return getKettleDirectory() + FILE_SEPARATOR + SHARED_DATA_FILE;
   }
 
@@ -1818,7 +1818,7 @@ public class Const {
    *
    * @return The local repositories file.
    */
-  public static final String getKettleLocalRepositoriesFile() {
+  public static String getKettleLocalRepositoriesFile() {
     return "repositories.xml";
   }
 
@@ -1827,7 +1827,7 @@ public class Const {
    *
    * @return The Kettle repositories file.
    */
-  public static final String getKettleUserRepositoriesFile() {
+  public static String getKettleUserRepositoriesFile() {
     return getKettleDirectory() + FILE_SEPARATOR + getKettleLocalRepositoriesFile();
   }
 
@@ -1838,7 +1838,7 @@ public class Const {
    *
    * @return The local Carte password file.
    */
-  public static final String getKettleLocalCartePasswordFile() {
+  public static String getKettleLocalCartePasswordFile() {
     return "pwd/kettle.pwd";
   }
 
@@ -1849,7 +1849,7 @@ public class Const {
    *
    * @return The Carte password file in the home directory.
    */
-  public static final String getKettleCartePasswordFile() {
+  public static String getKettleCartePasswordFile() {
     return getKettleDirectory() + FILE_SEPARATOR + "kettle.pwd";
   }
 
@@ -1879,7 +1879,7 @@ public class Const {
    * @deprecated use StringUtil.environmentSubstitute(): handles both Windows and unix conventions
    */
   @Deprecated
-  public static final String replEnv( String string ) {
+  public static String replEnv( String string ) {
     if ( string == null ) {
       return null;
     }
@@ -1931,7 +1931,7 @@ public class Const {
    * @deprecated please use StringUtil.environmentSubstitute now.
    */
   @Deprecated
-  public static final String[] replEnv( String[] string ) {
+  public static String[] replEnv( String[] string ) {
     String[] retval = new String[string.length];
     for ( int i = 0; i < string.length; i++ ) {
       retval[i] = Const.replEnv( string[i] );
@@ -1948,7 +1948,7 @@ public class Const {
    *          The default value in case source is null or the length of the string is 0
    * @return source if source is not null, otherwise return def
    */
-  public static final String NVL( String source, String def ) {
+  public static String NVL( String source, String def ) {
     if ( source == null || source.length() == 0 ) {
       return def;
     }
@@ -1962,7 +1962,7 @@ public class Const {
    *          The source value to check for null.
    * @return empty string if source is null, otherwise simply return the source value.
    */
-  public static final String nullToEmpty( String source ) {
+  public static String nullToEmpty( String source ) {
     if ( source == null ) {
       return "";
     }
@@ -1978,7 +1978,7 @@ public class Const {
    *          The array of strings to look in
    * @return The index of a search string in an array of strings. -1 if not found.
    */
-  public static final int indexOfString( String lookup, String[] array ) {
+  public static int indexOfString( String lookup, String[] array ) {
     if ( array == null ) {
       return -1;
     }
@@ -2003,7 +2003,7 @@ public class Const {
    *          The array of strings to look in
    * @return The indexes of strings in an array of strings. -1 if not found.
    */
-  public static final int[] indexsOfStrings( String[] lookup, String[] array ) {
+  public static int[] indexsOfStrings( String[] lookup, String[] array ) {
     int[] indexes = new int[lookup.length];
     for ( int i = 0; i < indexes.length; i++ ) {
       indexes[i] = indexOfString( lookup[i], array );
@@ -2021,7 +2021,7 @@ public class Const {
    *          The array of strings to look in
    * @return The indexes of strings in an array of strings. Only existing indexes are returned (no -1)
    */
-  public static final int[] indexsOfFoundStrings( String[] lookup, String[] array ) {
+  public static int[] indexsOfFoundStrings( String[] lookup, String[] array ) {
     List<Integer> indexesList = new ArrayList<Integer>();
     for ( int i = 0; i < lookup.length; i++ ) {
       int idx = indexOfString( lookup[i], array );
@@ -2045,7 +2045,7 @@ public class Const {
    *          The ArrayList of strings to look in
    * @return The index of a search string in an array of strings. -1 if not found.
    */
-  public static final int indexOfString( String lookup, List<String> list ) {
+  public static int indexOfString( String lookup, List<String> list ) {
     if ( list == null ) {
       return -1;
     }
@@ -2066,7 +2066,7 @@ public class Const {
    *          The array of strings to sort.
    * @return The sorted array of strings.
    */
-  public static final String[] sortStrings( String[] input ) {
+  public static String[] sortStrings( String[] input ) {
     Arrays.sort( input );
     return input;
   }
@@ -2088,7 +2088,7 @@ public class Const {
    *          The separator used.
    * @return the string split into an array of strings
    */
-  public static final String[] splitString( String string, String separator ) {
+  public static String[] splitString( String string, String separator ) {
     /*
      * 0123456 Example a;b;c;d --> new String[] { a, b, c, d }
      */
@@ -2134,7 +2134,7 @@ public class Const {
    *          The separator used.
    * @return the string split into an array of strings
    */
-  public static final String[] splitString( String string, char separator ) {
+  public static String[] splitString( String string, char separator ) {
     return splitString( string, separator, false );
   }
 
@@ -2153,7 +2153,7 @@ public class Const {
    *          in case the separator can be escaped (\;) The escape characters are NOT removed!
    * @return the string split into an array of strings
    */
-  public static final String[] splitString( String string, char separator, boolean escape ) {
+  public static String[] splitString( String string, char separator, boolean escape ) {
     /*
      * 0123456 Example a;b;c;d --> new String[] { a, b, c, d }
      */
@@ -2202,7 +2202,7 @@ public class Const {
    *          The separator used.
    * @return the string split into an array of strings
    */
-  public static final String[] splitPath( String path, String separator ) {
+  public static String[] splitPath( String path, String separator ) {
     //
     // Example /a/b/c --> new String[] { a, b, c }
     //
@@ -2360,7 +2360,7 @@ public class Const {
    *          the array that you want to do a distinct on
    * @return a sorted array of uniquely occurring strings
    */
-  public static final String[] getDistinctStrings( String[] strings ) {
+  public static String[] getDistinctStrings( String[] strings ) {
     if ( strings == null ) {
       return null;
     }
@@ -2384,11 +2384,11 @@ public class Const {
   /**
    * Returns a string of the stack trace of the specified exception
    */
-  public static final String getStackTracker( Throwable e ) {
+  public static String getStackTracker( Throwable e ) {
     return getClassicStackTrace( e );
   }
 
-  public static final String getClassicStackTrace( Throwable e ) {
+  public static String getClassicStackTrace( Throwable e ) {
     StringWriter stringWriter = new StringWriter();
     PrintWriter printWriter = new PrintWriter( stringWriter );
     e.printStackTrace( printWriter );
@@ -2425,7 +2425,7 @@ public class Const {
    *          The string to check
    * @return true if the string supplied is empty
    */
-  public static final boolean isEmpty( String string ) {
+  public static boolean isEmpty( String string ) {
     return string == null || string.length() == 0;
   }
 
@@ -2436,7 +2436,7 @@ public class Const {
    *          The stringBuffer to check
    * @return true if the stringBuffer supplied is empty
    */
-  public static final boolean isEmpty( StringBuffer string ) {
+  public static boolean isEmpty( StringBuffer string ) {
     return string == null || string.length() == 0;
   }
 
@@ -2448,7 +2448,7 @@ public class Const {
    *          The string array to check
    * @return true if the string array supplied is empty
    */
-  public static final boolean isEmpty( String[] strings ) {
+  public static boolean isEmpty( String[] strings ) {
     return strings == null || strings.length == 0;
   }
 
@@ -2459,7 +2459,7 @@ public class Const {
    *          The array to check
    * @return true if the array supplied is empty
    */
-  public static final boolean isEmpty( Object[] array ) {
+  public static boolean isEmpty( Object[] array ) {
     return array == null || array.length == 0;
   }
 
@@ -2470,14 +2470,14 @@ public class Const {
    *          the list to check
    * @return true if the supplied list is empty
    */
-  public static final boolean isEmpty( List<?> list ) {
+  public static boolean isEmpty( List<?> list ) {
     return list == null || list.size() == 0;
   }
 
   /**
    * @return a new ClassLoader
    */
-  public static final ClassLoader createNewClassLoader() throws KettleException {
+  public static ClassLoader createNewClassLoader() throws KettleException {
     try {
       // Nothing really in URL, everything is in scope.
       URL[] urls = new URL[] {};
@@ -2494,7 +2494,7 @@ public class Const {
    *
    * @return a new java byte array
    */
-  public static final byte[] createByteArray( int size ) {
+  public static byte[] createByteArray( int size ) {
     return new byte[size];
   }
 
@@ -2505,7 +2505,7 @@ public class Const {
    *          The strings to convert to initcap
    * @return the input string but with the first character of each word converted to upper-case.
    */
-  public static final String initCap( String string ) {
+  public static String initCap( String string ) {
     StringBuffer change = new StringBuffer( string );
     boolean new_word;
     int i;
@@ -2541,7 +2541,7 @@ public class Const {
    *          The name to use as a base for the filename
    * @return a valid filename
    */
-  public static final String createFilename( String name ) {
+  public static String createFilename( String name ) {
     StringBuffer filename = new StringBuffer();
     for ( int i = 0; i < name.length(); i++ ) {
       char c = name.charAt( i );
@@ -2554,7 +2554,7 @@ public class Const {
     return filename.toString().toLowerCase();
   }
 
-  public static final String createFilename( String directory, String name, String extension ) {
+  public static String createFilename( String directory, String name, String extension ) {
     if ( directory.endsWith( Const.FILE_SEPARATOR ) ) {
       return directory + createFilename( name ) + extension;
     } else {
@@ -2562,7 +2562,7 @@ public class Const {
     }
   }
 
-  public static final String createName( String filename ) {
+  public static String createName( String filename ) {
     if ( Const.isEmpty( filename ) ) {
       return filename;
     }
@@ -2782,16 +2782,14 @@ public class Const {
    *
    * @return Percentage of free memory.
    */
-  public static final int getPercentageFreeMemory() {
+  public static int getPercentageFreeMemory() {
     Runtime runtime = Runtime.getRuntime();
     long maxMemory = runtime.maxMemory();
     long allocatedMemory = runtime.totalMemory();
     long freeMemory = runtime.freeMemory();
     long totalFreeMemory = ( freeMemory + ( maxMemory - allocatedMemory ) );
 
-    int percentage = (int) Math.round( 100 * (double) totalFreeMemory / maxMemory );
-
-    return percentage;
+    return (int) Math.round( 100 * (double) totalFreeMemory / maxMemory );
   }
 
   /**
@@ -2804,7 +2802,7 @@ public class Const {
     if ( Const.isEmpty( input ) ) {
       return null;
     }
-    StringBuffer digitsOnly = new StringBuffer();
+    StringBuilder digitsOnly = new StringBuilder();
     char c;
     for ( int i = 0; i < input.length(); i++ ) {
       c = input.charAt( i );
@@ -2824,7 +2822,7 @@ public class Const {
     if ( Const.isEmpty( input ) ) {
       return null;
     }
-    StringBuffer digitsOnly = new StringBuffer();
+    StringBuilder digitsOnly = new StringBuilder();
     char c;
     for ( int i = 0; i < input.length(); i++ ) {
       c = input.charAt( i );
@@ -2942,9 +2940,8 @@ public class Const {
    */
   public static String removeCRLF( String in ) {
     char[] inArray = in.toCharArray();
-    StringBuffer out = new StringBuffer( inArray.length );
-    for ( int i = 0; i < inArray.length; i++ ) {
-      char c = inArray[i];
+    StringBuilder out = new StringBuilder( inArray.length );
+    for ( char c : inArray ) {
       if ( !( c == '\n' || c == '\r' ) ) {
         out.append( c );
       }
@@ -2961,9 +2958,8 @@ public class Const {
    */
   public static String removeCR( String in ) {
     char[] inArray = in.toCharArray();
-    StringBuffer out = new StringBuffer( inArray.length );
-    for ( int i = 0; i < inArray.length; i++ ) {
-      char c = inArray[i];
+    StringBuilder out = new StringBuilder( inArray.length );
+    for ( char c : inArray ) {
       if ( c != '\n' ) {
         out.append( c );
       }
@@ -2980,9 +2976,8 @@ public class Const {
    */
   public static String removeLF( String in ) {
     char[] inArray = in.toCharArray();
-    StringBuffer out = new StringBuffer( inArray.length );
-    for ( int i = 0; i < inArray.length; i++ ) {
-      char c = inArray[i];
+    StringBuilder out = new StringBuilder( inArray.length );
+    for ( char c : inArray ) {
       if ( c != '\r' ) {
         out.append( c );
       }
@@ -2991,7 +2986,7 @@ public class Const {
   } // removeCRLF
 
   /**
-   * Remove Horizontan Tab from String
+   * Remove horizontal tab from string
    *
    * @param in
    *          input
@@ -2999,9 +2994,8 @@ public class Const {
    */
   public static String removeTAB( String in ) {
     char[] inArray = in.toCharArray();
-    StringBuffer out = new StringBuffer( inArray.length );
-    for ( int i = 0; i < inArray.length; i++ ) {
-      char c = inArray[i];
+    StringBuilder out = new StringBuilder( inArray.length );
+    for ( char c : inArray ) {
       if ( c != '\t' ) {
         out.append( c );
       }
@@ -3029,8 +3023,7 @@ public class Const {
     }
     String dateformatString = NVL( DateFormat, "HH:mm:ss" );
     int t = decodeTime( time, dateformatString );
-    Date d = new Date( input.getTime() + t );
-    return d;
+    return new Date( input.getTime() + t );
   }
 
   // Decodes a time value in specified date format and returns it as milliseconds since midnight.
@@ -3048,13 +3041,13 @@ public class Const {
   }
 
   /**
-   * Get the number of occurances of searchFor in string.
+   * Get the number of occurrences of searchFor in string.
    *
    * @param string
    *          String to be searched
    * @param searchFor
    *          to be counted string
-   * @return number of occurances
+   * @return number of occurrences
    */
   public static int getOccurenceString( String string, String searchFor ) {
     if ( string == null || string.length() == 0 ) {
@@ -3116,13 +3109,13 @@ public class Const {
   }
 
   /**
-   * Get the number of occurances of searchFor in string.
+   * Get the number of occurrences of searchFor in string.
    *
    * @param string
    *          String to be searched
    * @param searchFor
    *          to be counted string
-   * @return number of occurances
+   * @return number of occurrences
    */
   public static int getOcuranceString( String string, String searchFor ) {
     if ( string == null || string.length() == 0 ) {
@@ -3175,9 +3168,6 @@ public class Const {
     if ( clazz.equals( Object.class ) ) {
       return false;
     }
-    if ( clazz.equals( superClass ) ) {
-      return true;
-    }
-    return classIsOrExtends( clazz.getSuperclass(), superClass );
+    return clazz.equals( superClass ) || classIsOrExtends( clazz.getSuperclass(), superClass );
   }
 }
