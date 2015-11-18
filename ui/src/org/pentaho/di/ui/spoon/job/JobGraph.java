@@ -1552,9 +1552,16 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   }
 
   public void delSelected() {
+    delSelected( getJobEntry() );
+  }
+
+  public void delSelected( JobEntryCopy clickedEntry ) {
     List<JobEntryCopy> copies = jobMeta.getSelectedEntries();
     int nrsels = copies.size();
     if ( nrsels == 0 ) {
+      if ( clickedEntry != null ) {
+        spoon.deleteJobEntryCopies( jobMeta, clickedEntry );
+      }
       return;
     }
 
@@ -1820,6 +1827,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       XulMenupopup menu = (XulMenupopup) doc.getElementById( "job-graph-entry" );
       if ( menu != null ) {
         List<JobEntryCopy> selection = jobMeta.getSelectedEntries();
+        doRightClickSelection( jobEntry, selection );
         int sels = selection.size();
 
         XulMenuitem item = (XulMenuitem) doc.getElementById( "job-graph-entry-newhop" );
@@ -2767,7 +2775,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       int leftPosition = ( area.x - pentahoImage.getBounds().width ) / 2;
       int topPosition = ( area.y - pentahoImage.getBounds().height ) / 2;
       e.gc.drawImage( pentahoImage, leftPosition, topPosition );
-      
+
     }
     img.dispose();
 
@@ -2776,9 +2784,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   public Image getJobImage( Device device, int x, int y, float magnificationFactor ) {
     GCInterface gc = new SWTGC( device, new Point( x, y ), iconsize );
 
-    int gridSize = 
-        PropsUI.getInstance().isShowCanvasGridEnabled() ? PropsUI.getInstance().getCanvasGridSize() : 1;  
-    
+    int gridSize =
+        PropsUI.getInstance().isShowCanvasGridEnabled() ? PropsUI.getInstance().getCanvasGridSize() : 1;
+
     JobPainter jobPainter =
       new JobPainter(
         gc, jobMeta, new Point( x, y ), new SwtScrollBar( hori ), new SwtScrollBar( vert ), hop_candidate,
@@ -3339,7 +3347,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     spoon.getSQL();
   }
 
-  public XulToolbar getToolbar() { return toolbar; }
+  public XulToolbar getToolbar() {
+    return toolbar;
+  }
 
   public void exploreDatabase() {
     spoon.exploreDatabase();
