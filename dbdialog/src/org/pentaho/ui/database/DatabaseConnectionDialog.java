@@ -44,9 +44,13 @@ public class DatabaseConnectionDialog {
   }
 
   public XulDomContainer getSwtInstance( Shell shell ) throws XulException {
+    SwtXulLoader loader = new SwtXulLoader();
+    return getSwtInstance( loader, shell );
+  }
+
+  public XulDomContainer getSwtInstance( SwtXulLoader loader, Shell shell ) throws XulException {
 
     XulDomContainer container = null;
-    SwtXulLoader loader = new SwtXulLoader();
 
     Iterable<String> keyIterable = extendedClasses.keySet();
     for ( Object key : keyIterable ) {
@@ -57,5 +61,4 @@ public class DatabaseConnectionDialog {
     container.initialize();
     return container;
   }
-
 }

@@ -55,21 +55,24 @@ public class KettleXulLoader extends SwtXulLoader {
     iconHeight = height;
   }
 
+  /**
+   * Get original stream without svg->png transformation.
+   */
+  public InputStream getOriginalResourceAsStream( String resource ) {
+    return super.getResourceAsStream( resource );
+  }
+
   @Override
   public InputStream getResourceAsStream( String resource ) {
     int height = iconHeight;
     int width = iconWidth;
     if ( resource.contains( ":" ) ) {
       // we have height/width overrides
-      width = Integer.parseInt( resource.substring( resource.indexOf( ":" ) + 1,
-          resource.indexOf( "#" ) ) );
-      height = Integer.parseInt( resource.substring( resource.indexOf( "#" ) + 1,
-          resource.indexOf( "." ) ) );
-      resource = resource.substring( 0, resource.indexOf( ":" ) ) +
-          resource.substring( resource.indexOf( "." ) );
+      width = Integer.parseInt( resource.substring( resource.indexOf( ":" ) + 1, resource.indexOf( "#" ) ) );
+      height = Integer.parseInt( resource.substring( resource.indexOf( "#" ) + 1, resource.indexOf( "." ) ) );
+      resource = resource.substring( 0, resource.indexOf( ":" ) ) + resource.substring( resource.indexOf( "." ) );
     }
-    if ( SvgSupport.isSvgEnabled() && ( SvgSupport.isSvgName( resource ) 
-        || SvgSupport.isPngName( resource ) ) ) {
+    if ( SvgSupport.isSvgEnabled() && ( SvgSupport.isSvgName( resource ) || SvgSupport.isPngName( resource ) ) ) {
       InputStream in = null;
       try {
         in = super.getResourceAsStream( SvgSupport.toSvgName( resource ) );
