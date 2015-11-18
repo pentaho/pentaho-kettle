@@ -2436,6 +2436,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
         if ( menu != null ) {
           List<StepMeta> selection = transMeta.getSelectedSteps();
+          doRightClickSelection( stepMeta, selection );
           int sels = selection.size();
 
           Document doc = getXulDomContainer().getDocumentRoot();
