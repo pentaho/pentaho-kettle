@@ -417,6 +417,23 @@ public class GUIResource {
       public void pluginChanged( Object serviceObject ) {
       }
     } );
+
+    PluginRegistry.getInstance().addPluginListener( JobEntryPluginType.class, new PluginTypeListener() {
+      @Override public void pluginAdded( Object serviceObject ) {
+        // make sure we load up the images for any new job entries that have been registered
+        loadJobEntryImages();
+      }
+
+      @Override public void pluginRemoved( Object serviceObject ) {
+        // rebuild the image map, in effect removing the image(s) for job entries that have gone away
+        loadJobEntryImages();
+      }
+
+      @Override public void pluginChanged( Object serviceObject ) {
+        // nothing needed here
+      }
+    } );
+
   }
 
   public static final GUIResource getInstance() {
