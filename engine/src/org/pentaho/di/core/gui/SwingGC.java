@@ -648,6 +648,9 @@ public class SwingGC implements GCInterface {
       case PARALLEL:
         dash = new float[] { 10, 5, 10, 5, };
         break;
+	  case DASH:
+        dash = new float[] { 6, 2, };
+        break;
       default:
         throw new RuntimeException( "Unhandled line style!" );
     }
