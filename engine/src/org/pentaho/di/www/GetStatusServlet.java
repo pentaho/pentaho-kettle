@@ -343,9 +343,11 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       //
       SlaveServerConfig serverConfig = getTransformationMap().getSlaveServerConfig();
       if ( serverConfig != null ) {
-        String maxLines = serverConfig.getMaxLogLines() + BaseMessages.getString( PKG, "GetStatusServlet.Lines" );
+        String maxLines = "";
         if ( serverConfig.getMaxLogLines() == 0 ) {
-          maxLines += BaseMessages.getString( PKG, "GetStatusServlet.NoLimit" );
+          maxLines = BaseMessages.getString( PKG, "GetStatusServlet.NoLimit" );
+        } else {
+          maxLines = serverConfig.getMaxLogLines() + BaseMessages.getString( PKG, "GetStatusServlet.Lines" );
         }
         out.print( "<tr> <td>"
           + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxLogLines" ) + "</td> <td>" + maxLines
@@ -353,10 +355,11 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
         // The max age of log lines
         //
-        String maxAge =
-          serverConfig.getMaxLogTimeoutMinutes() + BaseMessages.getString( PKG, "GetStatusServlet.Minutes" );
+        String maxAge = "";
         if ( serverConfig.getMaxLogTimeoutMinutes() == 0 ) {
-          maxAge += BaseMessages.getString( PKG, "GetStatusServlet.NoLimit" );
+          maxAge = BaseMessages.getString( PKG, "GetStatusServlet.NoLimit" );
+        } else {
+          maxAge = serverConfig.getMaxLogTimeoutMinutes() + BaseMessages.getString( PKG, "GetStatusServlet.Minutes" );
         }
         out.print( "<tr> <td>"
           + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxLogLinesAge" ) + "</td> <td>" + maxAge
@@ -364,10 +367,11 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
         // The max age of stale objects
         //
-        String maxObjAge =
-          serverConfig.getObjectTimeoutMinutes() + BaseMessages.getString( PKG, "GetStatusServlet.Minutes" );
+        String maxObjAge = "";
         if ( serverConfig.getObjectTimeoutMinutes() == 0 ) {
-          maxObjAge += BaseMessages.getString( PKG, "GetStatusServlet.NoLimit" );
+          maxObjAge = BaseMessages.getString( PKG, "GetStatusServlet.NoLimit" );
+        } else {
+          maxObjAge = serverConfig.getObjectTimeoutMinutes() + BaseMessages.getString( PKG, "GetStatusServlet.Minutes" );
         }
         out.print( "<tr> <td>"
           + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxObjectsAge" ) + "</td> <td>" + maxObjAge
