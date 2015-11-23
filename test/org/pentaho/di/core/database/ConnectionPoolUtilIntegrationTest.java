@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,8 @@ import static org.mockito.Mockito.*;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -36,6 +38,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.commons.dbcp.DelegatingConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -44,6 +47,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.database.util.DatabaseUtil;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -55,6 +59,13 @@ public class ConnectionPoolUtilIntegrationTest {
   private static final int INITIAL_POOL_SIZE = 1;
   Driver driver;
 
+  private static long MAX_WAIT_TIME = 1000;
+  private static int MAX_ACTIVE = 2;
+  private static String VALIDATION_QUERY = "select 1 from INFORMATION_SCHEMA.USERS";
+
+  private LogChannelInterface logChannelInterface;
+  Properties dsProps;
+
   @BeforeClass
   public static void setupBeforeClass() throws KettleException {
     KettleClientEnvironment.init();
@@ -64,6 +75,27 @@ public class ConnectionPoolUtilIntegrationTest {
   public void setUp() throws Exception {
     driver = mock( Driver.class, RETURNS_MOCKS );
     DriverManager.registerDriver( driver );
+
+    logChannelInterface = mock( LogChannelInterface.class, RETURNS_MOCKS );
+    dsProps = new Properties();
+    dsProps.setProperty( ConnectionPoolUtil.DEFAULT_AUTO_COMMIT, "true" );
+    dsProps.setProperty( ConnectionPoolUtil.DEFAULT_READ_ONLY, "true" );
+    dsProps.setProperty( ConnectionPoolUtil.DEFAULT_TRANSACTION_ISOLATION, "1" );
+    dsProps.setProperty( ConnectionPoolUtil.DEFAULT_CATALOG, "" );
+    dsProps.setProperty( ConnectionPoolUtil.MAX_IDLE, "30" );
+    dsProps.setProperty( ConnectionPoolUtil.MIN_IDLE, "3" );
+    dsProps.setProperty( ConnectionPoolUtil.MAX_WAIT, String.valueOf( MAX_WAIT_TIME ) ); // tested
+    dsProps.setProperty( ConnectionPoolUtil.VALIDATION_QUERY, VALIDATION_QUERY );
+    dsProps.setProperty( ConnectionPoolUtil.TEST_ON_BORROW, "true" );
+    dsProps.setProperty( ConnectionPoolUtil.TEST_ON_RETURN, "true" );
+    dsProps.setProperty( ConnectionPoolUtil.TEST_WHILE_IDLE, "true" );
+    dsProps.setProperty( ConnectionPoolUtil.TIME_BETWEEN_EVICTION_RUNS_MILLIS, "300000" );
+    dsProps.setProperty( ConnectionPoolUtil.POOL_PREPARED_STATEMENTS, "true" ); // tested
+    dsProps.setProperty( ConnectionPoolUtil.MAX_OPEN_PREPARED_STATEMENTS, "2" ); // tested
+    dsProps.setProperty( ConnectionPoolUtil.ACCESS_TO_UNDERLYING_CONNECTION_ALLOWED, "true" ); // tested
+    dsProps.setProperty( ConnectionPoolUtil.REMOVE_ABANDONED, "false" );
+    dsProps.setProperty( ConnectionPoolUtil.REMOVE_ABANDONED_TIMEOUT, "1000" );
+    dsProps.setProperty( ConnectionPoolUtil.LOG_ABANDONED, "false" );
   }
 
   @After
@@ -91,8 +123,68 @@ public class ConnectionPoolUtilIntegrationTest {
     testGetConnectionFromPool( 8 );
   }
 
+  @Test
+  public void testPreparedStatementsProperty() throws Exception {
+    Connection conn = null;
+    PreparedStatement[] ps = new PreparedStatement[ 3 ];
+    try {
+      DatabaseMeta dbMeta = new DatabaseMeta( "testPreparedStatements", "H2", "JDBC", null, "mem:test", null, "SA", "" );
+      dbMeta.setConnectionPoolingProperties( dsProps );
+      conn = ConnectionPoolUtil.getConnection( logChannelInterface, dbMeta, "part1", INITIAL_POOL_SIZE, MAX_ACTIVE );
+      ps[ 0 ] = conn.prepareStatement( VALIDATION_QUERY );
+      ps[ 1 ] = conn.prepareStatement( VALIDATION_QUERY );
+      boolean failed = false;
+      try {
+        ps[ 2 ] = conn.prepareStatement( VALIDATION_QUERY );
+      } catch ( Exception e ) {
+        failed = true;
+      }
+      assertTrue( "Properties 'poolPreparedStatements' or 'maxOpenPreparedStatements' don't work", failed );
+    } finally {
+      DatabaseUtil.closeSilently( ps );
+      DatabaseUtil.closeSilently( conn );
+    }
+  }
+
+  // maxPoolSize is set to "2", maxWait = MAX_WAIT_TIME
+  // so after getting the next connection the thread should block for 3 seconds and then
+  // throw "Cannot get connection exception"
+  @Test( timeout = 6000 )
+  public void testMaxActiveProperty() throws Exception {
+    Connection[] c = new Connection[ 3 ];
+    DatabaseMeta dbMeta = new DatabaseMeta( "testPreparedStatements", "H2", "JDBC", null, "mem:test", null, "SA", "" );
+    dbMeta.setConnectionPoolingProperties( dsProps );
+    try {
+      c[ 0 ] = ConnectionPoolUtil.getConnection( logChannelInterface, dbMeta, "part1", INITIAL_POOL_SIZE, MAX_ACTIVE );
+      c[ 1 ] = ConnectionPoolUtil.getConnection( logChannelInterface, dbMeta, "part1", INITIAL_POOL_SIZE, MAX_ACTIVE );
+      long startTime = System.currentTimeMillis();
+      try {
+        // this must wait a bit and throw an exception
+        c[ 2 ] = ConnectionPoolUtil.getConnection( logChannelInterface, dbMeta, "part1", INITIAL_POOL_SIZE, MAX_ACTIVE );
+      } catch ( SQLException e ) {
+        long waitedTime = System.currentTimeMillis() - startTime;
+        assertFalse( "Waited < maxWait", waitedTime < MAX_WAIT_TIME );
+      }
+    } finally {
+      DatabaseUtil.closeSilently( c );
+    }
+  }
+
+  @Test
+  public void testAccessToUnderlyingConnectionAllowedProperty() throws Exception {
+    Connection conn = null;
+    DatabaseMeta dbMeta = new DatabaseMeta( "testAccessToUnderlying", "H2", "JDBC", null, "mem:test", null, "SA", "" );
+    dbMeta.setConnectionPoolingProperties( dsProps );
+    try {
+      conn = ConnectionPoolUtil.getConnection( logChannelInterface, dbMeta, "part1", INITIAL_POOL_SIZE, MAX_ACTIVE );
+      Connection dconn = ( (DelegatingConnection) conn ).getInnermostDelegate();
+      assertNotNull( "Property 'accessToUnderlyingConnectionAllowed' doesn't work", dconn );
+    } catch ( Exception e ) {
+      fail();
+    }
+  }
+
   private void testGetConnectionFromPool( final int threadCount ) throws Exception {
-    final LogChannelInterface logChannelInterface = mock( LogChannelInterface.class, RETURNS_MOCKS );
     ArgumentCaptor<String> captorLogMessage = ArgumentCaptor.forClass( String.class );
 
     final DatabaseMeta dbMeta = mock( DatabaseMeta.class, RETURNS_MOCKS );
