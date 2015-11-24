@@ -224,7 +224,13 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     try {
-
+      String objectTypeString = XMLHandler.getTagValue( stepnode, "object_type" );
+      if ( objectTypeString != null ) {
+        objectTypeSelection = ObjectTypeSelection.valueOf( objectTypeString );
+      }
+      if ( objectTypeSelection == null ) {
+        objectTypeSelection = ObjectTypeSelection.All;
+      }
       includeRowNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownum" ) );
       rowNumberField = XMLHandler.getTagValue( stepnode, "rownum_field" );
 
@@ -252,7 +258,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
     try {
       int nrfiles = rep.countNrStepAttributes( id_step, "directory" );
       String objectTypeString = rep.getStepAttributeString( id_step, "object_type" );
-      if ( objectTypeSelection != null ) {
+      if ( objectTypeString != null ) {
         objectTypeSelection = ObjectTypeSelection.valueOf( objectTypeString );
       }
       if ( objectTypeSelection == null ) {

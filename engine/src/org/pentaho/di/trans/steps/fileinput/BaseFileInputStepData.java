@@ -75,6 +75,6 @@ public class BaseFileInputStepData extends BaseStepData {
   public Date lastModificationDateTime;
   public String uriName;
   public String rootUriName;
-  public long size;
+  public Long size;
 
 }

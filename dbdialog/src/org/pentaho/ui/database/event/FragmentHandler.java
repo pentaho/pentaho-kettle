@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,12 +54,12 @@ public class FragmentHandler extends AbstractXulEventHandler {
   public FragmentHandler() {
   }
 
-  private void loadDatabaseOptionsFragment( String fragmentUri ) throws XulException {
+  protected void loadDatabaseOptionsFragment( String fragmentUri ) throws XulException {
 
     XulComponent groupElement = document.getElementById( "database-options-box" );
     XulComponent parentElement = groupElement.getParent();
 
-    XulDomContainer fragmentContainer = null;
+    XulDomContainer fragmentContainer;
 
     try {
 
@@ -152,16 +152,19 @@ public class FragmentHandler extends AbstractXulEventHandler {
 
   }
 
-  private String getFragment( DatabaseInterface database, String dbName, String extension, String defaultFragment ) {
+  protected String getFragment( DatabaseInterface database, String dbName, String extension, String defaultFragment ) {
     String fragment;
+    String ext = ( extension == null ? "" : extension );
+    String databaseName = ( dbName == null ? "" : dbName );
+    String defaultFrag = ( defaultFragment == null ? "" : defaultFragment );
     if ( database.getXulOverlayFile() != null ) {
-      fragment = packagePath.concat( database.getXulOverlayFile() ).concat( extension );
+      fragment = packagePath.concat( database.getXulOverlayFile() ).concat( ext );
     } else {
-      fragment = packagePath.concat( dbName ).concat( extension );
+      fragment = packagePath.concat( databaseName ).concat( ext );
     }
     InputStream in = getClass().getClassLoader().getResourceAsStream( fragment.toLowerCase() );
     if ( in == null ) {
-      fragment = packagePath.concat( defaultFragment );
+      fragment = packagePath.concat( defaultFrag );
     }
     return fragment;
   }
@@ -173,7 +176,7 @@ public class FragmentHandler extends AbstractXulEventHandler {
   public void setData( Object arg0 ) {
   }
 
-  private void showMessage( String message ) {
+  protected void showMessage( String message ) {
     try {
       XulMessageBox box = (XulMessageBox) document.createElement( "messagebox" );
       box.setMessage( message );

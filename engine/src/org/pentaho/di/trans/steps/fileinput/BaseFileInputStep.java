@@ -427,9 +427,14 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
     data.path = KettleVFS.getFilename( file.getParent() );
     data.hidden = file.isHidden();
     data.extension = file.getName().getExtension();
-    data.lastModificationDateTime = new Date( file.getContent().getLastModifiedTime() );
     data.uriName = file.getName().getURI();
     data.rootUriName = file.getName().getRootURI();
-    data.size = file.getContent().getSize();
+    if ( file.getType().hasContent() ) {
+      data.lastModificationDateTime = new Date( file.getContent().getLastModifiedTime() );
+      data.size = file.getContent().getSize();
+    } else {
+      data.lastModificationDateTime = null;
+      data.size = null;
+    }
   }
 }

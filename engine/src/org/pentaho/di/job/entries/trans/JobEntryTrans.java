@@ -648,7 +648,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     // the repository is down.
     // Log the stack trace and return an error condition from this
     //
-    TransMeta transMeta = getTransMeta( rep, metaStore, this );
+    TransMeta transMeta = null;
+    try {
+      transMeta = getTransMeta( rep, metaStore, this );
+    } catch ( KettleException e ) {
+      logError( Const.getStackTracker( e ) );
+      result.setNrErrors( 1 );
+      result.setResult( false );
+      return result;
+    }
 
     int iteration = 0;
     String[] args1 = arguments;
@@ -868,6 +876,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           //
           executionConfiguration.setArgumentStrings( args );
 
+          if ( parentJob.getJobMeta().isBatchIdPassed() ) {
+            executionConfiguration.setPassedBatchId( parentJob.getPassedBatchId() );
+          }
+
           TransSplitter transSplitter = null;
           long errors = 0;
           try {
@@ -943,6 +955,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
               Const.NVL( transMeta.getParameterValue( param ), Const.NVL(
                 transMeta.getParameterDefault( param ), transMeta.getVariable( param ) ) );
             params.put( param, value );
+          }
+
+          if ( parentJob.getJobMeta().isBatchIdPassed() ) {
+            transExecutionConfiguration.setPassedBatchId( parentJob.getPassedBatchId() );
           }
 
           // Send the XML over to the slave server
@@ -1069,11 +1085,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
             // Wait until we're done with it...
             //TODO is it possible to implement Observer pattern to avoid Thread.sleep here?
-            while ( !trans.isFinished() && !parentJob.isStopped() && trans.getErrors() == 0 ) {
-              try {
-                Thread.sleep( 0, 500 );
-              } catch ( InterruptedException e ) {
-                // Ignore errors
+            while ( !trans.isFinished() && trans.getErrors() == 0 ) {
+              if ( parentJob.isStopped() ) {
+                trans.stopAll();
+                break;
+              } else {
+                try {
+                  Thread.sleep( 0, 500 );
+                } catch ( InterruptedException e ) {
+                  // Ignore errors
+                }
               }
             }
             trans.waitUntilFinished();
@@ -1154,15 +1175,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     try {
       TransMeta transMeta = null;
       CurrentDirectoryResolver r = new CurrentDirectoryResolver();
-      VariableSpace tmpSpace = r.resolveCurrentDirectory( 
+      VariableSpace tmpSpace = r.resolveCurrentDirectory(
           specificationMethod, space, rep, parentJob, getFilename() );
       switch( specificationMethod ) {
         case FILENAME:
           String realFilename = tmpSpace.environmentSubstitute( getFilename() );
           if ( rep != null ) {
-            while ( realFilename.contains( "//" ) ) {
-              realFilename = realFilename.replace( "//", "/" );
-            }
+            realFilename = r.normalizeSlashes( realFilename );
             // need to try to load from the repository
             try {
               String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
@@ -1173,7 +1192,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
               // try without extension
               if ( realFilename.endsWith( Const.STRING_TRANS_DEFAULT_EXT ) ) {
                 try {
-                  String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1, 
+                  String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1,
                       realFilename.indexOf( "." + Const.STRING_TRANS_DEFAULT_EXT ) );
                   String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
                   RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
@@ -1202,10 +1221,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             //
             // It reads last the last revision from the repository.
             //
-            while ( realDirectory.contains( "//" ) ) {
-              realDirectory = realDirectory.replace( "//", "/" );
-            }
-            
+            realDirectory = r.normalizeSlashes( realDirectory );
+
             RepositoryDirectoryInterface repositoryDirectory = rep.findDirectory( realDirectory );
             transMeta = rep.loadTransformation( transname, repositoryDirectory, null, true, null );
           } else {
@@ -1215,7 +1232,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             } catch ( KettleException ke ) {
               try {
                 // add .ktr extension and try again
-                transMeta = new TransMeta( realDirectory + "/" + transname + "." + Const.STRING_TRANS_DEFAULT_EXT, 
+                transMeta = new TransMeta( realDirectory + "/" + transname + "." + Const.STRING_TRANS_DEFAULT_EXT,
                     metaStore, null, true, this, null );
               } catch ( KettleException ke2 ) {
                 throw new KettleException( BaseMessages.getString( PKG, "JobTrans.Exception.NoRepDefined" ), ke2 );

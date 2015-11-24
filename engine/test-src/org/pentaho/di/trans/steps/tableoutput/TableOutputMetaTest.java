@@ -29,12 +29,17 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.trans.steps.loadsave.MemoryRepository;
 import org.pentaho.metastore.api.IMetaStore;
+import org.w3c.dom.Node;
 
 public class TableOutputMetaTest {
 
@@ -125,4 +130,189 @@ public class TableOutputMetaTest {
     assertEquals( "s6", tableOutputMeta.getStreamFields().get( 2 ) );
   }
 
+  @Test
+  public void testLoadXml() throws Exception {
+
+    TableOutputMeta tableOutputMeta = new TableOutputMeta();
+    tableOutputMeta.loadXML( getTestNode(), databases, metaStore );
+    assertEquals( "1000", tableOutputMeta.getCommitSize() );
+    assertEquals( null, tableOutputMeta.getGeneratedKeyField() );
+    assertEquals( "public", tableOutputMeta.getSchemaName() );
+    assertEquals( "sales_csv", tableOutputMeta.getTableName() );
+    assertEquals( null, tableOutputMeta.getPartitioningField() );
+    assertTrue( tableOutputMeta.truncateTable() );
+    assertTrue( tableOutputMeta.specifyFields() );
+    assertFalse( tableOutputMeta.ignoreErrors() );
+    assertFalse( tableOutputMeta.isPartitioningEnabled() );
+    assertTrue( tableOutputMeta.useBatchUpdate() );
+    assertFalse( tableOutputMeta.isTableNameInField() );
+    assertTrue( tableOutputMeta.isTableNameInTable() );
+    assertFalse( tableOutputMeta.isReturningGeneratedKeys() );
+    assertEquals(
+      "    <connection/>\n"
+        + "    <schema>public</schema>\n"
+        + "    <table>sales_csv</table>\n"
+        + "    <commit>1000</commit>\n"
+        + "    <truncate>Y</truncate>\n"
+        + "    <ignore_errors>N</ignore_errors>\n"
+        + "    <use_batch>Y</use_batch>\n"
+        + "    <specify_fields>Y</specify_fields>\n"
+        + "    <partitioning_enabled>N</partitioning_enabled>\n"
+        + "    <partitioning_field/>\n"
+        + "    <partitioning_daily>N</partitioning_daily>\n"
+        + "    <partitioning_monthly>Y</partitioning_monthly>\n"
+        + "    <tablename_in_field>N</tablename_in_field>\n"
+        + "    <tablename_field/>\n"
+        + "    <tablename_in_table>Y</tablename_in_table>\n"
+        + "    <return_keys>N</return_keys>\n"
+        + "    <return_field/>\n"
+        + "    <fields>\n"
+        + "        <field>\n"
+        + "          <column_name>ORDERNUMBER</column_name>\n"
+        + "          <stream_name>ORDERNUMBER</stream_name>\n"
+        + "        </field>\n"
+        + "        <field>\n"
+        + "          <column_name>QUANTITYORDERED</column_name>\n"
+        + "          <stream_name>QUANTITYORDERED</stream_name>\n"
+        + "        </field>\n"
+        + "        <field>\n"
+        + "          <column_name>PRICEEACH</column_name>\n"
+        + "          <stream_name>PRICEEACH</stream_name>\n"
+        + "        </field>\n"
+        + "    </fields>\n",
+      tableOutputMeta.getXML() );
+  }
+
+  @Test
+  public void testSaveRep() throws Exception {
+    TableOutputMeta tableOutputMeta = new TableOutputMeta();
+    tableOutputMeta.loadXML( getTestNode(), databases, metaStore );
+    StringObjectId id_step = new StringObjectId( "stepid" );
+    StringObjectId id_transformation = new StringObjectId( "transid" );
+    Repository rep = mock( Repository.class );
+    tableOutputMeta.saveRep( rep, metaStore, id_transformation, id_step );
+    verify( rep ).saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", null );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "schema", "public" );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "table", "sales_csv" );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "commit", "1000" );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "truncate", true );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "ignore_errors", false );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "use_batch", true );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "specify_fields", true );
+
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "partitioning_enabled", false );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "partitioning_field", null );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "partitioning_daily", false );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "partitioning_monthly", true );
+
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "tablename_in_field", false );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "tablename_field", null );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "tablename_in_table", true );
+
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "return_keys", false );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, "return_field", null );
+
+    verify( rep ).saveStepAttribute( id_transformation, id_step, 0, "column_name", "ORDERNUMBER" );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, 0, "stream_name", "ORDERNUMBER" );
+
+    verify( rep ).saveStepAttribute( id_transformation, id_step, 1, "column_name", "QUANTITYORDERED" );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, 1, "stream_name", "QUANTITYORDERED" );
+
+    verify( rep ).saveStepAttribute( id_transformation, id_step, 2, "column_name", "PRICEEACH" );
+    verify( rep ).saveStepAttribute( id_transformation, id_step, 2, "stream_name", "PRICEEACH" );
+
+    verifyNoMoreInteractions( rep );
+  }
+
+  @Test
+  public void testSetupDefault() throws Exception {
+    TableOutputMeta tableOutputMeta = new TableOutputMeta();
+    tableOutputMeta.setDefault();
+    assertEquals( "", tableOutputMeta.getTableName() );
+    assertEquals( "1000", tableOutputMeta.getCommitSize() );
+    assertFalse( tableOutputMeta.isPartitioningEnabled() );
+    assertTrue( tableOutputMeta.isPartitioningMonthly() );
+    assertEquals( "", tableOutputMeta.getPartitioningField() );
+    assertTrue( tableOutputMeta.isTableNameInTable() );
+    assertEquals( "", tableOutputMeta.getTableNameField() );
+    assertFalse( tableOutputMeta.specifyFields() );
+  }
+
+  @Test
+  public void testClone() throws Exception {
+    TableOutputMeta tableOutputMeta = new TableOutputMeta();
+    tableOutputMeta.setDefault();
+    tableOutputMeta.setFieldStream( new String[] {"1", "2", "3"} );
+    TableOutputMeta clone = (TableOutputMeta) tableOutputMeta.clone();
+    assertNotSame( clone, tableOutputMeta );
+    assertEquals( clone.getXML(), tableOutputMeta.getXML() );
+  }
+
+  @Test
+  public void testSupportsErrorHandling() throws Exception {
+    TableOutputMeta tableOutputMeta = new TableOutputMeta();
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    tableOutputMeta.setDatabaseMeta( dbMeta );
+    DatabaseInterface databaseInterface = mock( DatabaseInterface.class );
+    when( dbMeta.getDatabaseInterface() ).thenReturn( databaseInterface );
+    when( databaseInterface.supportsErrorHandling() ).thenReturn( true, false );
+    assertTrue( tableOutputMeta.supportsErrorHandling() );
+    assertFalse( tableOutputMeta.supportsErrorHandling() );
+    tableOutputMeta.setDatabaseMeta( null );
+    assertTrue( tableOutputMeta.supportsErrorHandling() );
+  }
+
+  private Node getTestNode() throws KettleXMLException {
+    String xml =
+      "  <step>\n"
+        + "    <name>Table output</name>\n"
+        + "    <type>TableOutput</type>\n"
+        + "    <description/>\n"
+        + "    <distribute>Y</distribute>\n"
+        + "    <custom_distribution/>\n"
+        + "    <copies>1</copies>\n"
+        + "         <partitioning>\n"
+        + "           <method>none</method>\n"
+        + "           <schema_name/>\n"
+        + "           </partitioning>\n"
+        + "    <connection>local postgres</connection>\n"
+        + "    <schema>public</schema>\n"
+        + "    <table>sales_csv</table>\n"
+        + "    <commit>1000</commit>\n"
+        + "    <truncate>Y</truncate>\n"
+        + "    <ignore_errors>N</ignore_errors>\n"
+        + "    <use_batch>Y</use_batch>\n"
+        + "    <specify_fields>Y</specify_fields>\n"
+        + "    <partitioning_enabled>N</partitioning_enabled>\n"
+        + "    <partitioning_field/>\n"
+        + "    <partitioning_daily>N</partitioning_daily>\n"
+        + "    <partitioning_monthly>Y</partitioning_monthly>\n"
+        + "    <tablename_in_field>N</tablename_in_field>\n"
+        + "    <tablename_field/>\n"
+        + "    <tablename_in_table>Y</tablename_in_table>\n"
+        + "    <return_keys>N</return_keys>\n"
+        + "    <return_field/>\n"
+        + "    <fields>\n"
+        + "        <field>\n"
+        + "          <column_name>ORDERNUMBER</column_name>\n"
+        + "          <stream_name>ORDERNUMBER</stream_name>\n"
+        + "        </field>\n"
+        + "        <field>\n"
+        + "          <column_name>QUANTITYORDERED</column_name>\n"
+        + "          <stream_name>QUANTITYORDERED</stream_name>\n"
+        + "        </field>\n"
+        + "        <field>\n"
+        + "          <column_name>PRICEEACH</column_name>\n"
+        + "          <stream_name>PRICEEACH</stream_name>\n"
+        + "        </field>\n"
+        + "    </fields>\n"
+        + "     <cluster_schema/>\n"
+        + " <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>\n"
+        + "      <xloc>368</xloc>\n"
+        + "      <yloc>64</yloc>\n"
+        + "      <draw>Y</draw>\n"
+        + "      </GUI>\n"
+        + "    </step>\n";
+    return XMLHandler.loadXMLString( xml, "step" );
+  }
 }

@@ -453,8 +453,7 @@ public class ExcelOutput extends BaseStep implements StepInterface {
           writeField( fieldName, vMeta, null, i, true );
         }
       } else {
-        if ( data.previousMeta != null ) // Just put all field names in the header/footer
-        {
+        if ( data.previousMeta != null ) { // Just put all field names in the header/footer
           for ( int i = 0; i < data.previousMeta.size(); i++ ) {
             String fieldName = data.previousMeta.getFieldNames()[i];
             ValueMetaInterface vMeta = new ValueMeta( fieldName, ValueMetaInterface.TYPE_STRING );
@@ -578,6 +577,13 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         data.sheet.setRowView( data.positionY, data.Headerrowheight );
       }
 
+      try {
+          setFonts();
+      } catch ( Exception we ) {
+          logError( "Error preparing fonts, colors for header and rows: " + we.toString() );
+          return retval;
+      }
+      
       data.headerWrote = false;
       data.splitnr++;
       data.oneFileOpened = true;
@@ -672,13 +678,6 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       data.realHeaderImage = environmentSubstitute( meta.getHeaderImage() );
       if ( !Const.isEmpty( meta.getEncoding() ) ) {
         data.ws.setEncoding( meta.getEncoding() );
-      }
-
-      try {
-        setFonts();
-      } catch ( Exception we ) {
-        logError( "Error preparing fonts, colors for header and rows: " + we.toString() );
-        return false;
       }
 
       if ( !meta.isDoNotOpenNewFileInit() ) {

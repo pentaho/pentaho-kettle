@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -75,19 +75,17 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
 /**
  * Handles all manipulation of the DatabaseMeta, data retrieval from XUL DOM and rudimentary validation.
- *
+ * <p/>
  * TODO: 2. Needs to be abstracted away from the DatabaseMeta object, so other tools in the platform can use the dialog
  * and their preferred database object. 3. Needs exception handling, string resourcing and logging
  *
  * @author gmoran
  * @created Mar 19, 2008
- *
  */
 public class DataHandler extends AbstractXulEventHandler {
 
-  public static final SortedMap<String, DatabaseInterface> connectionMap =
-    new TreeMap<String, DatabaseInterface>();
-  public static final Map<String, String> connectionNametoID = new HashMap<String, String>();
+  public static final SortedMap<String, DatabaseInterface> connectionMap = new TreeMap<>();
+  public static final Map<String, String> connectionNametoID = new HashMap<>();
 
   // The connectionMap allows us to keep track of the connection
   // type we are working with and the correlating database interface
@@ -97,7 +95,7 @@ public class DataHandler extends AbstractXulEventHandler {
 
     List<PluginInterface> plugins = registry.getPlugins( DatabasePluginType.class );
 
-    PluginTypeListener databaseTypeListener = new DatabaseTypeListener( registry ){
+    PluginTypeListener databaseTypeListener = new DatabaseTypeListener( registry ) {
       public void databaseTypeAdded( String pluginName, DatabaseInterface databaseInterface ) {
         connectionMap.put( pluginName, databaseInterface );
         connectionNametoID.put( pluginName, databaseInterface.getPluginId() );
@@ -254,13 +252,15 @@ public class DataHandler extends AbstractXulEventHandler {
     }
     PluginRegistry registry = PluginRegistry.getInstance();
     registry.addPluginListener( DatabasePluginType.class, new DatabaseTypeListener( registry ) {
-      @Override public void databaseTypeAdded( String pluginName, DatabaseInterface databaseInterface ) {
+      @Override
+      public void databaseTypeAdded( String pluginName, DatabaseInterface databaseInterface ) {
         if ( keys.add( pluginName ) ) {
           update();
         }
       }
 
-      @Override public void databaseTypeRemoved( String pluginName ) {
+      @Override
+      public void databaseTypeRemoved( String pluginName ) {
         if ( keys.remove( pluginName ) ) {
           update();
         }
@@ -268,7 +268,8 @@ public class DataHandler extends AbstractXulEventHandler {
 
       private void update() {
         Display.getDefault().syncExec( new Runnable() {
-          @Override public void run() {
+          @Override
+          public void run() {
             connectionBox.removeItems();
             for ( String key : keys ) {
               connectionBox.addItem( key );
@@ -391,7 +392,9 @@ public class DataHandler extends AbstractXulEventHandler {
 
   public void clearOptionsData() {
     getControls();
-    optionsParameterTree.getRootChildren().removeAll();
+    if ( optionsParameterTree != null ) {
+      optionsParameterTree.getRootChildren().removeAll();
+    }
   }
 
   public void getOptionHelp() {
@@ -423,7 +426,7 @@ public class DataHandler extends AbstractXulEventHandler {
 
     // if pooling selected, check the parameter validity before allowing
     // a deck panel switch...
-    int originalSelection = dialogDeck.getSelectedIndex();
+    int originalSelection = ( dialogDeck == null ? -1 : dialogDeck.getSelectedIndex() );
 
     boolean passed = true;
     if ( originalSelection == 3 ) {
@@ -782,18 +785,20 @@ public class DataHandler extends AbstractXulEventHandler {
     getControls();
 
     // Name:
-    connectionNameBox.setValue( meta.getDisplayName() );
+    if ( connectionNameBox != null ) {
+      connectionNameBox.setValue( meta.getDisplayName() );
+    }
 
     PluginRegistry registry = PluginRegistry.getInstance();
     PluginInterface dInterface = registry.getPlugin( DatabasePluginType.class, meta.getPluginId() );
 
     // Connection type:
-    int index = new ArrayList<String>( connectionMap.keySet() ).indexOf( dInterface.getName() );
+    int index = ( dInterface == null ? -1 : new ArrayList<>( connectionMap.keySet() ).indexOf( dInterface.getName() ) );
     if ( index >= 0 ) {
       connectionBox.setSelectedIndex( index );
     } else {
       LogChannel.GENERAL.logError( "Unable to find database type "
-        + dInterface.getName() + " in our connection map" );
+        + ( dInterface == null ? "null" : dInterface.getName() ) + " in our connection map" );
     }
 
     // Access type:
@@ -894,7 +899,9 @@ public class DataHandler extends AbstractXulEventHandler {
   private void setReadOnly( boolean readonly ) {
     // set the readonly status of EVERYTHING!
     traverseDomSetReadOnly( document.getRootElement(), readonly );
-    noticeLabel.setVisible( readonly );
+    if ( noticeLabel != null ) {
+      noticeLabel.setVisible( readonly );
+    }
 
     if ( readonly ) {
       // now turn back on the cancel and test buttons
@@ -909,7 +916,6 @@ public class DataHandler extends AbstractXulEventHandler {
   }
 
   /**
-   *
    * @return the list of parameters that were enabled, but had invalid return values (null or empty)
    */
   private boolean checkPoolingParameters() {
@@ -1449,14 +1455,15 @@ public class DataHandler extends AbstractXulEventHandler {
     }
   }
 
-  private static abstract class DatabaseTypeListener implements PluginTypeListener {
+  protected abstract static class DatabaseTypeListener implements PluginTypeListener {
     private final PluginRegistry registry;
 
     public DatabaseTypeListener( PluginRegistry registry ) {
       this.registry = registry;
     }
 
-    @Override public void pluginAdded( Object serviceObject ) {
+    @Override
+    public void pluginAdded( Object serviceObject ) {
       PluginInterface plugin = (PluginInterface) serviceObject;
       String pluginName = plugin.getName();
       try {
@@ -1465,16 +1472,21 @@ public class DataHandler extends AbstractXulEventHandler {
         databaseInterface.setName( pluginName );
         databaseTypeAdded( pluginName, databaseInterface );
       } catch ( KettleException e ) {
+        Throwable t = e;
+        if ( e.getCause() != null ) {
+          t = e.getCause();
+        }
         System.out.println( "Could not create connection entry for "
-          + pluginName + ".  " + e.getCause().getClass().getName() );
+          + pluginName + ".  " + t.getClass().getName() );
         LogChannel.GENERAL.logError( "Could not create connection entry for "
-          + pluginName + ".  " + e.getCause().getClass().getName() );
+          + pluginName + ".  " + t.getClass().getName() );
       }
     }
 
     public abstract void databaseTypeAdded( String pluginName, DatabaseInterface databaseInterface );
 
-    @Override public void pluginRemoved( Object serviceObject ) {
+    @Override
+    public void pluginRemoved( Object serviceObject ) {
       PluginInterface plugin = (PluginInterface) serviceObject;
       String pluginName = plugin.getName();
       databaseTypeRemoved( pluginName );
@@ -1482,7 +1494,8 @@ public class DataHandler extends AbstractXulEventHandler {
 
     public abstract void databaseTypeRemoved( String pluginName );
 
-    @Override public void pluginChanged( Object serviceObject ) {
+    @Override
+    public void pluginChanged( Object serviceObject ) {
       pluginRemoved( serviceObject );
       pluginAdded( serviceObject );
     }

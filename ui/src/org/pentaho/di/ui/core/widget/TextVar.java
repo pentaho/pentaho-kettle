@@ -141,6 +141,7 @@ public class TextVar extends Composite {
     fdText.top = new FormAttachment( 0, 0 );
     fdText.left = new FormAttachment( 0, 0 );
     fdText.right = new FormAttachment( 100, -image.getBounds().width );
+    fdText.bottom = new FormAttachment( 100, 0 );
     wText.setLayoutData( fdText );
   }
 

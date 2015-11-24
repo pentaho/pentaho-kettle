@@ -191,7 +191,6 @@ public class StaxPoiSheet implements KSheet {
       }
       String cellLocation = sheetReader.getAttributeValue( null, "r" );
       int columnIndex = StaxUtil.extractColumnNumber( cellLocation ) - 1;
-      // proc cell
 
       String cellType = sheetReader.getAttributeValue( null, "t" );
       String cellStyle = sheetReader.getAttributeValue( null, "s" );
@@ -217,8 +216,11 @@ public class StaxPoiSheet implements KSheet {
           break;
         }
       }
-      KCellType kcType = getCellType( cellType, cellStyle, isFormula );
-      cells[columnIndex] = new StaxPoiCell( parseValue( kcType, content ), kcType, currentRow );
+      if ( content != null ) {
+        KCellType kcType = getCellType( cellType, cellStyle, isFormula );
+        cells[columnIndex] = new StaxPoiCell( parseValue( kcType, content ), kcType, currentRow );
+      }
+      // else let cell be null
     }
     return cells;
   }

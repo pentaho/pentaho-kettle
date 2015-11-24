@@ -96,7 +96,8 @@ public class ConnectionsController extends LazilyInitializedController implement
     this.repository = repository;
   }
 
-  private DatabaseDialog getDatabaseDialog() {
+  // package-local visibility for testing purposes
+  DatabaseDialog getDatabaseDialog() {
     if ( databaseDialog != null ) {
       return databaseDialog;
     }
@@ -187,7 +188,8 @@ public class ConnectionsController extends LazilyInitializedController implement
     return isRepReadOnly;
   }
 
-  private void refreshConnectionList() {
+  // package-local visibility for testing purposes
+  void refreshConnectionList() {
     final List<UIDatabaseConnection> tmpList = new ArrayList<UIDatabaseConnection>();
     Runnable r = new Runnable() {
       public void run() {
@@ -220,21 +222,19 @@ public class ConnectionsController extends LazilyInitializedController implement
       getDatabaseDialog().setDatabaseMeta( databaseMeta );
 
       String dbName = getDatabaseDialog().open();
-      if ( dbName != null && !dbName.equals( "" ) ) {
-        // See if this user connection exists...
-        ObjectId idDatabase = repository.getDatabaseID( dbName );
-        if ( idDatabase == null ) {
-          repository.insertLogEntry( BaseMessages.getString(
-            PKG, "ConnectionsController.Message.CreatingDatabase", getDatabaseDialog()
-              .getDatabaseMeta().getName() ) );
-          repository.save( getDatabaseDialog().getDatabaseMeta(), Const.VERSION_COMMENT_INITIAL_VERSION, null );
-        } else {
-          MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
-          mb.setMessage( BaseMessages.getString(
-            PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Message" ) );
-          mb.setText( BaseMessages.getString(
-            PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Title" ) );
-          mb.open();
+      if ( dbName != null ) {
+        dbName = dbName.trim();
+        if ( !dbName.isEmpty() ) {
+          // See if this user connection exists...
+          ObjectId idDatabase = repository.getDatabaseID( dbName );
+          if ( idDatabase == null ) {
+            repository.insertLogEntry( BaseMessages.getString(
+              PKG, "ConnectionsController.Message.CreatingDatabase", getDatabaseDialog()
+                .getDatabaseMeta().getName() ) );
+            repository.save( getDatabaseDialog().getDatabaseMeta(), Const.VERSION_COMMENT_INITIAL_VERSION, null );
+          } else {
+            showAlreadyExistsMessage();
+          }
         }
       }
       // We should be able to tell the difference between a cancel and an empty database name
@@ -254,6 +254,16 @@ public class ConnectionsController extends LazilyInitializedController implement
     } finally {
       refreshConnectionList();
     }
+  }
+
+  // package-local visibility for testing purposes
+  void showAlreadyExistsMessage() {
+    MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
+    mb.setMessage( BaseMessages.getString(
+      PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Message" ) );
+    mb.setText( BaseMessages.getString(
+      PKG, "RepositoryExplorerDialog.Connection.Create.AlreadyExists.Title" ) );
+    mb.open();
   }
 
   /**
@@ -324,17 +334,26 @@ public class ConnectionsController extends LazilyInitializedController implement
           MessageBox mb = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
           mb.setMessage( BaseMessages.getString(
             PKG, "RepositoryExplorerDialog.Connection.Edit.DoesNotExists.Message" ) );
-          mb
-            .setText( BaseMessages.getString(
-              PKG, "RepositoryExplorerDialog.Connection.Edit.DoesNotExists.Title" ) );
+          mb.setText( BaseMessages.getString(
+            PKG, "RepositoryExplorerDialog.Connection.Edit.DoesNotExists.Title" ) );
           mb.open();
         } else {
           getDatabaseDialog().setDatabaseMeta( databaseMeta );
           String dbName = getDatabaseDialog().open();
-          if ( dbName != null && !dbName.equals( "" ) ) {
-            repository.insertLogEntry( BaseMessages.getString(
-              PKG, "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName() ) );
-            repository.save( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null );
+          if ( dbName != null ) {
+            dbName = dbName.trim();
+            if ( !dbName.isEmpty() ) {
+              ObjectId idRenamed = repository.getDatabaseID( dbName );
+              if ( idRenamed == null || idRenamed.equals( idDatabase ) ) {
+                // renaming to non-existing name or updating the current
+                repository.insertLogEntry( BaseMessages.getString(
+                  PKG, "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName() ) );
+                repository.save( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null );
+              } else {
+                // trying to rename to an existing name - show error dialog
+                showAlreadyExistsMessage();
+              }
+            }
           }
           // We should be able to tell the difference between a cancel and an empty database name
           //

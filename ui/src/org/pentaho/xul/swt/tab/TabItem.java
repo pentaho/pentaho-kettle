@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,7 +45,7 @@ public class TabItem {
     super();
     this.tabset = tabset;
     this.id = id;
-    item = new CTabItem( tabset.getSwtTabset(), SWT.CLOSE );
+    item = createTabItem( tabset );
     setText( text );
     tabset.addTab( this );
   }
@@ -151,4 +151,7 @@ public class TabItem {
     return changed;
   }
 
+  protected CTabItem createTabItem( TabSet tabset ) {
+    return new CTabItem( tabset.getSwtTabset(), SWT.CLOSE );
+  }
 }

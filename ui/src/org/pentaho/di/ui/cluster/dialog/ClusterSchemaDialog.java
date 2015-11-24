@@ -76,7 +76,7 @@ public class ClusterSchemaDialog extends Dialog {
   // private static LogWriter log = LogWriter.getInstance();
 
   private ClusterSchema clusterSchema;
-  
+
   private Collection<ClusterSchema> existingSchemas;
 
   private Shell shell;
@@ -124,9 +124,9 @@ public class ClusterSchemaDialog extends Dialog {
     props = PropsUI.getInstance();
     ok = false;
   }
-  
+
   public ClusterSchemaDialog( Shell par, ClusterSchema clusterSchema, List<SlaveServer> slaveServers ) {
-    this( par, clusterSchema, Collections.<ClusterSchema> emptyList(), slaveServers );
+    this( par, clusterSchema, Collections.<ClusterSchema>emptyList(), slaveServers );
   }
 
   public boolean open() {
@@ -452,7 +452,7 @@ public class ClusterSchemaDialog extends Dialog {
     getInfo();
 
     if ( !clusterSchema.getName().equals( originalSchema.getName() ) ) {
-      if ( DialogUtils.objectExists( clusterSchema, existingSchemas ) ) {
+      if ( DialogUtils.objectWithTheSameNameExists( clusterSchema, existingSchemas ) ) {
         String title = BaseMessages.getString( PKG, "ClusterSchemaDialog.ClusterSchemaNameExists.Title" );
         String message =
             BaseMessages.getString( PKG, "ClusterSchemaDialog.ClusterSchemaNameExists", clusterSchema.getName() );
@@ -464,7 +464,7 @@ public class ClusterSchemaDialog extends Dialog {
         return;
       }
     }
-    
+
     originalSchema.setName( clusterSchema.getName() );
     originalSchema.setBasePort( clusterSchema.getBasePort() );
     originalSchema.setSocketsBufferSize( clusterSchema.getSocketsBufferSize() );

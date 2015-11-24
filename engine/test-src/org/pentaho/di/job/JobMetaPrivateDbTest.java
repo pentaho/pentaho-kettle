@@ -26,6 +26,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.base.PrivateDatabasesTestTemplate;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.shared.SharedObjects;
 import org.w3c.dom.Document;
@@ -63,6 +64,9 @@ public class JobMetaPrivateDbTest extends PrivateDatabasesTestTemplate<JobMeta> 
 
   @BeforeClass
   public static void initKettle() throws Exception {
+    if ( Props.isInitialized() ) {
+      Props.getInstance().setOnlyUsedConnectionsSavedToXML( false );
+    }
     KettleEnvironment.init();
   }
 

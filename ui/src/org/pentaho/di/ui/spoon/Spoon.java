@@ -4949,8 +4949,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public boolean saveFile() {
     try {
       EngineMetaInterface meta = getActiveMeta();
-      if ( meta != null && AbstractMeta.class.isAssignableFrom( meta.getClass() ) ) {
-        if ( ( (AbstractMeta) meta ).hasMissingPlugins() ) {
+      if ( meta != null ) {
+        if ( AbstractMeta.class.isAssignableFrom( meta.getClass() ) && ( (AbstractMeta) meta ).hasMissingPlugins() ) {
           MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
           mb.setMessage( BaseMessages.getString( PKG, "Spoon.ErrorDialog.MissingPlugin.Error" ) );
           mb.setText( BaseMessages.getString( PKG, "Spoon.ErrorDialog.MissingPlugin.Title" ) );
@@ -6742,6 +6742,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       disablePreviewButton = !( transGraph.isRunning() && !transGraph.isHalting() );
     }
     boolean disableSave = true;
+    boolean disableDatabaseExplore = true;
     TabItemInterface currentTab = getActiveTabitem();
     if ( currentTab != null && currentTab.canHandleSave() ) {
       disableSave = !currentTab.hasContentChanged();
@@ -6749,6 +6750,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     EngineMetaInterface meta = getActiveMeta();
     if ( meta != null ) {
       disableSave = !meta.canSave();
+      disableDatabaseExplore = false;
     }
 
     org.pentaho.ui.xul.dom.Document doc;
@@ -6766,7 +6768,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           doc.getElementById( "help-plugins" ).setVisible( true );
         }
         // Only enable certain menu-items if we need to.
-        disableMenuItem( doc, "file-new-database", disableTransMenu && disableJobMenu || !isRepositoryRunning );
+        disableMenuItem( doc, "file-new-database", disableTransMenu && disableJobMenu );
         disableMenuItem( doc, "file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave );
         disableMenuItem( doc, "toolbar-file-save", disableTransMenu
           && disableJobMenu && disableMetaMenu || disableSave );
@@ -6812,6 +6814,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         disableMenuItem( doc, "repository-connect", isRepositoryRunning );
         disableMenuItem( doc, "repository-disconnect", !isRepositoryRunning );
         disableMenuItem( doc, "repository-explore", !isRepositoryRunning );
+        disableMenuItem( doc, "tools-dabase-explore", !isRepositoryRunning && disableDatabaseExplore );
         disableMenuItem( doc, "repository-clear-shared-object-cache", !isRepositoryRunning );
         disableMenuItem( doc, "toolbar-expore-repository", !isRepositoryRunning );
         disableMenuItem( doc, "repository-export-all", !isRepositoryRunning );

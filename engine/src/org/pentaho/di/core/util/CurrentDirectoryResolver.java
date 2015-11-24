@@ -126,4 +126,14 @@ public class CurrentDirectoryResolver {
     return resolveCurrentDirectory( parentVariables, directory, filename );
   }
 
+  public String normalizeSlashes( String str ) {
+    while ( str.contains( "\\" ) ) {
+      str = str.replace( "\\", "/" );
+    }
+    while ( str.contains( "//" ) ) {
+      str = str.replace( "//", "/" );
+    }
+    return str;
+  }
+
 }

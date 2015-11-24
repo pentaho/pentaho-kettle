@@ -22,16 +22,18 @@
 
 package org.pentaho.di.core.sql;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SQLFields {
+  private static final String DISTINCT_PREFIX = "DISTINCT ";
   private String tableAlias;
   private RowMetaInterface serviceFields;
   private String fieldsClause;
@@ -54,7 +56,7 @@ public class SQLFields {
     this.serviceFields = serviceFields;
     this.fieldsClause = fieldsClause;
     this.selectFields = selectFields;
-    fields = new ArrayList<SQLField>();
+    fields = Lists.newArrayList();
 
     distinct = false;
 
@@ -66,9 +68,9 @@ public class SQLFields {
       return;
     }
 
-    if ( fieldsClause.startsWith( "DISTINCT " ) ) {
+    if ( fieldsClause.regionMatches( true, 0, DISTINCT_PREFIX, 0, DISTINCT_PREFIX.length() ) ) {
       distinct = true;
-      fieldsClause = fieldsClause.substring( "DISTINCT ".length() );
+      fieldsClause = fieldsClause.substring( DISTINCT_PREFIX.length() );
     }
 
     List<String> strings = new ArrayList<String>();

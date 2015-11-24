@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -109,6 +110,18 @@ public abstract class AbstractGraph extends Composite {
 
   protected void setZoomLabel() {
     zoomLabel.setText( Integer.toString( Math.round( magnification * 100 ) ) + "%" );
+  }
+
+  protected <T extends GUIPositionInterface> void doRightClickSelection( T clicked, List<T> selection ) {
+    if ( !selection.isEmpty() && !selection.contains( clicked ) ) {
+      for ( GUIPositionInterface selected : selection ) {
+        selected.setSelected( false );
+      }
+      selection.clear();
+      clicked.setSelected( true );
+      selection.add( clicked );
+      redraw();
+    }
   }
 
   public void redraw() {

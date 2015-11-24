@@ -22,17 +22,6 @@
 
 package org.pentaho.di.core.row;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -41,6 +30,19 @@ import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class RowMetaTest {
 
@@ -281,6 +283,22 @@ public class RowMetaTest {
     string2.setName( "string" );
     assertSame( string2, rowMeta.searchValueMeta( "string" ) );
     assertSame( string, rowMeta.searchValueMeta( "string2" ) );
+  }
+
+  @Test
+  public void testCopyRowMetaCacheConstructor() {
+    Map<String, Integer> mapping = new HashMap<>();
+    mapping.put( "a", 1 );
+    List<Integer> needRealClone = new ArrayList<>();
+    needRealClone.add( 2 );
+    RowMeta.RowMetaCache rowMetaCache = new RowMeta.RowMetaCache( mapping, needRealClone );
+    RowMeta.RowMetaCache rowMetaCache2 = new RowMeta.RowMetaCache( rowMetaCache );
+    assertEquals( rowMetaCache.mapping, rowMetaCache2.mapping );
+    assertEquals( rowMetaCache.needRealClone, rowMetaCache2.needRealClone );
+    rowMetaCache = new RowMeta.RowMetaCache( mapping, null );
+    rowMetaCache2 = new RowMeta.RowMetaCache( rowMetaCache );
+    assertEquals( rowMetaCache.mapping, rowMetaCache2.mapping );
+    assertNull( rowMetaCache2.needRealClone );
   }
 
   // @Test

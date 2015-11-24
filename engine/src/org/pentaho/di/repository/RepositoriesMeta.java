@@ -69,7 +69,11 @@ public class RepositoriesMeta {
     errorMessage = null;
     databases = new ArrayList<DatabaseMeta>();
     repositories = new ArrayList<RepositoryMeta>();
-    log = new LogChannel( "RepositoriesMeta" );
+    setLog( newLogChannel() );
+  }
+
+  LogChannel newLogChannel() {
+    return new LogChannel( "RepositoriesMeta" );
   }
 
   public void addDatabase( DatabaseMeta ci ) {
@@ -78,6 +82,10 @@ public class RepositoriesMeta {
 
   public void addRepository( RepositoryMeta ri ) {
     repositories.add( ri );
+  }
+
+  void setLog( LogChannel log ) {
+    this.log = log;
   }
 
   public void addDatabase( int p, DatabaseMeta ci ) {
@@ -172,11 +180,11 @@ public class RepositoriesMeta {
     //
     clear();
 
-    File file = new File( Const.getKettleLocalRepositoriesFile() );
+    File file = new File( getKettleLocalRepositoriesFile() );
     if ( !file.exists() || !file.isFile() ) {
       log.logDetailed( BaseMessages.getString( PKG, "RepositoryMeta.Log.NoRepositoryFileInLocalDirectory", file
         .getAbsolutePath() ) );
-      file = new File( Const.getKettleUserRepositoriesFile() );
+      file = new File( getKettleUserRepositoriesFile() );
       if ( !file.exists() || !file.isFile() ) {
         return true; // nothing to read!
       }
@@ -210,6 +218,14 @@ public class RepositoriesMeta {
     }
 
     return true;
+  }
+
+  String getKettleUserRepositoriesFile() {
+    return Const.getKettleUserRepositoriesFile();
+  }
+
+  String getKettleLocalRepositoriesFile() {
+    return Const.getKettleLocalRepositoriesFile();
   }
 
   public void readDataFromInputStream( InputStream is ) throws KettleException {
@@ -308,7 +324,7 @@ public class RepositoriesMeta {
     if ( unableToReadIds != null && unableToReadIds.length() > 0 ) {
       errorMessage =
         BaseMessages.getString( PKG, "RepositoryMeta.Error.ReadRepositoryIdNotAvailable", unableToReadIds
-          .substring( 0, unableToReadIds.lastIndexOf( "," ) - 1 ) );
+          .substring( 0, unableToReadIds.lastIndexOf( "," ) ) );
     }
     if ( kettleException != null ) {
       throw kettleException;
@@ -337,7 +353,7 @@ public class RepositoriesMeta {
 
   public void writeData() throws KettleException {
     try {
-      FileOutputStream fos = new FileOutputStream( new File( Const.getKettleUserRepositoriesFile() ) );
+      FileOutputStream fos = new FileOutputStream( new File( getKettleUserRepositoriesFile() ) );
       fos.write( getXML().getBytes() );
       fos.close();
     } catch ( Exception e ) {

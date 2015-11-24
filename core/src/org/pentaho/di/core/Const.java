@@ -1055,6 +1055,12 @@ public class Const {
   public static final String KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME = "KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME";
 
   /**
+   * A variable to configure VFS USER_DIR_IS_ROOT option: should be "true" or "false"
+   */
+  public static final String VFS_USER_DIR_IS_ROOT =
+      "vfs.sftp.org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder.USER_DIR_IS_ROOT";
+
+  /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
    *
