@@ -3877,19 +3877,20 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         for ( int i = 0; i < rows.size(); i++ ) {
           Object[] row = rows.get( i );
           String procCatalog = rowMeta.getString( row, "PROCEDURE_CAT", null );
-          String procSchema = rowMeta.getString( row, "PROCEDURE_SCHEMA", null );
+          String procSchema = rowMeta.getString( row, "PROCEDURE_SCHEM", null );
           String procName = rowMeta.getString( row, "PROCEDURE_NAME", "" );
 
-          String name = "";
+          StringBuilder name = new StringBuilder( "" );
           if ( procCatalog != null ) {
-            name += procCatalog + ".";
-          } else if ( procSchema != null ) {
-            name += procSchema + ".";
+            name.append( procCatalog ).append( "." );
+          }
+          if ( procSchema != null ) {
+            name.append( procSchema ).append( "." );
           }
 
-          name += procName;
+          name.append( procName );
 
-          result[ i ] = name;
+          result[ i ] = name.toString();
         }
         return result;
       } catch ( Exception e ) {
