@@ -52,29 +52,34 @@ public class FtpsServer {
 
 
   public static FtpsServer createDefaultServer() throws Exception {
-    return new FtpsServer( DEFAULT_PORT, ADMIN, PASSWORD );
+    return new FtpsServer( DEFAULT_PORT, ADMIN, PASSWORD, true );
+  }
+
+  public static FtpsServer createFtpServer() throws Exception {
+    return new FtpsServer( DEFAULT_PORT, ADMIN, PASSWORD, false );
   }
 
   private final FtpServer server;
 
-  public FtpsServer( int port, String username, String password ) throws Exception {
-    this.server = createWithImplicitSslServer( port, username, password );
+  public FtpsServer( int port, String username, String password, boolean implicitSsl ) throws Exception {
+    this.server = createServer( port, username, password, implicitSsl );
   }
 
   /*
    * Adopted from https://mina.apache.org/ftpserver-project/embedding_ftpserver.html
    */
-  private FtpServer createWithImplicitSslServer( int port, String username, String password ) throws Exception {
+  private FtpServer createServer( int port, String username, String password, boolean implicitSsl ) throws Exception {
     ListenerFactory factory = new ListenerFactory();
     factory.setPort( port );
 
-
-    SslConfigurationFactory ssl = new SslConfigurationFactory();
-    ssl.setKeystoreFile( new File( SERVER_KEYSTORE ) );
-    ssl.setKeystorePassword( PASSWORD );
-    // set the SSL configuration for the listener
-    factory.setSslConfiguration( ssl.createSslConfiguration() );
-    factory.setImplicitSsl( true );
+    if ( implicitSsl ) {
+      SslConfigurationFactory ssl = new SslConfigurationFactory();
+      ssl.setKeystoreFile( new File( SERVER_KEYSTORE ) );
+      ssl.setKeystorePassword( PASSWORD );
+      // set the SSL configuration for the listener
+      factory.setSslConfiguration( ssl.createSslConfiguration() );
+      factory.setImplicitSsl( true );
+    }
 
     FtpServerFactory serverFactory = new FtpServerFactory();
     // replace the default listener
