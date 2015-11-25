@@ -64,4 +64,8 @@ public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta {
     }
   }
 
+  @Override
+  public boolean supportsGetBlob() {
+    return false;
+  }
 }
