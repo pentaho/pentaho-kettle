@@ -903,6 +903,8 @@
       <!-- Some extra things to run -->
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.copyfiles.CopyFilesTest"
             haltonerror="false"/>
+      <test todir="${testreports.xml.dir}" name="org.pentaho.di.job.entries.trans.JobEntryTransIntTest"
+            haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.kitchen.KitchenTest" haltonerror="false"/>
       <test todir="${testreports.xml.dir}" name="org.pentaho.di.www.TransformationMapTest" haltonerror="false"/>
     </junit>
