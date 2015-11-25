@@ -1074,11 +1074,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
             // Wait until we're done with it...
             //TODO is it possible to implement Observer pattern to avoid Thread.sleep here?
-            while ( !trans.isFinished() && !parentJob.isStopped() && trans.getErrors() == 0 ) {
-              try {
-                Thread.sleep( 0, 500 );
-              } catch ( InterruptedException e ) {
-                // Ignore errors
+            while ( !trans.isFinished() && trans.getErrors() == 0 ) {
+              if ( parentJob.isStopped() ) {
+                trans.stopAll();
+                break;
+              } else {
+                try {
+                  Thread.sleep( 0, 500 );
+                } catch ( InterruptedException e ) {
+                  // Ignore errors
+                }
               }
             }
             trans.waitUntilFinished();
