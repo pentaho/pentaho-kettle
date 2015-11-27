@@ -353,7 +353,7 @@
     </attributes>
   </connection>
   <connection>
-    <name>Sampledata</name>
+    <name>SampleData</name>
     <server/>
     <type>H2</type>
     <access>JNDI</access>
