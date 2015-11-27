@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Helper class that filterers information, before export of meta.
+ * Helper class that filterers information, before exporting meta to xml.
  *
  * @author IvanNikolaychuk
  */

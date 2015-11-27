@@ -5650,13 +5650,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public boolean saveXMLFile( boolean export ) {
     TransMeta transMeta = getActiveTransformation();
-    if (transMeta != null) {
-      return saveTransAsXmlFile(transMeta, export);
+    if ( transMeta != null ) {
+      return saveTransAsXmlFile( transMeta, export );
     }
 
     JobMeta jobMeta = getActiveJob();
     if ( jobMeta != null ) {
-      return saveJobAsXmlFile(jobMeta, export);
+      return saveJobAsXmlFile( jobMeta, export );
     }
 
     return false;
