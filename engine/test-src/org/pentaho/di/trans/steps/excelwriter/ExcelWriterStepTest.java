@@ -86,11 +86,17 @@ public class ExcelWriterStepTest {
       when( mockHelper.initStepMetaInterface.getSheetname() )
         .thenReturn( "12345678901234567890123456789012" ); // 32 character
       step.init( mockHelper.initStepMetaInterface, mockHelper.initStepDataInterface );
-
-      String content = baos.toString( "UTF-8" ); // e.g. ISO-8859-1
-      if ( !content.contains( "12345678901234567890123456789012" ) ) {
+      try {
+        step.prepareNextOutputFile();
         fail();
-      }
+      } catch (KettleException expected) {
+        String content = expected.getMessage();
+        if ( !content.contains( "12345678901234567890123456789012" ) ) {
+          fail();
+        } else {
+          // We expected this error message, the sheet name is too long for Excel
+        }
+      }      
     } finally {
       System.setErr( err );
     }
