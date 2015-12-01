@@ -147,6 +147,7 @@ import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.exception.KettleRepositoryStatusException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.GUIFactory;
@@ -9236,6 +9237,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       ShowMessageDialog dialog =
         new ShowMessageDialog( loginDialog.getShell(), SWT.OK | SWT.ICON_ERROR, BaseMessages.getString(
           PKG, "Spoon.Dialog.LoginFailed.Title" ), t.getLocalizedMessage() );
+      dialog.open();
+    } else if ( t instanceof KettleRepositoryStatusException ) {
+      ShowMessageDialog dialog =
+          new ShowMessageDialog( loginDialog.getShell(), SWT.CANCEL | SWT.ICON_ERROR, BaseMessages.getString(
+              PKG, "Spoon.Dialog.ConnectionRepo.Title", ( (KettleRepositoryStatusException) t ).getRepositoryName() ),
+              t.getLocalizedMessage() );
       dialog.open();
     } else {
       new ErrorDialog(
