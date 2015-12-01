@@ -28,8 +28,8 @@
     <dependency org="pentaho" name="pdi-osgi-bridge-core" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
 
     <!-- Data Service JDBC Driver -->
-    <dependency org="pentaho" name="pdi-dataservice-client-plugin-assembly" rev="${project.revision}" changing="true" conf="dataservice-jdbc->default" transitive="false">
-      <artifact name="pdi-dataservice-client-plugin-assembly" type="zip"/>
+    <dependency org="pentaho" name="pdi-dataservice-driver-bundle" rev="${project.revision}" changing="true" conf="dataservice-jdbc->default" transitive="false">
+      <artifact name="pdi-dataservice-driver-bundle" type="zip"/>
     </dependency>
 
     <!-- Kettle plugin dependencies-->
