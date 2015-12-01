@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,9 @@ package org.pentaho.di.core.util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
@@ -77,6 +80,17 @@ public class DateDetector {
       put( "yyyy/MM/dd HH:mm:ss", "^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$" );
       put( "dd MMM yyyy HH:mm:ss", "^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$" );
       put( "dd MMMM yyyy HH:mm:ss", "^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$" );
+      put( "dd-MM-yy HH:mm:ss.S", "^\\d{1,2}-\\d{1,2}-\\d{2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "dd-MM-yyyy HH:mm:ss.S", "^\\d{1,2}-\\d{1,2}-\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "dd.MM.yy HH:mm:ss.S", "^\\d{1,2}\\.\\d{1,2}\\.\\d{2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "dd.MM.yyyy HH:mm:ss.S", "^\\d{1,2}\\.\\d{1,2}\\.\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "MM/dd/yy HH:mm:ss.S", "^\\d{1,2}/\\d{1,2}/\\d{2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "MM/dd/yyyy HH:mm:ss.S", "^\\d{1,2}/\\d{1,2}/\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "yyyy-MM-dd HH:mm:ss.S", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "yyyy.MM.dd HH:mm:ss.S", "^\\d{4}\\.\\d{1,2}\\.\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "yyyy/MM/dd HH:mm:ss.S", "^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "dd MMM yyyy HH:mm:ss.S", "^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "dd MMMM yyyy HH:mm:ss.S", "^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
       put( "dd-MM-yy HH:mm:ss.SSS", "^\\d{1,2}-\\d{1,2}-\\d{2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
       put( "dd-MM-yyyy HH:mm:ss.SSS", "^\\d{1,2}-\\d{1,2}-\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
       put( "dd.MM.yy HH:mm:ss.SSS", "^\\d{1,2}\\.\\d{1,2}\\.\\d{2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
@@ -95,9 +109,7 @@ public class DateDetector {
   static final BidiMap DATE_FORMAT_TO_REGEXPS = new DualHashBidiMap() {
     {
       put( "MM-dd-yyyy", "^[0-1]?[0-9]-[0-3]?[0-9]-\\d{4}$" );
-      put( "dd/MM/yyyy", "^[0-3]?[0-9]/[0-1]?[0-9]/\\d{4}$" );
       put( "MM-dd-yy", "^[0-1]?[0-9]-[0-3]?[0-9]-\\d{2}$" );
-      put( "dd/MM/yy", "^[0-3]?[0-9]/[0-1]?[0-9]/\\d{2}$" );
       put( "yyyyMMdd", "^\\d{8}$" );
       put( "dd-MM-yy", "^\\d{1,2}-\\d{1,2}-\\d{2}$" );
       put( "dd-MM-yyyy", "^\\d{1,2}-\\d{1,2}-\\d{4}$" );
@@ -136,6 +148,17 @@ public class DateDetector {
       put( "yyyy/MM/dd HH:mm:ss", "^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$" );
       put( "dd MMM yyyy HH:mm:ss", "^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$" );
       put( "dd MMMM yyyy HH:mm:ss", "^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$" );
+      put( "dd-MM-yy HH:mm:ss.S", "^\\d{1,2}-\\d{1,2}-\\d{2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "dd-MM-yyyy HH:mm:ss.S", "^\\d{1,2}-\\d{1,2}-\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "dd.MM.yy HH:mm:ss.S", "^\\d{1,2}\\.\\d{1,2}\\.\\d{2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "dd.MM.yyyy HH:mm:ss.S", "^\\d{1,2}\\.\\d{1,2}\\.\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "MM/dd/yy HH:mm:ss.S", "^\\d{1,2}/\\d{1,2}/\\d{2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "MM/dd/yyyy HH:mm:ss.S", "^\\d{1,2}/\\d{1,2}/\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "yyyy-MM-dd HH:mm:ss.S", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "yyyy.MM.dd HH:mm:ss.S", "^\\d{4}\\.\\d{1,2}\\.\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "yyyy/MM/dd HH:mm:ss.S", "^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "dd MMM yyyy HH:mm:ss.S", "^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "dd MMMM yyyy HH:mm:ss.S", "^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
       put( "dd-MM-yy HH:mm:ss.SSS", "^\\d{1,2}-\\d{1,2}-\\d{2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
       put( "dd-MM-yyyy HH:mm:ss.SSS", "^\\d{1,2}-\\d{1,2}-\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
       put( "dd.MM.yy HH:mm:ss.SSS", "^\\d{1,2}\\.\\d{1,2}\\.\\d{2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
@@ -157,6 +180,8 @@ public class DateDetector {
   /**
    * 
    * @param dateFormat - date format for get regexp
+   *          <br>
+   *          <b>Warning:</b> return null if we pass US dateformat  without locale
    * @return regexp for given date format
    */
   public static String getRegexpByDateFormat( String dateFormat ) {
@@ -167,6 +192,7 @@ public class DateDetector {
    * 
    * @param dateFormat - date format for get regexp by locale
    * @return regexp for given date format
+   *  <b>Warning:</b> return null if we pass US dateformat with non US locale
    */
   public static String getRegexpByDateFormat( String dateFormat, String locale ) {
     if ( locale != null && LOCALE_en_US.equalsIgnoreCase( locale ) ) {
@@ -271,7 +297,8 @@ public class DateDetector {
   /**
    * 
    * @param dateString
-   *          - date string for detect date format
+   *          - date string for detect date format <br>
+   *          <b>Warning:</b> return eu if we pass en_US dateString  without locale
    * @return {@link java.lang.String} string which represented Date Format or null
    */
   public static String detectDateFormat( String dateString, String locale ) {
@@ -376,4 +403,33 @@ public class DateDetector {
     }
     return false;
   }
+
+  /**
+   * 
+   * @return all aviable date formats for eu
+   */
+  public static Set<String> getDateFormats() {
+    return getDateFormats( null );
+  }
+
+  /**
+   * 
+   * @return all aviable date formats for locale if locale null will use eu
+   */
+  public static Set<String> getDateFormats( String locale ) {
+    Set<String> dateFormats = new HashSet<String>();
+    if ( locale != null && LOCALE_en_US.equalsIgnoreCase( locale ) ) {
+      for ( Iterator<?> iterator = DATE_FORMAT_TO_REGEXPS_US.keySet().iterator(); iterator.hasNext(); ) {
+        String string = (String) iterator.next();
+        dateFormats.add( string );
+      }
+    } else {
+      for ( Iterator<?> iterator = DATE_FORMAT_TO_REGEXPS.keySet().iterator(); iterator.hasNext(); ) {
+        String string = (String) iterator.next();
+        dateFormats.add( string );
+      }
+    }
+    return dateFormats;
+  }
+
 }

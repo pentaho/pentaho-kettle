@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -173,6 +173,20 @@ public class DateDetectorTest {
     testPatternsFrom( DateDetector.DATE_FORMAT_TO_REGEXPS, LOCALE_es );
   }
 
+  @Test
+  public void testGetDateFormats() {
+    assertTrue( DateDetector.getDateFormats().contains( SAMPLE_DATE_FORMAT ) );
+    assertFalse( DateDetector.getDateFormats().contains( null ) );
+  }
+
+  @Test
+  public void testGetDateFormats_Locale() {
+    assertTrue( DateDetector.getDateFormats( LOCALE_es ).contains( SAMPLE_DATE_FORMAT ) );
+    assertTrue( DateDetector.getDateFormats( LOCALE_en_US ).contains( SAMPLE_DATE_FORMAT_US ) );
+    assertFalse( DateDetector.getDateFormats( LOCALE_en_US ).contains( null ) );
+    assertFalse( DateDetector.getDateFormats( LOCALE_es ).contains( null ) );
+  }
+
   private void testPatternsFrom( BidiMap formatToRegExps, String locale ) {
     Iterator iterator = formatToRegExps.keySet().iterator();
     while ( iterator.hasNext() ) {
@@ -187,8 +201,7 @@ public class DateDetectorTest {
     String dateString =
         pattern.replace( "dd", "31" ).replace( "yyyy", "2015" ).replace( "MMMM", "Decr" ).replace( "MMM", "Dec" )
             .replace( "MM", "12" ).replace( "yy", "15" ).replace( "HH", "12" ).replace( "mm", "00" ).replace( "ss",
-                "00" ).replace( "SSS", "123" );
-    System.out.println( pattern + " : " + dateString );
+                "00" ).replace( "SSS", "123" ).replace( "S", "1" );
     return dateString;
   }
 
