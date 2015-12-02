@@ -67,7 +67,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ============================================================================-->
 
 
-<project name="subfloor" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="subfloor" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:e="http://ant.apache.org/ivy/extra">
   <description>
     -------------------------------------------------------------------------------
     subfloor.xml provides tasks needed to perform a project build.
@@ -177,7 +177,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="true"
             description="Prefer SVNKit binding over the command line client for native svn support (defaults to true)"/>
   <property name="ivy.url"
-            value="http://nexus.pentaho.org/content/groups/omni/org/apache/ivy/ivy/2.3.0/ivy-2.3.0.jar"
+            value="http://nexus.pentaho.org/content/groups/omni/org/apache/ivy/ivy/2.4.0/ivy-2.4.0.jar"
             description="The URL to the current release of Apache IVY"/>
 
   <!-- Enunciate properties -->
@@ -346,6 +346,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="jacoco.it.execfile.path" location="${jacoco.integration.report.dir}/jacoco-it.exec"/>
   <property name="junit.test.pattern" value="**/*Test.java"/>
   <property name="junit.integration.test.pattern" value="**/*IT.java"/>
+  <property name="jacoco.ui.class.exclude.pattern" value=""/>
 
   <!-- Maven properties -->
   <property name="maven.options" value="-q"/>
@@ -362,8 +363,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   <!-- Checkstyle Properties -->
   <property name="checkstyle.version"
-            value="5.7"
+            value="6.12"
             description="The version of CheckStyle to use for coding standards"/>
+  <property name="pentaho.coding.standards.version"
+			value="1.0.3"/>
   <property name="checkstyle.dir"
             value="${basedir}/checkstyle"/>
   <property name="checkstyle.lib.dir"
@@ -371,17 +374,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="checkstyle.reports.dir"
             value="${checkstyle.dir}/reports"/>
   <property name="checkstyle.config.url"
-            value="http://ci.pentaho.com/job/pentaho-coding-standards/lastSuccessfulBuild/artifact/pentaho_checkStyle.xml"/>
+            value="http://nexus.pentaho.org/content/groups/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle/${pentaho.coding.standards.version}/pentaho-checkstyle-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.suppressions.url"
-            value="http://ci.pentaho.com/job/pentaho-coding-standards/lastSuccessfulBuild/artifact/suppressions.xml"/>
+            value="http://nexus.pentaho.org/content/groups/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-suppressions/${pentaho.coding.standards.version}/pentaho-checkstyle-suppressions-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.stylesheet.url"
-            value="http://ci.pentaho.com/job/pentaho-coding-standards/lastSuccessfulBuild/artifact/checkstyle-noframes-sorted.xsl"/>
+            value="http://nexus.pentaho.org/content/groups/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-stylesheet/${pentaho.coding.standards.version}/pentaho-checkstyle-stylesheet-${pentaho.coding.standards.version}.xsl"/>
   <property name="checkstyle.config.file"
-            value="${checkstyle.dir}/pentaho_checkStyle.xml"/>
+            value="${checkstyle.dir}/pentaho-checkstyle-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.suppressions.file"
             value="${checkstyle.dir}/suppressions.xml"/>
   <property name="checkstyle.stylesheet.file"
-            value="${checkstyle.dir}/checkstyle-noframes-sorted.xsl"/>
+            value="${checkstyle.dir}/pentaho-checkstyle-stylesheet-${pentaho.coding.standards.version}.xsl"/>
 
   <!-- Set the project revision number to the value in the manifest file (if it has not
        been specified in the properties file -->
@@ -845,13 +848,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         Fetches and installs CheckStyle resources for use by checkstyle targets
         ====================================================================-->
   <target name="install-checkstyle" depends="install-ivy">
-    <ivy:resolve inline="true"
-                 keep="true"
-                 organisation="com.puppycrawl.tools"
-                 module="checkstyle"
-                 revision="${checkstyle.version}"
+    <ivy:resolve keep="true"
                  conf="default"
-                 transitive="true"/>
+                 transitive="true">
+    	<dependency org="com.puppycrawl.tools" name="checkstyle" rev="${checkstyle.version}">
+    		<artifact name="checkstyle" type="all" e:classifier="all" ext="jar"/>
+    	</dependency>
+    </ivy:resolve>
 
     <ivy:retrieve conf="default" pattern="${checkstyle.lib.dir}/[module]-[revision](-[classifier]).[ext]"/>
     <ivy:cachepath pathid="checkstyle.classpath"/>
@@ -2157,7 +2160,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           </executiondata>
           <structure name="${ivy.artifact.id}">
             <classfiles>
-              <fileset dir="${classes.dir}"/>
+              <fileset dir="${classes.dir}">
+                <exclude name="${jacoco.ui.class.exclude.pattern}"/>
+              </fileset>
             </classfiles>
             <sourcefiles encoding="UTF-8">
               <fileset dir="${src.dir}"/>
@@ -2763,7 +2768,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <delete dir="${checkstyle.reports.dir}/xml"/>
     <mkdir dir="${checkstyle.dir}/lib"/>
 
-    <taskdef resource="checkstyletask.properties">
+    <taskdef resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties">
       <classpath refid="checkstyle.classpath"/>
     </taskdef>
 
