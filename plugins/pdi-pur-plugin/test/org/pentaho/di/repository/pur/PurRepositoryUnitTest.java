@@ -17,6 +17,7 @@
 
 package org.pentaho.di.repository.pur;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -24,15 +25,35 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.JobEntryLogTable;
+import org.pentaho.di.core.logging.LogTableInterface;
+import org.pentaho.di.core.logging.StepLogTable;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PurRepositoryUnitTest {
+  private VariableSpace mockedVariableSpace;
+  private HasDatabasesInterface mockedHasDbInterface;
+
+  @Before
+  public void init() {
+    System.setProperty( Const.KETTLE_TRANS_LOG_TABLE, "KETTLE_STEP_LOG_DB_VALUE" );
+    mockedVariableSpace = mock( VariableSpace.class );
+    mockedHasDbInterface = mock( HasDatabasesInterface.class );
+  }
+
   @Test
   public void testGetObjectInformationGetsAclByFileId() throws KettleException {
     PurRepository purRepository = new PurRepository();
@@ -62,5 +83,37 @@ public class PurRepositoryUnitTest {
     purRepository.connect( "TEST_USER", "TEST_PASSWORD" );
     purRepository.getObjectInformation( objectId, repositoryObjectType );
     verify( mockRepo ).getAcl( testFileId );
+  }
+
+  @Test
+  public void onlyGlobalVariablesOfLogTablesSetToNull() {
+    PurRepositoryExporter purRepoExporter = new PurRepositoryExporter( mock( PurRepository.class ) );
+    String hardcodedString = "hardcoded";
+    String globalParam = "${" + Const.KETTLE_TRANS_LOG_TABLE + "}";
+
+    StepLogTable stepLogTable = StepLogTable.getDefault( mockedVariableSpace, mockedHasDbInterface  );
+    stepLogTable.setConnectionName( hardcodedString );
+    stepLogTable.setSchemaName( hardcodedString );
+    stepLogTable.setTimeoutInDays( hardcodedString );
+    stepLogTable.setTableName( globalParam );
+
+    JobEntryLogTable jobEntryLogTable = JobEntryLogTable.getDefault( mockedVariableSpace, mockedHasDbInterface );
+    jobEntryLogTable.setConnectionName( hardcodedString );
+    jobEntryLogTable.setSchemaName( hardcodedString );
+    jobEntryLogTable.setTimeoutInDays( hardcodedString );
+    jobEntryLogTable.setTableName( globalParam );
+
+    List<LogTableInterface> logTables = new ArrayList<>();
+    logTables.add( jobEntryLogTable );
+    logTables.add( stepLogTable );
+
+    purRepoExporter.setGlobalVariablesOfLogTablesNull( logTables );
+
+    for(LogTableInterface logTable : logTables) {
+      assertEquals(logTable.getConnectionName(), hardcodedString);
+      assertEquals(logTable.getSchemaName(), hardcodedString);
+      assertEquals(logTable.getTimeoutInDays(), hardcodedString);
+      assertEquals(logTable.getTableName(), null);
+    }
   }
 }
