@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Andrey Khayrutdinov
