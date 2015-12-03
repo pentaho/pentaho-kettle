@@ -91,7 +91,7 @@ public class PurRepositoryUnitTest {
     String hardcodedString = "hardcoded";
     String globalParam = "${" + Const.KETTLE_TRANS_LOG_TABLE + "}";
 
-    StepLogTable stepLogTable = StepLogTable.getDefault( mockedVariableSpace, mockedHasDbInterface  );
+    StepLogTable stepLogTable = StepLogTable.getDefault( mockedVariableSpace, mockedHasDbInterface );
     stepLogTable.setConnectionName( hardcodedString );
     stepLogTable.setSchemaName( hardcodedString );
     stepLogTable.setTimeoutInDays( hardcodedString );
@@ -109,11 +109,11 @@ public class PurRepositoryUnitTest {
 
     purRepoExporter.setGlobalVariablesOfLogTablesNull( logTables );
 
-    for(LogTableInterface logTable : logTables) {
-      assertEquals(logTable.getConnectionName(), hardcodedString);
-      assertEquals(logTable.getSchemaName(), hardcodedString);
-      assertEquals(logTable.getTimeoutInDays(), hardcodedString);
-      assertEquals(logTable.getTableName(), null);
+    for ( LogTableInterface logTable : logTables ) {
+      assertEquals( logTable.getConnectionName(), hardcodedString );
+      assertEquals( logTable.getSchemaName(), hardcodedString );
+      assertEquals( logTable.getTimeoutInDays(), hardcodedString );
+      assertEquals( logTable.getTableName(), null );
     }
   }
 }
