@@ -60,6 +60,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.InputFileMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 /**
@@ -284,8 +285,9 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
     }
   }
 
+  @Override
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-      VariableSpace space ) throws KettleStepException {
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     rowMeta.clear(); // Start with a clean slate, eats the input
 
     for ( int i = 0; i < inputFields.length; i++ ) {
@@ -336,7 +338,11 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
       rowNumMeta.setOrigin( origin );
       rowMeta.addValueMeta( rowNumMeta );
     }
+  }
 
+  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
+      VariableSpace space ) throws KettleStepException {
+    getFields( rowMeta, origin, info, nextStep, space, null, null );
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,
