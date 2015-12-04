@@ -62,7 +62,6 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   private Button wPostTransformation;
   private Button wStartExecution;
   private Button wShowTransformations;
-  private TableView wVariables;
 
   public TransExecutionConfigurationDialog( Shell parent, TransExecutionConfiguration configuration,
     TransMeta transMeta ) {
