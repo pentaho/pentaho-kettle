@@ -22,10 +22,8 @@
 
 package org.pentaho.di.ui.trans.dialog;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +35,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -47,74 +43,35 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogLevel;
-import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.ConfigurationDialog;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-public class TransExecutionConfigurationDialog extends Dialog {
+public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!
 
-  private Display display;
-  private Shell parent;
-  private Shell shell;
-  private PropsUI props;
-  private boolean retval;
-
-  private Button wOK, wCancel;
-
-  private Group gLocal;
-
-  private TransExecutionConfiguration configuration;
-  private TransMeta transMeta;
-
-  private Button wExecLocal;
-  private Button wExecRemote;
   private Button wExecCluster;
-  private Button wSafeMode;
-  private Button wClearLog;
   private Button wPrepareExecution;
   private Button wPostTransformation;
   private Button wStartExecution;
   private Button wShowTransformations;
-
-  private Button wGatherMetrics;
-
-  private CCombo wRemoteHost;
-  private Label wlRemoteHost;
-  private Text wReplayDate;
-  private TableView wArguments;
-  private Label wlArguments;
-  private TableView wParams;
-  private Label wlParams;
-  private Label wlVariables;
   private TableView wVariables;
-  private Label wlReplayDate;
-  private Label wlLogLevel;
-  private CCombo wLogLevel;
-
-  private SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
-  private Group gDetails;
-  private Button wPassExport;
 
   public TransExecutionConfigurationDialog( Shell parent, TransExecutionConfiguration configuration,
     TransMeta transMeta ) {
-    super( parent );
-    this.parent = parent;
-    this.configuration = configuration;
-    this.transMeta = transMeta;
+    super( parent, configuration, transMeta );
 
     // Fill the parameters, maybe do this in another place?
     Map<String, String> params = configuration.getParams();
     params.clear();
-    String[] paramNames = transMeta.listParameters();
+    String[] paramNames = abstractMeta.listParameters();
     for ( String name : paramNames ) {
       params.put( name, "" );
     }
@@ -224,8 +181,8 @@ public class TransExecutionConfigurationDialog extends Dialog {
     fdRemoteHost.right = new FormAttachment( 66, 0 );
     fdRemoteHost.top = new FormAttachment( wExecRemote, margin * 2 );
     wRemoteHost.setLayoutData( fdRemoteHost );
-    for ( int i = 0; i < transMeta.getSlaveServers().size(); i++ ) {
-      SlaveServer slaveServer = transMeta.getSlaveServers().get( i );
+    for ( int i = 0; i < abstractMeta.getSlaveServers().size(); i++ ) {
+      SlaveServer slaveServer = abstractMeta.getSlaveServers().get( i );
       wRemoteHost.add( slaveServer.toString() );
     }
 
@@ -439,7 +396,7 @@ public class TransExecutionConfigurationDialog extends Dialog {
     int nrVariables = configuration.getVariables() != null ? configuration.getVariables().size() : 0;
     wVariables =
       new TableView(
-        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, false, null,
+          abstractMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, false, null,
         props );
     FormData fdVariables = new FormData();
     fdVariables.left = new FormAttachment( 50, margin );
@@ -473,7 +430,7 @@ public class TransExecutionConfigurationDialog extends Dialog {
     int nrArguments = configuration.getArguments() != null ? configuration.getArguments().size() : 0;
     wArguments =
       new TableView(
-        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, true, null,
+          abstractMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, true, null,
         props );
     FormData fdArguments = new FormData();
     fdArguments.left = new FormAttachment( 0, 0 );
@@ -506,11 +463,11 @@ public class TransExecutionConfigurationDialog extends Dialog {
         ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Preview size
     };
 
-    String[] namedParams = transMeta.listParameters();
+    String[] namedParams = abstractMeta.listParameters();
     int nrParams = namedParams.length;
     wParams =
       new TableView(
-        transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cParams, nrParams, true, null, props );
+          abstractMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cParams, nrParams, true, null, props );
     FormData fdParams = new FormData();
     fdParams.left = new FormAttachment( 0, 0 );
     fdParams.right = new FormAttachment( 50, -margin );
@@ -535,31 +492,6 @@ public class TransExecutionConfigurationDialog extends Dialog {
     return retval;
   }
 
-  private void getParamsData() {
-    wParams.clearAll( false );
-    List<String> paramNames = new ArrayList<String>( configuration.getParams().keySet() );
-    Collections.sort( paramNames );
-
-    for ( int i = 0; i < paramNames.size(); i++ ) {
-      String paramName = paramNames.get( i );
-      String paramValue = configuration.getParams().get( paramName );
-      String defaultValue;
-      try {
-        defaultValue = transMeta.getParameterDefault( paramName );
-      } catch ( UnknownParamException e ) {
-        defaultValue = "";
-      }
-
-      TableItem tableItem = new TableItem( wParams.table, SWT.NONE );
-      tableItem.setText( 1, paramName );
-      tableItem.setText( 2, Const.NVL( paramValue, "" ) );
-      tableItem.setText( 3, Const.NVL( defaultValue, "" ) );
-    }
-    wParams.removeEmptyRows();
-    wParams.setRowNums();
-    wParams.optWidth( true );
-  }
-
   private void getVariablesData() {
     wVariables.clearAll( false );
     List<String> variableNames = new ArrayList<String>( configuration.getVariables().keySet() );
@@ -569,7 +501,7 @@ public class TransExecutionConfigurationDialog extends Dialog {
       String variableName = variableNames.get( i );
       String variableValue = configuration.getVariables().get( variableName );
 
-      if ( Const.indexOfString( variableName, transMeta.listParameters() ) < 0 ) {
+      if ( Const.indexOfString( variableName, abstractMeta.listParameters() ) < 0 ) {
 
         TableItem tableItem = new TableItem( wVariables.table, SWT.NONE );
         tableItem.setText( 1, variableName );
@@ -600,38 +532,16 @@ public class TransExecutionConfigurationDialog extends Dialog {
     wArguments.optWidth( true );
   }
 
-  private void cancel() {
-    dispose();
-  }
-
-  private void dispose() {
-    props.setScreen( new WindowProperty( shell ) );
-    shell.dispose();
-  }
-
-  private void ok() {
-    if ( Const.isOSX() ) {
-      // OSX bug workaround.
-      //
-      wVariables.applyOSXChanges();
-      wParams.applyOSXChanges();
-      wArguments.applyOSXChanges();
-    }
-    getInfo();
-    retval = true;
-    dispose();
-  }
-
   public void getData() {
     wExecLocal.setSelection( configuration.isExecutingLocally() );
     wExecRemote.setSelection( configuration.isExecutingRemotely() );
-    wExecCluster.setSelection( configuration.isExecutingClustered() );
+    wExecCluster.setSelection( getConfiguration().isExecutingClustered() );
     wSafeMode.setSelection( configuration.isSafeModeEnabled() );
     wClearLog.setSelection( configuration.isClearingLog() );
-    wPrepareExecution.setSelection( configuration.isClusterPreparing() );
-    wPostTransformation.setSelection( configuration.isClusterPosting() );
-    wStartExecution.setSelection( configuration.isClusterStarting() );
-    wShowTransformations.setSelection( configuration.isClusterShowingTransformation() );
+    wPrepareExecution.setSelection( getConfiguration().isClusterPreparing() );
+    wPostTransformation.setSelection( getConfiguration().isClusterPosting() );
+    wStartExecution.setSelection( getConfiguration().isClusterStarting() );
+    wShowTransformations.setSelection( getConfiguration().isClusterShowingTransformation() );
     wRemoteHost
       .setText( configuration.getRemoteServer() == null ? "" : configuration.getRemoteServer().toString() );
     wPassExport.setSelection( configuration.isPassingExport() );
@@ -657,7 +567,7 @@ public class TransExecutionConfigurationDialog extends Dialog {
       }
       configuration.setExecutingLocally( wExecLocal.getSelection() );
       configuration.setExecutingRemotely( wExecRemote.getSelection() );
-      configuration.setExecutingClustered( wExecCluster.getSelection() );
+      getConfiguration().setExecutingClustered( wExecCluster.getSelection() );
 
       // Local data
       // --> preview handled in debug transformation meta dialog
@@ -665,15 +575,15 @@ public class TransExecutionConfigurationDialog extends Dialog {
       // Remote data
       if ( wExecRemote.getSelection() ) {
         String serverName = wRemoteHost.getText();
-        configuration.setRemoteServer( transMeta.findSlaveServer( serverName ) );
+        configuration.setRemoteServer( abstractMeta.findSlaveServer( serverName ) );
       }
       configuration.setPassingExport( wPassExport.getSelection() );
 
       // Clustering data
-      configuration.setClusterPosting( wPostTransformation.getSelection() );
-      configuration.setClusterPreparing( wPrepareExecution.getSelection() );
-      configuration.setClusterStarting( wStartExecution.getSelection() );
-      configuration.setClusterShowingTransformation( wShowTransformations.getSelection() );
+      getConfiguration().setClusterPosting( wPostTransformation.getSelection() );
+      getConfiguration().setClusterPreparing( wPrepareExecution.getSelection() );
+      getConfiguration().setClusterStarting( wStartExecution.getSelection() );
+      getConfiguration().setClusterShowingTransformation( wShowTransformations.getSelection() );
 
       configuration.setSafeModeEnabled( wSafeMode.getSelection() );
       configuration.setClearingLog( wClearLog.getSelection() );
@@ -687,57 +597,6 @@ public class TransExecutionConfigurationDialog extends Dialog {
     } catch ( Exception e ) {
       new ErrorDialog( shell, "Error in settings", "There is an error in the dialog settings", e );
     }
-  }
-
-  /**
-   * Get the parameters from the dialog.
-   */
-  private void getInfoParameters() {
-    Map<String, String> map = new HashMap<String, String>();
-    int nrNonEmptyVariables = wParams.nrNonEmpty();
-    for ( int i = 0; i < nrNonEmptyVariables; i++ ) {
-      TableItem tableItem = wParams.getNonEmpty( i );
-      String paramName = tableItem.getText( 1 );
-      String paramValue = tableItem.getText( 2 );
-      String defaultValue = tableItem.getText( 3 );
-
-      if ( Const.isEmpty( paramValue ) ) {
-        paramValue = Const.NVL( defaultValue, "" );
-      }
-
-      map.put( paramName, paramValue );
-    }
-    configuration.setParams( map );
-  }
-
-  private void getInfoVariables() {
-    Map<String, String> map = new HashMap<String, String>();
-    int nrNonEmptyVariables = wVariables.nrNonEmpty();
-    for ( int i = 0; i < nrNonEmptyVariables; i++ ) {
-      TableItem tableItem = wVariables.getNonEmpty( i );
-      String varName = tableItem.getText( 1 );
-      String varValue = tableItem.getText( 2 );
-
-      if ( !Const.isEmpty( varName ) ) {
-        map.put( varName, varValue );
-      }
-    }
-    configuration.setVariables( map );
-  }
-
-  private void getInfoArguments() {
-    Map<String, String> map = new HashMap<String, String>();
-    int nrNonEmptyArguments = wArguments.nrNonEmpty();
-    for ( int i = 0; i < nrNonEmptyArguments; i++ ) {
-      TableItem tableItem = wArguments.getNonEmpty( i );
-      String varName = tableItem.getText( 1 );
-      String varValue = tableItem.getText( 2 );
-
-      if ( !Const.isEmpty( varName ) ) {
-        map.put( varName, varValue );
-      }
-    }
-    configuration.setArguments( map );
   }
 
   private void enableFields() {
@@ -769,14 +628,6 @@ public class TransExecutionConfigurationDialog extends Dialog {
    * @return the configuration
    */
   public TransExecutionConfiguration getConfiguration() {
-    return configuration;
-  }
-
-  /**
-   * @param configuration
-   *          the configuration to set
-   */
-  public void setConfiguration( TransExecutionConfiguration configuration ) {
-    this.configuration = configuration;
+    return ( TransExecutionConfiguration ) configuration;
   }
 }
