@@ -508,4 +508,12 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 
     return indexes;
   }
+
+  @Override
+  public void setAllGlobalParametersToNull()  {
+    super.setAllGlobalParametersToNull();
+
+    logInterval = isGlobalParameter( logInterval ) ? null : logInterval;
+    logSizeLimit = isGlobalParameter( logSizeLimit ) ? null : logSizeLimit;
+  }
 }
