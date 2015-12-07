@@ -1434,7 +1434,7 @@ public class TransDialog extends Dialog {
     fdLogTimeout.top = new FormAttachment( wLogTable, margin );
     fdLogTimeout.right = new FormAttachment( 100, 0 );
     wLogTimeout.setLayoutData( fdLogTimeout );
-    wLogTimeout.setText( Const.NVL( channelLogTable.getTimeoutInDays(), "" ) );
+    wLogTimeout.setText( Const.NVL( metricsLogTable.getTimeoutInDays(), "" ) );
 
     // Add the fields grid...
     //
