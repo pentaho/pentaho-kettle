@@ -32,6 +32,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -159,6 +161,16 @@ public class PluginRegistry {
     lock.writeLock().lock();
     try {
     parentClassloaderPatternMap.put( plugin, patterns );
+    } finally {
+      lock.writeLock().unlock();
+    }
+  }
+
+  @VisibleForTesting
+  void removeParentClassLoaderPatterns( PluginInterface plugin ) {
+    lock.writeLock().lock();
+    try {
+      parentClassloaderPatternMap.remove( plugin );
     } finally {
       lock.writeLock().unlock();
     }
@@ -403,7 +415,8 @@ public class PluginRegistry {
     return loadClass( plugin, classType );
   }
 
-  private KettleURLClassLoader createClassLoader( PluginInterface plugin ) throws MalformedURLException,
+  @VisibleForTesting
+  KettleURLClassLoader createClassLoader( PluginInterface plugin ) throws MalformedURLException,
     UnsupportedEncodingException {
     List<String> jarfiles = plugin.getLibraries();
     URL[] urls = new URL[jarfiles.size()];
@@ -412,11 +425,24 @@ public class PluginRegistry {
       urls[i] = new URL( URLDecoder.decode( jarfile.toURI().toURL().toString(), "UTF-8" ) );
     }
     ClassLoader classLoader = getClass().getClassLoader();
-    String[] patterns = parentClassloaderPatternMap.get( plugin );
-    if ( patterns != null ) {
-      return new KettleSelectiveParentFirstClassLoader( urls, classLoader, plugin.getDescription(), patterns );
-    } else {
+
+    List<String> patterns = new ArrayList<String>();
+    // we cannot just look for the plugin in the map
+    // it may happen, that several plugins are shipped inside jar,
+    // thus we need to scan the map's content and look for plugins' directories
+    // if the map contains the plugin itself, it will also be handled correctly
+    String dir = plugin.getPluginDirectory().toString();
+    for ( Map.Entry<PluginInterface, String[]> entry : parentClassloaderPatternMap.entrySet() ) {
+      PluginInterface pluginWithPattern = entry.getKey();
+      if ( dir.equals( pluginWithPattern.getPluginDirectory().toString() ) ) {
+        patterns.addAll( Arrays.asList( entry.getValue() ) );
+      }
+    }
+    if ( patterns.isEmpty() ) {
       return new KettleURLClassLoader( urls, classLoader, plugin.getDescription() );
+    } else {
+      return new KettleSelectiveParentFirstClassLoader( urls, classLoader, plugin.getDescription(),
+        patterns.toArray( new String[ patterns.size() ] ) );
     }
   }
 
