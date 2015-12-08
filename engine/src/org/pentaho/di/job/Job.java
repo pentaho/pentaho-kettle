@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1268,6 +1268,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         db.writeLogRecord( jobEntryLogTable, LogStatus.START, copy, this );
       }
 
+      db.cleanupLogRecords( jobEntryLogTable );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Job.Exception.UnableToJobEntryInformationToLogTable" ),
           e );
