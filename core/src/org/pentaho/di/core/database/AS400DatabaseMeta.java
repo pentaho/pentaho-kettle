@@ -272,6 +272,11 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     return true;
   }
 
+  @Override
+  public String getSQLListOfSequences() {
+    return "SELECT SEQNAME FROM SYSCAT.SEQUENCES";
+  }
+
   /**
    * Check if a sequence exists.
    *
