@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -51,7 +52,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.w3c.dom.Node;
 
-public class JobExecutionConfiguration implements Cloneable {
+public class JobExecutionConfiguration implements ExecutionConfiguration {
   public static final String XML_TAG = "job_execution_configuration";
 
   private final LogChannelInterface log = LogChannel.GENERAL;

@@ -23,13 +23,10 @@
 package org.pentaho.di.ui.job.dialog;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -38,8 +35,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -49,75 +44,31 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.LogLevel;
-import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.ui.ConfigurationDialog;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-public class JobExecutionConfigurationDialog extends Dialog {
+public class JobExecutionConfigurationDialog extends ConfigurationDialog {
   private static Class<?> PKG = JobExecutionConfigurationDialog.class; // for i18n purposes, needed by Translator2!!
 
-  private Display display;
-  private Shell parent;
-  private Shell shell;
-  private PropsUI props;
-  private boolean retval;
-
-  private Button wOK, wCancel;
-
-  private Group gLocal;
-
-  private JobExecutionConfiguration configuration;
-  private JobMeta jobMeta;
-
-  private Button wExecLocal;
-  private Button wExecRemote;
-  private CCombo wRemoteHost;
-  private Label wlRemoteHost;
-  private Button wPassExport;
   private Button wExpandRemote;
-
-  private TableView wArguments;
-  private Label wlArguments;
-  private TableView wParams;
-  private Label wlParams;
-  private Label wlVariables;
-  private TableView wVariables;
-
-  private Group gDetails;
-
-  private Label wlLogLevel;
-  private CCombo wLogLevel;
-  private Button wSafeMode;
-  private Button wClearLog;
-
-  private Label wlReplayDate;
-  private Text wReplayDate;
-
   private CCombo wStartCopy;
 
-  private Button wGatherMetrics;
-
-  private SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
-
   public JobExecutionConfigurationDialog( Shell parent, JobExecutionConfiguration configuration, JobMeta jobMeta ) {
-    super( parent );
-    this.parent = parent;
-    this.configuration = configuration;
-    this.jobMeta = jobMeta;
+    super( parent, configuration, jobMeta );
 
     // Fill the parameters, maybe do this in another place?
     Map<String, String> params = configuration.getParams();
     params.clear();
-    String[] paramNames = jobMeta.listParameters();
+    String[] paramNames = abstractMeta.listParameters();
     for ( String name : paramNames ) {
       params.put( name, "" );
     }
@@ -227,8 +178,8 @@ public class JobExecutionConfigurationDialog extends Dialog {
     fdRemoteHost.right = new FormAttachment( 66, 0 );
     fdRemoteHost.top = new FormAttachment( wExecRemote, margin * 2 );
     wRemoteHost.setLayoutData( fdRemoteHost );
-    for ( int i = 0; i < jobMeta.getSlaveServers().size(); i++ ) {
-      SlaveServer slaveServer = jobMeta.getSlaveServers().get( i );
+    for ( int i = 0; i < abstractMeta.getSlaveServers().size(); i++ ) {
+      SlaveServer slaveServer = abstractMeta.getSlaveServers().get( i );
       wRemoteHost.add( slaveServer.toString() );
     }
 
@@ -384,9 +335,9 @@ public class JobExecutionConfigurationDialog extends Dialog {
     fdStartCopy.top = new FormAttachment( wReplayDate, margin );
     wStartCopy.setLayoutData( fdStartCopy );
 
-    String[] names = new String[jobMeta.getJobCopies().size()];
+    String[] names = new String[( ( JobMeta )abstractMeta ).getJobCopies().size()];
     for ( int i = 0; i < names.length; i++ ) {
-      JobEntryCopy copy = jobMeta.getJobCopies().get( i );
+      JobEntryCopy copy = ( ( JobMeta )abstractMeta ).getJobCopies().get( i );
       names[i] = getJobEntryCopyName( copy );
     }
     wStartCopy.setItems( names );
@@ -416,7 +367,7 @@ public class JobExecutionConfigurationDialog extends Dialog {
     int nrVariables = configuration.getVariables() != null ? configuration.getVariables().size() : 0;
     wVariables =
       new TableView(
-        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, false, null,
+          abstractMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cVariables, nrVariables, false, null,
         props );
     FormData fdVariables = new FormData();
     fdVariables.left = new FormAttachment( 50, margin );
@@ -449,11 +400,11 @@ public class JobExecutionConfigurationDialog extends Dialog {
         ColumnInfo.COLUMN_TYPE_TEXT, false, true ), // Default value
     };
 
-    String[] namedParams = jobMeta.listParameters();
+    String[] namedParams = abstractMeta.listParameters();
     int nrParams = namedParams.length;
     wParams =
       new TableView(
-        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cParams, nrParams, true, null, props );
+          abstractMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cParams, nrParams, true, null, props );
     FormData fdParams = new FormData();
     fdParams.left = new FormAttachment( 0, 0 );
     fdParams.right = new FormAttachment( 50, -margin );
@@ -486,7 +437,7 @@ public class JobExecutionConfigurationDialog extends Dialog {
     int nrArguments = configuration.getArguments() != null ? configuration.getArguments().size() : 10;
     wArguments =
       new TableView(
-        jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, false, null,
+          abstractMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, false, null,
         props );
     FormData fdArguments = new FormData();
     fdArguments.left = new FormAttachment( 0, 0 );
@@ -514,32 +465,6 @@ public class JobExecutionConfigurationDialog extends Dialog {
 
   private String getJobEntryCopyName( JobEntryCopy copy ) {
     return copy.getName() + ( copy.getNr() > 0 ? copy.getNr() : "" );
-  }
-
-  private void getParamsData() {
-    wParams.clearAll( false );
-    List<String> paramNames = new ArrayList<String>( configuration.getParams().keySet() );
-    Collections.sort( paramNames );
-
-    for ( int i = 0; i < paramNames.size(); i++ ) {
-      String paramName = paramNames.get( i );
-      String paramValue = configuration.getParams().get( paramName );
-
-      String defaultValue;
-      try {
-        defaultValue = jobMeta.getParameterDefault( paramName );
-      } catch ( UnknownParamException e ) {
-        defaultValue = "";
-      }
-
-      TableItem tableItem = new TableItem( wParams.table, SWT.NONE );
-      tableItem.setText( 1, paramName );
-      tableItem.setText( 2, Const.NVL( paramValue, "" ) );
-      tableItem.setText( 3, Const.NVL( defaultValue, "" ) );
-    }
-    wParams.removeEmptyRows();
-    wParams.setRowNums();
-    wParams.optWidth( true );
   }
 
   private void getVariablesData() {
@@ -587,28 +512,6 @@ public class JobExecutionConfigurationDialog extends Dialog {
     wArguments.optWidth( true );
   }
 
-  private void cancel() {
-    dispose();
-  }
-
-  private void dispose() {
-    props.setScreen( new WindowProperty( shell ) );
-    shell.dispose();
-  }
-
-  private void ok() {
-    if ( Const.isOSX() ) {
-      // OSX bug workaround.
-      //
-      wParams.applyOSXChanges();
-      wVariables.applyOSXChanges();
-      wArguments.applyOSXChanges();
-    }
-    getInfo();
-    retval = true;
-    dispose();
-  }
-
   public void getData() {
     wExecLocal.setSelection( configuration.isExecutingLocally() );
     wExecRemote.setSelection( configuration.isExecutingRemotely() );
@@ -617,7 +520,7 @@ public class JobExecutionConfigurationDialog extends Dialog {
     wRemoteHost
       .setText( configuration.getRemoteServer() == null ? "" : configuration.getRemoteServer().toString() );
     wPassExport.setSelection( configuration.isPassingExport() );
-    wExpandRemote.setSelection( configuration.isExpandingRemoteJob() );
+    wExpandRemote.setSelection( getConfiguration().isExpandingRemoteJob() );
     wLogLevel.select( DefaultLogLevel.getLogLevel().getLevel() );
     if ( configuration.getReplayDate() != null ) {
       wReplayDate.setText( simpleDateFormat.format( configuration.getReplayDate() ) );
@@ -625,9 +528,9 @@ public class JobExecutionConfigurationDialog extends Dialog {
     wGatherMetrics.setSelection( configuration.isGatheringMetrics() );
 
     String startCopy = "";
-    if ( !Const.isEmpty( configuration.getStartCopyName() ) ) {
+    if ( !Const.isEmpty( getConfiguration().getStartCopyName() ) ) {
       JobEntryCopy copy =
-        jobMeta.findJobEntry( configuration.getStartCopyName(), configuration.getStartCopyNr(), false );
+          ( ( JobMeta )abstractMeta ).findJobEntry( getConfiguration().getStartCopyName(), getConfiguration().getStartCopyNr(), false );
       if ( copy != null ) {
         startCopy = getJobEntryCopyName( copy );
       }
@@ -650,10 +553,10 @@ public class JobExecutionConfigurationDialog extends Dialog {
       //
       if ( wExecRemote.getSelection() ) {
         String serverName = wRemoteHost.getText();
-        configuration.setRemoteServer( jobMeta.findSlaveServer( serverName ) );
+        configuration.setRemoteServer( abstractMeta.findSlaveServer( serverName ) );
       }
       configuration.setPassingExport( wPassExport.getSelection() );
-      configuration.setExpandingRemoteJob( wExpandRemote.getSelection() );
+      getConfiguration().setExpandingRemoteJob( wExpandRemote.getSelection() );
 
       // various settings
       //
@@ -670,13 +573,13 @@ public class JobExecutionConfigurationDialog extends Dialog {
       int startCopyNr = 0;
       if ( !Const.isEmpty( wStartCopy.getText() ) ) {
         if ( wStartCopy.getSelectionIndex() >= 0 ) {
-          JobEntryCopy copy = jobMeta.getJobCopies().get( wStartCopy.getSelectionIndex() );
+          JobEntryCopy copy = ( ( JobMeta )abstractMeta ).getJobCopies().get( wStartCopy.getSelectionIndex() );
           startCopyName = copy.getName();
           startCopyNr = copy.getNr();
         }
       }
-      configuration.setStartCopyName( startCopyName );
-      configuration.setStartCopyNr( startCopyNr );
+      getConfiguration().setStartCopyName( startCopyName );
+      getConfiguration().setStartCopyNr( startCopyNr );
 
       // The lower part of the dialog...
       getInfoParameters();
@@ -688,57 +591,6 @@ public class JobExecutionConfigurationDialog extends Dialog {
     } catch ( Exception e ) {
       new ErrorDialog( shell, "Error in settings", "There is an error in the dialog settings", e );
     }
-  }
-
-  /**
-   * Get the parameters from the dialog.
-   */
-  private void getInfoParameters() {
-    Map<String, String> map = new HashMap<String, String>();
-    int nrNonEmptyVariables = wParams.nrNonEmpty();
-    for ( int i = 0; i < nrNonEmptyVariables; i++ ) {
-      TableItem tableItem = wParams.getNonEmpty( i );
-      String paramName = tableItem.getText( 1 );
-      String paramValue = tableItem.getText( 2 );
-      String defaultValue = tableItem.getText( 3 );
-
-      if ( Const.isEmpty( paramValue ) ) {
-        paramValue = Const.NVL( defaultValue, "" );
-      }
-
-      map.put( paramName, paramValue );
-    }
-    configuration.setParams( map );
-  }
-
-  private void getInfoVariables() {
-    Map<String, String> map = new HashMap<String, String>();
-    int nrNonEmptyVariables = wVariables.nrNonEmpty();
-    for ( int i = 0; i < nrNonEmptyVariables; i++ ) {
-      TableItem tableItem = wVariables.getNonEmpty( i );
-      String varName = tableItem.getText( 1 );
-      String varValue = tableItem.getText( 2 );
-
-      if ( !Const.isEmpty( varName ) ) {
-        map.put( varName, varValue );
-      }
-    }
-    configuration.setVariables( map );
-  }
-
-  private void getInfoArguments() {
-    Map<String, String> map = new HashMap<String, String>();
-    int nrNonEmptyArguments = wArguments.nrNonEmpty();
-    for ( int i = 0; i < nrNonEmptyArguments; i++ ) {
-      TableItem tableItem = wArguments.getNonEmpty( i );
-      String varName = tableItem.getText( 1 );
-      String varValue = tableItem.getText( 2 );
-
-      if ( !Const.isEmpty( varName ) ) {
-        map.put( varName, varValue );
-      }
-    }
-    configuration.setArguments( map );
   }
 
   private void enableFields() {
@@ -753,14 +605,6 @@ public class JobExecutionConfigurationDialog extends Dialog {
    * @return the configuration
    */
   public JobExecutionConfiguration getConfiguration() {
-    return configuration;
-  }
-
-  /**
-   * @param configuration
-   *          the configuration to set
-   */
-  public void setConfiguration( JobExecutionConfiguration configuration ) {
-    this.configuration = configuration;
+    return ( JobExecutionConfiguration ) configuration;
   }
 }
