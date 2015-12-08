@@ -139,7 +139,7 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void setDefault() {
-    filename = "file";
+    filename = "file.cube";
     addToResultFilenames = false;
     doNotOpenNewFileInit = false;
   }
