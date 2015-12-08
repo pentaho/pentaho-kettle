@@ -2438,6 +2438,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         db.writeLogRecord( stepLogTable, LogStatus.START, combi, null );
       }
 
+      db.cleanupLogRecords( stepLogTable );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG,
           "Trans.Exception.UnableToWriteStepInformationToLogTable" ), e );
