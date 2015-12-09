@@ -17,67 +17,19 @@
 
 package org.pentaho.di.repository.pur;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.core.exception.KettleRepositoryStatusException;
-import org.pentaho.platform.api.engine.IServerStatusProvider;
 
 public class PurRepositoryConnectorTest {
-  private PurRepositoryConnector purRepositoryConnector;
-  private PurRepositoryMeta mockPurRepositoryMeta;
-
-  @Before
-  public void setUp() throws Exception {
-    PurRepository mockPurRepository = mock( PurRepository.class );
-    mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
-    RootRef mockRootRef = mock( RootRef.class );
-    purRepositoryConnector = spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
-  }
-
   @Test
   public void testPDI12439PurRepositoryConnectorDoesntNPEAfterMultipleDisconnects() {
+    PurRepository mockPurRepository = mock( PurRepository.class );
+    PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
+    RootRef mockRootRef = mock( RootRef.class );
+    PurRepositoryConnector purRepositoryConnector =
+        new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef );
     purRepositoryConnector.disconnect();
     purRepositoryConnector.disconnect();
-  }
-
-  @Test
-  public void testCheckServerStatus() throws Exception {
-    final PurRepositoryLocation purRepositoryLocation = mock( PurRepositoryLocation.class );
-    when( mockPurRepositoryMeta.getRepositoryLocation() ).thenReturn( purRepositoryLocation );
-    final String testRepoName = "testRepoName";
-    when( mockPurRepositoryMeta.getName() ).thenReturn( testRepoName );
-    final String testBaseUrl = "testBaseUrl";
-    when( purRepositoryLocation.getUrl() ).thenReturn( testBaseUrl );
-
-    final WebResource resource = mock( WebResource.class );
-
-    final Client client = mock( Client.class );
-    when( purRepositoryConnector.getClient() ).thenReturn( client );
-    when( client.resource( testBaseUrl + PurRepositoryConnector.SERVER_STATUS_ENDPOINT ) ).thenReturn( resource );
-
-    doCallRealMethod().when( purRepositoryConnector ).checkServerStatus();
-
-    // test starting
-    when( resource.get( String.class ) ).thenReturn( IServerStatusProvider.ServerStatus.STARTING.toString() );
-    try {
-      purRepositoryConnector.checkServerStatus();
-      fail();
-    } catch ( KettleRepositoryStatusException e ) {
-      assertEquals( testRepoName, e.getRepositoryName() );
-    }
-
-    // test started
-    when( resource.get( String.class ) ).thenReturn( IServerStatusProvider.ServerStatus.STARTED.toString() );
-    try {
-      purRepositoryConnector.checkServerStatus();
-    } catch ( KettleRepositoryStatusException e ) {
-      fail();
-    }
   }
 }
