@@ -22,9 +22,9 @@
 
 package org.pentaho.di.core;
 
-import org.junit.Assert;
 import junit.framework.TestCase;
 import org.apache.commons.lang.SystemUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -1557,15 +1557,6 @@ public class ConstTest extends TestCase {
   public void testToDouble() {
     Assert.assertEquals( 123.45, Const.toDouble( "123.45", -12.34 ), 1e-15 );
     Assert.assertEquals( -12.34, Const.toDouble( "123asd", -12.34 ), 1e-15 );
-  }
-
-  @Test
-  public void testToDate() {
-    final Date expected = new Date( 1447252914241L );
-    final Date def = new Date( 12312312123L );
-
-    assertEquals( expected, Const.toDate( "2015/11/11 14:41:54.241", def ) );
-    assertEquals( def, Const.toDate( "invalid date", def ) );
   }
 
   @Test
