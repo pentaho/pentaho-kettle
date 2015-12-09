@@ -24,14 +24,9 @@ import java.util.concurrent.Future;
 
 import javax.xml.ws.WebServiceException;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleRepositoryStatusException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -49,7 +44,6 @@ import org.pentaho.di.ui.repository.pur.services.ILockService;
 import org.pentaho.di.ui.repository.pur.services.IRevisionService;
 import org.pentaho.di.ui.repository.pur.services.IRoleSupportSecurityManager;
 import org.pentaho.di.ui.repository.pur.services.ITrashService;
-import org.pentaho.platform.api.engine.IServerStatusProvider;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -61,7 +55,6 @@ import com.pentaho.pdi.ws.RepositorySyncException;
 import com.sun.xml.ws.client.ClientTransportException;
 
 public class PurRepositoryConnector implements IRepositoryConnector {
-  public static final String SERVER_STATUS_ENDPOINT = "/GetResource?serverStatus";
   private static final String SINGLE_DI_SERVER_INSTANCE = "singleDiServerInstance";
   private static final String REMOTE_DI_SERVER_INSTANCE = "remoteDiServerInstance";
   private static Class<?> PKG = PurRepository.class;
@@ -93,10 +86,6 @@ public class PurRepositoryConnector implements IRepositoryConnector {
     if ( serviceManager != null ) {
       disconnect();
     }
-
-    // Check server status
-    checkServerStatus();
-
     serviceManager = new WebServiceManager( repositoryMeta.getRepositoryLocation().getUrl(), username );
     RepositoryServiceRegistry purRepositoryServiceRegistry = new RepositoryServiceRegistry();
     IUser user1 = new EEUserInfo();
@@ -114,7 +103,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
       result.setUser( user1 );
 
       // We need to have the application context and the session available in order for us to skip authentication
-      if ( PentahoSystem.getApplicationContext() != null && PentahoSessionHolder.getSession() != null ) {
+      if ( PentahoSystem.getApplicationContext() != null && PentahoSessionHolder.getSession() != null) {
         if ( inProcess() ) {
           // connect to the IUnifiedRepository through PentahoSystem
           // this assumes we're running in a BI Platform
@@ -193,7 +182,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
           try {
             LogChannel.GENERAL.logBasic( "Creating repository sync web service" );
             IRepositorySyncWebService syncWebService =
-                serviceManager
+              serviceManager
                 .createService( username, decryptedPassword, IRepositorySyncWebService.class ); //$NON-NLS-1$
             LogChannel.GENERAL.logBasic( "Synchronizing repository web service" ); //$NON-NLS-1$
             syncWebService.sync( repositoryMeta.getName(), repositoryMeta.getRepositoryLocation().getUrl() );
@@ -263,30 +252,6 @@ public class PurRepositoryConnector implements IRepositoryConnector {
       throw new KettleException( e );
     }
     return result;
-  }
-
-  /**
-   * Check for the server for STARTING status
-   *
-   * @throws KettleRepositoryStatusException
-   */
-  protected void checkServerStatus() throws KettleRepositoryStatusException {
-    Client client = getClient();
-    final WebResource resource = client
-        .resource( repositoryMeta.getRepositoryLocation().getUrl() + SERVER_STATUS_ENDPOINT );
-    final String status = resource.get( String.class );
-    if ( IServerStatusProvider.ServerStatus.valueOf( status ) == IServerStatusProvider.ServerStatus.STARTING ) {
-      final KettleRepositoryStatusException kettleRepositoryStatusException =
-          new KettleRepositoryStatusException( BaseMessages.getString( PKG, "PurRepository.Server.Status.Starting",
-              repositoryMeta.getName() ) );
-      kettleRepositoryStatusException.setRepositoryName( repositoryMeta.getName() );
-      throw kettleRepositoryStatusException;
-    }
-  }
-
-  protected Client getClient() {
-    final ClientConfig clientConfig = new DefaultClientConfig();
-    return Client.create( clientConfig );
   }
 
   @Override
