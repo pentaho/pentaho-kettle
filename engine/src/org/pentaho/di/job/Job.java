@@ -1257,27 +1257,31 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   protected void writeJobEntryLogInformation() throws KettleException {
     Database db = null;
-    JobEntryLogTable jobEntryLogTable = jobMeta.getJobEntryLogTable();
+    JobEntryLogTable jobEntryLogTable = getJobMeta().getJobEntryLogTable();
     try {
-      db = new Database( this, jobEntryLogTable.getDatabaseMeta() );
+      db = createDataBase( jobEntryLogTable.getDatabaseMeta() );
       db.shareVariablesWith( this );
       db.connect();
       db.setCommit( logCommitSize );
 
-      for ( JobEntryCopy copy : jobMeta.getJobCopies() ) {
+      for ( JobEntryCopy copy : getJobMeta().getJobCopies() ) {
         db.writeLogRecord( jobEntryLogTable, LogStatus.START, copy, this );
       }
 
       db.cleanupLogRecords( jobEntryLogTable );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Job.Exception.UnableToJobEntryInformationToLogTable" ),
-          e );
+        e );
     } finally {
       if ( !db.isAutoCommit() ) {
         db.commitLog( true, jobEntryLogTable );
       }
       db.disconnect();
     }
+  }
+
+  protected Database createDataBase( DatabaseMeta databaseMeta ) {
+    return new Database( this, databaseMeta );
   }
 
   /**
