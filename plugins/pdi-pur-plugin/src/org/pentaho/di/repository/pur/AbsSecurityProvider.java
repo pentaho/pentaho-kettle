@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import java.util.List;
@@ -27,24 +26,27 @@ import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.ui.repository.pur.services.IAbsSecurityProvider;
 import org.pentaho.platform.security.policy.rolebased.ws.IAuthorizationPolicyWebService;
 
-public class AbsSecurityProvider extends PurRepositorySecurityProvider implements IAbsSecurityProvider, java.io.Serializable {
+public class AbsSecurityProvider extends PurRepositorySecurityProvider implements IAbsSecurityProvider,
+    java.io.Serializable {
   private static final long FIVE_MINUTES = 5 * 60 * 1000;
   private static final long serialVersionUID = -41954375242408881L; /* EESOURCE: UPDATE SERIALVERUID */
   private IAuthorizationPolicyWebService authorizationPolicyWebService = null;
-  private final ActiveCache<String, List<String>> allowedActionsActiveCache = new ActiveCache<String, List<String>>( new ActiveCacheLoader<String, List<String>>() {
+  private final ActiveCache<String, List<String>> allowedActionsActiveCache = new ActiveCache<String, List<String>>(
+      new ActiveCacheLoader<String, List<String>>() {
 
-    @Override
-    public List<String> load( String key ) throws Exception {
-      return authorizationPolicyWebService.getAllowedActions( key );
-    }
-  }, FIVE_MINUTES );
-  private final ActiveCache<String, Boolean> isAllowedActiveCache = new ActiveCache<String, Boolean>( new ActiveCacheLoader<String, Boolean>() {
+        @Override
+        public List<String> load( String key ) throws Exception {
+          return authorizationPolicyWebService.getAllowedActions( key );
+        }
+      }, FIVE_MINUTES );
+  private final ActiveCache<String, Boolean> isAllowedActiveCache = new ActiveCache<String, Boolean>(
+      new ActiveCacheLoader<String, Boolean>() {
 
-    @Override
-    public Boolean load( String key ) throws Exception {
-      return authorizationPolicyWebService.isAllowed(key);
-    }
-  }, FIVE_MINUTES );
+        @Override
+        public Boolean load( String key ) throws Exception {
+          return authorizationPolicyWebService.isAllowed( key );
+        }
+      }, FIVE_MINUTES );
 
   public AbsSecurityProvider( PurRepository repository, PurRepositoryMeta repositoryMeta, IUser userInfo,
       ServiceManager serviceManager ) {
@@ -66,36 +68,35 @@ public class AbsSecurityProvider extends PurRepositorySecurityProvider implement
     }
   }
 
-  public List<String> getAllowedActions(String nameSpace) throws KettleException {
+  public List<String> getAllowedActions( String nameSpace ) throws KettleException {
     try {
       return allowedActionsActiveCache.get( nameSpace );
-    } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(AbsSecurityProvider.class,
-          "AbsSecurityProvider.ERROR_0003_UNABLE_TO_ACCESS_GET_ALLOWED_ACTIONS"), e); //$NON-NLS-1$
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( AbsSecurityProvider.class,
+          "AbsSecurityProvider.ERROR_0003_UNABLE_TO_ACCESS_GET_ALLOWED_ACTIONS" ), e ); //$NON-NLS-1$
     }
   }
 
-  public boolean isAllowed(String actionName) throws KettleException {
+  public boolean isAllowed( String actionName ) throws KettleException {
     try {
       return isAllowedActiveCache.get( actionName );
-    } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(AbsSecurityProvider.class,
-          "AbsSecurityProvider.ERROR_0002_UNABLE_TO_ACCESS_IS_ALLOWED"), e);//$NON-NLS-1$
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( AbsSecurityProvider.class,
+          "AbsSecurityProvider.ERROR_0002_UNABLE_TO_ACCESS_IS_ALLOWED" ), e );//$NON-NLS-1$
     }
   }
 
   @Override
-  public void validateAction( RepositoryOperation... operations )
-      throws KettleException, KettleSecurityException {
+  public void validateAction( RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
 
     for ( RepositoryOperation operation : operations ) {
-      if ( ( operation == RepositoryOperation.EXECUTE_TRANSFORMATION ) ||
-           ( operation == RepositoryOperation.EXECUTE_JOB) ) {
+      if ( ( operation == RepositoryOperation.EXECUTE_TRANSFORMATION )
+          || ( operation == RepositoryOperation.EXECUTE_JOB ) ) {
         if ( isAllowed( IAbsSecurityProvider.EXECUTE_CONTENT_ACTION ) == false ) {
           throw new KettleException( operation + " : permission not allowed" );
         }
-      } else if ( ( operation == RepositoryOperation.MODIFY_TRANSFORMATION ) ||
-                  ( operation == RepositoryOperation.MODIFY_JOB ) ) {
+      } else if ( ( operation == RepositoryOperation.MODIFY_TRANSFORMATION )
+          || ( operation == RepositoryOperation.MODIFY_JOB ) ) {
         if ( isAllowed( IAbsSecurityProvider.CREATE_CONTENT_ACTION ) == false ) {
           throw new KettleException( operation + " : permission not allowed" );
         }

@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<!--===========================================================================
+PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
+
+Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+
+NOTICE: All information including source code contained herein is, and
+remains the sole property of Pentaho and its licensors. The intellectual
+and technical concepts contained herein are proprietary and confidential
+to, and are trade secrets of Pentaho and may be covered by U.S. and foreign
+patents, or patents in process, and are protected by trade secret and
+copyright laws. The receipt or possession of this source code and/or related
+information does not convey or imply any rights to reproduce, disclose or
+distribute its contents, or to manufacture, use, or sell anything that it
+may describe, in whole or in part. Any reproduction, modification, distribution,
+or public display of this information without the express written authorization
+from Pentaho is strictly prohibited and in violation of applicable laws and
+international treaties. Access to the source code contained herein is strictly
+prohibited to anyone except those individuals and entities who have executed
+confidentiality and non-disclosure agreements or other agreements with Pentaho,
+explicitly covering such access.
+============================================================================-->
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul">
+    <vbox id="revision-box" visible="true" />
+	<vbox id="acl-box" flex="1">
+		<vbox>
+			<hbox flex="1">
+				<label flex="1" id="file-folder-name" />
+			</hbox>
+		</vbox>
+  		<hbox flex="1">
+  			<vbox flex="2">
+  				<hbox>
+  					<label value="${AclTab.UserRoleLabel}"/>
+  					<label id="spacer-label" flex="1" />
+  					<button id="add-acl-button" image="${New_image}" pen:disabledimage="${Disabled_New_image}" onclick="permissionsController.showManageAclsDialog()" disabled="true"/>
+  					<button id="remove-acl-button" image="${Delete_image}" pen:disabledimage="${Disabled_Delete_image}" onclick="permissionsController.removeAcl()" disabled="true"/>					    
+  				</hbox>
+  				<listbox id="user-role-list" pen:binding="recipientName" disabled="false" flex="1"  seltype="multi"/>
+  			</vbox>
+  			<groupbox id="permissions-groupbox" flex="4">
+  					<caption label="${AclTab.Permissions}"/>
+  					<hbox id="permissions-hbox" flex="1">
+  					    <vbox id="permission-column-1" flex="1">
+                <checkbox id="read-checkbox" command="permissionsController.updatePermission()" flex="1" label="${AclTab.Read}" disabled="true"/>
+  							<checkbox id="write-checkbox" command="permissionsController.updatePermission()" flex="1" label="${AclTab.Write}" disabled="true"/>
+  						</vbox>																																								
+  						<vbox id="permission-column-2" flex="1"> 
+  							<checkbox id="delete-checkbox" command="permissionsController.updatePermission()" flex="1" label="${AclTab.Delete}" disabled="true"/>
+  							<checkbox id="manage-checkbox" command="permissionsController.updatePermission()" flex="1" label="${AclTab.ManageAcl}" disabled="true"/>
+  						</vbox>
+  					</hbox>
+  			</groupbox>												
+  		</hbox>
+
+		<hbox>
+			<checkbox id="inherit-from-parent-permission-checkbox" command="permissionsController.updateInheritFromParentPermission()" flex="1" label="${AclTab.InheritFromParent}"/>
+			<label id="spacer-label" flex="1" />
+			<button id="apply-acl" label="${Dialog.Apply}" onclick="permissionsController.apply()"/>												
+		</hbox>
+	</vbox>
+ 
+	<dialog id="repository-explorer-dialog"> 
+		<!--  ###############################################################################   -->
+	    <!--     MANAGE ACLS DIALOG: Dialog to manage acls                                      -->
+	    <!--  ###############################################################################   -->    
+		
+		<dialog id="manage-acls-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
+		    		ondialogaccept="permissionsController.updateAcls()"
+		    		ondialogcancel="permissionsController.closeManageAclsDialog()" 
+		    		buttons="accept, cancel" buttonalign="right" title="${ManageAclsDialog.Title}"
+		    		appicon="ui/images/spoon.ico" 
+		    		resizable="true"
+		    		height="500" width="400">
+		    	<vbox flex="1">
+            <!-- height hard-coded due to PDI-5155 -->
+			    	<groupbox id="user-section" flex="1" height="175">
+			    		<caption label="${ManageAclsDialog.UserLabel}" />
+			    		<hbox flex="1">
+				    		<vbox flex="2">
+								<label value="${ManageAclsDialog.Available}"/>
+								<listbox id="available-user-list" disabled="false" flex="1" seltype="multi"/>					
+				    		</vbox>
+						    <vbox>
+						    	<label id="spacer-label" flex="1" />
+								<button id="assign-user" image="${AddSingle16_image}" onclick="permissionsController.assignUsers()" disabled="true"/>
+								<button id="unassign-user" image="${RemoveSingle16_image}" onclick="permissionsController.unassignUsers()" disabled="true"/>
+								<label id="spacer-label" flex="1" />					    
+							</vbox>
+				    		<vbox flex="2">
+								<label value="${ManageAclsDialog.Selected}"/>
+								<listbox id="selected-user-list" pen:binding="recipientName" disabled="false" flex="1" seltype="multi"/>					
+				    		</vbox>	    		
+			    		</hbox>
+			    	</groupbox>
+			    	<groupbox id="role-section" flex="1">
+			    		<caption label="${ManageAclsDialog.RoleLabel}" />
+			    		<hbox flex="1">
+				    		<vbox flex="2">
+								<label value="${ManageAclsDialog.Available}"/>
+								<listbox id="available-role-list" disabled="false" flex="1" seltype="multi"/>					
+				    		</vbox>
+						    <vbox>
+						    	<label id="spacer-label" flex="1" />
+								<button id="assign-role" image="${AddSingle16_image}" onclick="permissionsController.assignRoles()" disabled="true"/>
+								<button id="unassign-role" image="${RemoveSingle16_image}" onclick="permissionsController.unassignRoles()" disabled="true"/>
+								<label id="spacer-label" flex="1" />					    
+							</vbox>
+				    		<vbox flex="2">
+								<label value="${ManageAclsDialog.Selected}"/>
+								<listbox id="selected-role-list" pen:binding="recipientName" disabled="false" flex="1" seltype="multi"/>					
+				    		</vbox>	    		
+			    		</hbox>
+			    	</groupbox>	    	
+		    	</vbox>
+		</dialog>
+	    <!--  ###############################################################################   -->
+	    <!--     APPLY ACL CONFIRMATION DIALOG: Dialog to display the confirmation              -->
+	    <!--     message to the user. User needs to select either of the two options or click   -->
+	    <!--         cancel   												                  -->
+	    <!--  ###############################################################################   -->    
+	    <dialog id="apply-acl-confirmation-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}" buttons="accept, cancel" ondialogcancel="permissionsController.closeApplyAclConfirmationDialog()"
+		  ondialogaccept="permissionsController.applyAcl()" buttonalign="right" title="${ApplyAclConfirmationDialog.Title}" appicon="ui/images/spoon.ico" 
+	  		xmlns:pen="http://www.pentaho.org/2008/xul" height="180" width="320">
+	       <vbox>
+	           <label value="${ApplyAclConfirmationDialog.ConfirmMessage1}"/>
+	           <label value="${ApplyAclConfirmationDialog.ConfirmMessage2}"/>
+	           <radio id="apply-only-radio-button" label="${ApplyAclConfirmationDialog.ApplyOnly}" command="permissionsController.setApplyOnly()" />		    
+	           <radio id="apply-recursive-radio-button" label="${ApplyAclConfirmationDialog.ApplyRecursive}" command="permissionsController.setApplyRecursive()" />
+	        </vbox>
+	    </dialog>
+  </dialog>  
+</overlay>
+										

@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import java.util.HashSet;
@@ -251,7 +250,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
     Set<String> privateTransformationDatabases = null;
     // read the private databases
     DataNode privateDatabases = rootNode.getNode( NODE_TRANS_PRIVATE_DATABASES );
-    //if we have node than we use new format we could remove unexpected node
+    // if we have node than we use new format we could remove unexpected node
     if ( privateDatabases != null ) {
       privateTransformationDatabases = new HashSet<String>();
       for ( DataNode privateDatabase : privateDatabases.getNodes() ) {
@@ -458,7 +457,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
   /**
    * Compatible loading of metadata for v4 style plugins using deprecated methods.
-   *
+   * 
    * @param stepMetaInterface
    * @param repository
    * @param objectId
@@ -586,7 +585,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
     DataNode rootNode = new DataNode( NODE_TRANS );
 
     if ( transMeta.getPrivateDatabases() != null ) {
-      //save all private transformations database name http://jira.pentaho.com/browse/PPP-3405
+      // save all private transformations database name http://jira.pentaho.com/browse/PPP-3405
       DataNode privateDatabaseNode = rootNode.addNode( NODE_TRANS_PRIVATE_DATABASES );
       for ( String privateDatabase : transMeta.getPrivateDatabases() ) {
         privateDatabaseNode.addNode( privateDatabase );
@@ -648,8 +647,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
       // Save the clustering information as well...
       //
-      stepNode.setProperty( PROP_CLUSTER_SCHEMA,
-        step.getClusterSchema() == null ? "" : step.getClusterSchema() //$NON-NLS-1$
+      stepNode.setProperty( PROP_CLUSTER_SCHEMA, step.getClusterSchema() == null ? "" : step.getClusterSchema() //$NON-NLS-1$
           .getName() );
 
       // Save the error hop metadata
@@ -816,7 +814,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
   /**
    * Insert all the databases from the repository into the TransMeta object, overwriting optionally
-   *
+   * 
    * @param TransMeta
    *          The transformation to load into.
    * @param overWriteShared
@@ -840,7 +838,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
   /**
    * Add clusters in the repository to this transformation if they are not yet present.
-   *
+   * 
    * @param TransMeta
    *          The transformation to load into.
    * @param overWriteShared
@@ -862,7 +860,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
   /**
    * Add the partitions in the repository to this transformation if they are not yet present.
-   *
+   * 
    * @param TransMeta
    *          The transformation to load into.
    * @param overWriteShared
@@ -884,7 +882,7 @@ public class TransDelegate extends AbstractDelegate implements ITransformer, ISh
 
   /**
    * Add the slave servers in the repository to this transformation if they are not yet present.
-   *
+   * 
    * @param TransMeta
    *          The transformation to load into.
    * @param overWriteShared

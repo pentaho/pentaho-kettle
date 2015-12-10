@@ -1,3 +1,19 @@
+/*!
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.utils;
 
 import org.pentaho.di.core.exception.KettleException;
@@ -24,18 +40,19 @@ public interface IRepositoryFactory {
 
   Repository connect( String repositoryName ) throws KettleException;
 
-  IRepositoryFactory DEFAULT = new CachingRepositoryFactory(){{
-    // Make sure we're registered with PentahoSystem so we can be found.
-    PentahoSystem.registerObject( this );
-  }};
+  IRepositoryFactory DEFAULT = new CachingRepositoryFactory() {
+    {
+      // Make sure we're registered with PentahoSystem so we can be found.
+      PentahoSystem.registerObject( this );
+    }
+  };
 
   /**
    * Sets the "ID" of the Repository Plugin Type to use (filebased, db, enterprise)
-   *
+   * 
    * @param id
    */
   void setRepositoryId( String id );
-
 
   /**
    * Decorating implementation which caches Repository instances by Principal name in the ICacheManager.
@@ -55,11 +72,13 @@ public interface IRepositoryFactory {
       this.delegate = delegate;
     }
 
-    @Override public void setRepositoryId( String id ) {
+    @Override
+    public void setRepositoryId( String id ) {
       delegate.setRepositoryId( id );
     }
 
-    @Override public Repository connect( String repositoryName ) throws KettleException {
+    @Override
+    public Repository connect( String repositoryName ) throws KettleException {
 
       IPentahoSession session = PentahoSessionHolder.getSession();
       if ( session == null ) {
@@ -68,7 +87,6 @@ public interface IRepositoryFactory {
             + "This is not allowed." );
       }
       ICacheManager cacheManager = PentahoSystem.getCacheManager( session );
-
 
       String sessionName = session.getName();
       Repository repository = (Repository) cacheManager.getFromRegionCache( REGION, sessionName );
@@ -92,16 +110,17 @@ public interface IRepositoryFactory {
   class DefaultRepositoryFactory implements IRepositoryFactory {
     private String repositoryId = "PentahoEnterpriseRepository";
 
-    @Override public void setRepositoryId( String id ) {
+    @Override
+    public void setRepositoryId( String id ) {
       this.repositoryId = id;
     }
 
-    @Override public Repository connect( String repositoryName ) throws KettleException {
+    @Override
+    public Repository connect( String repositoryName ) throws KettleException {
 
       RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
       boolean singleDiServerInstance =
-          "true".equals(
-              PentahoSystem.getSystemSetting( SINGLE_DI_SERVER_INSTANCE, "true" ) ); //$NON-NLS-1$ //$NON-NLS-2$
+          "true".equals( PentahoSystem.getSystemSetting( SINGLE_DI_SERVER_INSTANCE, "true" ) ); //$NON-NLS-1$ //$NON-NLS-2$
 
       try {
         if ( singleDiServerInstance ) {
@@ -114,7 +133,8 @@ public interface IRepositoryFactory {
                   + "<repository><id>" + repositoryId + "</id>" //$NON-NLS-1$
                   + "<name>" + SINGLE_DI_SERVER_INSTANCE + "</name>" //$NON-NLS-1$ //$NON-NLS-2$
                   + "<description>" + SINGLE_DI_SERVER_INSTANCE + "</description>" //$NON-NLS-1$ //$NON-NLS-2$
-                  + "<repository_location_url>" + PentahoSystem.getApplicationContext().getFullyQualifiedServerURL()
+                  + "<repository_location_url>"
+                  + PentahoSystem.getApplicationContext().getFullyQualifiedServerURL()
                   + "</repository_location_url>" //$NON-NLS-1$ //$NON-NLS-2$
                   + "<version_comment_mandatory>N</version_comment_mandatory>" //$NON-NLS-1$
                   + "</repository>" //$NON-NLS-1$
@@ -150,8 +170,8 @@ public interface IRepositoryFactory {
       Repository repository = null;
       try {
         repository =
-            PluginRegistry.getInstance().loadClass( RepositoryPluginType.class,
-                repositoryMeta.getId(), Repository.class );
+            PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta.getId(),
+                Repository.class );
         repository.init( repositoryMeta );
 
       } catch ( Exception e ) {
