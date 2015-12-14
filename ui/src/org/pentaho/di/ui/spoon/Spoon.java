@@ -4230,9 +4230,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           String name = sod.getObjectName();
           RepositoryDirectoryInterface repDir = sod.getDirectory();
 
+          ObjectId objId = sod.getObjectId();
           // Load a transformation
           if ( RepositoryObjectType.TRANSFORMATION.equals( type ) ) {
-            TransLoadProgressDialog tlpd = new TransLoadProgressDialog( shell, rep, name, repDir, null ); // Loads
+            TransLoadProgressDialog tlpd = null;
+            // prioritize loading file by id
+            if( objId != null && !Const.isEmpty( objId.getId() ) ) {
+              tlpd = new TransLoadProgressDialog( shell, rep, objId, null ); // Load by id
+            } else {
+              tlpd = new TransLoadProgressDialog( shell, rep, name, repDir, null ); // Load by name/path
+            }
             // the
             // last
             // version
@@ -4255,7 +4262,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             refreshTree();
           } else if ( RepositoryObjectType.JOB.equals( type ) ) {
             // Load a job
-            JobLoadProgressDialog jlpd = new JobLoadProgressDialog( shell, rep, name, repDir, null ); // Loads
+            JobLoadProgressDialog jlpd = null;
+            // prioritize loading file by id
+            if( objId != null && !Const.isEmpty( objId.getId() ) ) {
+              jlpd = new JobLoadProgressDialog( shell, rep, objId, null ); // Loads
+            } else {
+              jlpd = new JobLoadProgressDialog( shell, rep, name, repDir, null ); // Loads
+            }
             // the last version
             JobMeta jobMeta = jlpd.open();
             sharedObjectsFileMap.put( jobMeta.getSharedObjects().getFilename(), jobMeta.getSharedObjects() );
