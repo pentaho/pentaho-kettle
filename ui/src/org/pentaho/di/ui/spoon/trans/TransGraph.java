@@ -971,7 +971,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public void mouseUp( MouseEvent e ) {
     boolean control = ( e.stateMask & SWT.MOD1 ) != 0;
-
+    
+    TransHopMeta selectedHop = findHop( e.x, e.y );
+    if ( selectedHop != null ) {
+        StepErrorMeta errorMeta = selectedHop.getFromStep().getStepErrorMeta();
+        errorMeta.setEnabled( selectedHop.isEnabled() );
+    }
+    
     if ( iconoffset == null ) {
       iconoffset = new Point( 0, 0 );
     }
@@ -1984,7 +1990,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
    * @param y
    * @return the transformation hop on the specified location, otherwise: null
    */
-  private TransHopMeta findHop( int x, int y ) {
+  protected TransHopMeta findHop( int x, int y ) {
     return findHop( x, y, null );
   }
 
