@@ -383,9 +383,9 @@ public class TextFileInputUtils {
         int trim_type = fieldnr < nrfields ? f.getTrimType() : ValueMetaInterface.TRIM_TYPE_NONE;
 
         if ( fieldnr < strings.length ) {
-          String pol = strings[fieldnr];
+          String pol = strings[ fieldnr ];
           try {
-            if ( valueMeta.isNull( pol ) ) {
+            if ( valueMeta.isNull( pol ) || !Const.isEmpty( nullif ) && nullif.equals( pol ) ) {
               value = null;
             } else {
               value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );

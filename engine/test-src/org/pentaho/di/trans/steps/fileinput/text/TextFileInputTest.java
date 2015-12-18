@@ -32,7 +32,6 @@ import java.util.Collections;
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowSet;
@@ -49,6 +48,7 @@ import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 import org.pentaho.di.utils.TestUtils;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class TextFileInputTest {
 
@@ -136,20 +136,7 @@ public class TextFileInputTest {
     meta.content.footer = false;
     meta.content.nrFooterLines = -1;
 
-    TextFileInputData data = new TextFileInputData();
-    data.files = new FileInputList();
-    data.files.addFile( KettleVFS.getFileObject( virtualFile ) );
-
-    data.outputRowMeta = new RowMeta();
-    data.outputRowMeta.addValueMeta( new ValueMetaString( "col1" ) );
-    data.outputRowMeta.addValueMeta( new ValueMetaString( "col2" ) );
-
-    data.dataErrorLineHandler = Mockito.mock( FileErrorHandler.class );
-    data.fileFormatType = TextFileInputMeta.FILE_FORMAT_UNIX;
-    data.separator = ";";
-    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ], new Variables() );
-    data.filePlayList = new FilePlayListAll();
-
+    TextFileInputData data = createDataObject( virtualFile, ";", "col1", "col2" );
 
     RowSet output = new BlockingRowSet( 5 );
     executeStep( meta, data, output, 2 );
@@ -180,21 +167,7 @@ public class TextFileInputTest {
     meta.content.footer = false;
     meta.content.nrFooterLines = -1;
 
-    TextFileInputData data = new TextFileInputData();
-    data.files = new FileInputList();
-    data.files.addFile( KettleVFS.getFileObject( virtualFile ) );
-
-    data.outputRowMeta = new RowMeta();
-    data.outputRowMeta.addValueMeta( new ValueMetaString( "col1" ) );
-    data.outputRowMeta.addValueMeta( new ValueMetaString( "col2" ) );
-    data.outputRowMeta.addValueMeta( new ValueMetaString( "col3" ) );
-
-    data.dataErrorLineHandler = Mockito.mock( FileErrorHandler.class );
-    data.fileFormatType = TextFileInputMeta.FILE_FORMAT_UNIX;
-    data.separator = ",";
-    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ], new Variables() );
-    data.filePlayList = new FilePlayListAll();
-
+    TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2", "col3" );
 
     RowSet output = new BlockingRowSet( 5 );
     executeStep( meta, data, output, 2 );
@@ -207,6 +180,58 @@ public class TextFileInputTest {
 
 
     deleteVfsFile( virtualFile );
+  }
+
+  @Test
+  public void readInputWithNonEmptyNullif() throws Exception {
+    final String virtualFile = createVirtualFile( "pdi-14358.txt", "-,-\n" );
+
+    TextFileInputMeta meta = new TextFileInputMeta();
+
+    BaseFileInputField col2 = field( "col2" );
+    col2.setNullString( "-" );
+    meta.inputFiles.inputFields = new BaseFileInputField[] { field( "col1" ), col2 };
+
+    meta.content.fileCompression = "None";
+    meta.content.fileType = "CSV";
+    meta.content.header = false;
+    meta.content.nrHeaderLines = -1;
+    meta.content.footer = false;
+    meta.content.nrFooterLines = -1;
+
+    TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2" );
+
+    RowSet output = new BlockingRowSet( 5 );
+    executeStep( meta, data, output, 1 );
+
+    Object[] row = output.getRowImmediate();
+    assertRow( row, "-", null );
+
+
+    deleteVfsFile( virtualFile );
+  }
+
+  private TextFileInputData createDataObject( String file,
+                                              String separator,
+                                              String... outputFields ) throws Exception {
+    TextFileInputData data = new TextFileInputData();
+    data.files = new FileInputList();
+    data.files.addFile( KettleVFS.getFileObject( file ) );
+
+    data.separator = separator;
+
+    data.outputRowMeta = new RowMeta();
+    if ( outputFields != null ) {
+      for ( String field : outputFields ) {
+        data.outputRowMeta.addValueMeta( new ValueMetaString( field ) );
+      }
+    }
+
+    data.dataErrorLineHandler = mock( FileErrorHandler.class );
+    data.fileFormatType = TextFileInputMeta.FILE_FORMAT_UNIX;
+    data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ], new Variables() );
+    data.filePlayList = new FilePlayListAll();
+    return data;
   }
 
   private void executeStep( TextFileInputMeta meta, TextFileInputData data, RowSet output, int expectedRounds )
@@ -233,11 +258,8 @@ public class TextFileInputTest {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     bos.write( content.toString().getBytes() );
 
-    OutputStream os = KettleVFS.getFileObject( virtualFile ).getContent().getOutputStream();
-    try {
+    try ( OutputStream os = KettleVFS.getFileObject( virtualFile ).getContent().getOutputStream() ) {
       IOUtils.copy( new ByteArrayInputStream( bos.toByteArray() ), os );
-    } finally {
-      os.close();
     }
 
     return virtualFile;
