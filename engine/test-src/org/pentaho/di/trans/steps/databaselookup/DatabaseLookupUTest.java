@@ -30,9 +30,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
-import org.pentaho.di.core.TimedRow;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.MySQLDatabaseMeta;
@@ -54,9 +52,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.singletonList;
@@ -218,8 +214,8 @@ public class DatabaseLookupUTest {
   @Test
   public void getRowInCacheTest() throws KettleException {
 
-    StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper = new StepMockHelper<DatabaseLookupMeta,
-      DatabaseLookupData>( "Test", DatabaseLookupMeta.class, DatabaseLookupData.class );
+    StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper =
+      new StepMockHelper<>( "Test", DatabaseLookupMeta.class, DatabaseLookupData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
       .thenReturn( mockHelper.logChannelInterface );
 
@@ -227,7 +223,7 @@ public class DatabaseLookupUTest {
       new DatabaseLookup( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
         mockHelper.trans );
     DatabaseLookupData lookData = new DatabaseLookupData();
-    lookData.look = new LinkedHashMap<RowMetaAndData, TimedRow>();
+    lookData.cache = DefaultCache.newCache( lookData, 0 );
     lookData.lookupMeta = new RowMeta();
 
     look.init( new DatabaseLookupMeta(), lookData );
@@ -243,15 +239,15 @@ public class DatabaseLookupUTest {
     add1[ 0 ] = 10L;
     Object[] add2 = new Object[ 1 ];
     add2[ 0 ] = 20L;
-    look.storeRowInCache( lookupMeta, kgsRow1, add1 );
-    look.storeRowInCache( lookupMeta, kgsRow2, add2 );
+    lookData.cache.storeRowInCache( mockHelper.processRowsStepMetaInterface, lookupMeta, kgsRow1, add1 );
+    lookData.cache.storeRowInCache( mockHelper.processRowsStepMetaInterface, lookupMeta, kgsRow2, add2 );
 
     Object[] rowToCache = new Object[ 1 ];
     rowToCache[ 0 ] = 0L;
     lookData.conditions = new int[ 1 ];
     lookData.conditions[ 0 ] = DatabaseLookupMeta.CONDITION_GE;
-    Object[] dataFromCache = look.getRowFromCache( lookupMeta, rowToCache );
+    Object[] dataFromCache = lookData.cache.getRowFromCache( lookupMeta, rowToCache );
 
-    Assert.assertTrue( Arrays.equals( dataFromCache, add1 ) );
+    Assert.assertArrayEquals( dataFromCache, add1 );
   }
 }

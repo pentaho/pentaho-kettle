@@ -22,11 +22,8 @@
 
 package org.pentaho.di.trans.steps.databaselookup;
 
-import java.util.LinkedHashMap;
-
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.TimedRow;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -36,7 +33,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * @since 24-jan-2005
  */
 public class DatabaseLookupData extends BaseStepData implements StepDataInterface {
-  public LinkedHashMap<RowMetaAndData, TimedRow> look; // to store values in used to look up things...
+  public Cache cache;
   public Database db;
 
   public Object[] nullif; // Not found: default values...
@@ -58,4 +55,9 @@ public class DatabaseLookupData extends BaseStepData implements StepDataInterfac
     db = null;
   }
 
+  public interface Cache {
+    Object[] getRowFromCache( RowMetaInterface lookupMeta, Object[] lookupRow ) throws KettleException;
+
+    void storeRowInCache( DatabaseLookupMeta meta, RowMetaInterface lookupMeta, Object[] lookupRow, Object[] add );
+  }
 }
