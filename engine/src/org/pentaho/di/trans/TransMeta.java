@@ -121,6 +121,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * This class defines information about a transformation and offers methods to save and load it from XML or a PDI
@@ -3021,9 +3022,9 @@ public class TransMeta extends AbstractMeta
         // Read the error handling code of the steps...
         //
         Node errorHandlingNode = XMLHandler.getSubNode( transnode, XML_TAG_STEP_ERROR_HANDLING );
-        int nrErrorHandlers = XMLHandler.countNodes( errorHandlingNode, StepErrorMeta.XML_TAG );
+        int nrErrorHandlers = XMLHandler.countNodes( errorHandlingNode, StepErrorMeta.XML_ERROR_TAG );
         for ( int i = 0; i < nrErrorHandlers; i++ ) {
-          Node stepErrorMetaNode = XMLHandler.getSubNodeByNr( errorHandlingNode, StepErrorMeta.XML_TAG, i );
+          Node stepErrorMetaNode = XMLHandler.getSubNodeByNr( errorHandlingNode, StepErrorMeta.XML_ERROR_TAG, i );
           StepErrorMeta stepErrorMeta = new StepErrorMeta( this, stepErrorMetaNode, steps );
           if ( stepErrorMeta.getSourceStep() != null ) {
             stepErrorMeta.getSourceStep().setStepErrorMeta( stepErrorMeta ); // a bit of a trick, I know.
@@ -3043,7 +3044,7 @@ public class TransMeta extends AbstractMeta
         // Handle Hops
         //
         Node ordernode = XMLHandler.getSubNode( transnode, XML_TAG_ORDER );
-        n = XMLHandler.countNodes( ordernode, TransHopMeta.XML_TAG );
+        n = XMLHandler.countNodes( ordernode, TransHopMeta.XML_HOP_TAG );
 
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.WeHaveHops" ) + n + " hops..." );
@@ -3052,9 +3053,10 @@ public class TransMeta extends AbstractMeta
           if ( log.isDebug() ) {
             log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.LookingAtHop" ) + i );
           }
-          Node hopnode = XMLHandler.getSubNodeByNr( ordernode, TransHopMeta.XML_TAG, i );
+          Node hopnode = XMLHandler.getSubNodeByNr( ordernode, TransHopMeta.XML_HOP_TAG, i );
 
           TransHopMeta hopinf = new TransHopMeta( hopnode, steps );
+          hopinf.setErrorHop( isErrorNode( errorHandlingNode, hopnode ) );
           addTransHop( hopinf );
         }
 
@@ -3646,6 +3648,38 @@ public class TransMeta extends AbstractMeta
     return hasLoop( stepMeta, null, true ) || hasLoop( stepMeta, null, false );
   }
 
+  private boolean isErrorNode( Node errorHandingNode, Node checkNode ) {
+    NodeList errors = errorHandingNode.getChildNodes();
+    
+    Node nodeHopFrom = XMLHandler.getSubNode( checkNode, TransHopMeta.XML_FROM_TAG );
+    Node nodeHopTo = XMLHandler.getSubNode( checkNode, TransHopMeta.XML_TO_TAG );
+    
+    int i = 0;
+    while ( i < errors.getLength() ) {
+      
+      Node errorNode = errors.item( i );
+      
+      if ( !StepErrorMeta.XML_ERROR_TAG.equals( errorNode.getNodeName() ) ) {
+        i++;
+        continue;
+      }
+      
+      Node errorSourceNode = XMLHandler.getSubNode( errorNode, StepErrorMeta.XML_SOURCE_STEP_TAG );
+      Node errorTagetNode = XMLHandler.getSubNode( errorNode, StepErrorMeta.XML_TARGET_STEP_TAG );
+      
+      String sourceContent = errorSourceNode.getTextContent().trim();
+      String tagetContent = errorTagetNode.getTextContent().trim();
+      
+      if ( sourceContent.equals( nodeHopFrom.getTextContent().trim() )
+           && tagetContent.equals( nodeHopTo.getTextContent().trim() ) ) {
+        return true;
+      }
+      i++;
+    }
+    
+    return false;
+  }
+  
   /**
    * See if there are any loops in the transformation, starting at the indicated step. This works by looking at all the
    * previous steps. If you keep going backward and find the original step again, there is a loop.
