@@ -24,8 +24,10 @@ package org.pentaho.di.trans.steps.http;
 
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -148,6 +150,7 @@ public class HTTP extends BaseStep implements StepInterface {
         }
 
         String body = null;
+        StringBuilder headerString = new StringBuilder();
         // The status code
         if ( isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "HTTP.Log.ResponseStatusCode", "" + statusCode ) );
@@ -161,6 +164,7 @@ public class HTTP extends BaseStep implements StepInterface {
             if ( statusCode != 401 ) {
               // guess encoding
               //
+              Header[] headers = method.getResponseHeaders();
               String encoding = meta.getEncoding();
 
               // Try to determine the encoding from the Content-Type value
@@ -171,11 +175,21 @@ public class HTTP extends BaseStep implements StepInterface {
                   encoding = contentType.replaceFirst( "^.*;\\s*charset\\s*=\\s*", "" ).replace( "\"", "" ).trim();
                 }
               }
+              
+              headerString.append("{");
+              for (int i = 0; i < headers.length; i++) {
+            	  headerString.append("\"").append(headers[i].getName()).append("\"");
+            	  headerString.append(": ");
+            	  headerString.append("\"").append(headers[i].getValue()).append("\"");
+            	  if ( i < headers.length - 1 ) {
+            		  headerString.append(", ");
+            	  }
+              }
+              headerString.append("}");
 
               if ( isDebug() ) {
                 log.logDebug( toString(), BaseMessages.getString( PKG, "HTTP.Log.ResponseHeaderEncoding", encoding ) );
               }
-
               // the response
               if ( !Const.isEmpty( encoding ) ) {
                 inputStreamReader = new InputStreamReader( method.getResponseBodyAsStream(), encoding );
@@ -216,6 +230,9 @@ public class HTTP extends BaseStep implements StepInterface {
         }
         if ( !Const.isEmpty( meta.getResponseTimeFieldName() ) ) {
           newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( responseTime ) );
+        }
+        if ( !Const.isEmpty( meta.getResponseHeaderFieldName() ) ) {
+          newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString.toString() );
         }
 
       } finally {
