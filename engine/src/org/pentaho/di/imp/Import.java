@@ -179,7 +179,7 @@ public class Import {
         createOption( "filedir", "Import.CmdLine.FileDir", optionFileDir = new StringBuffer() ),
         createOption( "rules", "Import.CmdLine.RulesFile", optionRules = new StringBuffer() ),
         createOption( "norules", "Import.CmdLine.NoRules", optionNoRules = new StringBuffer(), true, false ),
-        createOption( "comment", "Import.CmdLine.Comment", optionComment = new StringBuffer(), true, false ),
+        createOption( "comment", "Import.CmdLine.Comment", optionComment = new StringBuffer(), false, false ),
         createOption( "replace", "Import.CmdLine.Replace", optionReplace = new StringBuffer(), true, false ),
         createOption( "coe", "Import.CmdLine.ContinueOnError", optionContinueOnError = new StringBuffer(), true, false ),
         createOption( "version", "Import.CmdLine.Version", optionVersion = new StringBuffer(), true, false ),
