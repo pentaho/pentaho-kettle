@@ -2375,17 +2375,17 @@ public class TransMeta extends AbstractMeta
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
     String[] parameters = listParameters();
     for ( int idx = 0; idx < parameters.length; idx++ ) {
-      retval.append( "        " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
-      retval.append( "            " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
-      retval.append( "            " )
+      retval.append( "      " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
+      retval.append( "        " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
+      retval.append( "        " )
           .append( XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
-      retval.append( "            " )
+      retval.append( "        " )
           .append( XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
-      retval.append( "        " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
+      retval.append( "      " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
     }
     retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
 
-    retval.append( "    <log>" ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.openTag( "log" ) ).append( Const.CR );
 
     // Add the metadata for the various logging tables
     //
@@ -2395,15 +2395,15 @@ public class TransMeta extends AbstractMeta
     retval.append( stepLogTable.getXML() );
     retval.append( metricsLogTable.getXML() );
 
-    retval.append( "    </log>" ).append( Const.CR );
-    retval.append( "    <maxdate>" ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.closeTag( "log" ) ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.openTag( "maxdate" ) ).append( Const.CR );
     retval.append( "      " )
         .append( XMLHandler.addTagValue( "connection", maxDateConnection == null ? "" : maxDateConnection.getName() ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "table", maxDateTable ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "field", maxDateField ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "offset", maxDateOffset ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "maxdiff", maxDateDifference ) );
-    retval.append( "    </maxdate>" ).append( Const.CR );
+    retval.append( "    " ).append( XMLHandler.closeTag( "maxdate" ) ).append( Const.CR );
 
     retval.append( "    " ).append( XMLHandler.addTagValue( "size_rowset", sizeRowset ) );
 
@@ -2449,7 +2449,7 @@ public class TransMeta extends AbstractMeta
       retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
       for ( int i = 0; i < slaveServers.size(); i++ ) {
         SlaveServer slaveServer = slaveServers.get( i );
-        retval.append( "         " ).append( slaveServer.getXML() ).append( Const.CR );
+        retval.append( slaveServer.getXML() );
       }
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_SLAVESERVERS ) ).append( Const.CR );
     }
@@ -2465,10 +2465,10 @@ public class TransMeta extends AbstractMeta
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_CLUSTERSCHEMAS ) ).append( Const.CR );
     }
 
-    retval.append( "  " ).append( XMLHandler.addTagValue( "created_user", createdUser ) );
-    retval.append( "  " ).append( XMLHandler.addTagValue( "created_date", XMLHandler.date2string( createdDate ) ) );
-    retval.append( "  " ).append( XMLHandler.addTagValue( "modified_user", modifiedUser ) );
-    retval.append( "  " ).append( XMLHandler.addTagValue( "modified_date", XMLHandler.date2string( modifiedDate ) ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "created_user", createdUser ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "created_date", XMLHandler.date2string( createdDate ) ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "modified_user", modifiedUser ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "modified_date", XMLHandler.date2string( modifiedDate ) ) );
 
     try {
       retval.append( "    " ).append( XMLHandler.addTagValue( "key_for_session_key", keyForSessionKey ) );
@@ -2506,7 +2506,7 @@ public class TransMeta extends AbstractMeta
       retval.append( "  " ).append( XMLHandler.openTag( XML_TAG_ORDER ) ).append( Const.CR );
       for ( int i = 0; i < nrTransHops(); i++ ) {
         TransHopMeta transHopMeta = getTransHop( i );
-        retval.append( transHopMeta.getXML() ).append( Const.CR );
+        retval.append( transHopMeta.getXML() );
       }
       retval.append( "  " ).append( XMLHandler.closeTag( XML_TAG_ORDER ) ).append( Const.CR );
 
@@ -2532,16 +2532,16 @@ public class TransMeta extends AbstractMeta
     }
 
     // The slave-step-copy/partition distribution. Only used for slave transformations in a clustering environment.
-    retval.append( "   " ).append( slaveStepCopyPartitionDistribution.getXML() );
+    retval.append( slaveStepCopyPartitionDistribution.getXML() );
 
     // Is this a slave transformation or not?
-    retval.append( "   " ).append( XMLHandler.addTagValue( "slave_transformation", slaveTransformation ) );
+    retval.append( "  " ).append( XMLHandler.addTagValue( "slave_transformation", slaveTransformation ) );
 
     // Also store the attribute groups
     //
-    retval.append( AttributesUtil.getAttributesXml( attributesMap ) ).append( Const.CR );
+    retval.append( AttributesUtil.getAttributesXml( attributesMap ) );
 
-    retval.append( "</" ).append( XML_TAG + ">" ).append( Const.CR );
+    retval.append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
     return retval.toString();
   }
