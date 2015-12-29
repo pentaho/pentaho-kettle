@@ -94,14 +94,14 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
   public String getXML() {
     StringBuilder retval = new StringBuilder();
 
-    retval.append( XMLHandler.openTag( XML_TAG ) );
-    retval.append( XMLHandler.addTagValue( "connection", connectionName ) );
-    retval.append( XMLHandler.addTagValue( "schema", schemaName ) );
-    retval.append( XMLHandler.addTagValue( "table", tableName ) );
-    retval.append( XMLHandler.addTagValue( "interval", logInterval ) );
-    retval.append( XMLHandler.addTagValue( "timeout_days", timeoutInDays ) );
+    retval.append( "      " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "connection", connectionName ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "schema", schemaName ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "table", tableName ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "interval", logInterval ) );
+    retval.append( "        " ).append( XMLHandler.addTagValue( "timeout_days", timeoutInDays ) );
     retval.append( super.getFieldsXML() );
-    retval.append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
+    retval.append( "      " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
     return retval.toString();
   }
