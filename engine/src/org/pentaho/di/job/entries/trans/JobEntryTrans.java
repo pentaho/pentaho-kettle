@@ -305,21 +305,21 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     }
 
     if ( parameters != null ) {
-      retval.append( "      " ).append( XMLHandler.openTag( "parameters" ) );
+      retval.append( "      " ).append( XMLHandler.openTag( "parameters" ) ).append( Const.CR );
 
       retval.append( "        " ).append( XMLHandler.addTagValue( "pass_all_parameters", passingAllParameters ) );
 
       for ( int i = 0; i < parameters.length; i++ ) {
         // This is a better way of making the XML file than the arguments.
-        retval.append( "            " ).append( XMLHandler.openTag( "parameter" ) );
+        retval.append( "        " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
 
-        retval.append( "            " ).append( XMLHandler.addTagValue( "name", parameters[ i ] ) );
-        retval.append( "            " ).append( XMLHandler.addTagValue( "stream_name", parameterFieldNames[ i ] ) );
-        retval.append( "            " ).append( XMLHandler.addTagValue( "value", parameterValues[ i ] ) );
+        retval.append( "          " ).append( XMLHandler.addTagValue( "name", parameters[ i ] ) );
+        retval.append( "          " ).append( XMLHandler.addTagValue( "stream_name", parameterFieldNames[ i ] ) );
+        retval.append( "          " ).append( XMLHandler.addTagValue( "value", parameterValues[ i ] ) );
 
-        retval.append( "            " ).append( XMLHandler.closeTag( "parameter" ) );
+        retval.append( "        " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
       }
-      retval.append( "      " ).append( XMLHandler.closeTag( "parameters" ) );
+      retval.append( "      " ).append( XMLHandler.closeTag( "parameters" ) ).append( Const.CR );
     }
 
     return retval.toString();
