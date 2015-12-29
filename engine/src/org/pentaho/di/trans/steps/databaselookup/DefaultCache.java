@@ -84,7 +84,7 @@ public class DefaultCache implements DatabaseLookupData.Cache {
             ValueMetaInterface keyMeta = key.getValueMeta( i );
             Object keyData = key.getData()[ i ];
 
-            switch( data.conditions[ i ] ) {
+            switch ( data.conditions[ i ] ) {
               case DatabaseLookupMeta.CONDITION_EQ:
                 match = ( cmpMeta.compare( cmpData, keyMeta, keyData ) == 0 );
                 break;

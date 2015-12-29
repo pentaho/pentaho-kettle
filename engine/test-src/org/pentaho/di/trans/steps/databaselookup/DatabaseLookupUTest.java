@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.databaselookup;
 
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -45,6 +44,7 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.databaselookup.readallcache.ReadAllCache;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
 
@@ -56,6 +56,10 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.singletonList;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyBoolean;
@@ -153,8 +157,7 @@ public class DatabaseLookupUTest {
       any( StepMeta.class ),
       any( VariableSpace.class ),
       any( Repository.class ),
-      any( IMetaStore.class )
-    );
+      any( IMetaStore.class ) );
     return meta;
   }
 
@@ -248,6 +251,66 @@ public class DatabaseLookupUTest {
     lookData.conditions[ 0 ] = DatabaseLookupMeta.CONDITION_GE;
     Object[] dataFromCache = lookData.cache.getRowFromCache( lookupMeta, rowToCache );
 
-    Assert.assertArrayEquals( dataFromCache, add1 );
+    assertArrayEquals( dataFromCache, add1 );
+  }
+
+
+  @Test
+  public void createsReadOnlyCache_WhenReadAll_AndNotAllEquals() throws Exception {
+    DatabaseLookupData data = getCreatedData( false );
+    assertThat( data.cache, is( instanceOf( ReadAllCache.class ) ) );
+  }
+
+  @Test
+  public void createsReadDefaultCache_WhenReadAll_AndAllEquals() throws Exception {
+    DatabaseLookupData data = getCreatedData( true );
+    assertThat( data.cache, is( instanceOf( DefaultCache.class ) ) );
+  }
+
+  private DatabaseLookupData getCreatedData( boolean allEquals ) throws Exception {
+    Database db = mock( Database.class );
+    when( db.getRows( anyString(), anyInt() ) )
+      .thenReturn( Collections.singletonList( new Object[] { 1L } ) );
+
+    RowMeta returnRowMeta = new RowMeta();
+    returnRowMeta.addValueMeta( new ValueMetaInteger() );
+    when( db.getReturnRowMeta() ).thenReturn( returnRowMeta );
+
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+
+    StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper = createMockHelper();
+
+    DatabaseLookupMeta meta = new DatabaseLookupMeta();
+    meta.setCached( true );
+    meta.setLoadingAllDataInCache( true );
+    meta.setDatabaseMeta( dbMeta );
+    // it's ok here, we won't do actual work
+    meta.allocate( 1, 0 );
+    meta.setStreamKeyField1( new String[] { "Test" } );
+
+    DatabaseLookupData data = new DatabaseLookupData();
+
+    DatabaseLookup step = spyLookup( mockHelper, db, meta.getDatabaseMeta() );
+    doNothing().when( step ).determineFieldsTypesQueryingDb();
+    doReturn( null ).when( step ).lookupValues( any( RowMetaInterface.class ), any( Object[].class ) );
+
+    RowMeta input = new RowMeta();
+    input.addValueMeta( new ValueMetaInteger( "Test" ) );
+    step.setInputRowMeta( input );
+    step.init( meta, data );
+
+
+    data.db = db;
+    data.keytypes = new int[] { ValueMetaInterface.TYPE_INTEGER };
+    if ( allEquals ) {
+      data.allEquals = true;
+      data.conditions = new int[] { DatabaseLookupMeta.CONDITION_EQ };
+    } else {
+      data.allEquals = false;
+      data.conditions = new int[] { DatabaseLookupMeta.CONDITION_LT };
+    }
+    step.processRow( meta, data );
+
+    return data;
   }
 }

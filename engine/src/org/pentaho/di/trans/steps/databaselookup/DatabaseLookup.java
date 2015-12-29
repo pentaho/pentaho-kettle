@@ -22,17 +22,11 @@
 
 package org.pentaho.di.trans.steps.databaselookup;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.TimedRow;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -52,6 +46,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.databaselookup.readallcache.ReadAllCache;
 
 /**
  * Looks up values in a database using keys from input streams.
@@ -77,7 +72,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
    * @return the resulting row after the lookup values where added
    * @throws KettleException In case something goes wrong.
    */
-  private synchronized Object[] lookupValues( RowMetaInterface inputRowMeta, Object[] row ) throws KettleException {
+  @VisibleForTesting
+  synchronized Object[] lookupValues( RowMetaInterface inputRowMeta, Object[] row ) throws KettleException {
     Object[] outputRow = RowDataUtil.resizeArray( row, data.outputRowMeta.size() );
 
     Object[] lookupRow = new Object[ data.lookupMeta.size() ];
@@ -215,7 +211,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     return outputRow;
   }
 
-  private void determineFieldsTypesQueryingDb() throws KettleException {
+  // visible for testing purposes
+  void determineFieldsTypesQueryingDb() throws KettleException {
     final String[] keyFields = meta.getTableKeyField();
     data.keytypes = new int[ keyFields.length ];
 
@@ -468,27 +465,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
       //
       List<Object[]> rows = db.getRows( sql, 0 );
       if ( rows != null && rows.size() > 0 ) {
-        RowMetaInterface returnRowMeta = db.getReturnRowMeta();
-        // Copy the data into 2 parts: key and value...
-        //
-        for ( Object[] row : rows ) {
-          int index = 0;
-          RowMeta keyMeta = new RowMeta();
-          Object[] keyData = new Object[ meta.getStreamKeyField1().length ];
-          for ( int i = 0; i < meta.getStreamKeyField1().length; i++ ) {
-            keyData[ i ] = row[ index ];
-            keyMeta.addValueMeta( returnRowMeta.getValueMeta( index++ ) );
-          }
-          // RowMeta valueMeta = new RowMeta();
-          Object[] valueData = new Object[ data.returnMeta.size() ];
-          for ( int i = 0; i < data.returnMeta.size(); i++ ) {
-            valueData[ i ] = row[ index++ ];
-            // valueMeta.addValueMeta(returnRowMeta.getValueMeta(index++));
-          }
-          // Store the data...
-          //
-          data.cache.storeRowInCache( meta, keyMeta, keyData, valueData );
-          incrementLinesInput();
+        if ( data.allEquals ) {
+          putToDefaultCache( db, rows );
+        } else {
+          putToReadOnlyCache( db, rows );
         }
       }
     } catch ( Exception e ) {
@@ -498,6 +478,57 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         db.disconnect();
       }
     }
+  }
+
+  private void putToDefaultCache( Database db, List<Object[]> rows ) {
+    RowMetaInterface returnRowMeta = db.getReturnRowMeta();
+    // Copy the data into 2 parts: key and value...
+    //
+    for ( Object[] row : rows ) {
+      int index = 0;
+      // not sure it is efficient to re-create the same on every row,
+      // but this was done earlier, so I'm keeping this behaviour
+      RowMetaInterface keyMeta = returnRowMeta.clone();
+      Object[] keyData = new Object[ meta.getStreamKeyField1().length ];
+      for ( int i = 0; i < meta.getStreamKeyField1().length; i++ ) {
+        keyData[ i ] = row[ index++ ];
+      }
+      // RowMeta valueMeta = new RowMeta();
+      Object[] valueData = new Object[ data.returnMeta.size() ];
+      for ( int i = 0; i < data.returnMeta.size(); i++ ) {
+        valueData[ i ] = row[ index++ ];
+        // valueMeta.addValueMeta(returnRowMeta.getValueMeta(index++));
+      }
+      // Store the data...
+      //
+      data.cache.storeRowInCache( meta, keyMeta, keyData, valueData );
+      incrementLinesInput();
+    }
+  }
+
+  private void putToReadOnlyCache( Database db, List<Object[]> rows ) {
+    ReadAllCache.Builder cacheBuilder = new ReadAllCache.Builder( data, rows.size() );
+
+    // all keys have the same row meta,
+    // it is useless to re-create it each time
+    RowMetaInterface returnRowMeta = db.getReturnRowMeta();
+    cacheBuilder.setKeysMeta( returnRowMeta.clone() );
+
+    final int keysAmount = meta.getStreamKeyField1().length;
+    // Copy the data into 2 parts: key and value...
+    //
+    final int valuesAmount = data.returnMeta.size();
+    for ( Object[] row : rows ) {
+      Object[] keyData = new Object[ keysAmount ];
+      System.arraycopy( row, 0, keyData, 0, keysAmount );
+
+      Object[] valueData = new Object[ valuesAmount ];
+      System.arraycopy( row, keysAmount, valueData, 0, valuesAmount );
+
+      cacheBuilder.add( keyData, valueData );
+      incrementLinesInput();
+    }
+    data.cache = cacheBuilder.build();
   }
 
   /**
