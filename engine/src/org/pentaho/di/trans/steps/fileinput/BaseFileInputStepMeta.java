@@ -27,6 +27,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.resource.ResourceEntry;
@@ -54,8 +56,11 @@ public abstract class BaseFileInputStepMeta extends BaseStepMeta {
       new String[] { BaseMessages.getString( PKG, "System.Combo.No" ), BaseMessages.getString( PKG,
           "System.Combo.Yes" ) };
 
+  @InjectionDeep
   public InputFiles inputFiles = new InputFiles();
+  @InjectionDeep
   public ErrorHandling errorHandling = new ErrorHandling();
+  @InjectionDeep
   public AdditionalOutputFields additionalOutputFields = new AdditionalOutputFields();
 
   /**
@@ -64,36 +69,47 @@ public abstract class BaseFileInputStepMeta extends BaseStepMeta {
   public static class InputFiles implements Cloneable {
 
     /** Array of filenames */
+    @Injection( name = "FILENAME", group = "FILENAME_LINES" )
     public String[] fileName = {};
 
     /** Wildcard or filemask (regular expression) */
+    @Injection( name = "FILEMASK", group = "FILENAME_LINES" )
     public String[] fileMask = {};
 
     /** Wildcard or filemask to exclude (regular expression) */
+    @Injection( name = "EXCLUDE_FILEMASK", group = "FILENAME_LINES" )
     public String[] excludeFileMask = {};
 
     /** Array of boolean values as string, indicating if a file is required. */
+    @Injection( name = "FILE_REQUIRED", group = "FILENAME_LINES" )
     public String[] fileRequired = {};
 
     /** Array of boolean values as string, indicating if we need to fetch sub folders. */
+    @Injection( name = "INCLUDE_SUBFOLDERS", group = "FILENAME_LINES" )
     public String[] includeSubFolders = {};
 
     /** Are we accepting filenames in input rows? */
+    @Injection( name = "ACCEPT_FILE_NAMES" )
     public boolean acceptingFilenames;
 
     /** The stepname to accept filenames from */
+    @Injection( name = "ACCEPT_FILE_STEP" )
     public String acceptingStepName;
 
     /** If receiving input rows, should we pass through existing fields? */
+    @Injection( name = "PASS_THROUGH_FIELDS" )
     public boolean passingThruFields;
 
     /** The field in which the filename is placed */
+    @Injection( name = "ACCEPT_FILE_FIELD" )
     public String acceptingField;
 
     /** The fields to import... */
+    @InjectionDeep
     public BaseFileInputField[] inputFields = {};
 
     /** The add filenames to result filenames flag */
+    @Injection( name = "ADD_FILES_TO_RESULT" )
     public boolean isaddresult;
 
     public Object clone() {
@@ -111,32 +127,42 @@ public abstract class BaseFileInputStepMeta extends BaseStepMeta {
   public static class ErrorHandling implements Cloneable {
 
     /** Ignore error : turn into warnings */
+    @Injection( name = "IGNORE_ERRORS" )
     public boolean errorIgnored;
 
     /** File error field name. */
+    @Injection( name = "FILE_ERROR_FIELD" )
     public String fileErrorField;
 
     /** File error text field name. */
+    @Injection( name = "FILE_ERROR_MESSAGE_FIELD" )
     public String fileErrorMessageField;
 
+    @Injection( name = "SKIP_BAD_FILES" )
     public boolean skipBadFiles;
 
     /** The directory that will contain warning files */
+    @Injection( name = "WARNING_FILES_TARGET_DIR" )
     public String warningFilesDestinationDirectory;
 
     /** The extension of warning files */
+    @Injection( name = "WARNING_FILES_EXTENTION" )
     public String warningFilesExtension;
 
     /** The directory that will contain error files */
+    @Injection( name = "ERROR_FILES_TARGET_DIR" )
     public String errorFilesDestinationDirectory;
 
     /** The extension of error files */
+    @Injection( name = "ERROR_FILES_EXTENTION" )
     public String errorFilesExtension;
 
     /** The directory that will contain line number files */
+    @Injection( name = "LINE_NR_FILES_TARGET_DIR" )
     public String lineNumberFilesDestinationDirectory;
 
     /** The extension of line number files */
+    @Injection( name = "LINE_NR_FILES_EXTENTION" )
     public String lineNumberFilesExtension;
 
     public Object clone() {
@@ -154,13 +180,21 @@ public abstract class BaseFileInputStepMeta extends BaseStepMeta {
   public static class AdditionalOutputFields implements Cloneable {
 
     /** Additional fields **/
+    @Injection( name = "FILE_SHORT_FILE_FIELDNAME" )
     public String shortFilenameField;
+    @Injection( name = "FILE_EXTENSION_FIELDNAME" )
     public String extensionField;
+    @Injection( name = "FILE_PATH_FIELDNAME" )
     public String pathField;
+    @Injection( name = "FILE_SIZE_FIELDNAME" )
     public String sizeField;
+    @Injection( name = "FILE_HIDDEN_FIELDNAME" )
     public String hiddenField;
+    @Injection( name = "FILE_LAST_MODIFICATION_FIELDNAME" )
     public String lastModificationField;
+    @Injection( name = "FILE_URI_FIELDNAME" )
     public String uriField;
+    @Injection( name = "FILE_ROOT_URI_FIELDNAME" )
     public String rootUriField;
 
     public Object clone() {
