@@ -21,16 +21,16 @@
     <dependency org="pentaho-kettle" name="kettle-core"        rev="${dependency.kettle.revision}" conf="dev->default" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-engine"      rev="${dependency.kettle.revision}" conf="dev->default" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt"      rev="${dependency.kettle.revision}" conf="dev->default" changing="true"/>
+    <dependency org="pentaho"        name="metastore"          rev="${dependency.pentaho-metastore.revision}" conf="dev->default" changing="true" transitive="false"/>
 
 	<!-- runtime dependencies of steps in this project -->
-    <dependency org="org.apache.commons"           name="commons-vfs2"        rev="2.1-20150824"    transitive="false"/>
-    <dependency org="pentaho"                      name="metastore"           rev="${dependency.pentaho-metastore.revision}" changing="true" transitive="false"/>
-    <dependency org="commons-io"                   name="commons-io"          rev="1.4"             transitive="false"/>
-    <dependency org="com.googlecode.json-simple"   name="json-simple"         rev="1.1"             transitive="false"/>
-    <dependency org="jsonpath"                     name="jsonpath"            rev="1.0"             transitive="false"/>
-    <dependency org="org.codehaus.jackson"         name="jackson-core-asl"    rev="1.9.2"           transitive="false"/>
-    <dependency org="org.codehaus.jackson"         name="jackson-mapper-asl"  rev="1.9.2"           transitive="false"/>
-    <dependency org="org.codehaus.jackson"         name="jackson-jaxrs"       rev="1.9.2"           transitive="false"/>
+    <dependency org="org.apache.commons"           name="commons-vfs2"        rev="2.1-20150824"    conf="dev->default" transitive="false"/>
+    <dependency org="commons-io"                   name="commons-io"          rev="1.4"             conf="dev->default" transitive="false"/>
+    <dependency org="com.googlecode.json-simple"   name="json-simple"         rev="1.1"             conf="dev->default" transitive="false"/>
+    <dependency org="jsonpath"                     name="jsonpath"            rev="1.0"             conf="dev->default" transitive="false"/>
+    <dependency org="org.codehaus.jackson"         name="jackson-core-asl"    rev="1.9.2"           conf="dev->default" transitive="false"/>
+    <dependency org="org.codehaus.jackson"         name="jackson-mapper-asl"  rev="1.9.2"           conf="dev->default" transitive="false"/>
+    <dependency org="org.codehaus.jackson"         name="jackson-jaxrs"       rev="1.9.2"           conf="dev->default" transitive="false"/>
 
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency org="org.eclipse.swt" name="swt-linux-x86_64" rev="4.3.2" conf="dev->default" transitive="false"/>
