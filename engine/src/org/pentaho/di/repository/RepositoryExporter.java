@@ -53,6 +53,7 @@ import org.pentaho.di.repository.filerep.KettleFileRepository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
+import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 
 /**
  * <p>This class is used to read repository, load jobs and transformations, and export them into xml file.
@@ -389,6 +390,25 @@ public class RepositoryExporter implements IRepositoryExporterFeedback {
             } catch ( Exception e ) {
               log.logError( BaseMessages.getString( PKG, "Repository.Exporter.Log.UnableToLoadTransInMap", mappingMeta
                   .getName() ), e );
+            }
+          }
+        }
+        if ( stepMeta.isEtlMetaInject() ) {
+          MetaInjectMeta metaInjectMeta = (MetaInjectMeta) stepMeta.getStepMetaInterface();
+          // convert to a named based reference.
+          //
+          if ( metaInjectMeta.getSpecificationMethod() == ObjectLocationSpecificationMethod.FILENAME ) {
+            try {
+              TransMeta meta =
+                  MetaInjectMeta.loadTransformationMeta( metaInjectMeta, fileRep, fileRep.metaStore, transMeta );
+              FileObject fileObject = KettleVFS.getFileObject( meta.getFilename() );
+              metaInjectMeta.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+              metaInjectMeta.setFileName( null );
+              metaInjectMeta.setTransName( meta.getName() );
+              metaInjectMeta.setDirectoryPath( Const.NVL( calcRepositoryDirectory( fileRep, fileObject ), "/" ) );
+            } catch ( Exception e ) {
+              log.logError( BaseMessages.getString( PKG, "Repository.Exporter.Log.UnableToLoadTransInMDI",
+                  metaInjectMeta.getName() ), e );
             }
           }
         }
