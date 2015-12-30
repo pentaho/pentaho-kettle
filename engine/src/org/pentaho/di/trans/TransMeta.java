@@ -1120,8 +1120,7 @@ public class TransMeta extends AbstractMeta
     int i;
     for ( i = 0; i < nrTransHops(); i++ ) {
       TransHopMeta hi = getTransHop( i );
-      if ( hi.getFromStep() != null && hi.getFromStep().equals( fromstep ) ) // return the first
-      {
+      if ( hi.getFromStep() != null && hi.getFromStep().equals( fromstep ) ) { // return the first
         return hi;
       }
     }
@@ -1187,8 +1186,7 @@ public class TransMeta extends AbstractMeta
     int i;
     for ( i = 0; i < nrTransHops(); i++ ) {
       TransHopMeta hi = getTransHop( i );
-      if ( hi.getToStep() != null && hi.getToStep().equals( tostep ) ) // Return the first!
-      {
+      if ( hi.getToStep() != null && hi.getToStep().equals( tostep ) ) { // Return the first!
         return hi;
       }
     }
@@ -3506,6 +3504,26 @@ public class TransMeta extends AbstractMeta
     return false;
   }
 
+  /**
+   * Checks if any selected step has been used in a hop or not.
+   *
+   * @param stepMeta
+   *          The step queried.
+   * @return true if a step is used in a hop (active or not), false otherwise
+   */
+  public boolean isAnySelectedStepUsedInTransHops() {
+    List<StepMeta> selectedSteps = getSelectedSteps();
+    int i = 0;
+    while ( i < selectedSteps.size() ) {
+      StepMeta stepMeta = selectedSteps.get(i);
+      if ( isStepUsedInTransHops( stepMeta ) ) {
+        return true;
+      }
+      i++;
+    }
+    return false;
+  }
+  
   /**
    * Clears the different changed flags of the transformation.
    *
