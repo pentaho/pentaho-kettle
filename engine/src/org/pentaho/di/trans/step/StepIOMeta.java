@@ -58,8 +58,9 @@ public class StepIOMeta implements StepIOMetaInterface, Cloneable {
   @Override
   protected StepIOMeta clone() throws CloneNotSupportedException {
     StepIOMeta ioMeta = (StepIOMeta) super.clone();
-    ioMeta.streams = new ArrayList<StreamInterface>();
-    ioMeta.streams.addAll( streams );
+
+    List<StreamInterface> cloneStreams = new ArrayList<>( streams );
+    ioMeta.streams = java.util.Collections.synchronizedList( cloneStreams );
     return ioMeta;
   }
 
