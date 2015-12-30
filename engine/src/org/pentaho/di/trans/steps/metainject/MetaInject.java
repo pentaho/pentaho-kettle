@@ -136,7 +136,7 @@ public class MetaInject extends BaseStep implements StepInterface {
             StepInjectionMetaEntry entry = findMetaEntry( metadataEntries, target.getAttributeKey() );
             if ( entry != null ) {
               if ( !target.isDetail() ) {
-                setEntryValue( entry, rows.get( 0 ), source );
+                setEntryValueIfFieldExists( entry, rows.get( 0 ), source );
                 inject.add( entry );
               } else {
                 // We are going to pass this entry N times for N target mappings
@@ -185,7 +185,7 @@ public class MetaInject extends BaseStep implements StepInterface {
                       //
                       SourceStepField detailSource = findDetailSource( targetMap, targetStep, rowEntry.getKey() );
                       if ( detailSource != null ) {
-                        setEntryValue( rowEntry, row, detailSource );
+                        setEntryValueIfFieldExists( rowEntry, row, detailSource );
                       } else {
                         if ( log.isDetailed() ) {
                           logDetailed( "No detail source found for key: "
@@ -368,6 +368,19 @@ public class MetaInject extends BaseStep implements StepInterface {
     return null;
   }
 
+  /**
+   * package-local visibility for testing purposes
+   */
+  void setEntryValueIfFieldExists( StepInjectionMetaEntry entry, RowMetaAndData row, SourceStepField source )
+    throws KettleValueException {
+    RowMetaInterface rowMeta = row.getRowMeta();
+    if ( rowMeta.indexOfValue( source.getField() ) < 0 ) {
+      return;
+    }
+    setEntryValue( entry, row, source );
+  }
+
+
   private void setEntryValue( StepInjectionMetaEntry entry, RowMetaAndData row, SourceStepField source ) throws KettleValueException {
     // A standard attribute, a single row of data...
     //
@@ -403,9 +416,7 @@ public class MetaInject extends BaseStep implements StepInterface {
 
     if ( super.init( smi, sdi ) ) {
       try {
-        data.transMeta =
-          MetaInjectMeta.loadTransformationMeta(
-            meta, getTrans().getRepository(), getTrans().getMetaStore(), this );
+        data.transMeta = loadTransformationMeta();
         data.transMeta.copyVariablesFrom( this );
 
         // Get a mapping between the step name and the injection...
@@ -436,4 +447,12 @@ public class MetaInject extends BaseStep implements StepInterface {
 
     return false;
   }
+
+  /**
+   * package-local visibility for testing purposes
+   */
+  TransMeta loadTransformationMeta() throws KettleException {
+    return MetaInjectMeta.loadTransformationMeta( meta, getTrans().getRepository(), getTrans().getMetaStore(), this );
+  }
+
 }
