@@ -710,7 +710,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
       // So let's change the filename from relative to absolute by grabbing the file object...
       // In case the name of the file comes from previous steps, forget about this!
       //
-      if ( Const.isEmpty( filenameField ) ) {
+      if ( Const.isEmpty( filenameField ) && !Const.isEmpty( filename ) ) {
         // From : ${Internal.Transformation.Filename.Directory}/../foo/bar.csv
         // To : /home/matt/test/files/foo/bar.csv
         //
