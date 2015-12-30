@@ -29,6 +29,7 @@ import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 
 import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
@@ -216,6 +217,7 @@ public class HTTPPOST extends BaseStep implements StepInterface {
           logDebug( BaseMessages.getString( PKG, "HTTPPOST.Log.ResponseCode", String.valueOf( statusCode ) ) );
         }
         String body = null;
+        StringBuilder headerString = new StringBuilder();
         if ( statusCode != -1 ) {
           if ( statusCode == 204 ) {
             body = "";
@@ -223,6 +225,7 @@ public class HTTPPOST extends BaseStep implements StepInterface {
             // if the response is not 401: HTTP Authentication required
             if ( statusCode != 401 ) {
 
+              Header[] headers = post.getResponseHeaders();
               // Use request encoding if specified in component to avoid strange response encodings
               // See PDI-3815
               String encoding = data.realEncoding;
@@ -235,6 +238,17 @@ public class HTTPPOST extends BaseStep implements StepInterface {
                   encoding = contentType.replaceFirst( "^.*;\\s*charset\\s*=\\s*", "" ).replace( "\"", "" ).trim();
                 }
               }
+              
+              headerString.append("{");
+              for (int i = 0; i < headers.length; i++) {
+            	  headerString.append("\"").append(headers[i].getName()).append("\"");
+            	  headerString.append(": ");
+            	  headerString.append("\"").append(headers[i].getValue()).append("\"");
+            	  if ( i < headers.length - 1 ) {
+            		  headerString.append(", ");
+            	  }
+              }
+              headerString.append("}");
 
               // Get the response, but only specify encoding if we've got one
               // otherwise the default charset ISO-8859-1 is used by HttpClient
@@ -283,6 +297,9 @@ public class HTTPPOST extends BaseStep implements StepInterface {
         }
         if ( !Const.isEmpty( meta.getResponseTimeFieldName() ) ) {
           newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( responseTime ) );
+        }
+        if ( !Const.isEmpty( meta.getResponseHeaderFieldName() ) ) {
+          newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString.toString() );
         }
       } finally {
         if ( inputStreamReader != null ) {
