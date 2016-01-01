@@ -51,7 +51,8 @@ public class AddXMLTest {
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
-    when( stepMockHelper.trans.getSocketRepository() ).thenReturn( mock( SocketRepository.class ) );
+    SocketRepository socketRepository = mock( SocketRepository.class );
+    when( stepMockHelper.trans.getSocketRepository() ).thenReturn( socketRepository );
     when( stepMockHelper.initStepMetaInterface.getOutputFields() ).thenReturn( new XMLField[] { field } );
     when( stepMockHelper.initStepMetaInterface.getRootNode() ).thenReturn( "ADDXML_TEST" );
   }
