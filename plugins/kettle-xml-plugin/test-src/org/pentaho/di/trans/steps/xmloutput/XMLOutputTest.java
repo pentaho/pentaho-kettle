@@ -72,7 +72,8 @@ public class XMLOutputTest {
         new StepMockHelper<XMLOutputMeta, XMLOutputData>( "XML_OUTPUT_TEST", XMLOutputMeta.class, XMLOutputData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         stepMockHelper.logChannelInterface );
-    when( stepMockHelper.transMeta.findStep( Matchers.anyString() ) ).thenReturn( mock( StepMeta.class ) );
+    StepMeta mockMeta = mock( StepMeta.class );
+    when( stepMockHelper.transMeta.findStep( Matchers.anyString() ) ).thenReturn( mockMeta );
     when( trans.getLogLevel() ).thenReturn( LogLevel.DEBUG );
 
     // Create and set Meta with some realistic data
