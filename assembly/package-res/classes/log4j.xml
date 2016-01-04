@@ -66,7 +66,10 @@
 	<category name="org.pentaho.platform.osgi">
 		<priority value="INFO" />
 	</category>
-
+	
+  <category name="org.pentaho.platform.engine.core.system.status">
+    <priority value="INFO"/>
+  </category>
 
    <!-- ======================= -->
    <!-- Setup the Root category -->
