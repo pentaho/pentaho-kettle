@@ -20,29 +20,26 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.step;
+package org.pentaho.di.ui.job.entry;
 
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.widgets.Shell;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * @author Andrey Khayrutdinov
  */
-public class BaseStepDialog_ConnectionLine_Test {
+public class JobEntryDialog_ConnectionLine_Test {
 
   private static String INITIAL_NAME = "qwerty";
   private static String INPUT_NAME = "asdfg";
@@ -58,72 +55,72 @@ public class BaseStepDialog_ConnectionLine_Test {
 
   @Test
   public void adds_WhenConnectionNameIsUnique() throws Exception {
-    TransMeta transMeta = new TransMeta();
+    JobMeta jobMeta = new JobMeta();
 
-    invokeAddConnectionListener( transMeta, INPUT_NAME );
+    invokeAddConnectionListener( jobMeta, INPUT_NAME );
 
-    assertOnlyDbExists( transMeta, INPUT_NAME, INPUT_HOST );
+    assertOnlyDbExists( jobMeta, INPUT_NAME, INPUT_HOST );
   }
 
   @Test
   public void ignores_WhenConnectionNameIsUsed() throws Exception {
-    TransMeta transMeta = new TransMeta();
-    transMeta.addDatabase( createDefaultDatabase() );
+    JobMeta jobMeta = new JobMeta();
+    jobMeta.addDatabase( createDefaultDatabase() );
 
-    invokeAddConnectionListener( transMeta, null );
+    invokeAddConnectionListener( jobMeta, null );
 
-    assertOnlyDbExists( transMeta, INITIAL_NAME, INITIAL_HOST );
+    assertOnlyDbExists( jobMeta, INITIAL_NAME, INITIAL_HOST );
   }
 
-  private void invokeAddConnectionListener( TransMeta transMeta, String answeredName ) throws Exception {
-    BaseStepDialog dialog = mock( BaseStepDialog.class );
+  private void invokeAddConnectionListener( JobMeta jobMeta, String answeredName ) throws Exception {
+    JobEntryDialog dialog = mock( JobEntryDialog.class );
     when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) )
       .thenAnswer( new PropsSettingAnswer( answeredName, INPUT_HOST ) );
 
-    dialog.transMeta = transMeta;
+    dialog.jobMeta = jobMeta;
     dialog.new AddConnectionListener( mock( CCombo.class ) ).widgetSelected( null );
   }
 
 
   @Test
   public void edits_WhenNotRenamed() throws Exception {
-    TransMeta transMeta = new TransMeta();
-    transMeta.addDatabase( createDefaultDatabase() );
+    JobMeta jobMeta = new JobMeta();
+    jobMeta.addDatabase( createDefaultDatabase() );
 
-    invokeEditConnectionListener( transMeta, INITIAL_NAME );
+    invokeEditConnectionListener( jobMeta, INITIAL_NAME );
 
-    assertOnlyDbExists( transMeta, INITIAL_NAME, INPUT_HOST );
+    assertOnlyDbExists( jobMeta, INITIAL_NAME, INPUT_HOST );
   }
 
   @Test
   public void edits_WhenNewNameIsUnique() throws Exception {
-    TransMeta transMeta = new TransMeta();
-    transMeta.addDatabase( createDefaultDatabase() );
+    JobMeta jobMeta = new JobMeta();
+    jobMeta.addDatabase( createDefaultDatabase() );
 
-    invokeEditConnectionListener( transMeta, INPUT_NAME );
+    invokeEditConnectionListener( jobMeta, INPUT_NAME );
 
-    assertOnlyDbExists( transMeta, INPUT_NAME, INPUT_HOST );
+    assertOnlyDbExists( jobMeta, INPUT_NAME, INPUT_HOST );
   }
 
   @Test
   public void ignores_WhenNewNameIsUsed() throws Exception {
-    TransMeta transMeta = new TransMeta();
-    transMeta.addDatabase( createDefaultDatabase() );
+    JobMeta jobMeta = new JobMeta();
+    jobMeta.addDatabase( createDefaultDatabase() );
 
-    invokeEditConnectionListener( transMeta, null );
+    invokeEditConnectionListener( jobMeta, null );
 
-    assertOnlyDbExists( transMeta, INITIAL_NAME, INITIAL_HOST );
+    assertOnlyDbExists( jobMeta, INITIAL_NAME, INITIAL_HOST );
   }
 
-  private void invokeEditConnectionListener( TransMeta transMeta, String answeredName ) throws Exception {
-    BaseStepDialog dialog = mock( BaseStepDialog.class );
+  private void invokeEditConnectionListener( JobMeta jobMeta, String answeredName ) throws Exception {
+    JobEntryDialog dialog = mock( JobEntryDialog.class );
     when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) )
       .thenAnswer( new PropsSettingAnswer( answeredName, INPUT_HOST ) );
 
     CCombo combo = mock( CCombo.class );
     when( combo.getText() ).thenReturn( INITIAL_NAME );
 
-    dialog.transMeta = transMeta;
+    dialog.jobMeta = jobMeta;
     dialog.new EditConnectionListener( combo ).widgetSelected( null );
   }
 
@@ -135,16 +132,15 @@ public class BaseStepDialog_ConnectionLine_Test {
     return existing;
   }
 
-  private void assertOnlyDbExists( TransMeta transMeta, String name, String host ) {
-    assertEquals( 1, transMeta.getDatabases().size() );
-    assertEquals( name, transMeta.getDatabase( 0 ).getName() );
-    assertEquals( host, transMeta.getDatabase( 0 ).getHostname() );
+  private void assertOnlyDbExists( JobMeta jobMeta, String name, String host ) {
+    assertEquals( 1, jobMeta.getDatabases().size() );
+    assertEquals( name, jobMeta.getDatabase( 0 ).getName() );
+    assertEquals( host, jobMeta.getDatabase( 0 ).getHostname() );
   }
 
   private static DatabaseMeta anyDbMeta() {
     return any( DatabaseMeta.class );
   }
-
 
   private static class PropsSettingAnswer implements Answer<String> {
     private final String name;
@@ -193,15 +189,14 @@ public class BaseStepDialog_ConnectionLine_Test {
     DatabaseDialog databaseDialog = mock( DatabaseDialog.class );
     when( databaseDialog.open() ).thenReturn( inputName );
 
-    TransMeta transMeta = new TransMeta();
+    JobMeta jobMeta = new JobMeta();
     DatabaseMeta db = createDefaultDatabase();
-    transMeta.addDatabase( db );
+    jobMeta.addDatabase( db );
 
-    BaseStepDialog dialog = mock( BaseStepDialog.class );
+    JobEntryDialog dialog = mock( JobEntryDialog.class );
     dialog.databaseDialog = databaseDialog;
-    dialog.transMeta = transMeta;
+    dialog.jobMeta = jobMeta;
     when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) ).thenCallRealMethod();
-    when( dialog.getDatabaseDialog( any( Shell.class ) ) ).thenCallRealMethod();
 
     String result = dialog.showDbDialogUnlessCancelledOrValid( (DatabaseMeta) db.clone(), db );
     assertEquals( expectedResult, result );
@@ -217,9 +212,9 @@ public class BaseStepDialog_ConnectionLine_Test {
     DatabaseMeta db2 = createDefaultDatabase();
     db2.setName( INPUT_NAME );
 
-    TransMeta transMeta = new TransMeta();
-    transMeta.addDatabase( db1 );
-    transMeta.addDatabase( db2 );
+    JobMeta jobMeta = new JobMeta();
+    jobMeta.addDatabase( db1 );
+    jobMeta.addDatabase( db2 );
 
     final String expectedResult = INPUT_NAME + "2";
 
@@ -235,11 +230,10 @@ public class BaseStepDialog_ConnectionLine_Test {
       .thenReturn( expectedResult );
 
 
-    BaseStepDialog dialog = mock( BaseStepDialog.class );
+    JobEntryDialog dialog = mock( JobEntryDialog.class );
     dialog.databaseDialog = databaseDialog;
-    dialog.transMeta = transMeta;
+    dialog.jobMeta = jobMeta;
     when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta() ) ).thenCallRealMethod();
-    when( dialog.getDatabaseDialog( any( Shell.class ) ) ).thenCallRealMethod();
 
     // try to rename db1 ("qwerty")
     String result = dialog.showDbDialogUnlessCancelledOrValid( (DatabaseMeta) db1.clone(), db1 );
