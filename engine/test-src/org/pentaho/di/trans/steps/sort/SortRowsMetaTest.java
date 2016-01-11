@@ -33,10 +33,12 @@ import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-public class SortRowsMetaUnit {
+public class SortRowsMetaTest {
 
   /**
    * Replaced previous testRep with load/save tester. Should cover http://jira.pentaho.com/browse/BACKLOG-377
@@ -44,28 +46,12 @@ public class SortRowsMetaUnit {
    */
   @Test
   public void testRoundTrips() throws KettleException {
-    List<String> attributes = Arrays.asList( "directory", "prefix", "sort_size", "free_memory", "compress",
-      "compress_variable", "unique_rows", "name", "ascending", "case_sensitive", "presorted" );
+    List<String> attributes = Arrays.asList( "Directory", "Prefix", "SortSize", "FreeMemoryLimit", "CompressFiles",
+      "CompressFilesVariable", "OnlyPassingUniqueRows", "FieldName", "Ascending", "CaseSensitive", "CollatorEnabled",
+      "CollatorStrength", "PreSortedField" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
-    getterMap.put( "sort_size", "getSortSize" );
-    getterMap.put( "free_memory", "getFreeMemoryLimit" );
-    getterMap.put( "compress", "getCompressFiles" );
-    getterMap.put( "compress_variable", "getCompressFilesVariable" );
-    getterMap.put( "unique_rows", "isOnlyPassingUniqueRows" );
-    getterMap.put( "name", "getFieldName" );
-    getterMap.put( "case_sensitive", "getCaseSensitive" );
-    getterMap.put( "presorted", "getPreSortedField" );
-
     Map<String, String> setterMap = new HashMap<String, String>();
-    setterMap.put( "sort_size", "setSortSize" );
-    setterMap.put( "free_memory", "setFreeMemoryLimit" );
-    setterMap.put( "compress", "setCompressFiles" );
-    setterMap.put( "compress_variable", "setCompressFilesVariable" );
-    setterMap.put( "name", "setFieldName" );
-    setterMap.put( "case_sensitive", "setCaseSensitive" );
-    setterMap.put( "presorted", "setPreSortedField" );
-    setterMap.put( "unique_rows", "setOnlyPassingUniqueRows" );
 
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
       new HashMap<String, FieldLoadSaveValidator<?>>();
@@ -73,14 +59,18 @@ public class SortRowsMetaUnit {
       new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 25 );
     FieldLoadSaveValidator<boolean[]> booleanArrayLoadSaveValidator =
       new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 25 );
+    FieldLoadSaveValidator<int[]> intArrayLoadSaveValidator =
+      new PrimitiveIntArrayLoadSaveValidator( new IntLoadSaveValidator(), 25 );
 
-    fieldLoadSaveValidatorAttributeMap.put( "name", stringArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "ascending", booleanArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "case_sensitive", booleanArrayLoadSaveValidator );
-    fieldLoadSaveValidatorAttributeMap.put( "presorted", booleanArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "FieldName", stringArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "Ascending", booleanArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "CaseSensitive", booleanArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "CollatorEnabled", booleanArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "CollatorStrength", intArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "PreSortedField", booleanArrayLoadSaveValidator );
 
-    LoadSaveTester loadSaveTester =
-      new LoadSaveTester( SortRowsMeta.class, attributes, getterMap, setterMap,
+    LoadSaveTester<SortRowsMeta> loadSaveTester =
+      new LoadSaveTester<>( SortRowsMeta.class, attributes, getterMap, setterMap,
         fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
     loadSaveTester.testSerialization();
