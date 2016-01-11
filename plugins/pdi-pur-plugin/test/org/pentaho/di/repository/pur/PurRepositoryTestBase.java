@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import org.junit.After;
@@ -69,10 +68,8 @@ import static org.pentaho.platform.security.userroledao.DefaultTenantedPrinciple
 /**
  * @author Andrey Khayrutdinov
  */
-@ContextConfiguration( locations = {
-    "classpath:/repository.spring.xml",
-    "classpath:/repository-test-override.spring.xml",
-    "classpath:/pdi-pur-plugin-test-override.spring.xml" } )
+@ContextConfiguration( locations = { "classpath:/repository.spring.xml",
+  "classpath:/repository-test-override.spring.xml", "classpath:/pdi-pur-plugin-test-override.spring.xml" } )
 @RunWith( SpringJUnit4ClassRunner.class )
 public abstract class PurRepositoryTestBase implements ApplicationContextAware {
 
@@ -103,8 +100,8 @@ public abstract class PurRepositoryTestBase implements ApplicationContextAware {
   // these two instances are just injected into the micro platform
   // they do not store anything except their settings, hence can be shared among different executions of tests
   private final ITenantedPrincipleNameResolver userNameUtils = new DefaultTenantedPrincipleNameResolver();
-  private final ITenantedPrincipleNameResolver roleNameUtils =
-    new DefaultTenantedPrincipleNameResolver( ALTERNATE_DELIMETER );
+  private final ITenantedPrincipleNameResolver roleNameUtils = new DefaultTenantedPrincipleNameResolver(
+      ALTERNATE_DELIMETER );
 
   // these objects are created during environment initialisation
   private ITenant systemTenant;
@@ -113,7 +110,6 @@ public abstract class PurRepositoryTestBase implements ApplicationContextAware {
   // this block stores those values, that should be restored after test's execution
   private MicroPlatform mp;
   private IRepositoryVersionManager existingVersionManager;
-
 
   @Before
   public void setUp() throws Exception {
@@ -159,7 +155,7 @@ public abstract class PurRepositoryTestBase implements ApplicationContextAware {
     mp.defineInstance( "roleAuthorizationPolicyRoleBindingDaoTarget", roleBindingDaoTarget );
     mp.defineInstance( "repositoryAdminUsername", repositoryAdmin );
     mp.defineInstance( "RepositoryFileProxyFactory",
-      new RepositoryFileProxyFactory( testJcrTemplate, repositoryFileDao ) );
+        new RepositoryFileProxyFactory( testJcrTemplate, repositoryFileDao ) );
     mp.defineInstance( "useMultiByteEncoding", Boolean.FALSE );
     initMicroPlatform( mp );
     mp.start();
@@ -169,12 +165,12 @@ public abstract class PurRepositoryTestBase implements ApplicationContextAware {
     // override this method to inject your own values into the micro platform
   }
 
-
   private void createSystemUser() {
     loginAsRepositoryAdmin();
     setAclManagement();
-    systemTenant = tenantManager.createTenant( null, ServerRepositoryPaths.getPentahoRootFolderName(),
-      tenantAdminRole, tenantAuthenticatedRole, ANONYMOUS_ROLE );
+    systemTenant =
+        tenantManager.createTenant( null, ServerRepositoryPaths.getPentahoRootFolderName(), tenantAdminRole,
+            tenantAuthenticatedRole, ANONYMOUS_ROLE );
     userRoleDao.createUser( systemTenant, systemAdmin, "", "", new String[] { tenantAdminRole } );
   }
 
@@ -184,8 +180,9 @@ public abstract class PurRepositoryTestBase implements ApplicationContextAware {
 
   private void createTester() {
     loginAsSystemAdmin();
-    testingTenant = tenantManager
-      .createTenant( systemTenant, TEST_TENANT, tenantAdminRole, tenantAuthenticatedRole, ANONYMOUS_ROLE );
+    testingTenant =
+        tenantManager
+            .createTenant( systemTenant, TEST_TENANT, tenantAdminRole, tenantAuthenticatedRole, ANONYMOUS_ROLE );
     userRoleDao.createUser( testingTenant, TEST_LOGIN, "", "", new String[] { tenantAdminRole } );
 
     createUserHomeFolder( testingTenant, TEST_LOGIN );
@@ -204,7 +201,7 @@ public abstract class PurRepositoryTestBase implements ApplicationContextAware {
     String principleId = userNameUtils.getPrincipleId( theTenant, theUsername );
     String authenticatedRoleId = roleNameUtils.getPrincipleId( theTenant, tenantAuthenticatedRole );
     TransactionCallbackWithoutResult callback =
-      createUserHomeDirCallback( theTenant, theUsername, principleId, authenticatedRoleId, repositoryFileDao );
+        createUserHomeDirCallback( theTenant, theUsername, principleId, authenticatedRoleId, repositoryFileDao );
     try {
       loginAsRepositoryAdmin();
       txnTemplate.execute( callback );
@@ -221,23 +218,21 @@ public abstract class PurRepositoryTestBase implements ApplicationContextAware {
     purRepository = new PurRepository();
     purRepository.init( purMeta );
     purRepository.setTest( unifiedRepository );
-    purRepository
-      .setPurRepositoryConnector( new PurRepositoryConnector( purRepository, purMeta, purRepository.getRootRef() ) );
+    purRepository.setPurRepositoryConnector( new PurRepositoryConnector( purRepository, purMeta, purRepository
+        .getRootRef() ) );
     purRepository.connect( TEST_LOGIN, "" );
   }
 
   private void loginAsTester() throws Exception {
     Authentication authentication =
-      createAuthentication( TEST_LOGIN, tenantAuthenticatedRole, roleNameUtils.getPrincipleId(
-        testingTenant, ANONYMOUS_ROLE ) );
+        createAuthentication( TEST_LOGIN, tenantAuthenticatedRole, roleNameUtils.getPrincipleId( testingTenant,
+            ANONYMOUS_ROLE ) );
 
     StandaloneSession session = createSession( testingTenant, TEST_LOGIN );
     session.setAttribute( "SECURITY_PRINCIPAL", authentication );
 
     setSession( session, authentication );
   }
-
-
 
   @After
   public void tearDown() throws Exception {
@@ -273,16 +268,15 @@ public abstract class PurRepositoryTestBase implements ApplicationContextAware {
     }
   }
 
-
-
   @Override
   public void setApplicationContext( ApplicationContext applicationContext ) throws BeansException {
     unifiedRepository = applicationContext.getBean( "unifiedRepository", IUnifiedRepository.class );
     tenantManager = applicationContext.getBean( "tenantMgrProxy", ITenantManager.class );
     userRoleDao = applicationContext.getBean( "userRoleDao", IUserRoleDao.class );
     authorizationPolicy = applicationContext.getBean( "authorizationPolicy", IAuthorizationPolicy.class );
-    roleBindingDaoTarget = (IRoleAuthorizationPolicyRoleBindingDao) applicationContext
-      .getBean( "roleAuthorizationPolicyRoleBindingDaoTarget" );
+    roleBindingDaoTarget =
+        (IRoleAuthorizationPolicyRoleBindingDao) applicationContext
+            .getBean( "roleAuthorizationPolicyRoleBindingDaoTarget" );
 
     SessionFactory jcrSessionFactory = (SessionFactory) applicationContext.getBean( "jcrSessionFactory" );
     testJcrTemplate = new JcrTemplate( jcrSessionFactory );
@@ -299,7 +293,7 @@ public abstract class PurRepositoryTestBase implements ApplicationContextAware {
 
     TestPrincipalProvider.userRoleDao = userRoleDao;
     TestPrincipalProvider.adminCredentialsStrategy =
-      (CredentialsStrategy) applicationContext.getBean( "jcrAdminCredentialsStrategy" );
+        (CredentialsStrategy) applicationContext.getBean( "jcrAdminCredentialsStrategy" );
     TestPrincipalProvider.repository = (Repository) applicationContext.getBean( "jcrRepository" );
 
     doSetApplicationContext( applicationContext );

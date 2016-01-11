@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import org.apache.commons.logging.Log;
@@ -74,7 +73,6 @@ public class UserRoleDelegateTest {
     roleListWebService = null;
   }
 
-
   @Test( expected = KettleException.class )
   public void createUser_ProhibitsToCreate_WhenNameCollides() throws Exception {
     final String name = "user";
@@ -104,7 +102,6 @@ public class UserRoleDelegateTest {
     verify( roleWebService ).createUser( any( ProxyPentahoUser.class ) );
   }
 
-
   @Test( expected = KettleException.class )
   public void createRole_ProhibitsToCreate_WhenNameCollides() throws Exception {
     final String name = "role";
@@ -128,7 +125,7 @@ public class UserRoleDelegateTest {
     final String upperCased = name.toUpperCase();
 
     IRole existing = new EERoleInfo( upperCased );
-    when( roleWebService.getRoles() ).thenReturn( new ProxyPentahoRole[]{ convertToPentahoProxyRole( existing ) } );
+    when( roleWebService.getRoles() ).thenReturn( new ProxyPentahoRole[] { convertToPentahoProxyRole( existing ) } );
 
     delegate.createRole( new EERoleInfo( name ) );
     verify( roleWebService ).createRole( any( ProxyPentahoRole.class ) );

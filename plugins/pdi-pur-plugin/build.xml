@@ -18,6 +18,9 @@
   <!-- The continuous target is used by CI ... this is the list of -->
   <!-- tasks that the CI machine will run.                         -->
   <!-- DO NOT change the CI machine's ant task .. change this list -->
+
+  <property name="assemble.copy-libs.excludes" value="kettle-*.jar, commons-*.jar, pentaho-xul-*.jar, webservices-*.jar, log4j-*.jar, jface*.jar, groovy*.jar, spring-*.jar, slf4j*.jar"/>
+
   <target name="continuous" depends="clean-all,resolve,publish" />
 
   <import file="build-res/subfloor-pkg.xml" />
@@ -29,6 +32,7 @@
   <property name="assemble.stage.dir"
             value="${bin.dir}/stage"
             description="Staging directory for package contents" />
+	
   <!-- Setup the compile classpath -->
   <path id="classpath">
     <fileset dir="${devlib.dir}">
@@ -88,7 +92,11 @@
     <pathelement path="${classes.dir}" />
   </path>
 
-
+  <target name="install">
+    <unzip src="${dist.dir}/${package.basename}.zip" dest="${kettle.plugin.dir}" overwrite="true">
+    </unzip>
+  </target>
+	
   <target name="clean-jars" depends="subfloor.clean-jars">
     <delete dir="${compilelib.dir}" />
   </target>
@@ -120,19 +128,20 @@
     <ivy:retrieve conf="compile" pattern="${compilelib.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
   </target>
 
-  <target name="assemble.copy-libs" depends="install-antcontrib">
-    <copy todir="${approot.stage.dir}">
-      <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
-    </copy>
-  </target>
-
   <!-- Override clean-all to clean the wadl2java lib folder -->
   <target name="clean-all" depends="subfloor.clean-all">
       <delete dir="${wadl2java.project}" />
   </target>
 
-  <target name="assemble" depends="jar,subfloor-pkg.assemble"/>
-  
+  <target name="assemble.copy-libs">
+    <copy todir="${approot.stage.dir}">
+      <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar"/>
+    </copy>
+    <copy todir="${approot.stage.dir}/lib">
+      <fileset dir="${lib.dir}" excludes="${assemble.copy-libs.excludes}"/>
+    </copy>
+  </target>	
+	
   <!-- Wadl2Java logic -->
   <target name="wadl2java-resolve" depends="install-antcontrib, install-ivy" description="Loads in the Wadl2Java dependencies so build-wadl2java.xml will work">
     <mkdir dir="${wadl2java.project}"/>

@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import org.junit.Test;
@@ -41,7 +40,6 @@ import static org.pentaho.di.repository.RepositoryObjectType.*;
  * @author Andrey Khayrutdinov
  */
 public class PurRepository_SharedObjects_IT extends PurRepositoryTestBase {
-
 
   @Test
   public void loadClusters() throws Exception {
@@ -76,7 +74,6 @@ public class PurRepository_SharedObjects_IT extends PurRepositoryTestBase {
     SharedObjectInterface object = objects.get( 0 );
     assertEquals( sharedObject, object );
   }
-
 
   @Test
   public void clusterIsRemovedFromCacheOnDelete() throws Exception {
@@ -124,15 +121,14 @@ public class PurRepository_SharedObjects_IT extends PurRepositoryTestBase {
     assertNotNull( element.getObjectId() );
 
     List<? extends SharedObjectInterface> before =
-      purRepository.loadAndCacheSharedObjects().get( element.getRepositoryElementType() );
+        purRepository.loadAndCacheSharedObjects().get( element.getRepositoryElementType() );
     assertEquals( 1, before.size() );
 
     remover.deleteFromRepository( element );
     List<? extends SharedObjectInterface> after =
-      purRepository.loadAndCacheSharedObjects().get( element.getRepositoryElementType() );
+        purRepository.loadAndCacheSharedObjects().get( element.getRepositoryElementType() );
     assertTrue( after.isEmpty() );
   }
-
 
   @Test
   public void loadAllShared() throws Exception {
@@ -158,9 +154,8 @@ public class PurRepository_SharedObjects_IT extends PurRepositoryTestBase {
     }
   }
 
-
   private static ClusterSchema cluster() {
-    return new ClusterSchema( "testCluster", Collections.<SlaveServer>emptyList() );
+    return new ClusterSchema( "testCluster", Collections.<SlaveServer> emptyList() );
   }
 
   private static DatabaseMeta database() {
@@ -184,7 +179,6 @@ public class PurRepository_SharedObjects_IT extends PurRepositoryTestBase {
   private static Map<RepositoryObjectType, List<? extends SharedObjectInterface>> map() {
     return new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface>>( RepositoryObjectType.class );
   }
-
 
   private interface Remover {
     void deleteFromRepository( RepositoryElementInterface element ) throws KettleException;

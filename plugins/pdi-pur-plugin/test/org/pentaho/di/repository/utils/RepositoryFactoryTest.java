@@ -1,3 +1,19 @@
+/*!
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.utils;
 
 import org.junit.Before;
@@ -30,14 +46,14 @@ public class RepositoryFactoryTest {
   }
 
   @Before
-  public void reset(){
+  public void reset() {
     PentahoSystem.clearObjectFactory();
   }
 
   @Test
   public void testConnectNoSession() throws Exception {
-    IRepositoryFactory.CachingRepositoryFactory cachingRepositoryFactory = new IRepositoryFactory
-        .CachingRepositoryFactory();
+    IRepositoryFactory.CachingRepositoryFactory cachingRepositoryFactory =
+        new IRepositoryFactory.CachingRepositoryFactory();
 
     // Call with no Session, should throw Exception
     try {
@@ -45,7 +61,6 @@ public class RepositoryFactoryTest {
       fail( "Should have thrown exception" );
     } catch ( KettleException expected ) {
     }
-
 
   }
 
@@ -58,9 +73,8 @@ public class RepositoryFactoryTest {
 
     // Delegate is just a mock. connect will be a cache miss
     IRepositoryFactory mockFactory = mock( IRepositoryFactory.class );
-    IRepositoryFactory.CachingRepositoryFactory cachingRepositoryFactory = new IRepositoryFactory
-        .CachingRepositoryFactory( mockFactory );
-
+    IRepositoryFactory.CachingRepositoryFactory cachingRepositoryFactory =
+        new IRepositoryFactory.CachingRepositoryFactory( mockFactory );
 
     cachingRepositoryFactory.connect( "foo" );
 
@@ -69,19 +83,17 @@ public class RepositoryFactoryTest {
     // Test with Cache Hit
     Repository mockRepository = mock( Repository.class );
     when( cacheManager.cacheEnabled( IRepositoryFactory.CachingRepositoryFactory.REGION ) ).thenReturn( true );
-    when( cacheManager.getFromRegionCache( IRepositoryFactory.CachingRepositoryFactory.REGION, "joe" ) ).
-        thenReturn( mockRepository );
+    when( cacheManager.getFromRegionCache( IRepositoryFactory.CachingRepositoryFactory.REGION, "joe" ) ).thenReturn(
+        mockRepository );
 
     Repository repo = cachingRepositoryFactory.connect( "foo" );
     assertThat( repo, sameInstance( mockRepository ) );
   }
 
-
   @Test
   public void testDefaultFactoryConnect() throws Exception {
 
-    IRepositoryFactory.DefaultRepositoryFactory repositoryFactory = new IRepositoryFactory
-        .DefaultRepositoryFactory();
+    IRepositoryFactory.DefaultRepositoryFactory repositoryFactory = new IRepositoryFactory.DefaultRepositoryFactory();
     repositoryFactory.setRepositoryId( "KettleFileRepository" );
 
     IPentahoSession session = new StandaloneSession( "joe" );

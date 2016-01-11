@@ -1,20 +1,19 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+ * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.pentaho.di.repository.pur;
 
 import java.util.ArrayList;
@@ -64,7 +63,7 @@ public class UserRoleHelper implements java.io.Serializable {
   }
 
   public static List<IRole> convertToListFromProxyPentahoRoles( UserRoleSecurityInfo info,
-                                                                IRoleSupportSecurityManager rsm ) {
+      IRoleSupportSecurityManager rsm ) {
     List<IRole> roleList = new ArrayList<IRole>();
     List<ProxyPentahoRole> roles = info.getRoles();
     List<UserToRoleAssignment> assignments = info.getAssignments();
@@ -84,7 +83,7 @@ public class UserRoleHelper implements java.io.Serializable {
   }
 
   public static List<IRole> convertToListFromProxyPentahoDefaultRoles( UserRoleSecurityInfo info,
-                                                                       IRoleSupportSecurityManager rsm ) {
+      IRoleSupportSecurityManager rsm ) {
     List<IRole> roleList = new ArrayList<IRole>();
     List<ProxyPentahoRole> roles = info.getDefaultRoles();
     List<UserToRoleAssignment> assignments = info.getAssignments();
@@ -110,9 +109,7 @@ public class UserRoleHelper implements java.io.Serializable {
   }
 
   public static List<IUser> convertToListFromProxyPentahoUsers( ProxyPentahoUser[] users,
-                                                                IUserRoleWebService userRoleWebService,
-                                                                UserRoleLookupCache lookupCache,
-                                                                IRoleSupportSecurityManager rsm ) {
+      IUserRoleWebService userRoleWebService, UserRoleLookupCache lookupCache, IRoleSupportSecurityManager rsm ) {
     List<IUser> userList = new ArrayList<IUser>();
     for ( ProxyPentahoUser user : users ) {
       userList.add( convertFromProxyPentahoUser( userRoleWebService, user, lookupCache, rsm ) );
@@ -121,9 +118,7 @@ public class UserRoleHelper implements java.io.Serializable {
   }
 
   public static List<IRole> convertToListFromProxyPentahoRoles( ProxyPentahoRole[] roles,
-                                                                IUserRoleWebService userRoleWebService,
-                                                                UserRoleLookupCache lookupCache,
-                                                                IRoleSupportSecurityManager rsm ) {
+      IUserRoleWebService userRoleWebService, UserRoleLookupCache lookupCache, IRoleSupportSecurityManager rsm ) {
     List<IRole> roleList = new ArrayList<IRole>();
     for ( ProxyPentahoRole role : roles ) {
       roleList.add( convertFromProxyPentahoRole( userRoleWebService, role, lookupCache, rsm ) );
@@ -132,19 +127,19 @@ public class UserRoleHelper implements java.io.Serializable {
   }
 
   public static ProxyPentahoUser[] convertToPentahoProxyUsers( Set<IUser> users ) {
-    ProxyPentahoUser[] proxyUsers = new ProxyPentahoUser[ users.size() ];
+    ProxyPentahoUser[] proxyUsers = new ProxyPentahoUser[users.size()];
     int i = 0;
     for ( IUser user : users ) {
-      proxyUsers[ i++ ] = convertToPentahoProxyUser( user );
+      proxyUsers[i++] = convertToPentahoProxyUser( user );
     }
     return proxyUsers;
   }
 
   public static ProxyPentahoUser[] convertToPentahoProxyUsers( List<IUser> users ) {
-    ProxyPentahoUser[] proxyUsers = new ProxyPentahoUser[ users.size() ];
+    ProxyPentahoUser[] proxyUsers = new ProxyPentahoUser[users.size()];
     int i = 0;
     for ( IUser user : users ) {
-      proxyUsers[ i++ ] = convertToPentahoProxyUser( user );
+      proxyUsers[i++] = convertToPentahoProxyUser( user );
     }
     return proxyUsers;
   }
@@ -161,19 +156,19 @@ public class UserRoleHelper implements java.io.Serializable {
   }
 
   public static ProxyPentahoRole[] convertToPentahoProxyRoles( Set<IRole> roles ) {
-    ProxyPentahoRole[] proxyRoles = new ProxyPentahoRole[ roles.size() ];
+    ProxyPentahoRole[] proxyRoles = new ProxyPentahoRole[roles.size()];
     int i = 0;
     for ( IRole role : roles ) {
-      proxyRoles[ i++ ] = convertToPentahoProxyRole( role );
+      proxyRoles[i++] = convertToPentahoProxyRole( role );
     }
     return proxyRoles;
   }
 
   public static ProxyPentahoRole[] convertToPentahoProxyRoles( List<IRole> roles ) {
-    ProxyPentahoRole[] proxyRoles = new ProxyPentahoRole[ roles.size() ];
+    ProxyPentahoRole[] proxyRoles = new ProxyPentahoRole[roles.size()];
     int i = 0;
     for ( IRole role : roles ) {
-      proxyRoles[ i++ ] = convertToPentahoProxyRole( role );
+      proxyRoles[i++] = convertToPentahoProxyRole( role );
     }
     return proxyRoles;
   }
@@ -185,8 +180,8 @@ public class UserRoleHelper implements java.io.Serializable {
     return role;
   }
 
-  private static Set<IRole> convertToSetFromProxyPentahoRoles( ProxyPentahoRole[] roles,
-                                                               UserRoleLookupCache lookupCache ) {
+  private static Set<IRole>
+    convertToSetFromProxyPentahoRoles( ProxyPentahoRole[] roles, UserRoleLookupCache lookupCache ) {
     Set<IRole> roleSet = new HashSet<IRole>();
     for ( ProxyPentahoRole role : roles ) {
       roleSet.add( lookupCache.lookupRole( role ) );
@@ -195,7 +190,7 @@ public class UserRoleHelper implements java.io.Serializable {
   }
 
   public static IRole convertFromProxyPentahoRole( IUserRoleWebService userRoleWebService, ProxyPentahoRole role,
-                                                   UserRoleLookupCache lookupCache, IRoleSupportSecurityManager rsm ) {
+      UserRoleLookupCache lookupCache, IRoleSupportSecurityManager rsm ) {
     IRole roleInfo = null;
     try {
       roleInfo = rsm.constructRole();
@@ -215,7 +210,7 @@ public class UserRoleHelper implements java.io.Serializable {
   }
 
   public static IUser convertFromProxyPentahoUser( IUserRoleWebService userRoleWebService, ProxyPentahoUser user,
-                                                   UserRoleLookupCache lookupCache, IRoleSupportSecurityManager rsm ) {
+      UserRoleLookupCache lookupCache, IRoleSupportSecurityManager rsm ) {
     IUser userInfo = null;
     try {
       userInfo = rsm.constructUser();
@@ -225,8 +220,8 @@ public class UserRoleHelper implements java.io.Serializable {
       userInfo.setName( user.getName() );
       try {
         if ( userInfo instanceof IEEUser ) {
-          ( (IEEUser) userInfo )
-            .setRoles( convertToSetFromProxyPentahoRoles( userRoleWebService.getRolesForUser( user ), lookupCache ) );
+          ( (IEEUser) userInfo ).setRoles( convertToSetFromProxyPentahoRoles(
+              userRoleWebService.getRolesForUser( user ), lookupCache ) );
         }
       } catch ( UserRoleException e ) {
         // TODO Auto-generated catch block
@@ -239,8 +234,8 @@ public class UserRoleHelper implements java.io.Serializable {
     return userInfo;
   }
 
-  private static Set<IUser> convertToSetFromProxyPentahoUsers( ProxyPentahoUser[] users,
-                                                               UserRoleLookupCache lookupCache ) {
+  private static Set<IUser>
+    convertToSetFromProxyPentahoUsers( ProxyPentahoUser[] users, UserRoleLookupCache lookupCache ) {
     Set<IUser> userSet = new HashSet<IUser>();
     for ( ProxyPentahoUser user : users ) {
       userSet.add( lookupCache.lookupUser( user ) );
@@ -248,8 +243,8 @@ public class UserRoleHelper implements java.io.Serializable {
     return userSet;
   }
 
-  private static Set<IRole> convertToSetFromProxyPentahoRoles( ProxyPentahoRole[] roles,
-                                                               IRoleSupportSecurityManager rsm ) {
+  private static Set<IRole>
+    convertToSetFromProxyPentahoRoles( ProxyPentahoRole[] roles, IRoleSupportSecurityManager rsm ) {
     Set<IRole> roleSet = new HashSet<IRole>();
     for ( ProxyPentahoRole role : roles ) {
       IRole roleInfo = null;
@@ -267,7 +262,7 @@ public class UserRoleHelper implements java.io.Serializable {
   }
 
   public static IUser convertToUserInfo( ProxyPentahoUser user, ProxyPentahoRole[] roles,
-                                         IRoleSupportSecurityManager rsm ) {
+      IRoleSupportSecurityManager rsm ) {
     IUser userInfo = null;
     try {
       userInfo = rsm.constructUser();
@@ -285,7 +280,7 @@ public class UserRoleHelper implements java.io.Serializable {
   }
 
   public static IRole convertFromProxyPentahoRole( ProxyPentahoRole role, List<UserToRoleAssignment> assignments,
-                                                   IRoleSupportSecurityManager rsm ) {
+      IRoleSupportSecurityManager rsm ) {
     IRole roleInfo = null;
     try {
       roleInfo = rsm.constructRole();
@@ -312,7 +307,7 @@ public class UserRoleHelper implements java.io.Serializable {
   }
 
   public static IUser convertFromProxyPentahoUser( ProxyPentahoUser user, List<UserToRoleAssignment> assignments,
-                                                   IRoleSupportSecurityManager rsm ) {
+      IRoleSupportSecurityManager rsm ) {
     IUser userInfo = null;
     try {
       userInfo = rsm.constructUser();
@@ -344,7 +339,7 @@ public class UserRoleHelper implements java.io.Serializable {
   }
 
   public static Set<IUser> getUsersForRole( String name, List<UserToRoleAssignment> assignments,
-                                            IRoleSupportSecurityManager rsm ) {
+      IRoleSupportSecurityManager rsm ) {
     Set<IUser> users = new HashSet<IUser>();
     for ( UserToRoleAssignment assignment : assignments ) {
       if ( name.equals( assignment.getRoleId() ) ) {
@@ -363,7 +358,7 @@ public class UserRoleHelper implements java.io.Serializable {
   }
 
   public static Set<IRole> getRolesForUser( String name, List<UserToRoleAssignment> assignments,
-                                            IRoleSupportSecurityManager rsm ) {
+      IRoleSupportSecurityManager rsm ) {
     if ( assignments == null || assignments.isEmpty() ) {
       return Collections.emptySet();
     }

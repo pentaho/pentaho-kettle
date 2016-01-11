@@ -112,6 +112,10 @@
     <dependency org="pentaho" name="VerticaBulkLoader" rev="${dependency.vertica-bulkloader-plugin.revision}" conf="plugins->default" changing="true" transitive="false">
       <artifact name="VerticaBulkLoader" type="zip" ext="zip" />
     </dependency>
+    <dependency org="pentaho-kettle" name="pdi-pur-plugin" rev="${dependency.pdi-pur-plugin.revision}" changing="true" transitive="false" conf="plugins->default">
+      <artifact name="pdi-pur-plugin" type="zip"/>
+    </dependency>
+
 
     <dependency org="pentaho" name="pentaho-platform-extensions"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
     <dependency org="org.slf4j" name="slf4j-api" rev="1.7.5"/>
@@ -120,6 +124,8 @@
     <dependency org="org.springframework" name="spring-beans"   rev="${dependency.spring.framework.revision}" />
     <dependency org="org.springframework" name="spring-context" rev="${dependency.spring.framework.revision}" />
     <dependency org="org.springframework.security" name="spring-security-core" rev="${dependency.spring.security.revision}" />
+    <dependency org="org.glassfish.metro" name="webservices-api" rev="2.1" transitive="false"/>
+    <dependency org="org.glassfish.metro" name="webservices-rt" rev="2.1" transitive="false"/>
 
     <!-- pentaho-metaverse -->
     <dependency org="pentaho" name="pentaho-metaverse-api" rev="${project.revision}" changing="true" transitive="false"/>
