@@ -1177,24 +1177,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       JobLogTable jobLogTable = jobMeta.getJobLogTable();
       if ( jobLogTable.isDefined() ) {
 
-        String tableName = jobMeta.getJobLogTable().getActualTableName();
-        DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
-
-        Database ldb = new Database( this, logcon );
-        ldb.shareVariablesWith( this );
-        try {
-          ldb.connect();
-          ldb.setCommit( logCommitSize );
-          ldb.writeLogRecord( jobMeta.getJobLogTable(), status, this, null );
-        } catch ( KettleDatabaseException dbe ) {
-          addErrors( 1 );
-          throw new KettleJobException( "Unable to end processing by writing log record to table " + tableName, dbe );
-        } finally {
-          if ( !ldb.isAutoCommit() ) {
-            ldb.commitLog( true, jobMeta.getJobLogTable() );
-          }
-          ldb.disconnect();
-        }
+        writeLogTableInformation( jobLogTable, status );
       }
 
       return true;
@@ -1203,6 +1186,38 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     }
   }
 
+  /**
+   *  Writes information to Job Log table.
+   *  Cleans old records, in case job is finished.
+   *
+   */
+  protected void writeLogTableInformation( JobLogTable jobLogTable, LogStatus status )
+    throws KettleJobException, KettleDatabaseException {
+    boolean cleanLogRecords = status.equals( LogStatus.END );
+    String tableName = jobLogTable.getActualTableName();
+    DatabaseMeta logcon = jobLogTable.getDatabaseMeta();
+
+    Database ldb = createDataBase( logcon );
+    ldb.shareVariablesWith( this );
+    try {
+      ldb.connect();
+      ldb.setCommit( logCommitSize );
+      ldb.writeLogRecord( jobLogTable, status, this, null );
+
+      if ( cleanLogRecords ) {
+        ldb.cleanupLogRecords( jobLogTable );
+      }
+
+    } catch ( KettleDatabaseException dbe ) {
+      addErrors( 1 );
+      throw new KettleJobException( "Unable to end processing by writing log record to table " + tableName, dbe );
+    } finally {
+      if ( !ldb.isAutoCommit() ) {
+        ldb.commitLog( true, jobLogTable );
+      }
+      ldb.disconnect();
+    }
+  }
   /**
    * Write log channel information.
    *

@@ -22,36 +22,76 @@
 
 package org.pentaho.di.job;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.BaseLogTable;
 import org.pentaho.di.core.logging.JobEntryLogTable;
+import org.pentaho.di.core.logging.JobLogTable;
+import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.HasDatabasesInterface;
+
+import java.util.ArrayList;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class JobTest {
+  private final static String STRING_DEFAULT = "<def>";
+  private Job mockedJob;
+  private Database mockedDataBase;
+  private VariableSpace mockedVariableSpace;
+  private HasDatabasesInterface hasDatabasesInterface;
+
+
+  @Before
+  public void init() {
+    mockedDataBase = mock( Database.class );
+    mockedJob = mock( Job.class );
+    mockedVariableSpace = mock( VariableSpace.class );
+    hasDatabasesInterface = mock( HasDatabasesInterface.class );
+
+    when( mockedJob.createDataBase( any( DatabaseMeta.class ) ) ).thenReturn( mockedDataBase );
+  }
 
   @Test
-  public void recordsCleanUpMethodIsCalled() throws KettleException {
-    Database mockedDataBase = mock( Database.class );
-    Job job = mock( Job.class );
+  public void recordsCleanUpMethodIsCalled_JobEntryLogTable() throws Exception {
 
-    JobEntryLogTable jobEntryLogTable = JobEntryLogTable.getDefault( mock( VariableSpace.class ), mock( HasDatabasesInterface.class ) );
-    jobEntryLogTable.setConnectionName( "connection" );
+    JobEntryLogTable jobEntryLogTable = JobEntryLogTable.getDefault( mockedVariableSpace, hasDatabasesInterface );
+    setAllTableParamsDefault( jobEntryLogTable );
 
     JobMeta jobMeta = new JobMeta(  );
     jobMeta.setJobEntryLogTable( jobEntryLogTable );
 
-    when( job.createDataBase( any( DatabaseMeta.class ) ) ).thenReturn( mockedDataBase );
-    when( job.getJobMeta() ).thenReturn( jobMeta );
-    doCallRealMethod().when( job ).writeJobEntryLogInformation();
+    when( mockedJob.getJobMeta() ).thenReturn( jobMeta );
+    doCallRealMethod().when( mockedJob ).writeJobEntryLogInformation();
 
-    job.writeJobEntryLogInformation();
+    mockedJob.writeJobEntryLogInformation();
 
     verify( mockedDataBase ).cleanupLogRecords( jobEntryLogTable );
   }
+
+  @Test
+  public void recordsCleanUpMethodIsCalled_JobLogTable() throws Exception {
+    JobLogTable jobLogTable = JobLogTable.getDefault( mockedVariableSpace, hasDatabasesInterface );
+    setAllTableParamsDefault( jobLogTable );
+
+    doCallRealMethod().when( mockedJob ).writeLogTableInformation( jobLogTable, LogStatus.END );
+
+    mockedJob.writeLogTableInformation( jobLogTable, LogStatus.END );
+
+    verify( mockedDataBase ).cleanupLogRecords( jobLogTable );
+  }
+
+  public void setAllTableParamsDefault( BaseLogTable table ) {
+    table.setSchemaName( STRING_DEFAULT );
+    table.setConnectionName( STRING_DEFAULT );
+    table.setTimeoutInDays( STRING_DEFAULT );
+    table.setTableName( STRING_DEFAULT );
+    table.setFields( new ArrayList<LogTableField>() );
+  }
+
 }
