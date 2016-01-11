@@ -238,9 +238,8 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
       job.setSocketRepository( getSocketRepository() );
 
       JobMap jobMap = getJobMap();
-      synchronized ( jobMap ) {
-        jobMap.addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
-      }
+
+      jobMap.addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
 
 
       // Disconnect from the job's repository when the job finishes.

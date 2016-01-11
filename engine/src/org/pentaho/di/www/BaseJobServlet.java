@@ -102,9 +102,8 @@ public abstract class BaseJobServlet extends BodyHttpServlet {
       } );
     }
 
-    synchronized ( getJobMap() ) {
-      getJobMap().addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
-    }
+    getJobMap().addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
+
     final Long passedBatchId = jobExecutionConfiguration.getPassedBatchId();
     if ( passedBatchId != null ) {
       job.setPassedBatchId( passedBatchId );

@@ -249,9 +249,7 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
         job.addDelegationListener( new CarteDelegationHandler( getTransformationMap(), getJobMap() ) );
       }
 
-      synchronized ( getJobMap() ) {
-        getJobMap().addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
-      }
+      getJobMap().addJob( job.getJobname(), carteObjectId, job, jobConfiguration );
 
       // Make sure to disconnect from the repository when the job finishes.
       //

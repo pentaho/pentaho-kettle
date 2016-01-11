@@ -223,7 +223,7 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
           // Create a new job object to start from a sane state. Then replace
           // the new job in the job map
           //
-          synchronized ( getJobMap() ) {
+          synchronized ( this ) {
             JobConfiguration jobConfiguration = getJobMap().getConfiguration( jobName );
 
             String carteObjectId = UUID.randomUUID().toString();
