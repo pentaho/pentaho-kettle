@@ -1,24 +1,41 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package org.pentaho.di.trans.steps.datagrid;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.trans.TransTestingUtil;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+import org.pentaho.test.util.FieldAccessor;
 
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.apache.commons.lang.reflect.FieldUtils.*;
 import static org.mockito.Mockito.when;
 
 /**
@@ -55,30 +72,11 @@ public class DataGrid_EmptyStringVsNull_Test {
 
 
   private void doTestEmptyStringVsNull( boolean diffProperty, List<Object[]> expected ) throws Exception {
-    final String fieldName = "EMPTY_STRING_AND_NULL_ARE_DIFFERENT";
-
-    final Field metaBaseField = getField( ValueMetaBase.class, fieldName );
-    final Object metaBaseValue = readStaticField( metaBaseField );
-
-    final Field metaField = getField( ValueMeta.class, fieldName );
-    final Object metaValue = readStaticField( metaField );
-
-    final Field modifiers = getField( Field.class, "modifiers", true );
-    writeField( modifiers, metaBaseField, metaBaseField.getModifiers() & ~Modifier.FINAL, true );
-    writeField( modifiers, metaField, metaField.getModifiers() & ~Modifier.FINAL, true );
-
-    Field.setAccessible( new AccessibleObject[] { metaBaseField, metaField }, true );
-    writeStaticField( metaBaseField, diffProperty );
-    writeStaticField( metaField, diffProperty );
-
+    FieldAccessor.ensureEmptyStringIsNotNull( diffProperty );
     try {
       executeAndAssertResults( expected );
     } finally {
-      writeStaticField( metaBaseField, metaBaseValue );
-      writeStaticField( metaField, metaValue );
-
-      writeField( modifiers, metaBaseField, metaBaseField.getModifiers() & Modifier.FINAL, true );
-      writeField( modifiers, metaField, metaField.getModifiers() & Modifier.FINAL, true );
+      FieldAccessor.resetEmptyStringIsNotNull();
     }
   }
 
